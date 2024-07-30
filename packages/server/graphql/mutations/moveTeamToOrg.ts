@@ -4,7 +4,6 @@ import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
 import getKysely from '../../postgres/getKysely'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import updateMeetingTemplateOrgId from '../../postgres/queries/updateMeetingTemplateOrgId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
@@ -28,9 +27,9 @@ const moveToOrg = async (
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const [org, teams, isPaidResult] = await Promise.all([
+  const [org, team, isPaidResult] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
-    getTeamsByIds([teamId]),
+    dataLoader.get('teams').load(teamId),
     pg
       .selectFrom('Team')
       .select('isPaid')
@@ -39,7 +38,6 @@ const moveToOrg = async (
       .limit(1)
       .executeTakeFirst()
   ])
-  const team = teams[0]
   if (!team) {
     return standardError(new Error('Did not find the team'))
   }
@@ -101,7 +99,7 @@ const moveToOrg = async (
     updateMeetingTemplateOrgId(currentOrgId, orgId),
     updateTeamByTeamId(updates, teamId)
   ])
-
+  dataLoader.clearAll('teams')
   // if no teams remain on the org, remove it
   await safeArchiveEmptyStarterOrganization(currentOrgId, dataLoader)
 

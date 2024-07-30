@@ -715,7 +715,8 @@ export const samlByDomain = (parent: RootDataLoader, dependsOn: RegisterDependsO
         .selectAll('SAML')
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
         .execute()
-      return normalizeResults(domains, res)
+      // not the same as normalizeResults
+      return domains.map((domain) => res.find((row) => row.domains.includes(domain)))
     },
     {
       ...parent.dataLoaderOptions
@@ -735,7 +736,8 @@ export const samlByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn
         .selectAll('SAML')
         .select(({fn}) => [fn.agg<string[]>('array_agg', ['SAMLDomain.domain']).as('domains')])
         .execute()
-      return normalizeResults(orgIds, res)
+      // not the same as normalizeResults
+      return orgIds.map((orgId) => res.find((row) => row.orgId === orgId))
     },
     {
       ...parent.dataLoaderOptions

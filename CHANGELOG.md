@@ -5,6 +5,96 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.40.0](https://github.com/ParabolInc/parabol/compare/v7.39.3...v7.40.0) (2024-07-26)
+
+
+### Added
+
+* nav updates ([#9973](https://github.com/ParabolInc/parabol/issues/9973)) ([2dd490a](https://github.com/ParabolInc/parabol/commit/2dd490ac75578f73d7a7b3e1f8ccfb1cd2164884))
+
+
+### Fixed
+
+* Disable SAML on downgrade to starter ([#10026](https://github.com/ParabolInc/parabol/issues/10026)) ([fa52c46](https://github.com/ParabolInc/parabol/commit/fa52c4638629fcf9c5c3453798d1320b9d8da2dd))
+
+
+### Changed
+
+* **deps:** bump braces from 3.0.2 to 3.0.3 ([#9843](https://github.com/ParabolInc/parabol/issues/9843)) ([0f6d8a4](https://github.com/ParabolInc/parabol/commit/0f6d8a40ad7e8490ba9503b56c5bc9e9a20620c2))
+* migrate EmailVerification to pg ([#9492](https://github.com/ParabolInc/parabol/issues/9492)) ([a653a61](https://github.com/ParabolInc/parabol/commit/a653a61b279631aa66d461ebd2012c4136358bd0))
+* **rethinkdb:** TemplateDimension: One-shot ([#10033](https://github.com/ParabolInc/parabol/issues/10033)) ([77e163a](https://github.com/ParabolInc/parabol/commit/77e163add65765641936bd56b83aa91f58e5b21a))
+* **SDL:** refactor _legacy.graphql into individual typeDefs ([#10019](https://github.com/ParabolInc/parabol/issues/10019)) ([f8b029d](https://github.com/ParabolInc/parabol/commit/f8b029d60b78e50e8afa5f0a0f44c863afce753a))
+
+## [7.39.3](https://github.com/ParabolInc/parabol/compare/v7.39.2...v7.39.3) (2024-07-25)
+
+
+### Changed
+
+* **rethinkdb:** TemplateScale: One-shot ([#10021](https://github.com/ParabolInc/parabol/issues/10021)) ([0c6c8e7](https://github.com/ParabolInc/parabol/commit/0c6c8e79dfbbac93362b3db640b008e32ba701b3))
+
+## [7.39.2](https://github.com/ParabolInc/parabol/compare/v7.39.1...v7.39.2) (2024-07-24)
+
+
+### Fixed
+
+* bump pm2 version ([#10027](https://github.com/ParabolInc/parabol/issues/10027)) ([0bb8ead](https://github.com/ParabolInc/parabol/commit/0bb8ead2adc52f64ad30ef57891791e1b3dd4ac1))
+
+
+### Changed
+
+* **rethinkdb:** TeamMember: Phase 3 ([#10003](https://github.com/ParabolInc/parabol/issues/10003)) ([73a5881](https://github.com/ParabolInc/parabol/commit/73a5881709f9345767c2a233cbe28716b6c3b8e1))
+
+## [7.39.1](https://github.com/ParabolInc/parabol/compare/v7.39.0...v7.39.1) (2024-07-23)
+
+
+### Changed
+
+* **rethinkdb:** TeamMember: Phase 2 ([#9993](https://github.com/ParabolInc/parabol/issues/9993)) ([90de32f](https://github.com/ParabolInc/parabol/commit/90de32f702849a92be28dff42188445947a54325))
+
+## [7.39.0](https://github.com/ParabolInc/parabol/compare/v7.38.11...v7.39.0) (2024-07-23)
+
+
+### Added
+
+* GCal event series for Standup ([#9959](https://github.com/ParabolInc/parabol/issues/9959)) ([8a6659a](https://github.com/ParabolInc/parabol/commit/8a6659a2373a101a970b2fb2a1004c0e21c85f65))
+
+
+### Changed
+
+* Fix test ([#10013](https://github.com/ParabolInc/parabol/issues/10013)) ([23c8048](https://github.com/ParabolInc/parabol/commit/23c8048eb88916d5f2021dc0e830fd3b953452e6))
+* Move more integration GraphQL types to SDL ([#10015](https://github.com/ParabolInc/parabol/issues/10015)) ([1279971](https://github.com/ParabolInc/parabol/commit/12799719081e53fdf0976005dabf851fc2908c42))
+* Reduce Azure DevOps scope ([#9999](https://github.com/ParabolInc/parabol/issues/9999)) ([e6a3c7d](https://github.com/ParabolInc/parabol/commit/e6a3c7d12b0f4e7a3b7caa4fe62ab81764c9f577))
+* upgrade from gpt-3.5-turbo to gpt-4o-mini ([#10002](https://github.com/ParabolInc/parabol/issues/10002)) ([b816727](https://github.com/ParabolInc/parabol/commit/b816727460620637f49027a1b32e47d3a2676152))
+
+## [7.38.11](https://github.com/ParabolInc/parabol/compare/v7.38.10...v7.38.11) (2024-07-19)
+
+
+### Fixed
+
+* Filipino checkin greeting ([#9997](https://github.com/ParabolInc/parabol/issues/9997)) ([5c45379](https://github.com/ParabolInc/parabol/commit/5c453794fa3ebb6f1948a2f6c8c7f70be2a0d009))
+
+
+### Changed
+
+* fix broken build mig file ([#10006](https://github.com/ParabolInc/parabol/issues/10006)) ([892cbd6](https://github.com/ParabolInc/parabol/commit/892cbd654d030a6884a4c50cecf6fb5244e153c8))
+* move some integrations to SDL pattern ([#10000](https://github.com/ParabolInc/parabol/issues/10000)) ([6d01097](https://github.com/ParabolInc/parabol/commit/6d01097ef68bbbe33eea1faf1367d7ad6120f1db))
+* **rethinkdb:** QueryMap: One-shot ([#10005](https://github.com/ParabolInc/parabol/issues/10005)) ([28553e4](https://github.com/ParabolInc/parabol/commit/28553e49c64206fde3e88d47ac48175639b8b6cb))
+* **rethinkdb:** TaskHistory: One-shot ([#10004](https://github.com/ParabolInc/parabol/issues/10004)) ([7100a23](https://github.com/ParabolInc/parabol/commit/7100a231fc6bbc750398daec03d882e5afc7a57c))
+* **rethinkdb:** TeamMember: Phase 1 ([#9979](https://github.com/ParabolInc/parabol/issues/9979)) ([b0c2cf2](https://github.com/ParabolInc/parabol/commit/b0c2cf2aa40aa08c8de24bfdcb2a9a150178271e))
+
+## [7.38.10](https://github.com/ParabolInc/parabol/compare/v7.38.9...v7.38.10) (2024-07-17)
+
+
+### Fixed
+
+* colors of the prompts for the threat level retro match now the prompts' names ([#9956](https://github.com/ParabolInc/parabol/issues/9956)) ([0287026](https://github.com/ParabolInc/parabol/commit/02870268ea8b57e31aec28295cd6d5bac9797b8c))
+* SAML return values from dataloader ([#9991](https://github.com/ParabolInc/parabol/issues/9991)) ([4f883fe](https://github.com/ParabolInc/parabol/commit/4f883fe7e557d4f6d121bc11ab68b30646d3d5e4))
+
+
+### Changed
+
+* parallelize codecheck ([#9983](https://github.com/ParabolInc/parabol/issues/9983)) ([cec7063](https://github.com/ParabolInc/parabol/commit/cec70635bb76dafb4bd71f661268268e34467e3c))
+
 ## [7.38.9](https://github.com/ParabolInc/parabol/compare/v7.38.8...v7.38.9) (2024-07-16)
 
 

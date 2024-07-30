@@ -1,0 +1,20 @@
+"""
+An immutable version of TemplateScale to be shared across all users
+"""
+type TemplateScaleRef {
+  """
+  md5 hash
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  The title of the scale used in the template
+  """
+  name: String!
+
+  """
+  The values used in this scale
+  """
+  values: [TemplateScaleValue!]!
+}

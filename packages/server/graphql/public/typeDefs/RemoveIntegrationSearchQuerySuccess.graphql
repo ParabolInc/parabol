@@ -1,0 +1,5 @@
+type RemoveIntegrationSearchQuerySuccess {
+  userId: ID
+  teamId: ID
+  jiraServerIntegration: JiraServerIntegration
+}

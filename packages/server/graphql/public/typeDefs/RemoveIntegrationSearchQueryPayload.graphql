@@ -1,0 +1,4 @@
+"""
+Return value for removeIntegrationSearchQuery, which could be an error
+"""
+union RemoveIntegrationSearchQueryPayload = ErrorPayload | RemoveIntegrationSearchQuerySuccess

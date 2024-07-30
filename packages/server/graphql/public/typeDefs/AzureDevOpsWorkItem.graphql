@@ -1,0 +1,49 @@
+"""
+The Azure DevOps Work Item that comes direct from Azure DevOps
+"""
+type AzureDevOpsWorkItem implements TaskIntegration {
+  """
+  GUID instanceId:projectKey:issueKey
+  """
+  id: ID!
+
+  """
+  URL to the issue
+  """
+  url: String!
+
+  """
+  The id of the issue from Azure, e.g. 7
+  """
+  issueKey: String!
+
+  """
+  Title of the work item
+  """
+  title: String!
+
+  """
+  Name or id of the Team Project the work item belongs to
+  """
+  teamProject: String!
+
+  """
+  The Azure DevOps Remote Project the work item belongs to
+  """
+  project: AzureDevOpsRemoteProject!
+
+  """
+  The Current State of the Work item
+  """
+  state: String!
+
+  """
+  The Type of the Work item
+  """
+  type: String!
+
+  """
+  The description converted into raw HTML
+  """
+  descriptionHTML: String!
+}

@@ -6,9 +6,7 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
-import getPg from '../../postgres/getPg'
-import {insertTemplateRefQuery} from '../../postgres/queries/generated/insertTemplateRefQuery'
-import {insertTemplateScaleRefQuery} from '../../postgres/queries/generated/insertTemplateScaleRefQuery'
+import getKysely from '../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
@@ -27,7 +25,7 @@ import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
-  const pg = getPg()
+  const pg = getKysely()
   const [template, dimensions] = await Promise.all([
     dataLoader.get('meetingTemplates').loadNonNull(templateId),
     dataLoader.get('templateDimensionsByTemplateId').load(templateId)
@@ -39,7 +37,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     isValid
   )
   const templateScales = uniqueScales.map(({name, values}) => {
-    const scale = {name, values}
+    const scale = {name, values: values.map(({color, label}) => ({color, label}))}
     const {id, str} = getHashAndJSON(scale)
     return {id, scale: str}
   })
@@ -59,10 +57,17 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
   }
   const {id: templateRefId, str: templateRefStr} = getHashAndJSON(templateRef)
   const ref = {id: templateRefId, template: templateRefStr}
-  await Promise.all([
-    insertTemplateScaleRefQuery.run({templateScales}, pg),
-    insertTemplateRefQuery.run({ref}, pg)
-  ])
+  await pg
+    .with('TemplateScaleRefUpsert', (qc) =>
+      qc
+        .insertInto('TemplateScaleRef')
+        .values(templateScales)
+        .onConflict((oc) => oc.doNothing())
+    )
+    .insertInto('TemplateRef')
+    .values(ref)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
   return templateRefId
 }
 
@@ -163,7 +168,7 @@ export default {
     }
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const {isSpectatingPoker} = teamMember
     const updates = {
       lastMeetingType: meetingType

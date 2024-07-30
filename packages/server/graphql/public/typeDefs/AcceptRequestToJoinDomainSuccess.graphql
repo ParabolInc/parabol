@@ -1,0 +1,6 @@
+type AcceptRequestToJoinDomainSuccess {
+  """
+  Viewer
+  """
+  viewer: User!
+}

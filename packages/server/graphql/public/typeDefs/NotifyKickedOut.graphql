@@ -1,0 +1,45 @@
+"""
+A notification sent to someone who was just kicked off a team
+"""
+type NotifyKickedOut implements Notification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  *The userId that should see this notification
+  """
+  userId: ID!
+
+  """
+  the user that evicted recipient
+  """
+  evictor: User!
+
+  """
+  The name of the team the user is joining
+  """
+  teamName: String!
+
+  """
+  The teamId the user was kicked out of
+  """
+  teamId: ID!
+
+  """
+  The team the task is on
+  """
+  team: Team!
+}

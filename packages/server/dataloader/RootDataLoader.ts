@@ -48,7 +48,7 @@ export type RegisterDependsOn = (primaryLoaders: AllPrimaryLoaders | AllPrimaryL
 
 // The RethinkDB logic is a leaky abstraction! It will be gone soon & this will be generic enough to put in its own package
 interface GenericDataLoader<TLoaders, TPrimaryLoaderNames> {
-  clearAll(pkLoaderName: TPrimaryLoaderNames): void
+  clearAll(pkLoaderName: TPrimaryLoaderNames | TPrimaryLoaderNames[]): void
   get<LoaderName extends keyof TLoaders, Loader extends TLoaders[LoaderName]>(
     loaderName: LoaderName
   ): Loader extends (...args: any[]) => any
@@ -85,8 +85,9 @@ export default class RootDataLoader<
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  clearAll: DataLoaderInstance['clearAll'] = (pkLoaderName) => {
-    const dependencies = [pkLoaderName, ...(this.dependentLoaders[pkLoaderName] ?? [])]
+  clearAll: DataLoaderInstance['clearAll'] = (inPkLoaderName) => {
+    const pkLoaderNames = Array.isArray(inPkLoaderName) ? inPkLoaderName : [inPkLoaderName]
+    const dependencies = pkLoaderNames.flatMap((pk) => [pk, ...(this.dependentLoaders[pk] ?? [])])
     dependencies.forEach((loaderName) => {
       this.loaders[loaderName]?.clearAll()
     })
@@ -95,22 +96,19 @@ export default class RootDataLoader<
     let loader = this.loaders[loaderName]
     if (loader) return loader
     const loaderMaker = loaderMakers[loaderName as keyof typeof loaderMakers]
+    const dependsOn: RegisterDependsOn = (inPrimaryLoaders) => {
+      const primaryLoaders = Array.isArray(inPrimaryLoaders) ? inPrimaryLoaders : [inPrimaryLoaders]
+      primaryLoaders.forEach((primaryLoader) => {
+        ;(this.dependentLoaders[primaryLoader] ??= []).push(loaderName)
+      })
+    }
     if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
       const {table} = loaderMaker
       loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
     } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
       const {fetch, field, pk} = loaderMaker
-      const basePkLoader = this.get(pk) as any
-      loader = rethinkForeignKeyLoader(basePkLoader, this.dataLoaderOptions, field, fetch)
+      loader = rethinkForeignKeyLoader(this, dependsOn, pk, field, fetch)
     } else {
-      const dependsOn: RegisterDependsOn = (inPrimaryLoaders) => {
-        const primaryLoaders = Array.isArray(inPrimaryLoaders)
-          ? inPrimaryLoaders
-          : [inPrimaryLoaders]
-        primaryLoaders.forEach((primaryLoader) => {
-          ;(this.dependentLoaders[primaryLoader] ??= []).push(loaderName)
-        })
-      }
       loader = (loaderMaker as any)(this, dependsOn)
     }
     this.loaders[loaderName] = loader!

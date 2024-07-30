@@ -1,0 +1,5 @@
+type RemovePokerTemplatePayload {
+  error: StandardMutationError
+  pokerTemplate: PokerTemplate
+  pokerMeetingSettings: PokerMeetingSettings
+}

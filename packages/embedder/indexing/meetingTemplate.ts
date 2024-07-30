@@ -41,7 +41,7 @@ const createTextFromPokerMeetingTemplate = async (
   const dimensionsText = (
     await Promise.all(
       dimensions.map(async ({name, description, scaleId}) => {
-        const scale = await dataLoader.get('templateScales').load(scaleId)
+        const scale = await dataLoader.get('templateScales').loadNonNull(scaleId)
         const scaleValues = scale.values.map(({label}) => label).join(', ')
         return `${name}\n${description ?? ''}\n${scale.name}\n${scaleValues}`
       })

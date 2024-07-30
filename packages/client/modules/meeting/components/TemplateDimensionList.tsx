@@ -6,8 +6,8 @@ import {useFragment} from 'react-relay'
 import {TemplateDimensionList_dimensions$key} from '../../../__generated__/TemplateDimensionList_dimensions.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MovePokerTemplateDimensionMutation from '../../../mutations/MovePokerTemplateDimensionMutation'
+import {getSortOrder} from '../../../shared/sortOrder'
 import {TEMPLATE_DIMENSION} from '../../../utils/constants'
-import dndNoise from '../../../utils/dndNoise'
 import TemplateDimensionItem from './TemplateDimensionItem'
 
 interface Props {
@@ -52,20 +52,7 @@ const TemplateDimensionList = (props: Props) => {
     ) {
       return
     }
-
-    let sortOrder
-    if (destination.index === 0) {
-      sortOrder = destinationDimension.sortOrder - 1 + dndNoise()
-    } else if (destination.index === dimensions.length - 1) {
-      sortOrder = destinationDimension.sortOrder + 1 + dndNoise()
-    } else {
-      const offset = source.index > destination.index ? -1 : 1
-      sortOrder =
-        ((dimensions[destination.index + offset]?.sortOrder ?? 0) +
-          destinationDimension.sortOrder) /
-          2 +
-        dndNoise()
-    }
+    const sortOrder = getSortOrder(dimensions, source.index, destination.index)
 
     const {id: dimensionId} = sourceDimension
     const variables = {dimensionId, sortOrder}

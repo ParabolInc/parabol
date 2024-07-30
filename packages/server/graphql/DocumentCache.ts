@@ -5,7 +5,7 @@
  */
 
 import {DocumentNode, parse} from 'graphql'
-import getRethink from '../database/rethinkDriver'
+import getKysely from '../postgres/getKysely'
 
 export default class DocumentCache {
   store = {} as {[docId: string]: DocumentNode}
@@ -16,8 +16,13 @@ export default class DocumentCache {
     // looks up query string for a persisted query, parses into an AST, caches and returns it
     let document = this.store[docId]
     if (!document) {
-      const r = await getRethink()
-      let queryString = await r.table('QueryMap').get(docId)('query').default(null).run()
+      const pg = getKysely()
+      const queryStringRes = await pg
+        .selectFrom('QueryMap')
+        .select('query')
+        .where('id', '=', docId)
+        .executeTakeFirst()
+      let queryString = queryStringRes?.query
       if (!queryString && !__PRODUCTION__) {
         // In development, use the frequently changing queryMap to look up persisted queries by hash
         const queryMap = require('../../../queryMap.json')

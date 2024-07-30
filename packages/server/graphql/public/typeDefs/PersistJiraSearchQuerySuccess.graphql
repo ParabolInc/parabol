@@ -1,0 +1,6 @@
+type PersistJiraSearchQuerySuccess {
+  """
+  The newly created auth
+  """
+  atlassianIntegration: AtlassianIntegration
+}

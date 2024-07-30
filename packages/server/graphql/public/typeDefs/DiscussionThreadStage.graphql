@@ -1,0 +1,14 @@
+"""
+A meeting stage that includes a discussion thread
+"""
+interface DiscussionThreadStage {
+  """
+  The ID to find the discussion that goes in the stage
+  """
+  discussionId: ID!
+
+  """
+  The discussion about the stage
+  """
+  discussion: Discussion!
+}

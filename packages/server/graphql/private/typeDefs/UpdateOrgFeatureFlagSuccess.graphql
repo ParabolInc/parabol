@@ -1,0 +1,6 @@
+type UpdateOrgFeatureFlagSuccess {
+  """
+  the organizations given the super power
+  """
+  updatedOrganizations: [Organization]
+}

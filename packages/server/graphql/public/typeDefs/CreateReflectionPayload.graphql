@@ -1,0 +1,16 @@
+type CreateReflectionPayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+  reflectionId: ID
+  reflection: RetroReflection
+
+  """
+  The group automatically created for the reflection
+  """
+  reflectionGroup: RetroReflectionGroup
+
+  """
+  The stages that were unlocked by navigating
+  """
+  unlockedStages: [NewMeetingStage!]
+}

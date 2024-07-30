@@ -57,22 +57,17 @@ const Nav = styled('nav')({
   width: '100%'
 })
 
-const OrgName = styled('div')({
-  paddingTop: 8,
-  paddingLeft: 15,
-  fontWeight: 600,
-  fontSize: 12,
-  lineHeight: '24px',
-  color: PALETTE.SLATE_500
+const TopNavItemsWrap = styled('div')({
+  padding: '10px 12px'
 })
 
 const NavItemsWrap = styled('div')({
-  padding: '8px 17px' // add 1 to 16 to match nav section border
+  padding: '10px 12px 0'
 })
 
 const NavItem = styled(LeftDashNavItem)({
   borderRadius: 44,
-  paddingLeft: 15
+  paddingLeft: 16
 })
 
 const DashHR = styled('div')({
@@ -121,7 +116,7 @@ const MobileDashSidebar = (props: Props) => {
         <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
         <NavBlock>
           <Nav>
-            <NavItemsWrap>
+            <TopNavItemsWrap>
               <NavItem
                 onClick={handleMenuClick}
                 icon={'userSettings'}
@@ -135,7 +130,7 @@ const MobileDashSidebar = (props: Props) => {
                 label={'Sign Out'}
                 exact
               />
-            </NavItemsWrap>
+            </TopNavItemsWrap>
             <DashHR />
             <NavItemsWrap>
               <NavItem
@@ -145,7 +140,11 @@ const MobileDashSidebar = (props: Props) => {
                 label={'Organizations'}
                 exact
               />
-              <OrgName>{name}</OrgName>
+              <div className='mb-1 mt-4 flex min-h-[32px] items-center'>
+                <span className='flex-1 pl-3 text-base font-semibold leading-6 text-slate-700'>
+                  {name}
+                </span>
+              </div>
               <NavItem
                 onClick={handleMenuClick}
                 icon={'creditScore'}
@@ -194,7 +193,7 @@ const MobileDashSidebar = (props: Props) => {
       <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
       <NavBlock>
         <Nav>
-          <NavItemsWrap>
+          <TopNavItemsWrap>
             <NavItem
               onClick={handleMenuClick}
               icon={'userSettings'}
@@ -208,7 +207,7 @@ const MobileDashSidebar = (props: Props) => {
               label={'Sign Out'}
               exact
             />
-          </NavItemsWrap>
+          </TopNavItemsWrap>
           <DashHR />
           <NavItemsWrap>
             <NavItem

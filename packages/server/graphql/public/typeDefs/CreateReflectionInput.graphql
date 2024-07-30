@@ -1,0 +1,13 @@
+input CreateReflectionInput {
+  """
+  A stringified draft-js document containing thoughts
+  """
+  content: String
+  meetingId: ID!
+
+  """
+  The prompt the reflection belongs to
+  """
+  promptId: ID!
+  sortOrder: Float!
+}

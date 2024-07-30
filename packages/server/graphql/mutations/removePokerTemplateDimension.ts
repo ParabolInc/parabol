@@ -1,7 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -22,12 +20,11 @@ const removePokerTemplateDimension = {
     {dimensionId}: {dimensionId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -40,25 +37,19 @@ const removePokerTemplateDimension = {
 
     // VALIDATION
     const {teamId, templateId} = dimension
-    const dimensionCount = await r
-      .table('TemplateDimension')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({templateId})
-      .filter((row: RDatum) => row('removedAt').default(null).eq(null))
-      .count()
-      .default(0)
-      .run()
+    const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
 
-    if (dimensionCount <= 1) {
+    if (dimensions.length <= 1) {
       return standardError(new Error('No dimensions remain'), {userId: viewerId})
     }
 
     // RESOLUTION
-    await Promise.all([
-      r.table('TemplateDimension').get(dimensionId).update({removedAt: now}).run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
-    ])
-
+    await pg
+      .updateTable('TemplateDimension')
+      .set({removedAt: now})
+      .where('id', '=', dimensionId)
+      .execute()
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId, templateId}
     publish(
       SubscriptionChannel.TEAM,

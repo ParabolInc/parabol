@@ -1,0 +1,11 @@
+type FlagReadyToAdvanceSuccess {
+  """
+  the meeting with the updated readyCount
+  """
+  meeting: NewMeeting!
+
+  """
+  the stage with the updated readyCount
+  """
+  stage: NewMeetingStage!
+}

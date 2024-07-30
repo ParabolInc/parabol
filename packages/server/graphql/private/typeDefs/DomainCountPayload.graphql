@@ -1,0 +1,11 @@
+type DomainCountPayload {
+  """
+  the email domain
+  """
+  domain: ID!
+
+  """
+  the sum total
+  """
+  total: Int!
+}

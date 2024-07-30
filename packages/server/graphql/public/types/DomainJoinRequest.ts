@@ -1,5 +1,5 @@
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
-import getRethink from '../../../database/rethinkDriver'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
@@ -15,7 +15,6 @@ const DomainJoinRequest: DomainJoinRequestResolvers = {
   },
   teams: async ({id}, _args, {authToken, dataLoader}: GQLContext) => {
     const viewerId = getUserId(authToken)
-    const r = await getRethink()
     const user = (await dataLoader.get('users').loadNonNull(viewerId))!
     const teamIds = user.tms
 
@@ -23,11 +22,10 @@ const DomainJoinRequest: DomainJoinRequestResolvers = {
 
     const {domain} = request
 
-    const leadTeamMembers = await r
-      .table('TeamMember')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isLead: true, userId: viewerId})
-      .run()
+    const teamMemberIds = teamIds.map((teamId) => TeamMemberId.join(teamId, viewerId))
+    const leadTeamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds))
+      .filter(isValid)
+      .filter(({isLead}) => isLead)
 
     const leadTeamIds = leadTeamMembers.map((teamMember) => teamMember.teamId)
     const leadTeams = (await dataLoader.get('teams').loadMany(leadTeamIds)).filter(isValid)

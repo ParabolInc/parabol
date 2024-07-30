@@ -6,15 +6,14 @@ import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Meeting from '../database/types/Meeting'
 import Organization from '../database/types/Organization'
 import Task from '../database/types/Task'
-import TeamMember from '../database/types/TeamMember'
 import User from '../database/types/User'
 import {Loaders} from '../dataloader/RootDataLoader'
-import {IGetTeamsByIdsQueryResult} from '../postgres/queries/generated/getTeamsByIdsQuery'
-import {Team} from '../postgres/queries/getTeamsByIds'
+import {TeamMember} from '../postgres/types'
 import {AnyMeeting} from '../postgres/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
 import {GQLContext} from './graphql'
 import isValid from './isValid'
+import {TeamSource} from './public/types/Team'
 
 export const resolveNewMeeting = (
   {
@@ -77,7 +76,7 @@ export const resolveTasks = async (
 }
 
 export const resolveTeam = (
-  {team, teamId}: {teamId?: string; team?: IGetTeamsByIdsQueryResult},
+  {team, teamId}: {teamId?: string; team?: TeamSource},
   _args: unknown,
   {dataLoader}: GQLContext
 ) => {
@@ -89,7 +88,7 @@ export const resolveTeam = (
 }
 
 export const resolveTeams = (
-  {teamIds, teams}: {teamIds: string; teams: Team[]},
+  {teamIds, teams}: {teamIds: string; teams: TeamSource[]},
   _args: unknown,
   {dataLoader}: GQLContext
 ) => {

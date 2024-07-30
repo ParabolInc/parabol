@@ -1,10 +1,8 @@
 import bcrypt from 'bcryptjs'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
-import {URLSearchParams} from 'url'
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import createEmailVerification from '../../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
+import getKysely from '../../../postgres/getKysely'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import isEmailVerificationRequired from '../../../utils/isEmailVerificationRequired'
@@ -21,7 +19,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}
   }
-  const r = await getRethink()
+  const pg = getKysely()
   const isOrganic = !invitationToken
   const {ip, dataLoader} = context
   const loginAttempt = await attemptLogin(email, password, ip)
@@ -49,13 +47,12 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   }
   const verificationRequired = await isEmailVerificationRequired(email, dataLoader)
   if (verificationRequired) {
-    const existingVerification = await r
-      .table('EmailVerification')
-      .getAll(email, {index: 'email'})
-      .filter((row: RValue) => row('expiration').gt(new Date()))
-      .nth(0)
-      .default(null)
-      .run()
+    const existingVerification = await pg
+      .selectFrom('EmailVerification')
+      .selectAll()
+      .where('email', '=', email)
+      .where('expiration', '>', new Date())
+      .executeTakeFirst()
     if (existingVerification) {
       return {error: {message: 'Verification email already sent'}}
     }

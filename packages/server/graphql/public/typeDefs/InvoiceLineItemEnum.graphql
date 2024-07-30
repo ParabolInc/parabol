@@ -1,0 +1,9 @@
+"""
+A big picture line item
+"""
+enum InvoiceLineItemEnum {
+  ADDED_USERS
+  INACTIVITY_ADJUSTMENTS
+  OTHER_ADJUSTMENTS
+  REMOVED_USERS
+}

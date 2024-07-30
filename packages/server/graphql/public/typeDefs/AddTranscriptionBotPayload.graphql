@@ -1,0 +1,4 @@
+"""
+Return value for addTranscriptionBot, which could be an error
+"""
+union AddTranscriptionBotPayload = ErrorPayload | AddTranscriptionBotSuccess

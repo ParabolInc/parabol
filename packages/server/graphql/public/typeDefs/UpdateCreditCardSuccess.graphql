@@ -1,0 +1,16 @@
+type UpdateCreditCardSuccess {
+  """
+  The teams that were updated with the new payment method
+  """
+  teamsUpdated: [Team!]!
+
+  """
+  The org that was updated with the new payment method
+  """
+  organization: Organization!
+
+  """
+  The client secret from the Stripe subscription. Used for client-side retrieval using a publishable key.
+  """
+  stripeSubscriptionClientSecret: String!
+}

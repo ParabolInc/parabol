@@ -68,6 +68,7 @@ afterEach(async () => {
 
 afterAll(async () => {
   await getKysely().destroy()
+  console.log('org verified destroy')
 })
 
 test('Founder is billing lead', async () => {
