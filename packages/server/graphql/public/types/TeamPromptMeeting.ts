@@ -1,8 +1,6 @@
-import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
-import TeamPromptMeetingMember from '../../../database/types/TeamPromptMeetingMember'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
@@ -10,6 +8,7 @@ import getPhase from '../../../utils/getPhase'
 import {TeamPromptMeetingResolvers} from '../resolverTypes'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
+  __isTypeOf: ({meetingType}) => meetingType === 'teamPrompt',
   prevMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return null
 
@@ -64,13 +63,6 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
 
   responses: ({id: meetingId}, _args, {}) => {
     return getTeamPromptResponsesByMeetingId(meetingId)
-  },
-
-  viewerMeetingMember: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-    return (meetingMember as TeamPromptMeetingMember) || null
   },
 
   responseCount: async ({id: meetingId}) => {

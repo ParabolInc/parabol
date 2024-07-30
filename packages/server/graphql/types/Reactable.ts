@@ -22,9 +22,9 @@ const Reactable = new GraphQLInterfaceType({
   resolveType: (type) => {
     const reactableType = getReactableType(type)
     const lookup = {
-      COMMENT: require('./Comment').default,
-      REFLECTION: require('./RetroReflection').default,
-      RESPONSE: require('./TeamPromptResponse').default
+      COMMENT: 'Comment',
+      REFLECTION: 'RetroReflection',
+      RESPONSE: 'TeamPromptResponse'
     } as const
     return lookup[reactableType]
   }
