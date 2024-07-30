@@ -32,9 +32,6 @@ const GenerateMeetingSummaryMutation: StandardMutation<TGenerateMeetingSummaryMu
   return commitMutation<TGenerateMeetingSummaryMutation>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {} = variables
-    },
     onCompleted,
     onError
   })

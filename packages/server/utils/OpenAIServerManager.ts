@@ -77,6 +77,7 @@ class OpenAIServerManager {
     }
   }
 
+  // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
   async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text
@@ -428,10 +429,9 @@ class OpenAIServerManager {
     }
   }
 
-  // if we keep generateSummary, we'll need to merge it with getSummary. This will require a UI change as we're returning links in markdown format here
+  // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
   async generateSummary(yamlData: string): Promise<string | null> {
     if (!this.openAIApi) return null
-    console.log('in generateSummary')
     const meetingURL = 'https://action.parabol.co/meet/'
     const prompt = `
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
