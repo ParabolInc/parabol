@@ -73,7 +73,7 @@ const OrgTeams = (props: Props) => {
           </div>
         </div>
         {allTeams.map((team) => (
-          <OrgTeamsRow key={team.id} teamRef={team} isOrgAdmin={isOrgAdmin} />
+          <OrgTeamsRow key={team.id} teamRef={team} />
         ))}
       </div>
 

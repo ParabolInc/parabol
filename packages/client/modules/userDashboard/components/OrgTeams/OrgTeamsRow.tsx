@@ -1,21 +1,18 @@
+import {ChevronRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
+
 import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
-import IconLabel from '../../../../components/IconLabel'
-import LinkButton from '../../../../components/LinkButton'
-import useModal from '../../../../hooks/useModal'
 import plural from '../../../../utils/plural'
-import ArchiveTeamModal from './ArchiveTeamModal'
 
 type Props = {
   teamRef: OrgTeamsRow_team$key
-  isOrgAdmin: boolean
 }
 
 const OrgTeamsRow = (props: Props) => {
-  const {teamRef, isOrgAdmin} = props
+  const {teamRef} = props
   const team = useFragment(
     graphql`
       fragment OrgTeamsRow_team on Team {
@@ -27,7 +24,6 @@ const OrgTeamsRow = (props: Props) => {
           isOrgAdmin
           isSelf
           email
-          preferredName
         }
       }
     `,
@@ -35,62 +31,26 @@ const OrgTeamsRow = (props: Props) => {
   )
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
-  const viewerTeamMember = teamMembers.find((m) => m.isSelf)
-  if (!viewerTeamMember && !isOrgAdmin) return null
-  const {isLead: viewerIsLead} = viewerTeamMember ?? {isLead: false}
-  const teamLead = teamMembers.find((m) => m.isLead)
-  const teamLeadName = teamLead && !viewerTeamMember?.isLead ? teamLead.preferredName : null
-  const {togglePortal, modalPortal} = useModal()
 
   return (
-    <>
-      <div className='flex items-center justify-between p-4 hover:bg-slate-100'>
-        <div className='flex flex-col'>
-          <div className='inline-flex items-center items-center gap-x-2'>
-            <Link to={`teams/${teamId}`} className='inline-block text-lg font-bold text-sky-500'>
-              {`${name} >`}
-            </Link>
-            {viewerIsLead && (
-              <span className='rounded-full bg-sky-700 px-2 py-0.5 text-xs text-white'>
-                Lead team
-              </span>
-            )}
-            {!viewerIsLead && !isOrgAdmin && (
-              <span className='rounded-full bg-grass-500 px-2 py-0.5 text-xs text-white'>
-                Member team
-              </span>
-            )}
-          </div>
-          <div className='text-gray-600'>
-            {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
-          </div>
-        </div>
-        {(viewerIsLead || isOrgAdmin) && (
-          <div className='flex items-center'>
-            <div>
-              <LinkButton
-                aria-label='Click to permanently delete this team.'
-                palette='red'
-                onClick={togglePortal}
-              >
-                <IconLabel icon='remove_circle' label='Delete Team' />
-              </LinkButton>
-              <span className='mt-2 block text-sm text-slate-600'>
-                <b>Note</b>: {'This can’t be undone.'}
-              </span>
+    <Link
+      className='block hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset'
+      to={`teams/${teamId}`}
+    >
+      <div className='flex items-center p-4'>
+        <div className='flex flex-1 flex-col py-1'>
+          <div className='text-gray-700 text-lg font-bold'>{name}</div>
+          <div className='flex items-center justify-between'>
+            <div className='text-gray-600'>
+              {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
             </div>
           </div>
-        )}
+        </div>
+        <div className='flex items-center justify-center'>
+          <ChevronRight />
+        </div>
       </div>
-      {modalPortal(
-        <ArchiveTeamModal
-          closeModal={togglePortal}
-          teamId={teamId}
-          teamName={name}
-          teamLeadName={teamLeadName}
-        />
-      )}
-    </>
+    </Link>
   )
 }
 
