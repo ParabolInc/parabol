@@ -5,8 +5,6 @@ import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
-import Row from '../../../../components/Row/Row'
-import RowActions from '../../../../components/Row/RowActions'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
@@ -74,16 +72,14 @@ export const OrgTeamMembers = (props: Props) => {
 
   return (
     <div className='max-w-4xl pb-4'>
-      <Row>
-        <div className='flex items-center'>
-          <Button size='md' shape='circle' variant='ghost' asChild>
-            <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
-              <ArrowBack />
-            </Link>
-          </Button>
-          <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
-        </div>
-        <RowActions>
+      <div className='flex items-center justify-center py-1'>
+        <Button size='md' shape='circle' variant='ghost' asChild>
+          <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
+            <ArrowBack />
+          </Link>
+        </Button>
+        <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
+        <div className='ml-auto'>
           <Button
             shape='circle'
             variant='ghost'
@@ -100,8 +96,8 @@ export const OrgTeamMembers = (props: Props) => {
               team={team}
             />
           )}
-        </RowActions>
-      </Row>
+        </div>
+      </div>
 
       <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
