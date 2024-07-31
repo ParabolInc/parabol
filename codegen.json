@@ -45,6 +45,7 @@
         "contextType": "../graphql#GQLContext",
         "showUnusedMappers": false,
         "mappers": {
+          "JiraRemoteAvatarUrls": "./types/JiraRemoteAvatarUrls#JiraRemoteAvatarUrlsSource",
           "TemplateDimensionRef": "./types/TemplateDimensionRef#TemplateDimensionRefSource",
           "UpdateIntegrationProviderSuccess": "./types/UpdateIntegrationProviderSuccess#UpdateIntegrationProviderSuccessSource",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",

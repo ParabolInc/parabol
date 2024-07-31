@@ -12,6 +12,19 @@ export const selectTimelineEvent = () => {
     | {type: 'createdTeam'; teamId: NotNull; orgId: NotNull}
   >()
 }
+
+export const selectTemplateScaleRef = () => {
+  return getKysely()
+    .selectFrom([
+      'TemplateScaleRef',
+      sql<{
+        name: string
+        values: {color: string; label: string}[]
+      }>`jsonb_to_record("TemplateScaleRef"."scale")`.as<'s'>(sql`s("name" text, "values" json)`)
+    ])
+    .select(['id', 'createdAt', 's.name', 's.values'])
+}
+
 export const selectTemplateScale = () => {
   return getKysely()
     .selectFrom('TemplateScale')

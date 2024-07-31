@@ -11,7 +11,6 @@ import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {TemplateScale} from '../../postgres/types'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
@@ -184,6 +183,24 @@ export type AnalyticsEvent =
   | 'Smart group title changed'
   | 'Task due date set'
 
+type UpgradeCTALocationEnumType =
+  | 'publicTemplate'
+  | 'teamTemplate'
+  | 'orgTemplate'
+  | 'createNewTemplate'
+  | 'createTeam'
+  | 'usageStats'
+  | 'directMeetingLinkLock'
+  | 'timelineHistoryLock'
+  | 'teamsLimitReminderSnackbar'
+  | 'teamsLimitReminderNotification'
+  | 'meetingSidebar'
+  | 'unpaidTeamModal'
+  | 'organizationLockedModal'
+  | 'startNewMeetingOrganizationLockedError'
+  | 'createNewTemplateAL'
+  | 'cloneTemplateAL'
+  | 'meetingSettingsTeamHealth'
 /**
  * Provides a unified interface for sending all the analytics events
  */
