@@ -1,0 +1,16 @@
+type SetTaskHighlightSuccess {
+  """
+  Meeting where the task is highlighted
+  """
+  meetingId: ID!
+
+  """
+  Task which highlight changed
+  """
+  taskId: ID!
+
+  """
+  Task which highlight changed
+  """
+  task: Task!
+}

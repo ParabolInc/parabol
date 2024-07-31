@@ -1,0 +1,6 @@
+type ToggleSummaryEmailSuccess {
+  """
+  The user whose summary email settings have changed
+  """
+  user: User!
+}

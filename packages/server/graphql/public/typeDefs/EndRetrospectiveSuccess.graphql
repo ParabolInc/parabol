@@ -1,0 +1,19 @@
+type EndRetrospectiveSuccess {
+  """
+  true if the meeting was killed (ended before reaching last stage)
+  """
+  isKill: Boolean!
+  team: Team!
+  meeting: RetrospectiveMeeting!
+
+  """
+  The ID of the suggestion to try a retro meeting, if tried
+  """
+  removedSuggestedActionId: ID
+  removedTaskIds: [ID!]!
+
+  """
+  An event that is important to the viewer, e.g. an ended meeting
+  """
+  timelineEvent: TimelineEvent!
+}

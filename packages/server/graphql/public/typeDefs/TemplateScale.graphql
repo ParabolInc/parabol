@@ -1,0 +1,51 @@
+"""
+A team-specific template scale.
+"""
+type TemplateScale {
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
+
+  """
+  true if the scale is currently used by the team, else false
+  """
+  isActive: Boolean!
+
+  """
+  True if this is a starter/default scale; false otherwise
+  """
+  isStarter: Boolean!
+
+  """
+  The datetime that the scale was removed. Null if it has not been removed.
+  """
+  removedAt: DateTime
+
+  """
+  foreign key. use the team field
+  """
+  teamId: ID!
+
+  """
+  The team that owns this template scale
+  """
+  team: Team!
+  updatedAt: DateTime!
+
+  """
+  The title of the scale used in the template
+  """
+  name: String!
+
+  """
+  The dimensions currently using this scale
+  """
+  dimensions: [TemplateDimension!]!
+
+  """
+  The values used in this scale
+  """
+  values: [TemplateScaleValue!]!
+}

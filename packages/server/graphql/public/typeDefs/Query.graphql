@@ -1,11 +1,5 @@
 type Query {
   viewer: User!
-  getDemoEntities(
-    """
-    the reflection bodies to entitize
-    """
-    text: String!
-  ): GetDemoEntitiesPayload!
   massInvitation(
     """
     The mass invitation token
@@ -18,6 +12,12 @@ type Query {
     """
     token: ID!
   ): VerifiedInvitationPayload!
+  getDemoEntities(
+    """
+    the reflection bodies to entitize
+    """
+    text: String!
+  ): GetDemoEntitiesPayload!
   SAMLIdP(
     """
     the email associated with a SAML login. null if instance is SSO-only

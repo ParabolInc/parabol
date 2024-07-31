@@ -1,0 +1,13 @@
+type StartDraggingReflectionPayload {
+  error: StandardMutationError
+
+  """
+  The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore
+  """
+  remoteDrag: RemoteReflectionDrag
+  meeting: NewMeeting
+  meetingId: ID
+  reflection: RetroReflection
+  reflectionId: ID
+  teamId: ID
+}

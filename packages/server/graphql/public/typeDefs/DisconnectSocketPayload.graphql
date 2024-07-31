@@ -1,0 +1,6 @@
+type DisconnectSocketPayload {
+  """
+  The user that disconnected
+  """
+  user: User
+}

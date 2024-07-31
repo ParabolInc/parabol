@@ -1,0 +1,10 @@
+"""
+The reason the invitation failed
+"""
+enum TeamInvitationErrorEnum {
+  accepted
+  expired
+  notFound
+  restrictedDomain
+  unverifiedEmail
+}

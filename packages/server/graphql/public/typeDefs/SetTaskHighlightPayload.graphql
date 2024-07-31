@@ -1,0 +1,4 @@
+"""
+Return object for SetTaskHighlightPayload
+"""
+union SetTaskHighlightPayload = ErrorPayload | SetTaskHighlightSuccess

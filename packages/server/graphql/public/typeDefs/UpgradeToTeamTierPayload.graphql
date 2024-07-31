@@ -1,0 +1,4 @@
+"""
+Return value for upgradeToTeamTier, which could be an error
+"""
+union UpgradeToTeamTierPayload = ErrorPayload | UpgradeToTeamTierSuccess

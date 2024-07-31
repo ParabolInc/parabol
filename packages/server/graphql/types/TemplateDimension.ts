@@ -1,11 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {GQLContext} from '../graphql'
 import {resolveTeam} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
@@ -46,7 +39,7 @@ const TemplateDimension: GraphQLObjectType = new GraphQLObjectType<any, GQLConte
       type: new GraphQLNonNull(GraphQLISO8601Type)
     },
     sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'the order of the dimensions in the template'
     },
     templateId: {

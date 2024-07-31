@@ -1,0 +1,6 @@
+type RequestToJoinDomainSuccess {
+  """
+  Was the request created successfully
+  """
+  success: Boolean!
+}

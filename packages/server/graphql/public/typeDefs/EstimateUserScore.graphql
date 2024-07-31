@@ -1,0 +1,29 @@
+"""
+The user and number of points they estimated for dimension (where 1 stage has 1 dimension)
+"""
+type EstimateUserScore {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The stageId
+  """
+  stageId: ID!
+
+  """
+  The userId that for this score
+  """
+  userId: ID!
+
+  """
+  The user that for this score
+  """
+  user: User!
+
+  """
+  The label that was associated with the score at the time of the vote. Note: It may no longer exist on the dimension
+  """
+  label: String!
+}

@@ -1,0 +1,14 @@
+type RemoveSlackAuthPayload {
+  error: StandardMutationError
+
+  """
+  The ID of the authorization removed
+  """
+  authId: ID
+  teamId: ID
+
+  """
+  The user with updated slackAuth
+  """
+  user: User
+}

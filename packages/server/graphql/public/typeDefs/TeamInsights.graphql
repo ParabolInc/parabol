@@ -1,22 +1,3 @@
-type Emoji {
-  id: ID!
-  count: Int!
-}
-
-type MeetingEngagement {
-  """
-  Engagement across retros, poker and standups
-  """
-  all: Float!
-}
-
-type TopRetroTemplate {
-  id: ID!
-  reflectTemplateId: ID!
-  reflectTemplate: ReflectTemplate!
-  count: Int!
-}
-
 type TeamInsights {
   id: ID!
 

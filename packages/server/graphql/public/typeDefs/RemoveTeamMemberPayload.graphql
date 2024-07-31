@@ -1,0 +1,28 @@
+type RemoveTeamMemberPayload {
+  error: StandardMutationError
+
+  """
+  The team member removed
+  """
+  teamMember: TeamMember
+
+  """
+  The team the team member was removed from
+  """
+  team: Team
+
+  """
+  The tasks that got reassigned
+  """
+  updatedTasks: [Task!]
+
+  """
+  The user removed from the team
+  """
+  user: User
+
+  """
+  A notification if you were kicked out by the team leader
+  """
+  kickOutNotification: NotifyKickedOut
+}

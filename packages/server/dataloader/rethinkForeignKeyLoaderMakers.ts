@@ -116,23 +116,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const templateDimensionsByTemplateId = new RethinkForeignKeyLoaderMaker(
-  'templateDimensions',
-  'templateId',
-  async (templateIds) => {
-    const r = await getRethink()
-    return (
-      r
-        .table('TemplateDimension')
-        .getAll(r.args(templateIds), {index: 'templateId'})
-        // NOTE: isActive must be false so we can see meetings in the past that use a now-inactive template
-        // .filter({isActive: true})
-        .orderBy('sortOrder')
-        .run()
-    )
-  }
-)
-
 export const slackAuthByUserId = new RethinkForeignKeyLoaderMaker(
   'slackAuths',
   'userId',

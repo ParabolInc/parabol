@@ -1,0 +1,11 @@
+"""
+The specific type of event
+"""
+enum TimelineEventEnum {
+  retroComplete
+  actionComplete
+  joinedParabol
+  createdTeam
+  POKER_COMPLETE
+  TEAM_PROMPT_COMPLETE
+}

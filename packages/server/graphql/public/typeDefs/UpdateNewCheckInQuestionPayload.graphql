@@ -1,0 +1,4 @@
+type UpdateNewCheckInQuestionPayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+}

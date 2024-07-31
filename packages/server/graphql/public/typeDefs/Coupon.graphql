@@ -1,0 +1,24 @@
+"""
+The discount coupon from Stripe, if any
+"""
+type Coupon {
+  """
+  The ID of the discount coupon from Stripe
+  """
+  id: String!
+
+  """
+  The amount off the invoice, if any
+  """
+  amountOff: Int
+
+  """
+  The name of the discount coupon from Stripe
+  """
+  name: String!
+
+  """
+  The percent off the invoice, if any
+  """
+  percentOff: Int
+}

@@ -1,0 +1,15 @@
+"""
+an event trigger and slack channel to receive it
+"""
+type SlackNotification {
+  id: ID!
+  event: SlackNotificationEventEnum!
+  eventType: SlackNotificationEventTypeEnum!
+
+  """
+  null if no notification is to be sent
+  """
+  channelId: ID
+  teamId: ID!
+  userId: ID!
+}

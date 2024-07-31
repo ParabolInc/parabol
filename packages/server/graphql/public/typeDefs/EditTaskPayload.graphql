@@ -1,0 +1,10 @@
+type EditTaskPayload {
+  error: StandardMutationError
+  task: Task
+  editor: User
+
+  """
+  true if the editor is editing, false if they stopped editing
+  """
+  isEditing: Boolean
+}

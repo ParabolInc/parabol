@@ -1,0 +1,19 @@
+"""
+The response to a teamInvitation query
+"""
+type TeamInvitationPayload {
+  """
+  The team invitation, if any
+  """
+  teamInvitation: TeamInvitation
+
+  """
+  the teamId of the team trying to join
+  """
+  teamId: ID
+
+  """
+  one of the active meetings trying to join
+  """
+  meetingId: ID
+}

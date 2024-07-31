@@ -1,0 +1,4 @@
+"""
+Return object for EndSprintPokerPayload
+"""
+union EndSprintPokerPayload = ErrorPayload | EndSprintPokerSuccess

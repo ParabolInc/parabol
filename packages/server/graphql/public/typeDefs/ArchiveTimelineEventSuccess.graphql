@@ -1,0 +1,6 @@
+type ArchiveTimelineEventSuccess {
+  """
+  the archived timelineEvent
+  """
+  timelineEvent: TimelineEvent!
+}

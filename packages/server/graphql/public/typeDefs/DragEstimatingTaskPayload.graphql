@@ -1,0 +1,4 @@
+"""
+Return object for DragEstimatingTaskPayload
+"""
+union DragEstimatingTaskPayload = ErrorPayload | DragEstimatingTaskSuccess

@@ -9,7 +9,7 @@ const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
   height: 40,
   overflow: 'hidden',
   padding: 0,
-  width: isOpen ? 200 : 40,
+  width: isOpen ? 232 : 40,
   marginTop: 16,
   marginBottom: 14, // account for nav margin 2px
   transition: `all 300ms ${BezierCurve.DECELERATE}`,
@@ -36,7 +36,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
     history.push('/activity-library')
   }
   return (
-    <div className='border-x border-solid border-[transparent] px-4'>
+    <div className='px-3'>
       <Button isOpen={isOpen} onClick={onClick}>
         <MeetingIcon />
         <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>

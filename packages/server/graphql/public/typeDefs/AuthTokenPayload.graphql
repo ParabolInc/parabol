@@ -1,0 +1,9 @@
+"""
+An auth token provided by Parabol to the client
+"""
+type AuthTokenPayload {
+  """
+  The encoded JWT
+  """
+  id: ID!
+}

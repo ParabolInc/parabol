@@ -83,7 +83,6 @@ type TeamHealthStage implements NewMeetingStage {
   The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
   """
   suggestedTimeLimit: Float
-
   teamId: ID!
 
   """

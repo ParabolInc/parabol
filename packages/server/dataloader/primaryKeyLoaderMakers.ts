@@ -7,7 +7,7 @@ import {getTeamPromptResponsesByIds} from '../postgres/queries/getTeamPromptResp
 import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
 import getTemplateScaleRefsByIds from '../postgres/queries/getTemplateScaleRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
-import {selectTemplateScale} from '../postgres/select'
+import {selectTemplateDimension, selectTemplateScale} from '../postgres/select'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
 export const users = primaryKeyLoaderMaker(getUsersByIds)
@@ -154,4 +154,8 @@ export const teamMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
 
 export const templateScales = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTemplateScale().where('TemplateScale.id', 'in', ids).execute()
+})
+
+export const templateDimensions = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTemplateDimension().where('id', 'in', ids).execute()
 })

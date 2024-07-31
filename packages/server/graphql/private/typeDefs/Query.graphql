@@ -1,0 +1,136 @@
+"""
+This file was generated from before we moved to SDL-driven development
+It's HUGE, and editing it directly could result in a headache.
+Please don't add anything to this file.
+Instead, add your new types to their own typeDef file
+"""
+type Query {
+  """
+  Get the number of logins, optionally broken down by domain
+  """
+  logins(
+    """
+    only include users whose accounts were created after this date
+    """
+    after: DateTime
+
+    """
+    if true, only include active users, else count all users
+    """
+    isActive: Boolean = false
+  ): LoginsPayload!
+
+  """
+  Ping various services to determine response time & availability
+  """
+  ping: PingableServices!
+
+  """
+  All the info about a specific company
+  """
+  company(
+    """
+    the top level doamin for a company (e.g. parabol.co)
+    """
+    domain: ID
+
+    """
+    if domain is not provided, the userId that belongs to the company
+    """
+    userId: ID
+  ): Company
+
+  """
+  Post signup and login metrics to slack
+  """
+  dailyPulse(
+    """
+    the earliest time to run the query
+    """
+    after: DateTime!
+
+    """
+    the email that holds the credentials to the channelId
+    """
+    email: String!
+
+    """
+    the ID of channel to post to
+    """
+    channelId: ID!
+  ): Boolean
+
+  """
+  Check if this server is alive (an example query).
+  """
+  pingActionTick: String
+  suCountTiersForUser(
+    """
+    the user for which you want the count of tier membership
+    """
+    userId: ID!
+  ): UserTiersCount
+  suUserCount(
+    """
+    which tier of org shall we count?
+    """
+    tier: TierEnum = team
+  ): Int
+  suOrgCount(
+    """
+    the minimum number of users within the org to count it
+    """
+    minOrgSize: Int = 2
+
+    """
+    which tier of org shall we count?
+    """
+    tier: TierEnum = team
+  ): Int
+
+  """
+  Dig into a user by providing the email or userId
+  """
+  user(
+    """
+    the email of the user
+    """
+    email: String
+
+    """
+    the ID of the user
+    """
+    userId: ID
+  ): User
+
+  """
+  Dig into many users by providing the userId
+  """
+  users(
+    """
+    a list of userIds
+    """
+    userIds: [ID!]!
+  ): [User]!
+
+  """
+  Get the number of signups, optionally broken down by domain
+  """
+  signups(
+    """
+    only include users whose accounts were created after this date
+    """
+    after: DateTime
+
+    """
+    if true, only include active users, else count all users
+    """
+    isActive: Boolean = false
+  ): SignupsPayload!
+  suProOrgInfo(
+    """
+    should organizations without active users be included?
+    """
+    includeInactive: Boolean! = false
+  ): [Organization!]
+}

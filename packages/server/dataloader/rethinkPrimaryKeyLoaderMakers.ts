@@ -18,4 +18,3 @@ export const slackNotifications = new RethinkPrimaryKeyLoaderMaker('SlackNotific
 export const suggestedActions = new RethinkPrimaryKeyLoaderMaker('SuggestedAction')
 export const tasks = new RethinkPrimaryKeyLoaderMaker('Task')
 export const teamInvitations = new RethinkPrimaryKeyLoaderMaker('TeamInvitation')
-export const templateDimensions = new RethinkPrimaryKeyLoaderMaker('TemplateDimension')

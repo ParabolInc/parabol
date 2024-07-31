@@ -1,0 +1,11 @@
+type TaskEditorDetails {
+  """
+  The userId of the person editing the task
+  """
+  userId: ID!
+
+  """
+  The name of the userId editing the task
+  """
+  preferredName: String!
+}

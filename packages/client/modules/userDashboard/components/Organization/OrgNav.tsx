@@ -6,13 +6,13 @@ import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {ElementWidth} from '../../../../types/constEnums'
 
 const Wrapper = styled('div')({
   display: 'flex',
   fontSize: 14,
   padding: '16px 0px',
-  maxWidth: ElementWidth.PANEL_WIDTH
+  maxWidth: '100%',
+  overflow: 'hidden'
 })
 
 const StyledIcon = styled('div')({
@@ -26,12 +26,18 @@ const NavigateNextIcon = styled(NavigateNext)({
   color: PALETTE.SLATE_900
 })
 
-const NavItemLabel = styled('span')<{isCurrent?: boolean}>(({isCurrent}) => ({
+const NavLabel = styled('span')<{isCurrent?: boolean}>(({isCurrent}) => ({
   fontWeight: isCurrent ? 600 : 400,
+  textWrap: 'nowrap',
   '&:hover': {
     cursor: isCurrent ? 'default' : 'pointer'
   }
 }))
+
+const OrgLabel = styled(NavLabel)({
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
+})
 
 type Props = {
   organizationRef: OrgNav_organization$key
@@ -52,15 +58,15 @@ const OrgNav = (props: Props) => {
 
   return (
     <Wrapper>
-      <NavItemLabel onClick={() => history.push('/meetings')}>Dashboard</NavItemLabel>
+      <NavLabel onClick={() => history.push('/meetings')}>Dashboard</NavLabel>
       <StyledIcon>
         <NavigateNextIcon />
       </StyledIcon>
-      <NavItemLabel onClick={() => history.push('/me/organizations')}>Organization</NavItemLabel>
+      <NavLabel onClick={() => history.push('/me/organizations')}>Organization</NavLabel>
       <StyledIcon>
         <NavigateNextIcon />
       </StyledIcon>
-      <NavItemLabel isCurrent>{`${name}'s Org`}</NavItemLabel>
+      <OrgLabel isCurrent>{`${name}'s Org`}</OrgLabel>
     </Wrapper>
   )
 }

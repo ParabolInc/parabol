@@ -30,7 +30,6 @@ import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
 import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
 import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
-import TemplateDimension from './types/TemplateDimension'
 
 export type RethinkSchema = {
   AgendaItem: {
@@ -148,10 +147,6 @@ export type RethinkSchema = {
   TeamInvitation: {
     type: TeamInvitation
     index: 'email' | 'teamId' | 'token'
-  }
-  TemplateDimension: {
-    type: TemplateDimension
-    index: 'teamId' | 'templateId' | 'scaleId'
   }
 }
 

@@ -1,0 +1,15 @@
+type OrganizationSubscriptionPayload {
+  fieldName: String!
+  AddOrgPayload: AddOrgPayload
+  ArchiveOrganizationPayload: ArchiveOrganizationPayload
+  DowngradeToStarterPayload: DowngradeToStarterPayload
+  PayLaterPayload: PayLaterPayload
+  RemoveOrgUserPayload: RemoveOrgUserPayload
+  SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
+  UpdateCreditCardPayload: UpdateCreditCardPayload
+  UpdateOrgPayload: UpdateOrgPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
+  UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
+}

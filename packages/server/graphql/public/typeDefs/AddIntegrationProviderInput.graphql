@@ -1,0 +1,39 @@
+"""
+An Integration Provider configuration
+"""
+input AddIntegrationProviderInput {
+  """
+  The team that the token is linked to
+  """
+  teamId: ID!
+
+  """
+  The service this provider is associated with
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  The kind of token used by this provider
+  """
+  authStrategy: IntegrationProviderAuthStrategyEnum!
+
+  """
+  The scope this provider configuration was created at (org-wide, or by the team)
+  """
+  scope: IntegrationProviderEditableScopeEnum!
+
+  """
+  Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+  """
+  webhookProviderMetadataInput: IntegrationProviderMetadataInputWebhook
+
+  """
+  OAuth1 provider metadata, has to be non-null if token type is OAuth1, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+  """
+  oAuth1ProviderMetadataInput: IntegrationProviderMetadataInputOAuth1
+
+  """
+  OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+  """
+  oAuth2ProviderMetadataInput: IntegrationProviderMetadataInputOAuth2
+}

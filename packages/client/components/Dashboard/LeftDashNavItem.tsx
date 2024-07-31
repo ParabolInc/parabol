@@ -26,21 +26,21 @@ const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
   alignItems: 'center',
   backgroundColor: isActive ? PALETTE.SLATE_300 : undefined,
   borderRadius: 4,
-  color: isActive ? PALETTE.SLATE_900 : PALETTE.SLATE_800,
+  color: PALETTE.SLATE_900,
   display: 'flex',
   fontSize: NavSidebar.FONT_SIZE,
-  fontWeight: 600,
+  fontWeight: isActive ? 600 : 400,
   lineHeight: NavSidebar.LINE_HEIGHT,
   marginBottom: 2,
   marginTop: 2,
   paddingBottom: 5,
-  paddingRight: 8,
+  paddingRight: 12,
   paddingTop: 5,
   textDecoration: 'none',
   transition: `background-color 100ms ease-in`,
   userSelect: 'none',
   width: '100%',
-  ':hover': {
+  ':hover, :focus, :active': {
     backgroundColor: PALETTE.SLATE_300
   }
 }))
@@ -50,7 +50,7 @@ const StyledIcon = styled('div')<{isActive: boolean}>(({isActive}) => ({
   height: 18,
   width: 18,
   color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600,
-  marginRight: 11
+  marginRight: 12
 }))
 
 const Label = styled('div')({
