@@ -1,15 +1,18 @@
-import {ArrowBack} from '@mui/icons-material'
+import {ArrowBack, MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
+import Row from '../../../../components/Row/Row'
+import RowActions from '../../../../components/Row/RowActions'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import {ORGANIZATIONS} from '../../../../utils/constants'
+import {OrgTeamActionMenu} from './OrgTeamActionMenu'
 import {OrgTeamMembersMenu} from './OrgTeamMembersMenu'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
 
@@ -22,6 +25,7 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         ...ArchiveTeam_team
+        ...OrgTeamActionMenu_team
         id
         billingTier
         isOrgAdmin
@@ -45,7 +49,15 @@ export const OrgTeamMembers = (props: Props) => {
   const data = usePreloadedQuery<OrgTeamMembersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuPortal: teamMemberActionMenuPortal, menuProps: teamMemberActionMenuProps} = useMenu(
+    MenuPosition.UPPER_RIGHT
+  )
+  const {
+    togglePortal: teamActionTogglePortal,
+    originRef,
+    menuPortal: teamActionMenuPortal,
+    menuProps: teamActionMenuProps
+  } = useMenu(MenuPosition.UPPER_RIGHT)
 
   const {
     open: openDeleteTeamDialog,
@@ -58,7 +70,7 @@ export const OrgTeamMembers = (props: Props) => {
 
   return (
     <div className='max-w-4xl pb-4'>
-      <div className='flex items-center justify-center py-1'>
+      <Row>
         <div className='flex items-center'>
           <Button size='md' shape='circle' variant='ghost' asChild>
             <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
@@ -67,7 +79,21 @@ export const OrgTeamMembers = (props: Props) => {
           </Button>
           <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
         </div>
-      </div>
+        <RowActions>
+          <Button
+            shape='circle'
+            variant='ghost'
+            onClick={teamActionTogglePortal}
+            ref={originRef}
+            className='bg-slate-400'
+          >
+            <MoreVert />
+          </Button>
+          {teamActionMenuPortal(
+            <OrgTeamActionMenu menuProps={teamActionMenuProps} canDeleteTeam={true} team={team} />
+          )}
+        </RowActions>
+      </Row>
 
       <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
@@ -85,8 +111,11 @@ export const OrgTeamMembers = (props: Props) => {
         ))}
       </div>
 
-      {menuPortal(
-        <OrgTeamMembersMenu menuProps={menuProps} openDeleteTeamModal={openDeleteTeamDialog} />
+      {teamMemberActionMenuPortal(
+        <OrgTeamMembersMenu
+          menuProps={teamMemberActionMenuProps}
+          openDeleteTeamModal={openDeleteTeamDialog}
+        />
       )}
 
       {isDeleteTeamDialogOpened ? (
