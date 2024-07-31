@@ -12,12 +12,11 @@ import ArchiveTeamModal from '../OrgTeams/ArchiveTeamModal'
 
 interface OrgTeamActionMenuProps {
   menuProps: MenuProps
-  canDeleteTeam: boolean
   team: OrgTeamActionMenu_team$key
 }
 
 export const OrgTeamActionMenu = (props: OrgTeamActionMenuProps) => {
-  const {menuProps, canDeleteTeam, team: teamRef} = props
+  const {menuProps, team: teamRef} = props
   const team = useFragment(
     graphql`
       fragment OrgTeamActionMenu_team on Team {
@@ -39,15 +38,13 @@ export const OrgTeamActionMenu = (props: OrgTeamActionMenuProps) => {
   return (
     <Menu ariaLabel={'Select your action'} {...menuProps}>
       <MenuItem>
-        {canDeleteTeam && (
-          <LinkButton
-            aria-label='Click to permanently delete this team.'
-            palette='red'
-            onClick={togglePortal}
-          >
-            <IconLabel icon='remove_circle' label='Delete Team' />
-          </LinkButton>
-        )}
+        <LinkButton
+          aria-label='Click to permanently delete this team.'
+          palette='red'
+          onClick={togglePortal}
+        >
+          <IconLabel icon='remove_circle' label='Delete Team' />
+        </LinkButton>
         {modalPortal(
           <ArchiveTeamModal
             closeModal={togglePortal}

@@ -68,7 +68,7 @@ export const OrgTeamMembers = (props: Props) => {
   if (!team) return null
   const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers, organization} = team
   const {isBillingLeader} = organization
-  const canDeleteTeam = isViewerLead || isBillingLeader || isViewerOrgAdmin
+  const showMenuButton = isViewerLead || isBillingLeader || isViewerOrgAdmin
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -80,22 +80,18 @@ export const OrgTeamMembers = (props: Props) => {
         </Button>
         <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
         <div className='ml-auto'>
-          <Button
-            shape='circle'
-            variant='ghost'
-            onClick={teamActionTogglePortal}
-            ref={originRef}
-            className='bg-slate-400'
-          >
-            <MoreVert />
-          </Button>
-          {teamActionMenuPortal(
-            <OrgTeamActionMenu
-              menuProps={teamActionMenuProps}
-              canDeleteTeam={canDeleteTeam}
-              team={team}
-            />
+          {showMenuButton && (
+            <Button
+              shape='circle'
+              variant='ghost'
+              onClick={teamActionTogglePortal}
+              ref={originRef}
+              className='bg-slate-400'
+            >
+              <MoreVert />
+            </Button>
           )}
+          {teamActionMenuPortal(<OrgTeamActionMenu menuProps={teamActionMenuProps} team={team} />)}
         </div>
       </div>
 
