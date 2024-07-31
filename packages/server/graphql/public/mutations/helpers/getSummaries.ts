@@ -8,7 +8,7 @@ export const getSummaries = async (
   teamId: string,
   startDate: Date,
   endDate: Date,
-  prompt?: string
+  prompt?: string | null
 ) => {
   const r = await getRethink()
   const MIN_MILLISECONDS = 60 * 1000 // 1 minute

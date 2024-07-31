@@ -430,7 +430,7 @@ class OpenAIServerManager {
   }
 
   // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
-  async generateSummary(yamlData: string, userPrompt?: string): Promise<string | null> {
+  async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
     const defaultPrompt = `

@@ -108,7 +108,7 @@ export const getTopics = async (
   startDate: Date,
   endDate: Date,
   dataLoader: DataLoaderWorker,
-  prompt?: string
+  prompt?: string | null
 ) => {
   const r = await getRethink()
   const MIN_REFLECTION_COUNT = 3

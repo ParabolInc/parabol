@@ -162,7 +162,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
       const yamlData = yaml.dump(meetingsContent, {
         noCompatMode: true
       })
-      const newSummary = await manager.generateSummary(yamlData, prompt as string)
+      const newSummary = await manager.generateSummary(yamlData, prompt)
       if (!newSummary) return null
 
       const now = new Date()
