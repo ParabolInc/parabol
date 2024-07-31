@@ -1,6 +1,6 @@
 import faker from 'faker'
-import getRethink from '../database/rethinkDriver'
 import createEmailVerification from '../email/createEmailVerification'
+import getKysely from '../postgres/getKysely'
 import {getUserTeams, sendIntranet, sendPublic} from './common'
 
 const signUpVerified = async (email: string) => {
@@ -23,12 +23,14 @@ const signUpVerified = async (email: string) => {
   // manually generate verification token so also the founder can be verified
   await createEmailVerification({email, password})
 
-  const r = await getRethink()
-  const verificationToken = await r
-    .table('EmailVerification')
-    .getAll(email, {index: 'email'})
-    .nth(0)('token')
-    .run()
+  const pg = getKysely()
+  const verificationToken = (
+    await pg
+      .selectFrom('EmailVerification')
+      .select('token')
+      .where('email', '=', email)
+      .executeTakeFirstOrThrow(() => new Error(`No verification token found for ${email}`))
+  ).token
 
   const verifyEmail = await sendPublic({
     query: `
@@ -55,9 +57,9 @@ const signUpVerified = async (email: string) => {
   expect(verifyEmail).toMatchObject({
     data: {
       verifyEmail: {
-        authToken: expect.toBeString(),
+        authToken: expect.any(String),
         user: {
-          id: expect.toBeString()
+          id: expect.any(String)
         }
       }
     }
@@ -153,7 +155,7 @@ test.skip('autoJoin on multiple teams does not create duplicate `OrganizationUse
   const newEmail = `${faker.internet.userName()}@${domain}`.toLowerCase()
   const {user: newUser} = await signUpVerified(newEmail)
 
-  expect(newUser.tms).toIncludeSameMembers(teamIds)
+  expect(newUser.tms).toEqual(expect.arrayContaining(teamIds))
   expect(newUser.organizations).toMatchObject([
     {
       id: orgId

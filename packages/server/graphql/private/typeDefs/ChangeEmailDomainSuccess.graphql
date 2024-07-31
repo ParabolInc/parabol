@@ -1,0 +1,11 @@
+type ChangeEmailDomainSuccess {
+  """
+  The users whose domains were changed
+  """
+  usersUpdated: [User!]!
+
+  """
+  Users whose domains were not changed as they were already in the new domain
+  """
+  usersNotUpdated: [User!]!
+}

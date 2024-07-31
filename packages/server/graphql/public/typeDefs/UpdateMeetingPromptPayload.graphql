@@ -1,0 +1,4 @@
+"""
+Return value for updateMeetingPrompt, which could be an error
+"""
+union UpdateMeetingPromptPayload = UpdateMeetingPromptSuccess | ErrorPayload

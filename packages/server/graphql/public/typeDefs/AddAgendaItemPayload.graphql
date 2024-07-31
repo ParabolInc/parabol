@@ -1,0 +1,10 @@
+type AddAgendaItemPayload {
+  error: StandardMutationError
+  agendaItem: AgendaItem
+  meetingId: ID
+
+  """
+  The meeting with the updated agenda item, if any
+  """
+  meeting: NewMeeting
+}

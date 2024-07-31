@@ -1,0 +1,33 @@
+"""
+All the meeting specifics for a user in a poker meeting
+"""
+type PokerMeetingMember implements MeetingMember {
+  """
+  A composite of userId::meetingId
+  """
+  id: ID!
+
+  """
+  true if present, false if absent, else null
+  """
+  isCheckedIn: Boolean
+    @deprecated(
+      reason: "Members are checked in when they enter the meeting now & not created beforehand"
+    )
+  meetingId: ID!
+  meetingType: MeetingTypeEnum!
+  teamId: ID!
+  teamMember: TeamMember!
+  user: User!
+  userId: ID!
+
+  """
+  The last time a meeting was updated (stage completed, finished, etc)
+  """
+  updatedAt: DateTime!
+
+  """
+  true if the user is not voting and does not want their vote to count towards aggregates
+  """
+  isSpectating: Boolean!
+}

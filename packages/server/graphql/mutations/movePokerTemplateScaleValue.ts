@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
+import {getSortOrder} from '../../../client/shared/sortOrder'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -30,13 +29,11 @@ const movePokerTemplateScaleValue = {
     {scaleId, label, index}: {scaleId: string; label: string; index: number},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const pg = getKysely()
     const viewerId = getUserId(authToken)
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await dataLoader.get('templateScales').load(scaleId)
 
     //AUTH
     if (!scale || scale.removedAt) {
@@ -47,39 +44,25 @@ const movePokerTemplateScaleValue = {
     }
 
     // VALIDATION
-    if (index < 0 || index >= scale.values.length - 2) {
-      return standardError(new Error('Invalid index to move to'), {userId: viewerId})
-    }
-    const scaleValueIndex = scale.values.findIndex((scaleValue) => scaleValue.label === label)
-    if (scaleValueIndex === -1) {
+    const itemIdx = scale.values.findIndex((scaleValue) => scaleValue.label === label)
+    if (itemIdx === -1) {
       return standardError(new Error('Did not find an existing scale value to move'), {
         userId: viewerId
       })
     }
+    if (index < 0 || index >= scale.values.length - 2) {
+      return standardError(new Error('Invalid index to move to'), {userId: viewerId})
+    }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update((row: RValue) => ({
-        values: row('values')
-          .deleteAt(scaleValueIndex)
-          .insertAt(index, scale.values[scaleValueIndex]),
-        updatedAt: now
-      }))
-      .run()
-    // mark all templates using this scale as updated
-    const updatedDimensions = await r
-      .table('TemplateDimension')
-      .getAll(scaleId, {index: 'scaleId'})
-      .run()
-    const updatedTemplateIds = updatedDimensions.map(({templateId}) => templateId)
+    const sortOrder = getSortOrder(scale.values, itemIdx, index)
     await pg
-      .updateTable('MeetingTemplate')
-      .set({updatedAt: now})
-      .where('id', 'in', updatedTemplateIds)
+      .updateTable('TemplateScaleValue')
+      .set({sortOrder})
+      .where('templateScaleId', '=', scale.id)
+      .where('label', '=', label)
       .execute()
-
+    dataLoader.clearAll('templateScales')
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,

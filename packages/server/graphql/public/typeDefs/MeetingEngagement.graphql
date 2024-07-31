@@ -1,0 +1,6 @@
+type MeetingEngagement {
+  """
+  Engagement across retros, poker and standups
+  """
+  all: Float!
+}

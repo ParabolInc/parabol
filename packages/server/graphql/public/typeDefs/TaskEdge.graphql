@@ -1,0 +1,10 @@
+"""
+An edge in a connection.
+"""
+type TaskEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Task!
+  cursor: DateTime
+}

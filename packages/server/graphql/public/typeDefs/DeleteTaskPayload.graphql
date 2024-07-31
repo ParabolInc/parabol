@@ -1,0 +1,8 @@
+type DeleteTaskPayload {
+  error: StandardMutationError
+
+  """
+  The task that was deleted
+  """
+  task: Task
+}

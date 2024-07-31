@@ -1,6 +1,5 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -16,20 +15,18 @@ const movePokerTemplateDimension = {
       type: new GraphQLNonNull(GraphQLID)
     },
     sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat)
+      type: new GraphQLNonNull(GraphQLString)
     }
   },
   async resolve(
     _source: unknown,
-    {dimensionId, sortOrder}: {dimensionId: string; sortOrder: number},
+    {dimensionId, sortOrder}: {dimensionId: string; sortOrder: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -41,20 +38,14 @@ const movePokerTemplateDimension = {
     }
 
     // RESOLUTION
-    const {teamId, templateId} = dimension
+    const {teamId} = dimension
 
-    await Promise.all([
-      r
-        .table('TemplateDimension')
-        .get(dimensionId)
-        .update({
-          sortOrder,
-          updatedAt: now
-        })
-        .run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
-    ])
-
+    await pg
+      .updateTable('TemplateDimension')
+      .set({sortOrder})
+      .where('id', '=', dimensionId)
+      .execute()
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId}
     publish(SubscriptionChannel.TEAM, teamId, 'MovePokerTemplateDimensionPayload', data, subOptions)
     return data

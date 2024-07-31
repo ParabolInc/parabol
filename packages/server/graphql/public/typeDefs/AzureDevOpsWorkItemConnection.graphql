@@ -1,0 +1,19 @@
+"""
+A connection to a list of items.
+"""
+type AzureDevOpsWorkItemConnection {
+  """
+  Page info with cursors coerced to ISO8601 dates
+  """
+  pageInfo: PageInfoDateCursor
+
+  """
+  A list of edges.
+  """
+  edges: [AzureDevOpsWorkItemEdge!]!
+
+  """
+  An error with the connection, if any
+  """
+  error: StandardMutationError
+}

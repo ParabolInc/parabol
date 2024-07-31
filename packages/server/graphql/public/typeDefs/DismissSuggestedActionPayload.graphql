@@ -1,0 +1,13 @@
+type DismissSuggestedActionPayload {
+  error: StandardMutationError
+
+  """
+  The user that dismissed the action
+  """
+  user: User
+
+  """
+  The id of the removed suggested action
+  """
+  removedSuggestedActionId: ID
+}

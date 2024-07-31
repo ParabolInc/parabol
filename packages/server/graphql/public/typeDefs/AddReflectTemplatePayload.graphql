@@ -1,0 +1,4 @@
+"""
+Return value for addReflectTemplate, which could be an error
+"""
+union AddReflectTemplatePayload = ErrorPayload | AddReflectTemplateSuccess

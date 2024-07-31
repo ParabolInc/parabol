@@ -6,7 +6,6 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 import {Logger} from '../../../utils/Logger'
 import RedisLock from '../../../utils/RedisLock'
 import {getUserId} from '../../../utils/authorization'
@@ -108,8 +107,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
           openDrawer: 'manageTeam'
         })
         .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
-        .execute(),
-      insertNewTeamMember(user, teamId, dataLoader)
+        .execute()
     ])
 
     if (!organizationUser) {

@@ -1,0 +1,5 @@
+type DenyPushInvitationPayload {
+  error: StandardMutationError
+  teamId: ID
+  userId: ID
+}

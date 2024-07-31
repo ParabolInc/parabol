@@ -1,0 +1,6 @@
+type UpdateRetroMaxVotesSuccess {
+  """
+  the meeting with the updated max votes
+  """
+  meeting: RetrospectiveMeeting!
+}

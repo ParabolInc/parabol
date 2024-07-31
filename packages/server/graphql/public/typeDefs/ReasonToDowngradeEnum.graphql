@@ -1,0 +1,10 @@
+"""
+Where the upgrade CTA button was clicked
+"""
+enum ReasonToDowngradeEnum {
+  tooExpensive
+  budgetChanges
+  missingKeyFeatures
+  notUsingPaidFeatures
+  anotherTool
+}

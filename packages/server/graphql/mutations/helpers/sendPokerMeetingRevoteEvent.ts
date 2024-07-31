@@ -1,6 +1,6 @@
 import Meeting from '../../../database/types/Meeting'
 import MeetingMember from '../../../database/types/MeetingMember'
-import TeamMember from '../../../database/types/TeamMember'
+import {TeamMember} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 import {DataLoaderWorker} from '../../graphql'
 

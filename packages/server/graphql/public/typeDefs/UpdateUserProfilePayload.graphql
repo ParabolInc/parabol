@@ -1,0 +1,9 @@
+type UpdateUserProfilePayload {
+  error: StandardMutationError
+  user: User
+
+  """
+  The updated team member
+  """
+  teamMembers: [TeamMember!]
+}

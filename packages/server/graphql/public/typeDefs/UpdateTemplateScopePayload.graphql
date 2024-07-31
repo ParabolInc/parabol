@@ -1,0 +1,4 @@
+"""
+Return object for UpdateTemplateScopePayload
+"""
+union UpdateTemplateScopePayload = ErrorPayload | UpdateTemplateScopeSuccess

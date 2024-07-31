@@ -1,0 +1,16 @@
+type UpdateTemplateScopeSuccess {
+  """
+  the template that was just updated, if downscoped, does not provide whole story
+  """
+  template: MeetingTemplate!
+
+  """
+  if downscoping a previously used template, this will be the replacement
+  """
+  clonedTemplate: MeetingTemplate
+
+  """
+  The settings that contain the teamTemplates array that was modified
+  """
+  settings: TeamMeetingSettings!
+}

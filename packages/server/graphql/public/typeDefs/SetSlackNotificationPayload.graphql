@@ -1,0 +1,9 @@
+type SetSlackNotificationPayload {
+  error: StandardMutationError
+  slackNotifications: [SlackNotification!]
+
+  """
+  The user with updated slack notifications
+  """
+  user: User
+}

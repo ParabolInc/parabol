@@ -15,7 +15,7 @@ const NotifyTaskInvolves: NotifyTaskInvolvesResolvers = {
   },
 
   changeAuthor: ({changeAuthorId}, _args, {dataLoader}) => {
-    return dataLoader.get('teamMembers').load(changeAuthorId)
+    return dataLoader.get('teamMembers').loadNonNull(changeAuthorId)
   },
 
   team: ({teamId}, _args, {dataLoader}) => {
