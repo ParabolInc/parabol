@@ -1,4 +1,5 @@
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
@@ -17,7 +18,6 @@ import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
-
 export type AnalyticsUser = {
   id: string
   email?: string
@@ -183,24 +183,6 @@ export type AnalyticsEvent =
   | 'Smart group title changed'
   | 'Task due date set'
 
-type UpgradeCTALocationEnumType =
-  | 'publicTemplate'
-  | 'teamTemplate'
-  | 'orgTemplate'
-  | 'createNewTemplate'
-  | 'createTeam'
-  | 'usageStats'
-  | 'directMeetingLinkLock'
-  | 'timelineHistoryLock'
-  | 'teamsLimitReminderSnackbar'
-  | 'teamsLimitReminderNotification'
-  | 'meetingSidebar'
-  | 'unpaidTeamModal'
-  | 'organizationLockedModal'
-  | 'startNewMeetingOrganizationLockedError'
-  | 'createNewTemplateAL'
-  | 'cloneTemplateAL'
-  | 'meetingSettingsTeamHealth'
 /**
  * Provides a unified interface for sending all the analytics events
  */
