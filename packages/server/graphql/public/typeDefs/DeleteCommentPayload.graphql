@@ -1,0 +1,4 @@
+"""
+Return object for DeleteCommentPayload
+"""
+union DeleteCommentPayload = ErrorPayload | DeleteCommentSuccess

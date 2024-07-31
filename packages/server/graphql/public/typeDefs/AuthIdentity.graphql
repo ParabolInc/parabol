@@ -1,0 +1,10 @@
+"""
+An authentication strategy to log in to Parabol
+"""
+interface AuthIdentity {
+  """
+  true if the email address using this strategy is verified, else false
+  """
+  isEmailVerified: Boolean!
+  type: AuthIdentityTypeEnum!
+}

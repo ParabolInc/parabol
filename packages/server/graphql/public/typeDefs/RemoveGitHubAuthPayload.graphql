@@ -1,0 +1,14 @@
+type RemoveGitHubAuthPayload {
+  error: StandardMutationError
+  teamId: ID
+
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember
+
+  """
+  The user with updated githubAuth
+  """
+  user: User
+}

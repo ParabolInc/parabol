@@ -1,0 +1,4 @@
+"""
+Return object for UpdatePokerScopePayload
+"""
+union UpdatePokerScopePayload = ErrorPayload | UpdatePokerScopeSuccess

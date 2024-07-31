@@ -1,0 +1,8 @@
+type JoinMeetingSuccess {
+  meetingId: ID!
+
+  """
+  The meeting with the updated stages, if any
+  """
+  meeting: NewMeeting!
+}

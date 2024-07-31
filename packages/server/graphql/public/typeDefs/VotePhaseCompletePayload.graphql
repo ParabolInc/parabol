@@ -1,0 +1,6 @@
+type VotePhaseCompletePayload {
+  """
+  the current meeting
+  """
+  meeting: RetrospectiveMeeting
+}

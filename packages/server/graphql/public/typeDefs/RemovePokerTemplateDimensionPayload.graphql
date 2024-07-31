@@ -1,0 +1,5 @@
+type RemovePokerTemplateDimensionPayload {
+  error: StandardMutationError
+  pokerTemplate: PokerTemplate
+  dimension: TemplateDimension
+}

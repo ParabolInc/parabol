@@ -2,7 +2,13 @@ import getRethink from '../../../database/rethinkDriver'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
-import {compareRValUndefinedAsNull, defaultEqFn} from '../../../postgres/utils/rethinkEqualityFns'
+import {
+  compareDateAlmostEqual,
+  compareRValUndefinedAsFalse,
+  compareRValUndefinedAsNull,
+  compareRValUndefinedAsNullAndTruncateRVal,
+  defaultEqFn
+} from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
 
 const handleResult = async (
@@ -27,35 +33,37 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'OrganizationUser') {
+  if (tableName === 'TeamMember') {
     const rowCountResult = await checkRowCount(tableName)
     const rethinkQuery = (joinedAt: Date, id: string | number) => {
       return r
-        .table('OrganizationUser' as any)
+        .table('TeamMember' as any)
         .between([joinedAt, id], [r.maxval, r.maxval], {
-          index: 'joinedAtId',
+          index: 'updatedAtId',
           leftBound: 'open',
           rightBound: 'closed'
         })
-        .orderBy({index: 'joinedAtId'}) as any
+        .orderBy({index: 'updatedAtId'}) as any
     }
     const pgQuery = async (ids: string[]) => {
-      return getKysely().selectFrom('OrganizationUser').selectAll().where('id', 'in', ids).execute()
+      return getKysely().selectFrom('TeamMember').selectAll().where('id', 'in', ids).execute()
     }
     const errors = await checkTableEq(
       rethinkQuery,
       pgQuery,
       {
         id: defaultEqFn,
-        suggestedTier: compareRValUndefinedAsNull,
-        inactive: defaultEqFn,
-        joinedAt: defaultEqFn,
-        orgId: defaultEqFn,
-        removedAt: defaultEqFn,
-        role: compareRValUndefinedAsNull,
+        isNotRemoved: compareRValUndefinedAsFalse,
+        isLead: compareRValUndefinedAsFalse,
+        isSpectatingPoker: compareRValUndefinedAsFalse,
+        email: defaultEqFn,
+        openDrawer: compareRValUndefinedAsNull,
+        picture: defaultEqFn,
+        preferredName: compareRValUndefinedAsNullAndTruncateRVal(100),
+        teamId: defaultEqFn,
         userId: defaultEqFn,
-        tier: defaultEqFn,
-        trialStartDate: compareRValUndefinedAsNull
+        createdAt: compareDateAlmostEqual,
+        updatedAt: compareDateAlmostEqual
       },
       maxErrors
     )

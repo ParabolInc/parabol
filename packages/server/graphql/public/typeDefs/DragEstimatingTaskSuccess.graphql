@@ -1,0 +1,6 @@
+type DragEstimatingTaskSuccess {
+  meetingId: ID!
+  meeting: PokerMeeting!
+  stageIds: [ID!]!
+  stages: [EstimateStage!]!
+}

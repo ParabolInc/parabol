@@ -1,0 +1,16 @@
+type PersistGitHubSearchQuerySuccess {
+  """
+  The affected teamId
+  """
+  teamId: ID!
+
+  """
+  The affected userId
+  """
+  userId: ID!
+
+  """
+  The auth with the updated search queries
+  """
+  githubIntegration: GitHubIntegration!
+}

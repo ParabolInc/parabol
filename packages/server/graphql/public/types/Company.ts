@@ -1,7 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
-import TeamMember from '../../../database/types/TeamMember'
+import {TeamMember} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'

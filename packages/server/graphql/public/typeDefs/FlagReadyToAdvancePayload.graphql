@@ -1,0 +1,4 @@
+"""
+Return object for FlagReadyToAdvancePayload
+"""
+union FlagReadyToAdvancePayload = ErrorPayload | FlagReadyToAdvanceSuccess

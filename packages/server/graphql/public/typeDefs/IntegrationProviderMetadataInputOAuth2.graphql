@@ -1,0 +1,24 @@
+"""
+OAuth2 provider metadata
+"""
+input IntegrationProviderMetadataInputOAuth2 {
+  """
+  The base URL used to access the provider
+  """
+  serverBaseUrl: URL!
+
+  """
+  The client id to give to the provider
+  """
+  clientId: String!
+
+  """
+  The client id to give to the provider
+  """
+  clientSecret: String!
+
+  """
+  The tenant id to give to the provider
+  """
+  tenantId: String!
+}

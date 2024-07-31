@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
-import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,6 +24,7 @@ const removePokerTemplate = {
   ) {
     const r = await getRethink()
     const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await dataLoader.get('meetingTemplates').load(templateId)
@@ -52,17 +53,15 @@ const removePokerTemplate = {
     // RESOLUTION
     const {id: settingsId} = settings
     template.isActive = false
-    await Promise.all([
-      removeMeetingTemplate(templateId),
-      r
-        .table('TemplateDimension')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          templateId
-        })
-        .update({removedAt: now})
-        .run()
-    ])
+    await pg
+      .with('MeetingTemplateDelete', (qc) =>
+        qc.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
+      )
+      .updateTable('TemplateDimension')
+      .set({removedAt: now})
+      .where('templateId', '=', templateId)
+      .execute()
+    dataLoader.clearAll(['meetingTemplates', 'templateDimensions'])
 
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)

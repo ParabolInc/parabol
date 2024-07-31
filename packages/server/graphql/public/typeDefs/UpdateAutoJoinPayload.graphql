@@ -1,0 +1,4 @@
+"""
+Return value for updateAutoJoin, which could be an error
+"""
+union UpdateAutoJoinPayload = ErrorPayload | UpdateAutoJoinSuccess

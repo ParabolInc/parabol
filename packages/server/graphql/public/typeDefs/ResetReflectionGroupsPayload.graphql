@@ -1,0 +1,4 @@
+"""
+Return value for resetReflectionGroups, which could be an error
+"""
+union ResetReflectionGroupsPayload = ErrorPayload | ResetReflectionGroupsSuccess

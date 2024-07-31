@@ -1,0 +1,49 @@
+"""
+Info associated with a current drag
+"""
+type RemoteReflectionDrag {
+  id: ID!
+
+  """
+  The userId of the person currently dragging the reflection
+  """
+  dragUserId: ID
+
+  """
+  The name of the dragUser
+  """
+  dragUserName: String
+  isSpotlight: Boolean
+  clientHeight: Float
+  clientWidth: Float
+
+  """
+  The primary key of the item being drug
+  """
+  sourceId: ID!
+
+  """
+  The estimated destination of the item being drug
+  """
+  targetId: ID
+
+  """
+  horizontal distance from the top left of the target
+  """
+  targetOffsetX: Float
+
+  """
+  vertical distance from the top left of the target
+  """
+  targetOffsetY: Float
+
+  """
+  the left of the source, relative to the client window
+  """
+  clientX: Float
+
+  """
+  the top of the source, relative to the client window
+  """
+  clientY: Float
+}

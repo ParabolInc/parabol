@@ -11,7 +11,6 @@ import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
-import insertNewTeamMember from './insertNewTeamMember'
 
 const handleFirstAcceptedInvitation = async (
   team: TeamSource,
@@ -108,7 +107,6 @@ const acceptTeamInvitation = async (
       })
       .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
       .execute(),
-    insertNewTeamMember(user, teamId, dataLoader),
     r
       .table('TeamInvitation')
       .getAll(teamId, {index: 'teamId'})

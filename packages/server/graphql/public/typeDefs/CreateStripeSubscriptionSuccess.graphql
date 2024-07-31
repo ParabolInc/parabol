@@ -1,0 +1,6 @@
+type CreateStripeSubscriptionSuccess {
+  """
+  The client secret from the Stripe subscription. Used for client-side retrieval using a publishable key.
+  """
+  stripeSubscriptionClientSecret: String!
+}

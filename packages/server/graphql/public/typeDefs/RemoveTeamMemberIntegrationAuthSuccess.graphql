@@ -1,0 +1,11 @@
+type RemoveTeamMemberIntegrationAuthSuccess {
+  """
+  The team member with the updated auth
+  """
+  teamMember: TeamMember!
+
+  """
+  The user who updated TeamMemberIntegrationAuth object
+  """
+  user: User!
+}

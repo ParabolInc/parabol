@@ -1,0 +1,8 @@
+type SetTaskEstimateSuccess {
+  task: Task!
+
+  """
+  The stage that holds the updated finalScore, if meetingId was provided
+  """
+  stage: EstimateStage
+}

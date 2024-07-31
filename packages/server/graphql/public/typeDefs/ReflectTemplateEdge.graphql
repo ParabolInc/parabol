@@ -1,0 +1,14 @@
+"""
+An edge in a connection.
+"""
+type ReflectTemplateEdge {
+  """
+  The item at the end of the edge
+  """
+  node: ReflectTemplate!
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+}

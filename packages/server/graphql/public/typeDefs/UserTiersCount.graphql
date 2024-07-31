@@ -1,0 +1,20 @@
+"""
+A count of the number of account tiers a user belongs to.
+"""
+type UserTiersCount {
+  """
+  The number of starter orgs the user is active upon
+  """
+  tierStarterCount: Int
+
+  """
+  The number of orgs on the team tier the user is active upon
+  """
+  tierTeamCount: Int
+
+  """
+  The number of orgs on the team tier the user holds the role of Billing Leader
+  """
+  tierTeamBillingLeaderCount: Int
+  user: User
+}

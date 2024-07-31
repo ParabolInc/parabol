@@ -8,7 +8,6 @@ import {
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import Task from '../../database/types/Task'
-import TeamMember from '../../database/types/TeamMember'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import errorFilter from '../errorFilter'
@@ -32,7 +31,7 @@ const getValidUserIds = async (
   ).filter(errorFilter)
   const teamMembersOnValidTeams = teamMembersByUserIds
     .flat()
-    .filter((teamMember: TeamMember) => validTeamIds.includes(teamMember.teamId))
+    .filter((teamMember) => validTeamIds.includes(teamMember.teamId))
   const teamMemberUserIds = new Set(
     teamMembersOnValidTeams.map(({userId}: {userId: string}) => userId)
   )

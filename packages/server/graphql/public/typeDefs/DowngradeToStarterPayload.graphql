@@ -1,0 +1,13 @@
+type DowngradeToStarterPayload {
+  error: StandardMutationError
+
+  """
+  The new Starter Org
+  """
+  organization: Organization
+
+  """
+  The updated teams under the org
+  """
+  teams: [Team]
+}

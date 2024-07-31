@@ -1,0 +1,14 @@
+"""
+A block of the meeting transcription with a speaker and text
+"""
+type TranscriptBlock {
+  """
+  The speaker who said the words
+  """
+  speaker: String!
+
+  """
+  The words that the speaker said
+  """
+  words: String!
+}

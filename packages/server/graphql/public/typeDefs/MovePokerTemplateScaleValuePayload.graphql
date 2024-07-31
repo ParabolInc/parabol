@@ -1,0 +1,4 @@
+"""
+Return object for MovePokerTemplateScaleValuePayload
+"""
+union MovePokerTemplateScaleValuePayload = ErrorPayload | MovePokerTemplateScaleValueSuccess

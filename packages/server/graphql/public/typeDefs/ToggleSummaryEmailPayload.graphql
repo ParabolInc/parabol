@@ -1,0 +1,4 @@
+"""
+Return value for toggleSummaryEmail, which could be an error
+"""
+union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess

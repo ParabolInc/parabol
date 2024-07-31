@@ -1,0 +1,4 @@
+"""
+Return value for verifyDomain, which could be an error
+"""
+union VerifyDomainPayload = ErrorPayload | VerifyDomainSuccess

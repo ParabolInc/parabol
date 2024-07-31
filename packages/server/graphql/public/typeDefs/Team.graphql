@@ -8,16 +8,6 @@ type Team {
   id: ID!
 
   """
-  Whether or not new users with the same domain and a verified email should auto-join the team
-  """
-  autoJoin: Boolean!
-
-  """
-  Whether the viewer belongs to the team
-  """
-  isViewerOnTeam: Boolean!
-
-  """
   The datetime the team was created
   """
   createdAt: DateTime!
@@ -89,11 +79,6 @@ type Team {
   isViewerLead: Boolean!
 
   """
-  true if the viewer is an admin for the team's org, else false
-  """
-  isOrgAdmin: Boolean!
-
-  """
   The team-specific settings for running all available types of meetings
   """
   meetingSettings(
@@ -124,6 +109,11 @@ type Team {
   activeMeetings: [NewMeeting!]!
 
   """
+  The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections
+  """
+  qualAIMeetingsCount: Int!
+
+  """
   The new meeting in progress, if any
   """
   meeting(
@@ -132,11 +122,6 @@ type Team {
     """
     meetingId: ID!
   ): NewMeeting
-
-  tier: TierEnum!
-
-  billingTier: TierEnum!
-
   organization: Organization!
 
   """
@@ -172,9 +157,27 @@ type Team {
   isArchived: Boolean
 
   """
+  Whether or not new users with the same domain and a verified email should auto-join the team
+  """
+  autoJoin: Boolean!
+
+  """
+  Whether the viewer belongs to the team
+  """
+  isViewerOnTeam: Boolean!
+
+  """
+  true if the viewer is an admin for the team's org, else false
+  """
+  isOrgAdmin: Boolean!
+  tier: TierEnum!
+  billingTier: TierEnum!
+
+  """
   Insights for the team, null if not enough data or feature flag isn't set
   """
   insights: TeamInsights
+
   """
   The team member that is the viewer
   """

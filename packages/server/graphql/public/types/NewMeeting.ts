@@ -20,7 +20,7 @@ const NewMeeting: NewMeetingResolvers = {
   },
   facilitator: ({facilitatorUserId, teamId}, _args, {dataLoader}) => {
     const teamMemberId = toTeamMemberId(teamId, facilitatorUserId)
-    return dataLoader.get('teamMembers').load(teamMemberId)
+    return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
   locked: async ({endedAt, teamId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

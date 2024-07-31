@@ -4,7 +4,6 @@ import React from 'react'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
-import {PALETTE} from '../../styles/paletteV3'
 import {NavSidebar} from '../../types/constEnums'
 import {
   AUTHENTICATION_PAGE,
@@ -40,7 +39,7 @@ const NavMain = styled('div')({
 
 const NavItem = styled(LeftDashNavItem)({
   borderRadius: 44,
-  paddingLeft: 15
+  paddingLeft: 16
 })
 
 const NavList = styled(DashNavList)({
@@ -54,14 +53,6 @@ const NavItemsWrap = styled('div')({
 const Wrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column'
-})
-
-const OrgName = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontWeight: 600,
-  fontSize: 12,
-  lineHeight: '16px',
-  padding: '8px 16px'
 })
 
 interface Props {
@@ -107,7 +98,11 @@ const DashSidebar = (props: Props) => {
                   label={'Organizations'}
                   exact
                 />
-                <OrgName>{name}</OrgName>
+                <div className='mb-1 mt-4 flex min-h-[32px] items-center'>
+                  <span className='flex-1 pl-3 text-base font-semibold leading-6 text-slate-700'>
+                    {name}
+                  </span>
+                </div>
                 <NavItem
                   icon={'creditScore'}
                   href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
@@ -146,7 +141,7 @@ const DashSidebar = (props: Props) => {
       <SideBarStartMeetingButton isOpen={isOpen} />
       <Nav isOpen={isOpen}>
         <Contents>
-          <div className='border-x border-solid border-[transparent] px-4'>
+          <div className='px-3'>
             <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
             <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
             <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />

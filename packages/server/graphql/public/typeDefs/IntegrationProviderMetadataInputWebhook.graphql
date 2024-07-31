@@ -1,0 +1,9 @@
+"""
+Webhook provider metadata
+"""
+input IntegrationProviderMetadataInputWebhook {
+  """
+  Webhook URL to be used by the provider
+  """
+  webhookUrl: URL!
+}
