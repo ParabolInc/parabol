@@ -20,8 +20,8 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   }
 
   const response = useSummaries
-    ? await getSummaries(teamId, startDate, endDate, prompt as string)
-    : await getTopics(teamId, startDate, endDate, dataLoader, prompt as string)
+    ? await getSummaries(teamId, startDate, endDate, prompt)
+    : await getTopics(teamId, startDate, endDate, dataLoader, prompt)
 
   if ('error' in response) {
     return response

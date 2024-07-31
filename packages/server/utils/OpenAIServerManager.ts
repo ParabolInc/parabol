@@ -348,7 +348,7 @@ class OpenAIServerManager {
   async generateInsight(
     yamlData: string,
     useSummaries: boolean,
-    userPrompt?: string
+    userPrompt?: string | null
   ): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
