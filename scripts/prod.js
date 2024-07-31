@@ -2,8 +2,16 @@ const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
 const cp = require('child_process')
 
 const runChild = (cmd) => {
-  return new Promise((resolve) => {
-    const build = cp.exec(cmd).on('exit', resolve)
+  return new Promise((resolve, reject) => {
+    const build = cp.exec(cmd).on('exit', (code, signal) => {
+      if (code !== 0) {
+        reject(new Error(`Received non-zero exit code ${code}`))
+      } else if (signal) {
+        reject(new Error(`Received signal ${signal}`))
+      } else {
+        resolve()
+      }
+    })
     build.stderr.pipe(process.stderr)
   })
 }
@@ -19,7 +27,7 @@ const prod = async (isDeploy, noDeps) => {
 
   console.log('starting webpack build')
   try {
-    const webpacks = await Promise.all([
+    await Promise.all([
       runChild(
         `yarn webpack --config ./scripts/webpack/prod.servers.config.js --no-stats --env=noDeps=${noDeps}`
       ),
@@ -27,12 +35,6 @@ const prod = async (isDeploy, noDeps) => {
         `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=minimize=${isDeploy}`
       )
     ])
-    webpacks.forEach(
-      function (exitCode) {
-        if (exitCode > 0)
-          throw new Error(`Error during one of the webpack build processes. Webpacks error codes ${webpacks}`)
-      }
-    )
   } catch (e) {
     console.log('error webpackifying', e)
     process.exit(1)
