@@ -29,10 +29,10 @@ const prod = async (isDeploy, noDeps) => {
   try {
     await Promise.all([
       runChild(
-        `yarn webpack --config ./scripts/webpack/prod.servers.config.js --no-stats --env=noDeps=${noDeps}`
+        `yarn webpack --config ./scripts/webpack/prod.servers.config.js --env=noDeps=${noDeps}`
       ),
       runChild(
-        `yarn webpack --config ./scripts/webpack/prod.client.config.js --no-stats --env=minimize=${isDeploy}`
+        `yarn webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isDeploy}`
       )
     ])
   } catch (e) {
