@@ -1,4 +1,10 @@
-import {ThreadableResolvers} from '../resolverTypes'
+import {ResolversParentTypes, ThreadableResolvers} from '../resolverTypes'
+
+export type ThreadableSource = (ResolversParentTypes['Task'] | ResolversParentTypes['Comment']) & {
+  threadParentId: string
+  threadSortOrder: number
+  replies?: ThreadableSource[]
+}
 
 const Threadable: ThreadableResolvers = {
   __resolveType: (type) => {
@@ -8,7 +14,8 @@ const Threadable: ThreadableResolvers = {
   },
   createdByUser: ({createdBy}, _args, {dataLoader}) => {
     return createdBy ? dataLoader.get('users').loadNonNull(createdBy) : null
-  }
+  },
+  replies: ({replies}) => replies || []
 }
 
 export default Threadable

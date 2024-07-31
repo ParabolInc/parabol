@@ -1,6 +1,6 @@
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
-import {Threadable} from '../../database/types/Threadable'
+import {ThreadableSource} from '../public/types/Threadable'
 import {DataLoaderWorker} from './../graphql'
 
 const resolveThreadableConnection = async (
@@ -12,11 +12,11 @@ const resolveThreadableConnection = async (
     dataLoader.get('tasksByDiscussionId').load(discussionId)
     // dataLoader.get('pollsByDiscussionId').load(discussionId)
   ])
-  const threadables = [...comments, ...tasks] as Threadable[]
-  const threadablesByParentId = {} as {[parentId: string]: Threadable[]}
+  const threadables = [...comments, ...tasks] as ThreadableSource[]
+  const threadablesByParentId = {} as {[parentId: string]: ThreadableSource[]}
 
-  const rootThreadables = [] as Threadable[]
-  const filteredThreadables = [] as Threadable[]
+  const rootThreadables = [] as ThreadableSource[]
+  const filteredThreadables = [] as ThreadableSource[]
 
   threadables.forEach((threadable) => {
     const {threadParentId} = threadable

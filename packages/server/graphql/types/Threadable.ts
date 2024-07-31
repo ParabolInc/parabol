@@ -6,9 +6,9 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
-import {Threadable as ThreadableDB} from '../../database/types/Threadable'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
+import {ThreadableSource as ThreadableDB} from '../public/types/Threadable'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfo from './PageInfo'
 
