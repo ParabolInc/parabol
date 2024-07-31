@@ -10,7 +10,6 @@ import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import {ORGANIZATIONS} from '../../../../utils/constants'
-import {OrgTeamActionMenu} from './OrgTeamActionMenu'
 import {OrgTeamMembersMenu} from './OrgTeamMembersMenu'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
 
@@ -22,7 +21,6 @@ const query = graphql`
   query OrgTeamMembersQuery($teamId: ID!) {
     viewer {
       team(teamId: $teamId) {
-        ...OrgTeamActionMenu_team
         id
         billingTier
         isOrgAdmin
@@ -49,15 +47,7 @@ export const OrgTeamMembers = (props: Props) => {
   const data = usePreloadedQuery<OrgTeamMembersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {menuPortal: teamMemberActionMenuPortal, menuProps: teamMemberActionMenuProps} = useMenu(
-    MenuPosition.UPPER_RIGHT
-  )
-  const {
-    togglePortal: teamActionTogglePortal,
-    originRef,
-    menuPortal: teamActionMenuPortal,
-    menuProps: teamActionMenuProps
-  } = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, menuPortal, menuProps, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const {
     open: openDeleteTeamDialog,
@@ -84,14 +74,13 @@ export const OrgTeamMembers = (props: Props) => {
             <Button
               shape='circle'
               variant='ghost'
-              onClick={teamActionTogglePortal}
+              onClick={togglePortal}
               ref={originRef}
               className='bg-slate-400'
             >
               <MoreVert />
             </Button>
           )}
-          {teamActionMenuPortal(<OrgTeamActionMenu menuProps={teamActionMenuProps} team={team} />)}
         </div>
       </div>
 
@@ -111,11 +100,8 @@ export const OrgTeamMembers = (props: Props) => {
         ))}
       </div>
 
-      {teamMemberActionMenuPortal(
-        <OrgTeamMembersMenu
-          menuProps={teamMemberActionMenuProps}
-          openDeleteTeamModal={openDeleteTeamDialog}
-        />
+      {menuPortal(
+        <OrgTeamMembersMenu menuProps={menuProps} openDeleteTeamModal={openDeleteTeamDialog} />
       )}
 
       {isDeleteTeamDialogOpened ? (
