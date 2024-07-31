@@ -24,7 +24,6 @@ const query = graphql`
   query OrgTeamMembersQuery($teamId: ID!) {
     viewer {
       team(teamId: $teamId) {
-        ...ArchiveTeam_team
         ...OrgTeamActionMenu_team
         id
         billingTier
@@ -32,6 +31,9 @@ const query = graphql`
         isViewerLead
         name
         orgId
+        organization {
+          isBillingLeader
+        }
         teamMembers(sortBy: "preferredName") {
           id
           isNotRemoved
@@ -66,7 +68,9 @@ export const OrgTeamMembers = (props: Props) => {
   } = useDialogState()
 
   if (!team) return null
-  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
+  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers, organization} = team
+  const {isBillingLeader} = organization
+  const canDeleteTeam = isViewerLead || isBillingLeader || isViewerOrgAdmin
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -90,7 +94,11 @@ export const OrgTeamMembers = (props: Props) => {
             <MoreVert />
           </Button>
           {teamActionMenuPortal(
-            <OrgTeamActionMenu menuProps={teamActionMenuProps} canDeleteTeam={true} team={team} />
+            <OrgTeamActionMenu
+              menuProps={teamActionMenuProps}
+              canDeleteTeam={canDeleteTeam}
+              team={team}
+            />
           )}
         </RowActions>
       </Row>
