@@ -1,8 +1,8 @@
-import {Poll} from '../../postgres/queries/getPollsByIds'
 import Comment from './Comment'
 import Task from './Task'
 
-export type Threadable = (Task | Comment | Poll) & {
+export type Threadable = (Task | Comment) & {
   threadParentId: string
   threadSortOrder: number
+  replies?: Threadable[]
 }
