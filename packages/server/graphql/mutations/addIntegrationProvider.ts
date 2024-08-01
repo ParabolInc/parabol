@@ -35,6 +35,17 @@ const addIntegrationProvider = {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
+    // INPUT VALIDATION
+    if (scope === 'global' && (teamId || orgId)) {
+      return {error: {message: 'Global providers must not have an `orgId` nor `teamId`'}}
+    }
+    if (scope === 'org' && (!orgId || teamId)) {
+      return {error: {message: 'Org providers must have an `orgId` and no `teamId`'}}
+    }
+    if (scope === 'team' && (!teamId || orgId)) {
+      return {error: {message: 'Team providers must have a `teamId` and no `orgId`'}}
+    }
+
     // AUTH
     if (!isSuperUser(authToken)) {
       if (scope === 'global') {
@@ -54,16 +65,6 @@ const addIntegrationProvider = {
     }
 
     // VALIDATION
-    if (scope === 'global' && (teamId || orgId)) {
-      return {error: {message: 'Global providers must not have an `orgId` nor `teamId`'}}
-    }
-    if (scope === 'org' && (!orgId || teamId)) {
-      return {error: {message: 'Org providers must have an `orgId` and no `teamId`'}}
-    }
-    if (scope === 'team' && (!teamId || orgId)) {
-      return {error: {message: 'Team providers must have a `teamId` and no `orgId`'}}
-    }
-
     const {
       authStrategy,
       oAuth1ProviderMetadataInput,
