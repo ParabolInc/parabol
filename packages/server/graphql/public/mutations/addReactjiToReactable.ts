@@ -13,7 +13,6 @@ import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import {GQLContext} from '../../graphql'
-import {ReactableEnumType} from '../../types/ReactableEnum'
 import getReactableType from '../../types/getReactableType'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -31,19 +30,7 @@ const tableLookup = {
 
 const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async (
   _source: unknown,
-  {
-    reactableId,
-    reactableType,
-    reactji,
-    isRemove,
-    meetingId
-  }: {
-    reactableId: string
-    reactableType: ReactableEnumType
-    reactji: string
-    isRemove?: boolean | null
-    meetingId: string
-  },
+  {reactableId, reactableType, reactji, isRemove, meetingId},
   {authToken, dataLoader, socketId: mutatorId}: GQLContext
 ) => {
   const r = await getRethink()

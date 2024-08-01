@@ -24,6 +24,7 @@ export async function up() {
       "type" "SuggestedActionTypeEnum" NOT NULL,
       "teamId" VARCHAR(100),
       "userId" VARCHAR(100) NOT NULL,
+      UNIQUE("userId", "type"),
       CONSTRAINT "fk_userId"
         FOREIGN KEY("userId")
           REFERENCES "User"("id")

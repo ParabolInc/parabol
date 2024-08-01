@@ -1,5 +1,29 @@
-import {sql} from 'kysely'
+import {NotNull, sql} from 'kysely'
 import getKysely from './getKysely'
+
+export const selectTimelineEvent = () => {
+  return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
+    | {
+        type: 'actionComplete' | 'POKER_COMPLETE' | 'TEAM_PROMPT_COMPLETE' | 'retroComplete'
+        teamId: NotNull
+        orgId: NotNull
+        meetingId: NotNull
+      }
+    | {type: 'createdTeam'; teamId: NotNull; orgId: NotNull}
+  >()
+}
+
+export const selectTemplateScaleRef = () => {
+  return getKysely()
+    .selectFrom([
+      'TemplateScaleRef',
+      sql<{
+        name: string
+        values: {color: string; label: string}[]
+      }>`jsonb_to_record("TemplateScaleRef"."scale")`.as<'s'>(sql`s("name" text, "values" json)`)
+    ])
+    .select(['id', 'createdAt', 's.name', 's.values'])
+}
 
 export const selectTemplateScale = () => {
   return getKysely()

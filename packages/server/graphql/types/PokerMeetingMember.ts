@@ -1,19 +1,8 @@
-import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
-import MeetingMember, {meetingMemberFields} from './MeetingMember'
+import {GraphQLObjectType} from 'graphql'
 
-const PokerMeetingMember = new GraphQLObjectType<any, GQLContext>({
+const PokerMeetingMember = new GraphQLObjectType({
   name: 'PokerMeetingMember',
-  interfaces: () => [MeetingMember],
-  description: 'All the meeting specifics for a user in a poker meeting',
-  fields: () => ({
-    ...meetingMemberFields(),
-    isSpectating: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description:
-        'true if the user is not voting and does not want their vote to count towards aggregates'
-    }
-  })
+  fields: {}
 })
 
 export default PokerMeetingMember

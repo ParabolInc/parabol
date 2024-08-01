@@ -1,7 +1,7 @@
 """
 The stage where the single team member responds to a prompt
 """
-type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage {
+type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage & NewMeetingTeamMemberStage {
   """
   stageId, shortid
   """
@@ -104,6 +104,11 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   discussion: Discussion!
 
   """
+  foreign key. use teamMember
+  """
+  teamMemberId: ID!
+
+  """
   The team member this stage belongs to
   """
   teamMember: TeamMember!
@@ -112,4 +117,9 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   The response to the prompt
   """
   response: TeamPromptResponse
+
+  """
+  The meeting member that is the focus for this phase item
+  """
+  meetingMember: MeetingMember!
 }

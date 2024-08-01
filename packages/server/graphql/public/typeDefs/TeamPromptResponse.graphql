@@ -46,9 +46,4 @@ type TeamPromptResponse implements Reactable {
   the shared sort order for reponses
   """
   sortOrder: Float!
-
-  """
-  The team this response belongs to
-  """
-  team: Team!
 }

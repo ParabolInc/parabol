@@ -8,11 +8,6 @@ type Poll implements Threadable {
   id: ID!
 
   """
-  The rich text body of the item
-  """
-  content: String!
-
-  """
   The timestamp the item was created
   """
   createdAt: DateTime!

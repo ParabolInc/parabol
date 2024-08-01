@@ -52,7 +52,10 @@ const isRRuleValid = (rrule: RRule) => {
 const RRuleScalarType: RRuleScalarConfig = {
   name: 'RRule',
   description: 'A custom scalar type for representing RRule strings',
-  parseValue(value: string) {
+  parseValue(value: unknown) {
+    if (typeof value !== 'string') {
+      throw new Error(`RRule is not a string, it is a: ${typeof value}`)
+    }
     const rrule = RRule.fromString(value)
     const {error} = isRRuleValid(rrule)
     if (error) {
@@ -61,8 +64,8 @@ const RRuleScalarType: RRuleScalarConfig = {
 
     return rrule
   },
-  serialize(value: RRule) {
-    return value.toString()
+  serialize(value: unknown) {
+    return (value as RRule).toString()
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
