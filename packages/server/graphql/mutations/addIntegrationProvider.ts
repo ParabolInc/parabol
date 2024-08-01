@@ -108,7 +108,7 @@ const addIntegrationProvider = {
           : {orgId: null, teamId})
     })
 
-    const data = {providerId, userId: viewerId}
+    const data = {providerId}
     if (resolvedOrgId) {
       publish(
         SubscriptionChannel.ORGANIZATION,
