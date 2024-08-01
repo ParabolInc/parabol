@@ -158,7 +158,7 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  const result = await publishWebhookGQL(query, variables)
+  const result = await publishWebhookGQL<{data: any}>(query, variables)
   if (result?.data) {
     res.writeStatus('200').end()
   } else {

@@ -78,13 +78,22 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   // hold onto responseStream so we can unsubscribe from other contexts
   connectionContext.subs[opId] = responseStream
   for await (const payload of responseStream) {
-    const {data, ...restPayload} = payload as ExecutionResult
+    const {data, ...restPayload} = payload as ExecutionResult<{
+      [subscriptionName: string]:
+        | {
+            fieldName: string
+            __typename: string
+            AuthTokenPayload?: {id: string}
+            [fieldName: string]: any
+          }
+        | undefined
+    }>
     if (!data) {
       sendGQLMessage(connectionContext, opId, 'data', false, payload)
       continue
     }
     const subscriptionName = Object.keys(data)[0]!
-    const subscriptionPayload = data[subscriptionName]
+    const subscriptionPayload = data[subscriptionName]!
     const {fieldName, __typename} = subscriptionPayload
     const fields = {
       fieldName,
@@ -96,7 +105,7 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     if (subscriptionName === 'notificationSubscription') {
       if (fieldName === 'AuthTokenPayload') {
         // AuthTokenPayload is sent when a user is added/removed from a team and their JWT is soft invalidated
-        const jwt = fields.AuthTokenPayload?.id
+        const jwt = (fields as any).AuthTokenPayload?.id
         connectionContext.authToken = new AuthToken(decode(jwt) as any)
         // When a JWT is invalidated, so are the subscriptions.
         // Allow the other subscription payloads to complete, then resubscribe
