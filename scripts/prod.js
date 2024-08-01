@@ -4,10 +4,10 @@ const cp = require('child_process')
 const runChild = (cmd) => {
   return new Promise((resolve, reject) => {
     const build = cp.exec(cmd).on('exit', (code, signal) => {
-      if (code !== 0) {
-        reject(new Error(`Received non-zero exit code ${code}`))
-      } else if (signal) {
+      if (signal) {
         reject(new Error(`Received signal ${signal}`))
+      } else if (code !== 0) {
+        reject(new Error(`Received non-zero exit code ${code}`))
       } else {
         resolve()
       }
