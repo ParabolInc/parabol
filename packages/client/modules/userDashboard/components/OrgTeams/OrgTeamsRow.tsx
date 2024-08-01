@@ -20,6 +20,7 @@ const OrgTeamsRow = (props: Props) => {
         name
         teamMembers {
           isSelf
+          isLead
           preferredName
         }
       }
@@ -29,6 +30,8 @@ const OrgTeamsRow = (props: Props) => {
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
+  const isLead = viewerTeamMember?.isLead
+  const isMember = viewerTeamMember && !isLead
 
   return (
     <Link
@@ -39,9 +42,14 @@ const OrgTeamsRow = (props: Props) => {
         <div className='flex flex-1 flex-col py-1'>
           <div className='text-gray-700 flex items-center text-lg font-bold'>
             {name}
-            {!viewerTeamMember && (
-              <span className='ml-2 rounded-full bg-tomato-700 px-2 py-0.5 text-xs text-white'>
-                Other's Team
+            {isLead && (
+              <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+                Team Lead
+              </span>
+            )}
+            {isMember && (
+              <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
+                Member
               </span>
             )}
           </div>
