@@ -46,9 +46,11 @@ const OrgTeams = (props: Props) => {
       <div className='flex items-center justify-center py-1'>
         <div>
           <h1 className='text-2xl font-semibold leading-7'>Teams</h1>
-          {!showAllTeams && (
-            <p className='text-gray-600 mb-2'>Only showing teams you're a member of</p>
-          )}
+          <p className='text-gray-600 mb-2'>
+            {!showAllTeams
+              ? "Only showing teams you're a member of"
+              : 'Showing all teams in the organization'}
+          </p>
         </div>
         <div className='ml-auto'>
           <Button
