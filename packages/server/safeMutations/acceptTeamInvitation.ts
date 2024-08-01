@@ -3,7 +3,6 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
-import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
@@ -23,38 +22,39 @@ const handleFirstAcceptedInvitation = async (
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamLead = teamMembers.find((tm) => tm.isLead)!
   const {userId} = teamLead
-  const isNewTeamLead = await r
-    .table('SuggestedAction')
-    .getAll(userId, {index: 'userId'})
-    .filter({type: 'tryRetroMeeting'})
-    .count()
-    .eq(0)
-    .run()
-  if (!isNewTeamLead) return null
-  await r
-    .table('SuggestedAction')
-    .insert([
-      {
-        id: generateUID(),
-        createdAt: now,
-        priority: 3,
-        removedAt: null,
-        teamId,
-        type: 'tryRetroMeeting',
-        userId
-      },
-      new SuggestedActionCreateNewTeam({userId}),
-      {
-        id: generateUID(),
-        createdAt: now,
-        priority: 5,
-        removedAt: null,
-        teamId,
-        type: 'tryActionMeeting',
-        userId
-      }
-    ])
-    .run()
+  const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
+  const hasTryRetro = suggestedActions.some((sa) => sa.type === 'tryRetroMeeting')
+  if (hasTryRetro) return null
+  const actions = [
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 3,
+      removedAt: null,
+      teamId,
+      type: 'tryRetroMeeting' as const,
+      userId
+    },
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 4,
+      removedAt: null,
+      type: 'createNewTeam' as const,
+      userId
+    },
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 5,
+      removedAt: null,
+      teamId,
+      type: 'tryActionMeeting' as const,
+      userId
+    }
+  ]
+  await getKysely().insertInto('SuggestedAction').values(actions).execute()
+  await r.table('SuggestedAction').insert(actions).run()
   return userId
 }
 

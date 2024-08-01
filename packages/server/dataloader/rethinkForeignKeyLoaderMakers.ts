@@ -142,7 +142,7 @@ export const suggestedActionsByUserId = new RethinkForeignKeyLoaderMaker(
     return r
       .table('SuggestedAction')
       .getAll(r.args(userIds), {index: 'userId'})
-      .filter({removedAt: null})
+      .filter((row: any) => row('removedAt').default(null).eq(null))
       .run()
   }
 )

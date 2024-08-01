@@ -4,7 +4,6 @@ type MeetingSubscriptionPayload {
   AutogroupSuccess: AutogroupSuccess
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
-  AddReactjiToReflectionSuccess: AddReactjiToReflectionSuccess
   AddReactjiToReactableSuccess: AddReactjiToReactableSuccess
   CreateReflectionPayload: CreateReflectionPayload
   DeleteCommentSuccess: DeleteCommentSuccess

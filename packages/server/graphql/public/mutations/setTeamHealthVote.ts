@@ -79,9 +79,11 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
   const data = {
     meetingId,
     stageId,
+    teamId,
     stage: {
       ...stage,
-      meetingId
+      meetingId,
+      teamId
     }
   }
 
