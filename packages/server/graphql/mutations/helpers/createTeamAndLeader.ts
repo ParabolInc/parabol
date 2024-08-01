@@ -7,6 +7,7 @@ import MeetingSettingsRetrospective from '../../../database/types/MeetingSetting
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
 
@@ -42,6 +43,13 @@ export default async function createTeamAndLeader(
   })
 
   const pg = getKysely()
+  const suggestedAction = {
+    id: generateUID(),
+    userId,
+    teamId,
+    type: 'inviteYourTeam' as const,
+    priority: 2
+  }
   await Promise.all([
     pg
       .with('TeamInsert', (qc) => qc.insertInto('Team').values(verifiedTeam))
@@ -63,11 +71,27 @@ export default async function createTeamAndLeader(
           openDrawer: 'manageTeam'
         })
       )
+      .with('SuggestedActionInsert', (qc) =>
+        qc
+          .insertInto('SuggestedAction')
+          .values(suggestedAction)
+          .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+      )
       .insertInto('TimelineEvent')
       .values(timelineEvent)
       .execute(),
     // add meeting settings
     r.table('MeetingSettings').insert(meetingSettings).run()
   ])
+  const hasSuggestedAction = await r
+    .table('SuggestedAction')
+    .getAll(userId, {index: 'userId'})
+    .filter({type: 'inviteYourTeam'})
+    .count()
+    .ge(1)
+    .run()
+  if (!hasSuggestedAction) {
+    await r.table('SuggestedAction').insert(suggestedAction).run()
+  }
   dataLoader.clearAll(['teams', 'users', 'teamMembers', 'timelineEvents', 'meetingSettings'])
 }

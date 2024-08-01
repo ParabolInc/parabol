@@ -1,8 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
 import AuthToken from '../../../database/types/AuthToken'
-import SuggestedActionCreateNewTeam from '../../../database/types/SuggestedActionCreateNewTeam'
-import SuggestedActionInviteYourTeam from '../../../database/types/SuggestedActionInviteYourTeam'
-import SuggestedActionTryTheDemo from '../../../database/types/SuggestedActionTryTheDemo'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
@@ -89,28 +86,43 @@ const bootstrapNewUser = async (
 
   const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
   const tms = [] as string[]
-
+  const actions = [
+    {
+      id: generateUID(),
+      userId,
+      type: 'tryTheDemo' as const,
+      priority: 1
+    },
+    {
+      id: generateUID(),
+      userId,
+      type: 'createNewTeam' as const,
+      priority: 4
+    }
+  ]
   if (teamsWithAutoJoin.length > 0) {
     await Promise.all(
       teamsWithAutoJoin.map((team) => {
         const teamId = team.id
         tms.push(teamId)
+        const inviteYourTeam = {
+          id: generateUID(),
+          userId,
+          teamId,
+          type: 'inviteYourTeam' as const,
+          priority: 2
+        }
         return Promise.all([
           acceptTeamInvitation(team, userId, dataLoader),
           isOrganic
             ? Promise.all([
-                r
-                  .table('SuggestedAction')
-                  .insert(new SuggestedActionInviteYourTeam({userId, teamId}))
-                  .run()
+                pg.insertInto('SuggestedAction').values(inviteYourTeam).execute(),
+                r.table('SuggestedAction').insert(inviteYourTeam).run()
               ])
-            : r
-                .table('SuggestedAction')
-                .insert([
-                  new SuggestedActionTryTheDemo({userId}),
-                  new SuggestedActionCreateNewTeam({userId})
-                ])
-                .run(),
+            : Promise.all([
+                pg.insertInto('SuggestedAction').values(actions).execute(),
+                r.table('SuggestedAction').insert(actions).run()
+              ]),
           analytics.autoJoined(newUser, teamId)
         ])
       })
@@ -130,15 +142,12 @@ const bootstrapNewUser = async (
     await Promise.all([
       createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader),
       addSeedTasks(userId, teamId),
-      r.table('SuggestedAction').insert(new SuggestedActionInviteYourTeam({userId, teamId})).run(),
       sendPromptToJoinOrg(newUser, dataLoader)
     ])
     analytics.newOrg(newUser, orgId, teamId, true)
   } else {
-    await r
-      .table('SuggestedAction')
-      .insert([new SuggestedActionTryTheDemo({userId}), new SuggestedActionCreateNewTeam({userId})])
-      .run()
+    await pg.insertInto('SuggestedAction').values(actions).execute()
+    await r.table('SuggestedAction').insert(actions).run()
   }
 
   analytics.accountCreated(newUser, !isOrganic, isPatient0)
