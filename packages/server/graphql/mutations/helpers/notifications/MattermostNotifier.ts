@@ -6,7 +6,7 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
-import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {IntegrationProviderMattermost as IIntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
@@ -24,6 +24,8 @@ import {
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
+
+type IntegrationProviderMattermost = IIntegrationProviderMattermost & {teamId: string}
 
 const notifyMattermost = async (
   event: EventEnum,
@@ -347,7 +349,7 @@ async function getMattermost(dataLoader: DataLoaderWorker, teamId: string, userI
   const provider = await dataLoader
     .get('bestTeamIntegrationProviders')
     .load({service: 'mattermost', teamId, userId})
-  return provider
+  return provider && provider.teamId
     ? [
         MattermostNotificationHelper({
           ...(provider as IntegrationProviderMattermost),

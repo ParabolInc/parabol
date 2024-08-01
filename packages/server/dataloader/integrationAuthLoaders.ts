@@ -5,6 +5,7 @@ import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification, {SlackNotificationEvent} from '../database/types/SlackNotification'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
+import getKysely from '../postgres/getKysely'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
@@ -12,7 +13,6 @@ import getBestTeamIntegrationAuth from '../postgres/queries/getBestTeamIntegrati
 import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
-import getSharedIntegrationProviders from '../postgres/queries/getSharedIntegrationProviders'
 import getTeamMemberIntegrationAuth from '../postgres/queries/getTeamMemberIntegrationAuth'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
@@ -25,8 +25,9 @@ interface TeamMemberIntegrationAuthPrimaryKey {
 
 interface SharedIntegrationProviderKey {
   service: IntegrationProviderServiceEnum
-  /// All team ids belonging to the organization, used for scope === 'org'
-  orgTeamIds: string[]
+  /// Query with 'org' scope by orgId
+  orgIds: string[]
+  /// Query with 'team' scope by teamId
   teamIds: string[]
 }
 
@@ -53,13 +54,33 @@ export const integrationProviders = (parent: RootDataLoader) => {
 export const sharedIntegrationProviders = (parent: RootDataLoader) => {
   return new DataLoader<SharedIntegrationProviderKey, TIntegrationProvider[], string>(
     async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({service, orgTeamIds, teamIds}) =>
-          getSharedIntegrationProviders(service, orgTeamIds, teamIds)
+      // slightly overfetching with the services here to keep the query simple
+      const services = Array.from(new Set(keys.map(({service}) => service)))
+      const orgIds = Array.from(new Set(keys.flatMap(({orgIds}) => orgIds)))
+      const teamIds = Array.from(new Set(keys.flatMap(({teamIds}) => teamIds)))
+
+      const pg = getKysely()
+      const results = await pg
+        .selectFrom('IntegrationProvider')
+        .selectAll()
+        .where(({and, or, eb}) =>
+          and([
+            eb('service', 'in', services),
+            eb('isActive', '=', true),
+            or([eb('scope', '!=', 'team'), eb('teamId', 'in', [...teamIds, ''])]),
+            or([eb('scope', '!=', 'org'), eb('orgId', 'in', [...orgIds, ''])])
+          ])
         )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : []))
-      return vals
+        .execute()
+      return keys.map(({service, orgIds, teamIds}) =>
+        results.filter(
+          (row) =>
+            row.service === service &&
+            (row.scope === 'global' ||
+              (row.scope === 'org' && row.orgId && orgIds.includes(row.orgId)) ||
+              (row.scope === 'team' && row.teamId && teamIds.includes(row.teamId)))
+        )
+      ) as TIntegrationProvider[][]
     },
     {
       ...parent.dataLoaderOptions

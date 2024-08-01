@@ -1,4 +1,4 @@
-import {ArrowBack} from '@mui/icons-material'
+import {ArrowBack, MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -21,13 +21,15 @@ const query = graphql`
   query OrgTeamMembersQuery($teamId: ID!) {
     viewer {
       team(teamId: $teamId) {
-        ...ArchiveTeam_team
         id
         billingTier
         isOrgAdmin
         isViewerLead
         name
         orgId
+        organization {
+          isBillingLeader
+        }
         teamMembers(sortBy: "preferredName") {
           id
           isNotRemoved
@@ -45,7 +47,7 @@ export const OrgTeamMembers = (props: Props) => {
   const data = usePreloadedQuery<OrgTeamMembersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal, menuPortal, menuProps, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const {
     open: openDeleteTeamDialog,
@@ -54,18 +56,31 @@ export const OrgTeamMembers = (props: Props) => {
   } = useDialogState()
 
   if (!team) return null
-  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
+  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers, organization} = team
+  const {isBillingLeader} = organization
+  const showMenuButton = isViewerLead || isBillingLeader || isViewerOrgAdmin
 
   return (
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
-        <div className='flex items-center'>
-          <Button size='md' shape='circle' variant='ghost' asChild>
-            <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
-              <ArrowBack />
-            </Link>
-          </Button>
-          <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
+        <Button size='md' shape='circle' variant='ghost' asChild>
+          <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
+            <ArrowBack />
+          </Link>
+        </Button>
+        <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
+        <div className='ml-auto'>
+          {showMenuButton && (
+            <Button
+              shape='circle'
+              variant='ghost'
+              onClick={togglePortal}
+              ref={originRef}
+              className='bg-slate-400'
+            >
+              <MoreVert />
+            </Button>
+          )}
         </div>
       </div>
 
