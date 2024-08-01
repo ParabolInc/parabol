@@ -6,23 +6,16 @@ import {
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
-import {Threadable as ThreadableDB} from '../../database/types/Threadable'
 import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
-import Comment from './Comment'
+import {ThreadableSource as ThreadableDB} from '../public/types/Threadable'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import PageInfo from './PageInfo'
-import Poll from './Poll'
-import Task from './Task'
 
 export const threadableFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
-  },
-  content: {
-    type: new GraphQLNonNull(GraphQLString),
-    description: 'The rich text body of the item'
   },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -68,19 +61,7 @@ export const threadableFields = () => ({
 
 const Threadable: GraphQLInterfaceType = new GraphQLInterfaceType({
   name: 'Threadable',
-  description: 'An item that can be put in a thread',
-  fields: threadableFields,
-  resolveType: (threadable: ThreadableDB) => {
-    if ('status' in threadable) {
-      return Task
-    }
-
-    if ('title' in threadable) {
-      return Poll
-    }
-
-    return Comment
-  }
+  fields: {}
 })
 
 const {connectionType, edgeType} = connectionDefinitions({
