@@ -47,12 +47,10 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
 
     const team = await dataLoader.get('teams').loadNonNull(teamMember.teamId)
     const {orgId} = team
-    const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const orgTeamIds = orgTeams.map(({id}) => id)
 
     const providers = await dataLoader.get('sharedIntegrationProviders').load({
       service: 'jiraServer',
-      orgTeamIds: [...orgTeamIds, 'aGhostTeam'],
+      orgIds: [orgId],
       teamIds: [teamId]
     })
 

@@ -13,6 +13,16 @@ input UpdateIntegrationProviderInput {
   scope: IntegrationProviderEditableScopeEnum
 
   """
+  The new team id for this provider for team scope
+  """
+  teamId: ID
+
+  """
+  The new org id for this provider for org scope
+  """
+  orgId: ID
+
+  """
   Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825
   """
   webhookProviderMetadataInput: IntegrationProviderMetadataInputWebhook

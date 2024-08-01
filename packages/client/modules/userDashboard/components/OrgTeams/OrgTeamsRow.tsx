@@ -19,11 +19,9 @@ const OrgTeamsRow = (props: Props) => {
         id
         name
         teamMembers {
-          id
-          isLead
-          isOrgAdmin
           isSelf
-          email
+          isLead
+          preferredName
         }
       }
     `,
@@ -31,6 +29,9 @@ const OrgTeamsRow = (props: Props) => {
   )
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
+  const viewerTeamMember = teamMembers.find((m) => m.isSelf)
+  const isLead = viewerTeamMember?.isLead
+  const isMember = !!viewerTeamMember && !isLead
 
   return (
     <Link
@@ -39,7 +40,19 @@ const OrgTeamsRow = (props: Props) => {
     >
       <div className='flex items-center p-4'>
         <div className='flex flex-1 flex-col py-1'>
-          <div className='text-gray-700 text-lg font-bold'>{name}</div>
+          <div className='text-gray-700 flex items-center text-lg font-bold'>
+            {name}
+            {isLead && (
+              <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+                Team Lead
+              </span>
+            )}
+            {isMember && (
+              <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
+                Member
+              </span>
+            )}
+          </div>
           <div className='flex items-center justify-between'>
             <div className='text-gray-600'>
               {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}

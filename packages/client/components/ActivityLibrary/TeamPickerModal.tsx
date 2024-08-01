@@ -48,7 +48,7 @@ const TeamPickerModal = (props: Props) => {
   )
 
   const [selectedTeam, setSelectedTeam] = useState(
-    teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
+    teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]
   )
 
   const atmosphere = useAtmosphere()
@@ -56,9 +56,12 @@ const TeamPickerModal = (props: Props) => {
 
   useEffect(() => {
     onCompleted()
-  }, [selectedTeam.id])
+  }, [selectedTeam?.id])
 
   const history = useHistory()
+
+  // user has no teams
+  if (!selectedTeam) return null
 
   const handleSelectTeam = () => {
     if (submitting) {

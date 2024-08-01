@@ -208,6 +208,39 @@ export const getUserTeams = async (userId: string) => {
   return user.data.user.teams as [{id: string}, ...{id: string}[]]
 }
 
+export const getUserOrgs = async (userId: string) => {
+  const user = await sendIntranet({
+    query: `
+      query User($userId: ID!) {
+        user(userId: $userId) {
+          id
+          organizations {
+            id
+          }
+        }
+      }
+    `,
+    variables: {
+      userId
+    },
+    isPrivate: true
+  })
+
+  expect(user).toMatchObject({
+    data: {
+      user: {
+        id: userId,
+        organizations: expect.arrayContaining([
+          {
+            id: expect.anything()
+          }
+        ])
+      }
+    }
+  })
+  return user.data.user.organizations as [{id: string}, ...{id: string}[]]
+}
+
 export const createPGTables = async (...tables: string[]) => {
   const pg = getKysely()
   await Promise.all(

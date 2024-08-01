@@ -5,7 +5,7 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
-import {IntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
@@ -36,6 +36,8 @@ const notifyMSTeams = async (
 
   return 'success'
 }
+
+type IntegrationProviderMSTeams = IIntegrationProviderMSTeams & {teamId: string}
 export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string; email: string}
 
 const createTeamPromptMeetingTitle = (meetingName: string) => `*${meetingName}* is open 💬`
@@ -338,7 +340,7 @@ async function getMSTeams(dataLoader: DataLoaderWorker, teamId: string, userId: 
     dataLoader.get('bestTeamIntegrationProviders').load({service: 'msTeams', teamId, userId}),
     dataLoader.get('users').loadNonNull(userId)
   ])
-  return provider
+  return provider && provider.teamId
     ? [
         MSTeamsNotificationHelper({
           ...(provider as IntegrationProviderMSTeams),

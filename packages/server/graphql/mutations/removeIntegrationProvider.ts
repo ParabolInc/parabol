@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import removeIntegrationProviderQuery from '../../postgres/queries/removeIntegrationProvider'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RemoveIntegrationProviderPayload from '../types/RemoveIntegrationProviderPayload'
@@ -27,10 +27,18 @@ const removeIntegrationProvider = {
     const providerDbId = IntegrationProviderId.split(providerId)
     const provider = await dataLoader.get('integrationProviders').load(providerDbId)
     if (!provider) return standardError(new Error('Integration Provider not found'))
-    const {teamId} = provider
+    const {teamId, orgId, scope} = provider
 
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: 'Must be on the team that created the provider'}}
+    if (!isSuperUser(authToken)) {
+      if (scope === 'global') {
+        return {error: {message: 'Must be a super user to remove a global provider'}}
+      }
+      if (scope === 'org' && !isUserOrgAdmin(viewerId, orgId!, dataLoader)) {
+        return {error: {message: 'Must be a member of the organization that created the provider'}}
+      }
+      if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
+        return {error: {message: 'Must be on the team that created the provider'}}
+      }
     }
 
     // RESOLUTION
