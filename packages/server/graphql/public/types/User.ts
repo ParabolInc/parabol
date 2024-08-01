@@ -17,6 +17,7 @@ import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
+import Invoice from '../../../database/types/Invoice'
 import MeetingMemberType from '../../../database/types/MeetingMember'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import Task from '../../../database/types/Task'
@@ -39,9 +40,10 @@ import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import makeUpcomingInvoice from '../../queries/helpers/makeUpcomingInvoice'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
-import {UserResolvers} from '../resolverTypes'
+import {ReqResolvers} from './ReqResolvers'
 
 declare const __PRODUCTION__: string
 
@@ -79,7 +81,79 @@ const getValidUserIds = async (
   )
   return userIds.filter((userId) => teamMemberUserIds.has(userId))
 }
-const User: UserResolvers = {
+
+const User: ReqResolvers<'User'> = {
+  organization: async (_source, {orgId}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const [organization, viewerOrganizationUser] = await Promise.all([
+      dataLoader.get('organizations').loadNonNull(orgId),
+      dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})
+    ])
+    if (!isSuperUser(authToken) && !viewerOrganizationUser) return null
+    return organization
+  },
+  invoices: async (_source, {orgId, first, after}, {authToken, dataLoader}) => {
+    const r = await getRethink()
+
+    // AUTH
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      // standardError(new Error('Not organization lead'), {userId: viewerId})
+      return {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false
+        }
+      }
+    }
+
+    // RESOLUTION
+    const {stripeId} = await dataLoader.get('organizations').loadNonNull(orgId)
+    const dbAfter = after ? new Date(after) : r.maxval
+    const [tooManyInvoices, orgUsers] = await Promise.all([
+      r
+        .table('Invoice')
+        .between([orgId, r.minval], [orgId, dbAfter], {
+          index: 'orgIdStartAt',
+          leftBound: 'open',
+          rightBound: 'closed'
+        })
+        .filter((invoice: RDatum) => invoice('status').ne('UPCOMING').and(invoice('total').ne(0)))
+        // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)
+        // break ties based on when created. In the future, we might want to consider using the created_at provided by stripe instead of our own
+        .orderBy(r.desc('startAt'), r.desc('createdAt'))
+        .limit(first + 1)
+        .run(),
+      dataLoader.get('organizationUsersByOrgId').load(orgId)
+    ])
+    const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+    const orgUserCount = activeOrgUsers.length
+    const org = await dataLoader.get('organizations').loadNonNull(orgId)
+    const upcomingInvoice = after
+      ? undefined
+      : await makeUpcomingInvoice(org, orgUserCount, stripeId)
+    const extraInvoices: Invoice[] = tooManyInvoices || []
+    const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
+    const allInvoices = upcomingInvoice
+      ? [upcomingInvoice, ...paginatedInvoices]
+      : paginatedInvoices
+    const nodes = allInvoices.slice(0, first)
+    const edges = nodes.map((node) => ({
+      cursor: node.startAt,
+      node
+    }))
+    const firstEdge = edges[0]
+    return {
+      edges,
+      pageInfo: {
+        startCursor: firstEdge && firstEdge.cursor,
+        endCursor: firstEdge && edges[edges.length - 1]!.cursor,
+        hasNextPage: extraInvoices.length + (upcomingInvoice ? 1 : 0) > first,
+        hasPreviousPage: false
+      }
+    }
+  },
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
     const r = await getRethink()
 
