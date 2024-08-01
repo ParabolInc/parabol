@@ -1,9 +1,8 @@
-import {AddReactjiToReactableSuccessResolvers} from '../../public/resolverTypes'
-import {ReactableEnumType} from '../../types/ReactableEnum'
+import {AddReactjiToReactableSuccessResolvers, ReactableEnum} from '../../public/resolverTypes'
 
 export type AddReactjiToReactableSuccessSource = {
   reactableId: string
-  reactableType: ReactableEnumType
+  reactableType: ReactableEnum
 }
 const AddReactjiToReactableSuccess: AddReactjiToReactableSuccessResolvers = {
   reactable: async ({reactableId, reactableType}, _args: unknown, {dataLoader}) => {

@@ -1,5 +1,5 @@
 import generateUID from '../../generateUID'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingTypeEnum} from '../../graphql/public/resolverTypes'
 import {NewMeetingPhaseTypeEnum} from './GenericMeetingPhase'
 
 interface Input {

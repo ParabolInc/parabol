@@ -1,4 +1,5 @@
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
@@ -11,14 +12,12 @@ import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {TemplateScale} from '../../postgres/types'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
-
 export type AnalyticsUser = {
   id: string
   email?: string
