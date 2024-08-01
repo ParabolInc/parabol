@@ -31,7 +31,7 @@ const OrgTeamsRow = (props: Props) => {
   const teamMembersCount = teamMembers.length
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   const isLead = viewerTeamMember?.isLead
-  const isMember = viewerTeamMember && !isLead
+  const isMember = !!viewerTeamMember && !isLead
 
   return (
     <Link
