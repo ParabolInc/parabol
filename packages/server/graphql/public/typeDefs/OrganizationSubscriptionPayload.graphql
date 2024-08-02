@@ -11,5 +11,6 @@ type OrganizationSubscriptionPayload {
   UpdateOrgPayload: UpdateOrgPayload
   OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
+  UpdateIntegrationProviderSuccess: UpdateIntegrationProviderSuccess
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
 }

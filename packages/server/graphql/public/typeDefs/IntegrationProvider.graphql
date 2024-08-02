@@ -8,9 +8,14 @@ interface IntegrationProvider {
   id: ID!
 
   """
-  The team that created the provider. "aGhostTeam" if global
+  The team that created the provider, null if not team scoped
   """
-  teamId: ID!
+  teamId: ID
+
+  """
+  The org that created the provider, null if not org scoped
+  """
+  orgId: ID
 
   """
   The timestamp the provider was created

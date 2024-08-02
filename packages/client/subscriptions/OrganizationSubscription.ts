@@ -56,6 +56,9 @@ const subscription = graphql`
       SetOrgUserRoleSuccess {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
       }
+      UpdateIntegrationProviderSuccess {
+        ...UpdateIntegrationProviderMutation_organization @relay(mask: false)
+      }
       UpdateTemplateScopeSuccess {
         ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
       }

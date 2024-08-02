@@ -198,3 +198,4 @@ services:
       - parabol-network
 networks:
   parabol-network:
+    name: parabol

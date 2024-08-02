@@ -4,8 +4,15 @@ An Integration Provider configuration
 input AddIntegrationProviderInput {
   """
   The team that the token is linked to
+  Must be provided if scope is 'team'
   """
-  teamId: ID!
+  teamId: ID
+
+  """
+  The organization this provider is associated with
+  Must be provided if scope is 'org'
+  """
+  orgId: ID
 
   """
   The service this provider is associated with

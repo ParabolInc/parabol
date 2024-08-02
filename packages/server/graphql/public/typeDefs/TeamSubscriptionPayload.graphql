@@ -69,7 +69,6 @@ type TeamSubscriptionPayload {
   SetDefaultSlackChannelSuccess: SetDefaultSlackChannelSuccess
   SetAppLocationSuccess: SetAppLocationSuccess
   UpdateGitHubDimensionFieldSuccess: UpdateGitHubDimensionFieldSuccess
-  UpdateIntegrationProviderSuccess: UpdateIntegrationProviderSuccess
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess

@@ -15,6 +15,7 @@ const generateGraphQLArtifacts = async () => {
       process.on('exit', () => {
         relayCompiler?.kill()
       })
+      relayCompiler.stderr.pipe(process.stderr)
     })
   console.log('gen graphql artifacts start')
   await generate(codegenSchema)

@@ -5,9 +5,14 @@ import getMeetingSeriesByIds from '../postgres/queries/getMeetingSeriesByIds'
 import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByIds'
 import {getTeamPromptResponsesByIds} from '../postgres/queries/getTeamPromptResponsesByIds'
 import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
-import getTemplateScaleRefsByIds from '../postgres/queries/getTemplateScaleRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
-import {selectTemplateDimension, selectTemplateScale} from '../postgres/select'
+import {
+  selectSuggestedAction,
+  selectTemplateDimension,
+  selectTemplateScale,
+  selectTemplateScaleRef,
+  selectTimelineEvent
+} from '../postgres/select'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
 export const users = primaryKeyLoaderMaker(getUsersByIds)
@@ -55,7 +60,9 @@ export const teams = primaryKeyLoaderMaker((ids: readonly string[]) => {
 })
 export const discussions = primaryKeyLoaderMaker(getDiscussionsByIds)
 export const templateRefs = primaryKeyLoaderMaker(getTemplateRefsByIds)
-export const templateScaleRefs = primaryKeyLoaderMaker(getTemplateScaleRefsByIds)
+export const templateScaleRefs = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTemplateScaleRef().where('id', 'in', ids).execute()
+})
 export const teamPromptResponses = primaryKeyLoaderMaker(getTeamPromptResponsesByIds)
 export const meetingSeries = primaryKeyLoaderMaker(getMeetingSeriesByIds)
 export const meetingTemplates = primaryKeyLoaderMaker(getMeetingTemplatesByIds)
@@ -96,7 +103,7 @@ export const retroReflections = primaryKeyLoaderMaker((ids: readonly string[]) =
 })
 
 export const timelineEvents = primaryKeyLoaderMaker((ids: readonly string[]) => {
-  return getKysely().selectFrom('TimelineEvent').selectAll().where('id', 'in', ids).execute()
+  return selectTimelineEvent().where('id', 'in', ids).execute()
 })
 
 export const selectOrganizations = () =>
@@ -158,4 +165,8 @@ export const templateScales = primaryKeyLoaderMaker((ids: readonly string[]) => 
 
 export const templateDimensions = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTemplateDimension().where('id', 'in', ids).execute()
+})
+
+export const _suggestedActions = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectSuggestedAction().where('id', 'in', ids).execute()
 })
