@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-node": "^1.3.2",
-    "@aws-sdk/client-s3": "3.537.0",
+    "@aws-sdk/client-s3": "3.614.0",
     "@aws-sdk/s3-request-presigner": "^3.565.0",
     "@dicebear/core": "^8.0.1",
     "@dicebear/initials": "^8.0.1",
