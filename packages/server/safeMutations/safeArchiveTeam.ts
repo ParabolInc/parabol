@@ -9,7 +9,7 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
   const now = new Date()
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const userIds = teamMembers.map((tm) => tm.userId)
-  const [rethinkResult, pgResult] = await Promise.all([
+  const [rethinkResult, removedSuggestedActions, team] = await Promise.all([
     r({
       invitations: r
         .table('TeamInvitation')
@@ -17,18 +17,14 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
         .filter({acceptedAt: null})
         .update((invitation: RDatum) => ({
           expiresAt: r.min([invitation('expiresAt'), now])
-        })) as unknown as null,
-      removedSuggestedActionIds: r
-        .table('SuggestedAction')
-        .getAll(teamId, {index: 'teamId'})
-        .update(
-          {
-            removedAt: now
-          },
-          {returnChanges: true}
-        )('changes')('new_val')('id')
-        .default([]) as unknown as string[]
+        })) as unknown as null
     }).run(),
+    pg
+      .updateTable('SuggestedAction')
+      .set({removedAt: now})
+      .where('teamId', '=', teamId)
+      .returning('id')
+      .execute(),
     pg
       .updateTable('Team')
       .set({isArchived: true})
@@ -43,7 +39,12 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
   ])
   dataLoader.clearAll(['teamMembers', 'users', 'teams'])
   const users = await Promise.all(userIds.map((userId) => dataLoader.get('users').load(userId)))
-  return {...rethinkResult, team: pgResult ?? null, users}
+  return {
+    invitations: rethinkResult.invitations,
+    removedSuggestedActionIds: removedSuggestedActions.map(({id}) => id),
+    team: team ?? null,
+    users
+  }
 }
 
 export default safeArchiveTeam

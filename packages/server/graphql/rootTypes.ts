@@ -5,11 +5,6 @@ import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import JiraDimensionField from './types/JiraDimensionField'
 import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
-import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
-import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
-import SuggestedActionTryActionMeeting from './types/SuggestedActionTryActionMeeting'
-import SuggestedActionTryRetroMeeting from './types/SuggestedActionTryRetroMeeting'
-import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
 import TimelineEventCompletedRetroMeeting from './types/TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './types/TimelineEventJoinedParabol'
@@ -22,11 +17,6 @@ const rootTypes = [
   IntegrationProviderOAuth2,
   IntegrationProviderWebhook,
   SetMeetingSettingsPayload,
-  SuggestedActionInviteYourTeam,
-  SuggestedActionTryRetroMeeting,
-  SuggestedActionTryActionMeeting,
-  SuggestedActionCreateNewTeam,
-  SuggestedActionTryTheDemo,
   TimelineEventTeamCreated,
   TimelineEventJoinedParabol,
   TimelineEventCompletedRetroMeeting,

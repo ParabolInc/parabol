@@ -134,19 +134,6 @@ export const slackNotificationsByTeamId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const suggestedActionsByUserId = new RethinkForeignKeyLoaderMaker(
-  'suggestedActions',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r
-      .table('SuggestedAction')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter((row: any) => row('removedAt').default(null).eq(null))
-      .run()
-  }
-)
-
 export const tasksByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'tasks',
   'discussionId',
