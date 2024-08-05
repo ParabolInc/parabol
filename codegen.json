@@ -81,6 +81,7 @@
           "Comment": "../../database/types/Comment#default as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
+          "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateStripeSubscriptionSuccess": "./types/CreateStripeSubscriptionSuccess#CreateStripeSubscriptionSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",

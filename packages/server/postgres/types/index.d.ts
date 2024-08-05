@@ -31,6 +31,7 @@ export interface RetroReflection
 export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSuggestedAction>
 
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
+
 export type TeamMember = Selectable<TeamMemberPG>
 
 export type TeamPromptResponse = Selectable<TeamPromptResponsePG>
