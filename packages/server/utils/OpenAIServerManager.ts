@@ -1,7 +1,7 @@
 import JSON5 from 'json5'
 import OpenAI from 'openai'
 import {ModifyType} from '../graphql/public/resolverTypes'
-import {RetroReflectionSource} from '../graphql/public/types/RetroReflection'
+import {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 
@@ -107,7 +107,7 @@ class OpenAIServerManager {
     }
   }
 
-  async getDiscussionPromptQuestion(topic: string, reflections: RetroReflectionSource[]) {
+  async getDiscussionPromptQuestion(topic: string, reflections: RetroReflection[]) {
     if (!this.openAIApi) return null
     const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:
 

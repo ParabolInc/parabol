@@ -13,8 +13,8 @@ import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import {GQLContext} from '../../graphql'
-import getReactableType from '../../types/getReactableType'
 import {MutationResolvers} from '../resolverTypes'
+import {getReactableType} from '../types/Reactable'
 
 const dataLoaderLookup = {
   RESPONSE: 'teamPromptResponses',

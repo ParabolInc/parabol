@@ -6,11 +6,10 @@ import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {Reactable, ReactableEnum} from '../../database/types/Reactable'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
-import {ModifyType} from '../../graphql/public/resolverTypes'
+import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
 import {TemplateScale} from '../../postgres/types'
@@ -360,7 +359,7 @@ class Analytics {
     user: AnalyticsUser,
     meetingId: string,
     meetingType: MeetingTypeEnum,
-    reactable: Reactable,
+    reactable: {createdBy?: string; id: string},
     reactableType: ReactableEnum,
     reactji: string,
     isRemove: boolean

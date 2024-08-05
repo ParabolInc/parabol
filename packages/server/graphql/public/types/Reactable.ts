@@ -1,6 +1,15 @@
 import resolveReactjis from '../../resolvers/resolveReactjis'
-import getReactableType from '../../types/getReactableType'
-import {ReactableResolvers} from '../resolverTypes'
+import {ReactableEnum, ReactableResolvers} from '../resolverTypes'
+
+export const getReactableType = (reactable: any): ReactableEnum => {
+  if (reactable.reflectionGroupId) {
+    return 'REFLECTION'
+  } else if (reactable.discussionId) {
+    return 'COMMENT'
+  } else {
+    return 'RESPONSE'
+  }
+}
 
 const Reactable: ReactableResolvers = {
   __resolveType: (type) => {

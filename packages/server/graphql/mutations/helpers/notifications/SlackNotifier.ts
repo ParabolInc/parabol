@@ -12,6 +12,7 @@ import {SlackNotificationEvent} from '../../../../database/types/SlackNotificati
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {Team} from '../../../../postgres/types'
 import User from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import SlackServerManager from '../../../../utils/SlackServerManager'
@@ -20,7 +21,6 @@ import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import {DataLoaderWorker} from '../../../graphql'
-import {TeamSource} from '../../../public/types/Team'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
@@ -137,12 +137,12 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
-const createTeamSectionContent = (team: TeamSource) => `*Team:*\n${team.name}`
+const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
 
 const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
 
 const makeTeamPromptStartMeetingNotification = (
-  team: TeamSource,
+  team: Team,
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
@@ -157,7 +157,7 @@ const makeTeamPromptStartMeetingNotification = (
 }
 
 const makeGenericStartMeetingNotification = (
-  team: TeamSource,
+  team: Team,
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
@@ -173,7 +173,7 @@ const makeGenericStartMeetingNotification = (
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: TeamSource, meeting: Meeting, meetingUrl: string) => SlackNotification
+  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotification
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -184,7 +184,7 @@ const makeStartMeetingNotificationLookup: Record<
 const addStandupResponsesToThread = async (
   res: PostMessageResponse,
   standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
-  team: TeamSource,
+  team: Team,
   user: User,
   meeting: Meeting,
   notificationChannel: NotificationChannel

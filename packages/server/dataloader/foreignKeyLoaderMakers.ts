@@ -1,12 +1,16 @@
+import TeamPromptResponseId from '../../client/shared/gqlIds/TeamPromptResponseId'
 import getKysely from '../postgres/getKysely'
 import {
+  selectOrganizations,
+  selectRetroReflections,
   selectSuggestedAction,
+  selectTeamPromptResponses,
+  selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
   selectTimelineEvent
 } from '../postgres/select'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
-import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
   selectTeams().where('orgId', 'in', orgIds).where('isArchived', '=', false).execute()
@@ -159,5 +163,14 @@ export const suggestedActionsByUserId = foreignKeyLoaderMaker(
   'userId',
   async (userIds) => {
     return selectSuggestedAction().where('userId', 'in', userIds).execute()
+  }
+)
+
+export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
+  'teamPromptResponses',
+  'meetingId',
+  async (meetingIds) => {
+    const res = await selectTeamPromptResponses().where('meetingId', 'in', meetingIds).execute()
+    return res.map((row) => ({...row, id: TeamPromptResponseId.join(row.id)}))
   }
 )
