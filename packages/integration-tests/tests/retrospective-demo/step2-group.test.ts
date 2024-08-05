@@ -119,7 +119,7 @@ test.describe('retrospective-demo / group page', () => {
     // Then it auto-generates a header
     await expect(
       page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Decisions Things"]`
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things Notion"]`
       )
     ).toBeVisible()
 
