@@ -82,7 +82,9 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
       ) as TIntegrationProvider[][]
     },
     {
-      ...parent.dataLoaderOptions
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({service, orgIds, teamIds}) =>
+        `${service}-${orgIds.toSorted().join(',')}-${teamIds.toSorted().join(',')}`
     }
   )
 }

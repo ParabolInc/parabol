@@ -10,7 +10,7 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {AuthToken} from '../../../../types/AuthToken'
-import {ExternalLinks, Providers} from '../../../../types/constEnums'
+import {ExternalLinks} from '../../../../types/constEnums'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../../../utils/AtlassianClientManager'
 import ProviderRow from './ProviderRow'
 
@@ -96,8 +96,8 @@ const AtlassianProviderRow = (props: Props) => {
         submitting={submitting}
         togglePortal={togglePortal}
         menuRef={originRef}
-        providerName={Providers.ATLASSIAN_NAME}
-        providerDescription={Providers.ATLASSIAN_DESC}
+        providerName='Atlassian'
+        providerDescription='Use Jira Cloud Issues from within Parabol.'
         providerLogo={<AtlassianProviderLogo />}
         error={errorMessage}
       />

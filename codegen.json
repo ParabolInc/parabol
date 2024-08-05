@@ -134,6 +134,7 @@
           "TemplateScale": "../../postgres/types/index#TemplateScale as TemplateScaleDB",
           "TemplateScaleRef": "../../postgres/types/index#TemplateScaleRef as TemplateScaleRefDB",
           "Threadable": "./types/Threadable#ThreadableSource",
+          "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "PokerMeetingMember": "../../database/types/MeetingPokerMeetingMember#default as PokerMeetingMemberDB",

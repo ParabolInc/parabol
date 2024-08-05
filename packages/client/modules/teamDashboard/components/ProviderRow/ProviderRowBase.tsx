@@ -85,24 +85,14 @@ const CardTop = styled('div')({
   padding: Layout.ROW_GUTTER
 })
 
-const HowItWorksLink = styled('a')({
-  color: PALETTE.SKY_500,
-  cursor: 'pointer',
-  textDecoration: 'underline',
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  }
-})
-
 export interface ProviderRowBaseProps {
   connected: boolean
   togglePortal: () => void
   menuRef: React.MutableRefObject<HTMLButtonElement | null> // TODO: make generic menu component
   providerName: string
-  providerDescription: string
+  providerDescription: React.ReactElement | string
   providerLogo: React.ReactElement
   children?: React.ReactElement | false
-  seeHowItWorksUrl?: string
   connectButton: React.ReactElement
   error?: React.ReactElement | string
 }
@@ -117,7 +107,6 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
     providerName,
     providerDescription,
     providerLogo,
-    seeHowItWorksUrl,
     children
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -127,17 +116,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
         {providerLogo}
         <RowInfo>
           <ProviderName>{providerName}</ProviderName>
-          <RowInfoCopy>
-            {providerDescription}.{' '}
-            {seeHowItWorksUrl && (
-              <>
-                <HowItWorksLink href={seeHowItWorksUrl} target='_blank' rel='noreferrer'>
-                  See how it works
-                </HowItWorksLink>
-                .
-              </>
-            )}
-          </RowInfoCopy>
+          <RowInfoCopy>{providerDescription} </RowInfoCopy>
           {!!error && (
             <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
               {error}

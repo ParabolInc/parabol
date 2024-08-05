@@ -9,7 +9,7 @@ import {
 interface IUpsertIntegrationProviderInput {
   service: IntegrationProviderServiceEnum
   authStrategy: IntegrationProviderAuthStrategyEnum
-  scope?: IntegrationProviderScopeEnum | null
+  scope?: IntegrationProviderScopeEnum | null | undefined
   clientId?: string
   tenantId?: string
   clientSecret?: string
