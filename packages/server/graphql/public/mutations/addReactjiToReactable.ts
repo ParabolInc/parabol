@@ -6,6 +6,7 @@ import {ValueOf} from '../../../../client/types/generics'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
 import Comment from '../../../database/types/Comment'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -13,8 +14,22 @@ import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
 import {GQLContext} from '../../graphql'
-import {MutationResolvers} from '../resolverTypes'
+import {MutationResolvers, ReactableEnum} from '../resolverTypes'
 import {getReactableType} from '../types/Reactable'
+
+export const getReactable = (
+  reactableDBId: string | number,
+  reactableType: ReactableEnum,
+  dataLoader: DataLoaderInstance
+) => {
+  if (reactableType === 'RESPONSE') {
+    return dataLoader.get('teamPromptResponses').load(reactableDBId as number)
+  }
+  if (reactableType === 'COMMENT') {
+    return dataLoader.get('comments').load(reactableDBId as string)
+  }
+  return dataLoader.get('retroReflections').load(reactableDBId as string)
+}
 
 const tableLookup = {
   RESPONSE: 'TeamPromptResponse',
@@ -38,16 +53,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const reactableDBId =
     reactableType === 'RESPONSE' ? TeamPromptResponseId.split(reactableId) : reactableId
 
-  const getReactable = () => {
-    if (reactableType === 'RESPONSE') {
-      return dataLoader.get('teamPromptResponses').load(reactableDBId as number)
-    }
-    if (reactableType === 'COMMENT') {
-      return dataLoader.get('comments').load(reactableId)
-    }
-    return dataLoader.get('retroReflections').load(reactableId)
-  }
-  const reactable = await getReactable()
+  const reactable = await getReactable(reactableDBId, reactableType, dataLoader)
 
   if (!reactable) {
     return {error: {message: `Item does not exist`}}
@@ -141,7 +147,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
 
   const {meetingType} = meeting
 
-  const data = {reactableId, reactableType}
+  const data = {reactableId: reactableDBId as any, reactableType}
 
   analytics.reactjiInteracted(
     viewer,

@@ -8,7 +8,6 @@ import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamProm
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
-import isValid from '../graphql/isValid'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
@@ -28,7 +27,7 @@ import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {selectTeams} from '../postgres/select'
-import {OrganizationUser, Reactable, Team} from '../postgres/types'
+import {OrganizationUser, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -63,12 +62,6 @@ export interface UserTasksKey {
   filterQuery?: string | null
   includeUnassigned?: boolean
 }
-
-const reactableLoaders = [
-  {type: 'COMMENT', loader: 'comments'},
-  {type: 'REFLECTION', loader: 'retroReflections'},
-  {type: 'RESPONSE', loader: 'teamPromptResponses'}
-] as const
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
@@ -142,28 +135,6 @@ export const meetingTaskEstimates = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.meetingId}:${key.taskId}`
-    }
-  )
-}
-
-export const reactables = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn(reactableLoaders.map((a) => a.loader))
-  return new DataLoader<ReactablesKey, Reactable, string>(
-    async (keys) => {
-      const reactableResults = await Promise.all(
-        reactableLoaders.map(async (val) => {
-          const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
-          return parent.get(val.loader).loadMany(ids as any[])
-        })
-      )
-      const reactables = reactableResults.flat().filter(isValid)
-      const keyIds = keys.map(({id}) => id)
-      const ret = normalizeResults(keyIds, reactables)
-      return ret as Reactable[]
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.id}:${key.type}`
     }
   )
 }
