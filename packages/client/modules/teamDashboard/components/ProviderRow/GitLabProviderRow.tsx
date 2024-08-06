@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
@@ -14,88 +13,10 @@ import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import {cardShadow} from '../../../../styles/elevation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint, Layout} from '../../../../types/constEnums'
+import {Breakpoint} from '../../../../types/constEnums'
 import GitLabClientManager from '../../../../utils/GitLabClientManager'
 import ConnectButton from './ConnectButton'
 import GitLabConfigMenu from './GitLabConfigMenu'
-
-const MenuButton = styled(FlatButton)({
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.SLATE_700,
-  fontSize: 14,
-  fontWeight: 600,
-  minWidth: 36,
-  paddingLeft: 0,
-  paddingRight: 0
-})
-
-const SmallMenuButton = styled(MenuButton)({
-  minWidth: 30
-})
-
-const StatusWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  paddingRight: 25
-})
-
-const StatusLabel = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 14,
-  fontWeight: 600,
-  paddingLeft: 6
-})
-
-const StatusIcon = styled('div')({
-  svg: {
-    fontSize: 18
-  },
-  width: 18,
-  height: 18,
-  color: PALETTE.SUCCESS_LIGHT
-})
-
-const MenuSmallIcon = styled(MoreVertIcon)({
-  svg: {
-    fontSize: 18
-  },
-  width: 18,
-  height: 18
-})
-
-const ProviderName = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '24px',
-  alignItems: 'center',
-  display: 'flex',
-  marginRight: 16,
-  verticalAlign: 'middle'
-})
-
-const ProviderCard = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: 'white',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  flexShrink: 0,
-  justifyContent: 'flex-start',
-  margin: '16px 0',
-  padding: 0,
-  position: 'relative',
-  width: '100%'
-})
-
-const CardTop = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  padding: Layout.ROW_GUTTER,
-  paddingBottom: 0
-})
 
 interface Props {
   teamId: string
@@ -166,68 +87,29 @@ const GitLabProviderRow = (props: Props) => {
   const {auth, cloudProvider, sharedProviders} = gitlab
   const connected = !!auth
   const connectedProviderId = auth?.provider?.id
-  const showCloudProvider =
-    cloudProvider && (!connected || cloudProvider.id === connectedProviderId)
+  const availableProviders = [...(cloudProvider ? [cloudProvider] : []), ...sharedProviders]
 
   return (
     <>
-      <ProviderCard>
-        <CardTop>
+      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded bg-white shadow-card'>
+        <div className='flex justify-start p-row-gutter pb-0'>
           <GitLabProviderLogo />
           <div className='flex w-full flex-col'>
-            {showCloudProvider && (
-              <div className='flex w-full flex-row pb-4'>
-                <RowInfo>
-                  <ProviderName>GitLab</ProviderName>
-                  <RowInfoCopy>Use GitLab Issues from within Parabol.</RowInfoCopy>
-                </RowInfo>
-                <ProviderActions>
-                  {!connected && (
-                    <ConnectButton
-                      onConnectClick={() =>
-                        openOAuth(
-                          cloudProvider.id,
-                          cloudProvider.clientId,
-                          cloudProvider.serverBaseUrl
-                        )
-                      }
-                      submitting={submitting}
-                    />
-                  )}
-                  {cloudProvider.id === connectedProviderId && (
-                    <>
-                      {isDesktop ? (
-                        <>
-                          <StatusWrapper>
-                            <StatusIcon>
-                              <DoneIcon />
-                            </StatusIcon>
-                            <StatusLabel>Connected</StatusLabel>
-                          </StatusWrapper>
-                          <SmallMenuButton onClick={togglePortal} ref={menuRef}>
-                            <MenuSmallIcon>
-                              <MoreVertIcon />
-                            </MenuSmallIcon>
-                          </SmallMenuButton>
-                        </>
-                      ) : (
-                        <MenuButton onClick={togglePortal} ref={menuRef}>
-                          <MoreVertIcon />
-                        </MenuButton>
-                      )}
-                    </>
-                  )}
-                </ProviderActions>
-              </div>
-            )}
-            {sharedProviders.map(({id, serverBaseUrl, clientId}) => {
+            {availableProviders.map(({id, serverBaseUrl, clientId}) => {
               const showProvider = !connected || id === connectedProviderId
+              const isCloudProvider = cloudProvider?.id === id
               if (!showProvider) return null
               return (
                 <div key={id} className='flex w-full flex-row pb-4'>
                   <RowInfo>
-                    <ProviderName>{serverBaseUrl.replace(/https:\/\//, '')}</ProviderName>
-                    <RowInfoCopy>Connect to your own GitLab server.</RowInfoCopy>
+                    <div className='mr-4 flex items-center align-middle font-semibold leading-6 text-slate-700'>
+                      {isCloudProvider ? 'GitLab' : serverBaseUrl.replace(/https:\/\//, '')}
+                    </div>
+                    <RowInfoCopy>
+                      {isCloudProvider
+                        ? 'Use GitLab Issues from within Parabol.'
+                        : 'Connect to your own GitLab server.'}
+                    </RowInfoCopy>
                   </RowInfo>
                   <ProviderActions>
                     {!connected && (
@@ -240,22 +122,28 @@ const GitLabProviderRow = (props: Props) => {
                       <>
                         {isDesktop ? (
                           <>
-                            <StatusWrapper>
-                              <StatusIcon>
-                                <DoneIcon />
-                              </StatusIcon>
-                              <StatusLabel>Connected</StatusLabel>
-                            </StatusWrapper>
-                            <SmallMenuButton onClick={togglePortal} ref={menuRef}>
-                              <MenuSmallIcon>
-                                <MoreVertIcon />
-                              </MenuSmallIcon>
-                            </SmallMenuButton>
+                            <div className='flex items-center pr-6'>
+                              <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
+                              <div className='pl-[6px] text-sm font-semibold text-slate-700'>
+                                Connected
+                              </div>
+                            </div>
+                            <FlatButton
+                              className='min-w-[30px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                              onClick={togglePortal}
+                              ref={menuRef}
+                            >
+                              <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                            </FlatButton>
                           </>
                         ) : (
-                          <MenuButton onClick={togglePortal} ref={menuRef}>
+                          <FlatButton
+                            className='min-w-9 border-slate-400 py-0 text-sm font-semibold text-slate-700'
+                            onClick={togglePortal}
+                            ref={menuRef}
+                          >
                             <MoreVertIcon />
-                          </MenuButton>
+                          </FlatButton>
                         )}
                       </>
                     )}
@@ -264,8 +152,8 @@ const GitLabProviderRow = (props: Props) => {
               )
             })}
           </div>
-        </CardTop>
-      </ProviderCard>
+        </div>
+      </div>
       {menuPortal(
         <GitLabConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
       )}

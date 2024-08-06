@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import React from 'react'
 import FlatButton from '../../../../components/FlatButton'
@@ -6,84 +5,7 @@ import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {cardShadow} from '../../../../styles/elevation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Breakpoint, Layout} from '../../../../types/constEnums'
-
-const MenuButton = styled(FlatButton)({
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.SLATE_700,
-  fontSize: 14,
-  fontWeight: 600,
-  minWidth: 36,
-  paddingLeft: 0,
-  paddingRight: 0
-})
-
-const SmallMenuButton = styled(MenuButton)({
-  minWidth: 30
-})
-
-const StatusWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  paddingRight: 25
-})
-
-const StatusLabel = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 14,
-  fontWeight: 600,
-  paddingLeft: 6
-})
-
-const StatusIcon = styled('div')({
-  svg: {
-    fontSize: 18
-  },
-  width: 18,
-  height: 18,
-  color: PALETTE.SUCCESS_LIGHT
-})
-
-const MenuSmallIcon = styled(MoreVertIcon)({
-  svg: {
-    fontSize: 18
-  },
-  width: 18,
-  height: 18
-})
-
-const ProviderName = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '24px',
-  alignItems: 'center',
-  display: 'flex',
-  marginRight: 16,
-  verticalAlign: 'middle'
-})
-
-const ProviderCard = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: 'white',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  flexShrink: 0,
-  justifyContent: 'flex-start',
-  margin: '16px 0',
-  padding: 0,
-  position: 'relative',
-  width: '100%'
-})
-
-const CardTop = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  padding: Layout.ROW_GUTTER
-})
+import {Breakpoint} from '../../../../types/constEnums'
 
 export interface ProviderRowBaseProps {
   connected: boolean
@@ -111,11 +33,13 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <ProviderCard>
-      <CardTop>
+    <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded bg-white shadow-card'>
+      <div className='flex justify-start p-row-gutter'>
         {providerLogo}
         <RowInfo>
-          <ProviderName>{providerName}</ProviderName>
+          <div className='mr-4 flex items-center align-middle font-semibold leading-6 text-slate-700'>
+            {providerName}
+          </div>
           <RowInfoCopy>{providerDescription} </RowInfoCopy>
           {!!error && (
             <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
@@ -129,29 +53,33 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
             <>
               {isDesktop ? (
                 <>
-                  <StatusWrapper>
-                    <StatusIcon>
-                      <DoneIcon />
-                    </StatusIcon>
-                    <StatusLabel>Connected</StatusLabel>
-                  </StatusWrapper>
-                  <SmallMenuButton onClick={togglePortal} ref={menuRef}>
-                    <MenuSmallIcon>
-                      <MoreVertIcon />
-                    </MenuSmallIcon>
-                  </SmallMenuButton>
+                  <div className='flex items-center pr-[25px]'>
+                    <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
+                    <div className='pl-[6px] text-sm font-semibold text-slate-700'>Connected</div>
+                  </div>
+                  <FlatButton
+                    className='min-w-[30px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                    onClick={togglePortal}
+                    ref={menuRef}
+                  >
+                    <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                  </FlatButton>
                 </>
               ) : (
-                <MenuButton onClick={togglePortal} ref={menuRef}>
+                <FlatButton
+                  className='min-w-9 border-slate-400 py-0 text-sm font-semibold text-slate-700'
+                  onClick={togglePortal}
+                  ref={menuRef}
+                >
                   <MoreVertIcon />
-                </MenuButton>
+                </FlatButton>
               )}
             </>
           )}
         </ProviderActions>
-      </CardTop>
+      </div>
       {children}
-    </ProviderCard>
+    </div>
   )
 }
 
