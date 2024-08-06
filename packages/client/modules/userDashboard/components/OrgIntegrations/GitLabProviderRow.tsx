@@ -32,6 +32,10 @@ const GitLabProviderRow = (props: Props) => {
     graphql`
       fragment GitLabProviderRow_organization on Organization {
         orgId: id
+        viewerOrganizationUser {
+          id
+          role
+        }
         integrationProviders {
           gitlab {
             id
@@ -43,7 +47,9 @@ const GitLabProviderRow = (props: Props) => {
     `,
     organizationRef
   )
-  const {orgId} = organization
+  const {orgId, viewerOrganizationUser} = organization
+  const isOrgAdmin = viewerOrganizationUser?.role === 'ORG_ADMIN'
+
   const {open, close, isOpen} = useDialogState()
   const {onError, onCompleted} = useMutationProps()
 
@@ -112,9 +118,11 @@ const GitLabProviderRow = (props: Props) => {
             <div className='font-semibold text-slate-700'>GitLab</div>
             <RowInfoCopy>Add private servers for use by your teams.</RowInfoCopy>
           </div>
-          <ProviderActions>
-            <ProviderRowActionButton onClick={open}>Add Server</ProviderRowActionButton>
-          </ProviderActions>
+          {isOrgAdmin && (
+            <ProviderActions>
+              <ProviderRowActionButton onClick={open}>Add Server</ProviderRowActionButton>
+            </ProviderActions>
+          )}
         </div>
         {organization.integrationProviders.gitlab.map(({id, serverBaseUrl, clientId}) => (
           <div key={id} className='flex-center flex items-center pt-4'>
@@ -124,11 +132,13 @@ const GitLabProviderRow = (props: Props) => {
               </div>
               <RowInfoCopy></RowInfoCopy>
             </div>
-            <ProviderActions>
-              <FlatButton onClick={() => edit(id, serverBaseUrl, clientId)}>
-                <MoreVertIcon />
-              </FlatButton>
-            </ProviderActions>
+            {isOrgAdmin && (
+              <ProviderActions>
+                <FlatButton onClick={() => edit(id, serverBaseUrl, clientId)}>
+                  <MoreVertIcon />
+                </FlatButton>
+              </ProviderActions>
+            )}
           </div>
         ))}
       </div>
