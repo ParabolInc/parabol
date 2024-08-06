@@ -36,11 +36,6 @@ const textStyle = {
   textAlign: 'left'
 } as const
 
-const linkStyle = {
-  color: '#2563EB',
-  textDecoration: 'underline'
-}
-
 interface Props {
   meetingRef: WholeMeetingSummaryResult_meeting$key
 }
@@ -62,22 +57,6 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
     `,
     meetingRef
   )
-
-  const {summary: wholeMeetingSummary, team} = meeting
-  const renderedSummary =
-    wholeMeetingSummary &&
-    (marked(wholeMeetingSummary, {
-      gfm: true,
-      breaks: true
-    }) as string | null)
-  // replace links with styled links
-  const formattedSummary = renderedSummary?.replace(
-    /<a href="(.*?)">(.*?)<\/a>/g,
-    `<a href="$1" style="color: ${linkStyle.color}; text-decoration: ${linkStyle.textDecoration};">$2</a>`
-  )
-
-  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
-
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
       source: 'Meeting Summary',
@@ -86,7 +65,22 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
     })
   }, [atmosphere, meeting.id, meeting.team.billingTier])
 
-  if (!formattedSummary) return null
+  const {summary: wholeMeetingSummary, team} = meeting
+
+  if (!wholeMeetingSummary) return null
+
+  const renderedSummary = marked(wholeMeetingSummary, {
+    gfm: true,
+    breaks: true
+  }) as string
+  // replace links with styled links
+  const formattedSummary = renderedSummary?.replace(
+    /<a href="(.*?)">(.*?)<\/a>/g,
+    `<a href="$1" style="color: ${PALETTE.SKY_500}; text-decoration: underline;">$2</a>`
+  )
+
+  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+
   return (
     <>
       <tr>
