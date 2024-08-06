@@ -1,5 +1,5 @@
-import {selectOrganizations} from '../../../dataloader/primaryKeyLoaderMakers'
 import getKysely from '../../../postgres/getKysely'
+import {selectOrganizations} from '../../../postgres/select'
 import {QueryResolvers} from '../resolverTypes'
 
 const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeInactive}) => {

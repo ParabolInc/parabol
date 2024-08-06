@@ -1,15 +1,15 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
+import {RetroReflection} from '../../../postgres/types'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
-import {RetroReflectionSource} from '../../public/types/RetroReflection'
 
 const generateGroups = async (
-  reflections: RetroReflectionSource[],
+  reflections: RetroReflection[],
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
