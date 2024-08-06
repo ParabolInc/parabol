@@ -193,6 +193,7 @@ export const enum Layout {
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
   SETTINGS_MAX_WIDTH = 768,
+  SETTINGS_NARROW_MAX_WIDTH = 644,
   TASK_COLUMNS_MAX_WIDTH = 1360
 }
 

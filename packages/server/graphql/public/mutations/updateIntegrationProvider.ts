@@ -117,22 +117,6 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     })
     .where('id', '=', providerDbId)
     .execute()
-  /*
-  await upsertIntegrationProvider({
-    id: providerId,
-    ...oAuth2ProviderMetadataInput,
-    ...webhookProviderMetadataInput,
-    service,
-    authStrategy,
-    scope: scope as IntegrationProviderScopeEnum | null ,
-    ...(scope === 'global'
-      ? {orgId: null, teamId: null}
-      : scope === 'org'
-        ? {orgId, teamId: null}
-        : {orgId: null, teamId})
-  })
-  */
-
   if (currentProvider.service === 'mattermost') {
     const {webhookUrl} = currentProvider
     const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl

@@ -99,9 +99,6 @@ export const ORG_SETTINGS_PAGE = 'settings'
 export const ORG_INTEGRATIONS_PAGE = 'integrations'
 export const AUTHENTICATION_PAGE = 'authentication'
 
-export const SETTINGS_NARROW_MAX_WIDTH = 644
-export const SETTINGS_MAX_WIDTH = 768
-
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
 export const MONTHLY_PRICE = 8
