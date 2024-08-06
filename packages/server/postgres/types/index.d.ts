@@ -3,13 +3,13 @@ import type Comment from '../../database/types/Comment'
 import {
   Discussion as DiscussionPG,
   OrganizationUser as OrganizationUserPG,
-  TeamMember as TeamMemberPG,
-  TeamPromptResponse as TeamPromptResponsePG
+  TeamMember as TeamMemberPG
 } from '../pg.d'
 import {
   selectOrganizations,
   selectRetroReflections,
   selectSuggestedAction,
+  selectTeamPromptResponses,
   selectTeams,
   selectTemplateScale,
   selectTemplateScaleRef
@@ -34,7 +34,7 @@ export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTea
 
 export type TeamMember = Selectable<TeamMemberPG>
 
-export type TeamPromptResponse = Selectable<TeamPromptResponsePG>
+export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 
 // TODO refactor getTemplateScaleRefsByIds to kysely

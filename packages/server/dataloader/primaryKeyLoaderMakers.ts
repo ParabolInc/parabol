@@ -1,4 +1,3 @@
-import TeamPromptResponseId from '../../client/shared/gqlIds/TeamPromptResponseId'
 import getKysely from '../postgres/getKysely'
 import {getDiscussionsByIds} from '../postgres/queries/getDiscussionsByIds'
 import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinRequestsByIds'
@@ -29,10 +28,8 @@ export const templateRefs = primaryKeyLoaderMaker(getTemplateRefsByIds)
 export const templateScaleRefs = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTemplateScaleRef().where('id', 'in', ids).execute()
 })
-export const teamPromptResponses = primaryKeyLoaderMaker(async (ids: readonly string[]) => {
-  const dbIds = ids.map((id) => TeamPromptResponseId.split(id))
-  const res = await selectTeamPromptResponses().where('id', 'in', dbIds).execute()
-  return res.map((obj) => ({...obj, id: TeamPromptResponseId.join(obj.id)}))
+export const teamPromptResponses = primaryKeyLoaderMaker(async (ids: readonly number[]) => {
+  return selectTeamPromptResponses().where('id', 'in', ids).execute()
 })
 export const meetingSeries = primaryKeyLoaderMaker(getMeetingSeriesByIds)
 export const meetingTemplates = primaryKeyLoaderMaker(getMeetingTemplatesByIds)

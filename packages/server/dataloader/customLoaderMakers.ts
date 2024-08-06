@@ -153,7 +153,7 @@ export const reactables = (parent: RootDataLoader, dependsOn: RegisterDependsOn)
       const reactableResults = await Promise.all(
         reactableLoaders.map(async (val) => {
           const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
-          return parent.get(val.loader).loadMany(ids as string[])
+          return parent.get(val.loader).loadMany(ids as any[])
         })
       )
       const reactables = reactableResults.flat().filter(isValid)

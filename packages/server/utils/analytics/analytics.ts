@@ -1,5 +1,6 @@
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
 import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
+import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
@@ -11,8 +12,7 @@ import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
-import {TemplateScale} from '../../postgres/types'
+import {TeamPromptResponse, TemplateScale} from '../../postgres/types'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
@@ -345,12 +345,12 @@ class Analytics {
   responseAdded = (
     user: AnalyticsUser,
     meetingId: string,
-    teamPromptResponseId: string,
+    teamPromptResponseId: number,
     isUpdate: boolean
   ) => {
     this.track(user, 'Response Added', {
       meetingId,
-      teamPromptResponseId,
+      teamPromptResponseId: TeamPromptResponseId.join(teamPromptResponseId),
       isUpdate
     })
   }

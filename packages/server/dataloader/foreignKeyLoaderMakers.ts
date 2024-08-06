@@ -1,10 +1,9 @@
-import TeamPromptResponseId from '../../client/shared/gqlIds/TeamPromptResponseId'
 import getKysely from '../postgres/getKysely'
+import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
   selectOrganizations,
   selectRetroReflections,
   selectSuggestedAction,
-  selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
@@ -169,8 +168,5 @@ export const suggestedActionsByUserId = foreignKeyLoaderMaker(
 export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
   'teamPromptResponses',
   'meetingId',
-  async (meetingIds) => {
-    const res = await selectTeamPromptResponses().where('meetingId', 'in', meetingIds).execute()
-    return res.map((row) => ({...row, id: TeamPromptResponseId.join(row.id)}))
-  }
+  getTeamPromptResponsesByMeetingIds
 )

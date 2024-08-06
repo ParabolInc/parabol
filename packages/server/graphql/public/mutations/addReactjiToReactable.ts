@@ -16,12 +16,6 @@ import {GQLContext} from '../../graphql'
 import {MutationResolvers} from '../resolverTypes'
 import {getReactableType} from '../types/Reactable'
 
-const dataLoaderLookup = {
-  RESPONSE: 'teamPromptResponses',
-  COMMENT: 'comments',
-  REFLECTION: 'retroReflections'
-} as const
-
 const tableLookup = {
   RESPONSE: 'TeamPromptResponse',
   COMMENT: 'Comment',
@@ -41,9 +35,19 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const subOptions = {mutatorId, operationId}
 
   //AUTH
-  const loaderName = dataLoaderLookup[reactableType]
-  const reactable = await dataLoader.get(loaderName).load(reactableId)
-  dataLoader.get(loaderName).clear(reactableId)
+  const reactableDBId =
+    reactableType === 'RESPONSE' ? TeamPromptResponseId.split(reactableId) : reactableId
+
+  const getReactable = () => {
+    if (reactableType === 'RESPONSE') {
+      return dataLoader.get('teamPromptResponses').load(reactableDBId as number)
+    }
+    if (reactableType === 'COMMENT') {
+      return dataLoader.get('comments').load(reactableId)
+    }
+    return dataLoader.get('retroReflections').load(reactableId)
+  }
+  const reactable = await getReactable()
 
   if (!reactable) {
     return {error: {message: `Item does not exist`}}
@@ -133,6 +137,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     updatePG(tableName),
     updateRethink(tableName)
   ])
+  dataLoader.clearAll(['comments', 'teamPromptResponses', 'retroReflections'])
 
   const {meetingType} = meeting
 
@@ -142,7 +147,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     viewer,
     meetingId,
     meetingType,
-    reactable,
+    {...reactable, id: reactableId},
     reactableType,
     reactji,
     !!isRemove

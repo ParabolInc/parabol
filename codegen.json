@@ -164,7 +164,7 @@
           "TeamMemberIntegrations": "./types/TeamMemberIntegrations#TeamMemberIntegrationsSource",
           "TeamPromptMeeting": "../../database/types/MeetingTeamPrompt#default as MeetingTeamPromptDB",
           "TeamPromptMeetingMember": "../../database/types/TeamPromptMeetingMember#default as TeamPromptMeetingMemberDB",
-          "TeamPromptResponse": "../../postgres/queries/getTeamPromptResponsesByIds#TeamPromptResponse",
+          "TeamPromptResponse": "../../postgres/types/index#TeamPromptResponse as TeamPromptResponseDB",
           "TemplateDimension": "../../postgres/types/index#TemplateDimension as TemplateDimensionDB",
           "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
           "ToggleFavoriteTemplateSuccess": "./types/ToggleFavoriteTemplateSuccess#ToggleFavoriteTemplateSuccessSource",

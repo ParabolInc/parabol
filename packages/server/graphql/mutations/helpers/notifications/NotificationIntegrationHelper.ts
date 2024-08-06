@@ -1,6 +1,5 @@
 import Meeting from '../../../../database/types/Meeting'
-import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
-import {Team} from '../../../../postgres/types'
+import {Team, TeamPromptResponse} from '../../../../postgres/types'
 import User from '../../../../postgres/types/IUser'
 export type NotifyResponse =
   | 'success'
