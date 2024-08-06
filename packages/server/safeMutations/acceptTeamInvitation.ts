@@ -15,7 +15,6 @@ const handleFirstAcceptedInvitation = async (
   team: TeamSource,
   dataLoader: DataLoaderInstance
 ): Promise<string | null> => {
-  const r = await getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
   if (!isOnboardTeam) return null
@@ -54,7 +53,6 @@ const handleFirstAcceptedInvitation = async (
     }
   ]
   await getKysely().insertInto('SuggestedAction').values(actions).execute()
-  await r.table('SuggestedAction').insert(actions).run()
   return userId
 }
 

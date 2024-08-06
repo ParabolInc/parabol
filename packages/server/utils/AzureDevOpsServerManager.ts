@@ -425,21 +425,23 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const workItems = [] as WorkItem[]
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
-    const payload = !!fields
-      ? {ids: workItemIds, fields: fields}
-      : {ids: workItemIds, $expand: 'Links'}
-    const res = await this.post<WorkItemBatchResponse>(uri, payload)
-    if (res instanceof Error) {
-      if (!firstError) {
-        firstError = res
-      }
-    } else {
-      const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
-        return {
-          ...workItem
+    // we can fetch at most 200 items at once VS403474
+    for (let i = 0; i < workItemIds.length; i += 200) {
+      const ids = workItemIds.slice(i, i + 200)
+      const payload = !!fields ? {ids, fields: fields} : {ids, $expand: 'Links'}
+      const res = await this.post<WorkItemBatchResponse>(uri, payload)
+      if (res instanceof Error) {
+        if (!firstError) {
+          firstError = res
         }
-      })
-      workItems.push(...mappedWorkItems)
+      } else {
+        const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
+          return {
+            ...workItem
+          }
+        })
+        workItems.push(...mappedWorkItems)
+      }
     }
     return {error: firstError, workItems: workItems}
   }

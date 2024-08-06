@@ -1,13 +1,26 @@
 import base64url from 'base64url'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
+import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {Threshold} from '../../../../client/types/constEnums'
+import {
+  AUTO_GROUPING_THRESHOLD,
+  MAX_REDUCTION_PERCENTAGE,
+  MAX_RESULT_GROUP_SIZE
+} from '../../../../client/utils/constants'
+import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import fetchAllLines from '../../../billing/helpers/fetchAllLines'
 import generateInvoice from '../../../billing/helpers/generateInvoice'
 import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
+import {RDatum, RValue} from '../../../database/stricterR'
+import Invoice from '../../../database/types/Invoice'
+import MeetingMemberType from '../../../database/types/MeetingMember'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
+import Task from '../../../database/types/Task'
 import getKysely from '../../../postgres/getKysely'
 import {
   getUserId,
@@ -16,15 +29,21 @@ import {
   isUserBillingLeader
 } from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import getMonthlyStreak from '../../../utils/getMonthlyStreak'
+import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
+import errorFilter from '../../errorFilter'
+import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
+import makeUpcomingInvoice from '../../queries/helpers/makeUpcomingInvoice'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
-import {UserResolvers} from '../resolverTypes'
+import {ReqResolvers} from './ReqResolvers'
 
 declare const __PRODUCTION__: string
 
@@ -42,7 +61,636 @@ const EMBED_URL = (() => {
 })()
 const SIMILARITY_THRESHOLD = 0.5
 
-const User: UserResolvers = {
+const getValidUserIds = async (
+  userIds: null | string[] | undefined,
+  viewerId: string,
+  validTeamIds: string[],
+  dataLoader: DataLoaderWorker
+) => {
+  if (!userIds) return null
+  if (userIds.length === 1 && userIds[0] === viewerId) return userIds
+  // NOTE: this will filter out ex-teammembers. if that's a problem, we should use a different dataloader
+  const teamMembersByUserIds = (
+    await dataLoader.get('teamMembersByUserId').loadMany(userIds as string[])
+  ).filter(errorFilter)
+  const teamMembersOnValidTeams = teamMembersByUserIds
+    .flat()
+    .filter((teamMember) => validTeamIds.includes(teamMember.teamId))
+  const teamMemberUserIds = new Set(
+    teamMembersOnValidTeams.map(({userId}: {userId: string}) => userId)
+  )
+  return userIds.filter((userId) => teamMemberUserIds.has(userId))
+}
+
+const User: ReqResolvers<'User'> = {
+  organization: async (_source, {orgId}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const [organization, viewerOrganizationUser] = await Promise.all([
+      dataLoader.get('organizations').loadNonNull(orgId),
+      dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})
+    ])
+    if (!isSuperUser(authToken) && !viewerOrganizationUser) return null
+    return organization
+  },
+  invoices: async (_source, {orgId, first, after}, {authToken, dataLoader}) => {
+    const r = await getRethink()
+
+    // AUTH
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      // standardError(new Error('Not organization lead'), {userId: viewerId})
+      return {
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false
+        }
+      }
+    }
+
+    // RESOLUTION
+    const {stripeId} = await dataLoader.get('organizations').loadNonNull(orgId)
+    const dbAfter = after ? new Date(after) : r.maxval
+    const [tooManyInvoices, orgUsers] = await Promise.all([
+      r
+        .table('Invoice')
+        .between([orgId, r.minval], [orgId, dbAfter], {
+          index: 'orgIdStartAt',
+          leftBound: 'open',
+          rightBound: 'closed'
+        })
+        .filter((invoice: RDatum) => invoice('status').ne('UPCOMING').and(invoice('total').ne(0)))
+        // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)
+        // break ties based on when created. In the future, we might want to consider using the created_at provided by stripe instead of our own
+        .orderBy(r.desc('startAt'), r.desc('createdAt'))
+        .limit(first + 1)
+        .run(),
+      dataLoader.get('organizationUsersByOrgId').load(orgId)
+    ])
+    const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+    const orgUserCount = activeOrgUsers.length
+    const org = await dataLoader.get('organizations').loadNonNull(orgId)
+    const upcomingInvoice = after
+      ? undefined
+      : await makeUpcomingInvoice(org, orgUserCount, stripeId)
+    const extraInvoices: Invoice[] = tooManyInvoices || []
+    const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
+    const allInvoices = upcomingInvoice
+      ? [upcomingInvoice, ...paginatedInvoices]
+      : paginatedInvoices
+    const nodes = allInvoices.slice(0, first)
+    const edges = nodes.map((node) => ({
+      cursor: node.startAt,
+      node
+    }))
+    const firstEdge = edges[0]
+    return {
+      edges,
+      pageInfo: {
+        startCursor: firstEdge && firstEdge.cursor,
+        endCursor: firstEdge && edges[edges.length - 1]!.cursor,
+        hasNextPage: extraInvoices.length + (upcomingInvoice ? 1 : 0) > first,
+        hasPreviousPage: false
+      }
+    }
+  },
+  archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
+    const r = await getRethink()
+
+    // AUTH
+    const userId = getUserId(authToken)
+    if (!isTeamMember(authToken, teamId)) {
+      standardError(new Error('Not organization lead'), {userId})
+      return null
+    }
+
+    // RESOLUTION
+    const teamMemberId = `${userId}::${teamId}`
+    const dbAfter = after ? new Date(after) : r.maxval
+    const tasks = await r
+      .table('Task')
+      // use a compound index so we can easily paginate later
+      .between([teamId, r.minval], [teamId, dbAfter], {
+        index: 'teamIdUpdatedAt'
+      })
+      .filter((task: RValue) =>
+        task('tags')
+          .contains('archived')
+          .and(
+            r.branch(task('tags').contains('private'), task('teamMemberId').eq(teamMemberId), true)
+          )
+      )
+      .orderBy(r.desc('updatedAt'))
+      .limit(first + 1)
+      .coerceTo('array')
+      .run()
+
+    const nodes = tasks.slice(0, first)
+    const edges = nodes.map((node) => ({
+      cursor: node.updatedAt,
+      node
+    }))
+    const firstEdge = edges[0]
+    return {
+      edges,
+      pageInfo: {
+        startCursor: firstEdge && firstEdge.cursor,
+        endCursor: firstEdge ? edges[edges.length - 1]!.cursor : new Date(),
+        hasNextPage: tasks.length > nodes.length,
+        hasPreviousPage: false
+      }
+    }
+  },
+  archivedTasksCount: async (_source, {teamId}, {authToken}) => {
+    const r = await getRethink()
+    const viewerId = getUserId(authToken)
+
+    // AUTH
+    const userId = getUserId(authToken)
+    if (!isTeamMember(authToken, teamId)) {
+      standardError(new Error('Team not found'), {userId: viewerId})
+      return 0
+    }
+
+    // RESOLUTION
+    const teamMemberId = `${userId}::${teamId}`
+    return r
+      .table('Task')
+      .between([teamId, r.minval], [teamId, r.maxval], {
+        index: 'teamIdUpdatedAt'
+      })
+      .filter((task: RValue) =>
+        task('tags')
+          .contains('archived')
+          .and(
+            r.branch(task('tags').contains('private'), task('teamMemberId').eq(teamMemberId), true)
+          )
+      )
+      .count()
+      .run()
+  },
+  meeting: async (_source, {meetingId}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (!meeting) {
+      standardError(new Error('Meeting not found'), {userId: viewerId, tags: {meetingId}})
+      return null
+    }
+    const {teamId} = meeting
+    if (!isTeamMember(authToken, teamId)) {
+      const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+      const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+      if (!meetingMember) {
+        // standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
+        return null
+      }
+    }
+    return meeting
+  },
+  notifications: async (_source, {first, after, types}, {authToken}) => {
+    const r = await getRethink()
+    // AUTH
+    const userId = getUserId(authToken)
+    const dbAfter = after || r.maxval
+    // RESOLUTION
+    // TODO consider moving the requestedFields to all queries
+    const nodesPlus1 = await r
+      .table('Notification')
+      .getAll(userId, {index: 'userId'})
+      .orderBy(r.desc('createdAt'))
+      .filter((row: RDatum) => {
+        if (types) {
+          return row('createdAt')
+            .lt(dbAfter)
+            .and(r.expr(types).contains(row('type')))
+        }
+        return row('createdAt').lt(dbAfter)
+      })
+      .limit(first + 1)
+      .run()
+
+    const nodes = nodesPlus1.slice(0, first)
+    const edges = nodes.map((node) => ({
+      cursor: node.createdAt,
+      node
+    }))
+    const lastEdge = edges[edges.length - 1]
+    return {
+      edges,
+      pageInfo: {
+        endCursor: lastEdge?.cursor,
+        hasNextPage: nodesPlus1.length > first,
+        hasPreviousPage: false
+      }
+    }
+  },
+  tasks: async (
+    _source,
+    {first, after, userIds, teamIds, archived, statusFilters, filterQuery, includeUnassigned},
+    {authToken, dataLoader}
+  ) => {
+    // AUTH
+    const viewerId = getUserId(authToken)
+    // VALIDATE
+    if ((teamIds && teamIds.length > 100) || (userIds && userIds.length > 100)) {
+      const err = new Error('Task filter is too broad')
+      standardError(err, {
+        userId: viewerId,
+        tags: {userIds: JSON.stringify(userIds), teamIds: JSON.stringify(teamIds)}
+      })
+      return connectionFromTasks([], 0, err)
+    }
+    // common queries
+    // - give me all the tasks for a particular team (users: all, team: abc)
+    // - give me all the tasks for a particular user (users: 123, team: all)
+    // - give me all the tasks for a number of teams (users: all, team: [abc, def])
+    // - give me all the tasks for a number of users (users: [123, 456], team: all)
+    // - give me all the tasks for a set of users & teams (users: [123, 456], team: [abc, def])
+    // - give me all the tasks for all the users on all the teams (users: all, team: all)
+
+    // if archived is true & no userId filter is provided, it should include tasks for ex-team members
+    // under no condition should it show tasks for archived teams
+    const accessibleTeamIds = authToken.tms
+    const validTeamIds = teamIds
+      ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
+      : accessibleTeamIds
+    const validUserIds = (await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)) ?? []
+    // RESOLUTION
+    const tasks = await dataLoader.get('userTasks').load({
+      first,
+      after,
+      userIds: validUserIds,
+      teamIds: validTeamIds,
+      archived,
+      statusFilters,
+      filterQuery,
+      includeUnassigned
+    })
+    const filteredTasks = tasks.filter((task: Task) => {
+      if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
+      return true
+    })
+    return connectionFromTasks(filteredTasks, first)
+  },
+  team: async (_source, {teamId}, {authToken, dataLoader}, {operation}) => {
+    // HANDLED_OPS is a list of operations that we gracefully handle on the client, so we don't want to report them to sentry
+    const HANDLED_OPS = ['TeamRootQuery', 'TeamContainerQuery']
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const {orgId} = team
+    const viewerId = getUserId(authToken)
+    const {role} =
+      (await dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})) ?? {}
+    const isOrgAdmin = role === 'ORG_ADMIN'
+    if (!isOrgAdmin && !isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
+      const viewerId = getUserId(authToken)
+      if (!HANDLED_OPS.includes(operation?.name?.value ?? '')) {
+        standardError(new Error('Team not found'), {userId: viewerId})
+      }
+      return null
+    }
+    return dataLoader.get('teams').loadNonNull(teamId)
+  },
+  createdAt: ({createdAt}) => createdAt || new Date('2016-06-01'),
+
+  isAnyBillingLeader: async ({id: userId}, _args, {dataLoader}) => {
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    return organizationUsers.some(
+      (organizationUser) =>
+        organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
+    )
+  },
+
+  isConnected: async ({id: userId}) => {
+    const redis = getRedis()
+    const connectedSocketsCount = await redis.llen(`presence:${userId}`)
+    return connectedSocketsCount > 0
+  },
+
+  isPatientZero: ({isPatient0}) => isPatient0,
+
+  isRemoved: ({isRemoved}) => !!isRemoved,
+
+  isWatched: ({isWatched}) => !!isWatched,
+
+  lastMetAt: async ({id: userId}, _args, {dataLoader}) => {
+    const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+    const lastMetAt = Math.max(
+      0,
+      ...meetingMembers.map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+    )
+    return lastMetAt ? new Date(lastMetAt) : null
+  },
+
+  meetingCount: async ({id: userId}, _args, {dataLoader}) => {
+    const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+    return meetingMembers.length
+  },
+
+  monthlyStreakMax: async ({id: userId}, _args, {dataLoader}) => {
+    const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+    const meetingDates = meetingMembers
+      .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+      .sort((a, b) => (a < b ? 1 : -1))
+
+    return getMonthlyStreak(meetingDates)
+  },
+
+  monthlyStreakCurrent: async ({id: userId}, _args, {dataLoader}) => {
+    const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+    const meetingDates = meetingMembers
+      .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+      .sort((a, b) => (a < b ? 1 : -1))
+    return getMonthlyStreak(meetingDates, true)
+  },
+
+  suggestedActions: async ({id: userId}, _args, {dataLoader, authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId) return []
+    const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
+    suggestedActions.sort((a, b) => (a.priority! < b.priority! ? -1 : 1))
+    return suggestedActions
+  },
+
+  payLaterClickCount: ({payLaterClickCount}) => payLaterClickCount || 0,
+
+  timeline: async ({id}, {after, first, teamIds, eventTypes}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+
+    // VALIDATE
+    if (teamIds && teamIds.length > 100) {
+      const error = new Error('Timeline filter is too broad')
+      standardError(error, {
+        userId: viewerId,
+        tags: {teamIds: JSON.stringify(teamIds)}
+      })
+      return {
+        error,
+        pageInfo: {
+          startCursor: after,
+          endCursor: after,
+          hasNextPage: false,
+          hasPreviousPage: false
+        },
+        edges: []
+      }
+    }
+    const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+    const accessibleTeamIds = userTeamMembers.map(({teamId}) => teamId)
+    const validTeamIds = teamIds
+      ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
+      : accessibleTeamIds
+
+    if (viewerId !== id && !isSuperUser(authToken))
+      return {error: 'Not user', pageInfo: {hasNextPage: false, hasPreviousPage: false}, edges: []}
+    const dbAfter = after ? new Date(after) : new Date('3000-01-01')
+    const minVal = new Date(0)
+
+    const pg = getKysely()
+    const events = await pg
+      .selectFrom('TimelineEvent')
+      .selectAll()
+      .where('userId', '=', viewerId)
+      .where((eb) => eb.between('createdAt', minVal, dbAfter))
+      .where('isActive', '=', true)
+      .where('teamId', 'in', validTeamIds)
+      .$if(!!eventTypes, (db) => db.where('type', 'in', eventTypes!))
+      .orderBy('createdAt', 'desc')
+      .limit(first + 1)
+      .execute()
+    const edges = events.slice(0, first).map((node) => ({
+      cursor: node.createdAt,
+      node
+    }))
+    const [firstEdge] = edges
+    return {
+      // FIXME orgId can be null sometimes
+      edges: edges as any,
+      pageInfo: {
+        startCursor: firstEdge ? firstEdge.cursor : null,
+        // FIXME: the PageInfo type should be a GraphQLISO8601 type, but fixing that requires more work
+        // because the type is shared all over so we'll have to verify that the change doesn't break anything
+        endCursor: firstEdge ? (new Date(edges[edges.length - 1]!.cursor).toJSON() as any) : null,
+        hasNextPage: events.length > edges.length,
+        hasPreviousPage: false
+      }
+    }
+  },
+
+  discussion: async (_source, {id}, {authToken, dataLoader}) => {
+    const discussion = await dataLoader.get('discussions').load(id)
+    if (!discussion) return null
+    const {teamId} = discussion
+    if (!isTeamMember(authToken, teamId)) {
+      return null
+    }
+    return discussion
+  },
+
+  newFeature: ({newFeatureId}, _args, {dataLoader}) => {
+    return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
+  },
+
+  lastSeenAtURLs: async ({id: userId}) => {
+    const redis = getRedis()
+    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
+    if (!userPresence || userPresence.length === 0) return null
+    return userPresence.map((socket) => JSON.parse(socket).lastSeenAtURL)
+  },
+
+  meetingMember: async ({id: userId}, {meetingId}, {dataLoader}) => {
+    const meetingMemberId = toTeamMemberId(meetingId, userId)
+    return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
+  },
+
+  organizationUser: async ({id: userId}, {orgId}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const [viewerOrganizationUser, userOrganizationUser] = await Promise.all([
+      dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId}),
+      dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
+    ])
+    if (viewerOrganizationUser || isSuperUser(authToken)) return userOrganizationUser
+    return null
+  },
+
+  organizationUsers: async ({id: userId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
+    if (viewerId === userId || isSuperUser(authToken)) {
+      return organizationUsers
+    }
+    const viewerOrganizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
+    const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+    return organizationUsers.filter((organizationUser) =>
+      viewerOrgIds.includes(organizationUser.orgId)
+    )
+  },
+
+  organizations: async ({id: userId}, _args, {authToken, dataLoader}) => {
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    const orgIds = organizationUsers.map(({orgId}) => orgId)
+    const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
+    organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
+    const viewerId = getUserId(authToken)
+    if (viewerId === userId || isSuperUser(authToken)) {
+      return organizations
+    }
+    const viewerOrganizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
+    const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+    return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
+  },
+
+  overLimitCopy: async ({id: userId, overLimitCopy}, _args, {dataLoader}) => {
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    const isAnyMemberOfPaidOrg = organizationUsers.some(
+      (organizationUser) => organizationUser.tier !== 'starter'
+    )
+    if (isAnyMemberOfPaidOrg) return null
+    return overLimitCopy
+  },
+
+  similarReflectionGroups: async (
+    {id: userId},
+    {reflectionGroupId, searchQuery: rawSearchQuery},
+    {dataLoader}
+  ) => {
+    const searchQuery = rawSearchQuery.toLowerCase().trim()
+    const retroReflectionGroup = await dataLoader
+      .get('retroReflectionGroups')
+      .load(reflectionGroupId)
+    if (!retroReflectionGroup) {
+      throw new Error('Invalid reflection group id')
+    }
+    const {meetingId} = retroReflectionGroup
+    const meetingMemberId = MeetingMemberId.join(meetingId, userId)
+    const [viewerMeetingMember, reflections] = await Promise.all([
+      dataLoader.get('meetingMembers').load(meetingMemberId),
+      dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    ])
+    if (!viewerMeetingMember) {
+      throw new Error('Not a member of meeting')
+    }
+
+    if (searchQuery !== '') {
+      const matchedReflections = reflections.filter(({plaintextContent}) =>
+        plaintextContent.toLowerCase().includes(searchQuery)
+      )
+      const relatedReflections = matchedReflections.filter(
+        ({reflectionGroupId: groupId}) => groupId !== reflectionGroupId
+      )
+      const relatedGroupIds = [
+        ...new Set(relatedReflections.map(({reflectionGroupId}) => reflectionGroupId))
+      ].slice(0, MAX_RESULT_GROUP_SIZE)
+      return (await dataLoader.get('retroReflectionGroups').loadMany(relatedGroupIds)).filter(
+        isValid
+      )
+    }
+
+    const reflectionsCount = reflections.length
+    const spotlightResultGroupSize = Math.min(reflectionsCount - 1, MAX_RESULT_GROUP_SIZE)
+    let currentResultGroupIds = new Set<string>()
+    let currentThresh: number | null = AUTO_GROUPING_THRESHOLD
+    while (currentThresh) {
+      const nextResultGroupIds = new Set<string>()
+      const res = groupReflections(reflections, {
+        groupingThreshold: currentThresh,
+        maxGroupSize: reflectionsCount,
+        maxReductionPercent: MAX_REDUCTION_PERCENTAGE
+      })
+      const {groupedReflectionsRes} = res
+      const nextThresh = res.nextThresh as number | null
+      const spotlightGroupedReflection = groupedReflectionsRes.find(
+        (group) => group.oldReflectionGroupId === reflectionGroupId
+      )
+      if (!spotlightGroupedReflection) break
+      for (const groupedReflectionRes of groupedReflectionsRes) {
+        const {reflectionGroupId, oldReflectionGroupId} = groupedReflectionRes
+        if (
+          reflectionGroupId === spotlightGroupedReflection.reflectionGroupId &&
+          oldReflectionGroupId !== spotlightGroupedReflection.oldReflectionGroupId
+        ) {
+          nextResultGroupIds.add(oldReflectionGroupId)
+        }
+        currentThresh = nextThresh
+        if (nextResultGroupIds.size > spotlightResultGroupSize) {
+          currentThresh = null
+          break
+        } else {
+          currentResultGroupIds = nextResultGroupIds
+          if (nextResultGroupIds.size === spotlightResultGroupSize) {
+            currentThresh = null
+            break
+          }
+        }
+      }
+    }
+    return (
+      await dataLoader.get('retroReflectionGroups').loadMany(Array.from(currentResultGroupIds))
+    ).filter(isValid)
+  },
+
+  teamInvitation: async ({id: userId}, {meetingId, teamId: inTeamId}, {authToken, dataLoader}) => {
+    if (!meetingId && !inTeamId) return {}
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId && !isSuperUser(authToken)) return {}
+    const user = (await dataLoader.get('users').load(userId))!
+    const {email} = user
+    let teamId = inTeamId
+    if (!teamId && meetingId) {
+      const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      if (!meeting) return {meetingId}
+      teamId = meeting.teamId
+    }
+    const teamInvitations = teamId
+      ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
+      : null
+    if (!teamInvitations) return {teamId, meetingId}
+    const teamInvitation = teamInvitations.find((invitation) => invitation.email === email)
+    return {teamInvitation, teamId, meetingId}
+  },
+
+  teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const user = (await dataLoader.get('users').load(userId))!
+    const activeTeamIds =
+      viewerId === userId || isSuperUser(authToken)
+        ? user.tms
+        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+    const teamIds = includeArchived
+      ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
+      : activeTeamIds
+    const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+    teams.sort((a, b) => (a.name > b.name ? 1 : -1))
+    return teams
+  },
+
+  teamMember: ({id}, {teamId, userId}, {authToken, dataLoader}) => {
+    if (!isTeamMember(authToken, teamId)) {
+      const viewerId = getUserId(authToken)
+      standardError(new Error('Not on team'), {userId: viewerId})
+      return null
+    }
+    const teamMemberId = toTeamMemberId(teamId, userId || id)
+    return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+  },
+
+  tms: ({id: userId, tms}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    return viewerId === userId
+      ? tms
+      : tms.filter((teamId: string) => authToken.tms.includes(teamId))
+  },
+
+  userOnTeam: async (_source, {userId}, {authToken, dataLoader}) => {
+    const userOnTeam = await dataLoader.get('users').load(userId)
+    if (!userOnTeam) {
+      return null
+    }
+    // const teams = new Set(userOnTeam)
+    const {tms} = userOnTeam
+    if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
+    return userOnTeam
+  },
   activity: async (_source, {activityId}, {dataLoader}) => {
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
     return activity || null

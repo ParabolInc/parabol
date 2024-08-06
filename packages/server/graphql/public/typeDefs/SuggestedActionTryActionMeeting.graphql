@@ -20,7 +20,7 @@ type SuggestedActionTryActionMeeting implements SuggestedAction {
   """
   * The timestamp the action was removed at
   """
-  removedAt: DateTime!
+  removedAt: DateTime
 
   """
   The specific type of suggested action
