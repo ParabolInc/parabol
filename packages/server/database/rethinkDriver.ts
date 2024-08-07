@@ -10,8 +10,6 @@ import AgendaItem from './types/AgendaItem'
 import AtlassianAuth from './types/AtlassianAuth'
 import Comment from './types/Comment'
 import FailedAuthRequest from './types/FailedAuthRequest'
-import Invoice from './types/Invoice'
-import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
@@ -56,14 +54,6 @@ export type RethinkSchema = {
   GQLRequest: {
     type: any
     index: 'id'
-  }
-  Invoice: {
-    type: Invoice
-    index: 'orgIdStartAt'
-  }
-  InvoiceItemHook: {
-    type: InvoiceItemHook
-    index: 'prorationDate' | 'stripeSubscriptionId'
   }
   MassInvitation: {
     type: MassInvitation

@@ -265,16 +265,6 @@ type Mutation {
   ): Boolean
 
   """
-  When stripe tells us a credit card was updated, update the details in our own DB
-  """
-  stripeUpdateCreditCard(
-    """
-    The stripe customer ID, or stripeId
-    """
-    customerId: ID!
-  ): Boolean
-
-  """
   When stripe tells us a subscription was updated, update the details in our own DB
   """
   stripeCreateSubscription(
@@ -302,26 +292,6 @@ type Mutation {
     The stripe subscription ID
     """
     subscriptionId: ID!
-  ): Boolean
-
-  """
-  When a new invoiceitem is sent from stripe, tag it with metadata
-  """
-  stripeUpdateInvoiceItem(
-    """
-    The stripe invoice ID
-    """
-    invoiceItemId: ID!
-  ): Boolean
-
-  """
-  An invice has been sent from stripe, meaning it is finalized
-  """
-  stripeInvoiceFinalized(
-    """
-    The stripe invoice ID
-    """
-    invoiceId: ID!
   ): Boolean
 
   """

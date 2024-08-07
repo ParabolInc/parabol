@@ -1,13 +1,11 @@
 import generateUID from '../../generateUID'
+import {TierEnum} from '../../graphql/public/resolverTypes'
 import {defaultTier} from '../../utils/defaultTier'
-import CreditCard from './CreditCard'
-import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string
   activeDomain?: string
   isActiveDomainTouched?: boolean
-  creditCard?: CreditCard
   createdAt?: Date
   name: string
   picture?: string
@@ -22,7 +20,6 @@ export default class Organization {
   id: string
   activeDomain?: string
   isActiveDomainTouched?: boolean
-  creditCard?: CreditCard
   createdAt: Date
   name: string
   payLaterClickCount: number
@@ -47,7 +44,6 @@ export default class Organization {
       isActiveDomainTouched,
       createdAt,
       updatedAt,
-      creditCard,
       name,
       showConversionModal,
       payLaterClickCount,
@@ -59,7 +55,6 @@ export default class Organization {
     this.isActiveDomainTouched = isActiveDomainTouched
     this.createdAt = createdAt || new Date()
     this.updatedAt = updatedAt || new Date()
-    this.creditCard = creditCard
     this.name = name
     this.tier = tier ?? defaultTier
     this.picture = picture

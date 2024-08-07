@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
-import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -9,7 +8,6 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
-import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -64,12 +62,10 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
 
   // RESOLUTION
-  const creditCard = await getCCFromCustomer(customer)
   await Promise.all([
     pg
       .updateTable('Organization')
       .set({
-        creditCard: toCreditCard(creditCard),
         tier: 'team',
         tierLimitExceededAt: null,
         scheduledLockAt: null,

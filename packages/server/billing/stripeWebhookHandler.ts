@@ -51,36 +51,9 @@ const eventLookup = {
           stripeInvoicePaid(invoiceId: $invoiceId)
         }
       `
-    },
-    finalized: {
-      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
-      query: `
-      mutation StripeInvoiceFinalized($invoiceId: ID!) {
-        stripeInvoiceFinalized(invoiceId: $invoiceId)
-      }`
-    }
-  },
-  invoiceitem: {
-    created: {
-      getVars: ({id: invoiceItemId}: {id: string}) => ({invoiceItemId}),
-      query: `
-        mutation StripeUpdateInvoiceItem($invoiceItemId: ID!) {
-          stripeUpdateInvoiceItem(invoiceItemId: $invoiceItemId)
-        }
-      `
     }
   },
   customer: {
-    source: {
-      updated: {
-        getVars: ({customer: customerId}: {customer: string}) => ({customerId}),
-        query: `
-        mutation StripeUpdateCreditCard($customerId: ID!) {
-          stripeUpdateCreditCard(customerId: $customerId)
-        }
-      `
-      }
-    },
     subscription: {
       created: {
         getVars: ({customer, id}: {customer: string; id: string}) => ({
