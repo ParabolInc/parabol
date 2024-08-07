@@ -1,3 +1,4 @@
+import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
 import getKysely from './getKysely'
 
@@ -46,5 +47,125 @@ export const selectTemplateDimension = () => {
 }
 
 export const selectSuggestedAction = () => {
-  return getKysely().selectFrom('SuggestedAction').selectAll().where('removedAt', 'is', null)
+  return getKysely()
+    .selectFrom('SuggestedAction')
+    .selectAll()
+    .where('removedAt', 'is', null)
+    .$narrowType<
+      | {type: 'createNewTeam' | 'tryTheDemo'}
+      | {
+          type: 'inviteYourTeam' | 'tryRetroMeeting' | 'tryActionMeeting'
+          teamId: string
+        }
+    >()
 }
+
+// Can revert to using .selectAll() when https://github.com/kysely-org/kysely/pull/1102 is merged
+export const selectTeams = () =>
+  getKysely()
+    .selectFrom('Team')
+    .select([
+      'autoJoin',
+      'createdAt',
+      'createdBy',
+      'id',
+      'insightsUpdatedAt',
+      'isArchived',
+      'isOnboardTeam',
+      'isPaid',
+      'kudosEmojiUnicode',
+      'lastMeetingType',
+      'lockMessageHTML',
+      'meetingEngagement',
+      'mostUsedEmojis',
+      'name',
+      'orgId',
+      'qualAIMeetingsCount',
+      'tier',
+      'topRetroTemplates',
+      'trialStartDate',
+      'updatedAt'
+    ])
+    .select(({fn}) => [
+      fn<
+        {
+          dimensionName: string
+          cloudId: string
+          projectKey: string
+          issueKey: string
+          fieldName: string
+          fieldType: string
+          fieldId: string
+        }[]
+      >('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
+    ])
+
+export type ReactjiDB = {id: string; userId: string}
+export const selectRetroReflections = () =>
+  getKysely()
+    .selectFrom('RetroReflection')
+    .select([
+      'id',
+      'content',
+      'createdAt',
+      'creatorId',
+      'isActive',
+      'meetingId',
+      'plaintextContent',
+      'promptId',
+      'reflectionGroupId',
+      'sentimentScore',
+      'sortOrder',
+      'updatedAt'
+    ])
+    .select(({fn}) => [
+      fn<{lemma: string; salience: number; name: string}[]>('to_json', ['entities']).as('entities'),
+      fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')
+    ])
+
+export const selectOrganizations = () =>
+  getKysely()
+    .selectFrom('Organization')
+    .select([
+      'id',
+      'activeDomain',
+      'isActiveDomainTouched',
+      'createdAt',
+      'name',
+      'payLaterClickCount',
+      'periodEnd',
+      'periodStart',
+      'picture',
+      'showConversionModal',
+      'stripeId',
+      'stripeSubscriptionId',
+      'upcomingInvoiceEmailSentAt',
+      'tier',
+      'tierLimitExceededAt',
+      'trialStartDate',
+      'scheduledLockAt',
+      'lockedAt',
+      'updatedAt',
+      'featureFlags'
+    ])
+    .select(({fn}) => [
+      fn<{brand: string; expiry: string; last4: number} | null>('to_json', ['creditCard']).as(
+        'creditCard'
+      )
+    ])
+
+export const selectTeamPromptResponses = () =>
+  getKysely()
+    .selectFrom('TeamPromptResponse')
+    .select([
+      'id',
+      'createdAt',
+      'updatedAt',
+      'meetingId',
+      'userId',
+      'sortOrder',
+      'content',
+      'plaintextContent'
+    ])
+    .$narrowType<{content: JSONContent}>()
+    .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])

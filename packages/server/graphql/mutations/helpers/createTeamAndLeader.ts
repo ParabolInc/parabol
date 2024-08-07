@@ -83,15 +83,5 @@ export default async function createTeamAndLeader(
     // add meeting settings
     r.table('MeetingSettings').insert(meetingSettings).run()
   ])
-  const hasSuggestedAction = await r
-    .table('SuggestedAction')
-    .getAll(userId, {index: 'userId'})
-    .filter({type: 'inviteYourTeam'})
-    .count()
-    .ge(1)
-    .run()
-  if (!hasSuggestedAction) {
-    await r.table('SuggestedAction').insert(suggestedAction).run()
-  }
   dataLoader.clearAll(['teams', 'users', 'teamMembers', 'timelineEvents', 'meetingSettings'])
 }

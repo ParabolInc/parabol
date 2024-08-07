@@ -74,12 +74,8 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
       delay: 1000,
       variables
     }
-    if (Math.random() > 0.1) {
-      ops.push({...baseOp, botId: 'bot1'})
-    }
-    if (Math.random() > 0.6) {
-      ops.push({...baseOp, botId: 'bot2'})
-    }
+    const botId = Math.random() > 0.5 ? 'bot1' : 'bot2'
+    ops.push({...baseOp, botId})
   })
   stageTasks.forEach((taskContent, idx) => {
     const taskId = `botTask${stageId}:${idx}`

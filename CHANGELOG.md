@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.41.2](https://github.com/ParabolInc/parabol/compare/v7.41.1...v7.41.2) (2024-08-05)
+
+
+### Fixed
+
+* Fetching more than 200 Azure DevOps issues ([#10073](https://github.com/ParabolInc/parabol/issues/10073)) ([5829a11](https://github.com/ParabolInc/parabol/commit/5829a1149a751deddc2b9346a350c92c7e079b24))
+
+
+### Changed
+
+* **rethinkdb:** SuggestedAction: Phase 3 ([#10043](https://github.com/ParabolInc/parabol/issues/10043)) ([6c0cc36](https://github.com/ParabolInc/parabol/commit/6c0cc36c75a3094ce181b5fac83fe9a1c064fb53))
+
 ## [7.41.1](https://github.com/ParabolInc/parabol/compare/v7.41.0...v7.41.1) (2024-08-02)
 
 
