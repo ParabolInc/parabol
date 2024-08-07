@@ -2,7 +2,7 @@ import DataLoader from 'dataloader'
 import tracer from 'dd-trace'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
-import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
@@ -26,8 +26,8 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {selectTeams} from '../postgres/select'
-import {OrganizationUser, Team} from '../postgres/types'
+import {selectMeetingSettings, selectTeams} from '../postgres/select'
+import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -288,7 +288,7 @@ export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
 
 export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingSettings')
-  return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
+  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
     async (keys) => {
       const r = await getRethink()
       const types = {} as Record<MeetingTypeEnum, string[]>
@@ -313,10 +313,35 @@ export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: Registe
         const {teamId, meetingType} = key
         // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
         if (meetingType === 'teamPrompt') {
-          return new MeetingSettingsTeamPrompt({teamId})
+          return new MeetingSettingsTeamPrompt({teamId}) as any
         }
         return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
       })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const _PGmeetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('meetingSettings')
+  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
+    async (keys) => {
+      const res = await selectMeetingSettings()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'meetingType'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.meetingType))
+          )
+        )
+        .execute()
+      return keys.map(
+        (key) =>
+          res.find((doc) => doc.teamId === key.teamId && doc.meetingType === key.meetingType)!
+      )
     },
     {
       ...parent.dataLoaderOptions,

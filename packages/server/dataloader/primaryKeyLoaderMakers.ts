@@ -6,6 +6,7 @@ import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByI
 import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
+  selectMeetingSettings,
   selectOrganizations,
   selectRetroReflections,
   selectSuggestedAction,
@@ -84,4 +85,8 @@ export const templateDimensions = primaryKeyLoaderMaker((ids: readonly string[])
 
 export const suggestedActions = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectSuggestedAction().where('id', 'in', ids).execute()
+})
+
+export const _PGmeetingSettings = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectMeetingSettings().where('id', 'in', ids).execute()
 })

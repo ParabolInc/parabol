@@ -1,6 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
 import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import getKysely from '../../../postgres/getKysely'
 import {GQLContext} from '../../graphql'
 
 const resolveSelectedTemplate =
@@ -23,6 +24,12 @@ const resolveSelectedTemplate =
       .get(settingsId)
       .update({selectedTemplateId: fallbackTemplateId})
       .run()
+    await getKysely()
+      .updateTable('MeetingSettings')
+      .set({selectedTemplateId: fallbackTemplateId})
+      .where('id', '=', settingsId)
+      .execute()
+
     return dataLoader.get('meetingTemplates').loadNonNull(fallbackTemplateId)
   }
 

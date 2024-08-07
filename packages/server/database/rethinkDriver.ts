@@ -3,13 +3,10 @@ import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
 import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
-import {ScheduledJobUnion} from '../types/custom'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import AgendaItem from './types/AgendaItem'
-import AtlassianAuth from './types/AtlassianAuth'
 import Comment from './types/Comment'
-import FailedAuthRequest from './types/FailedAuthRequest'
 import Invoice from './types/Invoice'
 import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
@@ -33,10 +30,6 @@ export type RethinkSchema = {
     type: AgendaItem
     index: 'teamId' | 'meetingId'
   }
-  AtlassianAuth: {
-    type: AtlassianAuth
-    index: 'atlassianUserId' | 'userId' | 'teamId'
-  }
   Comment: {
     type: Comment
     index: 'discussionId'
@@ -44,18 +37,6 @@ export type RethinkSchema = {
   ReflectPrompt: {
     type: RetrospectivePrompt
     index: 'teamId' | 'templateId'
-  }
-  EmailVerification: {
-    type: any
-    index: 'email' | 'token'
-  }
-  FailedAuthRequest: {
-    type: FailedAuthRequest
-    index: 'email' | 'ip'
-  }
-  GQLRequest: {
-    type: any
-    index: 'id'
   }
   Invoice: {
     type: Invoice
@@ -111,10 +92,6 @@ export type RethinkSchema = {
   PushInvitation: {
     type: PushInvitation
     index: 'userId'
-  }
-  ScheduledJob: {
-    type: ScheduledJobUnion
-    index: 'runAt' | 'type'
   }
   SlackAuth: {
     type: SlackAuth

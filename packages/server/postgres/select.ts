@@ -1,5 +1,6 @@
 import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
+import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 
 export const selectTimelineEvent = () => {
@@ -169,3 +170,41 @@ export const selectTeamPromptResponses = () =>
     ])
     .$narrowType<{content: JSONContent}>()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
+
+export type JiraSearchQuery = {
+  id: string
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters?: string[]
+  lastUsedAt: Date
+}
+
+export const selectMeetingSettings = () =>
+  getKysely()
+    .selectFrom('MeetingSettings')
+    .select([
+      'id',
+      'phaseTypes',
+      'meetingType',
+      'teamId',
+      'selectedTemplateId',
+      'jiraSearchQueries',
+      'maxVotesPerGroup',
+      'totalVotes',
+      'disableAnonymity',
+      'videoMeetingURL'
+    ])
+    .$narrowType<
+      // NewMeeetingPhaseTypeEnum[] should be inferred from kysely-codegen, but it's not
+      | {meetingType: NotNull; phaseTypes: NewMeetingPhaseTypeEnum[]}
+      | {
+          meetingType: 'retrospective'
+          phaseTypes: NewMeetingPhaseTypeEnum[]
+          maxVotesPerGroup: NotNull
+          totalVotes: NotNull
+          disableAnonymity: NotNull
+        }
+    >()
+    .select(({fn}) => [
+      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
+    ])
