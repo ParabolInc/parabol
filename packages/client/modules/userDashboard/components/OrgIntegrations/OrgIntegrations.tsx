@@ -3,7 +3,7 @@ import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
-import GitLabProviderRow from './GitLabProviderRow'
+import GitLabProviders from './GitLabProviders'
 
 type Props = {
   organizationRef: OrgIntegrations_organization$key
@@ -15,7 +15,7 @@ const OrgIntegrations = (props: Props) => {
     graphql`
       fragment OrgIntegrations_organization on Organization {
         id
-        ...GitLabProviderRow_organization
+        ...GitLabProviders_organization
         createdAt
         tier
         viewerOrganizationUser {
@@ -45,7 +45,7 @@ const OrgIntegrations = (props: Props) => {
           ) : (
             <div className='text-slate-700'>Only organization admins can manage integrations.</div>
           )}
-          <GitLabProviderRow organizationRef={organization} />
+          <GitLabProviders organizationRef={organization} />
         </div>
       </div>
     </Suspense>

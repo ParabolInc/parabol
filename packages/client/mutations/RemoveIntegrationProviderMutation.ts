@@ -3,6 +3,7 @@ import {commitMutation} from 'react-relay'
 import {RemoveIntegrationProviderMutation as TRemoveIntegrationProviderMutation} from '../__generated__/RemoveIntegrationProviderMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
+/* TODO we should update these somehow
 graphql`
   fragment RemoveIntegrationProviderMutation_team on RemoveIntegrationProviderSuccess {
     teamMember {
@@ -12,6 +13,7 @@ graphql`
     }
   }
 `
+*/
 
 const mutation = graphql`
   mutation RemoveIntegrationProviderMutation($providerId: ID!) {
@@ -21,7 +23,6 @@ const mutation = graphql`
           message
         }
       }
-      ...RemoveIntegrationProviderMutation_team @relay(mask: false)
     }
   }
 `
