@@ -26,7 +26,7 @@ const query = graphql`
     ...DashTopBar_query
     viewer {
       ...DashSidebar_viewer
-      newMeeting(meetingId: $meetingId) {
+      meeting(meetingId: $meetingId) {
         ...MeetingSummaryEmail_meeting
         ...MeetingLockedOverlay_meeting
         id
@@ -49,7 +49,7 @@ const NewMeetingSummary = (props: Props) => {
   const {urlAction, queryRef} = props
   const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef)
   const {viewer} = data
-  const {newMeeting, teams} = viewer
+  const {meeting: newMeeting, teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {history} = useRouter()
   useEffect(() => {

@@ -8,12 +8,12 @@ import NotificationTeamsLimitExceeded from '../../database/types/NotificationTea
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
-import {OrganizationSource} from '../../graphql/public/types/Organization'
 import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
 import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
 import getKysely from '../../postgres/getKysely'
 import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
+import {Organization} from '../../postgres/types'
 import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 import sendToSentry from '../../utils/sendToSentry'
 import removeTeamsLimitObjects from './removeTeamsLimitObjects'
@@ -36,7 +36,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
 }
 
 const sendWebsiteNotifications = async (
-  organization: OrganizationSource,
+  organization: Organization,
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {

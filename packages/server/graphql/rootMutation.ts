@@ -39,7 +39,6 @@ import endCheckIn from './mutations/endCheckIn'
 import endDraggingReflection from './mutations/endDraggingReflection'
 import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
-import endTeamPrompt from './mutations/endTeamPrompt'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
@@ -103,7 +102,6 @@ import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimens
 import updateCommentContent from './mutations/updateCommentContent'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
-import updateIntegrationProvider from './mutations/updateIntegrationProvider'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
 import updatePokerScope from './mutations/updatePokerScope'
 import updatePokerTemplateDimensionScale from './mutations/updatePokerTemplateDimensionScale'
@@ -235,9 +233,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateGitHubDimensionField,
       createPoll,
       addIntegrationProvider,
-      updateIntegrationProvider,
       removeIntegrationProvider,
-      endTeamPrompt,
       updateAzureDevOpsDimensionField
     }) as any
 })

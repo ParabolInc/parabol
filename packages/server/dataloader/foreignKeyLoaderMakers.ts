@@ -1,7 +1,15 @@
 import getKysely from '../postgres/getKysely'
-import {selectTemplateDimension, selectTemplateScale} from '../postgres/select'
+import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {
+  selectOrganizations,
+  selectRetroReflections,
+  selectSuggestedAction,
+  selectTeams,
+  selectTemplateDimension,
+  selectTemplateScale,
+  selectTimelineEvent
+} from '../postgres/select'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
-import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
   selectTeams().where('orgId', 'in', orgIds).where('isArchived', '=', false).execute()
@@ -82,10 +90,7 @@ export const timelineEventsByMeetingId = foreignKeyLoaderMaker(
   'timelineEvents',
   'meetingId',
   async (meetingIds) => {
-    const pg = getKysely()
-    return pg
-      .selectFrom('TimelineEvent')
-      .selectAll()
+    return selectTimelineEvent()
       .where('meetingId', 'in', meetingIds)
       .where('isActive', '=', true)
       .execute()
@@ -150,4 +155,18 @@ export const templateDimensionsByScaleId = foreignKeyLoaderMaker(
   async (scaleIds) => {
     return selectTemplateDimension().where('scaleId', 'in', scaleIds).orderBy('sortOrder').execute()
   }
+)
+
+export const suggestedActionsByUserId = foreignKeyLoaderMaker(
+  'suggestedActions',
+  'userId',
+  async (userIds) => {
+    return selectSuggestedAction().where('userId', 'in', userIds).execute()
+  }
+)
+
+export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
+  'teamPromptResponses',
+  'meetingId',
+  getTeamPromptResponsesByMeetingIds
 )

@@ -16,11 +16,9 @@ const MattermostIntegration: MattermostIntegrationResolvers = {
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const orgTeamIds = orgTeams.map(({id}) => id)
     return dataLoader
       .get('sharedIntegrationProviders')
-      .load({service: 'mattermost', orgTeamIds, teamIds: [teamId]})
+      .load({service: 'mattermost', orgIds: [orgId], teamIds: [teamId]})
   }
 }
 

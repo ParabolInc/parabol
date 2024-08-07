@@ -6,7 +6,8 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
 import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
-import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {IntegrationProviderMattermost as IIntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import {Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
@@ -14,7 +15,6 @@ import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
-import {TeamSource} from '../../../public/types/Team'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
@@ -24,6 +24,8 @@ import {
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
+
+type IntegrationProviderMattermost = IIntegrationProviderMattermost & {teamId: string}
 
 const notifyMattermost = async (
   event: EventEnum,
@@ -92,7 +94,7 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
 type MattermostNotificationAuth = IntegrationProviderMattermost & {userId: string}
 
 const makeTeamPromptStartMeetingNotification = (
-  team: TeamSource,
+  team: Team,
   meeting: Meeting,
   meetingUrl: string
 ) => {
@@ -118,11 +120,7 @@ const makeTeamPromptStartMeetingNotification = (
   ]
 }
 
-const makeGenericStartMeetingNotification = (
-  team: TeamSource,
-  meeting: Meeting,
-  meetingUrl: string
-) => {
+const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meetingUrl: string) => {
   return [
     makeFieldsAttachment(
       [
@@ -152,11 +150,7 @@ const makeGenericStartMeetingNotification = (
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (
-    team: TeamSource,
-    meeting: Meeting,
-    meetingUrl: string
-  ) => ReturnType<typeof makeFieldsAttachment>[]
+  (team: Team, meeting: Meeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -347,7 +341,7 @@ async function getMattermost(dataLoader: DataLoaderWorker, teamId: string, userI
   const provider = await dataLoader
     .get('bestTeamIntegrationProviders')
     .load({service: 'mattermost', teamId, userId})
-  return provider
+  return provider && provider.teamId
     ? [
         MattermostNotificationHelper({
           ...(provider as IntegrationProviderMattermost),

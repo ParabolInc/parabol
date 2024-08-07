@@ -1,24 +1,22 @@
 import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
+import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {Reactable, ReactableEnum} from '../../database/types/Reactable'
 import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
-import {ModifyType} from '../../graphql/public/resolverTypes'
+import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import {UpgradeCTALocationEnumType} from '../../graphql/types/UpgradeCTALocationEnum'
-import {TeamPromptResponse} from '../../postgres/queries/getTeamPromptResponsesByIds'
-import {TemplateScale} from '../../postgres/types'
+import {TeamPromptResponse, TemplateScale} from '../../postgres/types'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
-
 export type AnalyticsUser = {
   id: string
   email?: string
@@ -347,12 +345,12 @@ class Analytics {
   responseAdded = (
     user: AnalyticsUser,
     meetingId: string,
-    teamPromptResponseId: string,
+    teamPromptResponseId: number,
     isUpdate: boolean
   ) => {
     this.track(user, 'Response Added', {
       meetingId,
-      teamPromptResponseId,
+      teamPromptResponseId: TeamPromptResponseId.join(teamPromptResponseId),
       isUpdate
     })
   }
@@ -361,7 +359,7 @@ class Analytics {
     user: AnalyticsUser,
     meetingId: string,
     meetingType: MeetingTypeEnum,
-    reactable: Reactable,
+    reactable: {createdBy?: string; id: string},
     reactableType: ReactableEnum,
     reactji: string,
     isRemove: boolean

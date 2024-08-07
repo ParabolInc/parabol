@@ -26,9 +26,6 @@ import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
-import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
-import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
-import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
 
 export type RethinkSchema = {
@@ -126,12 +123,6 @@ export type RethinkSchema = {
   SlackNotification: {
     type: SlackNotification
     index: 'teamId' | 'userId'
-  }
-  SuggestedAction: {
-    // tryRetroMeeting = 'tryRetroMeeting',
-    // tryActionMeeting = 'tryActionMeeting'
-    type: SuggestedActionCreateNewTeam | SuggestedActionInviteYourTeam | SuggestedActionTryTheDemo
-    index: 'userId' | 'teamId'
   }
   Task: {
     type: Task

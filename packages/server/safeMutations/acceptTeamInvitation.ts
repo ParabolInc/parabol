@@ -3,66 +3,60 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
-import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
-import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
+import {Team} from '../postgres/types'
 import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 
 const handleFirstAcceptedInvitation = async (
-  team: TeamSource,
+  team: Team,
   dataLoader: DataLoaderInstance
 ): Promise<string | null> => {
-  const r = await getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
   if (!isOnboardTeam) return null
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamLead = teamMembers.find((tm) => tm.isLead)!
   const {userId} = teamLead
-  const isNewTeamLead = await r
-    .table('SuggestedAction')
-    .getAll(userId, {index: 'userId'})
-    .filter({type: 'tryRetroMeeting'})
-    .count()
-    .eq(0)
-    .run()
-  if (!isNewTeamLead) return null
-  await r
-    .table('SuggestedAction')
-    .insert([
-      {
-        id: generateUID(),
-        createdAt: now,
-        priority: 3,
-        removedAt: null,
-        teamId,
-        type: 'tryRetroMeeting',
-        userId
-      },
-      new SuggestedActionCreateNewTeam({userId}),
-      {
-        id: generateUID(),
-        createdAt: now,
-        priority: 5,
-        removedAt: null,
-        teamId,
-        type: 'tryActionMeeting',
-        userId
-      }
-    ])
-    .run()
+  const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
+  const hasTryRetro = suggestedActions.some((sa) => sa.type === 'tryRetroMeeting')
+  if (hasTryRetro) return null
+  const actions = [
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 3,
+      removedAt: null,
+      teamId,
+      type: 'tryRetroMeeting' as const,
+      userId
+    },
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 4,
+      removedAt: null,
+      type: 'createNewTeam' as const,
+      userId
+    },
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 5,
+      removedAt: null,
+      teamId,
+      type: 'tryActionMeeting' as const,
+      userId
+    }
+  ]
+  await getKysely().insertInto('SuggestedAction').values(actions).execute()
   return userId
 }
 
-const acceptTeamInvitation = async (
-  team: TeamSource,
-  userId: string,
-  dataLoader: DataLoaderWorker
-) => {
+const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const pg = getKysely()
   const now = new Date()

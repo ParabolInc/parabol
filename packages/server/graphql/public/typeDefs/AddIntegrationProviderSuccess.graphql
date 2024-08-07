@@ -3,14 +3,4 @@ type AddIntegrationProviderSuccess {
   The provider that was added
   """
   provider: IntegrationProvider!
-
-  """
-  Id of the team with the updated Integration Provider
-  """
-  teamId: ID!
-
-  """
-  The team with the updated Integration Provider
-  """
-  team: Team!
 }

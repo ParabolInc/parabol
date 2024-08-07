@@ -7,6 +7,7 @@ import MeetingSettingsRetrospective from '../../../database/types/MeetingSetting
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
 
@@ -42,6 +43,13 @@ export default async function createTeamAndLeader(
   })
 
   const pg = getKysely()
+  const suggestedAction = {
+    id: generateUID(),
+    userId,
+    teamId,
+    type: 'inviteYourTeam' as const,
+    priority: 2
+  }
   await Promise.all([
     pg
       .with('TeamInsert', (qc) => qc.insertInto('Team').values(verifiedTeam))
@@ -62,6 +70,12 @@ export default async function createTeamAndLeader(
           isLead: true,
           openDrawer: 'manageTeam'
         })
+      )
+      .with('SuggestedActionInsert', (qc) =>
+        qc
+          .insertInto('SuggestedAction')
+          .values(suggestedAction)
+          .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
       )
       .insertInto('TimelineEvent')
       .values(timelineEvent)

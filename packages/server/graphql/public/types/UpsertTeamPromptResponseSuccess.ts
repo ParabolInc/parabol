@@ -1,7 +1,7 @@
 import {UpsertTeamPromptResponseSuccessResolvers} from '../resolverTypes'
 
 export type UpsertTeamPromptResponseSuccessSource = {
-  teamPromptResponseId: string
+  teamPromptResponseId: number
   meetingId: string
 }
 

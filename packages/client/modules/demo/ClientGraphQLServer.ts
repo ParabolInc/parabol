@@ -265,7 +265,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...this.db.users[0],
-          newMeeting: {
+          meeting: {
             ...this.db.newMeeting,
             reflectionGroups: (
               this.db.newMeeting as {reflectionGroups: any[]}
@@ -301,7 +301,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...this.db.users[0],
-          newMeeting: {
+          meeting: {
             ...this.db.newMeeting,
             reflectionGroups: (
               this.db.newMeeting as {reflectionGroups: any[]}

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {WholeMeetingSummaryResult_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummaryResult_meeting.graphql'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
-import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
+import {marked} from 'marked'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
+import {PALETTE} from '../../../../../styles/paletteV3'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {AIExplainer} from '../../../../../types/constEnums'
 import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -35,12 +35,18 @@ const textStyle = {
   textAlign: 'left'
 } as const
 
-interface Props {
-  meetingRef: WholeMeetingSummaryResult_meeting$key
+const linkStyle = {
+  color: '#2563EB',
+  textDecoration: 'underline'
 }
 
-const WholeMeetingSummaryResult = (props: Props) => {
-  const {meetingRef} = props
+interface Props {
+  meetingRef: any // WholeMeetingSummaryResult_meeting$key
+}
+
+const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
+  const atmosphere = useAtmosphere()
+
   const meeting = useFragment(
     graphql`
       fragment WholeMeetingSummaryResult_meeting on NewMeeting {
@@ -55,31 +61,49 @@ const WholeMeetingSummaryResult = (props: Props) => {
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
+
   const {summary: wholeMeetingSummary, team} = meeting
+  const test =
+    'The budget work is recognized for its future value in improving focus and communication within the team ([link](https://action.parabol.co/meet/twbP2qPXNK/discuss/3)).'
+
+  const renderedTest = marked(test, {
+    gfm: true,
+    breaks: true,
+    smartypants: true
+  }).replace(
+    /<a href="(.*?)">(.*?)<\/a>/g,
+    `<a href="$1" style="color: ${linkStyle.color}; text-decoration: ${linkStyle.textDecoration};">$2</a>`
+  )
+
   const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
       source: 'Meeting Summary',
       tier: meeting.team.billingTier,
       meetingId: meeting.id
     })
-  }, [])
+  }, [atmosphere, meeting.id, meeting.team.billingTier])
+
   return (
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          <tr>
-            <td style={explainerStyle}>{explainerText}</td>
-          </tr>
-          <tr>
-            <td align='center' style={topicTitleStyle}>
-              {'🤖 Meeting Summary'}
-            </td>
-          </tr>
-          <tr>
-            <td style={textStyle}>{wholeMeetingSummary}</td>
-          </tr>
+          <table>
+            <tbody>
+              <tr>
+                <td style={explainerStyle}>{explainerText}</td>
+              </tr>
+              <tr>
+                <td align='center' style={topicTitleStyle}>
+                  {'🤖 Meeting Summary'}
+                </td>
+              </tr>
+              <tr>
+                <td style={textStyle} dangerouslySetInnerHTML={{__html: renderedTest}} />
+              </tr>
+            </tbody>
+          </table>
         </td>
       </tr>
       <EmailBorderBottom />

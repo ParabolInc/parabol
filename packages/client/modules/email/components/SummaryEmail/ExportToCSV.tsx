@@ -23,7 +23,7 @@ interface Props extends WithMutationProps {
 const query = graphql`
   query ExportToCSVQuery($meetingId: ID!) {
     viewer {
-      newMeeting(meetingId: $meetingId) {
+      meeting(meetingId: $meetingId) {
         meetingType
         team {
           name
@@ -91,14 +91,24 @@ const query = graphql`
                   edges {
                     node {
                       __typename
-                      content
+                      ... on Task {
+                        content
+                      }
+                      ... on Comment {
+                        content
+                      }
                       createdAt
                       createdByUser {
                         preferredName
                       }
                       replies {
                         __typename
-                        content
+                        ... on Task {
+                          content
+                        }
+                        ... on Comment {
+                          content
+                        }
                         createdAt
                         createdByUser {
                           preferredName
@@ -116,7 +126,7 @@ const query = graphql`
   }
 `
 
-type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['newMeeting']>
+type Meeting = NonNullable<NonNullable<ExportToCSVQuery['response']['viewer']>['meeting']>
 type ExportableTypeName = 'Task' | 'Reflection' | 'Comment' | 'Reply'
 
 interface CSVPokerRow {
@@ -232,7 +242,7 @@ const ExportToCSV = (props: Props) => {
         const {node} = edge
         const {createdAt, createdByUser, __typename: type, replies, content} = node
         const author = createdByUser?.preferredName ?? 'Anonymous'
-        const discussionThread = extractTextFromDraftString(content)
+        const discussionThread = extractTextFromDraftString(content!)
         rows.push({
           reflectionGroup: title!,
           author,
@@ -254,7 +264,7 @@ const ExportToCSV = (props: Props) => {
             createdAt,
             discussionThread,
             prompt: '',
-            content: extractTextFromDraftString(reply.content)
+            content: extractTextFromDraftString(reply.content!)
           })
         })
       })
@@ -277,7 +287,7 @@ const ExportToCSV = (props: Props) => {
         const {node} = edge
         const {createdAt, createdByUser, __typename: type, replies, content} = node
         const author = createdByUser?.preferredName ?? 'Anonymous'
-        const discussionThread = extractTextFromDraftString(content)
+        const discussionThread = extractTextFromDraftString(content!)
         rows.push({
           author,
           status: 'present',
@@ -297,7 +307,7 @@ const ExportToCSV = (props: Props) => {
             type: reply.__typename === 'Task' ? 'Task' : 'Reply',
             createdAt,
             discussionThread,
-            content: extractTextFromDraftString(reply.content)
+            content: extractTextFromDraftString(reply.content!)
           })
         })
       })
@@ -326,7 +336,7 @@ const ExportToCSV = (props: Props) => {
     onCompleted()
     if (!data) return
     const {viewer} = data
-    const {newMeeting} = viewer
+    const {meeting: newMeeting} = viewer
     if (!newMeeting) return
     const rows = getRows(newMeeting)
     if (rows.length === 0) return

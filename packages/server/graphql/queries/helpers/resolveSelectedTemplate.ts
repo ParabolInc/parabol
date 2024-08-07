@@ -23,7 +23,7 @@ const resolveSelectedTemplate =
       .get(settingsId)
       .update({selectedTemplateId: fallbackTemplateId})
       .run()
-    return dataLoader.get('meetingTemplates').load(fallbackTemplateId)
+    return dataLoader.get('meetingTemplates').loadNonNull(fallbackTemplateId)
   }
 
 export default resolveSelectedTemplate

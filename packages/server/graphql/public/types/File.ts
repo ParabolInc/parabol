@@ -12,7 +12,7 @@ const File: FileScalarConfig = {
   name: 'File',
   description: 'A file buffer',
   serialize: (value) => value,
-  parseValue: (value) => value,
+  parseValue: (value) => value as unknown as TFile,
   parseLiteral: (ast) => ast as unknown as TFile
 }
 

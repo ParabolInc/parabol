@@ -5,6 +5,67 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.41.2](https://github.com/ParabolInc/parabol/compare/v7.41.1...v7.41.2) (2024-08-05)
+
+
+### Fixed
+
+* Fetching more than 200 Azure DevOps issues ([#10073](https://github.com/ParabolInc/parabol/issues/10073)) ([5829a11](https://github.com/ParabolInc/parabol/commit/5829a1149a751deddc2b9346a350c92c7e079b24))
+
+
+### Changed
+
+* **rethinkdb:** SuggestedAction: Phase 3 ([#10043](https://github.com/ParabolInc/parabol/issues/10043)) ([6c0cc36](https://github.com/ParabolInc/parabol/commit/6c0cc36c75a3094ce181b5fac83fe9a1c064fb53))
+
+## [7.41.1](https://github.com/ParabolInc/parabol/compare/v7.41.0...v7.41.1) (2024-08-02)
+
+
+### Changed
+
+* **rethinkdb:** SuggestedAction: Phase 2 ([#10042](https://github.com/ParabolInc/parabol/issues/10042)) ([3bc68e0](https://github.com/ParabolInc/parabol/commit/3bc68e05497a8ee18a024c1f3b0d9e3268dc18a2))
+
+## [7.41.0](https://github.com/ParabolInc/parabol/compare/v7.40.2...v7.41.0) (2024-08-02)
+
+
+### Added
+
+* **orgAdmin:** org admins can archive teams ([#10022](https://github.com/ParabolInc/parabol/issues/10022)) ([31cd317](https://github.com/ParabolInc/parabol/commit/31cd317b906e2f02e3c87fc1cb3bedf77c160bb8))
+
+
+### Fixed
+
+* check signal for build exit code ([#10063](https://github.com/ParabolInc/parabol/issues/10063)) ([4207f7d](https://github.com/ParabolInc/parabol/commit/4207f7d0d925d0b8360a0e4e704edae96a46f85d))
+* Fix error in start meeting if the user has no teams ([#10056](https://github.com/ParabolInc/parabol/issues/10056)) ([e20aefd](https://github.com/ParabolInc/parabol/commit/e20aefd15c7d92b3ada0436ce41ca78f3ad600fd))
+* nest-graphql-endpoint support graphql v16 ([#10066](https://github.com/ParabolInc/parabol/issues/10066)) ([2c27e13](https://github.com/ParabolInc/parabol/commit/2c27e13cc234d78cad10b551bec6258e508270f2))
+* null not distinct ([#10067](https://github.com/ParabolInc/parabol/issues/10067)) ([e6204a7](https://github.com/ParabolInc/parabol/commit/e6204a75194e310ee1ceb89a15d2e23cb6cfeccf))
+
+
+### Changed
+
+* Add orgId to IntegrationProvider ([#6014](https://github.com/ParabolInc/parabol/issues/6014)) ([6819e90](https://github.com/ParabolInc/parabol/commit/6819e90d40c17761c5f7a0159c4de1dd344bc531))
+
+## [7.40.2](https://github.com/ParabolInc/parabol/compare/v7.40.1...v7.40.2) (2024-08-01)
+
+
+### Fixed
+
+* discussion mentioned can be triggered by all meetings ([#10060](https://github.com/ParabolInc/parabol/issues/10060)) ([b777958](https://github.com/ParabolInc/parabol/commit/b7779580b0717c42a10d58ac06143e2a0d66298a))
+
+## [7.40.1](https://github.com/ParabolInc/parabol/compare/v7.40.0...v7.40.1) (2024-08-01)
+
+
+### Fixed
+
+* **build:** build prod exits with code 1 if anything goes wrong ([#10016](https://github.com/ParabolInc/parabol/issues/10016)) ([1ed6a82](https://github.com/ParabolInc/parabol/commit/1ed6a82312f4aa63a3b46eed7645bd27a23d4d7f))
+
+
+### Changed
+
+* **docker-stack:** force network to be called parabol on the single-tenant compose stack ([#10041](https://github.com/ParabolInc/parabol/issues/10041)) ([8b3b1b8](https://github.com/ParabolInc/parabol/commit/8b3b1b80e436f33ae64580ec71c7ed098e076875))
+* **rethinkdb:** SuggestedAction: Phase 1 ([#10035](https://github.com/ParabolInc/parabol/issues/10035)) ([d00da10](https://github.com/ParabolInc/parabol/commit/d00da10595e85bd6cd7004b621e17efb2522b995))
+* update @radix-ui/react-alert-dialog  ([#9986](https://github.com/ParabolInc/parabol/issues/9986)) ([936f1f6](https://github.com/ParabolInc/parabol/commit/936f1f62fc474e94618ebb64dbbdd8678706a984))
+* upgrade GraphQL to v16 ([#10052](https://github.com/ParabolInc/parabol/issues/10052)) ([a27769c](https://github.com/ParabolInc/parabol/commit/a27769c56ce5f49b4186c47c364a9261f04c01ba))
+
 ## [7.40.0](https://github.com/ParabolInc/parabol/compare/v7.39.3...v7.40.0) (2024-07-26)
 
 
