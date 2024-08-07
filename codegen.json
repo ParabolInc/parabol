@@ -90,6 +90,7 @@
           "File": "./types/File#TFile",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
+          "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
           "GetTemplateSuggestionSuccess": "./types/GetTemplateSuggestionSuccess#GetTemplateSuggestionSuccessSource",
           "IntegrationProviderWebhook": "../../postgres/queries/getIntegrationProvidersByIds#TIntegrationProvider",
           "IntegrationProviderOAuth1": "../../postgres/queries/getIntegrationProvidersByIds#TIntegrationProvider",
