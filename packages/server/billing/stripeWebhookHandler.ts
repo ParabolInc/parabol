@@ -54,6 +54,16 @@ const eventLookup = {
     }
   },
   customer: {
+    source: {
+      updated: {
+        getVars: ({customer: customerId}: {customer: string}) => ({customerId}),
+        query: `
+        mutation StripeUpdateCreditCard($customerId: ID!) {
+          stripeUpdateCreditCard(customerId: $customerId)
+        }
+      `
+      }
+    },
     subscription: {
       created: {
         getVars: ({customer, id}: {customer: string; id: string}) => ({

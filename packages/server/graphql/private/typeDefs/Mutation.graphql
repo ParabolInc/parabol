@@ -265,6 +265,16 @@ type Mutation {
   ): Boolean
 
   """
+  When stripe tells us a credit card was updated, update the details in our own DB
+  """
+  stripeUpdateCreditCard(
+    """
+    The stripe customer ID, or stripeId
+    """
+    customerId: ID!
+  ): Boolean
+
+  """
   When stripe tells us a subscription was updated, update the details in our own DB
   """
   stripeCreateSubscription(

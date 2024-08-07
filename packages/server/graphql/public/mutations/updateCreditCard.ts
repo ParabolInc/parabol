@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -9,6 +10,7 @@ import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
+import {stripeCardToDBCard} from '../../mutations/helpers/stripeCardToDBCard'
 import {MutationResolvers} from '../resolverTypes'
 
 const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
@@ -52,11 +54,13 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   await manager.updateSubscription(subscription.id, paymentMethodId)
   const stripeCard = await manager.retrieveCardDetails(paymentMethodId)
   if (stripeCard instanceof Error) return standardError(stripeCard, {userId: viewerId})
+  const creditCard = stripeCardToDBCard(stripeCard)
 
   await Promise.all([
     getKysely()
       .updateTable('Organization')
       .set({
+        creditCard: toCreditCard(creditCard),
         tier: 'team',
         stripeId: customer.id,
         tierLimitExceededAt: null,

@@ -1,10 +1,12 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
+import getCCFromCustomer from './getCCFromCustomer'
 
 const oldUpgradeToTeamTier = async (
   orgId: string,
@@ -38,10 +40,12 @@ const oldUpgradeToTeamTier = async (
     }
   }
 
+  const creditCard = await getCCFromCustomer(customer)
   await getKysely()
     .updateTable('Organization')
     .set({
       ...subscriptionFields,
+      creditCard: toCreditCard(creditCard),
       tier: 'team',
       stripeId: customer.id,
       tierLimitExceededAt: null,
