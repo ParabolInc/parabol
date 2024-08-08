@@ -1,3 +1,4 @@
+import {Add as AddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -5,6 +6,8 @@ import {GitLabProviders_organization$key} from '../../../../__generated__/GitLab
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
+import {Breakpoint} from '../../../../types/constEnums'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import ProviderRowActionButton from '../../../teamDashboard/components/ProviderRow/ProviderRowActionButton'
 import AddGitLabProviderDialog from './AddGitLabProviderDialog'
@@ -40,6 +43,8 @@ const GitLabProviders = (props: Props) => {
   const isOrgAdmin = viewerOrganizationUser?.role === 'ORG_ADMIN'
   const {isOpen, open, close} = useDialogState()
 
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
+
   return (
     <>
       <div className='my-4 flex flex-col rounded bg-white shadow-card'>
@@ -50,11 +55,9 @@ const GitLabProviders = (props: Props) => {
             <RowInfoCopy>Add private servers for use by your teams.</RowInfoCopy>
           </div>
           <ProviderActions>
-            {isOrgAdmin ? (
-              <ProviderRowActionButton onClick={open}>Add Server</ProviderRowActionButton>
-            ) : (
-              <ProviderRowActionButton disabled>Add Server</ProviderRowActionButton>
-            )}
+            <ProviderRowActionButton onClick={open} disabled={!isOrgAdmin}>
+              {isDesktop ? 'Add Server' : <AddIcon />}
+            </ProviderRowActionButton>
           </ProviderActions>
         </div>
         {isOrgAdmin &&

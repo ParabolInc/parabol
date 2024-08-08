@@ -138,7 +138,7 @@ const GitLabProviderRow = (props: Props) => {
                           </>
                         ) : (
                           <FlatButton
-                            className='min-w-9 border-slate-400 py-0 text-sm font-semibold text-slate-700'
+                            className='min-w-[36px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
                             onClick={togglePortal}
                             ref={menuRef}
                           >
