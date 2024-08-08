@@ -188,7 +188,6 @@ export const selectMeetingSettings = () =>
       'meetingType',
       'teamId',
       'selectedTemplateId',
-      'jiraSearchQueries',
       'maxVotesPerGroup',
       'totalVotes',
       'disableAnonymity',
@@ -196,7 +195,7 @@ export const selectMeetingSettings = () =>
     ])
     .$narrowType<
       // NewMeeetingPhaseTypeEnum[] should be inferred from kysely-codegen, but it's not
-      | {meetingType: NotNull; phaseTypes: NewMeetingPhaseTypeEnum[]}
+      | {meetingType: 'action' | 'poker' | 'teamPrompt'; phaseTypes: NewMeetingPhaseTypeEnum[]}
       | {
           meetingType: 'retrospective'
           phaseTypes: NewMeetingPhaseTypeEnum[]

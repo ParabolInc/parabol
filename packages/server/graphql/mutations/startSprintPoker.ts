@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
@@ -135,7 +134,10 @@ export default {
     const meetingSettings = await dataLoader
       .get('meetingSettingsByType')
       .load({teamId, meetingType: 'poker'})
-    const {selectedTemplateId} = meetingSettings as MeetingSettingsPoker
+    const {selectedTemplateId} = meetingSettings
+    if (!selectedTemplateId) {
+      throw new Error('selectedTemplateId is required')
+    }
     const templateRefId = await freezeTemplateAsRef(selectedTemplateId, dataLoader)
 
     const meeting = new MeetingPoker({

@@ -1,7 +1,6 @@
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
-import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
@@ -35,7 +34,7 @@ type IRetrospectiveMeeting = Omit<
   votesRemaining: number
 }
 
-type IRetrospectiveMeetingSettings = RetrospectiveMeetingSettings & {
+type IRetrospectiveMeetingSettings = {
   team: any
 }
 

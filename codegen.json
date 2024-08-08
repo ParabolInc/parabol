@@ -46,6 +46,11 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "TeamMeetingSettings": "../../postgres/types/index#MeetingSettings as TeamMeetingSettingsDB",
+          "TeamPromptMeetingSettings": "../../postgres/types/index#MeetingSettings as TeamMeetingSettingsDB",
+          "PokerMeetingSettings": "../../postgres/types/index#PokerMeetingSettings as PokerMeetingSettingsDB",
+          "RetrospectiveMeetingSettings": "../../postgres/types/index#RetrospectiveMeetingSettings as RetrospectiveMeetingSettingsDB",
+          "RemovePokerTemplatePayload": "./types/RemovePokerTemplatePayload#RemovePokerTemplatePayloadSource",
           "JiraRemoteAvatarUrls": "./types/JiraRemoteAvatarUrls#JiraRemoteAvatarUrlsSource",
           "TemplateDimensionRef": "./types/TemplateDimensionRef#TemplateDimensionRefSource",
           "UpdateIntegrationProviderSuccess": "./types/UpdateIntegrationProviderSuccess#UpdateIntegrationProviderSuccessSource",
@@ -139,7 +144,6 @@
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
           "RetrospectiveMeetingMember": "../../database/types/RetroMeetingMember#default",
-          "RetrospectiveMeetingSettings": "../../database/types/MeetingSettingsRetrospective#default",
           "SAML": "./types/SAML#SAMLSource",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
@@ -153,7 +157,6 @@
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "Task": "../../database/types/Task#default",
           "Team": "../../postgres/types/index#Team as TeamDB",
-          "TeamPromptMeetingSettings": "../../database/types/MeetingSettingsTeamPrompt#default as MeetingSettingsTeamPromptDB",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",
           "TeamInvitation": "../../database/types/TeamInvitation#default",
