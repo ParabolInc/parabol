@@ -1,10 +1,10 @@
 import {Threshold} from 'parabol-client/types/constEnums'
+import {Team} from '../../../postgres/types'
 import {DataLoaderWorker} from '../../graphql'
-import {TeamSource} from '../../public/types/Team'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const canAccessAISummary = async (
-  team: TeamSource,
+  team: Team,
   featureFlags: string[],
   dataLoader: DataLoaderWorker,
   meetingType: 'standup' | 'retrospective'

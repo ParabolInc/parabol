@@ -6,13 +6,13 @@ import getRethink from '../database/rethinkDriver'
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
-import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
+import {Team} from '../postgres/types'
 import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
 
 const handleFirstAcceptedInvitation = async (
-  team: TeamSource,
+  team: Team,
   dataLoader: DataLoaderInstance
 ): Promise<string | null> => {
   const now = new Date()
@@ -52,15 +52,15 @@ const handleFirstAcceptedInvitation = async (
       userId
     }
   ]
-  await getKysely().insertInto('SuggestedAction').values(actions).execute()
+  await getKysely()
+    .insertInto('SuggestedAction')
+    .values(actions)
+    .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+    .execute()
   return userId
 }
 
-const acceptTeamInvitation = async (
-  team: TeamSource,
-  userId: string,
-  dataLoader: DataLoaderWorker
-) => {
+const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const pg = getKysely()
   const now = new Date()

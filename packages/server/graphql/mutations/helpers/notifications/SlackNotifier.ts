@@ -3,6 +3,7 @@ import formatWeekday from 'parabol-client/utils/date/formatWeekday'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
+import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
 import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
 import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
@@ -10,8 +11,8 @@ import Meeting from '../../../../database/types/Meeting'
 import SlackAuth from '../../../../database/types/SlackAuth'
 import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
-import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {Team, TeamPromptResponse} from '../../../../postgres/types'
 import User from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import SlackServerManager from '../../../../utils/SlackServerManager'
@@ -20,7 +21,6 @@ import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import {DataLoaderWorker} from '../../../graphql'
-import {TeamSource} from '../../../public/types/Team'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
@@ -137,12 +137,12 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
   }
 }
 
-const createTeamSectionContent = (team: TeamSource) => `*Team:*\n${team.name}`
+const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
 
 const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
 
 const makeTeamPromptStartMeetingNotification = (
-  team: TeamSource,
+  team: Team,
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
@@ -157,7 +157,7 @@ const makeTeamPromptStartMeetingNotification = (
 }
 
 const makeGenericStartMeetingNotification = (
-  team: TeamSource,
+  team: Team,
   meeting: Meeting,
   meetingUrl: string
 ): SlackNotification => {
@@ -173,7 +173,7 @@ const makeGenericStartMeetingNotification = (
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: TeamSource, meeting: Meeting, meetingUrl: string) => SlackNotification
+  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotification
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -184,7 +184,7 @@ const makeStartMeetingNotificationLookup: Record<
 const addStandupResponsesToThread = async (
   res: PostMessageResponse,
   standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
-  team: TeamSource,
+  team: Team,
   user: User,
   meeting: Meeting,
   notificationChannel: NotificationChannel
@@ -213,7 +213,7 @@ const addStandupResponsesToThread = async (
           utm_source: 'slack standup summary',
           utm_medium: 'product',
           utm_campaign: 'after-meeting',
-          responseId: response.id
+          responseId: TeamPromptResponseId.join(response.id)
         }
       }
       const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)
@@ -269,7 +269,7 @@ const getSlackMessageForNotification = async (
         utm_source: 'slack standup notification',
         utm_medium: 'product',
         utm_campaign: 'notifications',
-        responseId
+        responseId: TeamPromptResponseId.join(responseId)
       }
     }
 
@@ -281,7 +281,7 @@ const getSlackMessageForNotification = async (
       buttonText: 'See the discussion'
     }
   } else if (notification.type === 'RESPONSE_MENTIONED') {
-    const responseId = notification.responseId
+    const responseId = TeamPromptResponseId.split(notification.responseId)
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)
     const title = `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
@@ -291,7 +291,7 @@ const getSlackMessageForNotification = async (
         utm_source: 'slack standup notification',
         utm_medium: 'product',
         utm_campaign: 'notifications',
-        responseId
+        responseId: notification.responseId
       }
     }
 
@@ -511,7 +511,7 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
         utm_source: 'slack standup submission',
         utm_medium: 'product',
         utm_campaign: 'notifications',
-        responseId: response.id
+        responseId: TeamPromptResponseId.join(response.id)
       }
     }
     const responseUrl = makeAppURL(appOrigin, `meet/${meeting.id}/responses`, options)

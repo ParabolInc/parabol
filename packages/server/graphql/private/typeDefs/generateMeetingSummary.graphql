@@ -1,0 +1,28 @@
+extend type Mutation {
+  """
+  Generate new meeting summaries for every meeting in the given teams
+  """
+  generateMeetingSummary(
+    """
+    The ids of the teams to generate the meeting summary for
+    """
+    teamIds: [ID!]!
+
+    """
+    The optional user prompt that will be used to generate the meeting summary
+    """
+    prompt: String
+  ): GenerateMeetingSummaryPayload!
+}
+
+"""
+Return value for generateMeetingSummary, which could be an error
+"""
+union GenerateMeetingSummaryPayload = ErrorPayload | GenerateMeetingSummarySuccess
+
+type GenerateMeetingSummarySuccess {
+  """
+  The meetings that were updated with new summaries
+  """
+  meetings: [RetrospectiveMeeting!]!
+}

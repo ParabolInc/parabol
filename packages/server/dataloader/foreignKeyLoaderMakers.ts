@@ -1,12 +1,15 @@
 import getKysely from '../postgres/getKysely'
+import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
+  selectOrganizations,
+  selectRetroReflections,
   selectSuggestedAction,
+  selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
   selectTimelineEvent
 } from '../postgres/select'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
-import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
   selectTeams().where('orgId', 'in', orgIds).where('isArchived', '=', false).execute()
@@ -160,4 +163,10 @@ export const suggestedActionsByUserId = foreignKeyLoaderMaker(
   async (userIds) => {
     return selectSuggestedAction().where('userId', 'in', userIds).execute()
   }
+)
+
+export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
+  'teamPromptResponses',
+  'meetingId',
+  getTeamPromptResponsesByMeetingIds
 )
