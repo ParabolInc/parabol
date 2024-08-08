@@ -84,20 +84,27 @@ const bootstrapNewUser = async (
 
   const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
   const tms = [] as string[]
-  const actions = [
-    {
-      id: generateUID(),
-      userId,
-      type: 'tryTheDemo' as const,
-      priority: 1
-    },
-    {
-      id: generateUID(),
-      userId,
-      type: 'createNewTeam' as const,
-      priority: 4
-    }
-  ]
+  if (!isOrganic) {
+    const nonOrganicActions = [
+      {
+        id: generateUID(),
+        userId,
+        type: 'tryTheDemo' as const,
+        priority: 1
+      },
+      {
+        id: generateUID(),
+        userId,
+        type: 'createNewTeam' as const,
+        priority: 4
+      }
+    ]
+    await pg
+      .insertInto('SuggestedAction')
+      .values(nonOrganicActions)
+      .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+      .execute()
+  }
   if (teamsWithAutoJoin.length > 0) {
     await Promise.all(
       teamsWithAutoJoin.map((team) => {
@@ -113,18 +120,12 @@ const bootstrapNewUser = async (
         // We're racing with accept team invitation here which also adds some suggested actions. We don't want this to fail just because of duplicates.
         return Promise.all([
           acceptTeamInvitation(team, userId, dataLoader),
-          isOrganic
-            ? pg
-                .insertInto('SuggestedAction')
-                .values(inviteYourTeam)
-                .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
-                .execute()
-            : pg
-                .insertInto('SuggestedAction')
-                .values(actions)
-                .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
-                .execute(),
-          ,
+          isOrganic &&
+            pg
+              .insertInto('SuggestedAction')
+              .values(inviteYourTeam)
+              .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+              .execute(),
           analytics.autoJoined(newUser, teamId)
         ])
       })
@@ -147,12 +148,6 @@ const bootstrapNewUser = async (
       sendPromptToJoinOrg(newUser, dataLoader)
     ])
     analytics.newOrg(newUser, orgId, teamId, true)
-  } else {
-    await pg
-      .insertInto('SuggestedAction')
-      .values(actions)
-      .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
-      .execute()
   }
 
   analytics.accountCreated(newUser, !isOrganic, isPatient0)
