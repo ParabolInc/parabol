@@ -148,7 +148,11 @@ const bootstrapNewUser = async (
     ])
     analytics.newOrg(newUser, orgId, teamId, true)
   } else {
-    await pg.insertInto('SuggestedAction').values(actions).execute()
+    await pg
+      .insertInto('SuggestedAction')
+      .values(actions)
+      .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+      .execute()
   }
 
   analytics.accountCreated(newUser, !isOrganic, isPatient0)
