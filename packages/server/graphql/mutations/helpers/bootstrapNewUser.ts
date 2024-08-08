@@ -110,11 +110,20 @@ const bootstrapNewUser = async (
           type: 'inviteYourTeam' as const,
           priority: 2
         }
+        // We're racing with accept team invitation here which also adds some suggested actions. We don't want this to fail just because of duplicates.
         return Promise.all([
           acceptTeamInvitation(team, userId, dataLoader),
           isOrganic
-            ? pg.insertInto('SuggestedAction').values(inviteYourTeam).execute()
-            : pg.insertInto('SuggestedAction').values(actions).execute(),
+            ? pg
+                .insertInto('SuggestedAction')
+                .values(inviteYourTeam)
+                .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+                .execute()
+            : pg
+                .insertInto('SuggestedAction')
+                .values(actions)
+                .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+                .execute(),
           ,
           analytics.autoJoined(newUser, teamId)
         ])
