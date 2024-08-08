@@ -4,8 +4,8 @@ import {emailRegex} from 'parabol-client/validation/regex'
 
 const GraphQLEmailType = new GraphQLScalarType({
   name: 'Email',
-  serialize: (value) => value.toLowerCase(),
-  parseValue: (value) => value.toLowerCase(),
+  serialize: (value) => (value as string).toLowerCase(),
+  parseValue: (value) => (value as string).toLowerCase(),
   parseLiteral: (ast) => {
     if (ast.kind !== Kind.STRING) {
       throw new Error(`Query error: Email is not a string, it is a: ${ast.kind}`)

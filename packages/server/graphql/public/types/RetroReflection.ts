@@ -1,12 +1,7 @@
-import {ExtractTypeFromQueryBuilderSelect} from '../../../../client/types/generics'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
-import {selectRetroReflections} from '../../../dataloader/primaryKeyLoaderMakers'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import {RetroReflectionResolvers} from '../resolverTypes'
-
-export interface RetroReflectionSource
-  extends ExtractTypeFromQueryBuilderSelect<typeof selectRetroReflections> {}
 
 const RetroReflection: RetroReflectionResolvers = {
   creatorId: async ({creatorId, meetingId}, _args, {authToken, dataLoader}) => {

@@ -18,7 +18,7 @@ const GraphQLISO8601Type = new GraphQLScalarType({
 
   // Serialize a date to send to the client.
   serialize(value) {
-    const date = new Date(value)
+    const date = new Date(value as string)
 
     if (isNaN(date.getTime())) {
       throw new Error('Field error: value is an invalid Date')

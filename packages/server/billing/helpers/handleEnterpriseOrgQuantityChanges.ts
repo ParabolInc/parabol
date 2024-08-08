@@ -1,10 +1,10 @@
 import {DataLoaderWorker} from '../../graphql/graphql'
-import {OrganizationSource} from '../../graphql/public/types/Organization'
+import {Organization} from '../../postgres/types'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 
 const sendEnterpriseOverageEvent = async (
-  organization: OrganizationSource,
+  organization: Organization,
   dataLoader: DataLoaderWorker
 ) => {
   const manager = getStripeManager()
@@ -31,7 +31,7 @@ const sendEnterpriseOverageEvent = async (
 }
 
 const handleEnterpriseOrgQuantityChanges = async (
-  paidOrgs: OrganizationSource[],
+  paidOrgs: Organization[],
   dataLoader: DataLoaderWorker
 ) => {
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')

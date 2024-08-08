@@ -1,6 +1,8 @@
+import {MenuItem} from '@mui/material'
 import React from 'react'
+import IconLabel from '../../../../components/IconLabel'
+import LinkButton from '../../../../components/LinkButton'
 import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
 import {MenuProps} from '../../../../hooks/useMenu'
 
 interface OrgTeamMembersMenuProps {
@@ -14,13 +16,18 @@ export const OrgTeamMembersMenu = (props: OrgTeamMembersMenuProps) => {
 
   return (
     <Menu ariaLabel={'Select your action'} {...menuProps}>
-      <MenuItem
-        label='Delete team'
-        onClick={() => {
-          closePortal()
-          openDeleteTeamModal()
-        }}
-      />
+      <MenuItem>
+        <LinkButton
+          aria-label='Click to permanently delete this team.'
+          palette='red'
+          onClick={() => {
+            closePortal()
+            openDeleteTeamModal()
+          }}
+        >
+          <IconLabel icon='remove_circle' label='Delete Team' />
+        </LinkButton>
+      </MenuItem>
     </Menu>
   )
 }

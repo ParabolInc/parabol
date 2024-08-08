@@ -59,18 +59,16 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
   cloudProvider: async (_source, _args, {dataLoader}) => {
     const [globalProvider] = await dataLoader
       .get('sharedIntegrationProviders')
-      .load({service: 'azureDevOps', orgTeamIds: ['aGhostTeam'], teamIds: []})
+      .load({service: 'azureDevOps', orgIds: [], teamIds: []})
     return globalProvider!
   },
 
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const orgTeamIds = orgTeams.map(({id}) => id)
     return dataLoader
       .get('sharedIntegrationProviders')
-      .load({service: 'azureDevOps', orgTeamIds, teamIds: [teamId]})
+      .load({service: 'azureDevOps', orgIds: [orgId], teamIds: [teamId]})
   }
 }
 

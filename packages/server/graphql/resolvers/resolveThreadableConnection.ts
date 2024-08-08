@@ -1,23 +1,22 @@
 import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
-import {Threadable} from '../../database/types/Threadable'
-import {Poll} from '../../postgres/queries/getPollsByIds'
+import {ThreadableSource} from '../public/types/Threadable'
 import {DataLoaderWorker} from './../graphql'
 
 const resolveThreadableConnection = async (
   discussionId: string,
   {dataLoader}: {dataLoader: DataLoaderWorker}
 ) => {
-  const [comments, tasks, polls] = await Promise.all([
+  const [comments, tasks] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').load(discussionId),
-    dataLoader.get('tasksByDiscussionId').load(discussionId),
-    dataLoader.get('pollsByDiscussionId').load(discussionId)
+    dataLoader.get('tasksByDiscussionId').load(discussionId)
+    // dataLoader.get('pollsByDiscussionId').load(discussionId)
   ])
-  const threadables = [...comments, ...tasks, ...polls] as Threadable[]
-  const threadablesByParentId = {} as {[parentId: string]: Threadable[]}
+  const threadables = [...comments, ...tasks] as ThreadableSource[]
+  const threadablesByParentId = {} as {[parentId: string]: ThreadableSource[]}
 
-  const rootThreadables = [] as Threadable[]
-  const filteredThreadables = [] as Threadable[]
+  const rootThreadables = [] as ThreadableSource[]
+  const filteredThreadables = [] as ThreadableSource[]
 
   threadables.forEach((threadable) => {
     const {threadParentId} = threadable
@@ -34,20 +33,20 @@ const resolveThreadableConnection = async (
   rootThreadables.forEach((threadable) => {
     const {id: threadableId} = threadable
     const replies = threadablesByParentId[threadableId]
-    const isActive =
-      (threadable as TaskDB).status ||
-      (threadable as Comment).isActive ||
-      (threadable as Poll).deletedAt === null
+    const isActive = (threadable as TaskDB).status || (threadable as Comment).isActive
+    // (threadable as Poll).deletedAt === null
     if (!isActive && !replies) return
     filteredThreadables.push(threadable)
     if (replies) {
       replies.sort((a, b) => (a.threadSortOrder < b.threadSortOrder ? -1 : 1))
-      ;(threadable as any).replies = replies
+      threadable.replies = replies
+    } else {
+      threadable.replies = []
     }
   })
 
   const edges = filteredThreadables.map((node) => ({
-    cursor: node.createdAt,
+    cursor: node.createdAt.toISOString(),
     node
   }))
 
@@ -56,7 +55,8 @@ const resolveThreadableConnection = async (
     edges,
     pageInfo: {
       endCursor: lastEdge?.cursor,
-      hasNextPage: false
+      hasNextPage: false,
+      hasPreviousPage: false
     }
   }
 }

@@ -49,8 +49,8 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
     this.subscriber.subscribe(this.subChannel)
   }
 
-  publish = (request: Request) => {
-    return new Promise<Response>((resolve, reject) => {
+  publish = <NarrowResponse = Response>(request: Request) => {
+    return new Promise<NarrowResponse>((resolve, reject) => {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
       const {isAdHoc, longRunning} = request

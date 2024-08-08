@@ -54,11 +54,8 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       return {error: {message: 'teamId mismatch'}}
     }
   } else if (scope === 'org' && teamId !== integrationProvider.teamId) {
-    const [providerTeam, authTeam] = await Promise.all([
-      dataLoader.get('teams').loadNonNull(integrationProvider.teamId),
-      dataLoader.get('teams').loadNonNull(teamId)
-    ])
-    if (providerTeam.orgId !== authTeam.orgId) {
+    const authTeam = await dataLoader.get('teams').loadNonNull(teamId)
+    if (integrationProvider.orgId !== authTeam.orgId) {
       return {error: {message: 'provider not available for this team'}}
     }
   }

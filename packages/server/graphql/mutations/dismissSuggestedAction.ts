@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -19,7 +19,6 @@ export default {
     {suggestedActionId}: {suggestedActionId: string},
     {authToken, dataLoader}: GQLContext
   ) => {
-    const r = await getRethink()
     const now = new Date()
     const viewerId = getUserId(authToken)
 
@@ -34,7 +33,11 @@ export default {
     }
 
     // RESOLUTION
-    await r.table('SuggestedAction').get(suggestedActionId).update({removedAt: now}).run()
+    await getKysely()
+      .updateTable('SuggestedAction')
+      .set({removedAt: now})
+      .where('id', '=', suggestedActionId)
+      .execute()
 
     // no need to publish since that'll only affect their other open tabs
     return {

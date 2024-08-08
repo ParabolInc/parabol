@@ -145,6 +145,7 @@ const MattermostPanel = (props: Props) => {
           provider: {
             id: activeProvider.id,
             scope: 'team',
+            teamId,
             webhookProviderMetadataInput: {
               webhookUrl
             }
