@@ -49,15 +49,18 @@ const GitLabProviders = (props: Props) => {
             <div className='font-semibold text-slate-700'>GitLab</div>
             <RowInfoCopy>Add private servers for use by your teams.</RowInfoCopy>
           </div>
-          {isOrgAdmin && (
-            <ProviderActions>
+          <ProviderActions>
+            {isOrgAdmin ? (
               <ProviderRowActionButton onClick={open}>Add Server</ProviderRowActionButton>
-            </ProviderActions>
-          )}
+            ) : (
+              <ProviderRowActionButton disabled>Add Server</ProviderRowActionButton>
+            )}
+          </ProviderActions>
         </div>
-        {organization.integrationProviders.gitlab.map((provider) => (
-          <GitLabProviderRow key={provider.id} integrationProviderRef={provider} />
-        ))}
+        {isOrgAdmin &&
+          organization.integrationProviders.gitlab.map((provider) => (
+            <GitLabProviderRow key={provider.id} integrationProviderRef={provider} />
+          ))}
       </div>
       <AddGitLabProviderDialog orgId={orgId} isOpen={isOpen} onClose={close} />
     </>

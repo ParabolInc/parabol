@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
-import {Layout} from '../../../../types/constEnums'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
 
@@ -34,9 +33,7 @@ const OrgIntegrations = (props: Props) => {
   return (
     <Suspense fallback={<Loader />}>
       <div className='flex w-full flex-wrap'>
-        <div
-          className={`w-[${Layout.SETTINGS_MAX_WIDTH}px] max-w-[${Layout.SETTINGS_MAX_WIDTH}px]`}
-        >
+        <div className='w-[768px] max-w-[768px]'>
           <h1>Integration Settings</h1>
           {isOrgAdmin ? (
             <div className='text-base text-slate-700'>
