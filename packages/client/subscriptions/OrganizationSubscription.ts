@@ -27,6 +27,9 @@ const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       fieldName
+      AddIntegrationProviderSuccess {
+        ...AddIntegrationProviderMutation_organization @relay(mask: false)
+      }
       AddOrgPayload {
         ...AddOrgMutation_organization @relay(mask: false)
       }

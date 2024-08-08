@@ -1,5 +1,6 @@
 type OrganizationSubscriptionPayload {
   fieldName: String!
+  AddIntegrationProviderSuccess: AddIntegrationProviderSuccess
   AddOrgPayload: AddOrgPayload
   ArchiveOrganizationPayload: ArchiveOrganizationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload

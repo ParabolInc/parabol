@@ -46,7 +46,7 @@ const RemoveIntegrationProviderDialog = (props: Props) => {
   const {onCompleted, onError} = useMutationProps()
 
   const handleClick = () => {
-    close()
+    onClose()
     RemoveIntegrationProviderMutation(atmosphere, {providerId}, {onCompleted, onError})
   }
   const prettyService = prettifyService(service)

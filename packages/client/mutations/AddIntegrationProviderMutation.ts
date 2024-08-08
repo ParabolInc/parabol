@@ -4,9 +4,11 @@ import {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from 
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment AddIntegrationProviderMutation_team on AddIntegrationProviderSuccess {
+  fragment AddIntegrationProviderMutation_organization on AddIntegrationProviderSuccess {
     provider {
       id
+      teamId
+      orgId
       ... on IntegrationProviderWebhook {
         webhookUrl
       }
@@ -27,7 +29,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AddIntegrationProviderMutation_team @relay(mask: false)
+      ...AddIntegrationProviderMutation_organization @relay(mask: false)
     }
   }
 `
