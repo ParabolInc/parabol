@@ -5,7 +5,7 @@ export async function up() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-    CREATE TABLE "Insight" (
+    CREATE TABLE IF NOT EXISTS "Insight" (
       "id" SERIAL PRIMARY KEY,
       "teamId" VARCHAR(100) NOT NULL,
       "startDateTime" TIMESTAMP WITH TIME ZONE NOT NULL,

@@ -5,6 +5,40 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.42.2](https://github.com/ParabolInc/parabol/compare/v7.42.1...v7.42.2) (2024-08-08)
+
+
+### Fixed
+
+* Do not add suggested actions multiple times for autojoin ([#10096](https://github.com/ParabolInc/parabol/issues/10096)) ([445a897](https://github.com/ParabolInc/parabol/commit/445a89796b9a060cb4ab571a2cf06b5be20ca3b6))
+
+## [7.42.1](https://github.com/ParabolInc/parabol/compare/v7.42.0...v7.42.1) (2024-08-08)
+
+
+### Fixed
+
+* accept invite vialotes constraint on suggested action ([#10093](https://github.com/ParabolInc/parabol/issues/10093)) ([2f587ac](https://github.com/ParabolInc/parabol/commit/2f587ac7730a81d9bf14070d0ea7f8f60ab0caa5))
+
+## [7.42.0](https://github.com/ParabolInc/parabol/compare/v7.41.2...v7.42.0) (2024-08-08)
+
+
+### Added
+
+* generate a summary of meeting summaries ([#10017](https://github.com/ParabolInc/parabol/issues/10017)) ([dbb3497](https://github.com/ParabolInc/parabol/commit/dbb34970740a34a3a4489641c4701334fa183a00))
+* generate new meeting summaries for a team ([#10050](https://github.com/ParabolInc/parabol/issues/10050)) ([c497d9e](https://github.com/ParabolInc/parabol/commit/c497d9ec63d5e327ce9f1e664c3bc955869d07ae))
+
+
+### Fixed
+
+* Avoid refetching project template for ADO ([#10077](https://github.com/ParabolInc/parabol/issues/10077)) ([510c56e](https://github.com/ParabolInc/parabol/commit/510c56ee8f878e0661fe99172e5301eddfa573e9))
+* Don't fail acceptTeamInvitation for duplicate suggested actions ([#10091](https://github.com/ParabolInc/parabol/issues/10091)) ([fe6310c](https://github.com/ParabolInc/parabol/commit/fe6310c04364431a5f99b23fe38a3492e4f30ad2))
+* rename Insight migration ([#10087](https://github.com/ParabolInc/parabol/issues/10087)) ([41fc268](https://github.com/ParabolInc/parabol/commit/41fc26856c2217bd7b4035d09b6d04b8e9d60ef6))
+
+
+### Changed
+
+* cleanup selectors ([#10078](https://github.com/ParabolInc/parabol/issues/10078)) ([0a6534d](https://github.com/ParabolInc/parabol/commit/0a6534dfa85fbb921666a5c5ee2ef3d21161114f))
+
 ## [7.41.2](https://github.com/ParabolInc/parabol/compare/v7.41.1...v7.41.2) (2024-08-05)
 
 
