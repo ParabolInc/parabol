@@ -46,13 +46,10 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
-<<<<<<< HEAD
-=======
           "JiraRemoteAvatarUrls": "./types/JiraRemoteAvatarUrls#JiraRemoteAvatarUrlsSource",
           "TemplateDimensionRef": "./types/TemplateDimensionRef#TemplateDimensionRefSource",
           "UpdateIntegrationProviderSuccess": "./types/UpdateIntegrationProviderSuccess#UpdateIntegrationProviderSuccessSource",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",
->>>>>>> master
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../database/types/MeetingAction#default",
