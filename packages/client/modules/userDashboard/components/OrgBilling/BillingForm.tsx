@@ -20,10 +20,8 @@ import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
-import upgradeToTeamTierSuccessUpdater from '../../../../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 import {PALETTE} from '../../../../styles/paletteV3'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-import createProxyRecord from '../../../../utils/relay/createProxyRecord'
 
 const ButtonBlock = styled('div')({
   display: 'flex',
@@ -130,9 +128,10 @@ const BillingForm = (props: Props) => {
         return
       }
       commitLocalUpdate(atmosphere, (store) => {
-        const payload = createProxyRecord(store, 'payload', {})
-        payload.setLinkedRecord(store.get(orgId)!, 'organization')
-        upgradeToTeamTierSuccessUpdater(payload)
+        const organization = store.get(orgId)
+        if (!organization) return
+        organization.setValue(true, 'showConfetti')
+        organization.setValue(true, 'showDrawer')
       })
       onCompleted()
     }

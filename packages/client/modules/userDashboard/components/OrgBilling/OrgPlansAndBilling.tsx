@@ -1,6 +1,6 @@
 import {StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useRef, useState} from 'react'
+import React, {Suspense, useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
 import {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
 import {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
@@ -29,7 +29,7 @@ const OrgPlansAndBilling = (props: Props) => {
     `,
     queryRef
   )
-  const [queryData] = useRefetchableFragment<
+  const [queryData, refetchInvoices] = useRefetchableFragment<
     OrgPlansAndBillingRefetchQuery,
     OrgPlansAndBilling_query$key
   >(
@@ -50,6 +50,7 @@ const OrgPlansAndBilling = (props: Props) => {
         ...BillingLeaders_organization
         ...PaymentDetails_organization
         ...OrgPlanDrawer_organization
+        id
         billingTier
         isBillingLeader
       }
@@ -57,13 +58,18 @@ const OrgPlansAndBilling = (props: Props) => {
     organizationRef
   )
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-  const {billingTier, isBillingLeader} = organization
+  const {id: orgId, billingTier, isBillingLeader} = organization
   const cardNumberRef = useRef<StripeCardNumberElement>(null)
   const handleSelectTeamPlan = () => {
     setHasSelectedTeamPlan(true)
     cardNumberRef.current?.focus()
   }
-
+  const prevTierRef = useRef(billingTier)
+  useEffect(() => {
+    if (billingTier === prevTierRef.current) return
+    prevTierRef.current = billingTier
+    refetchInvoices({orgId, first: 3}, {fetchPolicy: 'network-only'})
+  }, [billingTier])
   if (billingTier === 'starter') {
     return (
       <Suspense fallback={''}>

@@ -24,8 +24,10 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
 
   // RESOLUTION
   const org = await dataLoader.get('organizations').loadNonNull(orgId)
-  const {stripeId} = org
-  if (!stripeId) return {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
+  const {stripeId, stripeSubscriptionId} = org
+  if (!stripeId || !stripeSubscriptionId)
+    // the subscription is necessary because if they downgraded we don't want to fetch invoices
+    return {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
   const manager = getStripeManager()
 
   const [session, upcomingInvoice, invoices] = await Promise.all([
