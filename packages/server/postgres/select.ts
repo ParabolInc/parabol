@@ -181,7 +181,6 @@ export const selectMeetingSettings = () =>
     .selectFrom('MeetingSettings')
     .select([
       'id',
-      'phaseTypes',
       'meetingType',
       'teamId',
       'selectedTemplateId',
@@ -192,15 +191,15 @@ export const selectMeetingSettings = () =>
     ])
     .$narrowType<
       // NewMeeetingPhaseTypeEnum[] should be inferred from kysely-codegen, but it's not
-      | {meetingType: 'action' | 'poker' | 'teamPrompt'; phaseTypes: NewMeetingPhaseTypeEnum[]}
+      | {meetingType: 'action' | 'poker' | 'teamPrompt'}
       | {
           meetingType: 'retrospective'
-          phaseTypes: NewMeetingPhaseTypeEnum[]
           maxVotesPerGroup: NotNull
           totalVotes: NotNull
           disableAnonymity: NotNull
         }
     >()
     .select(({fn}) => [
-      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
+      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries'),
+      fn<NewMeetingPhaseTypeEnum[]>('to_json', ['phaseTypes']).as('phaseTypes')
     ])
