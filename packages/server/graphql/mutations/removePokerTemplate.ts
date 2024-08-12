@@ -42,12 +42,9 @@ const removePokerTemplate = {
     const {teamId} = template
     const [templates, settings] = await Promise.all([
       dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
-      r
-        .table('MeetingSettings')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: 'poker'})
-        .nth(0)
-        .run() as unknown as MeetingSettingsPoker
+      dataLoader
+        .get('meetingSettingsByType')
+        .load({meetingType: 'poker', teamId}) as any as MeetingSettingsPoker
     ])
 
     // RESOLUTION
@@ -66,6 +63,11 @@ const removePokerTemplate = {
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
       const nextTemplateId = nextTemplate?.id ?? SprintPokerDefaults.DEFAULT_TEMPLATE_ID
+      await getKysely()
+        .updateTable('MeetingSettings')
+        .set({selectedTemplateId: nextTemplateId})
+        .where('id', '=', settingsId)
+        .execute()
       await r
         .table('MeetingSettings')
         .get(settingsId)
@@ -73,6 +75,7 @@ const removePokerTemplate = {
           selectedTemplateId: nextTemplateId
         })
         .run()
+      dataLoader.clearAll('meetingSettings')
     }
 
     const data = {templateId, settingsId}

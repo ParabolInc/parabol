@@ -2,11 +2,16 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
-import {analytics, MeetingSettings} from '../../../utils/analytics/analytics'
+import getKysely from '../../../postgres/getKysely'
+import {MeetingSettings} from '../../../postgres/types'
+import {
+  analytics,
+  MeetingSettings as MeetingSettingsAnalytics
+} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
 
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
@@ -19,13 +24,13 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const settings = await r.table('MeetingSettings').get(settingsId).run()
+  const settings = (await dataLoader.get('meetingSettings').load(settingsId)) as MeetingSettings
   if (!settings) {
     return standardError(new Error('Settings not found'), {userId: viewerId})
   }
 
   // RESOLUTION
-  const {teamId, meetingType} = settings
+  const {teamId, meetingType, phaseTypes} = settings
   const [team, viewer] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('users').loadNonNull(viewerId)
@@ -34,7 +39,27 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   const {featureFlags} = organization
   const hasTranscriptFlag = featureFlags?.includes('zoomTranscription')
 
-  const meetingSettings = {} as MeetingSettings
+  const meetingSettings = {} as MeetingSettingsAnalytics
+  const firstPhases: NewMeetingPhaseTypeEnum[] = []
+  if (checkinEnabled || (checkinEnabled !== false && phaseTypes.includes('checkin'))) {
+    firstPhases.push('checkin')
+  }
+  if (teamHealthEnabled || (teamHealthEnabled !== false && phaseTypes.includes('TEAM_HEALTH'))) {
+    firstPhases.push('TEAM_HEALTH')
+  }
+  const nextSettings = {
+    phaseTypes: [
+      ...firstPhases,
+      ...phaseTypes.filter((phase) => phase !== 'checkin' && phase !== 'TEAM_HEALTH')
+    ],
+    disableAnonymity: isNotNull(disableAnonymity) ? disableAnonymity : settings.disableAnonymity,
+    videoMeetingURL: hasTranscriptFlag
+      ? isNotNull(videoMeetingURL)
+        ? videoMeetingURL
+        : settings.videoMeetingURL
+      : null
+  }
+
   await r
     .table('MeetingSettings')
     .get(settingsId)
@@ -74,8 +99,20 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     })
     .run()
 
+  await getKysely()
+    .updateTable('MeetingSettings')
+    .set(nextSettings)
+    .where('id', '=', settings.id)
+    .execute()
+  dataLoader.clearAll('meetingSettings')
+
   const data = {settingsId}
-  analytics.meetingSettingsChanged(viewer, teamId, meetingType, meetingSettings)
+  analytics.meetingSettingsChanged(viewer, teamId, meetingType, {
+    disableAnonymity: nextSettings.disableAnonymity,
+    videoMeetingURL: nextSettings.videoMeetingURL,
+    hasIcebreaker: nextSettings.phaseTypes.includes('checkin'),
+    hasTeamHealth: nextSettings.phaseTypes.includes('TEAM_HEALTH')
+  })
   publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
   return data
 }

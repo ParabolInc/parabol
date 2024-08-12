@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -67,7 +68,13 @@ const selectTemplate = {
       )('changes')(0)('old_val')('id')
       .default(null)
       .run()
-
+    await getKysely()
+      .updateTable('MeetingSettings')
+      .set({selectedTemplateId})
+      .where('teamId', '=', teamId)
+      .where('meetingType', '=', template.type)
+      .returning('id')
+      .executeTakeFirst()
     // No need to check if a non-null 'meetingSettingsId' was returned - the Activity Library client
     // will always attempt to update the template, even if it's already selected, and we don't need
     // to return a 'meetingSettingsId' if no updates took place.

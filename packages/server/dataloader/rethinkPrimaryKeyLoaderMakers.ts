@@ -4,7 +4,6 @@ import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
  * all rethink dataloader types which also must exist in {@link rethinkDriver/RethinkSchema}
  */
 export const agendaItems = new RethinkPrimaryKeyLoaderMaker('AgendaItem')
-export const atlassianAuths = new RethinkPrimaryKeyLoaderMaker('AtlassianAuth')
 export const comments = new RethinkPrimaryKeyLoaderMaker('Comment')
 export const reflectPrompts = new RethinkPrimaryKeyLoaderMaker('ReflectPrompt')
 export const massInvitations = new RethinkPrimaryKeyLoaderMaker('MassInvitation')

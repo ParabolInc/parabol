@@ -24,6 +24,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const DUPLICATE_THRESHOLD = 3000
@@ -113,7 +114,13 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
         .update({
           videoMeetingURL: null
         })
-        .run()
+        .run(),
+    videoMeetingURL &&
+      pg
+        .updateTable('MeetingSettings')
+        .set({videoMeetingURL: null})
+        .where('id', '=', meetingSettingsId)
+        .execute()
   ])
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
@@ -133,7 +140,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     dataLoader
   })
   if (meetingSeries && gcalSeriesId) {
-    const pg = getKysely()
     await pg
       .updateTable('MeetingSeries')
       .set({gcalSeriesId})

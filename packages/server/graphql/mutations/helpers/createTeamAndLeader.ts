@@ -30,6 +30,7 @@ export default async function createTeamAndLeader(
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, trialStartDate} = organization
   const verifiedTeam = new Team({...newTeam, createdBy: userId, tier, trialStartDate})
+
   const meetingSettings = [
     new MeetingSettingsRetrospective({teamId}),
     new MeetingSettingsAction({teamId}),
@@ -76,6 +77,11 @@ export default async function createTeamAndLeader(
           .insertInto('SuggestedAction')
           .values(suggestedAction)
           .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+      )
+      .with('MeetingSettingsInsert', (qc) =>
+        qc
+          .insertInto('MeetingSettings')
+          .values(meetingSettings.map((s) => ({...s, jiraSearchQueries: null})))
       )
       .insertInto('TimelineEvent')
       .values(timelineEvent)
