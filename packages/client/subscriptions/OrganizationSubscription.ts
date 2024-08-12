@@ -20,7 +20,6 @@ import {
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
-import upgradeToTeamTierSuccessUpdater from '../mutations/handlers/upgradeToTeamTierSuccessUpdater'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -40,7 +39,6 @@ const subscription = graphql`
       OldUpdateCreditCardPayload {
         ...OldUpdateCreditCardMutation_organization @relay(mask: false)
       }
-
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
       }
@@ -77,8 +75,7 @@ const updateHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater,
-  UpgradeToTeamTierSuccess: upgradeToTeamTierSuccessUpdater
+  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const
 
 const OrganizationSubscription = (

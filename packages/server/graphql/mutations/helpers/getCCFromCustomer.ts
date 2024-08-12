@@ -38,7 +38,7 @@ export default async function getCCFromCustomer(
     const expiry = `${expMonth.toString().padStart(2, '0')}/${String(expYear).substr(2)}`
     return {
       brand,
-      last4,
+      last4: Number(last4),
       expiry
     }
   }

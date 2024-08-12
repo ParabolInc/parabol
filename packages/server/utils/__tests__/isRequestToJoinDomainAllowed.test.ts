@@ -1,9 +1,9 @@
 /* eslint-env jest */
 import {Insertable} from 'kysely'
 import {createPGTables, truncatePGTables} from '../../__tests__/common'
-import {TierEnum} from '../../database/types/Invoice'
 import RootDataLoader from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
+import {TierEnum} from '../../graphql/public/resolverTypes'
 import getKysely from '../../postgres/getKysely'
 import {User} from '../../postgres/pg'
 import {OrganizationUser} from '../../postgres/types'

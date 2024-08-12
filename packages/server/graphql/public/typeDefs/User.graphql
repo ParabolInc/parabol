@@ -63,7 +63,7 @@ type User {
     The id of the organization
     """
     orgId: ID!
-  ): InvoiceConnection
+  ): InvoiceConnection!
 
   """
   true if the user is a billing leader on any organization, else false
@@ -397,12 +397,6 @@ type User {
   Any super power given to the user via a super user
   """
   featureFlags: UserFeatureFlags!
-  invoiceDetails(
-    """
-    The id of the invoice
-    """
-    invoiceId: ID!
-  ): Invoice
 
   """
   url of user’s profile picture

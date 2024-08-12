@@ -35,9 +35,11 @@ const EmailFooter = () => {
             <div style={finePrintStyle}>
               {'Parabol, Inc.'}
               <br />
-              {'8605 Santa Monica Blvd'}
+              {'1111 6th Ave., Ste 550'}
               <br />
-              {'West Hollywood, CA 90069-4109'}
+              {'PMB 73201'}
+              <br />
+              {'San Diego, CA 92101'}
               <br />
               {'United States'}
               <br />

@@ -1,9 +1,9 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
+import {TierEnum} from '../../graphql/public/resolverTypes'
 import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
 import {defaultTier} from '../../utils/defaultTier'
 import AuthIdentity from './AuthIdentity'
-import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string
