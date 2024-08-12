@@ -52,7 +52,11 @@ const handleFirstAcceptedInvitation = async (
       userId
     }
   ]
-  await getKysely().insertInto('SuggestedAction').values(actions).execute()
+  await getKysely()
+    .insertInto('SuggestedAction')
+    .values(actions)
+    .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+    .execute()
   return userId
 }
 
