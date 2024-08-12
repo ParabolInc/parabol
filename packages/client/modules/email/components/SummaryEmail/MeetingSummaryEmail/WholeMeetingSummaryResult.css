@@ -1,0 +1,4 @@
+.link-style a {
+  color: #329ae5; /* Equivalent to PALETTE.SKY_500 */
+  text-decoration: underline;
+}

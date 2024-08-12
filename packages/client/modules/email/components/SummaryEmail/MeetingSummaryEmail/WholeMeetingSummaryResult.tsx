@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import DOMPurify from 'dompurify'
 import {marked} from 'marked'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,6 +10,7 @@ import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {AIExplainer} from '../../../../../types/constEnums'
 import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import EmailBorderBottom from './EmailBorderBottom'
+import './WholeMeetingSummaryResult.css'
 
 const topicTitleStyle = {
   color: PALETTE.SLATE_700,
@@ -73,11 +75,7 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
     gfm: true,
     breaks: true
   }) as string
-  // replace links with styled links
-  const formattedSummary = renderedSummary?.replace(
-    /<a href="(.*?)">(.*?)<\/a>/g,
-    `<a href="$1" style="color: ${PALETTE.SKY_500}; text-decoration: underline;">$2</a>`
-  )
+  const sanitizedSummary = DOMPurify.sanitize(renderedSummary)
 
   const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
 
@@ -94,7 +92,12 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
             </td>
           </tr>
           <tr>
-            <td style={textStyle} dangerouslySetInnerHTML={{__html: formattedSummary}} />
+            <td
+              align='center'
+              style={textStyle}
+              className='link-style'
+              dangerouslySetInnerHTML={{__html: sanitizedSummary}}
+            />
           </tr>
         </td>
       </tr>
