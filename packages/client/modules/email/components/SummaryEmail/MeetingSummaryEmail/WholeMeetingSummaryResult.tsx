@@ -69,8 +69,7 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
   const {summary: wholeMeetingSummary, team} = meeting
 
   if (!wholeMeetingSummary) return null
-  const test = `The budget work is recognized for its future value in improving focus and communication within the team ([link](https://action.parabol.co/meet/twbP2qPXNK/discuss/3](https://action.parabol.co/meet/twbP2qPXNK/discuss/3) )).`
-  const renderedSummary = marked(test, {
+  const renderedSummary = marked(wholeMeetingSummary, {
     gfm: true,
     breaks: true
   }) as string
