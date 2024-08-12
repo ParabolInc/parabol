@@ -1,6 +1,6 @@
 {
   "name": "chronos",
-  "version": "7.42.2",
+  "version": "7.43.0",
   "description": "A cron job scheduler",
   "author": "Matt Krick <matt.krick@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/chronos#readme",
@@ -25,6 +25,6 @@
   },
   "dependencies": {
     "cron": "^2.3.1",
-    "parabol-server": "7.42.2"
+    "parabol-server": "7.43.0"
   }
 }
