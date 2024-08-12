@@ -5,43 +5,32 @@ import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {Threshold} from '../../../../client/types/constEnums'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import fetchAllLines from '../../../billing/helpers/fetchAllLines'
-import generateInvoice from '../../../billing/helpers/generateInvoice'
-import generateUpcomingInvoice from '../../../billing/helpers/generateUpcomingInvoice'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
-import Invoice from '../../../database/types/Invoice'
 import MeetingMemberType from '../../../database/types/MeetingMember'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import Task from '../../../database/types/Task'
 import getKysely from '../../../postgres/getKysely'
-import {
-  getUserId,
-  isSuperUser,
-  isTeamMember,
-  isUserBillingLeader
-} from '../../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
-import {getStripeManager} from '../../../utils/stripe'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
-import makeUpcomingInvoice from '../../queries/helpers/makeUpcomingInvoice'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import {invoices} from '../fields/invoices'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {ReqResolvers} from './ReqResolvers'
 
@@ -92,68 +81,7 @@ const User: ReqResolvers<'User'> = {
     if (!isSuperUser(authToken) && !viewerOrganizationUser) return null
     return organization
   },
-  invoices: async (_source, {orgId, first, after}, {authToken, dataLoader}) => {
-    const r = await getRethink()
-
-    // AUTH
-    const viewerId = getUserId(authToken)
-    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      // standardError(new Error('Not organization lead'), {userId: viewerId})
-      return {
-        edges: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false
-        }
-      }
-    }
-
-    // RESOLUTION
-    const {stripeId} = await dataLoader.get('organizations').loadNonNull(orgId)
-    const dbAfter = after ? new Date(after) : r.maxval
-    const [tooManyInvoices, orgUsers] = await Promise.all([
-      r
-        .table('Invoice')
-        .between([orgId, r.minval], [orgId, dbAfter], {
-          index: 'orgIdStartAt',
-          leftBound: 'open',
-          rightBound: 'closed'
-        })
-        .filter((invoice: RDatum) => invoice('status').ne('UPCOMING').and(invoice('total').ne(0)))
-        // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)
-        // break ties based on when created. In the future, we might want to consider using the created_at provided by stripe instead of our own
-        .orderBy(r.desc('startAt'), r.desc('createdAt'))
-        .limit(first + 1)
-        .run(),
-      dataLoader.get('organizationUsersByOrgId').load(orgId)
-    ])
-    const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
-    const orgUserCount = activeOrgUsers.length
-    const org = await dataLoader.get('organizations').loadNonNull(orgId)
-    const upcomingInvoice = after
-      ? undefined
-      : await makeUpcomingInvoice(org, orgUserCount, stripeId)
-    const extraInvoices: Invoice[] = tooManyInvoices || []
-    const paginatedInvoices = after ? extraInvoices.slice(1) : extraInvoices
-    const allInvoices = upcomingInvoice
-      ? [upcomingInvoice, ...paginatedInvoices]
-      : paginatedInvoices
-    const nodes = allInvoices.slice(0, first)
-    const edges = nodes.map((node) => ({
-      cursor: node.startAt,
-      node
-    }))
-    const firstEdge = edges[0]
-    return {
-      edges,
-      pageInfo: {
-        startCursor: firstEdge && firstEdge.cursor,
-        endCursor: firstEdge && edges[edges.length - 1]!.cursor,
-        hasNextPage: extraInvoices.length + (upcomingInvoice ? 1 : 0) > first,
-        hasPreviousPage: false
-      }
-    }
-  },
+  invoices,
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
     const r = await getRethink()
 
@@ -754,32 +682,6 @@ const User: ReqResolvers<'User'> = {
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
-  },
-  invoiceDetails: async (_source, {invoiceId}, {authToken, dataLoader}) => {
-    const r = await getRethink()
-    const now = new Date()
-
-    const viewerId = getUserId(authToken)
-    const isUpcoming = invoiceId.startsWith('upcoming_')
-    const currentInvoice = await r.table('Invoice').get(invoiceId).default(null).run()
-    const orgId = (currentInvoice && currentInvoice.orgId) || invoiceId.substring(9) // remove 'upcoming_'
-    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      standardError(new Error('Not organization lead'), {userId: viewerId})
-      return null
-    }
-    if (currentInvoice) {
-      const invalidAt = new Date(
-        currentInvoice.createdAt.getTime() + Threshold.UPCOMING_INVOICE_TIME_VALID
-      )
-      if (invalidAt > now) return currentInvoice
-    }
-    if (isUpcoming) {
-      return generateUpcomingInvoice(orgId, dataLoader)
-    }
-    const manager = getStripeManager()
-    const stripeLineItems = await fetchAllLines(invoiceId)
-    const invoice = await manager.retrieveInvoice(invoiceId)
-    return generateInvoice(invoice, stripeLineItems, orgId, invoiceId, dataLoader)
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

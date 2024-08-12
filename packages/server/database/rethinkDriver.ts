@@ -7,8 +7,6 @@ import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import AgendaItem from './types/AgendaItem'
 import Comment from './types/Comment'
-import Invoice from './types/Invoice'
-import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
@@ -37,14 +35,6 @@ export type RethinkSchema = {
   ReflectPrompt: {
     type: RetrospectivePrompt
     index: 'teamId' | 'templateId'
-  }
-  Invoice: {
-    type: Invoice
-    index: 'orgIdStartAt'
-  }
-  InvoiceItemHook: {
-    type: InvoiceItemHook
-    index: 'prorationDate' | 'stripeSubscriptionId'
   }
   MassInvitation: {
     type: MassInvitation

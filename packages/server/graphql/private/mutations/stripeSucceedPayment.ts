@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
@@ -9,7 +8,6 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   {invoiceId},
   {authToken, dataLoader}
 ) => {
-  const r = await getRethink()
   const now = new Date()
 
   // AUTH
@@ -42,31 +40,13 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
     }
     return false
   }
-  const {creditCard} = org
 
   // RESOLUTION
   const teamUpdates = {
     isPaid: true,
     updatedAt: now
   }
-  await Promise.all([
-    r({
-      invoice: r
-        .table('Invoice')
-        .get(invoiceId)
-        .update({
-          creditCard: creditCard
-            ? {
-                ...creditCard,
-                last4: String(creditCard.last4)
-              }
-            : undefined,
-          paidAt: now,
-          status: 'PAID'
-        })
-    }).run(),
-    updateTeamByOrgId(teamUpdates, orgId)
-  ])
+  await Promise.all([updateTeamByOrgId(teamUpdates, orgId)])
   return true
 }
 

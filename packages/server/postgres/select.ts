@@ -124,6 +124,7 @@ export const selectRetroReflections = () =>
       fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')
     ])
 
+export type CreditCard = {brand: string; expiry: string; last4: number}
 export const selectOrganizations = () =>
   getKysely()
     .selectFrom('Organization')
@@ -149,11 +150,7 @@ export const selectOrganizations = () =>
       'updatedAt',
       'featureFlags'
     ])
-    .select(({fn}) => [
-      fn<{brand: string; expiry: string; last4: number} | null>('to_json', ['creditCard']).as(
-        'creditCard'
-      )
-    ])
+    .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 
 export const selectTeamPromptResponses = () =>
   getKysely()

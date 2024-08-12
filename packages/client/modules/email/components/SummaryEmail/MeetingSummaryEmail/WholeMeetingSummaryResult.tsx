@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {WholeMeetingSummaryResult_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummaryResult_meeting.graphql'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
-import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
+import DOMPurify from 'dompurify'
+import {marked} from 'marked'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {WholeMeetingSummaryResult_meeting$key} from '../../../../../__generated__/WholeMeetingSummaryResult_meeting.graphql'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
+import {PALETTE} from '../../../../../styles/paletteV3'
+import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {AIExplainer} from '../../../../../types/constEnums'
 import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import EmailBorderBottom from './EmailBorderBottom'
@@ -39,8 +41,9 @@ interface Props {
   meetingRef: WholeMeetingSummaryResult_meeting$key
 }
 
-const WholeMeetingSummaryResult = (props: Props) => {
-  const {meetingRef} = props
+const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
+  const atmosphere = useAtmosphere()
+
   const meeting = useFragment(
     graphql`
       fragment WholeMeetingSummaryResult_meeting on NewMeeting {
@@ -55,16 +58,25 @@ const WholeMeetingSummaryResult = (props: Props) => {
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
-  const {summary: wholeMeetingSummary, team} = meeting
-  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
       source: 'Meeting Summary',
       tier: meeting.team.billingTier,
       meetingId: meeting.id
     })
-  }, [])
+  }, [atmosphere, meeting.id, meeting.team.billingTier])
+
+  const {summary: wholeMeetingSummary, team} = meeting
+
+  if (!wholeMeetingSummary) return null
+  const renderedSummary = marked(wholeMeetingSummary, {
+    gfm: true,
+    breaks: true
+  }) as string
+  const sanitizedSummary = DOMPurify.sanitize(renderedSummary)
+
+  const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
+
   return (
     <>
       <tr>
@@ -78,7 +90,12 @@ const WholeMeetingSummaryResult = (props: Props) => {
             </td>
           </tr>
           <tr>
-            <td style={textStyle}>{wholeMeetingSummary}</td>
+            <td
+              align='center'
+              style={textStyle}
+              className='summary-link-style'
+              dangerouslySetInnerHTML={{__html: sanitizedSummary}}
+            />
           </tr>
         </td>
       </tr>

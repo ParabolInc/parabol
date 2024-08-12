@@ -4,9 +4,6 @@ import {Redirect, Route, Switch, useLocation} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
 
-const Invoice = lazy(
-  () => import(/* webpackChunkName: 'InvoiceRoot' */ '../modules/invoice/containers/InvoiceRoot')
-)
 const NewMeetingSummary = lazy(
   () =>
     import(
@@ -71,7 +68,6 @@ const PrivateRoutes = () => {
         </Route>
         <Route path='/meet/:meetingId' component={MeetingRoot} />
         <Route path='/meeting-series/:meetingId' component={MeetingSeriesRoot} />
-        <Route path='/invoice/:invoiceId' component={Invoice} />
         <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
         <Route path='/admin/graphql' component={Graphql} />
         <Route path='/admin/impersonate' component={Impersonate} />
