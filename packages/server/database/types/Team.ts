@@ -1,7 +1,7 @@
 import generateUID from '../../generateUID'
+import {TierEnum} from '../../graphql/public/resolverTypes'
 import {TEAM_NAME_LIMIT} from '../../postgres/constants'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
-import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string

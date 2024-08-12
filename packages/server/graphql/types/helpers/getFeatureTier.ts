@@ -1,4 +1,4 @@
-import {TierEnum} from '../../../database/types/Invoice'
+import {TierEnum} from '../../public/resolverTypes'
 
 export const getFeatureTier = ({
   tier,

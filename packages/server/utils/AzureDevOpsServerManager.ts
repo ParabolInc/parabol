@@ -591,7 +591,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     return {error: undefined, projects: teamProjectReferences}
   }
 
-  async getProjectProperties(instanceId: string, projectId: string) {
+  private async getProjectProperties(instanceId: string, projectId: string) {
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
     const result = await this.get<ProjectProperties>(uri)
