@@ -91,7 +91,7 @@ export type TaskEstimateProperties = {
 export type MeetingSettings = {
   hasIcebreaker?: boolean
   hasTeamHealth?: boolean
-  disableAnonymity?: boolean
+  disableAnonymity?: boolean | null
   videoMeetingURL?: string | null
 }
 

@@ -9,6 +9,6 @@ export const stripeCardToDBCard = (card: Stripe.PaymentMethod.Card) => {
   return {
     brand: formattedBrand,
     expiry,
-    last4
+    last4: Number(last4)
   }
 }

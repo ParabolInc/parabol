@@ -1,5 +1,6 @@
 import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
+import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 
 export const selectTimelineEvent = () => {
@@ -123,6 +124,7 @@ export const selectRetroReflections = () =>
       fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')
     ])
 
+export type CreditCard = {brand: string; expiry: string; last4: number}
 export const selectOrganizations = () =>
   getKysely()
     .selectFrom('Organization')
@@ -148,11 +150,7 @@ export const selectOrganizations = () =>
       'updatedAt',
       'featureFlags'
     ])
-    .select(({fn}) => [
-      fn<{brand: string; expiry: string; last4: number} | null>('to_json', ['creditCard']).as(
-        'creditCard'
-      )
-    ])
+    .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 
 export const selectTeamPromptResponses = () =>
   getKysely()
@@ -169,3 +167,41 @@ export const selectTeamPromptResponses = () =>
     ])
     .$narrowType<{content: JSONContent}>()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
+
+export type JiraSearchQuery = {
+  id: string
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters?: string[]
+  lastUsedAt: Date
+}
+
+export const selectMeetingSettings = () =>
+  getKysely()
+    .selectFrom('MeetingSettings')
+    .select([
+      'id',
+      'phaseTypes',
+      'meetingType',
+      'teamId',
+      'selectedTemplateId',
+      'jiraSearchQueries',
+      'maxVotesPerGroup',
+      'totalVotes',
+      'disableAnonymity',
+      'videoMeetingURL'
+    ])
+    .$narrowType<
+      // NewMeeetingPhaseTypeEnum[] should be inferred from kysely-codegen, but it's not
+      | {meetingType: NotNull; phaseTypes: NewMeetingPhaseTypeEnum[]}
+      | {
+          meetingType: 'retrospective'
+          phaseTypes: NewMeetingPhaseTypeEnum[]
+          maxVotesPerGroup: NotNull
+          totalVotes: NotNull
+          disableAnonymity: NotNull
+        }
+    >()
+    .select(({fn}) => [
+      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
+    ])

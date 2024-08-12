@@ -6,6 +6,7 @@ import {
   TeamMember as TeamMemberPG
 } from '../pg.d'
 import {
+  selectMeetingSettings,
   selectOrganizations,
   selectRetroReflections,
   selectSuggestedAction,
@@ -39,3 +40,5 @@ export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTempl
 
 // TODO refactor getTemplateScaleRefsByIds to kysely
 export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScaleRef>
+
+export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
