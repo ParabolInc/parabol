@@ -10,7 +10,6 @@ import {FONT_FAMILY} from '../../../../../styles/typographyV2'
 import {AIExplainer} from '../../../../../types/constEnums'
 import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import EmailBorderBottom from './EmailBorderBottom'
-import './WholeMeetingSummaryResult.css'
 
 const topicTitleStyle = {
   color: PALETTE.SLATE_700,
@@ -70,8 +69,8 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
   const {summary: wholeMeetingSummary, team} = meeting
 
   if (!wholeMeetingSummary) return null
-
-  const renderedSummary = marked(wholeMeetingSummary, {
+  const test = `The budget work is recognized for its future value in improving focus and communication within the team ([link](https://action.parabol.co/meet/twbP2qPXNK/discuss/3](https://action.parabol.co/meet/twbP2qPXNK/discuss/3) )).`
+  const renderedSummary = marked(test, {
     gfm: true,
     breaks: true
   }) as string
@@ -95,7 +94,7 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
             <td
               align='center'
               style={textStyle}
-              className='link-style'
+              className='summary-link-style'
               dangerouslySetInnerHTML={{__html: sanitizedSummary}}
             />
           </tr>
