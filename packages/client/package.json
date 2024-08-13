@@ -47,6 +47,7 @@
     "@types/react-textarea-autosize": "^8.0.0",
     "@types/react-virtualized": "^9.21.20",
     "@types/relay-runtime": "^14.1.9",
+    "@types/sanitize-html": "^2.11.0",
     "@types/stripe-v2": "^2.0.1",
     "babel-plugin-relay": "^12.0.0",
     "debug": "^4.1.1",
