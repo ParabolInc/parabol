@@ -131,6 +131,7 @@
     "rethinkdb-ts": "2.6.0",
     "rrule": "^2.7.2",
     "samlify": "^2.8.2",
+    "sanitize-html": "^2.13.0",
     "sharp": "^0.32.6",
     "string-similarity": "^3.0.0",
     "stripe": "^9.13.0",
