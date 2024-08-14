@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import DOMPurify from 'dompurify'
 import {marked} from 'marked'
 import React, {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import sanitizeHtml from 'sanitize-html'
 import {WholeMeetingSummaryResult_meeting$key} from '../../../../../__generated__/WholeMeetingSummaryResult_meeting.graphql'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'
 import {PALETTE} from '../../../../../styles/paletteV3'
@@ -73,7 +73,7 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
     gfm: true,
     breaks: true
   }) as string
-  const sanitizedSummary = DOMPurify.sanitize(renderedSummary)
+  const sanitizedSummary = sanitizeHtml(renderedSummary)
 
   const explainerText = team?.tier === 'starter' ? AIExplainer.STARTER : AIExplainer.PREMIUM_MEETING
 
