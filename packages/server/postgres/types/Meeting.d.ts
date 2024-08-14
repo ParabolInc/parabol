@@ -2,10 +2,6 @@ import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import MeetingAction from '../../database/types/MeetingAction'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
-import MeetingSettingsAction from '../../database/types/MeetingSettingsAction'
-import MeetingSettingsPoker from '../../database/types/MeetingSettingsPoker'
-import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
-import MeetingSettingsTeamPrompt from '../../database/types/MeetingSettingsTeamPrompt'
 import MeetingTeamPrompt from '../../database/types/MeetingTeamPrompt'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
@@ -21,9 +17,3 @@ export type AnyMeetingTeamMember =
   | RetroMeetingMember
   | ActionMeetingMember
   | TeamPromptMeetingMember
-
-export type AnyMeetingSettings =
-  | MeetingSettingsRetrospective
-  | MeetingSettingsAction
-  | MeetingSettingsPoker
-  | MeetingSettingsTeamPrompt

@@ -42,3 +42,5 @@ export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTempl
 export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScaleRef>
 
 export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
+export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
+export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}

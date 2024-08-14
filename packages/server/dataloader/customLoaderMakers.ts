@@ -4,7 +4,6 @@ import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
-import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
@@ -290,33 +289,19 @@ export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: Registe
   dependsOn('meetingSettings')
   return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
     async (keys) => {
-      const r = await getRethink()
-      const types = {} as Record<MeetingTypeEnum, string[]>
-      keys.forEach((key) => {
-        const {meetingType} = key
-        types[meetingType] = types[meetingType] || []
-        types[meetingType]!.push(key.teamId)
-      })
-      const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
-      const resultsByType = await Promise.all(
-        entries.map((entry) => {
-          const [meetingType, teamIds] = entry
-          return r
-            .table('MeetingSettings')
-            .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({meetingType: meetingType})
-            .run()
-        })
+      const res = await selectMeetingSettings()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'meetingType'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.meetingType))
+          )
+        )
+        .execute()
+      return keys.map(
+        (key) =>
+          res.find((doc) => doc.teamId === key.teamId && doc.meetingType === key.meetingType)!
       )
-      const docs = resultsByType.flat()
-      return keys.map((key) => {
-        const {teamId, meetingType} = key
-        // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
-        if (meetingType === 'teamPrompt') {
-          return new MeetingSettingsTeamPrompt({teamId}) as any
-        }
-        return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
-      })
     },
     {
       ...parent.dataLoaderOptions,

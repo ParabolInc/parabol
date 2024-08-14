@@ -21,7 +21,6 @@ import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
 import TeamHealthStage from '../../../database/types/TeamHealthStage'
-import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import insertDiscussions from '../../../postgres/queries/insertDiscussions'
@@ -145,20 +144,6 @@ const createNewMeetingPhases = async (
         case LAST_CALL:
         case 'SCOPE':
           return new GenericMeetingPhase(phaseType, durations)
-        case 'RESPONSES':
-          const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-          const teamMemberIds = teamMembers.map(({id}) => id)
-          const teamPromptResponsesPhase = new TeamPromptResponsesPhase(teamMemberIds)
-          const {stages: teamPromptStages} = teamPromptResponsesPhase
-          const teamMemberResponseDiscussion = teamPromptStages.map((stage) => ({
-            id: stage.discussionId,
-            teamId,
-            meetingId,
-            discussionTopicId: stage.teamMemberId,
-            discussionTopicType: 'teamPromptResponse' as const
-          }))
-          asyncSideEffects.push(insertDiscussions(teamMemberResponseDiscussion))
-          return teamPromptResponsesPhase
         default:
           throw new Error(`Unhandled phaseType: ${phaseType}`)
       }

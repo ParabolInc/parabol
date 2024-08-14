@@ -8,7 +8,7 @@ import {PokerMeetingSettingsResolvers} from '../resolverTypes'
 
 const PokerMeetingSettings: PokerMeetingSettingsResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'poker',
-  selectedTemplate: resolveSelectedTemplate('estimatedEffortTemplate'),
+  selectedTemplate: resolveSelectedTemplate<'poker'>('estimatedEffortTemplate'),
 
   teamTemplates: async ({teamId}, _args, {dataLoader}) => {
     const templates = await dataLoader

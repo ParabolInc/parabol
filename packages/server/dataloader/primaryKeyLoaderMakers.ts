@@ -87,6 +87,6 @@ export const suggestedActions = primaryKeyLoaderMaker((ids: readonly string[]) =
   return selectSuggestedAction().where('id', 'in', ids).execute()
 })
 
-export const _PGmeetingSettings = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const meetingSettings = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectMeetingSettings().where('id', 'in', ids).execute()
 })
