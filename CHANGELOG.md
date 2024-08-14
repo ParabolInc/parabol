@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.43.2](https://github.com/ParabolInc/parabol/compare/v7.43.1...v7.43.2) (2024-08-14)
+
+
+### Fixed
+
+* email-meeting-summaries ([#10104](https://github.com/ParabolInc/parabol/issues/10104)) ([5debeb9](https://github.com/ParabolInc/parabol/commit/5debeb959c7b6c9fbbf2f8a20a0377bb09efc3e0))
+
+## [7.43.1](https://github.com/ParabolInc/parabol/compare/v7.43.0...v7.43.1) (2024-08-12)
+
+
+### Changed
+
+* **rethinkdb:** MeetingSettings: Phase 2 ([#10089](https://github.com/ParabolInc/parabol/issues/10089)) ([dfc6422](https://github.com/ParabolInc/parabol/commit/dfc6422532ea2f39b1773d66154d304527a07371))
+
+## [7.43.0](https://github.com/ParabolInc/parabol/compare/v7.42.2...v7.43.0) (2024-08-12)
+
+
+### Added
+
+* update meeting summary UI ([#10081](https://github.com/ParabolInc/parabol/issues/10081)) ([bf1851e](https://github.com/ParabolInc/parabol/commit/bf1851e9ebfe88aa470952b1daf053a83c04c865))
+
+
+### Changed
+
+* **rethinkdb:** Invoice: Remove ([#10086](https://github.com/ParabolInc/parabol/issues/10086)) ([10164a8](https://github.com/ParabolInc/parabol/commit/10164a8a43850c9ca80042a151b4da6020ad37d6))
+* **rethinkdb:** MeetingSettings: Phase 1 ([#10088](https://github.com/ParabolInc/parabol/issues/10088)) ([40d8c8c](https://github.com/ParabolInc/parabol/commit/40d8c8c15b9804a5ee2ef49649893cdc5dfdd665))
+
 ## [7.42.2](https://github.com/ParabolInc/parabol/compare/v7.42.1...v7.42.2) (2024-08-08)
 
 

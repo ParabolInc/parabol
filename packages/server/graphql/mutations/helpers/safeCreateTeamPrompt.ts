@@ -1,9 +1,11 @@
 import {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
+import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
-import createNewMeetingPhases from './createNewMeetingPhases'
+import {primePhases} from './createNewMeetingPhases'
 
 export const DEFAULT_PROMPT = 'What are you working on today? Stuck on anything?'
 
@@ -24,20 +26,29 @@ const safeCreateTeamPrompt = async (
     .default(0)
     .run()
   const meetingId = generateUID()
-  const phases = await createNewMeetingPhases(
-    facilitatorId,
-    teamId,
-    meetingId,
-    meetingCount,
-    meetingType,
-    dataLoader
-  )
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const teamMemberIds = teamMembers.map(({id}) => id)
+  const teamPromptResponsesPhase = new TeamPromptResponsesPhase(teamMemberIds)
+  const {stages: teamPromptStages} = teamPromptResponsesPhase
+  await getKysely()
+    .insertInto('Discussion')
+    .values(
+      teamPromptStages.map((stage) => ({
+        id: stage.discussionId,
+        teamId,
+        meetingId,
+        discussionTopicId: stage.teamMemberId,
+        discussionTopicType: 'teamPromptResponse'
+      }))
+    )
+    .execute()
+  primePhases([teamPromptResponsesPhase])
   return new MeetingTeamPrompt({
     id: meetingId,
     name,
     teamId,
     meetingCount,
-    phases,
+    phases: [teamPromptResponsesPhase],
     facilitatorUserId: facilitatorId,
     meetingPrompt: DEFAULT_PROMPT, // :TODO: (jmtaber129): Get this from meeting settings.
     ...meetingOverrideProps
