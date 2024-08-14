@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -42,6 +43,12 @@ export default {
       .update({isActive: false}, {returnChanges: true})('changes')(0)('old_val')
       .default(null)
       .run()
+    await getKysely()
+      .updateTable('AgendaItem')
+      .set({isActive: false})
+      .where('id', '=', agendaItemId)
+      .returning('id')
+      .execute()
     if (!agendaItem) {
       return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }

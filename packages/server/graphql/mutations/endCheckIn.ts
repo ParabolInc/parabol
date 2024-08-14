@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {positionAfter} from '../../../client/shared/sortOrder'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
@@ -10,6 +11,7 @@ import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
+import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
@@ -61,8 +63,14 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
   return tasks
 }
 
-const clearAgendaItems = async (teamId: string) => {
+const clearAgendaItems = async (teamId: string, dataLoader: DataLoaderInstance) => {
+  await getKysely()
+    .updateTable('AgendaItem')
+    .set({isActive: false})
+    .where('teamId', '=', teamId)
+    .execute()
   const r = await getRethink()
+  dataLoader.clearAll('agendaItems')
   return r
     .table('AgendaItem')
     .getAll(teamId, {index: 'teamId'})
@@ -72,16 +80,15 @@ const clearAgendaItems = async (teamId: string) => {
     .run()
 }
 
-const getPinnedAgendaItems = async (teamId: string) => {
-  const r = await getRethink()
-  return r
-    .table('AgendaItem')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({isActive: true, pinned: true})
-    .run()
+const getPinnedAgendaItems = async (teamId: string, dataLoader: DataLoaderInstance) => {
+  const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+  return agendaItems.filter((agendaItem) => agendaItem.pinned)
 }
 
-const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
+const clonePinnedAgendaItems = async (
+  pinnedAgendaItems: AgendaItem[],
+  dataLoader: DataLoaderInstance
+) => {
   const r = await getRethink()
   const clonedPins = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
@@ -96,6 +103,17 @@ const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
     })
   })
   await r.table('AgendaItem').insert(clonedPins).run()
+  let curSortOrder = ''
+  const pgClonedPins = clonedPins.map((agendaItems) => {
+    const sortOrder = positionAfter(curSortOrder)
+    curSortOrder = sortOrder
+    return {
+      ...agendaItems,
+      sortOrder
+    }
+  })
+  await getKysely().insertInto('AgendaItem').values(pgClonedPins).execute()
+  dataLoader.clearAll('agendaItems')
 }
 
 const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
@@ -120,7 +138,7 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
       .filter({status: DONE})
       .filter((task: RDatum) => task('tags').contains('archived').not())
       .run(),
-    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
+    dataLoader.get('agendaItemsByTeamId').load(teamId)
   ])
 
   const agendaItemPhase = getPhase(phases, 'agendaitems')
@@ -128,12 +146,12 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
   const discussionIds = stages.map((stage) => stage.discussionId)
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
-  const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
+  const pinnedAgendaItems = await getPinnedAgendaItems(teamId, dataLoader)
   const isKill = !!(meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType))
-  if (!isKill) await clearAgendaItems(teamId)
+  if (!isKill) await clearAgendaItems(teamId, dataLoader)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
-    isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems),
+    isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems, dataLoader),
     updateTaskSortOrders(userIds, tasks),
     r
       .table('NewMeeting')

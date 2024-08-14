@@ -1,8 +1,10 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeUpdateAgendaItemSchema from 'parabol-client/validation/makeUpdateAgendaItemSchema'
+import {getSortOrder} from '../../../client/shared/sortOrder'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItemsStage from '../../database/types/AgendaItemsStage'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -27,6 +29,7 @@ export default {
   ) {
     const now = new Date()
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -49,6 +52,8 @@ export default {
     }
 
     // RESOLUTION
+    const oldAgendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+    const fromIdx = oldAgendaItems.findIndex((agendaItem) => agendaItem.id === id)
     await r
       .table('AgendaItem')
       .get(id)
@@ -57,6 +62,25 @@ export default {
         updatedAt: now
       })
       .run()
+    dataLoader.clearAll('agendaItems')
+    if (doc.sortOrder !== null && doc.sortOrder !== undefined) {
+      const nextAgendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+      const pgagendaItems = await dataLoader.get('_pgagendaItemsByTeamId').load(teamId)
+      const toIdx = nextAgendaItems.findIndex((agendaItem) => agendaItem.id === id)
+      const pgSortOrder = getSortOrder(pgagendaItems, fromIdx, toIdx)
+      await pg
+        .updateTable('AgendaItem')
+        .set({sortOrder: pgSortOrder})
+        .where('id', '=', id)
+        .execute()
+    } else {
+      await pg
+        .updateTable('AgendaItem')
+        .set({pinned: doc.pinned, content: doc.content})
+        .where('id', '=', id)
+        .execute()
+    }
+
     const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const actionMeeting = activeMeetings.find(
       (activeMeeting) => activeMeeting.meetingType === 'action'
