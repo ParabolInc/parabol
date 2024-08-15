@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -25,10 +24,8 @@ const addAgendaItem: MutationResolvers['addAgendaItem'] = async (
   }
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   // VALIDATION
-  const schema = makeAgendaItemSchema()
-  const {errors} = schema(newAgendaItem)
-  if (Object.keys(errors).length) {
-    return standardError(new Error('Failed input validation'), {userId: viewerId})
+  if (newAgendaItem.content.length > 64) {
+    return {error: {message: 'Agenda item must be shorter'}}
   }
 
   // RESOLUTION

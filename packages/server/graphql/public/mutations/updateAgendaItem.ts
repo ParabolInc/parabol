@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import makeUpdateAgendaItemSchema from 'parabol-client/validation/makeUpdateAgendaItemSchema'
 import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
@@ -21,27 +20,26 @@ const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
   const viewerId = getUserId(authToken)
 
   // AUTH
-  const {id: agendaItemId} = updatedAgendaItem
+  const {id: agendaItemId, content, pinned, sortOrder} = updatedAgendaItem
   const [teamId] = agendaItemId.split('::') as [string]
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 
   // VALIDATION
-  const schema = makeUpdateAgendaItemSchema()
-  const {
-    errors,
-    data: {id, ...doc}
-  } = schema(updatedAgendaItem) as any
-  if (Object.keys(errors).length) {
-    return standardError(new Error('Failed input validation'), {userId: viewerId})
+  if (content && content.length > 64) {
+    return {error: {message: 'Agenda item must be shorter'}}
   }
 
   // RESOLUTION
   await pg
     .updateTable('AgendaItem')
-    .set({pinned: doc.pinned, content: doc.content, sortOrder: doc.sortOrder})
-    .where('id', '=', id)
+    .set({
+      pinned: pinned ?? undefined,
+      content: content ?? undefined,
+      sortOrder: sortOrder ?? undefined
+    })
+    .where('id', '=', agendaItemId)
     .execute()
 
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
