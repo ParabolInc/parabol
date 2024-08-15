@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.43.4](https://github.com/ParabolInc/parabol/compare/v7.43.3...v7.43.4) (2024-08-15)
+
+
+### Fixed
+
+* action meetings that had templates. wtf ([#10130](https://github.com/ParabolInc/parabol/issues/10130)) ([7c5e532](https://github.com/ParabolInc/parabol/commit/7c5e5327d5acce8a02661a7d1c5db2bfa1857992))
+
 ## [7.43.3](https://github.com/ParabolInc/parabol/compare/v7.43.2...v7.43.3) (2024-08-15)
 
 
