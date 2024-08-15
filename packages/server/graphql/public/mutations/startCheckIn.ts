@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -89,7 +90,12 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
       .run(),
     updateTeamByTeamId(updates, teamId),
-    r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
+    r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run(),
+    getKysely()
+      .updateTable('AgendaItem')
+      .set({meetingId})
+      .where('id', 'in', agendaItemIds)
+      .execute()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)

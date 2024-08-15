@@ -60,13 +60,6 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     .execute()
   dataLoader.clearAll('meetingSettings')
 
-  await getKysely()
-    .updateTable('MeetingSettings')
-    .set(nextSettings)
-    .where('id', '=', settings.id)
-    .execute()
-  dataLoader.clearAll('meetingSettings')
-
   const data = {settingsId}
   analytics.meetingSettingsChanged(viewer, teamId, meetingType, {
     disableAnonymity: nextSettings.disableAnonymity,

@@ -1,9 +1,11 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAgendaItemSchema from 'parabol-client/validation/makeAgendaItemSchema'
+import {positionAfter} from '../../../client/shared/sortOrder'
 import getRethink from '../../database/rethinkDriver'
 import AgendaItem, {AgendaItemInput} from '../../database/types/AgendaItem'
 import generateUID from '../../generateUID'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -45,18 +47,33 @@ export default {
     }
 
     // RESOLUTION
+    const teamAgendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+    const lastAgendaItem = teamAgendaItems.at(-1)
+    const lastSortOrder = lastAgendaItem?.sortOrder ? String(lastAgendaItem.sortOrder) : ''
+    // this is just during the migration of AgendaItem table
+    const sortOrder = positionAfter(lastSortOrder)
     const agendaItemId = `${teamId}::${generateUID()}`
     await r
       .table('AgendaItem')
       .insert(
         new AgendaItem({
           ...validNewAgendaItem,
-          id: agendaItemId,
           teamId
         } as AgendaItemInput)
       )
       .run()
-
+    await getKysely()
+      .insertInto('AgendaItem')
+      .values({
+        id: agendaItemId,
+        content: newAgendaItem.content,
+        meetingId: newAgendaItem.meetingId,
+        pinned: newAgendaItem.pinned,
+        sortOrder,
+        teamId,
+        teamMemberId: newAgendaItem.teamMemberId
+      })
+      .execute()
     const meetingId = await addAgendaItemToActiveActionMeeting(agendaItemId, teamId, dataLoader)
     analytics.addedAgendaItem(viewer, teamId, meetingId)
     const data = {agendaItemId, meetingId}

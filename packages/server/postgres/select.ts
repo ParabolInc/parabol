@@ -203,3 +203,5 @@ export const selectMeetingSettings = () =>
       fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries'),
       fn<NewMeetingPhaseTypeEnum[]>('to_json', ['phaseTypes']).as('phaseTypes')
     ])
+
+export const selectAgendaItems = () => getKysely().selectFrom('AgendaItem').selectAll()

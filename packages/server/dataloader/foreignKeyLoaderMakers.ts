@@ -1,6 +1,7 @@
 import getKysely from '../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
+  selectAgendaItems,
   selectOrganizations,
   selectRetroReflections,
   selectSuggestedAction,
@@ -169,4 +170,24 @@ export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
   'teamPromptResponses',
   'meetingId',
   getTeamPromptResponsesByMeetingIds
+)
+
+export const _pgagendaItemsByTeamId = foreignKeyLoaderMaker(
+  '_pgagendaItems',
+  'teamId',
+  async (teamIds) => {
+    return selectAgendaItems()
+      .where('teamId', 'in', teamIds)
+      .where('isActive', '=', true)
+      .orderBy('sortOrder')
+      .execute()
+  }
+)
+
+export const _pgagendaItemsByMeetingId = foreignKeyLoaderMaker(
+  '_pgagendaItems',
+  'meetingId',
+  async (meetingIds) => {
+    return selectAgendaItems().where('meetingId', 'in', meetingIds).orderBy('sortOrder').execute()
+  }
 )

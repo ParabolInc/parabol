@@ -310,31 +310,6 @@ export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: Registe
   )
 }
 
-export const _PGmeetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('meetingSettings')
-  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
-    async (keys) => {
-      const res = await selectMeetingSettings()
-        .where(({eb, refTuple, tuple}) =>
-          eb(
-            refTuple('teamId', 'meetingType'),
-            'in',
-            keys.map((key) => tuple(key.teamId, key.meetingType))
-          )
-        )
-        .execute()
-      return keys.map(
-        (key) =>
-          res.find((doc) => doc.teamId === key.teamId && doc.meetingType === key.meetingType)!
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
-    }
-  )
-}
-
 export const organizationApprovedDomainsByOrgId = (parent: RootDataLoader) => {
   return new DataLoader<string, string[], string>(
     async (orgIds) => {

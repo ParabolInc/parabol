@@ -105,13 +105,11 @@ const removeTeamMember = async (
 
   const archivedTasks = await archiveTasksForDB(integratedTasksToArchive)
   const archivedTaskIds = archivedTasks.map(({id}) => id)
-  const agendaItemIds = await r
-    .table('AgendaItem')
-    .getAll(teamId, {index: 'teamId'})
-    .filter((row: RDatum) => row('teamMemberId').eq(teamMemberId))
-    .getField('id')
-    .run()
-
+  const teamAgendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+  const agendaItemIds = teamAgendaItems
+    .filter((agendaItem) => agendaItem.teamMemberId === teamMemberId)
+    .map(({id}) => id)
+  dataLoader.clearAll('agendaItems')
   // if a new meeting was currently running, remove them from it
   const filterFn = (stage: CheckInStage | UpdatesStage | EstimateStage | AgendaItemsStage) =>
     (stage as CheckInStage | UpdatesStage).teamMemberId === teamMemberId ||
