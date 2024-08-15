@@ -90,7 +90,6 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
       .run(),
     updateTeamByTeamId(updates, teamId),
-    r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run(),
     getKysely()
       .updateTable('AgendaItem')
       .set({meetingId})

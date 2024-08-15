@@ -5,7 +5,6 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import {AnyMeeting, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import AgendaItem from './types/AgendaItem'
 import Comment from './types/Comment'
 import MassInvitation from './types/MassInvitation'
 import NotificationKickedOut from './types/NotificationKickedOut'
@@ -24,10 +23,6 @@ import RetrospectivePrompt from './types/RetrospectivePrompt'
 import Task from './types/Task'
 
 export type RethinkSchema = {
-  AgendaItem: {
-    type: AgendaItem
-    index: 'teamId' | 'meetingId'
-  }
   Comment: {
     type: Comment
     index: 'discussionId'

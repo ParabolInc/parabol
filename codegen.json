@@ -46,6 +46,9 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "RemoveAgendaItemPayload": "./types/RemoveAgendaItemPayload#RemoveAgendaItemPayloadSource",
+          "AddAgendaItemPayload": "./types/AddAgendaItemPayload#AddAgendaItemPayloadSource",
+          "UpdateAgendaItemPayload": "./types/UpdateAgendaItemPayload#UpdateAgendaItemPayloadSource",
           "TeamMeetingSettings": "../../postgres/types/index#MeetingSettings as TeamMeetingSettingsDB",
           "TeamPromptMeetingSettings": "../../postgres/types/index#MeetingSettings as TeamMeetingSettingsDB",
           "PokerMeetingSettings": "../../postgres/types/index#PokerMeetingSettings as PokerMeetingSettingsDB",
@@ -66,7 +69,7 @@
           "AddTeamMemberIntegrationAuthSuccess": "./types/AddTeamMemberIntegrationAuthPayload#AddTeamMemberIntegrationAuthSuccessSource",
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
-          "AgendaItem": "../../database/types/AgendaItem#default as AgendaItemDB",
+          "AgendaItem": "../../postgres/types/index#AgendaItem as AgendaItemDB",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AtlassianIntegration": "../../postgres/queries/getAtlassianAuthByUserIdTeamId#AtlassianAuth as AtlassianAuthDB",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",

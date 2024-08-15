@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
-import addAgendaItem from './mutations/addAgendaItem'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addComment from './mutations/addComment'
 import addGitHubAuth from './mutations/addGitHubAuth'
@@ -63,7 +62,6 @@ import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
 import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
 import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePromptUpdateGroupColor'
-import removeAgendaItem from './mutations/removeAgendaItem'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeIntegrationProvider from './mutations/removeIntegrationProvider'
@@ -96,7 +94,6 @@ import setTaskHighlight from './mutations/setTaskHighlight'
 import startDraggingReflection from './mutations/startDraggingReflection'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
-import updateAgendaItem from './mutations/updateAgendaItem'
 import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
 import updateCommentContent from './mutations/updateCommentContent'
 import updateDragLocation from './mutations/updateDragLocation'
@@ -119,7 +116,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
   fields: () =>
     ({
-      addAgendaItem,
       addAtlassianAuth,
       addComment,
       addPokerTemplateDimension,
@@ -173,7 +169,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       reflectTemplatePromptUpdateDescription,
       pokerTemplateDimensionUpdateDescription,
       reflectTemplatePromptUpdateGroupColor,
-      removeAgendaItem,
       removeAtlassianAuth,
       removeGitHubAuth,
       removeOrgUser,
@@ -201,7 +196,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
-      updateAgendaItem,
       updateCommentContent,
       oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
