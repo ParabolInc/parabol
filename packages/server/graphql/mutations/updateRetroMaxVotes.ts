@@ -147,15 +147,6 @@ const updateRetroMaxVotes = {
         .where('meetingType', '=', 'retrospective')
         .execute(),
       r
-        .table('MeetingSettings')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: 'retrospective'})
-        .update({
-          totalVotes,
-          maxVotesPerGroup
-        })
-        .run(),
-      r
         .table('NewMeeting')
         .get(meetingId)
         .update({

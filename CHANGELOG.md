@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.43.6](https://github.com/ParabolInc/parabol/compare/v7.43.5...v7.43.6) (2024-08-16)
+
+
+### Fixed
+
+* add missing ID ([#10136](https://github.com/ParabolInc/parabol/issues/10136)) ([62abfa0](https://github.com/ParabolInc/parabol/commit/62abfa0c047383a2922957f859dab484abafa2b4))
+
+## [7.43.5](https://github.com/ParabolInc/parabol/compare/v7.43.4...v7.43.5) (2024-08-16)
+
+
+### Fixed
+
+* handle empty array to PG. fixup error handling ([#10133](https://github.com/ParabolInc/parabol/issues/10133)) ([ae28cde](https://github.com/ParabolInc/parabol/commit/ae28cdef4e02b91a1ac4ce67d26cfed2f8a4beda))
+
+## [7.43.4](https://github.com/ParabolInc/parabol/compare/v7.43.3...v7.43.4) (2024-08-15)
+
+
+### Fixed
+
+* action meetings that had templates. wtf ([#10130](https://github.com/ParabolInc/parabol/issues/10130)) ([7c5e532](https://github.com/ParabolInc/parabol/commit/7c5e5327d5acce8a02661a7d1c5db2bfa1857992))
+
+## [7.43.3](https://github.com/ParabolInc/parabol/compare/v7.43.2...v7.43.3) (2024-08-15)
+
+
+### Changed
+
+* **rethinkdb:** AgendaItem: Phase 1 ([#10108](https://github.com/ParabolInc/parabol/issues/10108)) ([27e68c3](https://github.com/ParabolInc/parabol/commit/27e68c3b44f28944fd12bd10b66b2ca0f4dcf330))
+* **rethinkdb:** MeetingSettings: Phase 3 ([#10090](https://github.com/ParabolInc/parabol/issues/10090)) ([7aa172b](https://github.com/ParabolInc/parabol/commit/7aa172bed5df7bdfdf981a920c19d4bcce9710e2))
+
 ## [7.43.2](https://github.com/ParabolInc/parabol/compare/v7.43.1...v7.43.2) (2024-08-14)
 
 

@@ -7,7 +7,6 @@ import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective, {
   isMeetingRetrospective
 } from '../../../database/types/MeetingRetrospective'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import MeetingTeamPrompt, {isMeetingTeamPrompt} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
@@ -79,7 +78,7 @@ const startRecurringMeeting = async (
     } else if (meetingSeries.meetingType === 'retrospective') {
       const {totalVotes, maxVotesPerGroup, disableAnonymity, templateId} =
         (lastMeeting as MeetingRetrospective) ?? {
-          templateId: (meetingSettings as MeetingSettingsRetrospective).selectedTemplateId,
+          templateId: meetingSettings.selectedTemplateId,
           ...meetingSettings
         }
       const meeting = await safeCreateRetrospective(

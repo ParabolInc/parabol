@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import MeetingSettingsRetrospective from '../../database/types/MeetingSettingsRetrospective'
 import getKysely from '../../postgres/getKysely'
 import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -42,9 +41,7 @@ const removeReflectTemplate = {
     const {teamId} = template
     const [templates, settings] = await Promise.all([
       dataLoader.get('meetingTemplatesByType').load({meetingType: 'retrospective', teamId}),
-      dataLoader
-        .get('meetingSettingsByType')
-        .load({meetingType: 'retrospective', teamId}) as any as MeetingSettingsRetrospective
+      dataLoader.get('meetingSettingsByType').load({meetingType: 'retrospective', teamId})
     ])
 
     // RESOLUTION
@@ -72,13 +69,6 @@ const removeReflectTemplate = {
         .set({selectedTemplateId: nextTemplateId})
         .where('id', '=', settingsId)
         .execute()
-      await r
-        .table('MeetingSettings')
-        .get(settingsId)
-        .update({
-          selectedTemplateId: nextTemplateId
-        })
-        .run()
       dataLoader.clearAll('meetingSettings')
     }
 

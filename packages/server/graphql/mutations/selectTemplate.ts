@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
@@ -26,7 +25,6 @@ const selectTemplate = {
     {selectedTemplateId, teamId}: {selectedTemplateId: string; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -54,21 +52,7 @@ const selectTemplate = {
     }
 
     // RESOLUTION
-    const meetingSettingsId = await r
-      .table('MeetingSettings')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        meetingType: template.type
-      })
-      .update(
-        {
-          selectedTemplateId
-        },
-        {returnChanges: true}
-      )('changes')(0)('old_val')('id')
-      .default(null)
-      .run()
-    await getKysely()
+    const meetingSettingsId = await getKysely()
       .updateTable('MeetingSettings')
       .set({selectedTemplateId})
       .where('teamId', '=', teamId)

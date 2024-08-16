@@ -2,7 +2,7 @@ import {MasterPool, r} from 'rethinkdb-ts'
 import SlackAuth from '../database/types/SlackAuth'
 import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
-import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
+import {AnyMeeting, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import AgendaItem from './types/AgendaItem'
@@ -39,10 +39,6 @@ export type RethinkSchema = {
   MassInvitation: {
     type: MassInvitation
     index: 'teamMemberId'
-  }
-  MeetingSettings: {
-    type: AnyMeetingSettings
-    index: 'teamId'
   }
   MeetingMember: {
     type: AnyMeetingTeamMember
