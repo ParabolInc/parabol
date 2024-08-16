@@ -172,8 +172,8 @@ export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
   getTeamPromptResponsesByMeetingIds
 )
 
-export const _pgagendaItemsByTeamId = foreignKeyLoaderMaker(
-  '_pgagendaItems',
+export const agendaItemsByTeamId = foreignKeyLoaderMaker(
+  'agendaItems',
   'teamId',
   async (teamIds) => {
     return selectAgendaItems()
@@ -184,8 +184,8 @@ export const _pgagendaItemsByTeamId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgagendaItemsByMeetingId = foreignKeyLoaderMaker(
-  '_pgagendaItems',
+export const agendaItemsByMeetingId = foreignKeyLoaderMaker(
+  'agendaItems',
   'meetingId',
   async (meetingIds) => {
     return selectAgendaItems().where('meetingId', 'in', meetingIds).orderBy('sortOrder').execute()

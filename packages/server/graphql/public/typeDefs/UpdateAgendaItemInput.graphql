@@ -22,5 +22,5 @@ input UpdateAgendaItemInput {
   """
   The sort order of the agenda item in the list
   """
-  sortOrder: Float
+  sortOrder: String
 }

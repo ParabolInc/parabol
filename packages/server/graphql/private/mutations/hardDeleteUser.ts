@@ -67,7 +67,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     dataLoader.get('meetingMembersByUserId').load(userIdToDelete)
   ])
   const teamIds = teamMembers.map(({teamId}) => teamId)
-  const teamMemberIds = teamMembers.map(({id}) => id)
   const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
 
   const discussions = await pg.query(`SELECT "id" FROM "Discussion" WHERE "teamId" = ANY ($1);`, [
@@ -93,11 +92,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .delete(),
-    agendaItem: r
-      .table('AgendaItem')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => r(teamMemberIds).contains(row('teamMemberId')))
       .delete(),
     pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
     slackNotification: r

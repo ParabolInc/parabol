@@ -16,33 +16,6 @@ export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const agendaItemsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'agendaItems',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('AgendaItem')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isActive: true})
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
-export const agendaItemsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'agendaItems',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('AgendaItem')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
 export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'comments',
   'discussionId',
