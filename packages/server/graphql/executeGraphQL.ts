@@ -8,6 +8,7 @@ import tracer from 'dd-trace'
 import {graphql} from 'graphql'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
 import type {GQLRequest} from '../types/custom'
+import sendToSentry from '../utils/sendToSentry'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'
 import getRateLimiter from './getRateLimiter'
@@ -59,10 +60,9 @@ const executeGraphQL = async (req: GQLRequest) => {
       response = {errors: [new Error(message)] as any}
     }
   }
-  if (!__PRODUCTION__ && response.errors) {
+  if (response.errors) {
     const [firstError] = response.errors
-    console.log((firstError as Error).stack)
-    console.trace({error: JSON.stringify(response)})
+    sendToSentry(firstError as Error)
   }
   dataLoader.dispose()
   return response
