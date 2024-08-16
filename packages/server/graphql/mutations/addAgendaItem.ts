@@ -58,6 +58,7 @@ export default {
       .insert(
         new AgendaItem({
           ...validNewAgendaItem,
+          id: agendaItemId,
           teamId
         } as AgendaItemInput)
       )
