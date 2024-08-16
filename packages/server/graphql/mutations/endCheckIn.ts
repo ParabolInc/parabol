@@ -7,13 +7,13 @@ import {positionAfter} from '../../../client/shared/sortOrder'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
+import {AgendaItem} from '../../postgres/types'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../utils/Logger'
@@ -69,15 +69,7 @@ const clearAgendaItems = async (teamId: string, dataLoader: DataLoaderInstance) 
     .set({isActive: false})
     .where('teamId', '=', teamId)
     .execute()
-  const r = await getRethink()
   dataLoader.clearAll('agendaItems')
-  return r
-    .table('AgendaItem')
-    .getAll(teamId, {index: 'teamId'})
-    .update({
-      isActive: false
-    })
-    .run()
 }
 
 const getPinnedAgendaItems = async (teamId: string, dataLoader: DataLoaderInstance) => {
@@ -89,30 +81,22 @@ const clonePinnedAgendaItems = async (
   pinnedAgendaItems: AgendaItem[],
   dataLoader: DataLoaderInstance
 ) => {
-  const r = await getRethink()
+  let curSortOrder = ''
   const clonedPins = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
-    return new AgendaItem({
+    const sortOrder = positionAfter(curSortOrder)
+    curSortOrder = sortOrder
+    return {
       id: agendaItemId,
       content: agendaItem.content,
       pinned: agendaItem.pinned,
       pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
-      sortOrder: agendaItem.sortOrder,
+      sortOrder,
       teamId: agendaItem.teamId,
       teamMemberId: agendaItem.teamMemberId
-    })
-  })
-  await r.table('AgendaItem').insert(clonedPins).run()
-  let curSortOrder = ''
-  const pgClonedPins = clonedPins.map((agendaItems) => {
-    const sortOrder = positionAfter(curSortOrder)
-    curSortOrder = sortOrder
-    return {
-      ...agendaItems,
-      sortOrder
     }
   })
-  await getKysely().insertInto('AgendaItem').values(pgClonedPins).execute()
+  await getKysely().insertInto('AgendaItem').values(clonedPins).execute()
   dataLoader.clearAll('agendaItems')
 }
 

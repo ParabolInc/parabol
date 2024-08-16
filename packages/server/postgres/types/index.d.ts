@@ -6,6 +6,7 @@ import {
   TeamMember as TeamMemberPG
 } from '../pg.d'
 import {
+  selectAgendaItems,
   selectMeetingSettings,
   selectOrganizations,
   selectRetroReflections,
@@ -44,3 +45,5 @@ export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTe
 export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
 export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
 export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}
+
+export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
