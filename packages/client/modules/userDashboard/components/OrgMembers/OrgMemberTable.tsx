@@ -29,13 +29,19 @@ interface Props {
   organizationUsers: any[] // Replace with the correct type
   billingLeaderCount: number
   orgAdminCount: number
+  onSort: () => void
+  sortBy: 'lastMetAt' | null
+  sortDirection: 'asc' | 'desc'
 }
 
 const OrgMemberTable: React.FC<Props> = ({
   organization,
   organizationUsers,
   billingLeaderCount,
-  orgAdminCount
+  orgAdminCount,
+  onSort,
+  sortBy,
+  sortDirection
 }) => {
   return (
     <TableWrapper>
@@ -44,7 +50,10 @@ const OrgMemberTable: React.FC<Props> = ({
           <tr>
             <TableHeader className='w-1/6'>Avatar</TableHeader>
             <TableHeader>Name & Email</TableHeader>
-            <TableHeader>Last Meeting Date</TableHeader>
+            <TableHeader onClick={onSort} style={{cursor: 'pointer'}}>
+              Last Meeting Date
+              {sortBy === 'lastMetAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+            </TableHeader>
             <TableHeader className='text-right'>Actions</TableHeader>
           </tr>
         </thead>

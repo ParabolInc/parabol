@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import React from 'react'
+import React, {useState} from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
@@ -50,6 +50,7 @@ const OrgMembers = (props: Props) => {
                   user {
                     preferredName
                     email
+                    lastMetAt
                   }
                   ...OrgMemberRow_organizationUser
                 }
@@ -79,6 +80,28 @@ const OrgMembers = (props: Props) => {
     (count, {node}) => (['ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count),
     0
   )
+  const [sortBy, setSortBy] = useState<'lastMetAt' | null>('lastMetAt')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+
+  const sortedOrganizationUsers = [...organizationUsers.edges].sort((a, b) => {
+    if (sortBy === 'lastMetAt') {
+      const aDate = a.node.user.lastMetAt ? new Date(a.node.user.lastMetAt) : new Date(0)
+      const bDate = b.node.user.lastMetAt ? new Date(b.node.user.lastMetAt) : new Date(0)
+      return sortDirection === 'asc'
+        ? aDate.getTime() - bDate.getTime()
+        : bDate.getTime() - aDate.getTime()
+    }
+    return 0
+  })
+
+  const handleSort = () => {
+    if (sortBy === 'lastMetAt') {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy('lastMetAt')
+      setSortDirection('desc')
+    }
+  }
 
   const exportToCSV = async () => {
     const rows = organizationUsers.edges.map((orgUser, idx) => {
@@ -118,9 +141,12 @@ const OrgMembers = (props: Props) => {
     >
       <OrgMemberTable
         organization={organization}
-        organizationUsers={organizationUsers.edges.map((edge) => edge.node)}
+        organizationUsers={sortedOrganizationUsers.map((edge) => edge.node)}
         billingLeaderCount={billingLeaderCount}
         orgAdminCount={orgAdminCount}
+        onSort={handleSort}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
       />
     </StyledPanel>
   )
