@@ -41,6 +41,10 @@ const AvatarBlock = styled('div')({
 
 const StyledRow = styled(Row)({
   padding: '12px 8px 12px 16px',
+  display: 'grid',
+  gridTemplateColumns: 'auto 1fr auto 1fr',
+  alignItems: 'center',
+  gap: '16px',
   [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     padding: '16px 8px 16px 16px'
   }
@@ -145,6 +149,16 @@ const UserInfo: React.FC<UserInfoProps> = ({
       {email}
     </RowInfoLink>
   </StyledRowInfo>
+)
+
+interface LastMetInfoProps {
+  lastMetAt: string | null
+}
+
+const LastMetInfo: React.FC<LastMetInfoProps> = ({lastMetAt}) => (
+  <div className='justify-self-center text-center'>
+    {lastMetAt ? new Date(lastMetAt).toLocaleDateString() : 'Never'}
+  </div>
 )
 
 interface UserActionsProps {
@@ -252,6 +266,7 @@ const OrgMemberRow = (props: Props) => {
           inactive
           picture
           preferredName
+          lastMetAt
         }
         role
         ...BillingLeaderActionMenu_organizationUser
@@ -264,7 +279,7 @@ const OrgMemberRow = (props: Props) => {
   const {isViewerBillingLeader, isViewerOrgAdmin} = organization
 
   const {
-    user: {email, inactive, picture, preferredName},
+    user: {email, inactive, picture, preferredName, lastMetAt},
     role
   } = organizationUser
 
@@ -286,6 +301,7 @@ const OrgMemberRow = (props: Props) => {
         isOrgAdmin={isOrgAdmin}
         inactive={inactive}
       />
+      <LastMetInfo lastMetAt={lastMetAt} />
       <UserActions
         isViewerOrgAdmin={isViewerOrgAdmin}
         isViewerBillingLeader={isViewerBillingLeader}
