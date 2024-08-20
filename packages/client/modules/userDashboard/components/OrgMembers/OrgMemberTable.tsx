@@ -5,7 +5,8 @@ import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 const TableWrapper = styled('div')({
   overflowX: 'auto',
-  width: '100%'
+  width: '100%',
+  padding: '0 16px'
 })
 
 const StyledTable = styled('table')({
@@ -41,14 +42,14 @@ const OrgMemberTable: React.FC<Props> = ({
       <StyledTable>
         <thead>
           <tr>
-            <TableHeader>Avatar</TableHeader>
-            <TableHeader>Name</TableHeader>
-            <TableHeader>Last Active Date</TableHeader>
-            <TableHeader>Actions</TableHeader>
+            <TableHeader className='w-1/6'>Avatar</TableHeader>
+            <TableHeader>Name & Email</TableHeader>
+            <TableHeader>Last Meeting Date</TableHeader>
+            <TableHeader className='text-right'>Actions</TableHeader>
           </tr>
         </thead>
         <tbody>
-          {organizationUsers.map((orgUser) => (
+          {organizationUsers.map((orgUser: any) => (
             <OrgMemberRow
               key={orgUser.user.userId}
               organizationUser={orgUser}

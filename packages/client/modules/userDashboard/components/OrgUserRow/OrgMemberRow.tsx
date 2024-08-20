@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {format} from 'date-fns'
 import React, {forwardRef, Ref} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -152,12 +153,11 @@ interface LastMetInfoProps {
   lastMetAt: string | null
 }
 
-const LastMetInfo: React.FC<LastMetInfoProps> = ({lastMetAt}) => (
-  <div className='justify-self-center text-center'>
-    {lastMetAt ? new Date(lastMetAt).toLocaleDateString() : 'Never'}
-  </div>
-)
+const LastMetInfo: React.FC<LastMetInfoProps> = ({lastMetAt}) => {
+  const formattedLastMetAt = lastMetAt ? format(new Date(lastMetAt), 'MMM do, yyyy') : 'Never'
 
+  return <StyledRowInfo>{formattedLastMetAt}</StyledRowInfo>
+}
 interface UserActionsProps {
   isViewerOrgAdmin: boolean
   isViewerBillingLeader: boolean
@@ -292,6 +292,8 @@ const OrgMemberRow = (props: Props) => {
     <StyledRow>
       <TableCell>
         <UserAvatar picture={picture} />
+      </TableCell>
+      <TableCell>
         <UserInfo
           preferredName={preferredName}
           email={email}
