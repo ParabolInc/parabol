@@ -14,7 +14,6 @@ import {
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton, {FlatButtonProps} from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
-import Row from '../../../../components/Row/Row'
 import RowActions from '../../../../components/Row/RowActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
@@ -39,15 +38,13 @@ const AvatarBlock = styled('div')({
   }
 })
 
-const StyledRow = styled(Row)({
-  padding: '12px 8px 12px 16px',
-  display: 'grid',
-  gridTemplateColumns: 'auto 1fr auto 1fr',
-  alignItems: 'center',
-  gap: '16px',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    padding: '16px 8px 16px 16px'
-  }
+const StyledRow = styled('tr')({
+  borderBottom: '1px solid #e0e0e0'
+})
+
+const TableCell = styled('td')({
+  padding: '12px 8px',
+  verticalAlign: 'middle'
 })
 
 const StyledRowInfo = styled(RowInfo)({
@@ -293,25 +290,31 @@ const OrgMemberRow = (props: Props) => {
 
   return (
     <StyledRow>
-      <UserAvatar picture={picture} />
-      <UserInfo
-        preferredName={preferredName}
-        email={email}
-        isBillingLeader={isBillingLeader}
-        isOrgAdmin={isOrgAdmin}
-        inactive={inactive}
-      />
-      <LastMetInfo lastMetAt={lastMetAt} />
-      <UserActions
-        isViewerOrgAdmin={isViewerOrgAdmin}
-        isViewerBillingLeader={isViewerBillingLeader}
-        isViewerLastOrgAdmin={isViewerLastOrgAdmin}
-        isViewerLastBillingLeader={isViewerLastBillingLeader}
-        organizationUser={organizationUser}
-        organization={organization}
-        preferredName={preferredName}
-        viewerId={viewerId}
-      />
+      <TableCell>
+        <UserAvatar picture={picture} />
+        <UserInfo
+          preferredName={preferredName}
+          email={email}
+          isBillingLeader={isBillingLeader}
+          isOrgAdmin={isOrgAdmin}
+          inactive={inactive}
+        />
+      </TableCell>
+      <TableCell>
+        <LastMetInfo lastMetAt={lastMetAt} />
+      </TableCell>
+      <TableCell>
+        <UserActions
+          isViewerOrgAdmin={isViewerOrgAdmin}
+          isViewerBillingLeader={isViewerBillingLeader}
+          isViewerLastOrgAdmin={isViewerLastOrgAdmin}
+          isViewerLastBillingLeader={isViewerLastBillingLeader}
+          organizationUser={organizationUser}
+          organization={organization}
+          preferredName={preferredName}
+          viewerId={viewerId}
+        />
+      </TableCell>
     </StyledRow>
   )
 }

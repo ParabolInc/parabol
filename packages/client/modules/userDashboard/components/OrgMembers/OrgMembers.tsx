@@ -11,7 +11,7 @@ import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
-import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+import OrgMemberTable from './OrgMemberTable'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -116,17 +116,12 @@ const OrgMembers = (props: Props) => {
         )
       }
     >
-      {organizationUsers.edges.map(({node: organizationUser}) => {
-        return (
-          <OrgMemberRow
-            key={organizationUser.id}
-            billingLeaderCount={billingLeaderCount}
-            orgAdminCount={orgAdminCount}
-            organizationUser={organizationUser}
-            organization={organization}
-          />
-        )
-      })}
+      <OrgMemberTable
+        organization={organization}
+        organizationUsers={organizationUsers.edges.map((edge) => edge.node)}
+        billingLeaderCount={billingLeaderCount}
+        orgAdminCount={orgAdminCount}
+      />
     </StyledPanel>
   )
 }
