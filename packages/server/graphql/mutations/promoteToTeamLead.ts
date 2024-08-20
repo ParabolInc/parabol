@@ -36,7 +36,10 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId),
       dataLoader.get('teams').loadNonNull(teamId)
     ])
-    const oldLead = teamMembers.find(({isLead}) => isLead)!
+    const oldLead = teamMembers.find(({isLead}) => isLead)
+    if (!oldLead) {
+      return standardError(new Error('Team has no team lead'), {userId: viewerId})
+    }
     const {id: oldLeadTeamMemberId} = oldLead
     if (!isSuperUser(authToken)) {
       const isOrgAdmin = await isUserOrgAdmin(viewerId, team.orgId, dataLoader)
