@@ -2,7 +2,7 @@ import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
 import {Logger} from '../../../utils/Logger'
 import SlackServerManager from '../../../utils/SlackServerManager'
-import {upsertNotifications} from '../addSlackAuth'
+import {upsertNotifications} from '../../public/mutations/addSlackAuth'
 
 const activatePrevSlackAuth = async (userId: string, teamId: string) => {
   const r = await getRethink()

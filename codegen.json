@@ -46,6 +46,8 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
+          "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
           "RemoveAgendaItemPayload": "./types/RemoveAgendaItemPayload#RemoveAgendaItemPayloadSource",
           "AddAgendaItemPayload": "./types/AddAgendaItemPayload#AddAgendaItemPayloadSource",
           "UpdateAgendaItemPayload": "./types/UpdateAgendaItemPayload#UpdateAgendaItemPayloadSource",
