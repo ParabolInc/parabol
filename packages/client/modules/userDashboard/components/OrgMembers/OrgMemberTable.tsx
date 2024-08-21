@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import User from '../../../../../server/database/types/User'
 import {Breakpoint} from '../../../../types/constEnums'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
@@ -30,7 +31,7 @@ interface Props {
   billingLeaderCount: number
   orgAdminCount: number
   onSort: () => void
-  sortBy: 'lastMetAt' | null
+  sortBy: keyof User | null
   sortDirection: 'asc' | 'desc'
 }
 
@@ -51,8 +52,8 @@ const OrgMemberTable: React.FC<Props> = ({
             <TableHeader className='w-1/6'>Avatar</TableHeader>
             <TableHeader>Name & Email</TableHeader>
             <TableHeader onClick={onSort} style={{cursor: 'pointer'}}>
-              Last Meeting Date
-              {sortBy === 'lastMetAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+              Last Seen Date
+              {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
             </TableHeader>
             <TableHeader className='text-right'>Actions</TableHeader>
           </tr>

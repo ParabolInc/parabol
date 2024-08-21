@@ -149,14 +149,14 @@ const UserInfo: React.FC<UserInfoProps> = ({
   </StyledRowInfo>
 )
 
-interface LastMetInfoProps {
-  lastMetAt: string | null
+interface LastSeenInfoProps {
+  lastSeenAt: string | null
 }
 
-const LastMetInfo: React.FC<LastMetInfoProps> = ({lastMetAt}) => {
-  const formattedLastMetAt = lastMetAt ? format(new Date(lastMetAt), 'MMM do, yyyy') : 'Never'
+const LastSeenInfo: React.FC<LastSeenInfoProps> = ({lastSeenAt}) => {
+  const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
 
-  return <StyledRowInfo>{formattedLastMetAt}</StyledRowInfo>
+  return <StyledRowInfo>{formattedLastSeenAt}</StyledRowInfo>
 }
 interface UserActionsProps {
   isViewerOrgAdmin: boolean
@@ -263,7 +263,7 @@ const OrgMemberRow = (props: Props) => {
           inactive
           picture
           preferredName
-          lastMetAt
+          lastSeenAt
         }
         role
         ...BillingLeaderActionMenu_organizationUser
@@ -276,7 +276,7 @@ const OrgMemberRow = (props: Props) => {
   const {isViewerBillingLeader, isViewerOrgAdmin} = organization
 
   const {
-    user: {email, inactive, picture, preferredName, lastMetAt},
+    user: {email, inactive, picture, preferredName, lastSeenAt},
     role
   } = organizationUser
 
@@ -303,7 +303,7 @@ const OrgMemberRow = (props: Props) => {
         />
       </TableCell>
       <TableCell>
-        <LastMetInfo lastMetAt={lastMetAt} />
+        <LastSeenInfo lastSeenAt={lastSeenAt} />
       </TableCell>
       <TableCell>
         <UserActions

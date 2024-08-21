@@ -43,7 +43,7 @@ const OrgMembers = (props: Props) => {
                   user {
                     preferredName
                     email
-                    lastMetAt
+                    lastSeenAt
                   }
                   ...OrgMemberRow_organizationUser
                 }
@@ -73,13 +73,13 @@ const OrgMembers = (props: Props) => {
     (count, {node}) => (['ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count),
     0
   )
-  const [sortBy, setSortBy] = useState<'lastMetAt' | null>('lastMetAt')
+  const [sortBy, setSortBy] = useState<'lastSeenAt' | null>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
   const sortedOrganizationUsers = [...organizationUsers.edges].sort((a, b) => {
-    if (sortBy === 'lastMetAt') {
-      const aDate = a.node.user.lastMetAt ? new Date(a.node.user.lastMetAt) : new Date(0)
-      const bDate = b.node.user.lastMetAt ? new Date(b.node.user.lastMetAt) : new Date(0)
+    if (sortBy === 'lastSeenAt') {
+      const aDate = a.node.user.lastSeenAt ? new Date(a.node.user.lastSeenAt) : new Date(0)
+      const bDate = b.node.user.lastSeenAt ? new Date(b.node.user.lastSeenAt) : new Date(0)
       return sortDirection === 'asc'
         ? aDate.getTime() - bDate.getTime()
         : bDate.getTime() - aDate.getTime()
@@ -88,10 +88,10 @@ const OrgMembers = (props: Props) => {
   })
 
   const handleSort = () => {
-    if (sortBy === 'lastMetAt') {
+    if (sortBy === 'lastSeenAt') {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortBy('lastMetAt')
+      setSortBy('lastSeenAt')
       setSortDirection('desc')
     }
   }
