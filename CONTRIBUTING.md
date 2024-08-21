@@ -111,17 +111,6 @@ to say, 200 points, 300 points, and so on.
 We currently will reevaluate this conversion rate once per calendar quarter
 at our board meeting.
 
-# Community
-
-Want to collaborate? Have questions about our stack?
-Join us on our Slack community!
-
-[![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
-
-Sign up at http://slackin.parabol.co/.
-
 ## Questions
 
-If you’ve got questions you'd like to inquire about privately, please don’t
-hesitate to reach out. You can reach us at
-[love@parabol.co](mailto:love@parabol.co).
+Want to collaborate? Have questions about our stack? Please don’t hesitate to reach out. You can reach us at [love@parabol.co](mailto:love@parabol.co).
