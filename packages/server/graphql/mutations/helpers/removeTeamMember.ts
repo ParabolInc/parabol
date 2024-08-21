@@ -32,14 +32,27 @@ const removeTeamMember = async (
   // see if they were a leader, make a new guy leader so later we can reassign tasks
   const activeTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
-  const {isLead, isNotRemoved} = teamMember ?? {}
-  // if the guy being removed is the leader & not the last, pick a new one. else, use him
-  const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead) || teamMember
-  if (!isNotRemoved || !teamMember || !teamLeader) {
-    throw new Error('Team member already removed')
+  if (!teamMember) {
+    return {
+      user: undefined,
+      notificationId: undefined,
+      archivedTaskIds: [] as string[],
+      reassignedTaskIds: [] as string[]
+    }
+  }
+  const currentTeamLeader = activeTeamMembers.find((t) => t.isLead)!
+  if (!currentTeamLeader) {
+    throw new Error('Team lead does not exist')
   }
 
-  if (activeTeamMembers.length === 1) {
+  const {isLead} = teamMember
+  const willArchive = activeTeamMembers.length === 1
+  const nextTeamLead =
+    isLead && !willArchive
+      ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
+      : currentTeamLeader
+
+  if (willArchive) {
     await Promise.all([
       // archive single-person teams
       pg.updateTable('Team').set({isArchived: true}).where('id', '=', teamId).execute(),
@@ -51,7 +64,7 @@ const removeTeamMember = async (
     await pg
       .updateTable('TeamMember')
       .set(({not}) => ({isLead: not('isLead')}))
-      .where('id', 'in', [teamMemberId, teamLeader.id])
+      .where('id', 'in', [teamMemberId, nextTeamLead.id])
       .execute()
   }
 
@@ -82,7 +95,7 @@ const removeTeamMember = async (
       )
       .update(
         {
-          userId: teamLeader.userId
+          userId: nextTeamLead.userId
         },
         {returnChanges: true}
       )('changes')('new_val')

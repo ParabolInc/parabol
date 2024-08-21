@@ -103,7 +103,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
         email,
         openDrawer: 'manageTeam'
       })
-      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
+      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
       .execute(),
     r
       .table('TeamInvitation')
