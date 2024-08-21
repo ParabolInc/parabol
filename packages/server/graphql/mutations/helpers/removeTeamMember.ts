@@ -46,11 +46,13 @@ const removeTeamMember = async (
   }
 
   const {isLead} = teamMember
-  const nextTeamLead = isLead
-    ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
-    : currentTeamLeader
+  const willArchive = activeTeamMembers.length === 1
+  const nextTeamLead =
+    isLead && !willArchive
+      ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
+      : currentTeamLeader
 
-  if (activeTeamMembers.length === 1) {
+  if (willArchive) {
     await Promise.all([
       // archive single-person teams
       pg.updateTable('Team').set({isArchived: true}).where('id', '=', teamId).execute(),
