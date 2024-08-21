@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
@@ -8,14 +7,8 @@ import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQue
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
-import Panel from '../../../../components/Panel/Panel'
-import {ElementWidth} from '../../../../types/constEnums'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberTable from './OrgMemberTable'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH
-})
 
 interface Props {
   queryRef: PreloadedQuery<OrgMembersQuery>
@@ -131,24 +124,37 @@ const OrgMembers = (props: Props) => {
   }
 
   return (
-    <StyledPanel
-      label='Organization Members'
-      controls={
-        isBillingLeader && (
-          <ExportToCSVButton handleClick={exportToCSV} corsOptions={APP_CORS_OPTIONS} />
-        )
-      }
-    >
-      <OrgMemberTable
-        organization={organization}
-        organizationUsers={sortedOrganizationUsers.map((edge) => edge.node)}
-        billingLeaderCount={billingLeaderCount}
-        orgAdminCount={orgAdminCount}
-        onSort={handleSort}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-      />
-    </StyledPanel>
+    <div className='max-w-4xl pb-4'>
+      <div className='flex items-center justify-start py-1'>
+        <div>
+          <h1 className='text-2xl font-semibold leading-7'>Members</h1>
+        </div>
+        <div className='ml-auto'>
+          {isBillingLeader && (
+            <ExportToCSVButton handleClick={exportToCSV} corsOptions={APP_CORS_OPTIONS} />
+          )}
+        </div>
+      </div>
+
+      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+        <div className='bg-slate-100 px-4 py-2'>
+          <div className='flex w-full justify-between'>
+            <div className='flex items-center font-bold'>
+              {organizationUsers.edges.length} total
+            </div>
+          </div>
+        </div>
+        <OrgMemberTable
+          organization={organization}
+          organizationUsers={sortedOrganizationUsers.map((edge) => edge.node)}
+          billingLeaderCount={billingLeaderCount}
+          orgAdminCount={orgAdminCount}
+          onSort={handleSort}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+        />
+      </div>
+    </div>
   )
 }
 
