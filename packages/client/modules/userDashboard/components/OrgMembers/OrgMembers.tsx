@@ -9,7 +9,7 @@ import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import User from '../../../../../server/database/types/User'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
-import OrgMemberTable from './OrgMemberTable'
+import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 
 interface Props {
   queryRef: PreloadedQuery<OrgMembersQuery>
@@ -149,15 +149,40 @@ const OrgMembers = (props: Props) => {
             </div>
           </div>
         </div>
-        <OrgMemberTable
-          organization={organization}
-          organizationUsers={sortedOrganizationUsers.map((edge) => edge.node)}
-          billingLeaderCount={billingLeaderCount}
-          orgAdminCount={orgAdminCount}
-          onSort={handleSort}
-          sortBy={sortBy}
-          sortDirection={sortDirection}
-        />
+        <div className='w-full overflow-x-auto px-4'>
+          <table className='w-full table-fixed border-collapse md:table-auto'>
+            <thead>
+              <tr className='border-b border-slate-300'>
+                <th
+                  className='w-[70%] cursor-pointer p-3 text-left font-semibold'
+                  onClick={() => handleSort('email')}
+                >
+                  User
+                  {sortBy === 'email' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
+                <th
+                  className='w-[20%] cursor-pointer p-3 text-left font-semibold'
+                  onClick={() => handleSort('lastSeenAt')}
+                >
+                  Last Seen Date
+                  {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                </th>
+                <th className='w-[20%] p-3 text-left font-semibold'></th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedOrganizationUsers.map(({node: organizationUser}) => (
+                <OrgMemberRow
+                  key={organizationUser.id}
+                  billingLeaderCount={billingLeaderCount}
+                  orgAdminCount={orgAdminCount}
+                  organizationUser={organizationUser}
+                  organization={organization}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
