@@ -13,17 +13,19 @@ const TableWrapper = styled('div')({
 const StyledTable = styled('table')({
   width: '100%',
   borderCollapse: 'collapse',
+  tableLayout: 'fixed',
   [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
     tableLayout: 'fixed'
   }
 })
 
-const TableHeader = styled('th')({
+const TableHeader = styled('th')<{width: string}>(({width}) => ({
   padding: '12px 8px',
   textAlign: 'left',
   fontWeight: 600,
-  borderBottom: '1px solid #e0e0e0'
-})
+  borderBottom: '1px solid #e0e0e0',
+  width: width
+}))
 
 interface Props {
   organization: any // Replace with the correct type
@@ -49,15 +51,19 @@ const OrgMemberTable: React.FC<Props> = ({
       <StyledTable>
         <thead>
           <tr>
-            <TableHeader onClick={() => onSort('email')} style={{cursor: 'pointer'}}>
+            <TableHeader width='70%' onClick={() => onSort('email')} style={{cursor: 'pointer'}}>
               User
               {sortBy === 'email' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
             </TableHeader>
-            <TableHeader onClick={() => onSort('lastSeenAt')} style={{cursor: 'pointer'}}>
+            <TableHeader
+              width='20%'
+              onClick={() => onSort('lastSeenAt')}
+              style={{cursor: 'pointer'}}
+            >
               Last Seen Date
               {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
             </TableHeader>
-            <TableHeader className='text-right'>Actions</TableHeader>
+            <TableHeader width='20%'></TableHeader>
           </tr>
         </thead>
         <tbody>

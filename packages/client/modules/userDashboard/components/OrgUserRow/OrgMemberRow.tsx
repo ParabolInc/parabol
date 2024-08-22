@@ -43,10 +43,11 @@ const StyledRow = styled('tr')({
   borderBottom: '1px solid #e0e0e0'
 })
 
-const TableCell = styled('td')({
+const TableCell = styled('td')<{width?: string}>(({width}) => ({
   padding: '12px 8px',
-  verticalAlign: 'middle'
-})
+  verticalAlign: 'middle',
+  width: width
+}))
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -228,6 +229,18 @@ const UserActions: React.FC<UserActionsProps> = ({
   )
 }
 
+const UserInfoWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  width: '100%',
+  overflow: 'hidden'
+})
+
+const UserInfoContent = styled('div')({
+  flexGrow: 1,
+  minWidth: 0
+})
+
 const OrgMemberRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {
@@ -286,22 +299,24 @@ const OrgMemberRow = (props: Props) => {
 
   return (
     <StyledRow>
-      <TableCell>
-        <div className='flex items-center'>
+      <TableCell width='50%'>
+        <UserInfoWrapper>
           <UserAvatar picture={picture} />
-          <UserInfo
-            preferredName={preferredName}
-            email={email}
-            isBillingLeader={isBillingLeader}
-            isOrgAdmin={isOrgAdmin}
-            inactive={inactive}
-          />
-        </div>
+          <UserInfoContent>
+            <UserInfo
+              preferredName={preferredName}
+              email={email}
+              isBillingLeader={isBillingLeader}
+              isOrgAdmin={isOrgAdmin}
+              inactive={inactive}
+            />
+          </UserInfoContent>
+        </UserInfoWrapper>
       </TableCell>
-      <TableCell>
+      <TableCell width='30%'>
         <LastSeenInfo lastSeenAt={lastSeenAt} />
       </TableCell>
-      <TableCell>
+      <TableCell width='20%'>
         <UserActions
           isViewerOrgAdmin={isViewerOrgAdmin}
           isViewerBillingLeader={isViewerBillingLeader}
