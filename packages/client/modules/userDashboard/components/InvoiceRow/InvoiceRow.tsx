@@ -64,7 +64,7 @@ const InvoiceRow = (props: Props) => {
     graphql`
       fragment InvoiceRow_invoice on Invoice {
         id
-        dueAt
+        periodEndAt
         total
         payUrl
         status
@@ -72,7 +72,7 @@ const InvoiceRow = (props: Props) => {
     `,
     invoiceRef
   )
-  const {dueAt, total, payUrl, status} = invoice
+  const {periodEndAt, total, payUrl, status} = invoice
   const isEstimate = status === 'UPCOMING'
 
   return (
@@ -88,8 +88,8 @@ const InvoiceRow = (props: Props) => {
           <InfoRow>
             <InvoiceTitle>
               {status === 'UPCOMING'
-                ? `Due on ${makeDateString(dueAt)}`
-                : `${makeDateString(dueAt)}`}
+                ? `Due on ${makeDateString(periodEndAt)}`
+                : `${makeDateString(periodEndAt)}`}
             </InvoiceTitle>
             <InfoRowRight>
               <InvoiceAmount>

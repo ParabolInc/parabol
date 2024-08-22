@@ -56,15 +56,14 @@ const Organization: OrganizationResolvers = {
 
   allTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
-    const [allTeamsOnOrg, organization, isOrgAdmin, isBillingLeader] = await Promise.all([
+    const [allTeamsOnOrg, organization, isOrgAdmin] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
       dataLoader.get('organizations').loadNonNull(orgId),
-      isUserOrgAdmin(viewerId, orgId, dataLoader),
-      isUserBillingLeader(viewerId, orgId, dataLoader)
+      isUserOrgAdmin(viewerId, orgId, dataLoader)
     ])
     const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
     const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
-    if (isBillingLeader || isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
+    if (isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
       const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
       return [...viewerTeams, ...otherTeams]

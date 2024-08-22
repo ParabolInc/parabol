@@ -27,9 +27,6 @@ const query = graphql`
         isViewerLead
         name
         orgId
-        organization {
-          isBillingLeader
-        }
         teamMembers(sortBy: "preferredName") {
           id
           isNotRemoved
@@ -56,9 +53,8 @@ export const OrgTeamMembers = (props: Props) => {
   } = useDialogState()
 
   if (!team) return null
-  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers, organization} = team
-  const {isBillingLeader} = organization
-  const showMenuButton = isViewerLead || isBillingLeader || isViewerOrgAdmin
+  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
+  const showMenuButton = isViewerLead || isViewerOrgAdmin
 
   return (
     <div className='max-w-4xl pb-4'>

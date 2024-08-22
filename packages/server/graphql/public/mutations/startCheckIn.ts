@@ -90,11 +90,12 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
       .run(),
     updateTeamByTeamId(updates, teamId),
-    getKysely()
-      .updateTable('AgendaItem')
-      .set({meetingId})
-      .where('id', 'in', agendaItemIds)
-      .execute()
+    agendaItemIds.length &&
+      getKysely()
+        .updateTable('AgendaItem')
+        .set({meetingId})
+        .where('id', 'in', agendaItemIds)
+        .execute()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)
