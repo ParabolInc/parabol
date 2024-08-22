@@ -1,4 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 
 const removeSlackAuths = async (
   userId: string,
@@ -6,36 +7,26 @@ const removeSlackAuths = async (
   removeToken?: boolean
 ) => {
   const r = await getRethink()
-  const now = new Date()
   const teamIdsArr = Array.isArray(teamIds) ? teamIds : [teamIds]
-  const existingAuths = await r
-    .table('SlackAuth')
-    .getAll(r.args(teamIdsArr), {index: 'teamId'})
-    .filter({userId})
-    .run()
-
-  if (!existingAuths.length) {
-    const error = new Error('Auth not found')
-    return {authIds: null, error}
+  if (teamIds.length === 0) {
+    return {authIds: null, error: 'No teams provided'}
   }
+  const inactiveAuths = await getKysely()
+    .updateTable('SlackAuth')
+    .set({botAccessToken: removeToken ? null : undefined, isActive: false})
+    .where('teamId', 'in', teamIds)
+    .where('userId', '=', userId)
+    .returning('id')
+    .execute()
 
-  const authIds = existingAuths.map(({id}) => id)
   await r({
-    auth: r
-      .table('SlackAuth')
-      .getAll(r.args(authIds))
-      .update({
-        botAccessToken: removeToken ? null : undefined,
-        isActive: false,
-        updatedAt: now
-      }),
     notifications: r
       .table('SlackNotification')
       .getAll(r.args(teamIdsArr), {index: 'teamId'})
       .filter({userId})
       .delete()
   }).run()
-
+  const authIds = inactiveAuths.map(({id}) => id)
   return {authIds, error: null}
 }
 

@@ -1,4 +1,4 @@
-import getRethink from '../../../database/rethinkDriver'
+import {selectSlackAuths} from '../../../postgres/select'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -12,11 +12,9 @@ const messageAllSlackUsers: MutationResolvers['messageAllSlackUsers'] = async (
   _source,
   {message}
 ) => {
-  const r = await getRethink()
-
   // RESOLUTION
-  const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
-  if (!allSlackAuths || !allSlackAuths.length) {
+  const allSlackAuths = await selectSlackAuths().where('isActive', '=', true).execute()
+  if (!allSlackAuths.length) {
     return standardError(new Error('No authorised Slack users'))
   }
 

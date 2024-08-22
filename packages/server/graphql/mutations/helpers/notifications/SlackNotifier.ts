@@ -592,22 +592,15 @@ export const SlackNotifier = {
     stageIndex: number,
     channelId: string
   ) {
-    const r = await getRethink()
-    const [team, user, meeting, reflectionGroup, reflections, slackAuth] = await Promise.all([
+    const [team, user, meeting, reflectionGroup, reflections, userSlackAuths] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('users').loadNonNull(userId),
       dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
       dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId),
-      r
-        .table('SlackAuth')
-        .getAll(userId, {index: 'userId'})
-        .filter({teamId})
-        .nth(0)
-        .default(null)
-        .run()
+      dataLoader.get('slackAuthByUserId').load(userId)
     ])
-
+    const slackAuth = userSlackAuths.find((auth) => auth.teamId === teamId)
     if (!slackAuth) {
       throw new Error('Slack auth not found')
     }

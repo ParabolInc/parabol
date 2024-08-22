@@ -85,7 +85,6 @@ import setAppLocation from './mutations/setAppLocation'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
-import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
@@ -188,7 +187,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setAppLocation,
       setPhaseFocus,
       setStageTimer,
-      setSlackNotification,
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
