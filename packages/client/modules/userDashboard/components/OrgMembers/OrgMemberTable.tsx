@@ -30,8 +30,8 @@ interface Props {
   organizationUsers: any[] // Replace with the correct type
   billingLeaderCount: number
   orgAdminCount: number
-  onSort: () => void
-  sortBy: keyof User | null
+  onSort: (column: keyof User) => void
+  sortBy: keyof User
   sortDirection: 'asc' | 'desc'
 }
 
@@ -49,8 +49,11 @@ const OrgMemberTable: React.FC<Props> = ({
       <StyledTable>
         <thead>
           <tr>
-            <TableHeader>User</TableHeader>
-            <TableHeader onClick={onSort} style={{cursor: 'pointer'}}>
+            <TableHeader onClick={() => onSort('email')} style={{cursor: 'pointer'}}>
+              User
+              {sortBy === 'email' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+            </TableHeader>
+            <TableHeader onClick={() => onSort('lastSeenAt')} style={{cursor: 'pointer'}}>
               Last Seen Date
               {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
             </TableHeader>

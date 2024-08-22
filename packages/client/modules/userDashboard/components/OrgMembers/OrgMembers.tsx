@@ -6,6 +6,7 @@ import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-re
 import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
+import User from '../../../../../server/database/types/User'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberTable from './OrgMemberTable'
@@ -73,7 +74,7 @@ const OrgMembers = (props: Props) => {
     (count, {node}) => (['ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count),
     0
   )
-  const [sortBy, setSortBy] = useState<'lastSeenAt' | null>('lastSeenAt')
+  const [sortBy, setSortBy] = useState<keyof User>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
   const sortedOrganizationUsers = [...organizationUsers.edges].sort((a, b) => {
@@ -83,16 +84,20 @@ const OrgMembers = (props: Props) => {
       return sortDirection === 'asc'
         ? aDate.getTime() - bDate.getTime()
         : bDate.getTime() - aDate.getTime()
+    } else if (sortBy === 'email') {
+      return sortDirection === 'asc'
+        ? a.node.user.email.localeCompare(b.node.user.email)
+        : b.node.user.email.localeCompare(a.node.user.email)
     }
     return 0
   })
 
-  const handleSort = () => {
-    if (sortBy === 'lastSeenAt') {
+  const handleSort = (column: keyof User) => {
+    if (sortBy === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortBy('lastSeenAt')
-      setSortDirection('desc')
+      setSortBy(column)
+      setSortDirection('asc')
     }
   }
 
