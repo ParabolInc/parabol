@@ -27,38 +27,8 @@ import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useModal from '../../../../hooks/useModal'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
-import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
-
-const AvatarBlock = styled('div')({
-  display: 'none',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    display: 'block',
-    marginRight: 16
-  }
-})
-
-const StyledRow = styled('tr')({
-  borderBottom: '1px solid #e0e0e0'
-})
-
-const TableCell = styled('td')<{width?: string}>(({width}) => ({
-  padding: '12px 8px',
-  verticalAlign: 'middle',
-  width: width
-}))
-
-const ActionsBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
-
-const MenuToggleBlock = styled('div')({
-  marginLeft: 8,
-  width: '2rem'
-})
 
 interface Props extends WithMutationProps {
   billingLeaderCount: number
@@ -109,13 +79,13 @@ interface UserAvatarProps {
 }
 
 const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
-  <AvatarBlock>
+  <div className='mr-4 hidden md:block'>
     {picture ? (
       <Avatar picture={picture} className='h-11 w-11' />
     ) : (
       <img alt='default avatar' src={defaultUserAvatar} />
     )}
-  </AvatarBlock>
+  </div>
 )
 
 interface UserInfoProps {
@@ -199,14 +169,14 @@ const UserActions: React.FC<UserActionsProps> = ({
 
   return (
     <RowActions>
-      <ActionsBlock>
+      <div className='flex items-center justify-end'>
         {showLeaveButton && (
           <StyledFlatButton onClick={toggleLeave} onMouseEnter={LeaveOrgModal.preload}>
             Leave Organization
           </StyledFlatButton>
         )}
         {(isViewerOrgAdmin || (isViewerBillingLeader && !isViewerLastBillingLeader)) && (
-          <MenuToggleBlock>
+          <div className='ml-2 w-8'>
             <MenuButton
               onClick={togglePortal}
               onMouseEnter={
@@ -214,7 +184,7 @@ const UserActions: React.FC<UserActionsProps> = ({
               }
               ref={originRef}
             />
-          </MenuToggleBlock>
+          </div>
         )}
         {isViewerOrgAdmin && menuPortal(<OrgAdminActionMenu {...actionMenuProps} />)}
         {!isViewerOrgAdmin &&
@@ -224,7 +194,7 @@ const UserActions: React.FC<UserActionsProps> = ({
         {removeModal(
           <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
         )}
-      </ActionsBlock>
+      </div>
     </RowActions>
   )
 }
@@ -298,8 +268,8 @@ const OrgMemberRow = (props: Props) => {
   const isViewerLastOrgAdmin = isViewerOrgAdmin && isOrgAdmin && orgAdminCount === 1
 
   return (
-    <StyledRow>
-      <TableCell width='50%'>
+    <tr className='border-b border-slate-300 last:border-b-0'>
+      <td className='w-1/2 py-3 px-2 align-middle'>
         <UserInfoWrapper>
           <UserAvatar picture={picture} />
           <UserInfoContent>
@@ -312,11 +282,11 @@ const OrgMemberRow = (props: Props) => {
             />
           </UserInfoContent>
         </UserInfoWrapper>
-      </TableCell>
-      <TableCell width='30%'>
+      </td>
+      <td className='w-3/10 py-3 px-2 align-middle'>
         <LastSeenInfo lastSeenAt={lastSeenAt} />
-      </TableCell>
-      <TableCell width='20%'>
+      </td>
+      <td className='w-1/5 py-3 px-2 align-middle'>
         <UserActions
           isViewerOrgAdmin={isViewerOrgAdmin}
           isViewerBillingLeader={isViewerBillingLeader}
@@ -327,8 +297,8 @@ const OrgMemberRow = (props: Props) => {
           preferredName={preferredName}
           viewerId={viewerId}
         />
-      </TableCell>
-    </StyledRow>
+      </td>
+    </tr>
   )
 }
 

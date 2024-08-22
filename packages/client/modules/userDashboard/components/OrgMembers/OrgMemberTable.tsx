@@ -1,31 +1,6 @@
-import styled from '@emotion/styled'
 import React from 'react'
 import User from '../../../../../server/database/types/User'
-import {Breakpoint} from '../../../../types/constEnums'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
-
-const TableWrapper = styled('div')({
-  overflowX: 'auto',
-  width: '100%',
-  padding: '0 16px'
-})
-
-const StyledTable = styled('table')({
-  width: '100%',
-  borderCollapse: 'collapse',
-  tableLayout: 'fixed',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    tableLayout: 'fixed'
-  }
-})
-
-const TableHeader = styled('th')<{width: string}>(({width}) => ({
-  padding: '12px 8px',
-  textAlign: 'left',
-  fontWeight: 600,
-  borderBottom: '1px solid #e0e0e0',
-  width: width
-}))
 
 interface Props {
   organization: any // Replace with the correct type
@@ -47,23 +22,25 @@ const OrgMemberTable: React.FC<Props> = ({
   sortDirection
 }) => {
   return (
-    <TableWrapper>
-      <StyledTable>
+    <div className='w-full overflow-x-auto px-4'>
+      <table className='w-full table-fixed border-collapse md:table-auto'>
         <thead>
-          <tr>
-            <TableHeader width='70%' onClick={() => onSort('email')} style={{cursor: 'pointer'}}>
+          <tr className='border-b border-slate-300'>
+            <th
+              className='w-[70%] cursor-pointer p-3 text-left font-semibold'
+              onClick={() => onSort('email')}
+            >
               User
               {sortBy === 'email' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
-            </TableHeader>
-            <TableHeader
-              width='20%'
+            </th>
+            <th
+              className='w-[20%] cursor-pointer p-3 text-left font-semibold'
               onClick={() => onSort('lastSeenAt')}
-              style={{cursor: 'pointer'}}
             >
               Last Seen Date
               {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
-            </TableHeader>
-            <TableHeader width='20%'></TableHeader>
+            </th>
+            <th className='w-[20%] p-3 text-left font-semibold'></th>
           </tr>
         </thead>
         <tbody>
@@ -77,8 +54,8 @@ const OrgMemberTable: React.FC<Props> = ({
             />
           ))}
         </tbody>
-      </StyledTable>
-    </TableWrapper>
+      </table>
+    </div>
   )
 }
 
