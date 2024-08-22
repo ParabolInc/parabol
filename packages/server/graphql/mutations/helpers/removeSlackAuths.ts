@@ -8,13 +8,13 @@ const removeSlackAuths = async (
 ) => {
   const r = await getRethink()
   const teamIdsArr = Array.isArray(teamIds) ? teamIds : [teamIds]
-  if (teamIds.length === 0) {
+  if (teamIdsArr.length === 0) {
     return {authIds: null, error: 'No teams provided'}
   }
   const inactiveAuths = await getKysely()
     .updateTable('SlackAuth')
     .set({botAccessToken: removeToken ? null : undefined, isActive: false})
-    .where('teamId', 'in', teamIds)
+    .where('teamId', 'in', teamIdsArr)
     .where('userId', '=', userId)
     .returning('id')
     .execute()

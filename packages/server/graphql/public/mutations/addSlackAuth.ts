@@ -70,6 +70,7 @@ const upsertAuth = async (
     })
     .onConflict((oc) =>
       oc.columns(['teamId', 'userId']).doUpdateSet((eb) => ({
+        isActive: true,
         defaultTeamChannelId: eb.ref('excluded.defaultTeamChannelId'),
         slackTeamId: eb.ref('excluded.slackTeamId'),
         slackTeamName: eb.ref('excluded.slackTeamName'),
