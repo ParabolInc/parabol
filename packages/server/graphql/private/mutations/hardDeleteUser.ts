@@ -94,10 +94,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .delete(),
     pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
-    slackNotification: r
-      .table('SlackNotification')
-      .getAll(userIdToDelete, {index: 'userId'})
-      .delete(),
     invitedByTeamInvitation: r
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})

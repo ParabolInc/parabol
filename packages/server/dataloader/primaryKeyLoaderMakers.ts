@@ -11,6 +11,7 @@ import {
   selectOrganizations,
   selectRetroReflections,
   selectSlackAuths,
+  selectSlackNotifications,
   selectSuggestedAction,
   selectTeamPromptResponses,
   selectTeams,
@@ -99,4 +100,8 @@ export const agendaItems = primaryKeyLoaderMaker((ids: readonly string[]) => {
 
 export const slackAuths = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectSlackAuths().where('id', 'in', ids).execute()
+})
+
+export const slackNotifications = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectSlackNotifications().where('id', 'in', ids).execute()
 })
