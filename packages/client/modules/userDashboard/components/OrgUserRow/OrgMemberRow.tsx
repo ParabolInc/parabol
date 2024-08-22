@@ -116,15 +116,6 @@ const UserInfo: React.FC<UserInfoProps> = ({
   </RowInfo>
 )
 
-interface LastSeenInfoProps {
-  lastSeenAt: string | null
-}
-
-const LastSeenInfo: React.FC<LastSeenInfoProps> = ({lastSeenAt}) => {
-  const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
-
-  return <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
-}
 interface UserActionsProps {
   isViewerOrgAdmin: boolean
   isViewerBillingLeader: boolean
@@ -199,18 +190,6 @@ const UserActions: React.FC<UserActionsProps> = ({
   )
 }
 
-const UserInfoWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%',
-  overflow: 'hidden'
-})
-
-const UserInfoContent = styled('div')({
-  flexGrow: 1,
-  minWidth: 0
-})
-
 const OrgMemberRow = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {
@@ -266,13 +245,14 @@ const OrgMemberRow = (props: Props) => {
   const isViewerLastBillingLeader =
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const isViewerLastOrgAdmin = isViewerOrgAdmin && isOrgAdmin && orgAdminCount === 1
+  const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
 
   return (
     <tr className='border-b border-slate-300 last:border-b-0'>
       <td className='w-1/2 py-3 px-2 align-middle'>
-        <UserInfoWrapper>
+        <div className='flex w-full items-center overflow-hidden'>
           <UserAvatar picture={picture} />
-          <UserInfoContent>
+          <div className='min-w-0 flex-grow'>
             <UserInfo
               preferredName={preferredName}
               email={email}
@@ -280,11 +260,11 @@ const OrgMemberRow = (props: Props) => {
               isOrgAdmin={isOrgAdmin}
               inactive={inactive}
             />
-          </UserInfoContent>
-        </UserInfoWrapper>
+          </div>
+        </div>
       </td>
       <td className='w-3/10 py-3 px-2 align-middle'>
-        <LastSeenInfo lastSeenAt={lastSeenAt} />
+        <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
       </td>
       <td className='w-1/5 py-3 px-2 align-middle'>
         <UserActions
