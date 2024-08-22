@@ -8,9 +8,9 @@ type Invoice {
   id: ID!
 
   """
-  The datetime the invoice is due
+  The datetime the invoice period has ended
   """
-  dueAt: DateTime!
+  periodEndAt: DateTime!
 
   """
   The total amount for the invoice (in USD)
