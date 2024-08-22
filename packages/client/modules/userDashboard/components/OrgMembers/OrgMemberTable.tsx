@@ -49,8 +49,7 @@ const OrgMemberTable: React.FC<Props> = ({
       <StyledTable>
         <thead>
           <tr>
-            <TableHeader className='w-1/6'>Avatar</TableHeader>
-            <TableHeader>Name & Email</TableHeader>
+            <TableHeader>User</TableHeader>
             <TableHeader onClick={onSort} style={{cursor: 'pointer'}}>
               Last Seen Date
               {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}

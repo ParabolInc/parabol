@@ -48,10 +48,6 @@ const TableCell = styled('td')({
   verticalAlign: 'middle'
 })
 
-const StyledRowInfo = styled(RowInfo)({
-  paddingLeft: 0
-})
-
 const ActionsBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
@@ -136,7 +132,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
   isOrgAdmin,
   inactive
 }) => (
-  <StyledRowInfo>
+  <RowInfo className='pl-0'>
     <RowInfoHeader>
       <RowInfoHeading>{preferredName}</RowInfoHeading>
       {isBillingLeader && <RoleTag>Billing Leader</RoleTag>}
@@ -146,7 +142,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
     <RowInfoLink href={`mailto:${email}`} title='Send an email'>
       {email}
     </RowInfoLink>
-  </StyledRowInfo>
+  </RowInfo>
 )
 
 interface LastSeenInfoProps {
@@ -156,7 +152,7 @@ interface LastSeenInfoProps {
 const LastSeenInfo: React.FC<LastSeenInfoProps> = ({lastSeenAt}) => {
   const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
 
-  return <StyledRowInfo>{formattedLastSeenAt}</StyledRowInfo>
+  return <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
 }
 interface UserActionsProps {
   isViewerOrgAdmin: boolean
@@ -291,16 +287,16 @@ const OrgMemberRow = (props: Props) => {
   return (
     <StyledRow>
       <TableCell>
-        <UserAvatar picture={picture} />
-      </TableCell>
-      <TableCell>
-        <UserInfo
-          preferredName={preferredName}
-          email={email}
-          isBillingLeader={isBillingLeader}
-          isOrgAdmin={isOrgAdmin}
-          inactive={inactive}
-        />
+        <div className='flex items-center'>
+          <UserAvatar picture={picture} />
+          <UserInfo
+            preferredName={preferredName}
+            email={email}
+            isBillingLeader={isBillingLeader}
+            isOrgAdmin={isOrgAdmin}
+            inactive={inactive}
+          />
+        </div>
       </TableCell>
       <TableCell>
         <LastSeenInfo lastSeenAt={lastSeenAt} />
