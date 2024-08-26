@@ -205,3 +205,5 @@ export const selectMeetingSettings = () =>
     ])
 
 export const selectAgendaItems = () => getKysely().selectFrom('AgendaItem').selectAll()
+
+export const selectSlackAuths = () => getKysely().selectFrom('SlackAuth').selectAll()

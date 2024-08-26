@@ -4,6 +4,7 @@ import {
   selectAgendaItems,
   selectOrganizations,
   selectRetroReflections,
+  selectSlackAuths,
   selectSuggestedAction,
   selectTeams,
   selectTemplateDimension,
@@ -191,3 +192,7 @@ export const agendaItemsByMeetingId = foreignKeyLoaderMaker(
     return selectAgendaItems().where('meetingId', 'in', meetingIds).orderBy('sortOrder').execute()
   }
 )
+
+export const slackAuthByUserId = foreignKeyLoaderMaker('slackAuths', 'userId', async (userIds) => {
+  return selectSlackAuths().where('userId', 'in', userIds).execute()
+})
