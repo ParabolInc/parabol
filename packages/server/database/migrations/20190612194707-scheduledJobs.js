@@ -1,4 +1,4 @@
-import SlackNotification from '../types/SlackNotification'
+import generateUID from '../../generateUID'
 
 exports.up = async (r) => {
   try {
@@ -31,11 +31,12 @@ exports.up = async (r) => {
       .run()
     const stageCompleteNotifications = slackUsers.map((slackUser) => {
       const {userId, teamId} = slackUser
-      return new SlackNotification({
+      return {
         userId,
         teamId,
         channelId: null,
-        event: 'MEETING_STAGE_TIME_LIMIT_END'
+        event: 'MEETING_STAGE_TIME_LIMIT_END',
+        id: generateUID()
       })
     })
     const stageReadyNotifications = slackUsers.map((slackUser) => {
