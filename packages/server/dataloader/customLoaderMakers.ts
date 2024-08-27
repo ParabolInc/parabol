@@ -83,31 +83,21 @@ export const commentCountByDiscussionId = (
   dependsOn('comments')
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
-      const r = await getRethink()
-      const groups = (await (
-        r
-          .table('Comment')
-          .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-          .filter((row: RDatum) =>
-            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
-          )
-          .group('discussionId') as any
+      const commentsByDiscussionId = await Promise.all(
+        discussionIds.map((discussionId) => parent.get('commentsByDiscussionId').load(discussionId))
       )
-        .count()
-        .ungroup()
-        .run()) as {group: string; reduction: number}[]
-      const lookup: Record<string, number> = {}
-      groups.forEach(({group, reduction}) => {
-        lookup[group] = reduction
+      return commentsByDiscussionId.map((commentArr) => {
+        const activeHumanComments = commentArr.filter(
+          (comment) => comment.isActive && comment.createdBy !== PARABOL_AI_USER_ID
+        )
+        return activeHumanComments.length
       })
-      return discussionIds.map((discussionId) => lookup[discussionId] || 0)
     },
     {
       ...parent.dataLoaderOptions
     }
   )
 }
-
 export const latestTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
     async (taskIds) => {

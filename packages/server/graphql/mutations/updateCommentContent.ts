@@ -5,6 +5,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -40,9 +41,8 @@ export default {
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const [comment, viewerMeetingMember] = await Promise.all([
-      r.table('Comment').get(commentId).run(),
-      dataLoader.get('meetingMembers').load(meetingMemberId),
-      dataLoader.get('newMeetings').load(meetingId)
+      dataLoader.get('comments').load(commentId),
+      dataLoader.get('meetingMembers').load(meetingMemberId)
     ])
     if (!comment || !comment.isActive) {
       return standardError(new Error('comment not found'), {userId: viewerId})
@@ -69,7 +69,12 @@ export default {
       .get(commentId)
       .update({content: normalizedContent, plaintextContent, updatedAt: now})
       .run()
-
+    await getKysely()
+      .updateTable('Comment')
+      .set({content: normalizedContent, plaintextContent})
+      .where('id', '=', commentId)
+      .execute()
+    dataLoader.clearAll('comments')
     // :TODO: (jmtaber129): diff new and old comment content for mentions and handle notifications
     // appropriately.
 

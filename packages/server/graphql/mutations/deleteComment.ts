@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -38,7 +39,7 @@ const deleteComment = {
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const [comment, viewerMeetingMember] = await Promise.all([
-      r.table('Comment').get(commentId).run(),
+      dataLoader.get('comments').load(commentId),
       dataLoader.get('meetingMembers').load(meetingMemberId),
       dataLoader.get('newMeetings').load(meetingId)
     ])
@@ -58,7 +59,12 @@ const deleteComment = {
     }
 
     await r.table('Comment').get(commentId).update({isActive: false, updatedAt: now}).run()
-
+    await getKysely()
+      .updateTable('Comment')
+      .set({updatedAt: now})
+      .where('id', '=', commentId)
+      .execute()
+    dataLoader.clearAll('comments')
     const data = {commentId}
 
     if (meetingId) {

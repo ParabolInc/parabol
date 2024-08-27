@@ -1,10 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {DISCUSS, PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
+import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
@@ -17,6 +16,7 @@ import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
+import isValid from '../../isValid'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
@@ -51,20 +51,16 @@ const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: Int
     generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
     getTranscription(recallBotId)
   ])
-
+  const commentCounts = (
+    await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
+  ).filter(isValid)
+  const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
   await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
       {
-        commentCount: r
-          .table('Comment')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .filter((row: RDatum) =>
-            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
-          )
-          .count()
-          .default(0) as unknown as number,
+        commentCount,
         taskCount: r
           .table('Task')
           .getAll(r.args(discussionIds), {index: 'discussionId'})

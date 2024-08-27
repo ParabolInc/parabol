@@ -2,6 +2,7 @@ import getKysely from '../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
   selectAgendaItems,
+  selectComments,
   selectOrganizations,
   selectRetroReflections,
   selectSlackAuths,
@@ -203,5 +204,14 @@ export const slackNotificationsByTeamId = foreignKeyLoaderMaker(
   'teamId',
   async (teamIds) => {
     return selectSlackNotifications().where('teamId', 'in', teamIds).execute()
+  }
+)
+
+export const _pgcommentsByDiscussionId = foreignKeyLoaderMaker(
+  '_pgcomments',
+  'discussionId',
+  async (discussionIds) => {
+    // include deleted comments so we can replace them with tombstones
+    return selectComments().where('discussionId', 'in', discussionIds).execute()
   }
 )

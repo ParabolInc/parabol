@@ -48,6 +48,7 @@
         "mappers": {
           "SetSlackNotificationPayload": "./types/SetSlackNotificationPayload#SetSlackNotificationPayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
+          "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
           "RemoveAgendaItemPayload": "./types/RemoveAgendaItemPayload#RemoveAgendaItemPayloadSource",
           "AddAgendaItemPayload": "./types/AddAgendaItemPayload#AddAgendaItemPayloadSource",
