@@ -16,7 +16,10 @@ const Threadable: ThreadableResolvers = {
     return createdBy ? dataLoader.get('users').loadNonNull(createdBy) : null
   },
   replies: ({replies}) => replies || [],
-  threadSortOrder: ({threadSortOrder}) => (isNaN(threadSortOrder) ? 0 : Math.trunc(threadSortOrder))
+  // Can remove after Comment is in PG
+  threadSortOrder: ({threadSortOrder}) => {
+    return isNaN(threadSortOrder) ? 0 : Math.trunc(threadSortOrder)
+  }
 }
 
 export default Threadable
