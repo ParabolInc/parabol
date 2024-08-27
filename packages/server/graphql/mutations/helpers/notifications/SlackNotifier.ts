@@ -9,10 +9,10 @@ import appOrigin from '../../../../appOrigin'
 import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
 import Meeting from '../../../../database/types/Meeting'
 import SlackAuth from '../../../../database/types/SlackAuth'
-import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
+import getKysely from '../../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {Team, TeamPromptResponse} from '../../../../postgres/types'
+import {SlackNotification, Team, TeamPromptResponse} from '../../../../postgres/types'
 import User from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import SlackServerManager from '../../../../utils/SlackServerManager'
@@ -26,7 +26,7 @@ import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
 import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
 
-type SlackNotification = {
+type SlackNotificationMessage = {
   title: string
   blocks: string | Array<{type: string}>
 }
@@ -45,15 +45,12 @@ const handleError = async (
   if ('error' in res) {
     const {error} = res
     if (error === 'channel_not_found') {
-      const r = await getRethink()
-      await r
-        .table('SlackNotification')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({channelId})
-        .update({
-          channelId: null
-        })
-        .run()
+      await getKysely()
+        .updateTable('SlackNotification')
+        .set({channelId: null})
+        .where('teamId', '=', teamId)
+        .where('channelId', '=', channelId)
+        .execute()
       return {
         error: new Error('channel_not_found')
       }
@@ -77,7 +74,7 @@ const handleError = async (
 
 const notifySlack = async (
   notificationChannel: NotificationChannel,
-  event: SlackNotificationEvent,
+  event: SlackNotification['event'],
   teamId: string,
   user: User,
   slackMessage: string | Array<{type: string}>,
@@ -145,7 +142,7 @@ const makeTeamPromptStartMeetingNotification = (
   team: Team,
   meeting: Meeting,
   meetingUrl: string
-): SlackNotification => {
+): SlackNotificationMessage => {
   const title = `*${meeting.name}* is open :speech_balloon: `
   const blocks = [
     makeSection(title),
@@ -160,7 +157,7 @@ const makeGenericStartMeetingNotification = (
   team: Team,
   meeting: Meeting,
   meetingUrl: string
-): SlackNotification => {
+): SlackNotificationMessage => {
   const title = 'Meeting started :wave: '
   const blocks = [
     makeSection(title),
@@ -173,7 +170,7 @@ const makeGenericStartMeetingNotification = (
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotification
+  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotificationMessage
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -539,7 +536,7 @@ async function getSlack(
   dataLoader: DataLoaderWorker,
   teamId: string,
   _userId: string,
-  event: SlackNotificationEvent
+  event: SlackNotification['event']
 ) {
   const notifications = await dataLoader
     .get('slackNotificationsByTeamIdAndEvent')

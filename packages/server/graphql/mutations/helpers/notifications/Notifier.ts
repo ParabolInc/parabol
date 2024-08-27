@@ -1,5 +1,5 @@
-import {SlackNotificationEvent} from '../../../../database/types/SlackNotification'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {SlackNotification} from '../../../../postgres/types'
 import {DataLoaderWorker} from '../../../graphql'
 import {NotificationIntegration, NotifyResponse} from './NotificationIntegrationHelper'
 
@@ -41,7 +41,7 @@ export type NotificationIntegrationLoader = (
   dataLoader: DataLoaderWorker,
   teamId: string,
   userId: string,
-  event: SlackNotificationEvent
+  event: SlackNotification['event']
 ) => Promise<NotificationIntegration[]>
 
 async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {

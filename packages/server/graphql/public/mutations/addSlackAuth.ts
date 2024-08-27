@@ -1,6 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import SlackNotification, {SlackNotificationEvent} from '../../../database/types/SlackNotification'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import SlackServerManager from '../../../utils/SlackServerManager'
@@ -9,6 +7,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
+import {slackNotificationEventTypeLookup} from '../types/SlackNotification'
 
 export const upsertNotifications = async (
   viewerId: string,
@@ -16,34 +15,27 @@ export const upsertNotifications = async (
   teamChannelId: string,
   channelId: string
 ) => {
-  const r = await getRethink()
-  const existingNotifications = await r
-    .table('SlackNotification')
-    .getAll(viewerId, {index: 'userId'})
-    .filter({teamId})
-    .run()
-  const teamEvents = [
-    'meetingStart',
-    'meetingEnd',
-    'MEETING_STAGE_TIME_LIMIT_START',
-    'STANDUP_RESPONSE_SUBMITTED'
-  ] as SlackNotificationEvent[]
-  const userEvents = ['MEETING_STAGE_TIME_LIMIT_END'] as SlackNotificationEvent[]
-  const events = [...teamEvents, ...userEvents]
-  const upsertableNotifications = events.map((event) => {
-    const existingNotification = existingNotifications.find(
-      (notification) => notification.event === event
-    )
-    return new SlackNotification({
-      event,
-      // the existing notification channel could be a bad one (legacy reasons, bad means not public or not @Parabol)
-      channelId: teamEvents.includes(event) ? teamChannelId : channelId,
+  const pg = getKysely()
+  const upsertableNotifications = Object.keys(slackNotificationEventTypeLookup).map((event) => {
+    const type =
+      slackNotificationEventTypeLookup[event as keyof typeof slackNotificationEventTypeLookup]
+    return {
+      id: generateUID(),
+      event: event as keyof typeof slackNotificationEventTypeLookup,
       teamId,
       userId: viewerId,
-      id: (existingNotification && existingNotification.id) || undefined
-    })
+      channelId: type === 'team' ? teamChannelId : channelId
+    }
   })
-  await r.table('SlackNotification').insert(upsertableNotifications, {conflict: 'replace'}).run()
+  await pg
+    .insertInto('SlackNotification')
+    .values(upsertableNotifications)
+    .onConflict((oc) =>
+      oc.columns(['teamId', 'userId', 'event']).doUpdateSet((eb) => ({
+        channelId: eb.ref('excluded.channelId')
+      }))
+    )
+    .execute()
 }
 
 const upsertAuth = async (

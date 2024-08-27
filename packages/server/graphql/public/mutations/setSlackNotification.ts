@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
-import SlackNotification from '../../../database/types/SlackNotification'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -15,7 +14,7 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const r = await getRethink()
+  const pg = getKysely()
 
   // AUTH
   if (!isTeamMember(authToken, teamId)) {
@@ -31,27 +30,24 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   }
 
   // RESOLUTION
-  const existingNotifications = await r
-    .table('SlackNotification')
-    .getAll(viewerId, {index: 'userId'})
-    .filter({teamId})
-    .filter((row: RDatum) => r(slackNotificationEvents).contains(row('event')))
-    .run()
-
-  const notifications = slackNotificationEvents.map((event) => {
-    const existingNotification = existingNotifications.find(
-      (notification) => notification.event === event
+  const notifications = slackNotificationEvents.map((event) => ({
+    event,
+    channelId: slackChannelId,
+    teamId,
+    userId: viewerId,
+    id: generateUID()
+  }))
+  const results = await pg
+    .insertInto('SlackNotification')
+    .values(notifications)
+    .onConflict((oc) =>
+      oc.columns(['teamId', 'userId', 'event']).doUpdateSet((eb) => ({
+        channelId: eb.ref('excluded.channelId')
+      }))
     )
-    return new SlackNotification({
-      event,
-      channelId: slackChannelId,
-      teamId,
-      userId: viewerId,
-      id: (existingNotification && existingNotification.id) || undefined
-    })
-  })
-  await r.table('SlackNotification').insert(notifications, {conflict: 'replace'}).run()
-  const slackNotificationIds = notifications.map(({id}) => id)
+    .returning('id')
+    .execute()
+  const slackNotificationIds = results.map(({id}) => id)
   const data = {userId: viewerId, slackNotificationIds}
   publish(SubscriptionChannel.TEAM, teamId, 'SetSlackNotificationPayload', data, subOptions)
   return data

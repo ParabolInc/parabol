@@ -5,6 +5,7 @@ import {
   selectOrganizations,
   selectRetroReflections,
   selectSlackAuths,
+  selectSlackNotifications,
   selectSuggestedAction,
   selectTeams,
   selectTemplateDimension,
@@ -196,3 +197,11 @@ export const agendaItemsByMeetingId = foreignKeyLoaderMaker(
 export const slackAuthByUserId = foreignKeyLoaderMaker('slackAuths', 'userId', async (userIds) => {
   return selectSlackAuths().where('userId', 'in', userIds).execute()
 })
+
+export const slackNotificationsByTeamId = foreignKeyLoaderMaker(
+  'slackNotifications',
+  'teamId',
+  async (teamIds) => {
+    return selectSlackNotifications().where('teamId', 'in', teamIds).execute()
+  }
+)
