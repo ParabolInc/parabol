@@ -10,10 +10,10 @@
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
-    "lint": "eslint --fix . --ext .ts,.tsx",
-    "lint:check": "eslint .",
-    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
-    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
+    "lint": "yarn lint:check --fix .",
+    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
+    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --write \"**/*.{ts,tsx,graphql}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --check \"**/*.{ts,tsx,graphql}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
