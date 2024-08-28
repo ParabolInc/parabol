@@ -16,6 +16,10 @@ export default [
   ...base,
   {
     ignores: [
+      'types/webpackEnv.ts',
+      'database/migrations',
+      'database/stricterR.ts',
+      'postgres/migrations',
       '**/generated/',
       '**/*/githubTypes.ts',
       '**/*/gitlabTypes.ts',
@@ -24,8 +28,8 @@ export default [
       '**/*/gitlabSchema.graphql',
       'graphql/private/schema.graphql',
       'graphql/public/schema.graphql',
-      'migrationTemplate.ts',
-      'billing/debug.ts',
+      '**/*/migrationTemplate.ts',
+      '**/*debug.ts',
       '**/*/pg.d.ts'
     ]
   }

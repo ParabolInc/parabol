@@ -17,7 +17,7 @@
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
     "lint": "eslint --fix .",
-    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint ./database/migrations",
+    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint --debug .",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose --runInBand",
