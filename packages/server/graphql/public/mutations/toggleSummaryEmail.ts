@@ -7,7 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   _source,
-  {},
+  _args,
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)

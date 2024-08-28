@@ -115,7 +115,11 @@ const startRecurringMeeting = async (
   return undefined
 }
 
-const processRecurrence: MutationResolvers['processRecurrence'] = async (_source, {}, context) => {
+const processRecurrence: MutationResolvers['processRecurrence'] = async (
+  _source,
+  _args,
+  context
+) => {
   const {dataLoader, socketId: mutatorId} = context
   const r = await getRethink()
   const now = new Date()

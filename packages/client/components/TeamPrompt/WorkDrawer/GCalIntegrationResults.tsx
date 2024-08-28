@@ -38,7 +38,7 @@ const GCalIntegrationResults = (props: Props) => {
 
   const gcal = query.viewer.teamMember?.integrations.gcal
 
-  const gcalResults = gcal?.events ? [...gcal?.events] : null
+  const gcalResults = gcal?.events ? [...gcal!.events] : null
   if (order === 'DESC') {
     gcalResults?.reverse()
   }

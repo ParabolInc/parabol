@@ -120,18 +120,13 @@ const SwipeableDashSidebar = (props: Props) => {
   const SIDEBAR_WIDTH: number = sidebarWidth || NavSidebar.WIDTH
   const HYSTERESIS_THRESH = HYSTERESIS * SIDEBAR_WIDTH
 
-  useEffect(
-    () => {
-      openPortal()
-      return () => {
-        window.clearTimeout(swipe.peekTimeout)
-        hideSidebar()
-      }
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
+  useEffect(() => {
+    openPortal()
+    return () => {
+      window.clearTimeout(swipe.peekTimeout)
+      hideSidebar()
+    }
+  }, [])
 
   const hideSidebar = useCallback(() => {
     setX(0)
