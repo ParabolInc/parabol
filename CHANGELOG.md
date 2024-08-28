@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.45.0](https://github.com/ParabolInc/parabol/compare/v7.44.0...v7.45.0) (2024-08-28)
+
+
+### Added
+
+* add ai summary to demo ([#10160](https://github.com/ParabolInc/parabol/issues/10160)) ([089a537](https://github.com/ParabolInc/parabol/commit/089a537899ac2ca9e71906b570146a1564233b1c))
+
 ## [7.44.0](https://github.com/ParabolInc/parabol/compare/v7.43.8...v7.44.0) (2024-08-27)
 
 
