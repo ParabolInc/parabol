@@ -73,8 +73,7 @@
     "parse-url": "^8.1.0",
     "rethinkdb-ts": "2.6.0",
     "recursive-readdir": "^2.2.3",
-    "json5": "^2.2.3",
-    "schema-utils": "^4.2.0"
+    "json5": "^2.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -105,7 +104,6 @@
     "graphql": "16.9.0",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
-    "jiti": "^1.21.6",
     "jscodeshift": "^0.14.0",
     "kysely": "^0.27.3",
     "kysely-codegen": "^0.15.0",
@@ -123,7 +121,6 @@
     "raw-loader": "^4.0.2",
     "relay-compiler": "^14.1.0",
     "relay-config": "^12.0.0",
-    "schema-utils": "^4.2.0",
     "sucrase": "^3.32.0",
     "tailwindcss": "^3.2.7",
     "terser-webpack-plugin": "^5.3.9",
