@@ -7,12 +7,11 @@ import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {SlackNotificationEventEnum} from '../../database/types/SlackNotification'
 import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import {TeamPromptResponse, TemplateScale} from '../../postgres/types'
+import {SlackNotification, TeamPromptResponse, TemplateScale} from '../../postgres/types'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
@@ -636,7 +635,7 @@ class Analytics {
   mattermostNotificationSent = (
     user: AnalyticsUser,
     teamId: string,
-    notificationEvent: SlackNotificationEventEnum
+    notificationEvent: SlackNotification['event']
   ) => {
     this.track(user, 'Mattermost notification sent', {teamId, notificationEvent})
   }
@@ -648,7 +647,7 @@ class Analytics {
   teamsNotificationSent = (
     user: AnalyticsUser,
     teamId: string,
-    notificationEvent: SlackNotificationEventEnum
+    notificationEvent: SlackNotification['event']
   ) => {
     this.track(user, 'MSTeams notification sent', {teamId, notificationEvent})
   }
@@ -668,7 +667,7 @@ class Analytics {
   slackNotificationSent = (
     user: AnalyticsUser,
     teamId: string,
-    notificationEvent: SlackNotificationEventEnum,
+    notificationEvent: SlackNotification['event'],
     reflectionGroupId?: string
   ) => {
     this.track(user, 'Slack notification sent', {teamId, notificationEvent, reflectionGroupId})

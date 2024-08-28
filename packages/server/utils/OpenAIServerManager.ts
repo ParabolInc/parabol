@@ -179,7 +179,7 @@ class OpenAIServerManager {
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
@@ -251,7 +251,7 @@ class OpenAIServerManager {
       )}, and the following reflection: "${reflection}", classify the reflection into the theme it fits in best. The reflection can only be added to one theme. Do not edit the reflection text. Your output should just be the theme name, and must be one of the themes I've provided.`
 
       const response = await this.openAIApi!.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',

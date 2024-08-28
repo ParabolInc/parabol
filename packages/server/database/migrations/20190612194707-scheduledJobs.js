@@ -1,4 +1,4 @@
-import SlackNotification from '../types/SlackNotification'
+import generateUID from '../../generateUID'
 
 exports.up = async (r) => {
   try {
@@ -7,23 +7,14 @@ exports.up = async (r) => {
     console.log(e)
   }
   try {
-    await r
-      .table('ScheduledJob')
-      .indexCreate('type')
-      .run()
-    await r
-      .table('ScheduledJob')
-      .indexCreate('runAt')
-      .run()
+    await r.table('ScheduledJob').indexCreate('type').run()
+    await r.table('ScheduledJob').indexCreate('runAt').run()
   } catch (e) {
     console.log(e)
   }
 
   try {
-    const slackUsers = await r
-      .table('SlackAuth')
-      .filter({isActive: true})
-      .run()
+    const slackUsers = await r.table('SlackAuth').filter({isActive: true}).run()
     const slackNotifications = await r
       .table('SlackNotification')
       .pluck('userId', 'teamId', 'channelId')
@@ -31,12 +22,13 @@ exports.up = async (r) => {
       .run()
     const stageCompleteNotifications = slackUsers.map((slackUser) => {
       const {userId, teamId} = slackUser
-      return new SlackNotification({
+      return {
         userId,
         teamId,
         channelId: null,
-        event: 'MEETING_STAGE_TIME_LIMIT_END'
-      })
+        event: 'MEETING_STAGE_TIME_LIMIT_END',
+        id: generateUID()
+      }
     })
     const stageReadyNotifications = slackUsers.map((slackUser) => {
       const {userId, teamId} = slackUser
@@ -68,10 +60,7 @@ exports.up = async (r) => {
       .filter({event: 'meetingStageTimeLimit'})
       .update({event: 'MEETING_STAGE_TIME_LIMIT_END'})
       .run()
-    await r
-      .table('SlackNotification')
-      .insert(records)
-      .run()
+    await r.table('SlackNotification').insert(records).run()
     await r(authUpdates)
       .forEach((auth) => {
         return r

@@ -10,6 +10,8 @@ import {
   selectMeetingSettings,
   selectOrganizations,
   selectRetroReflections,
+  selectSlackAuths,
+  selectSlackNotifications,
   selectSuggestedAction,
   selectTeamPromptResponses,
   selectTeams,
@@ -47,3 +49,7 @@ export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
 export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}
 
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
+
+export type SlackAuth = ExtractTypeFromQueryBuilderSelect<typeof selectSlackAuths>
+
+export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>

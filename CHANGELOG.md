@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.44.0](https://github.com/ParabolInc/parabol/compare/v7.43.8...v7.44.0) (2024-08-27)
+
+
+### Added
+
+* upgrade suggest groups openai models ([#10153](https://github.com/ParabolInc/parabol/issues/10153)) ([34d5194](https://github.com/ParabolInc/parabol/commit/34d519467dfcfdfbc5c13781ca257917faf9eb1a))
+
+
+### Changed
+
+* **rethinkdb:** SlackAuth ([#10154](https://github.com/ParabolInc/parabol/issues/10154)) ([420f072](https://github.com/ParabolInc/parabol/commit/420f07270177e36a837f138eb203f2b6b56fd730))
+* **rethinkdb:** SlackNotification ([#10163](https://github.com/ParabolInc/parabol/issues/10163)) ([1043859](https://github.com/ParabolInc/parabol/commit/1043859fe2b09dde80786271897f49276cd5aba7))
+
 ## [7.43.8](https://github.com/ParabolInc/parabol/compare/v7.43.7...v7.43.8) (2024-08-22)
 
 

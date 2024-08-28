@@ -89,24 +89,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const slackAuthByUserId = new RethinkForeignKeyLoaderMaker(
-  'slackAuths',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'}).run()
-  }
-)
-
-export const slackNotificationsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'slackNotifications',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'}).run()
-  }
-)
-
 export const tasksByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'tasks',
   'discussionId',

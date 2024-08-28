@@ -9,7 +9,6 @@ import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
-import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
@@ -83,11 +82,9 @@ import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
-import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
-import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
@@ -122,7 +119,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
       addReflectTemplatePrompt,
-      addSlackAuth,
       addGitHubAuth,
       addOrg,
       addTeam,
@@ -189,10 +185,8 @@ export default new GraphQLObjectType<any, GQLContext>({
       resetRetroMeetingToGroupStage,
       selectTemplate,
       setAppLocation,
-      setDefaultSlackChannel,
       setPhaseFocus,
       setStageTimer,
-      setSlackNotification,
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
