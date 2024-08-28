@@ -44,9 +44,6 @@ const SelectMeetingDropdownItem = (props: Props) => {
   if (!team) {
     // 95% sure there's a bug in relay causing this
     const errObj = {id: meetingId} as any
-    if (meeting.hasOwnProperty('team')) {
-      errObj.team = team
-    }
     Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
     return null
   }

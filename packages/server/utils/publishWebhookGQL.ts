@@ -13,7 +13,7 @@ const publishWebhookGQL = async <NarrowResponse>(
   options?: PublishOptions
 ) => {
   try {
-    return (await getGraphQLExecutor().publish)<NarrowResponse>({
+    return await getGraphQLExecutor().publish<NarrowResponse>({
       authToken: new ServerAuthToken(),
       query,
       variables,

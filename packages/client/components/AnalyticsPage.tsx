@@ -133,7 +133,6 @@ const AnalyticsPage = () => {
     configGA()
   }, [ReactGA.isInitialized, atmosphere.viewerId])
 
-  /* eslint-disable */
   const {href, pathname} = location
 
   useEffect(() => {

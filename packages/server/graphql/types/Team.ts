@@ -203,7 +203,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
     scales: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TemplateScale))),
       description: 'The list of scales this team can use',
-      resolve: async ({id: teamId}: {id: string}, {}, {dataLoader}: GQLContext) => {
+      resolve: async ({id: teamId}: {id: string}, _args, {dataLoader}: GQLContext) => {
         const availableScales = await dataLoader
           .get('scalesByTeamId')
           .loadMany([teamId, 'aGhostTeam'])

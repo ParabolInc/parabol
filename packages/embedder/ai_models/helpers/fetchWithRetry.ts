@@ -22,7 +22,7 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       attempt++
 
       if (debug) {
-        console.log(`Attempt ${attempt}: Fetching ${url}`)
+        console.log(`Attempt ${attempt}: Fetching ${JSON.stringify(url)}`)
       }
 
       const response = await fetch(url, fetchOptions)

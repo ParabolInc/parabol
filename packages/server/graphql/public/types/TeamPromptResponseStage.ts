@@ -4,7 +4,7 @@ import {TeamPromptResponseStageResolvers} from '../resolverTypes'
 
 const TeamPromptResponseStage: TeamPromptResponseStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'RESPONSES',
-  response: async ({meetingId, teamMemberId}, _args, {}) => {
+  response: async ({meetingId, teamMemberId}, _args) => {
     // TODO: implement getTeamPromptResponsesByMeetingIdAndUserId
     const responses = await getTeamPromptResponsesByMeetingId(meetingId)
     const userId = TeamMemberId.split(teamMemberId).userId

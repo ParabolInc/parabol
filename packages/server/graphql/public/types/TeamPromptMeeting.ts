@@ -61,7 +61,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
   },
 
-  responses: ({id: meetingId}, _args, {}) => {
+  responses: ({id: meetingId}, _args) => {
     return getTeamPromptResponsesByMeetingId(meetingId)
   },
 

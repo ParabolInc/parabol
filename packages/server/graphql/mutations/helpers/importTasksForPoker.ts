@@ -22,7 +22,6 @@ const importTasksForPoker = async (
   additiveUpdates.map((update) => {
     if (update.service === 'PARABOL') {
       integrationHashToTaskId[update.serviceTaskId] = update.serviceTaskId
-    } else {
     }
   })
   const newIntegrationUpdates = integratedUpdates.filter(
