@@ -30,7 +30,7 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
     return {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
   const manager = getStripeManager()
 
-  const [session, upcomingInvoice, invoices] = await Promise.all([
+  const [sessionRes, upcomingInvoiceRes, invoicesRes] = await Promise.allSettled([
     manager.stripe.billingPortal.sessions.create({
       customer: stripeId,
       return_url: makeAppURL(appOrigin, `me/organizations/${orgId}/billing`)
@@ -38,6 +38,22 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
     manager.retrieveUpcomingInvoice(stripeId),
     manager.listInvoices(stripeId)
   ])
+  if (
+    sessionRes.status === 'rejected' ||
+    upcomingInvoiceRes.status === 'rejected' ||
+    invoicesRes.status === 'rejected'
+  ) {
+    return {
+      edges: [],
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false
+      }
+    }
+  }
+  const session = sessionRes.value
+  const upcomingInvoice = upcomingInvoiceRes.value
+  const invoices = invoicesRes.value
   const parabolUpcomingInvoice: Invoice = {
     id: `upcoming_${orgId}`,
     periodEndAt: fromEpochSeconds(upcomingInvoice.period_end!),

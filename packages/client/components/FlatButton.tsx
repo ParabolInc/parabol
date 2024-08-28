@@ -1,3 +1,4 @@
+// DEPRECATED use packages/client/ui/Button/Button.tsx with variant='flat'
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
