@@ -1,7 +1,6 @@
 const shimRIC: Window['requestIdleCallback'] = (cb) => {
   const start = Date.now()
   return window.setTimeout(() => {
-    // eslint-disable-next-line
     cb({
       didTimeout: false,
       timeRemaining: () => Math.max(0, 50 - (Date.now() - start))

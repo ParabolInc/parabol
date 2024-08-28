@@ -44,7 +44,6 @@ const EditorSuggestions = <T extends BaseSuggestion>(props: Props<T>) => {
         <MentionMenu>
           {suggestions.map((suggestion, idx) => {
             return (
-              // eslint-disable-next-line
               <div
                 key={idx}
                 onMouseDown={dontTellDraft}
