@@ -11,8 +11,8 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "lint": "eslint --fix . --ext .ts,.tsx",
-    "lint:check": "eslint . --ext .ts,.tsx",
+    "lint": "eslint --fix .",
+    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
     "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
     "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
     "test": "jest --verbose",

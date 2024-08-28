@@ -16,19 +16,17 @@ export default [
   ...base,
   {
     ignores: [
-      '**/__generated__/',
       '**/generated/',
-      'githubTypes.ts',
-      'gitlabTypes.ts',
-      'resolverTypes.ts',
-      'githubSchema.graphql',
-      'gitlabSchema.graphql',
+      '**/*/githubTypes.ts',
+      '**/*/gitlabTypes.ts',
+      '**/*/resolverTypes.ts',
+      '**/*/githubSchema.graphql',
+      '**/*/gitlabSchema.graphql',
       'graphql/private/schema.graphql',
       'graphql/public/schema.graphql',
-      '_legacy.graphql',
       'migrationTemplate.ts',
       'billing/debug.ts',
-      'pg.d.ts'
+      '**/*/pg.d.ts'
     ]
   }
 ]

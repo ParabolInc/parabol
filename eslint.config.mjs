@@ -5,6 +5,9 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   {
+    ignores: ['**/*.js', '**/*.mjs']
+  },
+  {
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2020,
