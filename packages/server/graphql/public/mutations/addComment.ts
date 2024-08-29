@@ -111,6 +111,7 @@ const addComment: MutationResolvers['addComment'] = async (
       content: dbComment.content,
       plaintextContent: dbComment.plaintextContent,
       createdBy: dbComment.createdBy,
+      threadParentId: dbComment.threadParentId,
       threadSortOrder: dbComment.threadSortOrder,
       discussionId: dbComment.discussionId
     })
