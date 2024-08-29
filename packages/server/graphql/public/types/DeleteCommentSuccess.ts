@@ -6,7 +6,7 @@ export type DeleteCommentSuccessSource = {
 
 const DeleteCommentSuccess: DeleteCommentSuccessResolvers = {
   comment: async ({commentId}, _args, {dataLoader}) => {
-    return dataLoader.get('comments').load(commentId)
+    return dataLoader.get('comments').loadNonNull(commentId)
   }
 }
 

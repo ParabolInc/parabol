@@ -107,6 +107,6 @@ export const slackNotifications = primaryKeyLoaderMaker((ids: readonly string[])
   return selectSlackNotifications().where('id', 'in', ids).execute()
 })
 
-export const _pgcomments = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
 })

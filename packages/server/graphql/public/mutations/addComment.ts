@@ -2,15 +2,16 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
+import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
 import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../../database/rethinkDriver'
-import Comment from '../../../database/types/Comment'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import NotificationDiscussionMentioned from '../../../database/types/NotificationDiscussionMentioned'
 import NotificationResponseReplied from '../../../database/types/NotificationResponseReplied'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {IGetDiscussionsByIdsQueryResult} from '../../../postgres/queries/generated/getDiscussionsByIdsQuery'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -78,7 +79,7 @@ const addComment: MutationResolvers['addComment'] = async (
   const subOptions = {mutatorId, operationId}
 
   //AUTH
-  const {discussionId} = comment
+  const {discussionId, threadSortOrder, isAnonymous, threadParentId} = comment
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) {
     return {error: {message: 'Invalid discussion thread'}}
@@ -101,19 +102,18 @@ const addComment: MutationResolvers['addComment'] = async (
   // VALIDATION
   const content = normalizeRawDraftJS(comment.content)
 
-  const dbComment = new Comment({...comment, content, createdBy: viewerId})
-  const {id: commentId, isAnonymous, threadParentId} = dbComment
-  await r.table('Comment').insert(dbComment).run()
+  const commentId = generateUID()
   await getKysely()
     .insertInto('Comment')
     .values({
-      id: dbComment.id,
-      content: dbComment.content,
-      plaintextContent: dbComment.plaintextContent,
-      createdBy: dbComment.createdBy,
-      threadSortOrder: dbComment.threadSortOrder,
-      discussionId: dbComment.discussionId
+      id: commentId,
+      content,
+      plaintextContent: extractTextFromDraftString(content),
+      createdBy: viewerId,
+      threadSortOrder,
+      discussionId
     })
+    .returning('id')
     .execute()
 
   if (discussion.discussionTopicType === 'teamPromptResponse') {
@@ -162,7 +162,7 @@ const addComment: MutationResolvers['addComment'] = async (
   )!
   const {stages} = containsThreadablePhase
   const isAsync = stages.some((stage: GenericMeetingStage) => stage.isAsync)
-  analytics.commentAdded(viewer, meeting, isAnonymous, isAsync, !!threadParentId)
+  analytics.commentAdded(viewer, meeting, !!isAnonymous, isAsync, !!threadParentId)
   publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, subOptions)
   return data
 }

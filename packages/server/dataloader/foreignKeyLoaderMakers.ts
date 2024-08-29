@@ -207,8 +207,8 @@ export const slackNotificationsByTeamId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgcommentsByDiscussionId = foreignKeyLoaderMaker(
-  '_pgcomments',
+export const commentsByDiscussionId = foreignKeyLoaderMaker(
+  'comments',
   'discussionId',
   async (discussionIds) => {
     // include deleted comments so we can replace them with tombstones

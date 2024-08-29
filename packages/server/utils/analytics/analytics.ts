@@ -358,7 +358,7 @@ class Analytics {
     user: AnalyticsUser,
     meetingId: string,
     meetingType: MeetingTypeEnum,
-    reactable: {createdBy?: string; id: string},
+    reactable: {createdBy?: string | null; id: string},
     reactableType: ReactableEnum,
     reactji: string,
     isRemove: boolean

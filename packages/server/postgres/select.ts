@@ -2,6 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
+import {ReactjiDB} from './types'
 
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
@@ -101,7 +102,6 @@ export const selectTeams = () =>
       >('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
     ])
 
-export type ReactjiDB = {id: string; userId: string}
 export const selectRetroReflections = () =>
   getKysely()
     .selectFrom('RetroReflection')
