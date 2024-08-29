@@ -32,15 +32,12 @@ import TaskIntegration from './TaskIntegration'
 import TaskServiceEnum from './TaskServiceEnum'
 import TaskStatusEnum from './TaskStatusEnum'
 import Team from './Team'
-import Threadable, {threadableFields} from './Threadable'
 
 const Task: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Task',
   description: 'A long-term task shared across the team, assigned to a single user ',
-  interfaces: () => [Threadable],
   isTypeOf: ({status}) => !!status,
   fields: () => ({
-    ...(threadableFields() as any),
     agendaItem: {
       type: AgendaItem,
       description: 'The agenda item that the task was created in, if any',

@@ -16,6 +16,7 @@ import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
@@ -77,7 +78,10 @@ export default {
     ).size
     const discussionIds = estimateStages.map((stage) => stage.discussionId)
     const insights = await gatherInsights(meeting, dataLoader)
-
+    const commentCounts = (
+      await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
+    ).filter(isValid)
+    const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
     const completedMeeting = (await r
       .table('NewMeeting')
       .get(meetingId)
@@ -85,11 +89,7 @@ export default {
         {
           endedAt: now,
           phases,
-          commentCount: r
-            .table('Comment')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .count()
-            .default(0) as unknown as number,
+          commentCount,
           storyCount,
           ...insights
         },

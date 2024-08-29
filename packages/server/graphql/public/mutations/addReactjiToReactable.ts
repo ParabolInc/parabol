@@ -93,7 +93,6 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     tableName === 'TeamPromptResponse' ? TeamPromptResponseId.split(reactableId) : reactableId
 
   const updatePG = async (pgTable: ValueOf<typeof tableLookup>) => {
-    if (pgTable === 'Comment') return
     if (isRemove) {
       await pg
         .updateTable(pgTable)

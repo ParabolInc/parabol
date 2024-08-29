@@ -8,6 +8,7 @@ import {
   buildCommentContentBlock,
   createAIComment
 } from '../../../server/graphql/mutations/helpers/addAIGeneratedContentToThreads'
+import getKysely from '../../../server/postgres/getKysely'
 import getPhase from '../../../server/utils/getPhase'
 import publish from '../../../server/utils/publish'
 
@@ -54,6 +55,7 @@ export const publishSimilarRetroTopics = async (
   dataLoader: DataLoaderInstance
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const links = await Promise.all(
     similarEmbeddings.map((se) => makeSimilarDiscussionLink(se, dataLoader))
   )
@@ -68,5 +70,16 @@ export const publishSimilarRetroTopics = async (
     2
   )
   await r.table('Comment').insert(relatedDiscussionsComment).run()
+  await pg
+    .insertInto('Comment')
+    .values({
+      id: relatedDiscussionsComment.id,
+      content: relatedDiscussionsComment.content,
+      plaintextContent: relatedDiscussionsComment.plaintextContent,
+      createdBy: relatedDiscussionsComment.createdBy,
+      threadSortOrder: relatedDiscussionsComment.threadSortOrder,
+      discussionId: relatedDiscussionsComment.discussionId
+    })
+    .execute()
   publishComment(meetingId, relatedDiscussionsComment.id)
 }
