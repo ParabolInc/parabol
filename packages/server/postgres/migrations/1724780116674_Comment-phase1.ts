@@ -16,14 +16,14 @@ export async function up() {
       "threadParentId" VARCHAR(100),
       "reactjis" "Reactji"[] NOT NULL DEFAULT array[]::"Reactji"[],
       "content" JSONB NOT NULL,
-      "createdBy" VARCHAR(100) NOT NULL,
+      "createdBy" VARCHAR(100),
       "plaintextContent" VARCHAR(2000) NOT NULL,
       "discussionId" VARCHAR(100) NOT NULL,
       "threadSortOrder" INTEGER NOT NULL,
       CONSTRAINT "fk_createdBy"
         FOREIGN KEY("createdBy")
           REFERENCES "User"("id")
-          ON DELETE CASCADE,
+          ON DELETE SET NULL,
       CONSTRAINT "fk_discussionId"
         FOREIGN KEY("discussionId")
           REFERENCES "Discussion"("id")
