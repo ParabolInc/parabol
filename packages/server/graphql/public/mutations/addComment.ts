@@ -111,6 +111,7 @@ const addComment: MutationResolvers['addComment'] = async (
       plaintextContent: extractTextFromDraftString(content),
       createdBy: viewerId,
       threadSortOrder,
+      threadParentId,
       discussionId
     })
     .returning('id')
