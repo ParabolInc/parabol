@@ -2,6 +2,7 @@ import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getRethink from '../../../database/rethinkDriver'
 import Comment from '../../../database/types/Comment'
 import DiscussStage from '../../../database/types/DiscussStage'
+import getKysely from '../../../postgres/getKysely'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -45,7 +46,15 @@ const addAIGeneratedContentToThreads = async (
       )
       comments.push(topicSummaryComment)
     }
-
+    const pgComments = comments.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      plaintextContent: comment.plaintextContent,
+      createdBy: comment.createdBy,
+      threadSortOrder: comment.threadSortOrder,
+      discussionId: comment.discussionId
+    }))
+    await getKysely().insertInto('Comment').values(pgComments).execute()
     return r.table('Comment').insert(comments).run()
   })
   await Promise.all(commentPromises)

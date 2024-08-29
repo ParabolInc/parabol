@@ -11,7 +11,7 @@ input CreateTaskInput {
   foreign key for the thread this was created in
   """
   discussionId: ID
-  threadSortOrder: Float
+  threadSortOrder: Int
   threadParentId: ID
   sortOrder: Float
   status: TaskStatusEnum!

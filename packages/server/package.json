@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "7.45.0",
+  "version": "7.45.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -16,10 +16,10 @@
     "format": "yarn typecheck && yarn lint && yarn prettier",
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
-    "lint": "eslint --fix . --ext .ts,.tsx",
-    "lint:check": "eslint . --ext .ts,.tsx",
-    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
-    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
+    "lint": "yarn lint:check --fix .",
+    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
+    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --write \"**/*.{ts,tsx,graphql}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose --runInBand",
     "postversion": "git push --follow-tags",
     "typecheck": "tsc --noEmit -p tsconfig.json"
@@ -124,7 +124,7 @@
     "openai": "^4.53.0",
     "openapi-fetch": "^0.9.7",
     "oy-vey": "^0.12.1",
-    "parabol-client": "7.45.0",
+    "parabol-client": "7.45.1",
     "pg": "^8.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

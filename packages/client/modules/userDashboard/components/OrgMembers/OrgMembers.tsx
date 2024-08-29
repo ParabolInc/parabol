@@ -70,15 +70,6 @@ const OrgMembers = (props: Props) => {
   const {organization} = viewer
   if (!organization) return null
   const {organizationUsers, name: orgName, isBillingLeader} = organization
-  const billingLeaderCount = organizationUsers.edges.reduce(
-    (count, {node}) =>
-      ['BILLING_LEADER', 'ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count,
-    0
-  )
-  const orgAdminCount = organizationUsers.edges.reduce(
-    (count, {node}) => (['ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count),
-    0
-  )
 
   const exportToCSV = async () => {
     const rows = organizationUsers.edges.map((orgUser, idx) => {
@@ -120,8 +111,6 @@ const OrgMembers = (props: Props) => {
         return (
           <OrgMemberRow
             key={organizationUser.id}
-            billingLeaderCount={billingLeaderCount}
-            orgAdminCount={orgAdminCount}
             organizationUser={organizationUser}
             organization={organization}
           />

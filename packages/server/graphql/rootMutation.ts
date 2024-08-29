@@ -1,7 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
-import addComment from './mutations/addComment'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
@@ -20,7 +19,6 @@ import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
 import createTaskIntegration from './mutations/createTaskIntegration'
-import deleteComment from './mutations/deleteComment'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
 import denyPushInvitation from './mutations/denyPushInvitation'
@@ -92,7 +90,6 @@ import startDraggingReflection from './mutations/startDraggingReflection'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
-import updateCommentContent from './mutations/updateCommentContent'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
@@ -114,7 +111,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       addAtlassianAuth,
-      addComment,
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
@@ -132,7 +128,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       createOAuth1AuthorizeUrl,
       createReflection,
       createTask,
-      deleteComment,
       deleteTask,
       deleteUser,
       denyPushInvitation,
@@ -190,7 +185,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
-      updateCommentContent,
       oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,

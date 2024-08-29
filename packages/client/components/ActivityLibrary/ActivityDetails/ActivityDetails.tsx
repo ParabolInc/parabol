@@ -70,7 +70,7 @@ const ActivityDetails = (props: Props) => {
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-  // eslint-disable react-hooks/rules-of-hooks -- return above violates these rules, but is just a safeguard and not normal usage
+  /* eslint-disable react-hooks/rules-of-hooks */
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Viewed Template', {
       meetingType: activity.type,

@@ -7,7 +7,7 @@ input CreatePollInput {
   """
   The order of this threadable
   """
-  threadSortOrder: Float!
+  threadSortOrder: Int!
 
   """
   Poll question

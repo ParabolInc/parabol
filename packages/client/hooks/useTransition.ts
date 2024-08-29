@@ -115,11 +115,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       previousTransitionChildrenRef.current = currentTChildren
     }
     return previousTransitionChildrenRef.current
-  }, [
-    beginTransition,
-    children,
-    previousTransitionChildrenRef.current /* eslint-disable-line react-hooks/exhaustive-deps */
-  ])
+  }, [beginTransition, children, previousTransitionChildrenRef.current])
 }
 
 export default useTransition

@@ -7,6 +7,7 @@ import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
+  selectComments,
   selectMeetingSettings,
   selectOrganizations,
   selectRetroReflections,
@@ -104,4 +105,8 @@ export const slackAuths = primaryKeyLoaderMaker((ids: readonly string[]) => {
 
 export const slackNotifications = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectSlackNotifications().where('id', 'in', ids).execute()
+})
+
+export const _pgcomments = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectComments().where('id', 'in', ids).execute()
 })
