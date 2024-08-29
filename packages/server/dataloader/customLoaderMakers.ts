@@ -842,3 +842,59 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
     }
   )
 }
+
+export const featureFlagsByOwnerId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('featureFlags')
+  return new DataLoader<
+    {ownerId: string; scope: 'User' | 'Team' | 'Organization'},
+    FeatureFlag[],
+    string
+  >(
+    async (keys) => {
+      const pg = getKysely()
+
+      const userIds = keys.filter((k) => k.scope === 'User').map((k) => k.ownerId)
+      const teamIds = keys.filter((k) => k.scope === 'Team').map((k) => k.ownerId)
+      const orgIds = keys.filter((k) => k.scope === 'Organization').map((k) => k.ownerId)
+
+      let query = pg
+        .selectFrom('FeatureFlagOwner')
+        .innerJoin('FeatureFlag', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
+        .selectAll('FeatureFlag')
+
+      if (userIds.length > 0) {
+        query = query.where('FeatureFlagOwner.userId', 'in', userIds)
+      }
+
+      if (teamIds.length > 0) {
+        query = query.where('FeatureFlagOwner.teamId', 'in', teamIds)
+      }
+
+      if (orgIds.length > 0) {
+        query = query.where('FeatureFlagOwner.orgId', 'in', orgIds)
+      }
+
+      const featureFlags = await query.execute()
+
+      const featureFlagsByOwner = new Map<string, FeatureFlag[]>()
+      for (const key of keys) {
+        featureFlagsByOwner.set(
+          `${key.ownerId}:${key.scope}`,
+          featureFlags.filter((flag) => {
+            return (
+              (key.scope === 'User' && flag.userId === key.ownerId) ||
+              (key.scope === 'Team' && flag.teamId === key.ownerId) ||
+              (key.scope === 'Organization' && flag.orgId === key.ownerId)
+            )
+          })
+        )
+      }
+
+      return keys.map((key) => featureFlagsByOwner.get(`${key.ownerId}:${key.scope}`) || [])
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
+    }
+  )
+}
