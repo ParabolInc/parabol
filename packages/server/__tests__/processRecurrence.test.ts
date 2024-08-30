@@ -1,6 +1,7 @@
+import dayjs from 'dayjs'
 import ms from 'ms'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
-import {RRule} from 'rrule'
+import {toDateTime} from '../../client/shared/rruleUtil'
 import getRethink from '../database/rethinkDriver'
 import DiscussPhase from '../database/types/DiscussPhase'
 import MeetingRetrospective from '../database/types/MeetingRetrospective'
@@ -57,17 +58,6 @@ const assertIdempotency = async () => {
     }
   })
 }
-
-// :TODO: (jmtaber129): Handle cleanup better
-
-beforeEach(async () => {
-  // Process recurrence right before each test to prevent pending effects (i.e. meetings that will
-  // start or end on the next processRecurrence run) from interfering with test results.
-  await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
-  })
-})
 
 test('Should not end meetings that are not scheduled to end', async () => {
   const r = await getRethink()
@@ -192,24 +182,15 @@ test('Should end the current team prompt meeting and start a new meeting', async
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
-
-  const now = new Date()
-
-  // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
-  const startDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 2, 9)
-  )
-  const recurrenceRule = new RRule({
-    freq: RRule.WEEKLY,
-    dtstart: startDate,
-    interval: 1,
-    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
-  })
+  const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
+  const dateTime = toDateTime(startDate, 'UTC')
+  const recurrenceRule = `DTSTART:${dateTime}
+RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   const meetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',
     title: 'Daily Test Standup',
-    recurrenceRule: recurrenceRule.toString(),
+    recurrenceRule,
     duration: 24 * 60, // 24 hours
     teamId,
     facilitatorId: userId
@@ -270,23 +251,16 @@ test('Should end the current retro meeting and start a new meeting', async () =>
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
-  const now = new Date()
-
   // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
-  const startDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 2, 9)
-  )
-  const recurrenceRule = new RRule({
-    freq: RRule.WEEKLY,
-    dtstart: startDate,
-    interval: 1,
-    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
-  })
+  const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
+  const dateTime = toDateTime(startDate, 'UTC')
+  const recurrenceRule = `DTSTART:${dateTime}
+RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   const meetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'retrospective',
     title: 'Daily Retro', //they're really committed to improving
-    recurrenceRule: recurrenceRule.toString(),
+    recurrenceRule,
     duration: 24 * 60, // 24 hours
     teamId,
     facilitatorId: userId
@@ -351,23 +325,15 @@ test('Should only start a new meeting if it would still be active', async () => 
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
 
-  const now = new Date()
-
-  // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
-  const startDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 5, 9)
-  )
-  const recurrenceRule = new RRule({
-    freq: RRule.WEEKLY,
-    dtstart: startDate,
-    interval: 1,
-    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
-  })
+  const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
+  const dateTime = toDateTime(startDate, 'UTC')
+  const recurrenceRule = `DTSTART:${dateTime}
+RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   const newMeetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',
     title: 'Async Standup',
-    recurrenceRule: recurrenceRule.toString(),
+    recurrenceRule,
     duration: 24 * 60, // 24 hours
     teamId,
     facilitatorId: userId
@@ -418,18 +384,10 @@ test('Should not start a new meeting if the rrule has not started', async () => 
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
 
-  const now = new Date()
-
-  // Create a meeting series that starts tomorrow, and happens daily at 9a UTC.
-  const startDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 9)
-  )
-  const recurrenceRule = new RRule({
-    freq: RRule.WEEKLY,
-    dtstart: startDate,
-    interval: 1,
-    byweekday: [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
-  })
+  const startDate = dayjs().utc().add(1, 'day').set('hour', 9)
+  const dateTime = toDateTime(startDate, 'UTC')
+  const recurrenceRule = `DTSTART:${dateTime}
+RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   const newMeetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',
@@ -485,18 +443,10 @@ test('Should not hang if the rrule interval is invalid', async () => {
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
 
-  const now = new Date()
-
-  // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
-  const startDate = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 2, 9)
-  )
-  const recurrenceRule = new RRule({
-    freq: RRule.WEEKLY,
-    tzid: 'America/Los_Angeles',
-    interval: NaN,
-    dtstart: startDate
-  })
+  const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
+  const dateTime = toDateTime(startDate, 'UTC')
+  const recurrenceRule = `DTSTART:${dateTime}
+RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   const newMeetingSeriesId = await insertMeetingSeriesQuery({
     meetingType: 'teamPrompt',

@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import dayjs from 'dayjs'
+import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
 import React, {PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
@@ -11,8 +12,9 @@ import DropdownMenuToggle from '../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
 import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
-dayjs.extend(utcPlugin)
 
+dayjs.extend(utcPlugin)
+dayjs.extend(timezonePlugin)
 export const ALL_DAYS: Day[] = [
   {
     name: 'Monday',

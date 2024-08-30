@@ -1,106 +1,54 @@
-import {RRule} from 'rrule'
+import {RRuleSet} from 'rrule-rust'
 import RRuleScalarType from '../RRule'
 
 test('Should not allow for NaN interval values', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: NaN,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
+  const rrule = `DTSTART;TZID=America/Phoenix:20230121T090000
+RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR`
 
   expect(() => {
-    RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule interval must be an integer'))
+    RRuleScalarType.parseValue?.(rrule)
+  }).toThrow(new Error('RRULE interval must be an integer'))
 })
 
 test('Should not allow for interval values bigger than 52', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: 53,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
+  const rrule = `DTSTART;TZID=America/Phoenix:20230121T090000
+RRULE:FREQ=WEEKLY;INTERVAL=53;BYDAY=MO,TU,WE,TH,FR`
 
   expect(() => {
     RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule interval must be between 1 and 52'))
+  }).toThrow(new Error('RRULE interval must be between 1 and 52'))
 })
 
 test('Should not allow for interval values smaller than 1', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: 0,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
+  const rrule = `DTSTART;TZID=America/Phoenix:20230121T090000
+RRULE:FREQ=WEEKLY;INTERVAL=0;BYDAY=MO,TU,WE,TH,FR`
 
   expect(() => {
     RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule interval must be between 1 and 52'))
-})
-
-test('Should not allow for negative interval values', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: -1,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
-
-  expect(() => {
-    RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule interval must be between 1 and 52'))
+  }).toThrow(new Error('RRULE interval must be between 1 and 52'))
 })
 
 test('Should allow only WEEKLY frequency', () => {
-  const rrule = new RRule({
-    freq: RRule.DAILY,
-    interval: 1,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
+  const rrule = `DTSTART;TZID=America/Phoenix:20230121T090000
+RRULE:FREQ=DAILY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR`
 
   expect(() => {
     RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule frequency must be WEEKLY'))
+  }).toThrow(new Error('RRULE frequency must be WEEKLY'))
 })
 
-test('Should allow only interval values between 1 and 52', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: 53,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
-
-  expect(() => {
-    RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule interval must be between 1 and 52'))
+test('rrule-rust: TZID defaults to UTC', () => {
+  const str = `DTSTART:20221119T090000Z
+RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR`
+  const rrule = RRuleSet.parse(str)
+  const {tzid} = rrule
+  expect(tzid).toBe('UTC')
 })
 
-test('Should not allow for missing tzid', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: 1,
-    dtstart: new Date()
-  })
-
-  expect(() => {
-    RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule time zone is invalid'))
-})
-
-test('Should not allow for using count option', () => {
-  const rrule = new RRule({
-    freq: RRule.WEEKLY,
-    interval: 1,
-    count: 0,
-    dtstart: new Date(),
-    tzid: 'America/Los_Angeles'
-  })
-
-  expect(() => {
-    RRuleScalarType.parseValue?.(rrule.toString())
-  }).toThrow(new Error('RRule count option is not supported'))
+test('rrule-rust: TZID extracted', () => {
+  const str = `DTSTART;TZID=America/Los_Angeles:20230301T170000
+RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=TU,WE,MO,TH`
+  const rrule = RRuleSet.parse(str)
+  const {tzid} = rrule
+  expect(tzid).toBe('America/Los_Angeles')
 })

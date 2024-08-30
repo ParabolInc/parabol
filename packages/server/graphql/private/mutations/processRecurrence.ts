@@ -1,8 +1,9 @@
+import dayjs from 'dayjs'
 import tracer from 'dd-trace'
 import ms from 'ms'
-import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RRule} from 'rrule'
+import {DateTime, RRuleSet} from 'rrule-rust'
+import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import getRethink from '../../../database/rethinkDriver'
 import MeetingRetrospective, {
   isMeetingRetrospective
@@ -11,8 +12,8 @@ import MeetingTeamPrompt, {isMeetingTeamPrompt} from '../../../database/types/Me
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish, {SubOptions} from '../../../utils/publish'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {DataLoaderWorker} from '../../graphql'
 import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
@@ -45,17 +46,10 @@ const startRecurringMeeting = async (
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
   ])
 
-  const rrule = RRule.fromString(meetingSeries.recurrenceRule)
-  const nextMeetingStartDate = rrule.after(getRRuleDateFromJSDate(startTime))
-  const scheduledEndTime = nextMeetingStartDate
-    ? getJSDateFromRRuleDate(nextMeetingStartDate)
-    : undefined
+  const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
+  const scheduledEndTime = getNextRRuleDate(rrule)
 
-  const meetingName = createMeetingSeriesTitle(
-    meetingSeries.title,
-    startTime,
-    rrule.options.tzid ?? 'UTC'
-  )
+  const meetingName = createMeetingSeriesTitle(meetingSeries.title, startTime, rrule.tzid)
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
       const teamPromptMeeting = lastMeeting as MeetingTeamPrompt | null
@@ -133,6 +127,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
     .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
     .run()
 
+  console.log('meetings to End', meetingsToEnd)
   const res = await tracer.trace('processRecurrence.endMeetings', async () =>
     Promise.all(
       meetingsToEnd.map((meeting) => {
@@ -172,32 +167,13 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
           dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
         ])
 
-        // remove this check after 2024-05-05
-        if (
-          lastMeeting?.meetingSeriesId !== meetingSeries.id ||
-          lastMeeting.teamId !== meetingSeries.teamId
-        ) {
-          const error = new Error(
-            'lastMeetingByMeetingSeriesId returned a meeting that does not match the series'
-          )
-          sendToSentry(error)
-          throw error
-        }
-
         if (seriesOrg.lockedAt) {
           return
         }
 
         // For meetings that should still be active, start the meeting and set its end time.
         // Any subscriptions are handled by the shared meeting start code
-        const rrule = tracer.trace('RRule.fromString', () =>
-          RRule.fromString(meetingSeries.recurrenceRule)
-        )
-        // technically, RRULE should never return NaN here but there's a bug in the library
-        // https://github.com/jakubroztocil/rrule/issues/321
-        if (isNaN(rrule.options.interval)) {
-          return
-        }
+        const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
 
         // Only get meetings that should currently be active, i.e. meetings that should have started
         // within the last 24 hours, started after the last meeting in the series, and started before
@@ -207,15 +183,16 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
               Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
             )
           : new Date(0)
-        const newMeetingsStartTimes = tracer.trace('RRule.between', () =>
-          rrule.between(getRRuleDateFromJSDate(fromDate), getRRuleDateFromJSDate(now))
+        const newMeetingsStartTimes = rrule.between(
+          DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
+          DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
         )
         for (const startTime of newMeetingsStartTimes) {
           const err = await tracer.trace('startRecurringMeeting', async (span) => {
             span?.addTags({meetingSeriesId: meetingSeries.id})
             return startRecurringMeeting(
               meetingSeries,
-              getJSDateFromRRuleDate(startTime),
+              fromDateTime(startTime.toString(), rrule.tzid).toDate(),
               dataLoader,
               subOptions
             )

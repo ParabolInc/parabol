@@ -1,6 +1,7 @@
-import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from 'parabol-client/shared/rruleUtil'
+import dayjs from 'dayjs'
+import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RRule} from 'rrule'
+import {DateTime, RRuleSet} from 'rrule-rust'
 import getRethink from '../../../database/rethinkDriver'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
@@ -13,6 +14,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
 import {MutationResolvers} from '../resolverTypes'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 
 export const startNewMeetingSeries = async (
   meeting: {
@@ -22,7 +24,7 @@ export const startNewMeetingSeries = async (
     name: string
     facilitatorUserId: string
   },
-  recurrenceRule: RRule,
+  recurrenceRule: RRuleSet,
   meetingSeriesName?: string | null
 ) => {
   const {
@@ -32,7 +34,6 @@ export const startNewMeetingSeries = async (
     name: meetingName,
     facilitatorUserId: facilitatorId
   } = meeting
-  const now = new Date()
   const r = await getRethink()
 
   const newMeetingSeriesParams = {
@@ -45,11 +46,7 @@ export const startNewMeetingSeries = async (
     facilitatorId
   } as const
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
-  const rruleNow = getRRuleDateFromJSDate(now)
-  const nextMeetingStartRRuleDate = recurrenceRule.after(rruleNow)
-  const nextMeetingStartDate = nextMeetingStartRRuleDate
-    ? getJSDateFromRRuleDate(nextMeetingStartRRuleDate)
-    : null
+  const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
 
   await r
     .table('NewMeeting')
@@ -66,16 +63,10 @@ export const startNewMeetingSeries = async (
   }
 }
 
-const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRule: RRule) => {
+const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRule: RRuleSet) => {
   const r = await getRethink()
   const {id: meetingSeriesId} = meetingSeries
 
-  const now = new Date()
-  const rruleNow = getRRuleDateFromJSDate(now)
-  const nextMeetingStartDateRRule = newRecurrenceRule.after(rruleNow)
-  const nextMeetingStartDate = nextMeetingStartDateRRule
-    ? getJSDateFromRRuleDate(nextMeetingStartDateRRule)
-    : null
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
   // lets close all active meetings at the time when
@@ -90,7 +81,7 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
       .table('NewMeeting')
       .get(meeting.id)
       .update({
-        scheduledEndTime: nextMeetingStartDate
+        scheduledEndTime: getNextRRuleDate(newRecurrenceRule)
       })
       .run()
   )
@@ -112,14 +103,13 @@ const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .run()
 }
 
-const updateGCalRecurrenceRule = (oldRule: RRule, newRule: RRule | null | undefined) => {
-  if (!newRule) {
-    return new RRule({
-      ...oldRule.options,
-      until: new Date()
-    })
-  }
-  return newRule
+const updateGCalRecurrenceRule = (oldRule: RRuleSet, newRule: RRuleSet | null | undefined) => {
+  // null newRule means end the series
+  if (newRule) return newRule
+  const {tzid} = oldRule
+  const now = DateTime.fromString(toDateTime(dayjs(), tzid))
+  oldRule.rrules.forEach((rrule) => rrule.setUntil(now))
+  return oldRule
 }
 
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
@@ -160,7 +150,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       analytics.recurrenceStarted(viewer, meetingSeries)
     }
     if (gcalSeriesId) {
-      const newRrule = updateGCalRecurrenceRule(RRule.fromString(recurrenceRule), rrule)
+      const newRrule = updateGCalRecurrenceRule(RRuleSet.parse(recurrenceRule), rrule)
       await updateGcalSeries({
         gcalSeriesId,
         name: name ?? undefined,

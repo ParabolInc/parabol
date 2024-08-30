@@ -1,52 +1,38 @@
 import {Kind} from 'graphql'
-import isValidDate from 'parabol-client/utils/isValidDate'
-import {Frequency, RRule} from 'rrule'
+import {Frequency, RRuleSet} from 'rrule-rust'
 import {RRuleScalarConfig} from '../resolverTypes'
 
-const isRRuleValid = (rrule: RRule) => {
-  const {options} = rrule
-  const {interval, freq, count, tzid, dtstart} = options
+const isRRuleValid = (rrule: RRuleSet) => {
+  const {tzid, rrules} = rrule
+  const [firstRule] = rrules
+  if (!firstRule || rrules.length > 1) {
+    // this is just for us, it's not part of the spec
+    throw new Error('Exactly 1 RRule must exist in an RRule Set')
+  }
+  const {interval, frequency, count} = firstRule
   if (!Number.isSafeInteger(interval)) {
-    return {
-      error: 'RRule interval must be an integer'
-    }
+    throw new Error('RRULE interval must be an integer')
   }
 
-  const isWithinRange = rrule.options.interval >= 1 && rrule.options.interval <= 52
+  const isWithinRange = interval && interval >= 1 && interval <= 52
   if (!isWithinRange) {
-    return {
-      error: 'RRule interval must be between 1 and 52'
-    }
+    throw new Error('RRULE interval must be between 1 and 52')
   }
 
-  if (freq !== Frequency.WEEKLY) {
-    return {
-      error: 'RRule frequency must be WEEKLY'
-    }
+  if (frequency !== Frequency.Weekly) {
+    throw new Error('RRule frequency must be WEEKLY')
   }
 
   // using count option is not allowed
-  if (count !== null) {
-    return {
-      error: 'RRule count option is not supported'
-    }
+  if (count !== null && count !== undefined) {
+    throw new Error('RRULE count option is not supported')
   }
 
   try {
     Intl.DateTimeFormat(undefined, {timeZone: tzid!})
   } catch (e) {
-    return {
-      error: 'RRule time zone is invalid'
-    }
+    throw new Error('RRULE time zone is invalid')
   }
-
-  if (!isValidDate(dtstart)) {
-    return {
-      error: 'RRule dtstart is invalid'
-    }
-  }
-
-  return {error: null}
 }
 
 const RRuleScalarType: RRuleScalarConfig = {
@@ -56,27 +42,19 @@ const RRuleScalarType: RRuleScalarConfig = {
     if (typeof value !== 'string') {
       throw new Error(`RRule is not a string, it is a: ${typeof value}`)
     }
-    const rrule = RRule.fromString(value)
-    const {error} = isRRuleValid(rrule)
-    if (error) {
-      throw new Error(error)
-    }
-
+    const rrule = RRuleSet.parse(value)
+    isRRuleValid(rrule)
     return rrule
   },
   serialize(value: unknown) {
-    return (value as RRule).toString()
+    return (value as RRuleSet).toString()
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
       throw new Error(`RRule is not a string, it is a: ${ast.kind}`)
     }
-    const rrule = RRule.fromString(ast.value)
-    const {error} = isRRuleValid(rrule)
-    if (error) {
-      throw new Error(error)
-    }
-
+    const rrule = RRuleSet.parse(ast.value)
+    isRRuleValid(rrule)
     return rrule
   }
 }
