@@ -82,19 +82,19 @@ const OrgMembers = (props: Props) => {
     setSearchInput(e.target.value)
   }, [])
 
-  const filteredOrganizationUsers = useMemo(() => {
-    const searchLower = searchInput.toLowerCase()
+  const filteredOrgUsers = useMemo(() => {
+    const cleanedSearchInput = searchInput.toLowerCase().trim()
     return organizationUsers.edges
       .map(({node}) => node)
       .filter(
         (user) =>
-          user.user.preferredName.toLowerCase().includes(searchLower) ||
-          user.user.email.toLowerCase().includes(searchLower)
+          user.user.preferredName.toLowerCase().includes(cleanedSearchInput) ||
+          user.user.email.toLowerCase().includes(cleanedSearchInput)
       )
   }, [organizationUsers.edges, searchInput])
 
   const finalOrgUsers = useMemo(() => {
-    return [...filteredOrganizationUsers].sort((a, b) => {
+    return [...filteredOrgUsers].sort((a, b) => {
       if (sortBy === 'lastSeenAt') {
         const aDate = a.user.lastSeenAt ? new Date(a.user.lastSeenAt) : new Date(0)
         const bDate = b.user.lastSeenAt ? new Date(b.user.lastSeenAt) : new Date(0)
@@ -108,7 +108,7 @@ const OrgMembers = (props: Props) => {
       }
       return 0
     })
-  }, [filteredOrganizationUsers, sortBy, sortDirection])
+  }, [filteredOrgUsers, sortBy, sortDirection])
 
   const handleSort = (column: keyof User) => {
     if (sortBy === column) {
