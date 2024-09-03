@@ -159,7 +159,6 @@ const OrgMembers = (props: Props) => {
         </div>
       </div>
 
-      {/* Update search bar */}
       <div className='mb-4'>
         <input
           type='text'
