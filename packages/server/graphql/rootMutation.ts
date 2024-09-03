@@ -1,7 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
-import addComment from './mutations/addComment'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
@@ -9,7 +8,6 @@ import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
 import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
-import addSlackAuth from './mutations/addSlackAuth'
 import addTeam from './mutations/addTeam'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
@@ -21,7 +19,6 @@ import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
 import createTask from './mutations/createTask'
 import createTaskIntegration from './mutations/createTaskIntegration'
-import deleteComment from './mutations/deleteComment'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
 import denyPushInvitation from './mutations/denyPushInvitation'
@@ -83,11 +80,9 @@ import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import selectTemplate from './mutations/selectTemplate'
 import setAppLocation from './mutations/setAppLocation'
-import setDefaultSlackChannel from './mutations/setDefaultSlackChannel'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
-import setSlackNotification from './mutations/setSlackNotification'
 import setStageTimer from './mutations/setStageTimer'
 import setTaskEstimate from './mutations/setTaskEstimate'
 import setTaskHighlight from './mutations/setTaskHighlight'
@@ -95,7 +90,6 @@ import startDraggingReflection from './mutations/startDraggingReflection'
 import startSprintPoker from './mutations/startSprintPoker'
 import toggleTeamDrawer from './mutations/toggleTeamDrawer'
 import updateAzureDevOpsDimensionField from './mutations/updateAzureDevOpsDimensionField'
-import updateCommentContent from './mutations/updateCommentContent'
 import updateDragLocation from './mutations/updateDragLocation'
 import updateGitHubDimensionField from './mutations/updateGitHubDimensionField'
 import updateNewCheckInQuestion from './mutations/updateNewCheckInQuestion'
@@ -117,12 +111,10 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       addAtlassianAuth,
-      addComment,
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
       addReflectTemplatePrompt,
-      addSlackAuth,
       addGitHubAuth,
       addOrg,
       addTeam,
@@ -136,7 +128,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       createOAuth1AuthorizeUrl,
       createReflection,
       createTask,
-      deleteComment,
       deleteTask,
       deleteUser,
       denyPushInvitation,
@@ -189,14 +180,11 @@ export default new GraphQLObjectType<any, GQLContext>({
       resetRetroMeetingToGroupStage,
       selectTemplate,
       setAppLocation,
-      setDefaultSlackChannel,
       setPhaseFocus,
       setStageTimer,
-      setSlackNotification,
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
-      updateCommentContent,
       oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,

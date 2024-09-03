@@ -5,6 +5,66 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.45.2](https://github.com/ParabolInc/parabol/compare/v7.45.1...v7.45.2) (2024-08-29)
+
+
+### Fixed
+
+* add discussion before comments ([#10178](https://github.com/ParabolInc/parabol/issues/10178)) ([911ab90](https://github.com/ParabolInc/parabol/commit/911ab904550c9235f34a2bd48606d036d2b229e3))
+
+
+### Changed
+
+* **rethinkdb:** Comment: Phase 2 ([#10173](https://github.com/ParabolInc/parabol/issues/10173)) ([635fb15](https://github.com/ParabolInc/parabol/commit/635fb15cb30e0819268256866d1cb5511dc6b9a8))
+
+## [7.45.1](https://github.com/ParabolInc/parabol/compare/v7.45.0...v7.45.1) (2024-08-29)
+
+
+### Fixed
+
+* consolidate org user menus ([#10162](https://github.com/ParabolInc/parabol/issues/10162)) ([b172a2f](https://github.com/ParabolInc/parabol/commit/b172a2fa4e29245a916fe4046b29366b0f0b2b0e))
+
+
+### Changed
+
+* bump eslint ([#10170](https://github.com/ParabolInc/parabol/issues/10170)) ([002aac2](https://github.com/ParabolInc/parabol/commit/002aac201159e99d45367f44634e065566f1553f))
+* **rethinkdb:** Comment: Phase 1 ([#10166](https://github.com/ParabolInc/parabol/issues/10166)) ([d712811](https://github.com/ParabolInc/parabol/commit/d7128119c320efed44721fe6c4aad500d4617dbf))
+
+## [7.45.0](https://github.com/ParabolInc/parabol/compare/v7.44.0...v7.45.0) (2024-08-28)
+
+
+### Added
+
+* add ai summary to demo ([#10160](https://github.com/ParabolInc/parabol/issues/10160)) ([089a537](https://github.com/ParabolInc/parabol/commit/089a537899ac2ca9e71906b570146a1564233b1c))
+
+## [7.44.0](https://github.com/ParabolInc/parabol/compare/v7.43.8...v7.44.0) (2024-08-27)
+
+
+### Added
+
+* upgrade suggest groups openai models ([#10153](https://github.com/ParabolInc/parabol/issues/10153)) ([34d5194](https://github.com/ParabolInc/parabol/commit/34d519467dfcfdfbc5c13781ca257917faf9eb1a))
+
+
+### Changed
+
+* **rethinkdb:** SlackAuth ([#10154](https://github.com/ParabolInc/parabol/issues/10154)) ([420f072](https://github.com/ParabolInc/parabol/commit/420f07270177e36a837f138eb203f2b6b56fd730))
+* **rethinkdb:** SlackNotification ([#10163](https://github.com/ParabolInc/parabol/issues/10163)) ([1043859](https://github.com/ParabolInc/parabol/commit/1043859fe2b09dde80786271897f49276cd5aba7))
+
+## [7.43.8](https://github.com/ParabolInc/parabol/compare/v7.43.7...v7.43.8) (2024-08-22)
+
+
+### Fixed
+
+* no team leads ([#10145](https://github.com/ParabolInc/parabol/issues/10145)) ([a1599e9](https://github.com/ParabolInc/parabol/commit/a1599e90e90df1e4e32963fe304a0f85a0af020d))
+* **orgAdmins:** archived teams should be removed from the OrgTeams view ([#10142](https://github.com/ParabolInc/parabol/issues/10142)) ([c70b87a](https://github.com/ParabolInc/parabol/commit/c70b87a4561b1742ae726dd08f47811b3f1bd4ff))
+* **orgAdmins:** Billing leaders should not see all teams in the org ([#10141](https://github.com/ParabolInc/parabol/issues/10141)) ([cd570ac](https://github.com/ParabolInc/parabol/commit/cd570acd3a9aebb9b09e6139263a5ef85d406dc0))
+* use period end instead of due at ([#10151](https://github.com/ParabolInc/parabol/issues/10151)) ([6492679](https://github.com/ParabolInc/parabol/commit/6492679641bede9265b7df57295ad79caf3eadc9))
+
+
+### Changed
+
+* update contributing doc ([#10148](https://github.com/ParabolInc/parabol/issues/10148)) ([5a95f62](https://github.com/ParabolInc/parabol/commit/5a95f622f91ee6b992f37d5feb5bda850f82cf0b))
+
 ## [7.43.7](https://github.com/ParabolInc/parabol/compare/v7.43.6...v7.43.7) (2024-08-16)
 
 

@@ -196,7 +196,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       isAnonymous: isAnonymousComment,
       discussionId,
       threadParentId,
-      threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise()
+      threadSortOrder: getMaxSortOrder() + SORT_STEP
     }
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
     // move focus to end is very important! otherwise ghost chars appear
@@ -263,7 +263,7 @@ const DiscussionThreadInput = forwardRef((props: Props, ref: any) => {
       discussionId,
       meetingId,
       threadParentId,
-      threadSortOrder: getMaxSortOrder() + SORT_STEP + dndNoise(),
+      threadSortOrder: getMaxSortOrder() + SORT_STEP,
       userId: viewerId,
       teamId
     } as const

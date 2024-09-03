@@ -23,6 +23,7 @@ import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
@@ -133,6 +134,10 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
   const pinnedAgendaItems = await getPinnedAgendaItems(teamId, dataLoader)
   const isKill = !!(meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType))
   if (!isKill) await clearAgendaItems(teamId, dataLoader)
+  const commentCounts = (
+    await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
+  ).filter(isValid)
+  const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems, dataLoader),
@@ -143,11 +148,7 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
       .update(
         {
           agendaItemCount: activeAgendaItems.length,
-          commentCount: r
-            .table('Comment')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .count()
-            .default(0) as unknown as number,
+          commentCount,
           taskCount: tasks.length
         },
         {nonAtomic: true}

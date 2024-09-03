@@ -1,4 +1,3 @@
-import Comment from './types/Comment'
 import IntegrationProviderOAuth1 from './types/IntegrationProviderOAuth1'
 import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
 import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
@@ -22,7 +21,6 @@ const rootTypes = [
   TimelineEventCompletedRetroMeeting,
   TimelineEventCompletedActionMeeting,
   TimelineEventPokerComplete,
-  Comment,
   JiraDimensionField,
   RenamePokerTemplatePayload,
   UserTiersCount

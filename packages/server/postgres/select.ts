@@ -205,3 +205,26 @@ export const selectMeetingSettings = () =>
     ])
 
 export const selectAgendaItems = () => getKysely().selectFrom('AgendaItem').selectAll()
+
+export const selectSlackAuths = () => getKysely().selectFrom('SlackAuth').selectAll()
+
+export const selectSlackNotifications = () =>
+  getKysely().selectFrom('SlackNotification').selectAll()
+
+export const selectComments = () =>
+  getKysely()
+    .selectFrom('Comment')
+    .select([
+      'id',
+      'createdAt',
+      'isActive',
+      'isAnonymous',
+      'threadParentId',
+      'updatedAt',
+      'content',
+      'createdBy',
+      'plaintextContent',
+      'discussionId',
+      'threadSortOrder'
+    ])
+    .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])

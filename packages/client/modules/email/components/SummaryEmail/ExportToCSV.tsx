@@ -182,8 +182,8 @@ const ExportToCSV = (props: Props) => {
   const handlePokerMeeting = (meeting: Meeting) => {
     const rows = [] as CSVPokerRow[]
     const {phases} = meeting
-    const estimatePhase = phases!.find((phase) => phase.phaseType === 'ESTIMATE')!
-    const stages = estimatePhase.stages!
+    const estimatePhase = phases.find((phase) => phase.phaseType === 'ESTIMATE')!
+    const stages = estimatePhase.stages
     stages.forEach((stage) => {
       if (stage.__typename !== 'EstimateStage') return
       const {finalScore, dimensionRef, task, scores} = stage
@@ -274,7 +274,7 @@ const ExportToCSV = (props: Props) => {
 
   const handleActionMeeting = (newMeeting: Meeting) => {
     const {phases} = newMeeting
-    const agendaItemPhase = phases!.find((phase) => phase.phaseType === 'agendaitems')!
+    const agendaItemPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
     const {stages} = agendaItemPhase
     const rows = [] as CSVActionRow[]
     stages.forEach((stage) => {

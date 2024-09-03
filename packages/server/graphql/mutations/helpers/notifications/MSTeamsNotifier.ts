@@ -4,9 +4,8 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import Meeting from '../../../../database/types/Meeting'
-import {SlackNotificationEventEnum as EventEnum} from '../../../../database/types/SlackNotification'
 import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
-import {Team} from '../../../../postgres/types'
+import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
 import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
@@ -18,7 +17,7 @@ import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
 
 const notifyMSTeams = async (
-  event: EventEnum,
+  event: SlackNotification['event'],
   webhookUrl: string,
   user: IUser,
   teamId: string,

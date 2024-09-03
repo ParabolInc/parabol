@@ -30,7 +30,7 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
     return {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
   const manager = getStripeManager()
 
-  const [session, upcomingInvoice, invoices] = await Promise.all([
+  const [sessionRes, upcomingInvoiceRes, invoicesRes] = await Promise.allSettled([
     manager.stripe.billingPortal.sessions.create({
       customer: stripeId,
       return_url: makeAppURL(appOrigin, `me/organizations/${orgId}/billing`)
@@ -38,28 +38,44 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
     manager.retrieveUpcomingInvoice(stripeId),
     manager.listInvoices(stripeId)
   ])
+  if (
+    sessionRes.status === 'rejected' ||
+    upcomingInvoiceRes.status === 'rejected' ||
+    invoicesRes.status === 'rejected'
+  ) {
+    return {
+      edges: [],
+      pageInfo: {
+        hasNextPage: false,
+        hasPreviousPage: false
+      }
+    }
+  }
+  const session = sessionRes.value
+  const upcomingInvoice = upcomingInvoiceRes.value
+  const invoices = invoicesRes.value
   const parabolUpcomingInvoice: Invoice = {
     id: `upcoming_${orgId}`,
-    dueAt: fromEpochSeconds(upcomingInvoice.due_date!),
+    periodEndAt: fromEpochSeconds(upcomingInvoice.period_end!),
     total: upcomingInvoice.total,
     payUrl: session.url,
     status: 'UPCOMING'
   }
 
   const parabolPastInvoices: Invoice[] = invoices.data.map((stripeInvoice) => {
-    const {id, due_date, total, status: stripeStatus} = stripeInvoice
+    const {id, period_end, total, status: stripeStatus} = stripeInvoice
     const status: InvoiceStatusEnum =
       stripeStatus === 'uncollectible' ? 'FAILED' : stripeStatus === 'paid' ? 'PAID' : 'PENDING'
     return {
       id,
-      dueAt: fromEpochSeconds(due_date!),
+      periodEndAt: fromEpochSeconds(period_end!),
       total,
       payUrl: session.url,
       status
     }
   })
   const edges = [parabolUpcomingInvoice, ...parabolPastInvoices].map((node) => ({
-    cursor: node.dueAt,
+    cursor: node.periodEndAt,
     node
   }))
   const firstEdge = edges[0]

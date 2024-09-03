@@ -21,7 +21,9 @@ const SAMLRedirect = () => {
         // cross-domain attempts to access opener.location.origin will throw
         // this makes sure that Parabol opened the popup
         isSameOriginPopup = !!window.opener.location.origin
-      } catch {}
+      } catch {
+        /* noop */
+      }
     }
     if (isSameOriginPopup) {
       // SP-initiated

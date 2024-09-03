@@ -9,7 +9,7 @@ import getRedis from '../getRedis'
 const ISSUE_TTL_MS = ms('2d')
 const MAX_ATTEMPT_DURATION = ms('9s')
 
-type StoreAndNetworkRequests = RequestsInit | CacheHit | CacheMiss | CacheError
+type StoreAndNetworkRequests = CacheHit | CacheMiss | CacheError
 
 interface RequestsInit {
   firstToResolve: (value: unknown) => void

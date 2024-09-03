@@ -13,6 +13,6 @@ input AddCommentInput {
   foreign key for the discussion this was created in
   """
   discussionId: ID!
-  threadSortOrder: Float!
+  threadSortOrder: Int!
   threadParentId: ID
 }

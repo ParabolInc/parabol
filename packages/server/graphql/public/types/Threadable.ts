@@ -15,7 +15,11 @@ const Threadable: ThreadableResolvers = {
   createdByUser: ({createdBy}, _args, {dataLoader}) => {
     return createdBy ? dataLoader.get('users').loadNonNull(createdBy) : null
   },
-  replies: ({replies}) => replies || []
+  replies: ({replies}) => replies || [],
+  // Can remove after Comment is in PG
+  threadSortOrder: ({threadSortOrder}) => {
+    return isNaN(threadSortOrder) ? 0 : Math.trunc(threadSortOrder)
+  }
 }
 
 export default Threadable

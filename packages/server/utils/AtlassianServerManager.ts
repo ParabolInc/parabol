@@ -629,7 +629,7 @@ class AtlassianServerManager extends AtlassianManager {
       const project = await this.getProject(cloudId, projectKey)
 
       if (project instanceof RateLimitError || project instanceof Error) {
-        throw project
+        throw project as Error
       }
 
       if (project.simplified) {

@@ -3,16 +3,13 @@ import PollId from '../../../client/shared/gqlIds/PollId'
 import {GQLContext} from './../graphql'
 import PollOption from './PollOption'
 import Team from './Team'
-import Threadable, {threadableFields} from './Threadable'
 import User from './User'
 
 const Poll: GraphQLObjectType = new GraphQLObjectType<any, GQLContext>({
   name: 'Poll',
   description: 'A poll created during the meeting',
-  interfaces: () => [Threadable],
   isTypeOf: ({title}) => !!title,
   fields: () => ({
-    ...(threadableFields() as any),
     createdByUser: {
       type: new GraphQLNonNull(User),
       description: 'The user that created the item',
