@@ -85,10 +85,10 @@ const OrgMembers = (props: Props) => {
         return sortDirection === 'asc'
           ? aDate.getTime() - bDate.getTime()
           : bDate.getTime() - aDate.getTime()
-      } else if (sortBy === 'email') {
+      } else if (sortBy === 'preferredName') {
         return sortDirection === 'asc'
-          ? a.node.user.email.localeCompare(b.node.user.email)
-          : b.node.user.email.localeCompare(a.node.user.email)
+          ? a.node.user.preferredName.localeCompare(b.node.user.preferredName)
+          : b.node.user.preferredName.localeCompare(a.node.user.preferredName)
       }
       return 0
     })
@@ -157,16 +157,16 @@ const OrgMembers = (props: Props) => {
               <tr className='border-b border-slate-300'>
                 <th
                   className='w-[70%] cursor-pointer p-3 text-left font-semibold'
-                  onClick={() => handleSort('email')}
+                  onClick={() => handleSort('preferredName')}
                 >
                   User
-                  {sortBy === 'email' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
+                  {sortBy === 'preferredName' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
                 </th>
                 <th
                   className='w-[20%] cursor-pointer p-3 text-left font-semibold'
                   onClick={() => handleSort('lastSeenAt')}
                 >
-                  Last Seen Date
+                  Last Seen
                   {sortBy === 'lastSeenAt' && (sortDirection === 'asc' ? ' ▲' : ' ▼')}
                 </th>
                 <th className='w-[20%] p-3 text-left font-semibold'></th>
