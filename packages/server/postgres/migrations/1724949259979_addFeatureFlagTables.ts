@@ -13,7 +13,7 @@ export async function up() {
   await pg.schema
     .createTable('FeatureFlag')
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
-    .addColumn('featureName', 'varchar(255)', (col) => col.notNull())
+    .addColumn('featureName', 'varchar(255)', (col) => col.notNull().unique())
     .addColumn('scope', sql`"ScopeEnum"`, (col) => col.notNull())
     .addColumn('description', 'text')
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
