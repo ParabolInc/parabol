@@ -1,3 +1,4 @@
+import getKysely from '../../../postgres/getKysely'
 import {
   getUserId,
   isSuperUser,
@@ -23,9 +24,17 @@ const Organization: OrganizationResolvers = {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
   },
-  featureFlags: ({featureFlags}) => {
-    if (!featureFlags) return {}
-    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+  featureFlags: async ({id: orgId}) => {
+    const pg = getKysely()
+    const flags = await pg
+      .selectFrom('FeatureFlag')
+      .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
+      .where('FeatureFlagOwner.orgId', '=', orgId)
+      .where('FeatureFlag.expiresAt', '>', new Date())
+      .selectAll('FeatureFlag')
+      .execute()
+
+    return flags
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null

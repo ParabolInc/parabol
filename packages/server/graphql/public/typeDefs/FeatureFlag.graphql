@@ -1,0 +1,30 @@
+type FeatureFlag {
+  """
+  The name of the feature flag
+  """
+  featureName: String!
+
+  """
+  The scope of the feature flag
+  """
+  scope: ScopeEnum!
+
+  """
+  Description of the feature flag
+  """
+  description: String
+
+  """
+  Expiration date of the feature flag
+  """
+  expiresAt: DateTime!
+}
+
+"""
+The scope of a feature flag
+"""
+enum ScopeEnum {
+  User
+  Team
+  Organization
+}
