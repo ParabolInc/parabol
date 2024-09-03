@@ -19,6 +19,7 @@ export async function up() {
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+    .addUniqueConstraint('unique_featureName_scope', ['featureName', 'scope'])
     .execute()
 
   await pg.schema
