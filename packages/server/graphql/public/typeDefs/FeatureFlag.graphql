@@ -1,4 +1,4 @@
-type FeatureFlag {
+type FeatureFlagNew {
   """
   The name of the feature flag
   """

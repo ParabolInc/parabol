@@ -173,11 +173,6 @@ type Organization {
   featureFlags: OrganizationFeatureFlags!
 
   """
-  Any super power given to the organization via a super user
-  """
-  featureFlagsNew: [FeatureFlag!]!
-
-  """
   The SAML record attached to the Organization, if any
   """
   saml: SAML

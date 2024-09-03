@@ -1,5 +1,29 @@
 type Mutation {
   """
+  Add a new feature flag
+  """
+  addFeatureFlag(
+    """
+    The name of the feature flag
+    """
+    featureName: String!
+
+    """
+    The scope of the feature flag
+    """
+    scope: ScopeEnum!
+
+    """
+    A description of the feature flag
+    """
+    description: String!
+
+    """
+    The expiration date of the feature flag (optional)
+    """
+    expiresAt: DateTime!
+  ): AddFeatureFlagPayload!
+  """
   Updates the user email
   """
   updateEmail(
