@@ -2,34 +2,25 @@ import dayjs, {Dayjs} from 'dayjs'
 import customParsePlugin from 'dayjs/plugin/customParseFormat'
 import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
-import {datetime} from 'rrule'
+import {RRule} from 'rrule'
 
 dayjs.extend(customParsePlugin)
 dayjs.extend(utcPlugin)
 dayjs.extend(timezonePlugin)
 
-// THIS IS WRONG! It should use UTC instead of local time
-export const getRRuleDateFromJSDate = (date: Date) => {
-  return datetime(
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate(),
-    date.getHours(),
-    date.getMinutes()
-  )
+// the RRule package requires dstart to be a date object set to a negative UTC offset. It's ugly!
+export const toRRuleDateTime = (date: Dayjs) => {
+  return date.tz('UTC', true).toDate()
 }
 
-// THIS IS REALLY WRONG! it's gonna offset the time by the negative UTC offset
-export const getJSDateFromRRuleDate = (rruleDate: Date) => {
-  return new Date(
-    rruleDate.getUTCFullYear(),
-    rruleDate.getUTCMonth(),
-    rruleDate.getUTCDate(),
-    rruleDate.getUTCHours(),
-    rruleDate.getUTCMinutes()
-  )
+export const fromRRuleDateTime = (rrule: RRule) => {
+  const {options} = rrule
+  const {dtstart, tzid} = options
+  const tzidTimeStr = `${dtstart.getUTCFullYear()}-${dtstart.getUTCMonth() + 1}-${dtstart.getUTCDate()} ${dtstart.getUTCHours()}:${dtstart.getUTCMinutes()}`
+  return tzid ? dayjs.tz(tzidTimeStr, tzid) : dayjs(tzidTimeStr)
 }
 
+// These are used by rrule-rust on the server, which has a special DateTime object
 export const toDateTime = (date: Dayjs, tzid: string) => {
   return tzid
     ? date.tz(tzid).format('YYYYMMDD[T]HHmmss')

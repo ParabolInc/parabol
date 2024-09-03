@@ -1,12 +1,12 @@
 import clsx from 'clsx'
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
 import React, {PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
-import {getJSDateFromRRuleDate, getRRuleDateFromJSDate} from '../../shared/rruleUtil'
+import {fromRRuleDateTime, toRRuleDateTime} from '../../shared/rruleUtil'
 import plural from '../../utils/plural'
 import DropdownMenuToggle from '../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -176,16 +176,10 @@ export const RecurrenceSettings = (props: Props) => {
       ? rrule.options.byweekday.map((weekday) => ALL_DAYS.find((day) => day.intVal === weekday)!)
       : []
   )
-  const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Date>(
+  const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Dayjs>(
     rrule
-      ? getJSDateFromRRuleDate(rrule.options.dtstart)
-      : dayjs()
-          .add(1, 'day')
-          .set('hour', 6)
-          .set('minute', 0)
-          .set('second', 0)
-          .set('millisecond', 0)
-          .toDate() // suggest 6:00 AM tomorrow
+      ? fromRRuleDateTime(rrule)
+      : dayjs().add(1, 'day').set('hour', 6).set('minute', 0).set('second', 0).set('millisecond', 0) // suggest 6:00 AM tomorrow
   )
 
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
@@ -224,14 +218,13 @@ export const RecurrenceSettings = (props: Props) => {
             freq: Frequency.WEEKLY,
             interval: recurrenceInterval,
             byweekday: recurrenceDays.map((day) => day.rruleVal),
-            dtstart: getRRuleDateFromJSDate(recurrenceStartTime),
+            dtstart: toRRuleDateTime(recurrenceStartTime),
             tzid: timeZone
           })
         : null
 
     onRruleUpdated(rrule)
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
-
   return (
     <div className='space-y-4 p-4'>
       <div className='space-y-1'>
@@ -294,7 +287,7 @@ export const RecurrenceSettings = (props: Props) => {
         <Label>Each instance starts at</Label>
         <DropdownMenuToggle
           className='w-full text-sm'
-          defaultText={`${dayjs(recurrenceStartTime).format('h:mm A')} (${timeZone})`}
+          defaultText={`${recurrenceStartTime.local().format('h:mm A')} (${timeZone})`}
           onClick={togglePortal}
           ref={originRef}
           size='small'
