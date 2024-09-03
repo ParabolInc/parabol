@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import React, {useMemo, useState} from 'react'
+import React, {useCallback, useMemo, useState} from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
@@ -76,23 +76,39 @@ const OrgMembers = (props: Props) => {
   )
   const [sortBy, setSortBy] = useState<keyof User>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+  const [searchInput, setSearchInput] = useState('')
 
-  const sortedOrganizationUsers = useMemo(() => {
-    return [...organizationUsers.edges].sort((a, b) => {
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value)
+  }, [])
+
+  const filteredOrganizationUsers = useMemo(() => {
+    const searchLower = searchInput.toLowerCase()
+    return organizationUsers.edges
+      .map(({node}) => node)
+      .filter(
+        (user) =>
+          user.user.preferredName.toLowerCase().includes(searchLower) ||
+          user.user.email.toLowerCase().includes(searchLower)
+      )
+  }, [organizationUsers.edges, searchInput])
+
+  const finalOrgUsers = useMemo(() => {
+    return [...filteredOrganizationUsers].sort((a, b) => {
       if (sortBy === 'lastSeenAt') {
-        const aDate = a.node.user.lastSeenAt ? new Date(a.node.user.lastSeenAt) : new Date(0)
-        const bDate = b.node.user.lastSeenAt ? new Date(b.node.user.lastSeenAt) : new Date(0)
+        const aDate = a.user.lastSeenAt ? new Date(a.user.lastSeenAt) : new Date(0)
+        const bDate = b.user.lastSeenAt ? new Date(b.user.lastSeenAt) : new Date(0)
         return sortDirection === 'asc'
           ? aDate.getTime() - bDate.getTime()
           : bDate.getTime() - aDate.getTime()
       } else if (sortBy === 'preferredName') {
         return sortDirection === 'asc'
-          ? a.node.user.preferredName.localeCompare(b.node.user.preferredName)
-          : b.node.user.preferredName.localeCompare(a.node.user.preferredName)
+          ? a.user.preferredName.localeCompare(b.user.preferredName)
+          : b.user.preferredName.localeCompare(a.user.preferredName)
       }
       return 0
     })
-  }, [organizationUsers.edges, sortBy, sortDirection])
+  }, [filteredOrganizationUsers, sortBy, sortDirection])
 
   const handleSort = (column: keyof User) => {
     if (sortBy === column) {
@@ -143,6 +159,17 @@ const OrgMembers = (props: Props) => {
         </div>
       </div>
 
+      {/* Update search bar */}
+      <div className='mb-4'>
+        <input
+          type='text'
+          placeholder='Search by name or email'
+          value={searchInput}
+          onChange={handleSearchChange}
+          className='focus:border-blue-500 focus:ring-blue-500 w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-1'
+        />
+      </div>
+
       <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
@@ -173,7 +200,7 @@ const OrgMembers = (props: Props) => {
               </tr>
             </thead>
             <tbody>
-              {sortedOrganizationUsers.map(({node: organizationUser}) => (
+              {finalOrgUsers.map((organizationUser) => (
                 <OrgMemberRow
                   key={organizationUser.id}
                   billingLeaderCount={billingLeaderCount}
