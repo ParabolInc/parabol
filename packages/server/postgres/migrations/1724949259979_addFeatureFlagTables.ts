@@ -12,7 +12,7 @@ export async function up() {
 
   await pg.schema
     .createTable('FeatureFlag')
-    .addColumn('id', 'varchar(255)', (col) => col.primaryKey())
+    .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
     .addColumn('featureName', 'varchar(255)', (col) => col.notNull())
     .addColumn('scope', sql`"ScopeEnum"`, (col) => col.notNull())
     .addColumn('description', 'text')
@@ -23,7 +23,7 @@ export async function up() {
 
   await pg.schema
     .createTable('FeatureFlagOwner')
-    .addColumn('featureFlagId', 'varchar(255)', (col) =>
+    .addColumn('featureFlagId', 'uuid', (col) =>
       col.notNull().references('FeatureFlag.id').onDelete('cascade')
     )
     .addColumn('userId', 'varchar(255)')

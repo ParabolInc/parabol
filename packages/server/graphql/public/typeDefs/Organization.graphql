@@ -170,10 +170,12 @@ type Organization {
   """
   teamStats: [TeamStat!]!
 
+  featureFlags: OrganizationFeatureFlags!
+
   """
   Any super power given to the organization via a super user
   """
-  featureFlags: [FeatureFlag!]!
+  featureFlagsNew: [FeatureFlag!]!
 
   """
   The SAML record attached to the Organization, if any

@@ -1,5 +1,10 @@
 type FeatureFlagOwner {
   """
+  The feature flag id
+  """
+  featureFlagId: ID!
+
+  """
   The user ID if the owner is a user
   """
   userId: ID

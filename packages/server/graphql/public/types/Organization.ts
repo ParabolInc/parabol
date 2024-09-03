@@ -24,8 +24,12 @@ const Organization: OrganizationResolvers = {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
   },
-  featureFlags: async ({id: orgId}) => {
+  featureFlags: async ({featureFlags, id: orgId}) => {
+    if (!featureFlags) return {}
+    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+
     const pg = getKysely()
+    // TODO: replace with dataloader
     const flags = await pg
       .selectFrom('FeatureFlag')
       .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
