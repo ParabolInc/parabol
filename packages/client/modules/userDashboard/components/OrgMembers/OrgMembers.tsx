@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
@@ -77,20 +77,22 @@ const OrgMembers = (props: Props) => {
   const [sortBy, setSortBy] = useState<keyof User>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
-  const sortedOrganizationUsers = [...organizationUsers.edges].sort((a, b) => {
-    if (sortBy === 'lastSeenAt') {
-      const aDate = a.node.user.lastSeenAt ? new Date(a.node.user.lastSeenAt) : new Date(0)
-      const bDate = b.node.user.lastSeenAt ? new Date(b.node.user.lastSeenAt) : new Date(0)
-      return sortDirection === 'asc'
-        ? aDate.getTime() - bDate.getTime()
-        : bDate.getTime() - aDate.getTime()
-    } else if (sortBy === 'email') {
-      return sortDirection === 'asc'
-        ? a.node.user.email.localeCompare(b.node.user.email)
-        : b.node.user.email.localeCompare(a.node.user.email)
-    }
-    return 0
-  })
+  const sortedOrganizationUsers = useMemo(() => {
+    return [...organizationUsers.edges].sort((a, b) => {
+      if (sortBy === 'lastSeenAt') {
+        const aDate = a.node.user.lastSeenAt ? new Date(a.node.user.lastSeenAt) : new Date(0)
+        const bDate = b.node.user.lastSeenAt ? new Date(b.node.user.lastSeenAt) : new Date(0)
+        return sortDirection === 'asc'
+          ? aDate.getTime() - bDate.getTime()
+          : bDate.getTime() - aDate.getTime()
+      } else if (sortBy === 'email') {
+        return sortDirection === 'asc'
+          ? a.node.user.email.localeCompare(b.node.user.email)
+          : b.node.user.email.localeCompare(a.node.user.email)
+      }
+      return 0
+    })
+  }, [organizationUsers.edges, sortBy, sortDirection])
 
   const handleSort = (column: keyof User) => {
     if (sortBy === column) {
