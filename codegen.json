@@ -49,6 +49,7 @@
           "SetSlackNotificationPayload": "./types/SetSlackNotificationPayload#SetSlackNotificationPayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",
+          "AddIntegrationProviderSuccess": "./types/AddIntegrationProviderSuccess#AddIntegrationProviderSuccessSource",
           "DeleteCommentSuccess": "./types/DeleteCommentSuccess#DeleteCommentSuccessSource",
           "UpdateCommentContentSuccess": "./types/UpdateCommentContentSuccess#UpdateCommentContentSuccessSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",

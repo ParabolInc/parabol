@@ -18,6 +18,13 @@ graphql`
         tenantId
       }
     }
+    teamMemberIntegrations {
+      ...MattermostProviderRowTeamMemberIntegrations @relay(mask: false)
+      ...MSTeamsProviderRowTeamMemberIntegrations @relay(mask: false)
+    }
+    orgIntegrationProviders {
+      ...GitLabProviders_orgIntegrationProviders @relay(mask: false)
+    }
   }
 `
 

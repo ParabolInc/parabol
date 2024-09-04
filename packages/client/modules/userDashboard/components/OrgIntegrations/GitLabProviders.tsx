@@ -17,6 +17,17 @@ type Props = {
   organizationRef: GitLabProviders_organization$key
 }
 
+graphql`
+  fragment GitLabProviders_orgIntegrationProviders on OrgIntegrationProviders {
+    gitlab {
+      ...GitLabProviderRow_integrationProvider
+      id
+      serverBaseUrl
+      clientId
+    }
+  }
+`
+
 const GitLabProviders = (props: Props) => {
   const {organizationRef} = props
   const organization = useFragment(
@@ -28,12 +39,7 @@ const GitLabProviders = (props: Props) => {
           role
         }
         integrationProviders {
-          gitlab {
-            ...GitLabProviderRow_integrationProvider
-            id
-            serverBaseUrl
-            clientId
-          }
+          ...GitLabProviders_orgIntegrationProviders @relay(mask: false)
         }
       }
     `,

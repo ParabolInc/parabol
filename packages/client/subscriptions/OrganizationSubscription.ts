@@ -51,6 +51,9 @@ const subscription = graphql`
       UpgradeToTeamTierSuccess {
         ...UpgradeToTeamTierFrag_organization @relay(mask: false)
       }
+      RemoveIntegrationProviderSuccess {
+        ...RemoveIntegrationProviderMutation_organization @relay(mask: false)
+      }
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_organization @relay(mask: false)
       }
@@ -76,8 +79,8 @@ const onNextHandlers = {
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
+  SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const
 
