@@ -7,14 +7,6 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
-interface Subjects {
-  emails?: string[]
-  domain?: string
-  userId?: string
-  teamId?: string
-  orgId?: string
-}
-
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
   {flagName, subjects},
@@ -33,15 +25,15 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   }
 
   // VALIDATION
-  const subjectKeys = Object.keys(subjects) as (keyof Subjects)[]
-  if (subjectKeys.length !== 1) {
-    return standardError(new Error('Exactly one subject type must be provided'), {
+  const subjectKeys = Object.keys(subjects)
+
+  if (subjectKeys.length === 0) {
+    return standardError(new Error('At least one subject type must be provided'), {
       userId: viewerId
     })
   }
 
   // RESOLUTION
-
   const featureFlag = await pg
     .selectFrom('FeatureFlag')
     .select(['id', 'scope'])
@@ -53,50 +45,54 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   }
 
   const {id: featureFlagId, scope} = featureFlag
-  let targetIds: string[] = []
+  const userIds: string[] = []
+  const teamIds: string[] = []
+  const orgIds: string[] = []
 
-  const [subjectType] = subjectKeys
-  if (!subjectType) {
-    return standardError(new Error('Subject value must be provided'), {userId: viewerId})
-  }
-  const subjectValue = subjects[subjectType]
+  for (const subjectType of subjectKeys) {
+    const subjectValue = subjects[subjectType as keyof typeof subjects]
+    if (!subjectValue || subjectValue.length === 0) continue
 
-  switch (subjectType) {
-    case 'emails':
-      const users = await getUsersByEmails(subjectValue as string[])
-      targetIds = users.map((user) => user.id)
-      break
-    case 'domain':
-      const domainUsers = await getUsersByDomain(subjectValue as string)
-      targetIds = domainUsers.map((user) => user.id)
-      break
-    case 'userId':
-    case 'teamId':
-    case 'orgId':
-      targetIds = [subjectValue as string]
-      break
+    switch (subjectType) {
+      case 'emails':
+        const users = await getUsersByEmails(subjectValue)
+        userIds.push(...users.map((user) => user.id))
+        break
+      case 'domains':
+        for (const domain of subjectValue) {
+          const domainUsers = await getUsersByDomain(domain)
+          userIds.push(...domainUsers.map((user) => user.id))
+        }
+        break
+      case 'userIds':
+        userIds.push(...subjectValue)
+        break
+      case 'teamIds':
+        teamIds.push(...subjectValue)
+        break
+      case 'orgIds':
+        orgIds.push(...subjectValue)
+        break
+    }
   }
 
-  // Validate scope
-  if (
-    (subjectType === 'emails' || subjectType === 'domain' || subjectType === 'userId') &&
-    scope !== 'User'
-  ) {
-    return standardError(
-      new Error(`Scope mismatch: Feature flag is not for ${subjectType} scope`),
-      {userId: viewerId}
-    )
+  if (userIds.length > 0 && scope !== 'User') {
+    return standardError(new Error('Scope mismatch: Feature flag is not for User scope'), {
+      userId: viewerId
+    })
   }
-  if (subjectType === 'teamId' && scope !== 'Team') {
+  if (teamIds.length > 0 && scope !== 'Team') {
     return standardError(new Error('Scope mismatch: Feature flag is not for Team scope'), {
       userId: viewerId
     })
   }
-  if (subjectType === 'orgId' && scope !== 'Organization') {
+  if (orgIds.length > 0 && scope !== 'Organization') {
     return standardError(new Error('Scope mismatch: Feature flag is not for Organization scope'), {
       userId: viewerId
     })
   }
+
+  const targetIds = scope === 'User' ? userIds : scope === 'Team' ? teamIds : orgIds
 
   for (const targetId of targetIds) {
     await pg
@@ -111,11 +107,15 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
       .execute()
 
     const data = {targetId, featureFlagId}
-    // TOOD: notification or viewer sub?
     publish(SubscriptionChannel.NOTIFICATION, targetId, 'ApplyFeatureFlagPayload', data, subOptions)
   }
 
-  return {featureFlagId, targetIds}
+  return {
+    featureFlagId,
+    userIds,
+    teamIds,
+    orgIds
+  }
 }
 
 export default applyFeatureFlag

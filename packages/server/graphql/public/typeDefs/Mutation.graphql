@@ -11,6 +11,20 @@ type Mutation {
   addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload!
 
   """
+  Apply a feature flag to specified subjects (users, teams, or organizations)
+  """
+  applyFeatureFlag(
+    """
+    The name of the feature flag to apply
+    """
+    flagName: String!
+    """
+    The subjects to which the feature flag will be applied
+    """
+    subjects: SubjectsInput!
+  ): ApplyFeatureFlagPayload!
+
+  """
   Add a comment to a discussion
   """
   addComment(

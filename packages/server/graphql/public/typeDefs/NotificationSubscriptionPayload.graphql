@@ -4,6 +4,7 @@ type NotificationSubscriptionPayload {
   AddNewFeaturePayload: AddNewFeaturePayload
   AddOrgPayload: AddOrgPayload
   AddTeamPayload: AddTeamPayload
+  ApplyFeatureFlagPayload: ApplyFeatureFlagSuccess
   ArchiveTimelineEventSuccess: ArchiveTimelineEventSuccess
   SetNotificationStatusPayload: SetNotificationStatusPayload
   CreateTaskPayload: CreateTaskPayload
