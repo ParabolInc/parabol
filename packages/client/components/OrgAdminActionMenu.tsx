@@ -1,5 +1,4 @@
 import {MoreVert} from '@mui/icons-material'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -123,9 +122,14 @@ export const OrgAdminActionMenu = (props: Props) => {
         )}
         {isSelf &&
           ((isOrgAdmin && isViewerLastOrgAdmin) || (isBillingLeader && isViewerLastRole)) && (
-            <DropdownMenu.Label className='select-none p-2'>
+            <MenuItem
+              onClick={() => {
+                window.location.href =
+                  'mailto:support@parabol.co?subject=Request to be removed from organization'
+              }}
+            >
               {'Contact support@parabol.co to be removed'}
-            </DropdownMenu.Label>
+            </MenuItem>
           )}
       </MenuContent>
     </Menu>
