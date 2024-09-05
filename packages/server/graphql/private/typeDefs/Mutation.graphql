@@ -9,11 +9,6 @@ type Mutation {
     featureName: String!
 
     """
-    The scope of the feature flag
-    """
-    scope: ScopeEnum!
-
-    """
     A description of the feature flag
     """
     description: String!

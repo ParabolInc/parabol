@@ -1,4 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
@@ -6,6 +7,7 @@ const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
   {featureName, description, expiresAt}
 ) => {
   const pg = getKysely()
+
   const newFeatureFlag = await pg
     .insertInto('FeatureFlag')
     .values({
@@ -13,13 +15,12 @@ const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
       description,
       expiresAt
     })
-    .returningAll()
+    .returning('id')
     .executeTakeFirst()
 
   if (!newFeatureFlag) {
-    throw new Error('Failed to insert new feature flag')
+    return standardError(new Error('Failed to insert new feature flag'))
   }
-
   return {
     featureFlagId: newFeatureFlag.id
   }

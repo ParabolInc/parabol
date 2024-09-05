@@ -8,27 +8,29 @@ export async function up() {
     })
   })
 
-  await pg.schema.createType('ScopeEnum').asEnum(['User', 'Team', 'Organization']).execute()
-
   await pg.schema
     .createTable('FeatureFlag')
+    .ifNotExists()
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
-    .addColumn('featureName', 'varchar(255)', (col) => col.notNull().unique())
-    .addColumn('scope', sql`"ScopeEnum"`, (col) => col.notNull())
+    .addColumn('featureName', 'varchar(255)', (col) => col.notNull())
     .addColumn('description', 'text')
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+    .addUniqueConstraint('unique_featureName', ['featureName'])
     .execute()
 
   await pg.schema
     .createTable('FeatureFlagOwner')
+    .ifNotExists()
     .addColumn('featureFlagId', 'uuid', (col) =>
       col.notNull().references('FeatureFlag.id').onDelete('cascade')
     )
-    .addColumn('userId', 'varchar(255)')
-    .addColumn('teamId', 'varchar(255)')
-    .addColumn('orgId', 'varchar(255)')
+    .addColumn('userId', 'varchar(255)', (col) => col.references('User.id').onDelete('cascade'))
+    .addColumn('teamId', 'varchar(255)', (col) => col.references('Team.id').onDelete('cascade'))
+    .addColumn('orgId', 'varchar(255)', (col) =>
+      col.references('Organization.id').onDelete('cascade')
+    )
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addCheckConstraint(
       'check_feature_flag_owner_exclusivity',
@@ -38,24 +40,9 @@ export async function up() {
        ("userId" IS NULL AND "teamId" IS NULL AND "orgId" IS NOT NULL))
     `
     )
-    .execute()
-
-  await pg.schema
-    .createIndex('idx_feature_flag_owner_user')
-    .on('FeatureFlagOwner')
-    .columns(['userId', 'featureFlagId'])
-    .execute()
-
-  await pg.schema
-    .createIndex('idx_feature_flag_owner_team')
-    .on('FeatureFlagOwner')
-    .columns(['teamId', 'featureFlagId'])
-    .execute()
-
-  await pg.schema
-    .createIndex('idx_feature_flag_owner_org')
-    .on('FeatureFlagOwner')
-    .columns(['orgId', 'featureFlagId'])
+    .addUniqueConstraint('unique_feature_flag_owner_user', ['userId', 'featureFlagId'])
+    .addUniqueConstraint('unique_feature_flag_owner_team', ['teamId', 'featureFlagId'])
+    .addUniqueConstraint('unique_feature_flag_owner_org', ['orgId', 'featureFlagId'])
     .execute()
 }
 
@@ -66,7 +53,6 @@ export async function down() {
     })
   })
 
-  await pg.schema.dropTable('FeatureFlag').execute()
   await pg.schema.dropTable('FeatureFlagOwner').execute()
-  await pg.schema.dropType('ScopeEnum').execute()
+  await pg.schema.dropTable('FeatureFlag').execute()
 }
