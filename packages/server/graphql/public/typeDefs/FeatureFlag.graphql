@@ -14,12 +14,3 @@ type FeatureFlagNew {
   """
   expiresAt: DateTime!
 }
-
-"""
-The scope of a feature flag
-"""
-enum ScopeEnum {
-  User
-  Team
-  Organization
-}

@@ -26,9 +26,11 @@ export async function up() {
     .addColumn('featureFlagId', 'uuid', (col) =>
       col.notNull().references('FeatureFlag.id').onDelete('cascade')
     )
-    .addColumn('userId', 'varchar(255)')
-    .addColumn('teamId', 'varchar(255)')
-    .addColumn('orgId', 'varchar(255)')
+    .addColumn('userId', 'varchar(255)', (col) => col.references('User.id').onDelete('cascade'))
+    .addColumn('teamId', 'varchar(255)', (col) => col.references('Team.id').onDelete('cascade'))
+    .addColumn('orgId', 'varchar(255)', (col) =>
+      col.references('Organization.id').onDelete('cascade')
+    )
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addCheckConstraint(
       'check_feature_flag_owner_exclusivity',
@@ -38,24 +40,9 @@ export async function up() {
        ("userId" IS NULL AND "teamId" IS NULL AND "orgId" IS NOT NULL))
     `
     )
-    .execute()
-
-  await pg.schema
-    .createIndex('idx_feature_flag_owner_user')
-    .on('FeatureFlagOwner')
-    .columns(['userId', 'featureFlagId'])
-    .execute()
-
-  await pg.schema
-    .createIndex('idx_feature_flag_owner_team')
-    .on('FeatureFlagOwner')
-    .columns(['teamId', 'featureFlagId'])
-    .execute()
-
-  await pg.schema
-    .createIndex('idx_feature_flag_owner_org')
-    .on('FeatureFlagOwner')
-    .columns(['orgId', 'featureFlagId'])
+    .addUniqueConstraint('unique_feature_flag_owner_user', ['userId', 'featureFlagId'])
+    .addUniqueConstraint('unique_feature_flag_owner_team', ['teamId', 'featureFlagId'])
+    .addUniqueConstraint('unique_feature_flag_owner_org', ['orgId', 'featureFlagId'])
     .execute()
 }
 

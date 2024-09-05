@@ -170,6 +170,9 @@ type Organization {
   """
   teamStats: [TeamStat!]!
 
+  """
+  Any super power given to the organization via a super user
+  """
   featureFlags: OrganizationFeatureFlags!
 
   """
