@@ -89,6 +89,8 @@ const GitLabProviderRow = (props: Props) => {
   const connectedProviderId = auth?.provider?.id
   const availableProviders = [...(cloudProvider ? [cloudProvider] : []), ...sharedProviders]
 
+  if (availableProviders.length === 0) return null
+
   return (
     <>
       <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded bg-white shadow-card'>
