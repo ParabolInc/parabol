@@ -12,6 +12,7 @@
         "contextType": "../graphql#InternalContext",
         "mappers": {
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
+          "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
