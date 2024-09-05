@@ -16,7 +16,6 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   const subOptions = {operationId}
   const pg = getKysely()
 
-  // AUTH
   const viewerId = getUserId(authToken)
   if (!isSuperUser(authToken)) {
     return standardError(new Error('Not authorized to apply feature flag'), {
@@ -24,7 +23,6 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     })
   }
 
-  // VALIDATION
   const subjectKeys = Object.keys(subjects)
 
   if (subjectKeys.length === 0) {
@@ -33,10 +31,9 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     })
   }
 
-  // RESOLUTION
   const featureFlag = await pg
     .selectFrom('FeatureFlag')
-    .select(['id', 'scope'])
+    .select(['id'])
     .where('featureName', '=', flagName)
     .executeTakeFirst()
 
@@ -44,7 +41,8 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     return standardError(new Error('Feature flag not found'), {userId: viewerId})
   }
 
-  const {id: featureFlagId, scope} = featureFlag
+  const {id: featureFlagId} = featureFlag
+
   const userIds: string[] = []
   const teamIds: string[] = []
   const orgIds: string[] = []
@@ -76,32 +74,16 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     }
   }
 
-  if (userIds.length > 0 && scope !== 'User') {
-    return standardError(new Error('Scope mismatch: Feature flag is not for User scope'), {
-      userId: viewerId
-    })
-  }
-  if (teamIds.length > 0 && scope !== 'Team') {
-    return standardError(new Error('Scope mismatch: Feature flag is not for Team scope'), {
-      userId: viewerId
-    })
-  }
-  if (orgIds.length > 0 && scope !== 'Organization') {
-    return standardError(new Error('Scope mismatch: Feature flag is not for Organization scope'), {
-      userId: viewerId
-    })
-  }
-
-  const targetIds = scope === 'User' ? userIds : scope === 'Team' ? teamIds : orgIds
+  const targetIds = [...userIds, ...teamIds, ...orgIds]
 
   for (const targetId of targetIds) {
     await pg
       .insertInto('FeatureFlagOwner')
       .values({
         featureFlagId,
-        userId: scope === 'User' ? targetId : null,
-        teamId: scope === 'Team' ? targetId : null,
-        orgId: scope === 'Organization' ? targetId : null
+        userId: userIds.includes(targetId) ? targetId : null,
+        teamId: teamIds.includes(targetId) ? targetId : null,
+        orgId: orgIds.includes(targetId) ? targetId : null
       })
       .onConflict((oc) => oc.doNothing())
       .execute()
