@@ -10,6 +10,7 @@ export async function up() {
 
   await pg.schema
     .createTable('FeatureFlag')
+    .ifNotExists()
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
     .addColumn('featureName', 'varchar(255)', (col) => col.notNull())
     .addColumn('description', 'text')
@@ -21,6 +22,7 @@ export async function up() {
 
   await pg.schema
     .createTable('FeatureFlagOwner')
+    .ifNotExists()
     .addColumn('featureFlagId', 'uuid', (col) =>
       col.notNull().references('FeatureFlag.id').onDelete('cascade')
     )
@@ -64,6 +66,6 @@ export async function down() {
     })
   })
 
-  await pg.schema.dropTable('FeatureFlag').execute()
   await pg.schema.dropTable('FeatureFlagOwner').execute()
+  await pg.schema.dropTable('FeatureFlag').execute()
 }
