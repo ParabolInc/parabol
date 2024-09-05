@@ -5,11 +5,6 @@ type FeatureFlagNew {
   featureName: String!
 
   """
-  The scope of the feature flag
-  """
-  scope: ScopeEnum!
-
-  """
   Description of the feature flag
   """
   description: String

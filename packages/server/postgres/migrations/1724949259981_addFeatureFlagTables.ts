@@ -8,18 +8,15 @@ export async function up() {
     })
   })
 
-  await pg.schema.createType('ScopeEnum').asEnum(['User', 'Team', 'Organization']).execute()
-
   await pg.schema
     .createTable('FeatureFlag')
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
     .addColumn('featureName', 'varchar(255)', (col) => col.notNull())
-    .addColumn('scope', sql`"ScopeEnum"`, (col) => col.notNull())
     .addColumn('description', 'text')
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
-    .addUniqueConstraint('unique_featureName_scope', ['featureName', 'scope'])
+    .addUniqueConstraint('unique_featureName', ['featureName'])
     .execute()
 
   await pg.schema
@@ -69,5 +66,4 @@ export async function down() {
 
   await pg.schema.dropTable('FeatureFlag').execute()
   await pg.schema.dropTable('FeatureFlagOwner').execute()
-  await pg.schema.dropType('ScopeEnum').execute()
 }
