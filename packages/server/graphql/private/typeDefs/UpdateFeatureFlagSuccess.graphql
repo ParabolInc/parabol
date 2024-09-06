@@ -1,4 +1,4 @@
-type AddFeatureFlagSuccess {
+type UpdateFeatureFlagSuccess {
   """
   The newly updated feature flag
   """

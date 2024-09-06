@@ -20,6 +20,16 @@ type Mutation {
   ): AddFeatureFlagPayload!
 
   """
+  Delete an existing feature flag
+  """
+  deleteFeatureFlag(
+    """
+    The name of the feature flag to delete
+    """
+    featureName: String!
+  ): DeleteFeatureFlagPayload!
+
+  """
   Update an existing feature flag
   """
   updateFeatureFlag(

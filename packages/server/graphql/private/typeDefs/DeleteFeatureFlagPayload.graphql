@@ -1,0 +1,4 @@
+"""
+Return value for deleteFeatureFlag, which could be an error
+"""
+union DeleteFeatureFlagPayload = ErrorPayload | DeleteFeatureFlagSuccess

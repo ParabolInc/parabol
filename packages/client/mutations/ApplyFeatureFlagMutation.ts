@@ -3,15 +3,15 @@ import {commitMutation} from 'react-relay'
 import {ApplyFeatureFlagMutation as TApplyFeatureFlagMutation} from '../__generated__/ApplyFeatureFlagMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
-// featureFlag {
-//   id
-//   featureName
-//   scope
-//   description
-//   expiresAt
-// }
 graphql`
   fragment ApplyFeatureFlagMutation_notificatiion on ApplyFeatureFlagSuccess {
+    featureFlag {
+      id
+      featureName
+      scope
+      description
+      expiresAt
+    }
     users {
       id
       email
