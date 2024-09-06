@@ -14,7 +14,7 @@ const updateFeatureFlag: MutationResolvers['updateFeatureFlag'] = async (
       expiresAt
     })
     .where('featureName', '=', featureName)
-    .returningAll()
+    .returning('id')
     .executeTakeFirst()
 
   if (!updatedFeatureFlag) {
@@ -22,7 +22,7 @@ const updateFeatureFlag: MutationResolvers['updateFeatureFlag'] = async (
   }
 
   return {
-    featureFlag: updatedFeatureFlag
+    featureFlagId: updatedFeatureFlag.id
   }
 }
 
