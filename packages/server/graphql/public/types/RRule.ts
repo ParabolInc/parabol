@@ -20,7 +20,7 @@ const isRRuleValid = (rrule: RRuleSet) => {
   }
 
   if (frequency !== Frequency.Weekly) {
-    throw new Error('RRule frequency must be WEEKLY')
+    throw new Error('RRULE frequency must be WEEKLY')
   }
 
   // using count option is not allowed

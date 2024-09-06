@@ -10,11 +10,11 @@ import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
 import {MutationResolvers} from '../resolverTypes'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 
 export const startNewMeetingSeries = async (
   meeting: {
