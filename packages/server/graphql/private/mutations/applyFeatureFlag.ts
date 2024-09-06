@@ -1,9 +1,7 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
-import {getUserId, isSuperUser} from '../../../utils/authorization'
-import publish from '../../../utils/publish'
+import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -17,11 +15,6 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   const pg = getKysely()
 
   const viewerId = getUserId(authToken)
-  if (!isSuperUser(authToken)) {
-    return standardError(new Error('Not authorized to apply feature flag'), {
-      userId: viewerId
-    })
-  }
 
   const subjectKeys = Object.keys(subjects)
 
@@ -76,21 +69,18 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
 
   const targetIds = [...userIds, ...teamIds, ...orgIds]
 
-  for (const targetId of targetIds) {
-    await pg
-      .insertInto('FeatureFlagOwner')
-      .values({
-        featureFlagId,
-        userId: userIds.includes(targetId) ? targetId : null,
-        teamId: teamIds.includes(targetId) ? targetId : null,
-        orgId: orgIds.includes(targetId) ? targetId : null
-      })
-      .onConflict((oc) => oc.doNothing())
-      .execute()
+  const values = targetIds.map((targetId) => ({
+    featureFlagId,
+    userId: userIds.includes(targetId) ? targetId : null,
+    teamId: teamIds.includes(targetId) ? targetId : null,
+    orgId: orgIds.includes(targetId) ? targetId : null
+  }))
 
-    const data = {targetId, featureFlagId}
-    publish(SubscriptionChannel.NOTIFICATION, targetId, 'ApplyFeatureFlagPayload', data, subOptions)
-  }
+  await pg
+    .insertInto('FeatureFlagOwner')
+    .values(values)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
 
   return {
     featureFlagId,

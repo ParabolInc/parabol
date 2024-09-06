@@ -12,6 +12,7 @@
         "contextType": "../graphql#InternalContext",
         "mappers": {
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
+          "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "DeleteFeatureFlagSuccess": "./types/DeleteFeatureFlagSuccess#DeleteFeatureFlagSuccessSource",
           "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
@@ -64,7 +65,6 @@
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",
           "AddedNotification": "./types/AddedNotification#AddedNotificationSource",
           "AgendaItem": "../../postgres/types/index#AgendaItem as AgendaItemDB",
-          "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "ArchiveTeamPayload": "./types/ArchiveTeamPayload#ArchiveTeamPayloadSource",
           "AtlassianIntegration": "../../postgres/queries/getAtlassianAuthByUserIdTeamId#AtlassianAuth as AtlassianAuthDB",
           "AuthTokenPayload": "./types/AuthTokenPayload#AuthTokenPayloadSource",

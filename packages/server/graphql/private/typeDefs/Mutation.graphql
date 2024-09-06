@@ -20,6 +20,20 @@ type Mutation {
   ): AddFeatureFlagPayload!
 
   """
+  Apply a feature flag to specified subjects (users, teams, or organizations)
+  """
+  applyFeatureFlag(
+    """
+    The name of the feature flag to apply
+    """
+    flagName: String!
+    """
+    The subjects to which the feature flag will be applied
+    """
+    subjects: SubjectsInput!
+  ): ApplyFeatureFlagPayload!
+
+  """
   Delete an existing feature flag
   """
   deleteFeatureFlag(
