@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.46.1](https://github.com/ParabolInc/parabol/compare/v7.46.0...v7.46.1) (2024-09-06)
+
+
+### Fixed
+
+* multiple slack notifications ([#10190](https://github.com/ParabolInc/parabol/issues/10190)) ([c4444ef](https://github.com/ParabolInc/parabol/commit/c4444ef9814a30bb2659427d17f639dbf151f46e))
+
+
+### Changed
+
+* **rethinkdb:** Comment: Phase 2 ([#10180](https://github.com/ParabolInc/parabol/issues/10180)) ([9148205](https://github.com/ParabolInc/parabol/commit/91482054870809d133fbc70af078b033d55c6ace))
+
 ## [7.46.0](https://github.com/ParabolInc/parabol/compare/v7.45.2...v7.46.0) (2024-09-04)
 
 
