@@ -91,7 +91,9 @@ const handleCompletedRetrospectiveStage = async (
       discussionTopicId: stage.reflectionGroupId
     }))
     // discussions must exist before we can add comments to them!
-    await pg.insertInto('Discussion').values(discussions).execute()
+    if (discussions.length > 0) {
+      await pg.insertInto('Discussion').values(discussions).execute()
+    }
     await Promise.all([
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
       publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})

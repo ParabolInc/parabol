@@ -109,20 +109,22 @@ const createNewMeetingPhases = async (
         case DISCUSS:
           const discussPhase = new DiscussPhase(durations)
           const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
-          asyncSideEffects.push(
-            pg
-              .insertInto('Discussion')
-              .values(
-                discussStages.map((stage) => ({
-                  id: stage.discussionId,
-                  teamId,
-                  meetingId,
-                  discussionTopicId: stage.reflectionGroupId,
-                  discussionTopicType: 'reflectionGroup'
-                }))
-              )
-              .execute()
-          )
+          if (discussStages.length > 0) {
+            asyncSideEffects.push(
+              pg
+                .insertInto('Discussion')
+                .values(
+                  discussStages.map((stage) => ({
+                    id: stage.discussionId,
+                    teamId,
+                    meetingId,
+                    discussionTopicId: stage.reflectionGroupId,
+                    discussionTopicType: 'reflectionGroup'
+                  }))
+                )
+                .execute()
+            )
+          }
           return discussPhase
         case UPDATES:
           return new UpdatesPhase({durations, stages: [new UpdatesStage(facilitatorTeamMemberId)]})
@@ -131,20 +133,22 @@ const createNewMeetingPhases = async (
           const agendaItemIds = agendaItems.map(({id}) => id)
           const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
           const {stages} = agendaItemPhase
-          asyncSideEffects.push(
-            pg
-              .insertInto('Discussion')
-              .values(
-                stages.map((stage) => ({
-                  id: stage.discussionId,
-                  teamId,
-                  meetingId,
-                  discussionTopicId: stage.agendaItemId,
-                  discussionTopicType: 'agendaItem'
-                }))
-              )
-              .execute()
-          )
+          if (stages.length > 0) {
+            asyncSideEffects.push(
+              pg
+                .insertInto('Discussion')
+                .values(
+                  stages.map((stage) => ({
+                    id: stage.discussionId,
+                    teamId,
+                    meetingId,
+                    discussionTopicId: stage.agendaItemId,
+                    discussionTopicType: 'agendaItem'
+                  }))
+                )
+                .execute()
+            )
+          }
           return agendaItemPhase
         case 'ESTIMATE':
           return new EstimatePhase()
