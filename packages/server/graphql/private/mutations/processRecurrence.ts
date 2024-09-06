@@ -127,7 +127,6 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
     .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
     .run()
 
-  console.log('meetings to End', meetingsToEnd)
   const res = await tracer.trace('processRecurrence.endMeetings', async () =>
     Promise.all(
       meetingsToEnd.map((meeting) => {
