@@ -6,7 +6,6 @@ import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
-import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
@@ -28,12 +27,11 @@ const handleCompletedRetrospectiveStage = async (
   meeting: MeetingRetrospective,
   dataLoader: DataLoaderWorker
 ) => {
+  const pg = getKysely()
   if (stage.phaseType === REFLECT || stage.phaseType === GROUP) {
     const data: Record<string, any> = await removeEmptyReflections(meeting, dataLoader)
 
     if (stage.phaseType === REFLECT) {
-      const pg = getKysely()
-
       const [reflectionGroups, unsortedReflections] = await Promise.all([
         dataLoader.get('retroReflectionGroupsByMeetingId').load(meeting.id),
         dataLoader.get('retroReflectionsByMeetingId').load(meeting.id)
@@ -93,7 +91,7 @@ const handleCompletedRetrospectiveStage = async (
       discussionTopicId: stage.reflectionGroupId
     }))
     // discussions must exist before we can add comments to them!
-    await insertDiscussions(discussions)
+    await pg.insertInto('Discussion').values(discussions).execute()
     await Promise.all([
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
       publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
