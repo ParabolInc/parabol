@@ -24,21 +24,35 @@ const Organization: OrganizationResolvers = {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
   },
-  featureFlags: async ({orgId}) => {
-    // if (!featureFlags) return {}
-    // return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
-
+  featureFlags: async ({featureFlags}) => {
+    if (!featureFlags) return {}
+    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+  },
+  // TODO: refactor to dataloader
+  featureFlag: async ({id: orgId}, {featureName}) => {
     const pg = getKysely()
-    // TODO: replace with dataloader
-    const flags = await pg
+    const featureFlag = await pg
+      .selectFrom('FeatureFlag')
+      .where('FeatureFlag.featureName', '=', featureName)
+      .select('FeatureFlag.id')
+      .executeTakeFirst()
+
+    if (!featureFlag) {
+      throw new Error(
+        `Feature flag "${featureName}" does not exist. Please check the feature name.`
+      )
+    }
+
+    const flagOwnership = await pg
       .selectFrom('FeatureFlag')
       .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
       .where('FeatureFlagOwner.orgId', '=', orgId)
-      .where('FeatureFlag.expiresAt', '>', new Date())
-      .selectAll('FeatureFlag')
-      .execute()
+      .where('FeatureFlag.featureName', '=', featureName)
+      .where('FeatureFlag.expiresAt', '>', new Date()) // Check if the feature flag is not expired
+      .select('FeatureFlag.id') // We only need to know if there's a match
+      .executeTakeFirst()
 
-    return flags
+    return !!flagOwnership
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null
