@@ -1,5 +1,4 @@
 import {SelectQueryBuilder, Selectable} from 'kysely'
-import type Comment from '../../database/types/Comment'
 import {
   Discussion as DiscussionPG,
   OrganizationUser as OrganizationUserPG,
@@ -7,6 +6,7 @@ import {
 } from '../pg.d'
 import {
   selectAgendaItems,
+  selectComments,
   selectMeetingSettings,
   selectOrganizations,
   selectRetroReflections,
@@ -23,6 +23,7 @@ type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never
 
 export type Discussion = Selectable<DiscussionPG>
+export type ReactjiDB = {id: string; userId: string}
 
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
@@ -53,3 +54,5 @@ export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaIt
 export type SlackAuth = ExtractTypeFromQueryBuilderSelect<typeof selectSlackAuths>
 
 export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>
+
+export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>

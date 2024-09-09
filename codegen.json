@@ -84,7 +84,7 @@
           "AzureDevOpsRemoteProject": "./types/AzureDevOpsRemoteProject#AzureDevOpsRemoteProjectSource",
           "AzureDevOpsWorkItem": "../../dataloader/azureDevOpsLoaders#AzureDevOpsWorkItem",
           "BatchArchiveTasksSuccess": "./types/BatchArchiveTasksSuccess#BatchArchiveTasksSuccessSource",
-          "Comment": "../../database/types/Comment#default as CommentDB",
+          "Comment": "../../postgres/types/index#Comment as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
