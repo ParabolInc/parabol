@@ -5,7 +5,6 @@ import {RDatum} from '../../database/stricterR'
 import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
-import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
@@ -89,12 +88,17 @@ const updateTemplateScope = {
       const activePrompts = prompts.filter(({removedAt}) => !removedAt)
       const promptIds = activePrompts.map(({id}) => id)
       const clonedPrompts = activePrompts.map((prompt) => {
-        return new RetrospectivePrompt({
-          ...prompt,
+        return {
+          id: generateUID(),
+          teamId: prompt.teamId,
           templateId: clonedTemplateId!,
           parentPromptId: prompt.id,
+          sortOrder: prompt.sortOrder,
+          question: prompt.question,
+          description: prompt.description,
+          groupColor: prompt.groupColor,
           removedAt: null
-        })
+        }
       })
       await Promise.all([
         pg
