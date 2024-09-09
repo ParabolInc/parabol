@@ -46,6 +46,8 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "MoveReflectTemplatePromptPayload": "./types/MoveReflectTemplatePromptPayload#MoveReflectTemplatePromptPayloadSource",
+          "AddReflectTemplatePromptPayload": "./types/AddReflectTemplatePromptPayload#AddReflectTemplatePromptPayloadSource",
           "SetSlackNotificationPayload": "./types/SetSlackNotificationPayload#SetSlackNotificationPayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",

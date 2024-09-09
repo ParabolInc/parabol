@@ -7,7 +7,6 @@ import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addTeam from './mutations/addTeam'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
@@ -41,7 +40,6 @@ import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
-import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
@@ -114,7 +112,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReflectTemplatePrompt,
       addGitHubAuth,
       addOrg,
       addTeam,
@@ -148,7 +145,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       invalidateSessions,
       inviteToTeam,
       movePokerTemplateDimension,
-      moveReflectTemplatePrompt,
       moveTeamToOrg,
       navigateMeeting,
       newMeetingCheckIn,

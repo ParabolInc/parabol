@@ -41,7 +41,7 @@ type Mutation {
   """
   Add a new template full of prompts
   """
-  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload
+  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
   addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
 
