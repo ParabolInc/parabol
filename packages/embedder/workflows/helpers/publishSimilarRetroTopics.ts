@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from '../../../client/types/constEnums'
 import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../../server/appOrigin'
-import getRethink from '../../../server/database/rethinkDriver'
 import {DataLoaderInstance} from '../../../server/dataloader/RootDataLoader'
 import {isRetroMeeting} from '../../../server/graphql/meetingTypePredicates'
 import {
@@ -54,7 +53,6 @@ export const publishSimilarRetroTopics = async (
   similarEmbeddings: {embeddingsMetadataId: number; similarity: number}[],
   dataLoader: DataLoaderInstance
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const links = await Promise.all(
     similarEmbeddings.map((se) => makeSimilarDiscussionLink(se, dataLoader))
@@ -69,7 +67,6 @@ export const publishSimilarRetroTopics = async (
     buildCommentContentBlock('🤖 Related Discussions', `<ul>${listItems}</ul>`),
     2
   )
-  await r.table('Comment').insert(relatedDiscussionsComment).run()
   await pg
     .insertInto('Comment')
     .values({

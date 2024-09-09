@@ -2,7 +2,6 @@ import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import MeetingAction from '../../../database/types/MeetingAction'
 import getKysely from '../../../postgres/getKysely'
-import insertDiscussions from '../../../postgres/queries/insertDiscussions'
 import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -47,16 +46,20 @@ const addAgendaItemToActiveActionMeeting = async (
         updatedAt: now
       })
       .run(),
-    getKysely().updateTable('AgendaItem').set({meetingId}).where('id', '=', agendaItemId).execute(),
-    insertDiscussions([
-      {
-        id: discussionId,
-        teamId,
-        meetingId,
-        discussionTopicType: 'agendaItem' as const,
-        discussionTopicId: agendaItemId
-      }
-    ])
+    getKysely()
+      .with('InsertDiscussion', (qb) =>
+        qb.insertInto('Discussion').values({
+          id: discussionId,
+          teamId,
+          meetingId,
+          discussionTopicType: 'agendaItem',
+          discussionTopicId: agendaItemId
+        })
+      )
+      .updateTable('AgendaItem')
+      .set({meetingId})
+      .where('id', '=', agendaItemId)
+      .execute()
   ])
 
   return meetingId

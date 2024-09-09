@@ -15,23 +15,6 @@ export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
       .run()
   }
 )
-
-export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
-  'comments',
-  'discussionId',
-  async (discussionIds) => {
-    const r = await getRethink()
-    return (
-      r
-        .table('Comment')
-        .getAll(r.args(discussionIds), {index: 'discussionId'})
-        // include deleted comments so we can replace them with tombstones
-        // .filter({isActive: true})
-        .run()
-    )
-  }
-)
-
 export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   'newMeetings',
   'teamId',
