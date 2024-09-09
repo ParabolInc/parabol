@@ -80,11 +80,14 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     const activePrompts = prompts.filter(({removedAt}) => !removedAt)
     const newTemplatePrompts = activePrompts.map((prompt) => {
       return {
-        ...prompt,
         id: generateUID(),
         teamId,
         templateId: newTemplate.id,
         parentPromptId: prompt.id,
+        sortOrder: prompt.sortOrder,
+        question: prompt.question,
+        description: prompt.description,
+        groupColor: prompt.groupColor,
         removedAt: null
       }
     })
@@ -118,11 +121,14 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     const newTemplate = templates[0]!
     const {id: templateId} = newTemplate
     await Promise.all([
-      r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
+      r
+        .table('ReflectPrompt')
+        .insert(newTemplatePrompts.map((p, idx) => ({...p, sortOrder: idx})))
+        .run(),
       pg
         .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
         .insertInto('ReflectPrompt')
-        .values(newTemplatePrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
+        .values(newTemplatePrompts)
         .execute(),
       decrementFreeTemplatesRemaining(viewerId, 'retro')
     ])

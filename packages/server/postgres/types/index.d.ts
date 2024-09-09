@@ -9,6 +9,7 @@ import {
   selectComments,
   selectMeetingSettings,
   selectOrganizations,
+  selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
@@ -56,3 +57,4 @@ export type SlackAuth = ExtractTypeFromQueryBuilderSelect<typeof selectSlackAuth
 export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>
 
 export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
+export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
