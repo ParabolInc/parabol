@@ -55,8 +55,6 @@ import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDi
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
-import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
-import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePromptUpdateGroupColor'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeIntegrationProvider from './mutations/removeIntegrationProvider'
@@ -65,7 +63,6 @@ import removePokerTemplateDimension from './mutations/removePokerTemplateDimensi
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
-import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
 import removeReflection from './mutations/removeReflection'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
@@ -73,7 +70,6 @@ import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
-import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import selectTemplate from './mutations/selectTemplate'
@@ -153,18 +149,14 @@ export default new GraphQLObjectType<any, GQLContext>({
       pushInvitation,
       promoteNewMeetingFacilitator,
       promoteToTeamLead,
-      reflectTemplatePromptUpdateDescription,
       pokerTemplateDimensionUpdateDescription,
-      reflectTemplatePromptUpdateGroupColor,
       removeAtlassianAuth,
       removeGitHubAuth,
       removeOrgUser,
       removeReflectTemplate,
-      removeReflectTemplatePrompt,
       removePokerTemplateDimension,
       renameMeeting,
       renameMeetingTemplate,
-      renameReflectTemplatePrompt,
       renamePokerTemplateDimension,
       renamePokerTemplateScale,
       removePokerTemplateScale,

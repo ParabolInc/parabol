@@ -1,29 +1,13 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import getKysely from '../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import ReflectTemplatePromptUpdateDescriptionPayload from '../types/ReflectTemplatePromptUpdateDescriptionPayload'
+import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import standardError from '../../../utils/standardError'
+import {MutationResolvers} from '../resolverTypes'
 
-const reflectTemplatePromptUpdateDescription = {
-  description: 'Update the description of a reflection prompt',
-  type: ReflectTemplatePromptUpdateDescriptionPayload,
-  args: {
-    promptId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    description: {
-      type: new GraphQLNonNull(GraphQLString)
-    }
-  },
-  async resolve(
-    _source: unknown,
-    {promptId, description}: {promptId: string; description: string},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) {
+const reflectTemplatePromptUpdateDescription: MutationResolvers['reflectTemplatePromptUpdateDescription'] =
+  async (_source, {promptId, description}, {authToken, dataLoader, socketId: mutatorId}) => {
     const r = await getRethink()
     const pg = getKysely()
     const now = new Date()
@@ -71,6 +55,5 @@ const reflectTemplatePromptUpdateDescription = {
     )
     return data
   }
-}
 
 export default reflectTemplatePromptUpdateDescription

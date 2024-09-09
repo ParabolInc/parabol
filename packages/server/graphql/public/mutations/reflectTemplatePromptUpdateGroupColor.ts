@@ -1,29 +1,13 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import getKysely from '../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import ReflectTemplatePromptUpdateGroupColorPayload from '../types/ReflectTemplatePromptUpdateGroupColorPayload'
+import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import standardError from '../../../utils/standardError'
+import {MutationResolvers} from '../resolverTypes'
 
-const reflectTemplatePromptUpdateGroupColor = {
-  groupColor: 'Update the groupColor of a reflection prompt',
-  type: ReflectTemplatePromptUpdateGroupColorPayload,
-  args: {
-    promptId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    groupColor: {
-      type: new GraphQLNonNull(GraphQLString)
-    }
-  },
-  async resolve(
-    _source: unknown,
-    {promptId, groupColor}: {promptId: string; groupColor: string},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) {
+const reflectTemplatePromptUpdateGroupColor: MutationResolvers['reflectTemplatePromptUpdateGroupColor'] =
+  async (_source, {promptId, groupColor}, {authToken, dataLoader, socketId: mutatorId}) => {
     const r = await getRethink()
     const pg = getKysely()
     const now = new Date()
@@ -67,6 +51,5 @@ const reflectTemplatePromptUpdateGroupColor = {
     )
     return data
   }
-}
 
 export default reflectTemplatePromptUpdateGroupColor
