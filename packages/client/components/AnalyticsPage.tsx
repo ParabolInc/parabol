@@ -171,8 +171,8 @@ const AnalyticsPage = () => {
       const translated = !!document.querySelector(
         'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
       )
-      const user_id = atmosphere.viewerId
-      if (!!user_id) {
+      const userId = atmosphere.viewerId
+      if (!!userId) {
         amplitude.track(
           'Loaded a Page',
           {
@@ -185,7 +185,7 @@ const AnalyticsPage = () => {
             search: location.search
           },
           {
-            user_id
+            user_id: userId
           }
         )
       }
