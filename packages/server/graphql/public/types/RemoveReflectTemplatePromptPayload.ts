@@ -9,7 +9,9 @@ export type RemoveReflectTemplatePromptPayloadSource =
 
 const RemoveReflectTemplatePromptPayload: RemoveReflectTemplatePromptPayloadResolvers = {
   reflectTemplate: (source, _args, {dataLoader}) => {
-    return 'templateId' in source ? dataLoader.get('meetingTemplates').load(templateId) : null
+    return 'templateId' in source
+      ? dataLoader.get('meetingTemplates').loadNonNull(source.templateId)
+      : null
   },
 
   prompt: (source, _args, {dataLoader}) => {

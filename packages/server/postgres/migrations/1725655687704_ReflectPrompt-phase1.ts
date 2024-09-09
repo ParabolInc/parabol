@@ -50,7 +50,7 @@ export async function down() {
   const client = new Client(getPgConfig())
   await client.connect()
   await client.query(`
-    DROP TABLE "Comment";
+    DROP TABLE IF EXISTS "ReflectPrompt";
     ` /* Do undo magic */)
   await client.end()
 }
