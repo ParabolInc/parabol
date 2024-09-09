@@ -8,7 +8,7 @@ interface Input {
   description: string
   groupColor: string
   removedAt: Date | null
-  parentPromptId?: string
+  parentPromptId?: string | null
 }
 
 export default class RetrospectivePrompt {
