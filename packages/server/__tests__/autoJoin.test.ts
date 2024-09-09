@@ -74,7 +74,7 @@ const signUpVerified = async (email: string) => {
   }
 }
 
-test.skip('autoJoin on multiple teams does not create duplicate `OrganizationUser`s', async () => {
+test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s', async () => {
   const domain = `${faker.internet.domainWord()}.parabol.fun`
 
   const email = `${faker.internet.userName()}@${domain}`.toLowerCase()
