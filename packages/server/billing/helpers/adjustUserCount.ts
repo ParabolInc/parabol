@@ -61,19 +61,13 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
 
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
-  const [rawOrganizations, organizationUsers] = await Promise.all([
-    dataLoader.get('organizations').loadMany(orgIds),
-    dataLoader.get('organizationUsersByUserId').load(userId)
-  ])
+  const rawOrganizations = await dataLoader.get('organizations').loadMany(orgIds)
   const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
-    const oldOrganizationUser = organizationUsers.find(
-      (organizationUser) => organizationUser.orgId === orgId
-    )
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
     return {
-      id: oldOrganizationUser?.id || generateUID(),
+      id: generateUID(),
       orgId,
       userId,
       tier: organization.tier
@@ -83,7 +77,18 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
   await getKysely()
     .insertInto('OrganizationUser')
     .values(docs)
-    .onConflict((oc) => oc.doNothing())
+    .onConflict((oc) =>
+      oc
+        .constraint('unique_org_user')
+        .doUpdateSet({
+          joinedAt: sql`CURRENT_TIMESTAMP`,
+          removedAt: null,
+          inactive: false,
+          role: null,
+          suggestedTier: null,
+          tier: (eb) => eb.ref('excluded.tier')
+        })
+    )
     .execute()
   await Promise.all(
     orgIds.map((orgId) => {
