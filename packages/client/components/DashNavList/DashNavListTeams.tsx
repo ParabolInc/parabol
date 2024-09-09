@@ -29,9 +29,7 @@ const DashNavListTeams = (props: Props) => {
         id
         name
         tier
-        featureFlags {
-          publicTeams
-        }
+        publicTeamsEnabled: featureFlag(featureName: "publicTeams")
         viewerTeams {
           ...DashNavListTeam @relay(mask: false)
         }
@@ -43,8 +41,7 @@ const DashNavListTeams = (props: Props) => {
     organizationRef
   )
   const [showModal, setShowModal] = useState(false)
-  const {publicTeams, viewerTeams, featureFlags} = organization
-  const publicTeamsEnabled = featureFlags?.publicTeams
+  const {publicTeams, viewerTeams, publicTeamsEnabled} = organization
   const publicTeamsCount = publicTeamsEnabled ? publicTeams.length : 0
 
   const handleClose = () => {

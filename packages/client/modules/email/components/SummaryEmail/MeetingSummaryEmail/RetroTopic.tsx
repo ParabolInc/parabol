@@ -105,9 +105,7 @@ const RetroTopic = (props: Props) => {
       fragment RetroTopic_meeting on RetrospectiveMeeting {
         id
         organization {
-          featureFlags {
-            shareSummary
-          }
+          shareSummary: featureFlag(featureName: "shareSummary")
         }
       }
     `,
@@ -116,7 +114,7 @@ const RetroTopic = (props: Props) => {
 
   const {id: meetingId} = meeting
 
-  const hasShareSummaryFeatureFlag = meeting.organization.featureFlags.shareSummary
+  const hasShareSummaryFeatureFlag = meeting.organization.shareSummary
 
   const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
