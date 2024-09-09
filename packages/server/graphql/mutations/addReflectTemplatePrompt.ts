@@ -5,6 +5,7 @@ import palettePickerOptions from '../../../client/styles/palettePickerOptions'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
 import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -25,6 +26,7 @@ const addReflectTemplatePrompt = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await dataLoader.get('meetingTemplates').load(templateId)
@@ -69,7 +71,14 @@ const addReflectTemplatePrompt = {
       removedAt: null
     })
 
-    await r.table('ReflectPrompt').insert(reflectPrompt).run()
+    await Promise.all([
+      await r.table('ReflectPrompt').insert(reflectPrompt).run(),
+      pg
+        .updateTable('MeetingTemplate')
+        .set({updatedAt: new Date()})
+        .where('id', '=', templateId)
+        .execute()
+    ])
 
     const promptId = reflectPrompt.id
     const data = {promptId}

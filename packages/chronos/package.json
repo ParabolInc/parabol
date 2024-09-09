@@ -1,6 +1,6 @@
 {
   "name": "chronos",
-  "version": "7.7.0",
+  "version": "7.46.2",
   "description": "A cron job scheduler",
   "author": "Matt Krick <matt.krick@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/chronos#readme",
@@ -10,10 +10,10 @@
     "url": "git+https://github.com/ParabolInc/parabol.git"
   },
   "scripts": {
-    "lint": "eslint --fix . --ext .ts,.tsx",
-    "lint:check": "eslint . --ext .ts,.tsx",
-    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --write \"**/*.{ts,tsx,graphql}\"",
-    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.eslintignore --check \"**/*.{ts,tsx,graphql}\"",
+    "lint": "yarn lint:check --fix .",
+    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
+    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --write \"**/*.{ts,tsx,graphql}\"",
+    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --check \"**/*.{ts,tsx,graphql}\"",
     "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
@@ -21,10 +21,10 @@
   },
   "devDependencies": {
     "@types/cron": "^2.0.1",
-    "@types/node": "^16.11.62"
+    "@types/node": "^20.11.17"
   },
   "dependencies": {
     "cron": "^2.3.1",
-    "parabol-server": "7.7.0"
+    "parabol-server": "7.46.2"
   }
 }

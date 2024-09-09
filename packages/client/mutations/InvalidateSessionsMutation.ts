@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {InvalidateSessionsMutation as TInvalidateSessionsMutation} from '../__generated__/InvalidateSessionsMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment InvalidateSessionsMutation_notification on InvalidateSessionsPayload {

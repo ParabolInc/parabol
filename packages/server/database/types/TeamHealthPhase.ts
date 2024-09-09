@@ -1,5 +1,5 @@
-import TeamHealthStage from './TeamHealthStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
+import TeamHealthStage from './TeamHealthStage'
 
 interface Input {
   stages: [TeamHealthStage, ...TeamHealthStage[]]

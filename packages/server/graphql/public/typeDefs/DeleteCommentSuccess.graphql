@@ -1,0 +1,8 @@
+type DeleteCommentSuccess {
+  commentId: ID!
+
+  """
+  the comment just deleted
+  """
+  comment: Comment!
+}

@@ -5,13 +5,14 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
-import getRethink from '../../database/rethinkDriver'
-import Reflection from '../../database/types/Reflection'
+import getKysely from '../../postgres/getKysely'
+import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayload'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
@@ -33,14 +34,14 @@ export default {
     {reflectionId, content}: {reflectionId: string; content: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId).run()
+    const reflection = await dataLoader.get('retroReflections').load(reflectionId)
+    dataLoader.get('retroReflections').clear(reflectionId)
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -56,7 +57,6 @@ export default {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {tier} = team
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already ended'), {userId: viewerId})
@@ -67,6 +67,9 @@ export default {
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content)
+    if (normalizedContent.length > 2000) {
+      return {error: {message: 'Reflection content is too long'}}
+    }
 
     // RESOLUTION
     const plaintextContent = extractTextFromDraftString(normalizedContent)
@@ -76,28 +79,25 @@ export default {
       ? await getReflectionEntities(plaintextContent)
       : reflection.entities
     const sentimentScore =
-      tier !== 'starter'
+      getFeatureTier(team) !== 'starter'
         ? isVeryDifferent
           ? await getReflectionSentimentScore(question, plaintextContent)
           : reflection.sentimentScore
         : undefined
-    await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
+    await pg
+      .updateTable('RetroReflection')
+      .set({
         content: normalizedContent,
-        entities,
+        entities: toGoogleAnalyzedEntity(entities),
         sentimentScore,
-        plaintextContent,
-        updatedAt: now
+        plaintextContent
       })
-      .run()
+      .where('id', '=', reflectionId)
+      .execute()
 
-    const reflectionsInGroup = (await r
-      .table('RetroReflection')
-      .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-      .filter({isActive: true})
-      .run()) as Reflection[]
+    const reflectionsInGroup = await dataLoader
+      .get('retroReflectionsByGroupId')
+      .load(reflectionGroupId)
 
     const newTitle = getGroupSmartTitle(reflectionsInGroup)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)

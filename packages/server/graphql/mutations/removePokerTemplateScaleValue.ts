@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,14 +23,13 @@ const removePokerTemplateScaleValue = {
     {scaleId, label}: {scaleId: string; label: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const scale = await dataLoader.get('templateScales').load(scaleId)
     if (!scale || scale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -49,15 +47,12 @@ const removePokerTemplateScaleValue = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update((row: RValue) => ({
-        values: row('values').deleteAt(row('values').offsetsOf(oldScaleValue).nth(0)),
-        updatedAt: now
-      }))
-      .run()
-
+    await pg
+      .deleteFrom('TemplateScaleValue')
+      .where('templateScaleId', '=', scaleId)
+      .where('label', '=', label)
+      .execute()
+    dataLoader.clearAll('templateScales')
     const data = {scaleId}
     publish(
       SubscriptionChannel.TEAM,

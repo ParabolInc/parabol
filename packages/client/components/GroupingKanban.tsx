@@ -3,8 +3,8 @@ import {captureException} from '@sentry/minimal'
 import graphql from 'babel-plugin-relay/macro'
 import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import useCallbackRef from '~/hooks/useCallbackRef'
 import {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
+import useCallbackRef from '~/hooks/useCallbackRef'
 import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
@@ -14,8 +14,8 @@ import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
-import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
+import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
 import SpotlightModal from './SpotlightModal'
 
 interface Props {
@@ -139,7 +139,7 @@ const GroupingKanban = (props: Props) => {
   }
 
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
-    const container = {} as {[promptId: string]: typeof reflectionGroups[0][]}
+    const container = {} as {[promptId: string]: (typeof reflectionGroups)[0][]}
     let isEditing = false
     reflectionGroups.forEach((group) => {
       const {reflections, promptId} = group

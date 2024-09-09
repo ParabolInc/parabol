@@ -1,7 +1,6 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import Meeting from '../../../database/types/Meeting'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -46,6 +45,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   if (getPhase(phases, 'reflect')) {
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     reflections.forEach(({creatorId, reactjis}) => {
+      if (!creatorId) return
       passiveMembers.delete(creatorId)
       reactjis.forEach(({userId}) => {
         passiveMembers.delete(userId)
@@ -56,7 +56,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
 
   // Team prompt responses
   if (getPhase(phases, 'RESPONSES')) {
-    const responses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
     responses.forEach(({userId, reactjis}) => {
       passiveMembers.delete(userId)
       reactjis.forEach(({userId}) => {

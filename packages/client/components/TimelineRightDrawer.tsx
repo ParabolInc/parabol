@@ -3,9 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import {TimelineRightDrawer_viewer$key} from '../__generated__/TimelineRightDrawer_viewer.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {DashTimeline, NavSidebar} from '../types/constEnums'
-import {TimelineRightDrawer_viewer$key} from '../__generated__/TimelineRightDrawer_viewer.graphql'
 import ErrorBoundary from './ErrorBoundary'
 import TimelinePriorityTasks from './TimelinePriorityTasks'
 
@@ -24,7 +24,7 @@ export const RightDrawer = styled('div')({
   minWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
   maxWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
   borderLeft: `1px solid ${PALETTE.SLATE_400}`,
-  height: 'fit-content',
+  height: '100%',
   padding: 16,
   [makeMinWidthMediaQuery(MIN_WIDTH)]: {
     display: 'block'

@@ -3,6 +3,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
+import {
+  SlackNotificationEventEnum,
+  SlackNotificationList_viewer$key
+} from '../../../../__generated__/SlackNotificationList_viewer.graphql'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
 import StyledError from '../../../../components/StyledError'
@@ -13,10 +17,6 @@ import useSlackChannels from '../../../../hooks/useSlackChannels'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
-import {
-  SlackNotificationEventEnum,
-  SlackNotificationList_viewer$key
-} from '../../../../__generated__/SlackNotificationList_viewer.graphql'
 import SlackChannelPicker from './SlackChannelPicker'
 import SlackNotificationRow from './SlackNotificationRow'
 

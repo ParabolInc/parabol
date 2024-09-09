@@ -1,7 +1,8 @@
 import {JSONContent} from '@tiptap/core'
+import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
 import getRethink from '../../../../database/rethinkDriver'
 import NotificationResponseMentioned from '../../../../database/types/NotificationResponseMentioned'
-import {TeamPromptResponse} from '../../../../postgres/queries/getTeamPromptResponsesByIds'
+import {TeamPromptResponse} from '../../../../postgres/types'
 
 const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
   if (content.type === 'mention' && content.attrs?.id) {
@@ -36,14 +37,14 @@ const createTeamPromptMentionNotifications = async (
     return []
   }
 
-  const notificationsToAdd = addedMentions.map(
-    (mention) =>
-      new NotificationResponseMentioned({
-        userId: mention,
-        responseId: newResponse.id,
-        meetingId: newResponse.meetingId
-      })
-  )
+  const notificationsToAdd = addedMentions.map((mention) => {
+    return new NotificationResponseMentioned({
+      userId: mention,
+      // hack to turn the DB id into the GQL ID. The GDL ID should only be used in GQL resolvers, but i didn't catch this before it got built
+      responseId: TeamPromptResponseId.join(newResponse.id),
+      meetingId: newResponse.meetingId
+    })
+  })
 
   const r = await getRethink()
   await r.table('Notification').insert(notificationsToAdd).run()

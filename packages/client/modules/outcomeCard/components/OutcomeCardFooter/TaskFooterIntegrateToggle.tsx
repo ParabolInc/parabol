@@ -45,7 +45,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
         dataCy={`${dataCy}-button`}
       >
         <IconLabel
-          icon='publish'
+          icon='widgets'
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
           onClick={closeTooltip}

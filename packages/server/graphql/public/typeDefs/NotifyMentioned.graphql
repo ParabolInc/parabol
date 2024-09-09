@@ -1,0 +1,52 @@
+type NotifyMentioned implements Notification {
+  """
+  A shortid for the notification
+  """
+  id: ID!
+
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
+
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
+
+  """
+  Sender name, null if anonymous
+  """
+  senderName: String
+
+  """
+  Sender picture
+  """
+  senderPicture: URL
+
+  """
+  The userId that should see this notification
+  """
+  userId: ID!
+
+  """
+  The id of the meeting the user was mentioned in
+  """
+  meetingId: String!
+
+  """
+  Meeting name
+  """
+  meetingName: String!
+
+  """
+  Linked retro reflection if mentioned in a reflection
+  """
+  retroReflection: RetroReflection
+
+  """
+  Linked discussion stage number
+  """
+  retroDiscussStageIdx: Int
+}

@@ -1,5 +1,5 @@
-import Atmosphere from '../Atmosphere'
 import * as amplitude from '@amplitude/analytics-browser'
+import Atmosphere from '../Atmosphere'
 
 const SendClientSideEvent = (
   atmosphere: Atmosphere,

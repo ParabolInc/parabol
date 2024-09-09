@@ -14,7 +14,7 @@ describe('InMemoryRateLimiter', () => {
   }
 
   beforeEach(() => {
-    jest.useFakeTimers('modern')
+    jest.useFakeTimers()
   })
 
   afterEach(() => {

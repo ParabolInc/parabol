@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
+import {mapResponseMentionedToToast_notification$data} from '../../__generated__/mapResponseMentionedToToast_notification.graphql'
 import {Snack} from '../../components/Snackbar'
 import {OnNextHistoryContext} from '../../types/relayMutations'
-import {mapResponseMentionedToToast_notification$data} from '../../__generated__/mapResponseMentionedToToast_notification.graphql'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
@@ -22,12 +23,14 @@ graphql`
 
 const mapResponseMentionedToToast = (
   notification: mapResponseMentionedToToast_notification$data,
-  {history}: OnNextHistoryContext
+  {atmosphere, history}: OnNextHistoryContext
 ): Snack | null => {
   if (!notification) return null
   const {id: notificationId, meeting, response} = notification
   const {preferredName: authorName} = response.user
   const {id: meetingId, name: meetingName} = meeting
+
+  const message = `${authorName} mentioned you in their response in ${meetingName}.`
 
   // :TODO: (jmtaber129): Check if we're already open to the relevant standup response discussion
   // thread, and do nothing if we are.
@@ -35,12 +38,22 @@ const mapResponseMentionedToToast = (
   return {
     key: makeNotificationToastKey(notificationId),
     autoDismiss: 10,
-    message: `${authorName} mentioned you in their response in ${meetingName}.`,
+    message,
     action: {
       label: 'See their response',
       callback: () => {
         history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
       }
+    },
+    onShow: () => {
+      SendClientSideEvent(atmosphere, 'Snackbar Viewed', {
+        snackbarType: 'responseMentioned'
+      })
+    },
+    onManualDismiss: () => {
+      SendClientSideEvent(atmosphere, 'Snackbar Clicked', {
+        snackbarType: 'responseMentioned'
+      })
     }
   }
 }

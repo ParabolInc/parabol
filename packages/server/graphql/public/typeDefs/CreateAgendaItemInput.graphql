@@ -1,0 +1,27 @@
+input CreateAgendaItemInput {
+  """
+  The content of the agenda item
+  """
+  content: String!
+
+  """
+  True if the agenda item has been pinned
+  """
+  pinned: Boolean!
+  teamId: ID!
+
+  """
+  The team member ID of the person creating the agenda item
+  """
+  teamMemberId: ID!
+
+  """
+  The sort order of the agenda item in the list
+  """
+  sortOrder: String
+
+  """
+  The meeting ID of the agenda item
+  """
+  meetingId: String
+}

@@ -40,7 +40,7 @@ const greetings = [
     language: 'Chinese'
   },
   {
-    content: 'Yeoboseyo',
+    content: 'Annyeong',
     language: 'Korean'
   },
   {
@@ -70,6 +70,42 @@ const greetings = [
   {
     content: 'Lei Ho',
     language: 'Cantonese'
+  },
+  {
+    content: 'Salaam',
+    language: 'Arabic'
+  },
+  {
+    content: 'Kumusta',
+    language: 'Filipino'
+  },
+  {
+    content: 'Pryvit',
+    language: 'Ukranian'
+  },
+  {
+    content: 'Habari',
+    language: 'Swahili'
+  },
+  {
+    content: 'Vanakkam',
+    language: 'Tamil'
+  },
+  {
+    content: 'Chào',
+    language: 'Vietnamese'
+  },
+  {
+    content: 'Gamardjoba',
+    language: 'Georgian'
+  },
+  {
+    content: 'Selam',
+    language: 'Amharic'
+  },
+  {
+    content: 'Iska warran',
+    language: 'Somalian'
   }
 ]
 
@@ -294,7 +330,11 @@ const questions = [
   'If buying groceries were a game, what would be one of the loading screen tips?',
   'What’s one of your recent pet peeves?',
   'How would your best friend describe you?',
-  'Congratulations! You’ve been chosen to represent your country in a global competition. What sport or activity are you doing?'
+  'Congratulations! You’ve been chosen to represent your country in a global competition. What sport or activity are you doing?',
+  'What’s a small victory you had this week that might seem trivial but was important to you?',
+  'If you could have any author, living or dead, write the story of your life, who would it be and why?',
+  'Imagine you could teleport to any place in the world for your next meal. Where would you go and what would you eat?',
+  'What’s one song that always boosts your mood, no matter how many times you hear it?'
 ]
 
 export const makeCheckinGreeting = (meetingCount: number, seedId = '') => {

@@ -1,5 +1,6 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {GetRepositoriesQuery} from '../../../types/githubTypes'
+import {Logger} from '../../../utils/Logger'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getRepositories from '../../../utils/githubQueries/getRepositories.graphql'
 import {DataLoaderWorker} from '../../graphql'
@@ -25,7 +26,7 @@ const fetchGitHubRepos = async (
   const githubRequest = getGitHubRequest(info, context, {accessToken})
   const [data, error] = await githubRequest<GetRepositoriesQuery>(getRepositories)
   if (error) {
-    console.error(error.message)
+    Logger.error(error.message)
     return []
   }
   const {viewer} = data

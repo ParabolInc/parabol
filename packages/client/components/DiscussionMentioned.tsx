@@ -4,11 +4,12 @@ import {Editor} from 'draft-js'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
+import {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
 import useEditorState from '../hooks/useEditorState'
 import useRouter from '../hooks/useRouter'
 import {cardShadow} from '../styles/elevation'
+import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
-import {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
 
 const EditorWrapper = styled('div')({
@@ -60,7 +61,8 @@ const DiscussionMentioned = (props: Props) => {
   )
   const {history} = useRouter()
   const {meeting, author, comment, discussion} = notification
-  const {picture: authorPicture, preferredName: authorName} = author
+  const authorPicture = author ? author.picture : anonymousAvatar
+  const authorName = author ? author.preferredName : 'Anonymous'
   const {stage} = discussion
   const {id: stageId, response} = stage ?? {}
   const {id: meetingId, name: meetingName} = meeting

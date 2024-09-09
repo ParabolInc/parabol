@@ -33,13 +33,16 @@ export default {
     }
 
     // RESOLUTION
-    const res = await removeSlackAuths(viewerId, teamId, true)
-    if (res.error) {
-      return standardError(res.error, {userId: viewerId})
+    const [res, viewer] = await Promise.all([
+      removeSlackAuths(viewerId, teamId, true),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
+    if (!res.authIds) {
+      return {error: {message: res.error}}
     }
     const authId = res.authIds[0]
 
-    analytics.integrationRemoved(viewerId, teamId, 'slack')
+    analytics.integrationRemoved(viewer, teamId, 'slack')
     const data = {authId, teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveSlackAuthPayload', data, subOptions)
     return data

@@ -27,7 +27,7 @@ export default abstract class Meeting {
   isLegacy?: boolean // true if old version of action meeting
   createdAt = new Date()
   updatedAt = new Date()
-  createdBy: string
+  createdBy: string | null
   endedAt: Date | undefined | null = undefined
   facilitatorStageId: string | undefined
   facilitatorUserId: string

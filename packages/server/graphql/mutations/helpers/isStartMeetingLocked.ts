@@ -3,7 +3,7 @@ import {DataLoaderWorker} from '../../graphql'
 
 const isStartMeetingLocked = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organization = await dataLoader.get('organizations').load(team.orgId)
+  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
 
   const {lockedAt: organizationLockedAt, name: organizationName} = organization
   const {isPaid, lockMessageHTML} = team

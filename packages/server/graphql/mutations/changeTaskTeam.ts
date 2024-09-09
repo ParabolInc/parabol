@@ -2,9 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
 import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
 import Task from '../../database/types/Task'
-import generateUID from '../../generateUID'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
@@ -76,8 +74,8 @@ export default {
         task.integration?.service === 'jira'
           ? await Promise.all(authKeys.map((key) => dataLoader.get('freshAtlassianAuth').load(key)))
           : task.integration?.service === 'github'
-          ? await Promise.all(authKeys.map((key) => dataLoader.get('githubAuth').load(key)))
-          : authKeys.map(() => null)
+            ? await Promise.all(authKeys.map((key) => dataLoader.get('githubAuth').load(key)))
+            : authKeys.map(() => null)
 
       if (!targetTeamAuth && !sourceTeamAuth && !accessUsersTargetTeamAuth) {
         return standardError(new Error('No valid integration found'), {
@@ -155,23 +153,7 @@ export default {
           .filter({teamId})
           .delete({returnChanges: true})('changes')(0)('old_val')
           .default(null),
-      newTask: r.table('Task').get(taskId).update(updates),
-      taskHistory: r
-        .table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {
-          index: 'taskIdUpdatedAt'
-        })
-        .orderBy({index: 'taskIdUpdatedAt'})
-        .nth(-1)
-        .default(null)
-        .do((taskHistoryRecord: RValue) => {
-          // prepopulated cards will not have a history
-          return r.branch(
-            taskHistoryRecord.ne(null),
-            r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: generateUID()})),
-            null
-          )
-        })
+      newTask: r.table('Task').get(taskId).update(updates)
     }).run()
 
     if (deletedConflictingIntegrationTask) {

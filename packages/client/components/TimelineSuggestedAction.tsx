@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {lazy} from 'react'
 import {useFragment} from 'react-relay'
-import {ValueOf} from '../types/generics'
 import {TimelineSuggestedAction_viewer$key} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
+import {ValueOf} from '../types/generics'
 import DelayUnmount from './DelayUnmount'
 
 interface Props {
@@ -57,7 +57,7 @@ function TimelineSuggestedAction(props: Props) {
     viewerRef
   )
   const {suggestedActions} = viewer
-  const [suggestedAction] = suggestedActions
+  const suggestedAction = suggestedActions?.[0]
   let AsyncComponent: ValueOf<typeof lookup> | undefined
   if (suggestedAction) {
     const {__typename} = suggestedAction
@@ -66,7 +66,9 @@ function TimelineSuggestedAction(props: Props) {
   return (
     <Wrapper>
       <DelayUnmount unmountAfter={500}>
-        {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction!} /> : null}
+        {AsyncComponent && suggestedAction ? (
+          <AsyncComponent suggestedAction={suggestedAction} />
+        ) : null}
       </DelayUnmount>
     </Wrapper>
   )

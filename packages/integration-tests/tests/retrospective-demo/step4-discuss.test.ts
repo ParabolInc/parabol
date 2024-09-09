@@ -34,9 +34,7 @@ test.describe('retrospective-demo / discuss page', () => {
 
     // Then it auto-generates a header - we expect to see this in the sidebar on the discuss page
     await expect(
-      page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Documenting things in"]`
-      )
+      page.locator(`[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things"]`)
     ).toBeVisible()
 
     await goToNextPhase(page)
@@ -48,7 +46,7 @@ test.describe('retrospective-demo / discuss page', () => {
       await page.click('button[aria-label="Toggle the sidebar"]')
     }
 
-    await expect(page.locator('[data-cy=sidebar] :text("Documenting things in")')).toBeVisible()
+    await expect(page.locator('[data-cy=sidebar] :text("Things")')).toBeVisible()
   })
 
   test('shows all the groups in the sidebar', async ({page, isMobile}) => {

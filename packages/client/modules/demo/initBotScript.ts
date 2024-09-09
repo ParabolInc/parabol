@@ -1,5 +1,5 @@
-import {RetroDemo} from '~/types/constEnums'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import {RetroDemo} from '~/types/constEnums'
 import {demoTeamId} from './initDB'
 
 // 3 -> 1

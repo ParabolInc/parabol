@@ -1,4 +1,4 @@
-import {TierEnum} from '~/../server/database/types/Invoice'
+import {TierEnum} from '../../__generated__/DowngradeToStarterMutation.graphql'
 
 function isTeamHealthAvailable(tier: TierEnum) {
   return tier !== 'starter'

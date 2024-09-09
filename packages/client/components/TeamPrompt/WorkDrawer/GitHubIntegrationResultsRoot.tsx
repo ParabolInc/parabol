@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react'
-import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
+import {Loader} from '~/utils/relay/renderLoader'
 import gitHubIntegrationResultsQuery, {
   GitHubIntegrationResultsQuery
 } from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
+import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import ErrorBoundary from '../../ErrorBoundary'
 import GitHubIntegrationResults from './GitHubIntegrationResults'
-import {Loader} from '~/utils/relay/renderLoader'
 
 interface Props {
   teamId: string

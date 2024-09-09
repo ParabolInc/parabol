@@ -17,6 +17,8 @@ const STATIC_CACHE = `parabol-static-${__APP_VERSION__}`
 const DYNAMIC_CACHE = `parabol-dynamic-${__APP_VERSION__}`
 const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
 
+// this gets built in applyEnvVarToClientAssets
+const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/^\/{2,}/, 'https://')
 const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
   e.waitUntil(cb(e))
 }
@@ -27,7 +29,8 @@ const onInstall = async (_event: ExtendableEvent) => {
   const cacheNames = await caches.keys()
   const oldStaticCacheName = cacheNames.find((cacheName) => cacheName.startsWith('parabol-static'))
   const newCache = await caches.open(STATIC_CACHE)
-  const fetchCachedFiles = async (urls: string[]) => Promise.all(urls.map((url) => newCache.add(url)))
+  const fetchCachedFiles = async (urls: string[]) =>
+    Promise.all(urls.map((url) => newCache.add(url)))
 
   // if this is their first service worker, fetch it all
   if (!oldStaticCacheName) {
@@ -73,7 +76,13 @@ const onFetch = async (event: FetchEvent) => {
       return cachedRes
     }
     try {
-      const networkRes = await fetch(request)
+      // request.mode could be 'no-cors'
+      // By fetching the URL without specifying the mode the response will not be opaque
+      const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
+      // if one of our assets is not in the service worker cache, then it's either fetched via network or served from the broswer cache.
+      // The browser cache most likely has incorrect CORS headers set, so we better always fetch from the network.
+      const req = isParabolHosted ? fetch(request.url, {cache: 'no-store'}) : fetch(request)
+      const networkRes = await req
       const cache = await caches.open(DYNAMIC_CACHE)
       // cloning here because I'm not sure if we must clone before reading the body
       cache.put(request.url, networkRes.clone()).catch(console.error)

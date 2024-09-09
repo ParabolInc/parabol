@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
 import {stripeCardToDBCard} from './stripeCardToDBCard'
 
@@ -16,7 +17,7 @@ export default async function getCCFromCustomer(
     // customers that used Stripe Elements have default_payment_method: https://stripe.com/docs/payments/payment-methods/transitioning?locale=en-GB
     const cardRes = await manager.retrieveDefaultCardDetails(customer.id)
     if (cardRes instanceof Error) {
-      console.error(cardRes)
+      Logger.error(cardRes)
       return undefined
     }
     return stripeCardToDBCard(cardRes)
@@ -37,7 +38,7 @@ export default async function getCCFromCustomer(
     const expiry = `${expMonth.toString().padStart(2, '0')}/${String(expYear).substr(2)}`
     return {
       brand,
-      last4,
+      last4: Number(last4),
       expiry
     }
   }

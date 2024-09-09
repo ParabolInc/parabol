@@ -59,12 +59,10 @@ module.exports = {
       'self-hosted',
       // important terminating / so saml-redirect doesn't get targeted, too
       'saml/'
-    ].reduce((obj, name) => {
-      obj[`/${name}`] = {
-        target: `http://localhost:${SOCKET_PORT}`
-      }
-      return obj
-    }, {})
+    ].map((name) => ({
+      context: [`/${name}`],
+      target: `http://localhost:${SOCKET_PORT}`
+    }))
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
@@ -121,15 +119,25 @@ module.exports = {
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         googleAnalytics: process.env.GA_TRACKING_ID,
+        mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
+        msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
         oauth2Redirect: process.env.OAUTH2_REDIRECT,
+        hasOpenAI: !!process.env.OPEN_AI_API_KEY,
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
         AUTH_GOOGLE_ENABLED: process.env.AUTH_GOOGLE_DISABLED !== 'true',
+        AUTH_MICROSOFT_ENABLED: process.env.AUTH_MICROSOFT_DISABLED !== 'true',
         AUTH_SSO_ENABLED: process.env.AUTH_SSO_DISABLED !== 'true',
-        AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY
+        AMPLITUDE_WRITE_KEY: process.env.AMPLITUDE_WRITE_KEY,
+        microsoftTenantId: process.env.MICROSOFT_TENANT_ID,
+        microsoft: process.env.MICROSOFT_CLIENT_ID,
+        GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED === 'true',
+        GLOBAL_BANNER_TEXT: process.env.GLOBAL_BANNER_TEXT,
+        GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
+        GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR
       })
     }),
     new ReactRefreshWebpackPlugin(),

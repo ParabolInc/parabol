@@ -41,7 +41,9 @@ const pipeStreamOverResponse = (
 
     .on('error', () => {
       if (!res.aborted) {
-        res.writeStatus('500').end()
+        res.cork(() => {
+          res.writeStatus('500').end()
+        })
       }
       readStream.destroy()
     })

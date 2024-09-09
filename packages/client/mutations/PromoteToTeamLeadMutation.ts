@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {PromoteToTeamLeadMutation as TPromoteToTeamLeadMutation} from '../__generated__/PromoteToTeamLeadMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 graphql`
   fragment PromoteToTeamLeadMutation_team on PromoteToTeamLeadPayload {
     team {
-      isLead
+      isViewerLead
     }
     oldLeader {
       ...DashboardAvatar_teamMember

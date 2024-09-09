@@ -1,26 +1,25 @@
 import styled from '@emotion/styled'
-import {Error as ErrorIcon} from '@mui/icons-material'
-import {Close} from '@mui/icons-material'
+import {Close, Error as ErrorIcon} from '@mui/icons-material'
 import {Checkbox} from '@mui/material'
+import graphql from 'babel-plugin-relay/macro'
 import React, {useState} from 'react'
+import {useFragment} from 'react-relay'
+import {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
+import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {
-  readableReasonsToDowngrade,
-  reasonsToDowngradeLookup,
-  TeamBenefits
-} from '../../../../utils/constants'
-import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarterMutation'
-import {useFragment} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarterMutation'
+import {PALETTE} from '../../../../styles/paletteV3'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
-import {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
+import {
+  TeamBenefits,
+  readableReasonsToDowngrade,
+  reasonsToDowngradeLookup
+} from '../../../../utils/constants'
 
 const StyledDialogContainer = styled(DialogContainer)({
   padding: 8

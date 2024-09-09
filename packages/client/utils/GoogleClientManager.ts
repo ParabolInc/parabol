@@ -1,11 +1,12 @@
 import {RouterProps} from 'react-router'
 import Atmosphere from '../Atmosphere'
+import {AUTH_DIALOG_WIDTH} from '../components/AuthenticationDialog'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import LoginWithGoogleMutation from '../mutations/LoginWithGoogleMutation'
 import {LocalStorageKey} from '../types/constEnums'
+import GoogleManager from './GoogleManager'
 import getAnonymousId from './getAnonymousId'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import GoogleManager from './GoogleManager'
 import makeHref from './makeHref'
 
 class GoogleClientManager extends GoogleManager {
@@ -16,7 +17,8 @@ class GoogleClientManager extends GoogleManager {
     history: RouterProps['history'],
     pageParams: string,
     invitationToken?: string,
-    loginHint?: string
+    loginHint?: string,
+    getOffsetTop?: () => number
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
@@ -31,10 +33,11 @@ class GoogleClientManager extends GoogleManager {
     })
     const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
     submitMutation()
+    const top = getOffsetTop?.() || 56
     const popup = window.open(
       uri,
       'OAuth',
-      getOAuthPopupFeatures({width: 356, height: 530, top: 56})
+      getOAuthPopupFeatures({width: AUTH_DIALOG_WIDTH, height: 576, top})
     )
     const closeCheckerId = window.setInterval(() => {
       if (popup && popup.closed) {

@@ -1,62 +1,77 @@
+import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
 import getRethink from '../database/rethinkDriver'
-import SuggestedActionCreateNewTeam from '../database/types/SuggestedActionCreateNewTeam'
+import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
-import {Team} from '../postgres/queries/getTeamsByIds'
-import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
+import getKysely from '../postgres/getKysely'
+import {Team} from '../postgres/types'
+import {Logger} from '../utils/Logger'
 import setUserTierForUserIds from '../utils/setUserTierForUserIds'
-import addTeamIdToTMS from './addTeamIdToTMS'
-import insertNewTeamMember from './insertNewTeamMember'
 
-const handleFirstAcceptedInvitation = async (team: Team): Promise<string | null> => {
-  const r = await getRethink()
+const handleFirstAcceptedInvitation = async (
+  team: Team,
+  dataLoader: DataLoaderInstance
+): Promise<string | null> => {
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
   if (!isOnboardTeam) return null
-  const newTeamLeadUserId = await getNewTeamLeadUserId(teamId)
-  if (newTeamLeadUserId) {
-    await r
-      .table('SuggestedAction')
-      .insert([
-        {
-          id: generateUID(),
-          createdAt: now,
-          priority: 3,
-          removedAt: null,
-          teamId,
-          type: 'tryRetroMeeting',
-          userId: newTeamLeadUserId
-        },
-        new SuggestedActionCreateNewTeam({userId: newTeamLeadUserId}),
-        {
-          id: generateUID(),
-          createdAt: now,
-          priority: 5,
-          removedAt: null,
-          teamId,
-          type: 'tryActionMeeting',
-          userId: newTeamLeadUserId
-        }
-      ])
-      .run()
-  }
-  return newTeamLeadUserId
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const teamLead = teamMembers.find((tm) => tm.isLead)!
+  const {userId} = teamLead
+  const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
+  const hasTryRetro = suggestedActions.some((sa) => sa.type === 'tryRetroMeeting')
+  if (hasTryRetro) return null
+  const actions = [
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 3,
+      removedAt: null,
+      teamId,
+      type: 'tryRetroMeeting' as const,
+      userId
+    },
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 4,
+      removedAt: null,
+      type: 'createNewTeam' as const,
+      userId
+    },
+    {
+      id: generateUID(),
+      createdAt: now,
+      priority: 5,
+      removedAt: null,
+      teamId,
+      type: 'tryActionMeeting' as const,
+      userId
+    }
+  ]
+  await getKysely()
+    .insertInto('SuggestedAction')
+    .values(actions)
+    .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+    .execute()
+  return userId
 }
 
 const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),
     dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
-  const {email} = user
-  const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
-  const [, invitationNotificationIds] = await Promise.all([
-    insertNewTeamMember(user, teamId),
+  const {email, picture, preferredName} = user
+  const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team, dataLoader)
+  const [invitationNotificationIds] = await Promise.all([
     r
       .table('Notification')
       .getAll(userId, {index: 'userId'})
@@ -71,8 +86,25 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
       )('changes')('new_val')('id')
       .default([])
       .run(),
-    // add the team to the user doc
-    addTeamIdToTMS(userId, teamId),
+    pg
+      .with('UserUpdate', (qc) =>
+        qc
+          .updateTable('User')
+          .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+          .where('id', '=', userId)
+      )
+      .insertInto('TeamMember')
+      .values({
+        id: TeamMemberId.join(teamId, userId),
+        teamId,
+        userId,
+        picture,
+        preferredName,
+        email,
+        openDrawer: 'manageTeam'
+      })
+      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
+      .execute(),
     r
       .table('TeamInvitation')
       .getAll(teamId, {index: 'teamId'})
@@ -84,7 +116,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
       })
       .run()
   ])
-
+  dataLoader.clearAll(['teamMembers', 'users'])
   if (!organizationUser) {
     // clear the cache, adjustUserCount will mutate these
     dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
@@ -92,7 +124,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     try {
       await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
     } catch (e) {
-      console.log(e)
+      Logger.log(e)
     }
     await setUserTierForUserIds([userId])
   }

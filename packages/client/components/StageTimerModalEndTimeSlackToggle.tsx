@@ -2,14 +2,14 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
+import {StageTimerModalEndTimeSlackToggle_facilitator$key} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetSlackNotificationMutation from '../mutations/SetSlackNotificationMutation'
 import {ICON_SIZE} from '../styles/typographyV2'
 import SlackClientManager from '../utils/SlackClientManager'
-import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
-import {StageTimerModalEndTimeSlackToggle_facilitator$key} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -119,7 +119,7 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   }
   return (
     <Block>
-      {(slack?.isActive || noActiveIntegrations) && (
+      {SlackClientManager.isAvailable && (slack?.isActive || noActiveIntegrations) && (
         <ButtonRow onClick={onClick}>
           <StyledCheckbox active={slackToggleActive} />
           <Label>{'Notify team via Slack'}</Label>

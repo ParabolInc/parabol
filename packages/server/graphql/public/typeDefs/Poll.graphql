@@ -1,0 +1,74 @@
+"""
+A poll created during the meeting
+"""
+type Poll implements Threadable {
+  """
+  Poll id in a format of `poll:idGeneratedByDatabase`
+  """
+  id: ID!
+
+  """
+  The timestamp the item was created
+  """
+  createdAt: DateTime!
+
+  """
+  The userId that created the item
+  """
+  createdBy: ID
+
+  """
+  The user that created the item
+  """
+  createdByUser: User!
+
+  """
+  the replies to this threadable item
+  """
+  replies: [Threadable!]!
+
+  """
+  The FK of the discussion this task was created in. Null if task was not created in a discussion
+  """
+  discussionId: ID
+
+  """
+  the parent, if this threadable is a reply, else null
+  """
+  threadParentId: ID
+
+  """
+  the order of this threadable, relative to threadParentId
+  """
+  threadSortOrder: Int
+
+  """
+  The timestamp the item was updated
+  """
+  updatedAt: DateTime!
+
+  """
+  The foreign key for the meeting the poll was created in
+  """
+  meetingId: ID
+
+  """
+  The id of the team (indexed)
+  """
+  teamId: ID!
+
+  """
+  The team this poll belongs to
+  """
+  team: Team!
+
+  """
+  Poll title
+  """
+  title: String!
+
+  """
+  A list of all the poll options related to this poll
+  """
+  options: [PollOption!]!
+}

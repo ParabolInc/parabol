@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {EmailNotifications_viewer$key} from '../__generated__/EmailNotifications_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import ToggleSummaryEmailMutation from '../mutations/ToggleSummaryEmailMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {EmailNotifications_viewer$key} from '../__generated__/EmailNotifications_viewer.graphql'
 import Checkbox from './Checkbox'
 import StyledError from './StyledError'
 
@@ -59,7 +59,7 @@ const EmailNotifications = (props: Props) => {
   return (
     <Wrapper onClick={handleClick}>
       <StyledCheckbox active={sendSummaryEmail} />
-      <Text>{'Send meeting summary emails'}</Text>
+      <Text>{'Receive meeting summary emails'}</Text>
       <ErrorMessage>{error?.message}</ErrorMessage>
     </Wrapper>
   )

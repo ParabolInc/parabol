@@ -1,14 +1,13 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
-import TeamMember from '../../../database/types/TeamMember'
+import {TeamMember} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {CompanyResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
-import {getTeamsByOrgIds} from './helpers/getTeamsByOrgIds'
 
 export type CompanySource = {id: string}
 
@@ -79,7 +78,9 @@ const Company: CompanyResolvers = {
     // if there aren't 2 active users, abort
     if (activeOrganizationUsers.length < 2) return 0
     // get the unarchived teams
-    const unarchivedTeams = await getTeamsByOrgIds(allOrgIds, dataLoader, false)
+    const unarchivedTeams = (await dataLoader.get('teamsByOrgIds').loadMany(allOrgIds))
+      .filter(isValid)
+      .flat()
     // if there aren't any unarchived teams, abort
     if (unarchivedTeams.length === 0) return 0
     // create teamMemberIds
@@ -89,14 +90,17 @@ const Company: CompanyResolvers = {
       .flat()
       .filter(isValid)
     // group by teamId
-    const teamMembersByTeamId = teamMembers.reduce((obj, teamMember) => {
-      if (obj[teamMember.teamId]) {
-        obj[teamMember.teamId]!.push(teamMember)
-      } else {
-        obj[teamMember.teamId] = [teamMember]
-      }
-      return obj
-    }, {} as Record<string, [TeamMember, ...TeamMember[]]>)
+    const teamMembersByTeamId = teamMembers.reduce(
+      (obj, teamMember) => {
+        if (obj[teamMember.teamId]) {
+          obj[teamMember.teamId]!.push(teamMember)
+        } else {
+          obj[teamMember.teamId] = [teamMember]
+        }
+        return obj
+      },
+      {} as Record<string, [TeamMember, ...TeamMember[]]>
+    )
 
     // filter out teams that have less than 2 unremoved team members
     const teamsWithSufficientTeamMembers = Object.values(teamMembersByTeamId)
@@ -119,7 +123,7 @@ const Company: CompanyResolvers = {
     const r = await getRethink()
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
-    const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
+    const teams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
     const lastMetAt = await r
@@ -136,10 +140,10 @@ const Company: CompanyResolvers = {
     const r = await getRethink()
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
-    const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
+    const teams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
-    const filterFn = after ? () => true : (meeting: any) => meeting('createdAt').ge(after)
+    const filterFn = after ? (meeting: any) => meeting('createdAt').ge(after) : () => true
     return r
       .table('NewMeeting')
       .getAll(r.args(teamIds), {index: 'teamId'})
@@ -153,7 +157,7 @@ const Company: CompanyResolvers = {
     const r = await getRethink()
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
-    const teams = await getTeamsByOrgIds(orgIds, dataLoader, true)
+    const teams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
     return (

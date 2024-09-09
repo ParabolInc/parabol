@@ -1,0 +1,49 @@
+"""
+Jira Server integration data for a given team member
+"""
+type JiraServerIntegration {
+  """
+  Composite key in jiraServer:providerId format
+  """
+  id: ID
+
+  """
+  The OAuth1 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthOAuth1
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderOAuth1!]!
+
+  """
+  A list of issues coming straight from the jira integration for a specific team member
+  """
+  issues(
+    first: Int = 25
+    after: String = "-1"
+
+    """
+    A string of text to search for, or JQL if isJQL is true
+    """
+    queryString: String
+
+    """
+    true if the queryString is JQL, else false
+    """
+    isJQL: Boolean!
+    projectKeyFilters: [ID!]
+  ): JiraServerIssueConnection!
+
+  """
+  A list of projects accessible by this team member. empty if viewer is not the user
+  """
+  projects: [JiraServerRemoteProject!]!
+  providerId: ID
+
+  """
+  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  """
+  searchQueries: [JiraSearchQuery!]!
+}

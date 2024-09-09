@@ -1,11 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
-import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {EmailDiscussionMentioned_notification$key} from 'parabol-client/__generated__/EmailDiscussionMentioned_notification.graphql'
+import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import React, {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.png'
 import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import makeAppURL from '../../../../utils/makeAppURL'
 import fromStageIdToUrl from '../../../../utils/meetings/fromStageIdToUrl'
@@ -66,7 +67,9 @@ const EmailDiscussionMentioned = (props: Props) => {
     notificationRef
   )
   const {meeting, author, comment, discussion} = notification
-  const {rasterPicture: authorPicture, preferredName: authorName} = author
+  const authorPicture = author ? author.rasterPicture : anonymousAvatar
+  const authorName = author ? author.preferredName : 'Anonymous'
+
   const {stage} = discussion
   const {id: meetingId, name: meetingName} = meeting
   const {id: stageId, response} = stage ?? {}

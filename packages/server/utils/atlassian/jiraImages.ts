@@ -2,7 +2,7 @@ import base64url from 'base64url'
 import cheerio from 'cheerio'
 import crypto from 'crypto'
 import ms from 'ms'
-import AtlassianManager from 'parabol-client/utils/AtlassianManager'
+import AtlassianServerManager from '../AtlassianServerManager'
 import getRedis from '../getRedis'
 
 export const NO_IMAGE_BUFFER = Buffer.from('X')
@@ -42,7 +42,7 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
 }
 
 export const downloadAndCacheImages = async (
-  manager: AtlassianManager,
+  manager: AtlassianServerManager,
   imageUrlToHash: Record<string, string>
 ) => {
   return Promise.all(
@@ -53,7 +53,7 @@ export const downloadAndCacheImages = async (
 }
 
 export const downloadAndCacheImage = async (
-  manager: AtlassianManager,
+  manager: AtlassianServerManager,
   imageUrlHash: string,
   imageUrl: string
 ) => {

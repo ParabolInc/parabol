@@ -1,7 +1,7 @@
 import generateUID from '../../generateUID'
+import {TierEnum} from '../../graphql/public/resolverTypes'
 import {TEAM_NAME_LIMIT} from '../../postgres/constants'
 import {MeetingTypeEnum} from '../../postgres/types/Meeting'
-import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string
@@ -13,10 +13,10 @@ interface Input {
   isArchived?: boolean
   isPaid?: boolean
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
-  isOneOnOneTeam?: boolean
   updatedAt?: Date
 }
 
@@ -31,9 +31,9 @@ export default class Team {
   lastMeetingType: MeetingTypeEnum
   lockMessageHTML?: string | null
   tier: TierEnum
+  trialStartDate?: Date | null
   orgId: string
   isOnboardTeam: boolean
-  isOneOnOneTeam?: boolean
   qualAIMeetingsCount: number
   updatedAt: Date
   constructor(input: Input) {
@@ -44,12 +44,12 @@ export default class Team {
       id,
       isArchived,
       isOnboardTeam,
-      isOneOnOneTeam,
       lastMeetingType,
       isPaid,
       name,
       orgId,
       tier,
+      trialStartDate,
       qualAIMeetingsCount,
       updatedAt
     } = input
@@ -58,13 +58,13 @@ export default class Team {
     this.createdBy = createdBy
     this.orgId = orgId
     this.tier = tier
+    this.trialStartDate = trialStartDate
     this.id = id ?? generateUID()
     this.createdAt = createdAt ?? new Date()
     this.updatedAt = updatedAt ?? new Date()
     this.lastMeetingType = lastMeetingType ?? 'retrospective'
     this.isArchived = isArchived ?? false
     this.isOnboardTeam = isOnboardTeam ?? false
-    this.isOneOnOneTeam = isOneOnOneTeam ?? false
     this.isPaid = isPaid ?? true
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
   }

@@ -4,9 +4,9 @@ import React from 'react'
 import appOrigin from '../appOrigin'
 import AuthToken from '../database/types/AuthToken'
 import {GQLContext} from '../graphql/graphql'
+import ServerEnvironment from './ServerEnvironment'
 import emailTemplate from './emailTemplate'
 import renderSSRElement from './renderSSRElement'
-import ServerEnvironment from './ServerEnvironment'
 
 interface Props {
   meetingId: string

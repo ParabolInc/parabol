@@ -1,11 +1,11 @@
-import React from 'react'
-import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
-import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import GCalEventCard from './GCalEventCard'
 import {OpenInNew} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
+import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
+import GCalEventCard from './GCalEventCard'
 
 interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>
@@ -38,7 +38,7 @@ const GCalIntegrationResults = (props: Props) => {
 
   const gcal = query.viewer.teamMember?.integrations.gcal
 
-  const gcalResults = gcal?.events ? [...gcal?.events] : null
+  const gcalResults = gcal?.events ? [...gcal!.events] : null
   if (order === 'DESC') {
     gcalResults?.reverse()
   }
@@ -97,7 +97,7 @@ const GCalIntegrationResults = (props: Props) => {
               Looks like you don’t have any events to display
             </div>
             <Link
-              to={`/team/${teamId}/settings/integrations`}
+              to={`/team/${teamId}/integrations`}
               className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
             >
               Review your Google Calendar configuration

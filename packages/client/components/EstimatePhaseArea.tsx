@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
+import {EstimatePhaseArea_meeting$key} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useGotoStageId from '~/hooks/useGotoStageId'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import {EstimatePhaseArea_meeting$key} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import EstimateDimensionColumn from './EstimateDimensionColumn'
 import PokerCardDeck from './PokerCardDeck'
 
@@ -55,8 +55,8 @@ const innerStyle = (isDesktop: boolean, hasSingleDimension: boolean): React.CSSP
         ? '12px 8px 0'
         : '4px 4px 0'
       : isDesktop
-      ? '8px 40px 0'
-      : '8px 16px 0',
+        ? '8px 40px 0'
+        : '8px 16px 0',
     width: '100%',
     overflow: 'visible'
   }

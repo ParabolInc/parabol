@@ -10,4 +10,3 @@ Since that time, RethinkDB has occassionally been unstable for us under high loa
 Since our data is very relational, it made sense to move PostgresQL, which we are actively doing.
 
 - Migrations are stored in [`packages/server/database/migrations`](./migrations/)
-- RethinkDB Dashboard is at [http://localhost:8080](http://localhost:8080)

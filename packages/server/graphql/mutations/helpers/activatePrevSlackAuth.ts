@@ -1,19 +1,17 @@
 import ms from 'ms'
-import getRethink from '../../../database/rethinkDriver'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import getKysely from '../../../postgres/getKysely'
+import {Logger} from '../../../utils/Logger'
 import SlackServerManager from '../../../utils/SlackServerManager'
-import {upsertNotifications} from '../addSlackAuth'
+import {upsertNotifications} from '../../public/mutations/addSlackAuth'
 
-const activatePrevSlackAuth = async (userId: string, teamId: string) => {
-  const r = await getRethink()
-  const now = new Date()
-  const previousAuth = await r
-    .table('SlackAuth')
-    .getAll(userId, {index: 'userId'})
-    .filter({teamId})
-    .nth(0)
-    .default(null)
-    .run()
-
+const activatePrevSlackAuth = async (
+  userId: string,
+  teamId: string,
+  dataLoader: DataLoaderInstance
+) => {
+  const previousAuths = await dataLoader.get('slackAuthByUserId').load(userId)
+  const previousAuth = previousAuths.find((auth) => auth.teamId === teamId)
   if (!previousAuth) return
   const LAST_YEAR = new Date(Date.now() - ms('1y'))
   const {
@@ -29,14 +27,17 @@ const activatePrevSlackAuth = async (userId: string, teamId: string) => {
     const manager = new SlackServerManager(botAccessToken)
     const authRes = await manager.isValidAuthToken(botAccessToken)
     if (!authRes.ok) {
-      console.error(authRes.error)
+      Logger.error(authRes.error)
       return
     }
 
-    await r({
-      auth: r.table('SlackAuth').get(authId).update({isActive: true, updatedAt: now}),
-      notifications: upsertNotifications(userId, teamId, defaultTeamChannelId, slackUserId)
-    }).run()
+    await getKysely()
+      .updateTable('SlackAuth')
+      .set({isActive: true})
+      .where('id', '=', authId)
+      .execute()
+    dataLoader.clearAll('slackAuths')
+    await upsertNotifications(userId, teamId, defaultTeamChannelId, slackUserId)
   }
 }
 

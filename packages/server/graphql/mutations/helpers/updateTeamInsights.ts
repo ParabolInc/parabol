@@ -18,7 +18,7 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
   const organization = await dataLoader.get('organizations').load(orgId)
-  if (!organization?.featureFlags?.includes('teamInsights')) return
+  if (organization?.featureFlags?.includes('noTeamInsights')) return
 
   // actual update
   const r = await getRethink()
@@ -48,13 +48,16 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   ])
 
   // emojis
-  const allUsedEmojis = meetingInsights.reduce((acc, meeting) => {
-    if (!meeting?.usedReactjis) return acc
-    Object.entries(meeting?.usedReactjis).forEach(([emoji, count]) => {
-      acc[emoji] = (acc[emoji] ?? 0) + count
-    })
-    return acc
-  }, {} as Record<string, number>)
+  const allUsedEmojis = meetingInsights.reduce(
+    (acc, meeting) => {
+      if (!meeting?.usedReactjis) return acc
+      Object.entries(meeting?.usedReactjis).forEach(([emoji, count]) => {
+        acc[emoji] = (acc[emoji] ?? 0) + count
+      })
+      return acc
+    },
+    {} as Record<string, number>
+  )
 
   const mostUsedEmojis = Object.entries(allUsedEmojis)
     .map(([id, count]) => ({id, count}))

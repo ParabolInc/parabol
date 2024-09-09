@@ -2,13 +2,14 @@ import {v4 as uuid} from 'uuid'
 import zlib from 'zlib'
 
 const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
+  const issuer = process.env.SAML_ISSUER || `https://${process.env.HOST}/saml-metadata/${slug}`
   const template = `
   <samlp:AuthnRequest
       xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
       xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_${uuid()}" Version="2.0" IssueInstant="${new Date().toISOString()}" Destination="${destination}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="https://${
-    process.env.HOST
-  }/saml/${slug}">
-  <saml:Issuer>https://${process.env.HOST}/saml-metadata/${slug}</saml:Issuer>
+        process.env.HOST
+      }/saml/${slug}">
+  <saml:Issuer>${issuer}</saml:Issuer>
       <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="false"/>
   </samlp:AuthnRequest>
   `

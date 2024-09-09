@@ -18,8 +18,14 @@ interface Props {
 
 const ThreadedReplyButton = (props: Props) => {
   const {onReply, dataCy} = props
+
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // stop propagating so the new reply is not immediately cancelled
+    e.stopPropagation()
+    onReply()
+  }
   return (
-    <Reply data-cy={`${dataCy}-reply-button`} onClick={onReply}>
+    <Reply data-cy={`${dataCy}-reply-button`} onClick={onClick}>
       Reply
     </Reply>
   )

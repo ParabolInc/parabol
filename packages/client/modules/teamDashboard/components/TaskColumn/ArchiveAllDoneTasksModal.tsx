@@ -1,17 +1,17 @@
+import {Close} from '@mui/icons-material'
 import React from 'react'
+import DialogTitle from '../../../../components/DialogTitle'
+import FlatButton from '../../../../components/FlatButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import BatchArchiveTasksMutation from '../../../../mutations/BatchArchiveTasksMutation'
-import {Close} from '@mui/icons-material'
-import FlatButton from '../../../../components/FlatButton'
-import DialogTitle from '../../../../components/DialogTitle'
 
 type Props = {
   taskIds: string[]
   closeModal: () => void
 }
 
-const UserAvatarInput = (props: Props) => {
+const ArchiveAllDoneTasksModal = (props: Props) => {
   const {closeModal, taskIds} = props
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -54,4 +54,4 @@ const UserAvatarInput = (props: Props) => {
   )
 }
 
-export default UserAvatarInput
+export default ArchiveAllDoneTasksModal

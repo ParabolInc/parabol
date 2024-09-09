@@ -1,0 +1,29 @@
+"""
+A monthly billing invoice for an organization
+"""
+type Invoice {
+  """
+  A shortid for the invoice
+  """
+  id: ID!
+
+  """
+  The datetime the invoice period has ended
+  """
+  periodEndAt: DateTime!
+
+  """
+  The total amount for the invoice (in USD)
+  """
+  total: Float!
+
+  """
+  The URL to pay via stripe if payment was not collected in app
+  """
+  payUrl: String!
+
+  """
+  the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
+  """
+  status: InvoiceStatusEnum!
+}

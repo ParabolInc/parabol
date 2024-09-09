@@ -1,33 +1,29 @@
+import * as RadioGroup from '@radix-ui/react-radio-group'
+import graphql from 'babel-plugin-relay/macro'
+import clsx from 'clsx'
 import React, {ComponentPropsWithoutRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import graphql from 'babel-plugin-relay/macro'
-import * as RadioGroup from '@radix-ui/react-radio-group'
-import clsx from 'clsx'
-import {Link} from 'react-router-dom'
-
-import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
-import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
-
-import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
-import {ActivityCard, ActivityCardImage} from '../ActivityCard'
-import {ActivityBadge} from '../ActivityBadge'
-
-import IconLabel from '../../IconLabel'
-import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
-import sortByTier from '../../../utils/sortByTier'
 import {useHistory} from 'react-router'
+import {Link} from 'react-router-dom'
+import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
+import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
+import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
+import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
 import {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
-import {Threshold} from '../../../types/constEnums'
 import useRouter from '../../../hooks/useRouter'
-import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
-import BaseButton from '../../BaseButton'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
-import RaisedButton from '../../RaisedButton'
+import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import sortByTier from '../../../utils/sortByTier'
+import BaseButton from '../../BaseButton'
+import IconLabel from '../../IconLabel'
+import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
+import RaisedButton from '../../RaisedButton'
+import {ActivityBadge} from '../ActivityBadge'
+import {ActivityCard, ActivityCardImage} from '../ActivityCard'
+import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
@@ -36,19 +32,6 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
     <span className={clsx('font-semibold text-slate-800', className)} {...rest}>
       {children}
     </span>
-  )
-}
-
-const CategoryTitle = (props: ComponentPropsWithoutRef<'div'>) => {
-  const {children, className, ...rest} = props
-
-  return (
-    <div
-      className={clsx('p-4 text-lg font-semibold leading-5 text-slate-700', className)}
-      {...rest}
-    >
-      {children}
-    </div>
   )
 }
 
@@ -112,9 +95,8 @@ const SUPPORTED_CUSTOM_ACTIVITIES: SupportedActivity[] = [
 const query = graphql`
   query CreateNewActivityQuery {
     viewer {
-      featureFlags {
-        noTemplateLimit
-      }
+      freeCustomRetroTemplatesRemaining
+      freeCustomPokerTemplatesRemaining
       preferredTeamId
       teams {
         id
@@ -123,15 +105,6 @@ const query = graphql`
         orgId
         ...NewMeetingTeamPicker_selectedTeam
         ...NewMeetingTeamPicker_teams
-      }
-      availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
-        edges {
-          node {
-            name
-            teamId
-            type
-          }
-        }
       }
     }
   }
@@ -161,29 +134,24 @@ export const CreateNewActivity = (props: Props) => {
     return selectedActivity
   })
   const {viewer} = data
-  const {teams, availableTemplates, preferredTeamId, featureFlags} = viewer
+  const {
+    teams,
+    preferredTeamId,
+    freeCustomRetroTemplatesRemaining,
+    freeCustomPokerTemplatesRemaining
+  } = viewer
   const [selectedTeam, setSelectedTeam] = useState(
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const history = useHistory()
+  const freeCustomTemplatesRemaining =
+    selectedActivity.type === 'retrospective'
+      ? freeCustomRetroTemplatesRemaining
+      : freeCustomPokerTemplatesRemaining
 
   const handleCreateRetroTemplate = () => {
     if (submitting) {
-      return
-    }
-
-    const teamTemplates = availableTemplates.edges.filter(
-      (template) =>
-        template.node.teamId === selectedTeam.id && template.node.type === 'retrospective'
-    )
-
-    if (teamTemplates.length >= Threshold.MAX_RETRO_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
-      return
-    }
-    if (teamTemplates.find((template) => template.node.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
       return
     }
 
@@ -209,19 +177,6 @@ export const CreateNewActivity = (props: Props) => {
 
   const handleCreatePokerTemplate = () => {
     if (submitting) {
-      return
-    }
-
-    const teamTemplates = availableTemplates.edges.filter(
-      (template) => template.node.teamId === selectedTeam.id && template.node.type === 'poker'
-    )
-
-    if (teamTemplates.length >= Threshold.MAX_POKER_TEAM_TEMPLATES) {
-      onError(new Error('You may only have 20 templates per team. Please remove one first.'))
-      return
-    }
-    if (teamTemplates.find((template) => template.node.name === '*New Template')) {
-      onError(new Error('You already have a new template. Try renaming that one first.'))
       return
     }
 
@@ -290,22 +245,25 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-lg bg-transparent p-1 focus:outline-none'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-slate-100 focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
                 value={activity.type}
               >
                 <ActivityCard
-                  className='aspect-[320/190] w-80 group-data-[state=checked]:ring-4 group-data-[state=checked]:ring-sky-500 group-data-[state=checked]:ring-offset-4'
+                  className='aspect-[320/190] w-80'
                   theme={DEFAULT_CARD_THEME}
                   title={activity.title}
-                  titleAs={CategoryTitle}
+                  type={activity.type}
                 >
-                  <ActivityCardImage src={activity.image} />
+                  <ActivityCardImage
+                    src={activity.image}
+                    category={activity.type === 'retrospective' ? 'retrospective' : 'estimation'}
+                  />
                 </ActivityCard>
                 <div className='flex gap-x-3 p-3'>
                   {activity.includedCategories.map((badge) => (
                     <ActivityBadge
                       key={badge}
-                      className={clsx('text-white', CATEGORY_THEMES[badge].primary)}
+                      className={clsx('text-white', `${CATEGORY_THEMES[badge].primary}`)}
                     >
                       {CATEGORY_ID_TO_NAME[badge]}
                     </ActivityBadge>
@@ -334,16 +292,15 @@ export const CreateNewActivity = (props: Props) => {
         </div>
         {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' && !featureFlags.noTemplateLimit ? (
-            <div className='mx-auto flex h-12 items-center gap-24'>
-              <div className='w-96'>
-                Upgrade to the <b>Team Plan</b> to create custom activities unlocking your team’s
-                ideal workflow.
-              </div>
+          {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
+            <div className='flex w-full items-center justify-center gap-4'>
+              <span className='pr-4 text-center'>
+                Upgrade to the <b>Team Plan</b> to create more custom activities
+              </span>
 
               <RaisedButton
                 palette='pink'
-                className='mx-auto h-12 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                className='h-12 px-4 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
                 onClick={handleUpgrade}
               >
                 Upgrade to Team Plan

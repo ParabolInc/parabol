@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {FilterList, Group, Person} from '@mui/icons-material'
-import React, {forwardRef, Ref} from 'react'
+import React, {Ref, forwardRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import LinkButton from '../LinkButton'
 

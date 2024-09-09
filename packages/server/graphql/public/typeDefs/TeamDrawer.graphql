@@ -1,0 +1,7 @@
+"""
+The right drawer types available on the team dashboard
+"""
+enum TeamDrawer {
+  agenda
+  manageTeam
+}

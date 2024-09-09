@@ -1,44 +1,56 @@
 import bcrypt from 'bcryptjs'
+import {sql} from 'kysely'
 import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 
 const logFailedLogin = async (ip: string, email: string) => {
-  const r = await getRethink()
+  const pg = getKysely()
   if (ip) {
     const failedAuthRequest = new FailedAuthRequest({ip, email})
-    await r.table('FailedAuthRequest').insert(failedAuthRequest).run()
+    await pg.insertInto('FailedAuthRequest').values(failedAuthRequest).execute()
   }
 }
 
 const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
-  const r = await getRethink()
+  const pg = getKysely()
   const yesterday = new Date(Date.now() - ms('1d'))
   const email = denormEmail.toLowerCase().trim()
 
   const existingUser = await getUserByEmail(email)
-  const {failOnAccount, failOnTime} = await r({
-    failOnAccount: r
-      .table('FailedAuthRequest')
-      .getAll(ip, {index: 'ip'})
-      .filter({email})
-      .filter((row: RDatum) => row('time').ge(yesterday))
-      .count()
-      .ge(Threshold.MAX_ACCOUNT_PASSWORD_ATTEMPTS) as unknown as boolean,
-    failOnTime: r
-      .table('FailedAuthRequest')
-      .getAll(ip, {index: 'ip'})
-      .filter((row: RDatum) => row('time').ge(yesterday))
-      .count()
-      .ge(Threshold.MAX_DAILY_PASSWORD_ATTEMPTS) as unknown as boolean
-  }).run()
+  const {failOnAccount, failOnTime} = (await pg
+    .with('byAccount', (qb) =>
+      qb
+        .selectFrom('FailedAuthRequest')
+        .select((eb) => eb.fn.count<number>('id').as('attempts'))
+        .where('ip', '=', ip)
+        .where('email', '=', email)
+        .where('time', '>=', yesterday)
+    )
+    .with('byTime', (qb) =>
+      qb
+        .selectFrom('FailedAuthRequest')
+        .select((eb) => eb.fn.count<number>('id').as('attempts'))
+        .where('ip', '=', ip)
+        .where('time', '>=', yesterday)
+    )
+    .selectFrom(['byAccount', 'byTime'])
+    .select(({ref}) => [
+      sql<boolean>`${ref('byAccount.attempts')} >= ${Threshold.MAX_ACCOUNT_PASSWORD_ATTEMPTS}`.as(
+        'failOnAccount'
+      ),
+      sql<boolean>`${ref('byTime.attempts')} >= ${Threshold.MAX_DAILY_PASSWORD_ATTEMPTS}`.as(
+        'failOnTime'
+      )
+    ])
+    .executeTakeFirst()) as {failOnAccount: boolean; failOnTime: boolean}
+
   if (failOnAccount || failOnTime) {
     await sleep(1000)
     // silently fail to trick security researchers
@@ -61,6 +73,8 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
     }
     const {type} = bestIdentity
     if (type === AuthIdentityTypeEnum.GOOGLE) return {error: AuthenticationError.USER_EXISTS_GOOGLE}
+    if (type === AuthIdentityTypeEnum.MICROSOFT)
+      return {error: AuthenticationError.USER_EXISTS_MICROSOFT}
     throw new Error(`Unknown identity type: ${type}`)
   }
   const {hashedPassword} = localIdentity

@@ -1,17 +1,18 @@
+import {StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useState} from 'react'
+import React, {Suspense, useEffect, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
-import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
-import PaymentDetails from './PaymentDetails'
-import BillingLeaders from './BillingLeaders'
-import OrgPlans from './OrgPlans'
-import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
-import OrgPlanDrawer from './OrgPlanDrawer'
-import OrgBillingInvoices from './OrgBillingInvoices'
 import {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
 import {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
+import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
 import {OrgPlansAndBilling_query$key} from '../../../../__generated__/OrgPlansAndBilling_query.graphql'
+import BillingLeaders from './BillingLeaders'
 import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
+import OrgBillingInvoices from './OrgBillingInvoices'
+import OrgPlanDrawer from './OrgPlanDrawer'
+import OrgPlans from './OrgPlans'
+import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
+import PaymentDetails from './PaymentDetails'
 
 type Props = {
   organizationRef: OrgPlansAndBilling_organization$key
@@ -28,7 +29,7 @@ const OrgPlansAndBilling = (props: Props) => {
     `,
     queryRef
   )
-  const [queryData] = useRefetchableFragment<
+  const [queryData, refetchInvoices] = useRefetchableFragment<
     OrgPlansAndBillingRefetchQuery,
     OrgPlansAndBilling_query$key
   >(
@@ -49,20 +50,27 @@ const OrgPlansAndBilling = (props: Props) => {
         ...BillingLeaders_organization
         ...PaymentDetails_organization
         ...OrgPlanDrawer_organization
-        tier
+        id
+        billingTier
         isBillingLeader
       }
     `,
     organizationRef
   )
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-  const {tier, isBillingLeader} = organization
-
+  const {id: orgId, billingTier, isBillingLeader} = organization
+  const cardNumberRef = useRef<StripeCardNumberElement>(null)
   const handleSelectTeamPlan = () => {
     setHasSelectedTeamPlan(true)
+    cardNumberRef.current?.focus()
   }
-
-  if (tier === 'starter') {
+  const prevTierRef = useRef(billingTier)
+  useEffect(() => {
+    if (billingTier === prevTierRef.current) return
+    prevTierRef.current = billingTier
+    refetchInvoices({orgId, first: 3}, {fetchPolicy: 'network-only'})
+  }, [billingTier])
+  if (billingTier === 'starter') {
     return (
       <Suspense fallback={''}>
         <div className='pb-20'>
@@ -72,10 +80,7 @@ const OrgPlansAndBilling = (props: Props) => {
             handleSelectTeamPlan={handleSelectTeamPlan}
             hasSelectedTeamPlan={hasSelectedTeamPlan}
           />
-          <PaymentDetails
-            organizationRef={organization}
-            hasSelectedTeamPlan={hasSelectedTeamPlan}
-          />
+          <PaymentDetails organizationRef={organization} cardNumberRef={cardNumberRef} />
           <BillingLeaders organizationRef={organization} />
           <OrgPlanDrawer organizationRef={organization} />
         </div>
@@ -87,7 +92,7 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
-        {isBillingLeader && tier === 'team' && (
+        {isBillingLeader && billingTier === 'team' && (
           <>
             <OrgBillingInvoices queryRef={queryData} isWide />
             <OrgBillingCreditCardInfo organizationRef={organization} />

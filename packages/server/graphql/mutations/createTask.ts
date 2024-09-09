@@ -7,8 +7,6 @@ import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task, {TaskServiceEnum} from '../../database/types/Task'
-import TeamMember from '../../database/types/TeamMember'
-import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -172,7 +170,8 @@ export default {
       return {error: {message: 'Not on team'}}
     }
 
-    const errors = await Promise.all([
+    const [viewer, ...errors] = await Promise.all([
+      dataLoader.get('users').loadNonNull(viewerId),
       // threadParentId not validated because if it's invalid it simply won't appear
       validateTaskDiscussionId(newTask, dataLoader),
       validateTaskMeetingId(meetingId, viewerId, dataLoader),
@@ -218,27 +217,10 @@ export default {
       threadParentId,
       userId
     })
-    const {id: taskId, updatedAt} = task
-    const history = {
-      id: generateUID(),
-      content,
-      taskId,
-      status,
-      teamId,
-      userId,
-      updatedAt
-    }
-
-    const {teamMembers} = await r({
-      task: r.table('Task').insert(task),
-      history: r.table('TaskHistory').insert(history),
-      teamMembers: r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          isNotRemoved: true
-        })
-        .coerceTo('array') as unknown as TeamMember[]
+    const {id: taskId} = task
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    await r({
+      task: r.table('Task').insert(task)
     }).run()
 
     handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
@@ -254,9 +236,9 @@ export default {
       meetingType: meeting?.meetingType,
       inMeeting: !!meetingId
     }
-    analytics.taskCreated(viewerId, taskProperties)
+    analytics.taskCreated(viewer, taskProperties)
     if (integration?.service) {
-      analytics.taskPublished(viewerId, taskProperties, integration.service)
+      analytics.taskPublished(viewer, taskProperties, integration.service)
     }
     return {taskId}
   }

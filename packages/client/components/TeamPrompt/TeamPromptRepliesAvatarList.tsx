@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TeamPromptRepliesAvatarList_edges$key} from '~/__generated__/TeamPromptRepliesAvatarList_edges.graphql'
 import useOverflowAvatars from '~/hooks/useOverflowAvatars'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {TeamPromptRepliesAvatarList_edges$key} from '~/__generated__/TeamPromptRepliesAvatarList_edges.graphql'
 import AvatarListUser from '../AvatarListUser'
 import TeamPromptOverflowAvatar from './TeamPromptOverflowAvatar'
 
@@ -70,7 +70,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
                 onTransitionEnd={onTransitionEnd}
                 status={status}
                 offset={offsetSize * displayIdx}
-                width={AVATAR_SIZE}
+                className='h-6 w-6'
               />
               <TeamPromptOverflowAvatar
                 key={`${userId}:overflowCount`}
@@ -92,7 +92,7 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
             onTransitionEnd={onTransitionEnd}
             status={status}
             offset={offsetSize * displayIdx}
-            width={AVATAR_SIZE}
+            className='h-6 w-6'
           />
         )
       })}

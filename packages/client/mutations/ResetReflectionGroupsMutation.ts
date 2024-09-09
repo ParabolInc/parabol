@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {ResetReflectionGroupsMutation as TResetReflectionGroupsMutation} from '../__generated__/ResetReflectionGroupsMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsSuccess {
@@ -14,7 +14,6 @@ graphql`
         id
         title
         promptId
-        smartTitle
         reflections {
           id
           plaintextContent

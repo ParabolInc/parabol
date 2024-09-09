@@ -1,0 +1,6 @@
+type ToggleFavoriteTemplateSuccess {
+  """
+  The user who's favorite templates were updated
+  """
+  user: User!
+}

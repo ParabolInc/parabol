@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {GetProfileQuery} from '../../types/githubTypes'
+import GitHubServerManager from '../../utils/GitHubServerManager'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import getProfile from '../../utils/githubQueries/getProfile.graphql'
-import GitHubServerManager from '../../utils/GitHubServerManager'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
@@ -37,7 +37,10 @@ export default {
     }
 
     // RESOLUTION
-    const oAuth2Response = await GitHubServerManager.init(code)
+    const [oAuth2Response, viewer] = await Promise.all([
+      GitHubServerManager.init(code),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (oAuth2Response instanceof Error) {
       return standardError(oAuth2Response, {userId: viewerId})
     }
@@ -50,12 +53,12 @@ export default {
     if (error) {
       return standardError(error, {userId: viewerId})
     }
-    const {viewer} = data
-    const {login} = viewer
+    const {viewer: gitHubViewer} = data
+    const {login} = gitHubViewer
 
     await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes})
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
-    analytics.integrationAdded(viewerId, teamId, 'github')
+    analytics.integrationAdded(viewer, teamId, 'github')
 
     return {teamId, userId: viewerId}
   }

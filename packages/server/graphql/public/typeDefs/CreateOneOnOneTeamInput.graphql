@@ -1,4 +1,0 @@
-input CreateOneOnOneTeamInput {
-  email: Email!
-  orgId: String!
-}

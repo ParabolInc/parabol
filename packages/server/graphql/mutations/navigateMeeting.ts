@@ -4,6 +4,7 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import startStage_ from 'parabol-client/utils/startStage_'
 import unlockNextStages from 'parabol-client/utils/unlockNextStages'
 import getRethink from '../../database/rethinkDriver'
+import {Logger} from '../../utils/Logger'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -84,7 +85,7 @@ export default {
         phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader)
         if (stage.scheduledEndTime) {
           // not critical, no await needed
-          removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(console.error)
+          removeScheduledJobs(stage.scheduledEndTime, {meetingId}).catch(Logger.error)
           stage.scheduledEndTime = null
         }
       }

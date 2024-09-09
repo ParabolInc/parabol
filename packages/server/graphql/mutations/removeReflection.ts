@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,13 +25,14 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
-    const now = new Date()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId).run()
+    const reflection = await dataLoader.get('retroReflections').load(reflectionId)
+    dataLoader.get('retroReflections').clear(reflectionId)
     if (!reflection) {
       return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
@@ -49,15 +51,12 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('RetroReflection')
-      .get(reflectionId)
-      .update({
-        isActive: false,
-        updatedAt: now
-      })
-      .run()
-    await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId)
+    await pg
+      .updateTable('RetroReflection')
+      .set({isActive: false})
+      .where('id', '=', reflectionId)
+      .execute()
+    await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId, dataLoader)
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds
     if (reflections.length === 0) {

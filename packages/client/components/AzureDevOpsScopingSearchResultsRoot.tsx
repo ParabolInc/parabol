@@ -2,11 +2,11 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import azureDevOpsScopingSearchResultsQuery, {
   AzureDevOpsScopingSearchResultsQuery
 } from '../__generated__/AzureDevOpsScopingSearchResultsQuery.graphql'
 import {AzureDevOpsScopingSearchResultsRoot_meeting$key} from '../__generated__/AzureDevOpsScopingSearchResultsRoot_meeting.graphql'
+import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import AzureDevOpsScopingSearchResults from './AzureDevOpsScopingSearchResults'
 
 interface Props {

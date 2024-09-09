@@ -1,0 +1,6 @@
+type UpdateMeetingTemplateSuccess {
+  """
+  The updated meeting
+  """
+  meeting: NewMeeting!
+}

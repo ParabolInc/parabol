@@ -1,0 +1,3 @@
+type ResetReflectionGroupsSuccess {
+  meeting: RetrospectiveMeeting!
+}

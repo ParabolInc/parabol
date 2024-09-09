@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
+import {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
 import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
 import React, {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 
@@ -18,6 +18,7 @@ const contentStyle = {
   borderStyle: 'solid',
   borderWidth: '1px',
   boxSizing: 'content-box',
+  breakInside: 'avoid',
   color: PALETTE.SLATE_700,
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '14px',

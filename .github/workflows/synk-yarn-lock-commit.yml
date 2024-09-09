@@ -1,0 +1,52 @@
+name: Update Snyk PR to add yarn.lock
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  update-snyk-pr:
+    if: contains(github.event.pull_request.title, '[Snyk]')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}  # This token is provided by Actions, no need to create one
+
+      - name: Setup environment variables
+        run: |
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+          echo "NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)" >> $GITHUB_ENV
+
+          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
+          echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}" >> $GITHUB_ENV
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: package.json
+          # Caching yarn dir & running yarn install is too slow
+          # Instead, we aggressively cache node_modules below to avoid calling install
+
+      - name: Get cached node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Install node_modules
+        run: yarn install
+
+      - name: Commit yarn.lock to the PR branch
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add yarn.lock
+          git commit -m "Update yarn.lock" || echo "No changes to commit"
+          git push

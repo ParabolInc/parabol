@@ -3,20 +3,22 @@ on:
   push:
     branches-ignore:
       - "release-please--**"
+      - "release/v**"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 env:
-  PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+  PARABOL_BUILD_ENV_PATH: docker/images/parabol-ubi/environments/pipeline
 jobs:
   test:
     runs-on: ubuntu-8cores
+    timeout-minutes: 30
     permissions:
       contents: "read"
       id-token: "write"
     services:
       postgres:
-        image: postgres:15.4
+        image: pgvector/pgvector:0.7.0-pg16
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
@@ -77,7 +79,6 @@ jobs:
           yarn db:migrate
           yarn pg:migrate up
           yarn pg:build
-          yarn pg:generate
 
       - name: Build for testing
         run: yarn build
@@ -85,18 +86,22 @@ jobs:
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
 
-      - name: Check Code Quality
-        run: yarn codecheck
-
       - name: Run Predeploy for Testing
         run: yarn predeploy
 
       - name: Start testing server in background
-        run: |
-          yarn start &
+        uses: JarvusInnovations/background-action@v1
+        with:
+          run: |
+            yarn start &
+          wait-on: |
+            http://localhost:3000/graphql
 
-      - name: Wait for testing server to be healthy
-        run: curl -4 --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/graphql
+      - name: Kysely Codegen
+        run: yarn pg:generate
+
+      - name: Typecheck
+        run: yarn typecheck
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit
@@ -129,5 +134,14 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: test-results/
+          path: packages/integration-tests/test-results/
           retention-days: 7
+
+      - name: Report Status
+        if: ${{ failure() && github.ref_name == 'master' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

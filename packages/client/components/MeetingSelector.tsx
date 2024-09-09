@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {Redirect} from 'react-router'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Redirect} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
+import {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
 import lazyPreload from '../utils/lazyPreload'
-import {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 
 interface Props {
   meetingId: string

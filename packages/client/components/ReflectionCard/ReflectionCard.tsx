@@ -3,12 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorProps} from 'draft-js'
 import React, {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
-import isDemoRoute from '~/utils/isDemoRoute'
 import {
   NewMeetingPhaseTypeEnum,
   ReflectionCard_meeting$key
 } from '~/__generated__/ReflectionCard_meeting.graphql'
+import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
+import isDemoRoute from '~/utils/isDemoRoute'
+import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {MenuPosition} from '../../hooks/useCoords'
@@ -25,7 +26,6 @@ import isAndroid from '../../utils/draftjs/isAndroid'
 import remountDecorators from '../../utils/draftjs/remountDecorators'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
-import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import CardButton from '../CardButton'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
 import IconLabel from '../IconLabel'
@@ -144,6 +144,7 @@ const ReflectionCard = (props: Props) => {
         }
         disableAnonymity
         spotlightSearchQuery
+        teamId
       }
     `,
     meetingRef
@@ -159,8 +160,15 @@ const ReflectionCard = (props: Props) => {
     reflectionGroupId,
     creator
   } = reflection
-  const {localPhase, localStage, spotlightGroup, phases, disableAnonymity, spotlightSearchQuery} =
-    meeting
+  const {
+    localPhase,
+    localStage,
+    spotlightGroup,
+    phases,
+    disableAnonymity,
+    spotlightSearchQuery,
+    teamId
+  } = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const spotlightGroupId = spotlightGroup?.id
@@ -333,7 +341,6 @@ const ReflectionCard = (props: Props) => {
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <ReflectionEditorWrapper
-        dataCy={`editor-wrapper`}
         isClipped={isClipped}
         ariaLabel={readOnly ? '' : 'Edit this reflection'}
         editorRef={editorRef}
@@ -343,10 +350,11 @@ const ReflectionCard = (props: Props) => {
         handleReturn={handleReturn}
         handleKeyDownFallback={handleKeyDownFallback}
         placeholder={isViewerCreator ? 'My reflection… (press enter to add)' : '*New Reflection*'}
-        readOnly={readOnly}
+        readOnly={!!readOnly}
         setEditorState={setEditorState}
         userSelect={userSelect}
         disableAnonymity={disableAnonymity}
+        teamId={teamId}
       />
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (

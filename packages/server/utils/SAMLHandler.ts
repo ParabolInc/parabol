@@ -19,6 +19,22 @@ mutation LoginSAML($queryString: String!, $samlName: ID!) {
 }
 `
 
+type Response = {
+  errors: string[]
+  data: {
+    loginSAML: {
+      error?: {
+        message: string
+      }
+      userId: string
+      authToken: string
+      isNewUser: boolean
+      user: {
+        isPatient0: boolean
+      }
+    }
+  }
+}
 const redirectOnError = (res: HttpResponse, error: string) => {
   res.writeStatus('302').writeHeader('location', `/saml-redirect?error=${error}`).end()
 }
@@ -33,7 +49,7 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   }
   const parser = (buffer: Buffer) => buffer.toString()
   const queryString = await parseBody({res, parser})
-  const payload = await publishWebhookGQL(query, {samlName, queryString})
+  const payload = await publishWebhookGQL<Response>(query, {samlName, queryString})
   if (!payload) return
   const {data, errors} = payload
   if (!data || errors) {
@@ -47,15 +63,13 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
     redirectOnError(res, message)
     return
   }
-  res.cork(() => {
-    res
-      .writeStatus('302')
-      .writeHeader(
-        'location',
-        `/saml-redirect?userId=${userId}&token=${authToken}&isNewUser=${isNewUser}&isPatient0=${user.isPatient0}`
-      )
-      .end()
-  })
+  res
+    .writeStatus('302')
+    .writeHeader(
+      'location',
+      `/saml-redirect?userId=${userId}&token=${authToken}&isNewUser=${isNewUser}&isPatient0=${user.isPatient0}`
+    )
+    .end()
 })
 
 export default SAMLHandler

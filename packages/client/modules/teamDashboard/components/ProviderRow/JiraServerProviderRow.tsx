@@ -8,9 +8,9 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import JiraServerClientManager from '../../../../utils/JiraServerClientManager'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import ProviderRowContactUs from './ProviderRowContactUs'
 
 interface Props {

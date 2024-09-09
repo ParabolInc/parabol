@@ -1,12 +1,18 @@
 import {DataLoaderWorker} from '../graphql/graphql'
 
 const isEmailVerificationRequired = async (email: string, dataLoader: DataLoaderWorker) => {
-  const domain = email.split('@')[1]!
-  const [approvedEmail, approvedDomain] = await Promise.all([
+  const exactDomain = email.split('@')[1]!
+
+  // search for wildcards, too
+  const [tld, domain] = exactDomain.split('.').reverse()
+  const wildcardDomain = `*.${domain}.${tld}`
+
+  const [approvedEmail, approvedDomain, approvedWildcardDomain] = await Promise.all([
     dataLoader.get('organizationApprovedDomains').load(email),
-    dataLoader.get('organizationApprovedDomains').load(domain)
+    dataLoader.get('organizationApprovedDomains').load(exactDomain),
+    dataLoader.get('organizationApprovedDomains').load(wildcardDomain)
   ])
-  return approvedEmail || approvedDomain
+  return approvedEmail || approvedDomain || approvedWildcardDomain
 }
 
 export default isEmailVerificationRequired

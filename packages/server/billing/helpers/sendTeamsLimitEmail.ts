@@ -16,6 +16,7 @@ const sendTeamsLimitEmail = (props: Props) => {
   const {id: userId, preferredName, email} = user
   const {subject, body, html} = teamLimitsEmailCreator({
     userId,
+    email,
     orgId,
     preferredName,
     orgName,

@@ -17,10 +17,10 @@ const getIsNaggingPath = (history: RouterProps['history']) => {
   return !(pathname.includes('/usage') || pathname.includes('/meet/'))
 }
 
-const shouldNag = (tier: TierEnum, suggestedTier: TierEnum | null) => {
+const shouldNag = (billingTier: TierEnum, suggestedTier: TierEnum | null) => {
   if (!suggestedTier) return false
-  const suggestPro = suggestedTier === 'team' && tier === 'starter'
-  const suggestEnterprise = suggestedTier === 'enterprise' && tier !== 'enterprise'
+  const suggestPro = suggestedTier === 'team' && billingTier === 'starter'
+  const suggestEnterprise = suggestedTier === 'enterprise' && billingTier !== 'enterprise'
   return suggestPro || suggestEnterprise
 }
 

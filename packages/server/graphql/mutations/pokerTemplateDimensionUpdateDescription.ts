@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -23,11 +23,10 @@ const pokerTemplateDimensionUpdateDescription = {
     {dimensionId, description}: {dimensionId: string; description: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -43,15 +42,12 @@ const pokerTemplateDimensionUpdateDescription = {
     const normalizedDescription = description.trim().slice(0, 256) || ''
 
     // RESOLUTION
-    await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .update({
-        description: normalizedDescription,
-        updatedAt: now
-      })
-      .run()
-
+    await pg
+      .updateTable('TemplateDimension')
+      .set({description: normalizedDescription})
+      .where('id', '=', dimensionId)
+      .execute()
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId}
     publish(
       SubscriptionChannel.TEAM,

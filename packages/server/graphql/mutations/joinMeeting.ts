@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import rMapIf from '../../database/rMapIf'
+import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
@@ -10,11 +10,11 @@ import Meeting from '../../database/types/Meeting'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
-import TeamMember from '../../database/types/TeamMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
-import insertDiscussions from '../../postgres/queries/insertDiscussions'
+import getKysely from '../../postgres/getKysely'
+import {TeamMember} from '../../postgres/types'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -67,7 +67,10 @@ const joinMeeting = {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     //AUTH
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const [meeting, viewer] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!meeting) {
       return {error: {message: 'Invalid meeting ID'}}
     }
@@ -79,7 +82,7 @@ const joinMeeting = {
       return {error: {message: 'Not on the team'}}
     }
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
     const {errors} = await r.table('MeetingMember').insert(meetingMember).run()
     // if this is called concurrently, only 1 will be error free
@@ -142,15 +145,16 @@ const joinMeeting = {
       // only add a new stage for the new users (ie. invited to the team after the meeting was started)
       if (teamMemberResponseStage) return
       const responsesStage = new TeamPromptResponseStage({teamMemberId})
-      await insertDiscussions([
-        {
+      await getKysely()
+        .insertInto('Discussion')
+        .values({
           id: responsesStage.discussionId,
           teamId,
           meetingId,
           discussionTopicId: teamMemberId,
-          discussionTopicType: 'teamPromptResponse' as const
-        }
-      ])
+          discussionTopicType: 'teamPromptResponse'
+        })
+        .execute()
       return addStageToPhase(responsesStage, 'RESPONSES')
     }
 
@@ -161,8 +165,7 @@ const joinMeeting = {
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    analytics.meetingJoined(viewerId, meeting, team)
+    analytics.meetingJoined(viewer, meeting)
     return data
   }
 }

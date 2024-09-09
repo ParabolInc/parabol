@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutation} from '../__generated__/UpdateRecurrenceSettingsMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateRecurrenceSettingsMutation_team on UpdateRecurrenceSettingsSuccess {
@@ -21,11 +21,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateRecurrenceSettingsMutation(
-    $meetingId: ID!
-    $recurrenceSettings: RecurrenceSettingsInput!
-  ) {
-    updateRecurrenceSettings(meetingId: $meetingId, recurrenceSettings: $recurrenceSettings) {
+  mutation UpdateRecurrenceSettingsMutation($meetingId: ID!, $name: String, $rrule: RRule) {
+    updateRecurrenceSettings(meetingId: $meetingId, name: $name, rrule: $rrule) {
       ... on ErrorPayload {
         error {
           message

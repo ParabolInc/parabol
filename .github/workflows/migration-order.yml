@@ -10,7 +10,7 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v3
         with:
-          ref: master
+          ref: ${{ github.base_ref }}
 
       - name: Get newest migration on master
         run: |
@@ -22,7 +22,7 @@ jobs:
 
       - name: Get new migrations
         id: new-migrations
-        uses: tj-actions/changed-files@v40
+        uses: tj-actions/changed-files@v41
         with:
           files: packages/server/postgres/migrations/*.ts
 

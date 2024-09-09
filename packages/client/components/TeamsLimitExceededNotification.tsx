@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {TeamsLimitExceededNotification_notification$key} from '~/__generated__/TeamsLimitExceededNotification_notification.graphql'
 import useRouter from '~/hooks/useRouter'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
-import {TeamsLimitExceededNotification_notification$key} from '~/__generated__/TeamsLimitExceededNotification_notification.graphql'
+import {Threshold} from '../types/constEnums'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
-import {Threshold} from '../types/constEnums'
 
 interface Props {
   notification: TeamsLimitExceededNotification_notification$key

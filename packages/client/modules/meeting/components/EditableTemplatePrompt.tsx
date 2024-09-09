@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {EditableTemplatePrompt_prompts$key} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 import Legitity from '../../../validation/Legitity'
-import {EditableTemplatePrompt_prompts$key} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
 
 const StyledEditableText = styled(EditableText)({
   fontSize: 16,

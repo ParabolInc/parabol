@@ -110,8 +110,6 @@ export default class Atmosphere extends Environment {
   upgradeTransportPromise: Promise<void> | null = null
   // it's only null before login, so it's just a little white lie
   viewerId: string = null!
-  /** @deprecated */
-  userId: string | null = null
   tabCheckChannel?: BroadcastChannel
   constructor() {
     super({
@@ -272,6 +270,7 @@ export default class Atmosphere extends Environment {
       console.error('Cannot connect!')
       // this may be reached if the auth token was deemed invalid by the server
       this.setAuthToken(null)
+      window.location.href = '/'
       return
     }
     this.transport = new GQLTrebuchetClient(trebuchet)
@@ -413,8 +412,6 @@ export default class Atmosphere extends Environment {
     } else {
       this.viewerId = viewerId!
       window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
-      // deprecated! will be removed soon
-      this.userId = viewerId
     }
   }
 
@@ -518,6 +515,5 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions = []
     this.subscriptions = {}
     this.viewerId = null!
-    this.userId = null // DEPRECATED
   }
 }

@@ -7,7 +7,7 @@ import EditorLinkChangerModal from './EditorLinkChangerModal'
 
 interface Props {
   editorState: EditorState
-  editorRef: RefObject<HTMLTextAreaElement>
+  editorRef?: RefObject<HTMLTextAreaElement>
 
   link: string | null
 
@@ -95,11 +95,11 @@ const EditorLinkChangerDraftjs = (props: Props) => {
       'apply-entity'
     )
     setEditorState(newEditorState)
-    setTimeout(() => editorRef.current && editorRef.current.focus(), 0)
+    setTimeout(() => editorRef?.current && editorRef.current.focus(), 0)
   }
 
   const handleEscape = () => {
-    setTimeout(() => editorRef.current && editorRef.current.focus(), 0)
+    setTimeout(() => editorRef?.current && editorRef.current.focus(), 0)
   }
 
   return (

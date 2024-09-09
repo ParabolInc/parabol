@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
+import {Link} from 'react-router-dom'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
 import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
 import TimelineHistoryLockedCard from './TimelineHistoryLockedCard'
-import {Link} from 'react-router-dom'
 
 const ResultScroller = styled('div')({
   overflow: 'auto'

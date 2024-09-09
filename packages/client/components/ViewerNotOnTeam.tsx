@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
-import {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -46,24 +46,19 @@ const ViewerNotOnTeam = (props: Props) => {
   const {history} = useRouter()
   const {onError, onCompleted} = useMutationProps()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
-  useEffect(
-    () => {
-      if (teamInvitation) {
-        // if an invitation already exists, accept it
-        AcceptTeamInvitationMutation(
-          atmosphere,
-          {invitationToken: teamInvitation.token},
-          {history, meetingId}
-        )
-        return
-      } else if (teamId)
-        PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
-      return undefined
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
+  useEffect(() => {
+    if (teamInvitation) {
+      // if an invitation already exists, accept it
+      AcceptTeamInvitationMutation(
+        atmosphere,
+        {invitationToken: teamInvitation.token},
+        {history, meetingId}
+      )
+      return
+    } else if (teamId)
+      PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
+    return undefined
+  }, [])
 
   if (teamInvitation) return null
   return (

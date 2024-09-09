@@ -1,25 +1,30 @@
 import Meeting from '../../../database/types/Meeting'
 import MeetingMember from '../../../database/types/MeetingMember'
-import TeamMember from '../../../database/types/TeamMember'
+import {TeamMember} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
+import {DataLoaderWorker} from '../../graphql'
 
 const sendPokerMeetingRevoteEvent = async (
   meeting: Meeting,
   teamMembers: TeamMember[],
-  meetingMembers: MeetingMember[]
+  meetingMembers: MeetingMember[],
+  dataLoader: DataLoaderWorker
 ) => {
   const {facilitatorUserId, meetingNumber, phases, teamId} = meeting
   const presentMemberUserIds = meetingMembers.map(({userId}) => userId)
-  presentMemberUserIds.forEach((userId) => {
+  return presentMemberUserIds.map(async (userId) => {
     const wasFacilitator = userId === facilitatorUserId
-    analytics.pokerMeetingTeamRevoted(userId, {
-      teamId,
-      hasIcebreaker: phases[0]?.phaseType === 'checkin',
-      wasFacilitator,
-      meetingNumber,
-      teamMembersCount: teamMembers.length,
-      teamMembersPresentCount: meetingMembers.length
-    })
+    const user = await dataLoader.get('users').load(userId)
+    if (user) {
+      analytics.pokerMeetingTeamRevoted(user, {
+        teamId,
+        hasIcebreaker: phases[0]?.phaseType === 'checkin',
+        wasFacilitator,
+        meetingNumber,
+        teamMembersCount: teamMembers.length,
+        teamMembersPresentCount: meetingMembers.length
+      })
+    }
   })
 }
 

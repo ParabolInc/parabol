@@ -1,24 +1,26 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Snack} from '../../components/Snackbar'
-import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import {
   NotificationEnum,
   popNotificationToast_notification$data
 } from '../../__generated__/popNotificationToast_notification.graphql'
+import {Snack} from '../../components/Snackbar'
+import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
+import mapMentionedToToast from './mapMentionedToToast'
+import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
+import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
-import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
-import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 
 const typePicker: Partial<
   Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
 > = {
   DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
+  MENTIONED: mapMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast,
   TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
@@ -33,6 +35,7 @@ graphql`
       id
       ...mapDiscussionMentionedToToast_notification @relay(mask: false)
       ...mapResponseMentionedToToast_notification @relay(mask: false)
+      ...mapMentionedToToast_notification @relay(mask: false)
       ...mapResponseRepliedToToast_notification @relay(mask: false)
       ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)

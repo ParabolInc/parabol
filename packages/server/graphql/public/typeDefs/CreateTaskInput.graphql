@@ -1,0 +1,29 @@
+input CreateTaskInput {
+  content: String
+  plaintextContent: String
+
+  """
+  foreign key for the meeting this was created in
+  """
+  meetingId: ID
+
+  """
+  foreign key for the thread this was created in
+  """
+  discussionId: ID
+  threadSortOrder: Int
+  threadParentId: ID
+  sortOrder: Float
+  status: TaskStatusEnum!
+
+  """
+  teamId, the team the task is on
+  """
+  teamId: ID!
+
+  """
+  userId, the owner of the task. This can be null if the task is not assigned to anyone.
+  """
+  userId: ID
+  integration: CreateTaskIntegrationInput
+}

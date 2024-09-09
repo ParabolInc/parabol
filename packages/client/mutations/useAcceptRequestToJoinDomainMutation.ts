@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation, UseMutationConfig} from 'react-relay'
-import useAtmosphere from '../hooks/useAtmosphere'
 import {useAcceptRequestToJoinDomainMutation as TAcceptRequestToJoinDomainMutation} from '../__generated__/useAcceptRequestToJoinDomainMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`

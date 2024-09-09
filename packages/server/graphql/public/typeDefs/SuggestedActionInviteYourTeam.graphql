@@ -1,0 +1,49 @@
+"""
+a suggestion to invite others to your team
+"""
+type SuggestedActionInviteYourTeam implements SuggestedAction {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  * The timestamp the action was created at
+  """
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """
+  * The timestamp the action was removed at
+  """
+  removedAt: DateTime
+
+  """
+  The specific type of suggested action
+  """
+  type: SuggestedActionTypeEnum!
+
+  """
+  * The userId this action is for
+  """
+  userId: ID!
+
+  """
+  The user than can see this event
+  """
+  user: User!
+
+  """
+  The teamId that we suggest you should invite people to
+  """
+  teamId: ID!
+
+  """
+  The team you should invite people to
+  """
+  team: Team!
+}

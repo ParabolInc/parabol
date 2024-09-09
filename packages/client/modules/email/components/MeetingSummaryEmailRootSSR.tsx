@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
 import React from 'react'
 import {useLazyLoadQuery} from 'react-relay'
-import {Environment} from 'relay-runtime'
 import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import makeAppURL from '../../../utils/makeAppURL'
 import MeetingSummaryEmail from './SummaryEmail/MeetingSummaryEmail/MeetingSummaryEmail'
@@ -10,7 +9,7 @@ import MeetingSummaryEmail from './SummaryEmail/MeetingSummaryEmail/MeetingSumma
 const query = graphql`
   query MeetingSummaryEmailRootSSRQuery($meetingId: ID!) {
     viewer {
-      newMeeting(meetingId: $meetingId) {
+      meeting(meetingId: $meetingId) {
         meetingType
         team {
           id
@@ -43,9 +42,9 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
   // viewer will be null on initial SSR render
   if (!data?.viewer) return null
   const {viewer} = data
-  const {newMeeting} = viewer
-  if (!newMeeting) return null
-  const {team} = newMeeting
+  const {meeting} = viewer
+  if (!meeting) return null
+  const {team} = meeting
   const {id: teamId} = team
   const options = {searchParams: meetingSummaryUrlParams}
   const referrerUrl = makeAppURL(appOrigin, `new-summary/${meetingId}`, options)
@@ -54,7 +53,7 @@ const MeetingSummaryEmailRootSSR = (props: Props) => {
   const emailCSVUrl = makeAppURL(appOrigin, `new-summary/${meetingId}/csv`, options)
   return (
     <MeetingSummaryEmail
-      meeting={newMeeting}
+      meeting={meeting}
       referrer={'email'}
       teamDashUrl={teamDashUrl}
       meetingUrl={meetingUrl}

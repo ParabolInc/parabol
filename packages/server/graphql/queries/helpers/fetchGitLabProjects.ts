@@ -1,6 +1,7 @@
 import {GraphQLResolveInfo} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import {Logger} from '../../../utils/Logger'
 import {GQLContext} from '../../graphql'
 
 const fetchGitLabProjects = async (
@@ -18,7 +19,7 @@ const fetchGitLabProjects = async (
   const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
   const [data, error] = await manager.getProjects({})
   if (error) {
-    console.error(error.message)
+    Logger.error(error.message)
     return []
   }
   return (

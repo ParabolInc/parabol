@@ -1,0 +1,10 @@
+type UpdateTaskPayload {
+  error: StandardMutationError
+  task: Task
+
+  """
+  If a task was just turned private, this its ID, else null
+  """
+  privatizedTaskId: ID
+  addedNotification: NotifyTaskInvolves
+}

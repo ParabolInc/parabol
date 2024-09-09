@@ -3,16 +3,15 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import Notification from '../../database/types/Notification'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
+import getKysely from '../../postgres/getKysely'
 import updateMeetingTemplateOrgId from '../../postgres/queries/updateMeetingTemplateOrgId'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
+import {Logger} from '../../utils/Logger'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
-import getKysely from '../../postgres/getKysely'
 
 const MAX_NUM_TEAMS = 40
 
@@ -28,9 +27,9 @@ const moveToOrg = async (
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const [org, teams, isPaidResult] = await Promise.all([
-    r.table('Organization').get(orgId).run(),
-    getTeamsByIds([teamId]),
+  const [org, team, isPaidResult] = await Promise.all([
+    dataLoader.get('organizations').loadNonNull(orgId),
+    dataLoader.get('teams').load(teamId),
     pg
       .selectFrom('Team')
       .select('isPaid')
@@ -39,7 +38,6 @@ const moveToOrg = async (
       .limit(1)
       .executeTakeFirst()
   ])
-  const team = teams[0]
   if (!team) {
     return standardError(new Error('Did not find the team'))
   }
@@ -49,27 +47,22 @@ const moveToOrg = async (
     if (!userId) {
       return standardError(new Error('No userId provided'))
     }
-    const newOrganizationUser = await r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({orgId, removedAt: null})
-      .nth(0)
-      .default(null)
-      .run()
+    const [newOrganizationUser, oldOrganizationUser] = await Promise.all([
+      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
+      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId: currentOrgId, userId})
+    ])
+
     if (!newOrganizationUser) {
       return standardError(new Error('Not on organization'), {userId})
     }
-    const isBillingLeaderForOrg = newOrganizationUser.role === 'BILLING_LEADER'
+    const isBillingLeaderForOrg =
+      newOrganizationUser.role === 'BILLING_LEADER' || newOrganizationUser.role === 'ORG_ADMIN'
     if (!isBillingLeaderForOrg) {
       return standardError(new Error('Not organization leader'), {userId})
     }
-    const oldOrganizationUser = await r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({orgId: currentOrgId, removedAt: null})
-      .nth(0)
-      .run()
-    const isBillingLeaderForTeam = oldOrganizationUser.role === 'BILLING_LEADER'
+
+    const isBillingLeaderForTeam =
+      oldOrganizationUser?.role === 'BILLING_LEADER' || oldOrganizationUser?.role === 'ORG_ADMIN'
     if (!isBillingLeaderForTeam) {
       return standardError(new Error('Not organization leader'), {userId})
     }
@@ -84,36 +77,31 @@ const moveToOrg = async (
     orgId,
     isPaid: !!isPaidResult?.isPaid,
     tier: org.tier,
+    trialStartDate: org.trialStartDate,
     updatedAt: new Date()
   }
-  const [rethinkResult] = await Promise.all([
-    r({
-      notifications: r
-        .table('Notification')
-        .filter({teamId})
-        .filter((notification: RDatum) => notification('orgId').default(null).ne(null))
-        .update({orgId}) as unknown as Notification[],
-      newToOrgUserIds: r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isNotRemoved: true})
-        .filter((teamMember: RDatum) => {
-          return r
-            .table('OrganizationUser')
-            .getAll(teamMember('userId'), {index: 'userId'})
-            .filter({orgId, removedAt: null})
-            .count()
-            .eq(0)
-        })('userId')
-        .coerceTo('array') as unknown as string[]
-    }).run(),
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const teamMemberUserIds = teamMembers.map(({userId}) => userId)
+  const orgUserKeys = teamMemberUserIds.map((userId) => ({userId, orgId}))
+  const existingOrgUsers = (
+    await dataLoader.get('organizationUsersByUserIdOrgId').loadMany(orgUserKeys)
+  ).filter(isValid)
+  const newToOrgUserIds = teamMemberUserIds.filter(
+    (userId) => !existingOrgUsers.find((orgUser) => orgUser.userId === userId)
+  )
+  await Promise.all([
+    r
+      .table('Notification')
+      .filter({teamId})
+      .filter((notification: RDatum) => notification('orgId').default(null).ne(null))
+      .update({orgId})
+      .run(),
     updateMeetingTemplateOrgId(currentOrgId, orgId),
     updateTeamByTeamId(updates, teamId)
   ])
-  const {newToOrgUserIds} = rethinkResult
-
+  dataLoader.clearAll('teams')
   // if no teams remain on the org, remove it
-  await safeArchiveEmptyStarterOrganization(currentOrgId)
+  await safeArchiveEmptyStarterOrganization(currentOrgId, dataLoader)
 
   await Promise.all(
     newToOrgUserIds.map((newUserId) => {
@@ -165,7 +153,7 @@ export default {
     const successes = results.filter((result) => typeof result === 'string')
     const failures = results.filter((result) => typeof result !== 'string')
     const successStr = successes.join('\n')
-    console.error('failures', failures)
+    Logger.error('failures', failures)
     return successStr
   }
 }

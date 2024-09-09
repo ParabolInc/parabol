@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {MenuProps} from '../hooks/useMenu'
 import {NewTeamOrgDropdown_organizations$key} from '../__generated__/NewTeamOrgDropdown_organizations.graphql'
+import {MenuProps} from '../hooks/useMenu'
 import DropdownMenuItemLabel from './DropdownMenuItemLabel'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
@@ -24,6 +24,7 @@ const NewTeamOrgDropdown = (props: Props) => {
         id
         name
         tier
+        billingTier
       }
     `,
     organizationsRef
@@ -36,14 +37,14 @@ const NewTeamOrgDropdown = (props: Props) => {
     >
       <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
-        const {id, tier, name} = anOrg
+        const {id, tier, billingTier, name} = anOrg
         return (
           <MenuItem
             key={id}
             label={
               <DropdownMenuItemLabel>
                 <span>{name}</span>
-                {tier !== 'starter' && <TierTag tier={tier} />}
+                {tier !== 'starter' && <TierTag tier={tier} billingTier={billingTier} />}
               </DropdownMenuItemLabel>
             }
             onClick={() => {

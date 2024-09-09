@@ -3,6 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState} from 'draft-js'
 import React, {ReactNode, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
+import {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
+import {ThreadedCommentBase_viewer$key} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -11,13 +14,10 @@ import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutati
 import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import isTempId from '~/utils/relay/isTempId'
-import {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
-import {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
-import {ThreadedCommentBase_viewer$key} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import CommentEditor from './TaskEditor/CommentEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
@@ -66,7 +66,7 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_viewer on User {
         ...ThreadedItemReply_viewer
-        tier
+        billingTier
       }
     `,
     viewerRef
@@ -140,7 +140,7 @@ const ThreadedCommentBase = (props: Props) => {
     if (createdByUserNullable?.id === PARABOL_AI_USER_ID) {
       SendClientSideEvent(atmosphere, 'AI Summary Viewed', {
         source: 'Discussion',
-        tier: viewer.tier,
+        tier: viewer.billingTier,
         meetingId,
         discussionTopicId
       })

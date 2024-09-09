@@ -5,15 +5,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {CreateReflectionMutation_meeting$data} from '~/__generated__/CreateReflectionMutation_meeting.graphql'
+import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
-import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
 import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'
 
 graphql`
   fragment CreateReflectionMutation_meeting on CreateReflectionPayload {
+    reflectionId
     reflectionGroup {
       meetingId
       sortOrder

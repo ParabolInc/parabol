@@ -1,29 +1,40 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useMemo} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import React, {Fragment, useEffect, useMemo} from 'react'
+import {
+  PreloadedQuery,
+  commitLocalUpdate,
+  fetchQuery,
+  usePreloadedQuery,
+  useRefetchableFragment
+} from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
 import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
+import {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
+import {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityLibraryTemplateSearch_query.graphql'
 import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
-import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
-import {ActivityBadge} from './ActivityBadge'
-import {ActivityCardImage} from './ActivityCard'
-import {ActivityLibraryCard} from './ActivityLibraryCard'
-import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
+import LoadingComponent from '../LoadingComponent/LoadingComponent'
+import AISearch from './AISearch'
+import ActivityGrid from './ActivityGrid'
+import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
 import {
-  CategoryID,
+  AllCategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
+  CUSTOM_CATEGORY_ID,
+  CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
-import CreateActivityCard from './CreateActivityCard'
 import SearchBar from './SearchBar'
 
 graphql`
@@ -34,6 +45,7 @@ graphql`
     name
     type
     category
+    scope
     ... on PokerTemplate {
       dimensions {
         name
@@ -65,15 +77,39 @@ graphql`
     category
     illustrationUrl
     isRecommended
-    isFree
+    scope
     ...ActivityLibrary_templateSearchDocument @relay(mask: false)
+    ...ActivityCard_template
     ...ActivityLibraryCardDescription_template
+  }
+`
+
+const templateSearchFragment = graphql`
+  fragment ActivityLibraryTemplateSearch_query on Query
+  @argumentDefinitions(search: {type: "String!"})
+  @refetchable(queryName: "ActivityLibraryTemplateSearchRefetchQuery") {
+    viewer {
+      templateSearch(search: $search) {
+        ...ActivityLibrary_template @relay(mask: false)
+      }
+    }
+  }
+`
+
+const templateSearchQuery = graphql`
+  query ActivityLibraryTemplateSearchQuery($search: String!) {
+    ...ActivityLibraryTemplateSearch_query @arguments(search: $search)
   }
 `
 
 const query = graphql`
   query ActivityLibraryQuery {
+    ...ActivityLibraryTemplateSearch_query @arguments(search: "")
     viewer {
+      ...ActivityGrid_user
+      favoriteTemplates {
+        ...ActivityLibrary_template @relay(mask: false)
+      }
       availableTemplates(first: 2000) @connection(key: "ActivityLibrary_availableTemplates") {
         edges {
           node {
@@ -81,12 +117,9 @@ const query = graphql`
           }
         }
       }
-      featureFlags {
-        retrosInDisguise
-      }
       organizations {
         featureFlags {
-          oneOnOne
+          aiTemplate
         }
       }
     }
@@ -121,85 +154,99 @@ const getTemplateDocumentValue = (
     .flat()
     .join('-')
 
-const CategoryIDToColorClass = {
-  [QUICK_START_CATEGORY_ID]: 'bg-grape-700',
-  ...Object.fromEntries(
-    Object.entries(CATEGORY_THEMES).map(([key, value]) => {
-      return [key, value.primary]
-    })
-  )
-} as Record<CategoryID | typeof QUICK_START_CATEGORY_ID, string>
+const CategoryIDToColorClass = Object.fromEntries(
+  Object.entries(CATEGORY_THEMES).map(([key, value]) => {
+    return [key, value.primary]
+  })
+) as Record<keyof typeof CATEGORY_THEMES, string>
 
-type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
+export type Template = Omit<ActivityLibrary_template$data, ' $fragmentType'>
 
-type SubCategory = 'popular' | 'recentlyUsed' | 'recentlyUsedInOrg' | 'neverTried'
-
-const subCategoryMapping: Record<SubCategory, string> = {
+const MAX_PER_SUBCATEGORY = 6
+const subCategoryMapping = {
   popular: 'Popular templates',
   recentlyUsed: 'You used these recently',
   recentlyUsedInOrg: 'Others in your organization are using',
-  neverTried: 'Try these activities'
-}
+  neverTried: 'Try these activities',
+  getStarted: 'Activities to get you started',
+  other: 'Other activities'
+} as const
 
-interface ActivityGridProps {
-  templates: Template[]
-  selectedCategory: string
-}
+const mapRetroSubCategories = (templates: readonly Template[]) => {
+  const subCategoryTemplates = Object.fromEntries(
+    Object.keys(subCategoryMapping).map((subCategory) => {
+      return [
+        subCategory,
+        templates
+          .filter((template) => template.subCategories?.includes(subCategory))
+          .slice(0, MAX_PER_SUBCATEGORY) as Template[]
+      ]
+    })
+  )
+  //just in case there were values already
+  subCategoryTemplates.other = []
+  subCategoryTemplates.other = templates.filter(
+    (template) =>
+      !Object.values(subCategoryTemplates)
+        .flat()
+        .find((catTemplate) => catTemplate.id === template.id)
+  )
 
-const ActivityGrid = ({templates, selectedCategory}: ActivityGridProps) => {
-  return (
-    <>
-      {templates.map((template) => {
-        return (
-          <Link
-            key={template.id}
-            to={{
-              pathname: `/activity-library/details/${template.id}`,
-              state: {prevCategory: selectedCategory}
-            }}
-            className='flex focus:rounded-md focus:outline-primary'
-          >
-            <ActivityLibraryCard
-              className='group aspect-[256/160] flex-1'
-              key={template.id}
-              theme={CATEGORY_THEMES[template.category as CategoryID]}
-              title={template.name}
-              badge={
-                !template.isFree ? (
-                  <ActivityBadge className='m-2 bg-gold-300 text-grape-700'>Premium</ActivityBadge>
-                ) : null
-              }
-            >
-              <ActivityCardImage
-                className='group-hover/card:hidden'
-                src={template.illustrationUrl}
-              />
-              <ActivityLibraryCardDescription
-                className='hidden group-hover/card:flex'
-                templateRef={template}
-              />
-            </ActivityLibraryCard>
-          </Link>
-        )
-      })}
-    </>
+  return Object.fromEntries(
+    Object.entries(subCategoryTemplates).map(([key, value]) => {
+      return [subCategoryMapping[key as keyof typeof subCategoryMapping]!, value]
+    })
   )
 }
 
-const MAX_PER_SUBCATEGORY = 6
+const mapTeamCategories = (templates: readonly Template[]) => {
+  // list public templates last
+  const publicTemplates = [] as Template[]
+  const mapped = templates.reduce(
+    (acc, template) => {
+      const {team, scope} = template
+      if (scope === 'PUBLIC') {
+        publicTemplates.push(template)
+      } else {
+        const {name} = team
+        if (!acc[name]) {
+          acc[name] = []
+        }
+        acc[name]!.push(template)
+      }
+      return acc
+    },
+    {} as Record<string, Template[]>
+  )
+
+  mapped['Parabol'] = publicTemplates
+  return mapped
+}
 
 export const ActivityLibrary = (props: Props) => {
+  const atmosphere = useAtmosphere()
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {featureFlags, availableTemplates, organizations} = viewer
-  const hasOneOnOneFeatureFlag = !!organizations.find((org) => org.featureFlags.oneOnOne)
+  const {availableTemplates, organizations} = viewer
+  const hasAITemplateFeatureFlag = !!organizations.find((org) => org.featureFlags.aiTemplate)
+
+  const [isSearching, setIsSearching] = React.useState(true)
+  const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<
+    ActivityLibraryTemplateSearchRefetchQuery,
+    ActivityLibraryTemplateSearch_query$key
+  >(templateSearchFragment, data)
+
+  const setSearch = (value: string) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      viewer.setValue(value, 'activityLibrarySearch')
+    })
+  }
 
   const templates = useMemo(() => {
     const templatesMap = availableTemplates.edges.map((edge) => edge.node)
-    if (!hasOneOnOneFeatureFlag) {
-      return templatesMap.filter((template) => template.id !== 'oneOnOneAction')
-    }
     return templatesMap
   }, [availableTemplates])
 
@@ -211,6 +258,31 @@ export const ActivityLibrary = (props: Props) => {
     onQueryChange,
     resetQuery
   } = useSearchFilter(templates, getTemplateDocumentValue)
+  const {debouncedSearch: debouncedSearchQuery, dirty} = useDebouncedSearch(searchQuery)
+  const showLoading = dirty || isSearching
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      setIsSearching(true)
+      // Avoid suspense while refreshing the search results, see
+      // https://relay.dev/docs/guided-tour/refetching/refetching-fragments-with-different-data/#if-you-need-to-avoid-suspense
+      fetchQuery(atmosphere, templateSearchQuery, {search: debouncedSearchQuery}).subscribe({
+        complete: () => {
+          refetchTemplateSearch({search: debouncedSearchQuery}, {fetchPolicy: 'store-only'})
+          setIsSearching(false)
+        },
+        error: () => {
+          setIsSearching(false)
+        }
+      })
+      SendClientSideEvent(atmosphere, 'Activity Library Searched', {
+        debouncedSearchQuery
+      })
+    } else {
+      refetchTemplateSearch({search: ''}, {fetchPolicy: 'store-only'})
+      setIsSearching(false)
+    }
+  }, [debouncedSearchQuery])
 
   const {match} = useRouter<{categoryId?: string}>()
   const {
@@ -219,44 +291,57 @@ export const ActivityLibrary = (props: Props) => {
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
-      // If there's a search query, just use the search filter results
-      return filteredTemplates
+      // If there's a search query, combine the filtered templates with the search results
+      const searchResults = templateSearch.viewer.templateSearch
+      const doubleMatches = searchResults.filter((searchResult) =>
+        filteredTemplates.find((template) => template.id === searchResult.id)
+      )
+
+      return [
+        ...doubleMatches,
+        ...filteredTemplates.filter(
+          (template) => !doubleMatches.find((doubleMatch) => doubleMatch.id === template.id)
+        ),
+        ...searchResults.filter(
+          (searchResult) => !doubleMatches.find((doubleMatch) => doubleMatch.id === searchResult.id)
+        )
+      ]
+    }
+    if (categoryId === 'favorite') {
+      return viewer.favoriteTemplates
     }
 
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
         ? template.isRecommended
-        : template.category === categoryId
+        : categoryId === CUSTOM_CATEGORY_ID
+          ? template.scope !== 'PUBLIC'
+          : template.category === categoryId
     )
-  }, [searchQuery, filteredTemplates, categoryId])
+  }, [searchQuery, filteredTemplates, templateSearch, categoryId])
 
-  const subCategoryTemplates = Object.fromEntries(
-    Object.keys(subCategoryMapping).map((subCategory) => {
-      return [
-        subCategory,
-        templatesToRender
-          .filter((template) => template.subCategories?.includes(subCategory))
-          .slice(0, MAX_PER_SUBCATEGORY) as Template[]
-      ]
-    })
-  ) as Record<SubCategory, Template[]>
+  const sectionedTemplates = useMemo(() => {
+    // Show the teams on search as well, because you can search by team name
+    if (categoryId === CUSTOM_CATEGORY_ID || searchQuery.length > 0) {
+      return mapTeamCategories(templatesToRender)
+    }
 
-  const otherTemplates = templatesToRender.filter(
-    (template) =>
-      !Object.values(subCategoryTemplates)
-        .flat()
-        .find((catTemplate) => catTemplate.id === template.id)
-  ) as Template[]
+    if (searchQuery.length > 0) {
+      return undefined
+    }
 
-  if (!featureFlags.retrosInDisguise) {
-    return <Redirect to='/404' />
-  }
+    if (categoryId === 'retrospective') {
+      return mapRetroSubCategories(templatesToRender)
+    }
+    if (categoryId === 'recommended') {
+      return {[subCategoryMapping.getStarted]: [...templatesToRender]}
+    }
+    return undefined
+  }, [categoryId, templatesToRender])
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
     return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
   }
-
-  const selectedCategory = categoryId as CategoryID | typeof QUICK_START_CATEGORY_ID
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
@@ -278,18 +363,32 @@ export const ActivityLibrary = (props: Props) => {
                 Start Activity
               </div>
             </div>
-            <div className='hidden grow md:block'>
-              <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
-            </div>
+            {!hasAITemplateFeatureFlag && (
+              <div className='hidden grow md:block'>
+                <SearchBar
+                  searchQuery={searchQuery}
+                  onChange={(e) => {
+                    onQueryChange(e)
+                    setSearch(e.target.value)
+                  }}
+                />
+              </div>
+            )}
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
-              to={`/activity-library/new-activity/${selectedCategory}`}
+              to={`/activity-library/new-activity/${categoryId}`}
             >
               Create custom activity
             </Link>
           </div>
           <div className='mt-4 flex w-full md:hidden'>
-            <SearchBar searchQuery={searchQuery} onChange={onQueryChange} />
+            <SearchBar
+              searchQuery={searchQuery}
+              onChange={(e) => {
+                onQueryChange(e)
+                setSearch(e.target.value)
+              }}
+            />
           </div>
         </div>
       </div>
@@ -297,14 +396,14 @@ export const ActivityLibrary = (props: Props) => {
       <ScrollArea.Root className='w-full'>
         <ScrollArea.Viewport className='w-full'>
           <div className='flex gap-2 px-4 pt-6 md:flex-wrap md:pb-4 lg:mx-[15%]'>
-            {(availableCategoryIds as Array<CategoryID | typeof QUICK_START_CATEGORY_ID>).map(
+            {(availableCategoryIds as Array<AllCategoryID | typeof QUICK_START_CATEGORY_ID>).map(
               (category) => (
                 <Link
                   className={clsx(
-                    'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm text-slate-800',
-                    category === selectedCategory && searchQuery.length === 0
+                    'flex flex-shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
+                    category === categoryId && searchQuery.length === 0
                       ? [
-                          CategoryIDToColorClass[category],
+                          `${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
                         ]
                       : 'border border-slate-300 bg-white'
@@ -312,6 +411,14 @@ export const ActivityLibrary = (props: Props) => {
                   to={`/activity-library/category/${category}`}
                   onClick={() => resetQuery()}
                   key={category}
+                  style={{
+                    color:
+                      category === 'favorite'
+                        ? category === categoryId && searchQuery.length === 0
+                          ? 'white'
+                          : 'red'
+                        : undefined
+                  }}
                 >
                   {CATEGORY_ID_TO_NAME[category]}
                 </Link>
@@ -324,64 +431,55 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
-          {templatesToRender.length === 0 ? (
-            <div className='mx-auto flex p-2 text-slate-700'>
-              <img className='w-32' src={halloweenRetrospectiveTemplate} />
-              <div className='ml-10'>
-                <div className='mb-4 text-xl font-semibold'>No results found!</div>
-                <div className='mb-6 max-w-[360px]'>
-                  Try tapping a category above, using a different search, or creating exactly what
-                  you have in mind.
-                </div>
-                <div className='h-40 w-64'>
-                  <CreateActivityCard category={QUICK_START_CATEGORY_ID} className='h-full' />
-                </div>
-              </div>
+          {hasAITemplateFeatureFlag && (
+            <div className='mx-auto mt-4 pt-2'>
+              <AISearch />
             </div>
+          )}
+          {templatesToRender.length === 0 && !showLoading ? (
+            <ActivityLibraryEmptyState
+              searchQuery={searchQuery}
+              categoryId={categoryId as AllCategoryID}
+            />
           ) : (
             <>
-              {categoryId === 'retrospective' && searchQuery.length === 0 ? (
+              {sectionedTemplates ? (
                 <>
-                  {(Object.keys(subCategoryMapping) as SubCategory[]).map(
-                    (subCategory) =>
-                      subCategoryTemplates[subCategory].length > 0 && (
-                        <>
+                  {Object.entries(sectionedTemplates).map(([subCategory, subCategoryTemplates]) =>
+                    subCategoryTemplates.length > 0 ? (
+                      <Fragment key={subCategory}>
+                        {subCategory && (
                           <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                            {subCategoryMapping[subCategory]}
+                            {subCategory}
                           </div>
-                          <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                            <ActivityGrid
-                              templates={subCategoryTemplates[subCategory]}
-                              selectedCategory={selectedCategory}
-                            />
-                          </div>
-                        </>
-                      )
-                  )}
-                  {otherTemplates.length > 0 && (
-                    <>
-                      <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
-                        Other activities
-                      </div>
-                      <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
-                        <ActivityGrid
-                          templates={otherTemplates}
-                          selectedCategory={selectedCategory}
-                        />
-                      </div>
-                    </>
+                        )}
+                        <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 px-4 md:mt-4'>
+                          <ActivityGrid
+                            templates={subCategoryTemplates}
+                            selectedCategory={categoryId}
+                            viewerRef={viewer}
+                          />
+                        </div>
+                      </Fragment>
+                    ) : (
+                      <div className='p-4' />
+                    )
                   )}
                 </>
               ) : (
-                <div className='mt-1 grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4 md:mt-4'>
-                  <ActivityGrid
-                    templates={templatesToRender as Template[]}
-                    selectedCategory={selectedCategory}
-                  />
-                </div>
+                <>
+                  <div className='grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(40%,256px),1fr))] gap-4 p-4'>
+                    <ActivityGrid
+                      templates={templatesToRender as Template[]}
+                      selectedCategory={categoryId}
+                      viewerRef={viewer}
+                    />
+                  </div>
+                </>
               )}
             </>
           )}
+          {showLoading && <LoadingComponent />}
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation='vertical'

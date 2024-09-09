@@ -4,10 +4,11 @@ import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
-import {isOrgTier, isOrgTierSource} from './rules/isOrgTier'
+import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import isUserViewer from './rules/isUserViewer'
-import {isViewerBillingLeader, isViewerBillingLeaderSource} from './rules/isViewerBillingLeader'
+import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
+import {isViewerOnOrg} from './rules/isViewerOnOrg'
 import isViewerOnTeam from './rules/isViewerOnTeam'
 import rateLimit from './rules/rateLimit'
 
@@ -31,8 +32,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     createImposterToken: isSuperUser,
+    generateInsight: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
+      rateLimit({perMinute: 50, perHour: 500})
+    ),
+    loginWithMicrosoft: and(
+      not(isEnvVarTrue('AUTH_MICROSOFT_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
     signUpWithPassword: and(
@@ -46,17 +52,32 @@ const permissionMap: PermissionMap<Resolvers> = {
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),
     addApprovedOrganizationDomains: or(
       isSuperUser,
-      and(isViewerBillingLeader, isOrgTier('enterprise'))
+      and(
+        isViewerBillingLeader<'Mutation.addApprovedOrganizationDomains'>('args.orgId'),
+        isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
+      )
     ),
-    removeApprovedOrganizationDomains: or(isSuperUser, isViewerBillingLeader),
+    removeApprovedOrganizationDomains: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
+    ),
+    uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
   },
   Query: {
     '*': isAuthenticated,
-    getDemoEntities: rateLimit({perMinute: 5, perHour: 50})
+    getDemoEntities: rateLimit({perMinute: 5, perHour: 50}),
+    SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
-    saml: and(isViewerBillingLeaderSource, isOrgTierSource('enterprise'))
+    saml: and(
+      isViewerBillingLeader<'Organization.saml'>('source.id'),
+      isOrgTier<'Organization.saml'>('source.id', 'enterprise')
+    )
+  },
+  RetroReflectionGroup: {
+    smartTitle: isSuperUser,
+    voterIds: isSuperUser
   },
   User: {
     domains: or(isSuperUser, isUserViewer)

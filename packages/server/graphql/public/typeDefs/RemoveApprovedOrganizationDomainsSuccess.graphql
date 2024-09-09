@@ -1,0 +1,6 @@
+type RemoveApprovedOrganizationDomainsSuccess {
+  """
+  The organization with updated restrictions
+  """
+  organization: Organization!
+}

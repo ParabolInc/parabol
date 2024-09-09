@@ -1,7 +1,7 @@
+import {ValueExpression, sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getPg from '../../../postgres/getPg'
-import {appendUserFeatureFlagsQuery} from '../../../postgres/queries/generated/appendUserFeatureFlagsQuery'
-import {removeUserFeatureFlagsQuery} from '../../../postgres/queries/generated/removeUserFeatureFlagsQuery'
+import getKysely from '../../../postgres/getKysely'
+import {DB} from '../../../postgres/pg'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import IUser from '../../../postgres/types/IUser'
@@ -17,6 +17,7 @@ const updateFeatureFlag: MutationResolvers['updateFeatureFlag'] = async (
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId}
+  const pg = getKysely()
 
   // AUTH
   const viewerId = getUserId(authToken)
@@ -43,9 +44,10 @@ const updateFeatureFlag: MutationResolvers['updateFeatureFlag'] = async (
   }
 
   const userIds = isUpdatingViewerFlag ? [viewerId] : users.map(({id}) => id)
-  addFlag
-    ? await appendUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
-    : await removeUserFeatureFlagsQuery.run({ids: userIds, flag}, getPg())
+  const featureFlags: ValueExpression<DB, 'User', string[]> = addFlag
+    ? sql`arr_append_uniq("featureFlags", ${flag})`
+    : sql`array_remove("featureFlags", ${flag})`
+  await pg.updateTable('User').set({featureFlags}).where('id', 'in', userIds).execute()
   userIds.forEach((userId) => {
     const data = {userId}
     publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdateFeatureFlagPayload', data, subOptions)

@@ -11,10 +11,10 @@ interface Props {
   editorState: EditorState
   onBlur?: (e: React.FocusEvent) => void
   onFocus?: (e: React.FocusEvent) => void
-  onKeyDown: (e: React.KeyboardEvent) => void
+  onKeyDown?: (e: React.KeyboardEvent) => void
   onPastedText?: (text: string) => void
-  placeholder: string
-  editorRef: RefObject<HTMLTextAreaElement>
+  placeholder?: string
+  editorRef?: RefObject<HTMLTextAreaElement>
   onChange?: () => void
 }
 

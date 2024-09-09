@@ -1,0 +1,51 @@
+type GitHubIntegration {
+  """
+  composite key
+  """
+  id: ID!
+
+  """
+  The access token to github. good forever
+  """
+  accessToken: ID
+
+  """
+  The timestamp the provider was created
+  """
+  createdAt: DateTime!
+
+  """
+  true if an access token exists, else false
+  """
+  isActive: Boolean!
+
+  """
+  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  """
+  githubSearchQueries: [GitHubSearchQuery!]!
+
+  """
+  *The GitHub login used for queries
+  """
+  login: ID!
+
+  """
+  The comma-separated list of scopes requested from GitHub
+  """
+  scope: String!
+
+  """
+  *The team that the token is linked to
+  """
+  teamId: ID!
+
+  """
+  The timestamp the token was updated at
+  """
+  updatedAt: DateTime!
+
+  """
+  The user that the access token is attached to
+  """
+  userId: ID!
+}

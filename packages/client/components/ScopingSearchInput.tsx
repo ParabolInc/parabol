@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
+import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
-import {ServiceEnumType} from 'parabol-server/graphql/types/ServiceEnum'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const SearchInput = styled('input')({
   appearance: 'none',
@@ -38,7 +38,7 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
-  service: ServiceEnumType
+  service: TaskServiceEnum
   defaultInput?: string
 }
 

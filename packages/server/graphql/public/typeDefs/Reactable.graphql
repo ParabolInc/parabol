@@ -1,0 +1,14 @@
+"""
+An item that can have reactjis
+"""
+interface Reactable {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  All the reactjis for the given reflection
+  """
+  reactjis: [Reactji!]!
+}

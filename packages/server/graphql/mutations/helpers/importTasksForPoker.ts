@@ -16,13 +16,12 @@ const importTasksForPoker = async (
   const existingTasks = await r
     .table('Task')
     .getAll(r.args(integrationHashes), {index: 'integrationHash'})
-    .filter({teamId})
+    .filter({teamId, userId})
     .run()
   const integrationHashToTaskId = {} as Record<string, string>
   additiveUpdates.map((update) => {
     if (update.service === 'PARABOL') {
       integrationHashToTaskId[update.serviceTaskId] = update.serviceTaskId
-    } else {
     }
   })
   const newIntegrationUpdates = integratedUpdates.filter(

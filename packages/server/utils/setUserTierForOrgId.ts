@@ -1,13 +1,15 @@
-import getRethink from '../database/rethinkDriver'
+import getKysely from '../postgres/getKysely'
 import setUserTierForUserIds from './setUserTierForUserIds'
 
 const setUserTierForOrgId = async (orgId: string) => {
-  const r = await getRethink()
-  const userIds = await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null})('userId')
-    .run()
+  const pg = getKysely()
+  const orgUsers = await pg
+    .selectFrom('OrganizationUser')
+    .select('userId')
+    .where('orgId', '=', orgId)
+    .where('removedAt', 'is', null)
+    .execute()
+  const userIds = orgUsers.map(({userId}) => userId)
   await setUserTierForUserIds(userIds)
 }
 

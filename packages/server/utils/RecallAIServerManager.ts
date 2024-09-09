@@ -3,6 +3,7 @@ import axios from 'axios'
 import {ExternalLinks} from '../../client/types/constEnums'
 import appOrigin from '../appOrigin'
 import {TranscriptBlock} from '../database/types/MeetingRetrospective'
+import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 
 const sdk = api('@recallai/v1.6#536jnqlf7d6blh')
@@ -19,7 +20,7 @@ const getBase64Image = async () => {
     const base64Image = buffer.toString('base64')
     return base64Image
   } catch (error) {
-    console.error(error)
+    Logger.error(error)
     return null
   }
 }

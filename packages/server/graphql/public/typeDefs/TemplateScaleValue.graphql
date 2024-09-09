@@ -1,0 +1,26 @@
+"""
+A value for a scale.
+"""
+type TemplateScaleValue {
+  id: ID!
+
+  """
+  The id of the scale this value belongs to
+  """
+  scaleId: ID!
+
+  """
+  The color used to visually group a scale value
+  """
+  color: String!
+
+  """
+  The label for this value, e.g., XS, M, L
+  """
+  label: String!
+
+  """
+  the order of the scale value in this scale
+  """
+  sortOrder: Int!
+}

@@ -1,31 +1,32 @@
 import styled from '@emotion/styled'
-import {Close as CloseIcon, Link, PersonAdd as PersonAddIcon} from '@mui/icons-material'
+import {
+  Close as CloseIcon,
+  Link,
+  PersonAdd as PersonAddIcon,
+  Replay as ReplayIcon
+} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import useRouter from '~/hooks/useRouter'
-import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
+import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
-import EndCheckInMutation from '../mutations/EndCheckInMutation'
-import EndRetrospectiveMutation from '../mutations/EndRetrospectiveMutation'
-import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
-import {HistoryMaybeLocalHandler, StandardMutation} from '../types/relayMutations'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
-import {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import {MeetingTypeEnum} from '../__generated__/NewMeetingQuery.graphql'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import {MenuItemLabelStyle} from './MenuItemLabel'
+import {EndMeetingMutationLookup} from './Recurrence/EndRecurringMeetingModal'
 
 interface Props {
   menuProps: MenuProps
   popTooltip: () => void
   queryRef: PreloadedQuery<MeetingCardOptionsMenuQuery>
+  openRecurrenceSettingsModal: () => void
   openEndRecurringMeetingModal: () => void
 }
 
@@ -49,16 +50,6 @@ const OptionMenuItem = styled('div')({
   minWidth: '200px'
 })
 
-const EndMeetingMutationLookup: Record<
-  MeetingTypeEnum,
-  StandardMutation<any, HistoryMaybeLocalHandler>
-> = {
-  teamPrompt: EndTeamPromptMutation,
-  action: EndCheckInMutation,
-  retrospective: EndRetrospectiveMutation,
-  poker: EndSprintPokerMutation
-}
-
 const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
     viewer {
@@ -73,10 +64,8 @@ const query = graphql`
         id
         meetingType
         facilitatorUserId
-        ... on TeamPromptMeeting {
-          meetingSeries {
-            cancelledAt
-          }
+        meetingSeries {
+          cancelledAt
         }
       }
     }
@@ -84,7 +73,13 @@ const query = graphql`
 `
 
 const MeetingCardOptionsMenu = (props: Props) => {
-  const {menuProps, popTooltip, queryRef, openEndRecurringMeetingModal} = props
+  const {
+    menuProps,
+    popTooltip,
+    queryRef,
+    openRecurrenceSettingsModal,
+    openEndRecurringMeetingModal
+  } = props
   const data = usePreloadedQuery<MeetingCardOptionsMenuQuery>(query, queryRef)
   const {viewer} = data
   const {id: viewerId, team, meeting} = viewer
@@ -146,6 +141,23 @@ const MeetingCardOptionsMenu = (props: Props) => {
           })
         }}
       />
+      {canEndMeeting && hasRecurrenceEnabled && (
+        <MenuItem
+          key='edit-recurrence'
+          label={
+            <OptionMenuItem>
+              <StyledIcon>
+                <ReplayIcon />
+              </StyledIcon>
+              <span>{'Edit recurrence settings'}</span>
+            </OptionMenuItem>
+          }
+          onClick={() => {
+            closePortal()
+            openRecurrenceSettingsModal()
+          }}
+        />
+      )}
       {canEndMeeting && (
         <MenuItem
           key='close'

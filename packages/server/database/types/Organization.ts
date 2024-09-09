@@ -1,7 +1,7 @@
 import generateUID from '../../generateUID'
+import {TierEnum} from '../../graphql/public/resolverTypes'
+import {CreditCard} from '../../postgres/select'
 import {defaultTier} from '../../utils/defaultTier'
-import CreditCard from './CreditCard'
-import {TierEnum} from './Invoice'
 
 interface Input {
   id?: string
@@ -35,6 +35,7 @@ export default class Organization {
   upcomingInvoiceEmailSentAt?: Date
   tier: TierEnum
   tierLimitExceededAt?: Date | null
+  trialStartDate?: Date | null
   scheduledLockAt?: Date | null
   lockedAt?: Date | null
   updatedAt: Date

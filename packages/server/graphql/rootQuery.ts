@@ -2,7 +2,6 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../utils/authorization'
 import {GQLContext} from './graphql'
 import massInvitation from './queries/massInvitation'
-import SAMLIdP from './queries/SAMLIdP'
 import verifiedInvitation from './queries/verifiedInvitation'
 import User from './types/User'
 
@@ -18,7 +17,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       }
     },
     massInvitation,
-    verifiedInvitation,
-    SAMLIdP
+    verifiedInvitation
   })
 })

@@ -2,14 +2,13 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import stringSimilarity from 'string-similarity'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import UpdateReflectionGroupTitlePayload from '../types/UpdateReflectionGroupTitlePayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 type UpdateReflectionGroupTitleMutationVariables = {
   title: string
@@ -32,14 +31,14 @@ export default {
     {reflectionGroupId, title}: UpdateReflectionGroupTitleMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId).run()
+    const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)
+
     if (!reflectionGroup) {
       return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
@@ -47,7 +46,10 @@ export default {
     if (oldTitle === title) {
       return {error: {message: 'Group already renamed'}}
     }
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const [meeting, viewer] = await Promise.all([
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -67,35 +69,24 @@ export default {
       return {error: {message: 'Title is too long'}}
     }
 
-    const allTitles = await r
-      .table('RetroReflectionGroup')
-      .getAll(meetingId, {index: 'meetingId'})
-      .filter({isActive: true})('title')
-      .run()
+    const allGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+    const allTitles = allGroups.map((g) => g.title)
     if (allTitles.includes(normalizedTitle)) {
       return standardError(new Error('Group titles must be unique'), {userId: viewerId})
     }
 
     // RESOLUTION
-    await Promise.all([
-      r
-        .table('RetroReflectionGroup')
-        .get(reflectionGroupId)
-        .update({
-          title: normalizedTitle
-        })
-        .run(),
-      pg
-        .updateTable('RetroReflectionGroup')
-        .set({title: normalizedTitle})
-        .where('id', '=', reflectionGroupId)
-        .execute()
-    ])
+    dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
+    await pg
+      .updateTable('RetroReflectionGroup')
+      .set({title: normalizedTitle})
+      .where('id', '=', reflectionGroupId)
+      .execute()
 
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!
       const similarity = stringSimilarity.compareTwoStrings(smartTitle, normalizedTitle)
-      analytics.smartGroupTitleChanged(viewerId, similarity, smartTitle, normalizedTitle)
+      analytics.smartGroupTitleChanged(viewer, similarity, smartTitle, normalizedTitle)
     }
 
     const data = {meetingId, reflectionGroupId}

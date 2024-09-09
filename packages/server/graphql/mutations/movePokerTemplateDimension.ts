@@ -1,6 +1,6 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -15,19 +15,18 @@ const movePokerTemplateDimension = {
       type: new GraphQLNonNull(GraphQLID)
     },
     sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat)
+      type: new GraphQLNonNull(GraphQLString)
     }
   },
   async resolve(
     _source: unknown,
-    {dimensionId, sortOrder}: {dimensionId: string; sortOrder: number},
+    {dimensionId, sortOrder}: {dimensionId: string; sortOrder: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -39,16 +38,14 @@ const movePokerTemplateDimension = {
     }
 
     // RESOLUTION
-    await r
-      .table('TemplateDimension')
-      .get(dimensionId)
-      .update({
-        sortOrder,
-        updatedAt: now
-      })
-      .run()
-
     const {teamId} = dimension
+
+    await pg
+      .updateTable('TemplateDimension')
+      .set({sortOrder})
+      .where('id', '=', dimensionId)
+      .execute()
+    dataLoader.clearAll('templateDimensions')
     const data = {dimensionId}
     publish(SubscriptionChannel.TEAM, teamId, 'MovePokerTemplateDimensionPayload', data, subOptions)
     return data

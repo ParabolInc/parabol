@@ -1,7 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import getKysely from '../../postgres/getKysely'
+import {Logger} from '../../utils/Logger'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -24,23 +25,21 @@ const selectTemplate = {
     {selectedTemplateId, teamId}: {selectedTemplateId: string; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const [template, viewer] = await Promise.all([
-      dataLoader.get('meetingTemplates').load(selectedTemplateId) as Promise<MeetingTemplate>,
-      dataLoader.get('users').loadNonNull(viewerId)
+    const [template] = await Promise.all([
+      dataLoader.get('meetingTemplates').load(selectedTemplateId) as Promise<MeetingTemplate>
     ])
 
     if (!template || !template.isActive) {
-      console.log('no template', selectedTemplateId, template)
+      Logger.log('no template', selectedTemplateId, template)
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
-    const {scope, isFree} = template
+    const {scope} = template
     const viewerTeam = await dataLoader.get('teams').loadNonNull(teamId)
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, template.teamId))
@@ -50,34 +49,16 @@ const selectTemplate = {
       if (viewerTeam.orgId !== templateTeam.orgId) {
         return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
       }
-    } else if (scope === 'PUBLIC') {
-      if (
-        !isFree &&
-        !viewer.featureFlags.includes('noTemplateLimit') &&
-        viewerTeam.tier === 'starter'
-      ) {
-        return standardError(new Error('User does not have access to this premium template'), {
-          userId: viewerId
-        })
-      }
     }
 
     // RESOLUTION
-    const meetingSettingsId = await r
-      .table('MeetingSettings')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        meetingType: template.type
-      })
-      .update(
-        {
-          selectedTemplateId
-        },
-        {returnChanges: true}
-      )('changes')(0)('old_val')('id')
-      .default(null)
-      .run()
-
+    const meetingSettingsId = await getKysely()
+      .updateTable('MeetingSettings')
+      .set({selectedTemplateId})
+      .where('teamId', '=', teamId)
+      .where('meetingType', '=', template.type)
+      .returning('id')
+      .executeTakeFirst()
     // No need to check if a non-null 'meetingSettingsId' was returned - the Activity Library client
     // will always attempt to update the template, even if it's already selected, and we don't need
     // to return a 'meetingSettingsId' if no updates took place.

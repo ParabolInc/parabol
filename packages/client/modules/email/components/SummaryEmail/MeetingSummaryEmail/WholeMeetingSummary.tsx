@@ -9,6 +9,11 @@ interface Props {
   meetingRef: WholeMeetingSummary_meeting$key
 }
 
+const isServer = typeof window === 'undefined'
+const hasAI = isServer
+  ? !!process.env.OPEN_AI_API_KEY
+  : !!window.__ACTION__ && !!window.__ACTION__.hasOpenAI
+
 const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -26,16 +31,8 @@ const WholeMeetingSummary = (props: Props) => {
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
-            summary
-          }
-          phases {
-            phaseType
-            ... on DiscussPhase {
-              stages {
-                discussion {
-                  summary
-                }
-              }
+            reflections {
+              id
             }
           }
         }
@@ -49,21 +46,23 @@ const WholeMeetingSummary = (props: Props) => {
     meetingRef
   )
   if (meeting.__typename === 'RetrospectiveMeeting') {
-    const {summary: wholeMeetingSummary, reflectionGroups, phases} = meeting
-    const discussPhase = phases!.find((phase) => phase.phaseType === 'discuss')
-    const {stages} = discussPhase ?? {}
-    const hasTopicSummary = reflectionGroups!.some((group) => group.summary)
-    const hasDiscussionSummary = !!stages?.some((stage) => stage.discussion?.summary)
-    const hasOpenAISummary = hasTopicSummary || hasDiscussionSummary
-    if (!hasOpenAISummary) return null
-    if (hasOpenAISummary && !wholeMeetingSummary) return <WholeMeetingSummaryLoading />
+    const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
+    const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
+    const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
+    if (!hasMoreThanOneReflection || organization.featureFlags.noAISummary || !hasAI) return null
+    if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting
-    if (!organization.featureFlags.standupAISummary || organization.featureFlags.noAISummary) {
+    if (
+      !organization.featureFlags.standupAISummary ||
+      organization.featureFlags.noAISummary ||
+      !hasAI ||
+      !responses ||
+      responses.length === 0
+    ) {
       return null
     }
-    if (!responses || responses.length === 0) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   }

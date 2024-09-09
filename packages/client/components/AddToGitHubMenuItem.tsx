@@ -28,6 +28,7 @@ const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
   const openOAuth = () => {
     GitHubClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
+  if (!GitHubClientManager.isAvailable) return null
   return (
     <MenuItem
       ref={ref}

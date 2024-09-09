@@ -4,9 +4,9 @@ import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import plural from 'parabol-client/utils/plural'
 import React from 'react'
+import ServerEnvironment from './ServerEnvironment'
 import emailTemplate from './emailTemplate'
 import renderSSRElement from './renderSSRElement'
-import ServerEnvironment from './ServerEnvironment'
 
 type TextSummaryProps = Omit<NotificationSummaryProps, 'notificationRefs'>
 const textOnlySummary = (props: TextSummaryProps) => {

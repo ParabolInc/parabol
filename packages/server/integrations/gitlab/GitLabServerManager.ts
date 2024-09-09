@@ -9,8 +9,8 @@ import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
-import {RootSchema} from '../../graphql/public/rootSchema'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {RootSchema} from '../../types/custom'
 import {
   CreateIssueMutation,
   CreateNoteMutation,

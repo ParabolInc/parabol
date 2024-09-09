@@ -15,7 +15,7 @@ export type RemoveTeamMemberPayloadSource = {
 
 const RemoveTeamMemberPayload: RemoveTeamMemberPayloadResolvers = {
   teamMember: async ({teamMemberId}, _args, {dataLoader}: GQLContext) => {
-    return dataLoader.get('teamMembers').load(teamMemberId)
+    return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
   team: async ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)

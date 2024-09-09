@@ -1,8 +1,9 @@
 import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {Logger} from '../../utils/Logger'
 import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
-import NewMeeting, {newMeetingFields} from './NewMeeting'
+import NewMeeting from './NewMeeting'
 import PokerMeetingMember from './PokerMeetingMember'
 import Task from './Task'
 
@@ -11,7 +12,6 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
   interfaces: () => [NewMeeting],
   description: 'A Poker meeting',
   fields: () => ({
-    ...newMeetingFields(),
     commentCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of comments generated in the meeting',
@@ -40,7 +40,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({id: meetingId}, {storyId: taskId}, {dataLoader}) => {
         const task = await dataLoader.get('tasks').load(taskId)
         if (task.meetingId !== meetingId) {
-          console.log('naughty storyId supplied to PokerMeeting')
+          Logger.log('naughty storyId supplied to PokerMeeting')
           return null
         }
         return task

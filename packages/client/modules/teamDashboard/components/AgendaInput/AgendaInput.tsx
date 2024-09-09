@@ -3,6 +3,7 @@ import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {AgendaInput_team$key} from '../../../../__generated__/AgendaInput_team.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -11,13 +12,12 @@ import useHotkey from '../../../../hooks/useHotkey'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useTooltip from '../../../../hooks/useTooltip'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
+import {positionAfter} from '../../../../shared/sortOrder'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
 import {PALETTE} from '../../../../styles/paletteV3'
 import ui from '../../../../styles/ui'
-import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-import {AgendaInput_team$key} from '../../../../__generated__/AgendaInput_team.graphql'
 
 const AgendaInputBlock = styled('div')({
   padding: `8px 0`,
@@ -123,7 +123,7 @@ const AgendaInput = (props: Props) => {
     const newAgendaItem = {
       content,
       pinned: false,
-      sortOrder: getNextSortOrder(agendaItems),
+      sortOrder: positionAfter(agendaItems.at(-1)?.sortOrder ?? ''),
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)
     }

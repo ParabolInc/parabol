@@ -26,7 +26,7 @@ const sendAccountRemovedEvent = async (
   })
   parabolPayload.data.user.email = email
   parabolPayload.data.user.isRemoved = true
-  analytics.accountRemoved(userIdToDelete, validReason)
+  analytics.accountRemoved({id: userIdToDelete, email}, validReason)
 }
 
 export default sendAccountRemovedEvent

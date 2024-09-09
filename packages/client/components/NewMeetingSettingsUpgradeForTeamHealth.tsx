@@ -1,13 +1,13 @@
+import styled from '@emotion/styled'
+import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsUpgradeForTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsUpgradeForTeamHealth_team.graphql'
-import PlainButton from './PlainButton/PlainButton'
-import {Lock} from '@mui/icons-material'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import useAtmosphere from '../hooks/useAtmosphere'
-import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV3'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
+import PlainButton from './PlainButton/PlainButton'
 
 const ButtonRow = styled(PlainButton)({
   background: PALETTE.SLATE_200,

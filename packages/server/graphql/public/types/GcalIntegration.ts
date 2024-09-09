@@ -1,6 +1,6 @@
 import {google} from 'googleapis'
-import {GcalIntegrationResolvers} from '../resolverTypes'
 import appOrigin from '../../../appOrigin'
+import {GcalIntegrationResolvers} from '../resolverTypes'
 
 export type GcalIntegrationSource = {
   teamId: string
@@ -14,7 +14,7 @@ const GcalIntegration: GcalIntegrationResolvers = {
   cloudProvider: async (_source, _args, {dataLoader}) => {
     const [globalProvider] = await dataLoader
       .get('sharedIntegrationProviders')
-      .load({service: 'gcal', orgTeamIds: ['aGhostTeam'], teamIds: []})
+      .load({service: 'gcal', orgIds: [], teamIds: []})
     if (!globalProvider) return null
     return globalProvider
   },

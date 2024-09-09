@@ -1,7 +1,7 @@
 import getPg from '../../../../postgres/getPg'
 
 const filterFields = ['createdAt', 'lastSeenAt'] as const
-type FilterField = typeof filterFields[number]
+type FilterField = (typeof filterFields)[number]
 
 const authCount = async (
   after: Date | null | undefined,

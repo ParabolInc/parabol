@@ -13,7 +13,8 @@ INSERT INTO
     "consumerSecret",
     "serverBaseUrl",
     "webhookUrl",
-    "teamId"
+    "teamId",
+    "orgId"
   )
 VALUES
   (
@@ -27,9 +28,10 @@ VALUES
     :consumerSecret,
     :serverBaseUrl,
     :webhookUrl,
-    :teamId
+    :teamId,
+    :orgId
   )
-ON CONFLICT ("teamId", "service", "authStrategy") DO UPDATE SET
+ON CONFLICT ("orgId", "teamId", "service", "authStrategy") DO UPDATE SET
   "service" = EXCLUDED."service",
   "authStrategy" = EXCLUDED."authStrategy",
   "scope" = EXCLUDED."scope",

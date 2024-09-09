@@ -1,7 +1,7 @@
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
-import {MutationResolvers} from '../resolverTypes'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
+import {MutationResolvers} from '../resolverTypes'
 
 const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   _source,
@@ -20,6 +20,8 @@ const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   const {error} = loginAttempt
   if (error === AuthenticationError.USER_EXISTS_GOOGLE) {
     return {error: {message: 'Try logging in with Google'}}
+  } else if (error === AuthenticationError.USER_EXISTS_MICROSOFT) {
+    return {error: {message: 'Try logging in with Microsoft'}}
   } else if (
     error === AuthenticationError.INVALID_PASSWORD ||
     error === AuthenticationError.USER_NOT_FOUND

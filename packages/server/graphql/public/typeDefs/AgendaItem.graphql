@@ -1,0 +1,64 @@
+"""
+A request placeholder that will likely turn into 1 or more tasks
+"""
+type AgendaItem {
+  """
+  The team member that created the agenda item
+  """
+  teamMember: TeamMember!
+
+  """
+  The unique agenda item id teamId::shortid
+  """
+  id: ID!
+
+  """
+  The body of the agenda item
+  """
+  content: String!
+
+  """
+  The timestamp the agenda item was created
+  """
+  createdAt: DateTime
+
+  """
+  true if the agenda item has not been processed or deleted
+  """
+  isActive: Boolean!
+
+  """
+  True if the agenda item has been pinned
+  """
+  pinned: Boolean
+
+  """
+  If pinned, this is the unique id of the original agenda item
+  """
+  pinnedParentId: ID
+
+  """
+  The sort order of the agenda item in the list
+  """
+  sortOrder: String!
+
+  """
+  *The team for this agenda item
+  """
+  teamId: ID!
+
+  """
+  The teamMemberId that created this agenda item
+  """
+  teamMemberId: ID!
+
+  """
+  The meetingId of the agenda item
+  """
+  meetingId: ID
+
+  """
+  The timestamp the agenda item was updated
+  """
+  updatedAt: DateTime
+}

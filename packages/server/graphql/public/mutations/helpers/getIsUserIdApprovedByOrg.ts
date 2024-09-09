@@ -1,5 +1,6 @@
 import createEmailVerficationForExistingUser from '../../../../email/createEmailVerficationForExistingUser'
 import {DataLoaderWorker} from '../../../graphql'
+import getIsEmailApprovedByOrg from './getIsEmailApprovedByOrg'
 const getIsUserIdApprovedByOrg = async (
   userId: string,
   orgId: string,
@@ -15,8 +16,8 @@ const getIsUserIdApprovedByOrg = async (
   if (organizationUser) return undefined
   const user = await dataLoader.get('users').loadNonNull(userId)
   const {email, identities} = user
-  const isApproved = approvedDomains.some((domain) => email.endsWith(domain))
-  if (!isApproved) {
+  const maybeError = await getIsEmailApprovedByOrg(email, orgId, dataLoader)
+  if (maybeError) {
     const message = `Your email is not on your company's approved list of users. Please reach out to your account admin or support@parabol.co for more information`
     return new Error(message)
   }

@@ -1,0 +1,11 @@
+type ProcessRecurrenceSuccess {
+  """
+  Number of meetings that were ended because of this mutation.
+  """
+  meetingsEnded: Int!
+
+  """
+  Number of meetings that were started because of this mutation.
+  """
+  meetingsStarted: Int!
+}

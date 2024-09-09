@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
+import {GitLabScopingSelectAllIssues_issues$key} from '../__generated__/GitLabScopingSelectAllIssues_issues.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -10,7 +11,6 @@ import GitLabIssueId from '../shared/gqlIds/GitLabIssueId'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
-import {GitLabScopingSelectAllIssues_issues$key} from '../__generated__/GitLabScopingSelectAllIssues_issues.graphql'
 import Checkbox from './Checkbox'
 
 const Item = styled('div')({
@@ -70,7 +70,7 @@ const GitLabScopingSelectAllIssues = (props: Props) => {
           service: 'gitlab',
           serviceTaskId,
           action
-        } as const)
+        }) as const
     )
 
     const variables = {

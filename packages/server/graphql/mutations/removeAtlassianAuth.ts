@@ -35,14 +35,17 @@ export default {
     }
 
     // RESOLUTION
-    const existingAuth = await getAtlassianAuthByUserIdTeamId(viewerId, teamId)
+    const [existingAuth, viewer] = await Promise.all([
+      getAtlassianAuthByUserIdTeamId(viewerId, teamId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!existingAuth) {
       return standardError(new Error('Auth not found'), {userId: viewerId})
     }
 
     await removeAtlassianAuth(viewerId, teamId)
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
-    analytics.integrationRemoved(viewerId, teamId, 'jira')
+    analytics.integrationRemoved(viewer, teamId, 'jira')
 
     const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveAtlassianAuthPayload', data, subOptions)

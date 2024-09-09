@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useLocation} from 'react-router'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useLocation} from 'react-router'
 import {RequestToJoinOrgNotification_notification$key} from '~/__generated__/RequestToJoinOrgNotification_notification.graphql'
+import useRouter from '../hooks/useRouter'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
-import useRouter from '../hooks/useRouter'
 
 interface Props {
   notification: RequestToJoinOrgNotification_notification$key

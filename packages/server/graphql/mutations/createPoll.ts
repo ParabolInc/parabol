@@ -2,12 +2,12 @@ import {GraphQLNonNull} from 'graphql'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import insertPollWithOptions from '../../postgres/queries/insertPollWithOptions'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import CreatePollInput from '../types/CreatePollInput'
 import CreatePollPayload from '../types/CreatePollPayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 type PollOptionsInputVariables = {
   title: string
@@ -84,7 +84,10 @@ const createPoll = {
       return {error: {message: 'Not on team'}}
     }
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-    const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
+    const [viewerMeetingMember, viewer] = await Promise.all([
+      dataLoader.get('meetingMembers').load(meetingMemberId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!viewerMeetingMember) {
       return {error: {message: 'Not a member of the meeting'}}
     }
@@ -108,7 +111,7 @@ const createPoll = {
     const {pollId} = insertPollResult[0]!
 
     const data = {pollId}
-    analytics.pollAdded(viewerId, teamId, meetingId)
+    analytics.pollAdded(viewer, teamId, meetingId)
     publish(SubscriptionChannel.MEETING, meetingId, 'CreatePollSuccess', data, subOptions)
     return data
   }

@@ -1,6 +1,6 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../../database/rethinkDriver'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import getKysely from '../../../postgres/getKysely'
+import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
@@ -14,25 +14,22 @@ const oldUpgradeToTeamTier = async (
   email: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const now = new Date()
 
-  const organization = await r.table('Organization').get(orgId).run()
+  const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) throw new Error('Bad orgId')
 
   const {stripeId, stripeSubscriptionId} = organization
-  const quantity = await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, inactive: false})
-    .count()
-    .run()
+  const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+  const quantity = activeOrgUsers.length
 
   const manager = getStripeManager()
   const customer = stripeId
     ? await manager.updatePayment(stripeId, source)
-    : await manager.createCustomer(orgId, email, source)
-
+    : await manager.createCustomer(orgId, email, undefined, source)
+  if (customer instanceof Error) throw customer
   let subscriptionFields = {}
   if (!stripeSubscriptionId) {
     const subscription = await manager.createTeamSubscriptionOld(customer.id, orgId, quantity)
@@ -43,21 +40,22 @@ const oldUpgradeToTeamTier = async (
     }
   }
 
-  await r({
-    updatedOrg: r
-      .table('Organization')
-      .get(orgId)
-      .update({
-        ...subscriptionFields,
-        creditCard: await getCCFromCustomer(customer),
-        tier: 'team',
-        stripeId: customer.id,
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null,
-        updatedAt: now
-      })
-  }).run()
+  const creditCard = await getCCFromCustomer(customer)
+  await getKysely()
+    .updateTable('Organization')
+    .set({
+      ...subscriptionFields,
+      creditCard: toCreditCard(creditCard),
+      tier: 'team',
+      stripeId: customer.id,
+      tierLimitExceededAt: null,
+      scheduledLockAt: null,
+      lockedAt: null,
+      updatedAt: now,
+      trialStartDate: null
+    })
+    .where('id', '=', orgId)
+    .execute()
 
   // If subscription already exists and has open invoices, try to process them
   if (stripeSubscriptionId) {
@@ -75,13 +73,15 @@ const oldUpgradeToTeamTier = async (
   }
 
   await Promise.all([
-    updateTeamByOrgId(
-      {
+    pg
+      .updateTable('Team')
+      .set({
         isPaid: true,
-        tier: 'team'
-      },
-      orgId
-    ),
+        tier: 'team',
+        trialStartDate: null
+      })
+      .where('orgId', '=', orgId)
+      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 

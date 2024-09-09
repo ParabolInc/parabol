@@ -1,0 +1,21 @@
+input CreatePollInput {
+  """
+  Foreign key for the discussion this was created in
+  """
+  discussionId: ID!
+
+  """
+  The order of this threadable
+  """
+  threadSortOrder: Int!
+
+  """
+  Poll question
+  """
+  title: String!
+
+  """
+  All the poll voting options
+  """
+  options: [PollOptionInput!]!
+}

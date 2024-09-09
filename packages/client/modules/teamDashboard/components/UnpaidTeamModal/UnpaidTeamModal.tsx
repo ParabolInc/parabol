@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -9,11 +10,10 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useRouter from '../../../../hooks/useRouter'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
+import type {UpgradeCTALocationEnumType} from '../../../../shared/UpgradeCTALocationEnumType'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
-import {UpgradeCTALocationEnumType} from 'parabol-server/graphql/types/UpgradeCTALocationEnum'
-import {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
@@ -45,9 +45,11 @@ const query = graphql`
           lockedAt
           name
           billingLeaders {
-            id
-            preferredName
-            email
+            user {
+              id
+              preferredName
+              email
+            }
           }
           creditCard {
             brand
@@ -85,9 +87,10 @@ const UnpaidTeamModal = (props: Props) => {
 
   const {id: orgId, billingLeaders, name: orgName} = organization
   const [firstBillingLeader] = billingLeaders
-  const billingLeaderName = firstBillingLeader?.preferredName ?? 'Unknown'
-  const email = firstBillingLeader?.email ?? 'Unknown'
-  const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1
+  const {user: firstBillingLeaderUser} = firstBillingLeader ?? {}
+  const billingLeaderName = firstBillingLeaderUser?.preferredName ?? 'Unknown'
+  const email = firstBillingLeaderUser?.email ?? 'Unknown'
+  const isALeader = billingLeaders.findIndex((leader) => leader.user.id === viewerId) !== -1
 
   const goToBilling = (upgradeCTALocation: UpgradeCTALocationEnumType) => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {

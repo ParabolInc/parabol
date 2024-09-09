@@ -1,0 +1,11 @@
+type MessageAllSlackUsersSuccess {
+  """
+  A list of the Parabol user ids that have been sent a direct message in Slack
+  """
+  messagedUserIds: [ID!]!
+
+  """
+  Slack messages that failed to send
+  """
+  errors: [MessageSlackUserError!]
+}

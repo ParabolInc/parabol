@@ -3,11 +3,11 @@ import ms from 'ms'
 import {Unpromise} from 'parabol-client/types/generics'
 import {DBType} from '../database/rethinkDriver'
 import RedisInstance from '../utils/RedisInstance'
+import RethinkDBCache, {RWrite} from './RethinkDBCache'
 import customRedisQueries from './customRedisQueries'
 import hydrateRedisDoc from './hydrateRedisDoc'
-import RethinkDBCache, {RWrite} from './RethinkDBCache'
 export type RedisType = {
-  [P in keyof typeof customRedisQueries]: Unpromise<ReturnType<typeof customRedisQueries[P]>>[0]
+  [P in keyof typeof customRedisQueries]: Unpromise<ReturnType<(typeof customRedisQueries)[P]>>[0]
 }
 
 export type CacheType = RedisType & DBType

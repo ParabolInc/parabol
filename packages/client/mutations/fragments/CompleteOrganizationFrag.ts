@@ -4,7 +4,9 @@ graphql`
     id
     isBillingLeader
     billingLeaders {
-      id
+      user {
+        id
+      }
     }
     createdAt
     name
@@ -21,5 +23,6 @@ graphql`
     periodStart
     periodEnd
     tier
+    billingTier
   }
 `

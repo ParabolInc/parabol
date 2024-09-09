@@ -1,5 +1,3 @@
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
 import './types/modules.d'
 
 if (__PRODUCTION__) {

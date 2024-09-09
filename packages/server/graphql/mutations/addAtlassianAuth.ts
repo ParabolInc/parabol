@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getAtlassianAuthsByUserId from '../../postgres/queries/getAtlassianAuthsByUserId'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
-import {analytics} from '../../utils/analytics/analytics'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -37,7 +37,10 @@ export default {
     }
 
     // RESOLUTION
-    const oauthResponse = await AtlassianServerManager.init(code)
+    const [oauthResponse, viewer] = await Promise.all([
+      AtlassianServerManager.init(code),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (oauthResponse instanceof Error) {
       return standardError(new Error(`Jira: ${oauthResponse}`), {userId: viewerId})
     }
@@ -83,7 +86,7 @@ export default {
     ])
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
-    analytics.integrationAdded(viewerId, teamId, 'jira')
+    analytics.integrationAdded(viewer, teamId, 'jira')
     const data = {teamId, userId: viewerId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
     return data

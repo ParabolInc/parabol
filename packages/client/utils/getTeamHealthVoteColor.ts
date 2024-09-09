@@ -1,5 +1,5 @@
-import blendColors from './blendColors'
 import {PALETTE} from '../styles/paletteV3'
+import blendColors from './blendColors'
 
 function getTeamHealthVoteColor(allVotes: readonly number[], vote: number) {
   const minVote = Math.min(...allVotes)

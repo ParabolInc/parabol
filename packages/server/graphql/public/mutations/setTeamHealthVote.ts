@@ -1,12 +1,12 @@
-import {MutationResolvers} from '../resolverTypes'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import {RValue} from '../../../database/stricterR'
+import TeamHealthVote from '../../../database/types/TeamHealthVote'
+import updateStage from '../../../database/updateStage'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateStage from '../../../database/updateStage'
-import TeamHealthVote from '../../../database/types/TeamHealthVote'
-import {RValue} from '../../../database/stricterR'
+import {MutationResolvers} from '../resolverTypes'
 
 const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealthVote) => {
   const r = await getRethink()
@@ -79,9 +79,11 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
   const data = {
     meetingId,
     stageId,
+    teamId,
     stage: {
       ...stage,
-      meetingId
+      meetingId,
+      teamId
     }
   }
 

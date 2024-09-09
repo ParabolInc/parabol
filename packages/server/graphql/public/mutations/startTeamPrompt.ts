@@ -1,24 +1,25 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
+import createGcalEvent from '../../mutations/helpers/createGcalEvent'
+import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
-import {createTeamPromptTitle} from '../../../database/types/MeetingTeamPrompt'
-import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 
 const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, recurrenceSettings, gcalInput},
+  {teamId, name, rrule, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
@@ -30,7 +31,10 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
-  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
+  const [unpaidError, viewer] = await Promise.all([
+    isStartMeetingLocked(teamId, dataLoader),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   const redisLock = new RedisLockQueue(`newTeamPromptMeeting:${teamId}`, MEETING_START_DELAY_MS)
@@ -43,11 +47,8 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   }
 
   //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
-  const meetingName = createTeamPromptTitle(
-    recurrenceSettings?.name || 'Standup',
-    new Date(),
-    'UTC'
-  )
+  const meetingName = createMeetingSeriesTitle(name || 'Standup', new Date(), 'UTC')
+  const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, r, dataLoader)
 
   await Promise.all([
@@ -61,20 +62,31 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
 
   const {id: meetingId} = meeting
-  if (recurrenceSettings?.rrule) {
-    const meetingSeries = await startNewMeetingSeries(
-      viewerId,
-      teamId,
-      meetingId,
-      meeting.name,
-      recurrenceSettings.rrule,
-      recurrenceSettings.name
-    )
-    analytics.recurrenceStarted(viewerId, meetingSeries)
+  const meetingSeries = rrule && (await startNewMeetingSeries(meeting, rrule, name))
+  if (meetingSeries) {
+    // meeting was modified if a new meeting series was created
+    dataLoader.get('newMeetings').clear(meetingId)
+    analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
-  analytics.meetingStarted(viewerId, meeting)
-  const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+  analytics.meetingStarted(viewer, meeting)
+  const {error, gcalSeriesId} = await createGcalEvent({
+    name: eventName,
+    gcalInput,
+    meetingId,
+    teamId,
+    viewerId,
+    rrule,
+    dataLoader
+  })
+  if (meetingSeries && gcalSeriesId) {
+    const pg = getKysely()
+    await pg
+      .updateTable('MeetingSeries')
+      .set({gcalSeriesId})
+      .where('id', '=', meetingSeries.id)
+      .execute()
+  }
   const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data

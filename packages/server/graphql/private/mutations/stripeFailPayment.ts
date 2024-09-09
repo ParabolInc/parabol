@@ -75,12 +75,11 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     // Not to handle this particular case in 23 hours, we do it now
     await terminateSubscription(orgId)
   }
-
-  const billingLeaderUserIds = (await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, role: 'BILLING_LEADER'})('userId')
-    .run()) as string[]
+  const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const billingLeaderOrgUsers = orgUsers.filter(
+    ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+  )
+  const billingLeaderUserIds = billingLeaderOrgUsers.map(({userId}) => userId)
 
   const {default_source} = customer
 
@@ -102,7 +101,6 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   )
 
   await r({
-    update: r.table('Invoice').get(invoiceId).update({status: 'FAILED'}),
     insert: r.table('Notification').insert(notifications)
   }).run()
 

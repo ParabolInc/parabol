@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import upsertIntegrationProvider from '../../postgres/queries/upsertIntegrationProvider'
-import {isSuperUser, isTeamMember} from '../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import AddIntegrationProviderInput, {
@@ -30,13 +30,38 @@ const addIntegrationProvider = {
     context: GQLContext
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
-    const {teamId} = input
+    const {teamId, orgId, scope} = input
+    const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
+    // INPUT VALIDATION
+    if (scope === 'global' && (teamId || orgId)) {
+      return {error: {message: 'Global providers must not have an `orgId` nor `teamId`'}}
+    }
+    if (scope === 'org' && (!orgId || teamId)) {
+      return {error: {message: 'Org providers must have an `orgId` and no `teamId`'}}
+    }
+    if (scope === 'team' && (!teamId || orgId)) {
+      return {error: {message: 'Team providers must have a `teamId` and no `orgId`'}}
+    }
+
     // AUTH
-    if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-      return {error: {message: 'Must be on the team for which the provider is created'}}
+    if (!isSuperUser(authToken)) {
+      if (scope === 'global') {
+        return {error: {message: 'Must be a super user to add a global provider'}}
+      }
+      if (scope === 'org' && !isUserOrgAdmin(viewerId, orgId!, dataLoader)) {
+        return {
+          error: {
+            message:
+              'Must be an organization admin to add an integration provider on organization level'
+          }
+        }
+      }
+      if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
+        return {error: {message: 'Must be on the team for the integration provider'}}
+      }
     }
 
     // VALIDATION
@@ -67,18 +92,33 @@ const addIntegrationProvider = {
       return {error: {message: 'Exactly 1 metadata provider is expected'}}
     }
 
+    const resolvedOrgId =
+      orgId || (teamId ? (await dataLoader.get('teams').loadNonNull(teamId)).orgId : null)
+
     // RESOLUTION
     const providerId = await upsertIntegrationProvider({
       authStrategy,
       ...rest,
       ...oAuth1ProviderMetadataInput,
       ...oAuth2ProviderMetadataInput,
-      ...webhookProviderMetadataInput
+      ...webhookProviderMetadataInput,
+      ...(scope === 'global'
+        ? {orgId: null, teamId: null}
+        : scope === 'org'
+          ? {orgId, teamId: null}
+          : {orgId: null, teamId})
     })
 
-    //TODO: add proper subscription scope handling here, teamId only exists in provider with team scope
-    const data = {teamId, providerId}
-    publish(SubscriptionChannel.TEAM, teamId, 'AddIntegrationProviderSuccess', data, subOptions)
+    const data = {providerId}
+    if (resolvedOrgId) {
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        resolvedOrgId,
+        'AddIntegrationProviderSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

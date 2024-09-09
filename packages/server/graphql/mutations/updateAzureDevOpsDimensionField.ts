@@ -4,6 +4,7 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import upsertAzureDevOpsDimensionFieldMap, {
   AzureDevOpsFieldMapProps
 } from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
+import {Logger} from '../../utils/Logger'
 import {isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -57,7 +58,7 @@ const updateAzureDevOpsDimensionField = {
     },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    //console.log(`Inside updateAzureDevOpsDimensionField`)
+    //Logger.log(`Inside updateAzureDevOpsDimensionField`)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -91,7 +92,7 @@ const updateAzureDevOpsDimensionField = {
       } as AzureDevOpsFieldMapProps
       await upsertAzureDevOpsDimensionFieldMap(props)
     } catch (e) {
-      console.log(e)
+      Logger.log(e)
     }
 
     const data = {teamId, meetingId}

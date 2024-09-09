@@ -3,8 +3,8 @@ import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import AuthToken from '../../database/types/AuthToken'
 import generateUID from '../../generateUID'
-import getTeamsByOrgIds from '../../postgres/queries/getTeamsByOrgIds'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
@@ -14,10 +14,10 @@ import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
+import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(AddTeamPayload),
@@ -46,16 +46,16 @@ export default {
       const {invitees} = args
       const orgId = args.newTeam.orgId ?? ''
       const viewerId = getUserId(authToken)
-      const viewer = await dataLoader.get('users').load(viewerId)
 
       if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
         return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 
       // VALIDATION
-      const [orgTeams, organization] = await Promise.all([
-        getTeamsByOrgIds([orgId], {isArchived: false}),
-        dataLoader.get('organizations').load(orgId)
+      const [orgTeams, organization, viewer] = await Promise.all([
+        dataLoader.get('teamsByOrgIds').load(orgId),
+        dataLoader.get('organizations').loadNonNull(orgId),
+        dataLoader.get('users').loadNonNull(viewerId)
       ])
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
@@ -73,9 +73,8 @@ export default {
         return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
-        const organization = await dataLoader.get('organizations').load(orgId)
-        const {tier} = organization
-        if (tier === 'starter') {
+        const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+        if (getFeatureTier(organization) === 'starter') {
           return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }
@@ -85,12 +84,12 @@ export default {
 
       // RESOLUTION
       const teamId = generateUID()
-      await createTeamAndLeader(viewer!, {id: teamId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(viewer, {id: teamId, isOnboardTeam: false, ...newTeam}, dataLoader)
 
       const {tms} = authToken
       // MUTATIVE
       tms.push(teamId)
-      analytics.newTeam(viewerId, orgId, teamId, orgTeams.length + 1)
+      analytics.newTeam(viewer, orgId, teamId, orgTeams.length + 1)
       publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {

@@ -69,6 +69,7 @@ extend type User {
   # If positive, client clock is ahead of server clock by this many ms
   clientClockOffset: Int
   dashSearch: String
+  activityLibrarySearch: String
   pageName: String
   # The team we should default to in team pickers, etc.
   preferredTeamId: ID

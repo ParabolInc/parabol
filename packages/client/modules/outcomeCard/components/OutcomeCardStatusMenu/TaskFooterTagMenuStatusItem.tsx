@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import React, {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {TaskFooterTagMenuStatusItem_task$key} from '../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
 import MenuItem from '../../../../components/MenuItem'
 import MenuItemDot from '../../../../components/MenuItemDot'
 import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import {taskStatusColors, taskStatusLabels} from '../../../../utils/taskStatus'
-import {TaskFooterTagMenuStatusItem_task$key} from '../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
 
 interface Props {
   area: AreaEnum

@@ -3,15 +3,23 @@ import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {EstimatePhaseDiscussionDrawer_meeting$key} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
-import {EstimatePhaseDiscussionDrawer_meeting$key} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
-import {BezierCurve, Breakpoint, DiscussionThreadEnum, ZIndex} from '../types/constEnums'
+import {
+  BezierCurve,
+  Breakpoint,
+  DiscussionThreadEnum,
+  GlobalBanner,
+  ZIndex
+} from '../types/constEnums'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import LabelHeading from './LabelHeading/LabelHeading'
 import PlainButton from './PlainButton/PlainButton'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
@@ -21,6 +29,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
   height: '100vh',
   justifyContent: 'flex-start',
   overflow: 'hidden',
+  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
   position: isDesktop ? 'fixed' : 'static',
   bottom: 0,
   top: 0,

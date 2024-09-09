@@ -1,19 +1,14 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isSpecialPokerLabel from 'parabol-client/utils/isSpecialPokerLabel'
-import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import TemplateScaleInput, {TemplateScaleInputType} from '../types/TemplateScaleInput'
 import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateScaleValuePayload'
-import {
-  validateColorValue,
-  validateScaleLabel,
-  validateScaleLabelValueUniqueness
-} from './helpers/validateScaleValue'
+import {validateColorValue, validateScaleLabel} from './helpers/validateScaleValue'
 
 const updatePokerTemplateScaleValue = {
   description: 'Update the label, numerical value or color of a scale value in a scale',
@@ -42,14 +37,13 @@ const updatePokerTemplateScaleValue = {
     },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const existingScale = await r.table('TemplateScale').get(scaleId).run()
+    const existingScale = await dataLoader.get('templateScales').load(scaleId)
     if (!existingScale || existingScale.removedAt) {
       return standardError(new Error('Did not find an active scale'), {userId: viewerId})
     }
@@ -81,31 +75,13 @@ const updatePokerTemplateScaleValue = {
     if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
       return standardError(new Error('Invalid scale label'), {userId: viewerId})
     }
-
-    await r
-      .table('TemplateScale')
-      .get(scaleId)
-      .update((row: RValue) => ({
-        values: row('values').changeAt(oldScaleValueIndex, newScaleValue),
-        updatedAt: now
-      }))
-      .run()
-    const updatedScale = await r.table('TemplateScale').get(scaleId).run()
-
-    if (!validateScaleLabelValueUniqueness(updatedScale.values)) {
-      // updated values or labels are not unique, rolling back
-      await r
-        .table('TemplateScale')
-        .get(scaleId)
-        .update({
-          values: existingScale.values,
-          updatedAt: existingScale.updatedAt
-        })
-        .run()
-      return standardError(new Error('Scale labels and/or numerical values are not unique'), {
-        userId: viewerId
-      })
-    }
+    await pg
+      .updateTable('TemplateScaleValue')
+      .set({label, color})
+      .where('templateScaleId', '=', scaleId)
+      .where('label', '=', oldScaleLabel)
+      .execute()
+    dataLoader.clearAll('templateScales')
 
     const data = {scaleId}
     publish(

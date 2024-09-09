@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {ToggleTeamDrawerMutation as TToggleTeamDrawerMutation} from '../__generated__/ToggleTeamDrawerMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import {ToggleTeamDrawerMutation as TToggleTeamDrawerMutation} from '../__generated__/ToggleTeamDrawerMutation.graphql'
 
 graphql`
   fragment ToggleTeamDrawerMutation_teamMember on ToggleTeamDrawerSuccess {

@@ -6,11 +6,12 @@ import {r} from 'rethinkdb-ts'
 import {parse} from 'url'
 import cliPgmConfig from '../../packages/server/postgres/pgmConfig'
 import '../webpack/utils/dotenv'
+import pgEnsureExtensions from './pgEnsureExtensions'
 import pgMigrate from './pgMigrateRunner'
 import * as rethinkMigrate from './rethinkMigrateRunner'
 
 const migrateRethinkDB = async () => {
-  console.log('👴 RethinkDB Migraiton Started')
+  console.log('👴 RethinkDB Migration Started')
   const {hostname, port, path: urlPath} = parse(process.env.RETHINKDB_URL!)
   process.env.host = hostname!
   process.env.port = port!
@@ -27,11 +28,12 @@ const migrateRethinkDB = async () => {
     collector[name] = context(relativePath)
   })
   await rethinkMigrate.up({all: true, migrations: collector})
-  console.log('👴 RethinkDB Migraiton Complete')
+  console.log('👴 RethinkDB Migration Complete')
 }
 
 const migratePG = async () => {
   console.log('🐘 Postgres Migration Started')
+  await pgEnsureExtensions()
   // pgm uses a dynamic require statement, which doesn't work with webpack
   // if we ignore that dynamic require, we'd still have to include the migrations directory AND any dependencies it might have
   // by processing through webpack's require.context, we let webpack handle everything

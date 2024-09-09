@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {NewTeamOrgPicker_organizations$key} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 import DropdownMenuToggle from '../../../components/DropdownMenuToggle'
 import TierTag from '../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import lazyPreload from '../../../utils/lazyPreload'
 import sortByTier from '../../../utils/sortByTier'
-import {NewTeamOrgPicker_organizations$key} from '../../../__generated__/NewTeamOrgPicker_organizations.graphql'
 
 const MenuToggleInner = styled('div')({
   alignItems: 'center',
@@ -50,22 +50,18 @@ const NewTeamOrgPicker = (props: Props) => {
         id
         name
         tier
+        billingTier
       }
     `,
     organizationsRef
   )
   const sortedOrgs = useMemo(() => sortByTier(organizations), [organizations])
-  useEffect(
-    () => {
-      const [firstOrg] = sortedOrgs
-      if (firstOrg) {
-        onChange(firstOrg.id)
-      }
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
+  useEffect(() => {
+    const [firstOrg] = sortedOrgs
+    if (firstOrg) {
+      onChange(firstOrg.id)
+    }
+  }, [])
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS
@@ -85,7 +81,9 @@ const NewTeamOrgPicker = (props: Props) => {
         defaultText={
           <MenuToggleInner>
             <MenuToggleLabel>{defaultText}</MenuToggleLabel>
-            {org && org.tier !== 'starter' && <TierTag tier={org.tier} />}
+            {org && org.tier !== 'starter' && (
+              <TierTag tier={org.tier} billingTier={org.billingTier} />
+            )}
           </MenuToggleInner>
         }
       />

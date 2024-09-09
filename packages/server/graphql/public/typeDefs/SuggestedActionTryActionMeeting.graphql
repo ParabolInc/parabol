@@ -1,0 +1,49 @@
+"""
+a suggestion to try a retro with your team
+"""
+type SuggestedActionTryActionMeeting implements SuggestedAction {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  * The timestamp the action was created at
+  """
+  createdAt: DateTime!
+
+  """
+  The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+  """
+  priority: Float
+
+  """
+  * The timestamp the action was removed at
+  """
+  removedAt: DateTime
+
+  """
+  The specific type of suggested action
+  """
+  type: SuggestedActionTypeEnum!
+
+  """
+  * The userId this action is for
+  """
+  userId: ID!
+
+  """
+  The user than can see this event
+  """
+  user: User!
+
+  """
+  fk
+  """
+  teamId: ID!
+
+  """
+  The team you should run an action meeting with
+  """
+  team: Team!
+}

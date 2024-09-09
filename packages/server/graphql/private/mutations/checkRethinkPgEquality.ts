@@ -1,12 +1,12 @@
-import fs from 'fs'
-import path from 'path'
 import getRethink from '../../../database/rethinkDriver'
-import getMeetingTemplatesByIds from '../../../postgres/queries/getMeetingTemplatesByIds'
+import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
+import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
   compareRValUndefinedAsFalse,
   compareRValUndefinedAsNull,
+  compareRValUndefinedAsNullAndTruncateRVal,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -21,37 +21,52 @@ const handleResult = async (
   const resultStr = JSON.stringify(result)
   if (!writeToFile) return resultStr
 
-  const fileName = `${tableName}-${new Date()}`
-  const fileDir = path.join(process.cwd(), '__rethinkEquality__')
-  const fileLocation = path.join(fileDir, fileName)
-  await fs.promises.mkdir(fileDir, {recursive: true})
-  await fs.promises.writeFile(fileLocation, resultStr)
-  return `Result written to ${fileLocation}`
+  const fileName = `rethinkdbEquality_${tableName}_${new Date().toISOString()}.json`
+  const manager = getFileStoreManager()
+  const buffer = Buffer.from(resultStr, 'utf-8')
+  return manager.putDebugFile(buffer, fileName)
 }
 
 const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = async (
   _source,
-  {tableName, writeToFile}
+  {tableName, writeToFile, maxErrors}
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'MeetingTemplate') {
+  if (tableName === 'TeamMember') {
     const rowCountResult = await checkRowCount(tableName)
-    const rethinkQuery = r.table('MeetingTemplate').orderBy('updatedAt', {index: 'updatedAt'})
-    const errors = await checkTableEq(rethinkQuery, getMeetingTemplatesByIds, {
-      createdAt: defaultEqFn,
-      isActive: defaultEqFn,
-      name: defaultEqFn,
-      teamId: defaultEqFn,
-      updatedAt: compareDateAlmostEqual,
-      scope: defaultEqFn,
-      orgId: defaultEqFn,
-      parentTemplateId: compareRValUndefinedAsNull,
-      lastUsedAt: compareRValUndefinedAsNull,
-      type: defaultEqFn,
-      isStarter: compareRValUndefinedAsFalse,
-      isFree: compareRValUndefinedAsFalse
-    })
+    const rethinkQuery = (joinedAt: Date, id: string | number) => {
+      return r
+        .table('TeamMember' as any)
+        .between([joinedAt, id], [r.maxval, r.maxval], {
+          index: 'updatedAtId',
+          leftBound: 'open',
+          rightBound: 'closed'
+        })
+        .orderBy({index: 'updatedAtId'}) as any
+    }
+    const pgQuery = async (ids: string[]) => {
+      return getKysely().selectFrom('TeamMember').selectAll().where('id', 'in', ids).execute()
+    }
+    const errors = await checkTableEq(
+      rethinkQuery,
+      pgQuery,
+      {
+        id: defaultEqFn,
+        isNotRemoved: compareRValUndefinedAsFalse,
+        isLead: compareRValUndefinedAsFalse,
+        isSpectatingPoker: compareRValUndefinedAsFalse,
+        email: defaultEqFn,
+        openDrawer: compareRValUndefinedAsNull,
+        picture: defaultEqFn,
+        preferredName: compareRValUndefinedAsNullAndTruncateRVal(100),
+        teamId: defaultEqFn,
+        userId: defaultEqFn,
+        createdAt: compareDateAlmostEqual,
+        updatedAt: compareDateAlmostEqual
+      },
+      maxErrors
+    )
     return handleResult(tableName, rowCountResult, errors, writeToFile)
   }
   return 'Table not found'

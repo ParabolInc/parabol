@@ -56,13 +56,11 @@ const httpGraphQLBodyHandler = async (
     }
   }
   const response = await handleGraphQLTrebuchetRequest(body, connectionContext)
-  res.cork(() => {
-    if (response) {
-      res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
-    } else {
-      res.writeStatus('200').end()
-    }
-  })
+  if (response) {
+    res.writeHeader('content-type', 'application/json').end(JSON.stringify(response))
+  } else {
+    res.writeStatus('200').end()
+  }
 }
 
 const contentTypeBodyParserMap = {

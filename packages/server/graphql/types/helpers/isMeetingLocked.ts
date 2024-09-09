@@ -1,4 +1,5 @@
 import {DataLoaderWorker} from '../../graphql'
+import {getFeatureTier} from './getFeatureTier'
 
 const isMeetingLocked = async (
   viewerId: string,
@@ -17,21 +18,20 @@ const isMeetingLocked = async (
   ])
 
   const {featureFlags} = viewer
-  const {tier, isPaid, orgId, isArchived} = team
+  const {tier, trialStartDate, isPaid, orgId, isArchived} = team
 
   if (featureFlags.includes('noMeetingHistoryLimit')) {
     return false
   }
 
-  if (tier !== 'starter' && isPaid) {
+  if ((tier !== 'starter' && isPaid) || trialStartDate) {
     return false
   }
 
   // Archived teams are not updated with the current tier, just check the organization
   if (isArchived) {
-    const organization = await dataLoader.get('organizations').load(orgId)
-    const {tier} = organization
-    if (tier !== 'starter') {
+    const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+    if (getFeatureTier(organization) !== 'starter') {
       return false
     }
   }

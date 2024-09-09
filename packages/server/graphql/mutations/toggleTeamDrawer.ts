@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -26,7 +25,7 @@ const toggleTeamDrawer = {
     {teamId, teamDrawerType}: {teamId: string; teamDrawerType: TeamDrawer | null},
     {authToken}: GQLContext
   ) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
 
     //AUTH
@@ -37,17 +36,14 @@ const toggleTeamDrawer = {
     // RESOLUTION
     const userId = getUserId(authToken)
     const viewerTeamMemberId = `${userId}::${teamId}`
-    await r
-      .table('TeamMember')
-      .get(viewerTeamMemberId)
-      .update((teamMember: RValue) => ({
-        openDrawer: r.branch(
-          teamMember('openDrawer').default(null).eq(teamDrawerType),
-          null,
-          teamDrawerType
-        )
+
+    await pg
+      .updateTable('TeamMember')
+      .set(({fn, ref, val}) => ({
+        openDrawer: fn('NULLIF', [val(teamDrawerType), ref('openDrawer')])
       }))
-      .run()
+      .where('id', '=', viewerTeamMemberId)
+      .execute()
     return {teamMemberId: viewerTeamMemberId}
   }
 }

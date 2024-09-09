@@ -3,14 +3,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
 import React, {memo, RefObject} from 'react'
 import {useFragment} from 'react-relay'
-import EditingStatus from '~/components/EditingStatus/EditingStatus'
-import {PALETTE} from '~/styles/paletteV3'
 import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import EditingStatus from '~/components/EditingStatus/EditingStatus'
+import {PALETTE} from '~/styles/paletteV3'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskEditor from '../../../../components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -37,12 +38,12 @@ const RootCard = styled('div')<{
   boxShadow: isDragging
     ? Elevation.CARD_DRAGGING
     : isTaskHighlighted
-    ? cardHoverShadow
-    : isTaskFocused
-    ? cardFocusShadow
-    : isTaskHovered
-    ? cardHoverShadow
-    : cardShadow
+      ? cardHoverShadow
+      : isTaskFocused
+        ? cardFocusShadow
+        : isTaskHovered
+          ? cardHoverShadow
+          : cardShadow
 }))
 
 const ContentBlock = styled('div')({
@@ -89,6 +90,9 @@ const OutcomeCard = memo((props: Props) => {
     graphql`
       fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
         ...IntegratedTaskContent_task
+        editors {
+          userId
+        }
         id
         integration {
           __typename
@@ -110,7 +114,11 @@ const OutcomeCard = memo((props: Props) => {
   )
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
-  const {integration, status, id: taskId, team, isHighlighted} = task
+  const {integration, status, id: taskId, team, isHighlighted, editors} = task
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
+  const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
+  const isEditing = editors.length > otherEditors.length
   const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const {id: teamId} = team
   const type = integration?.__typename
@@ -165,7 +173,7 @@ const OutcomeCard = memo((props: Props) => {
         <TaskFooter
           dataCy={`${dataCy}`}
           area={area}
-          cardIsActive={isTaskFocused || isTaskHovered}
+          cardIsActive={isTaskFocused || isTaskHovered || isEditing}
           editorState={editorState}
           isAgenda={isAgenda}
           task={task}

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
 import {RemoveGitHubAuthMutation as TRemoveGitHubAuthMutation} from '../__generated__/RemoveGitHubAuthMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment RemoveGitHubAuthMutation_team on RemoveGitHubAuthPayload {

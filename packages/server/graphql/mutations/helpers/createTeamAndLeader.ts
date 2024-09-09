@@ -1,37 +1,32 @@
-import getRethink from '../../../database/rethinkDriver'
-import MeetingSettingsAction from '../../../database/types/MeetingSettingsAction'
-import MeetingSettingsPoker from '../../../database/types/MeetingSettingsPoker'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
+import {sql} from 'kysely'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
+import {MeetingSettingsThreshold} from '../../../../client/types/constEnums'
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
-import getPg from '../../../postgres/getPg'
-import {insertTeamQuery} from '../../../postgres/queries/generated/insertTeamQuery'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import IUser from '../../../postgres/types/IUser'
-import catchAndLog from '../../../postgres/utils/catchAndLog'
-import addTeamIdToTMS from '../../../safeMutations/addTeamIdToTMS'
-import insertNewTeamMember from '../../../safeMutations/insertNewTeamMember'
 
 interface ValidNewTeam {
   id: string
   name: string
   orgId: string
   isOnboardTeam: boolean
-  isOneOnOneTeam?: boolean
 }
 
-// used for addorg, addTeam, maybeCreateOneOnOneTeam
-export default async function createTeamAndLeader(user: IUser, newTeam: ValidNewTeam) {
-  const r = await getRethink()
-  const {id: userId} = user
+// used for addorg, addTeam
+export default async function createTeamAndLeader(
+  user: IUser,
+  newTeam: ValidNewTeam,
+  dataLoader: DataLoaderInstance
+) {
+  const {id: userId, picture, preferredName, email} = user
   const {id: teamId, orgId} = newTeam
-  const organization = await r.table('Organization').get(orgId).run()
-  const {tier} = organization
-  const verifiedTeam = new Team({...newTeam, createdBy: userId, tier})
-  const meetingSettings = [
-    new MeetingSettingsRetrospective({teamId}),
-    new MeetingSettingsAction({teamId}),
-    new MeetingSettingsPoker({teamId})
-  ]
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  const {tier, trialStartDate} = organization
+  const verifiedTeam = new Team({...newTeam, createdBy: userId, tier, trialStartDate})
+
   const timelineEvent = new TimelineEventCreatedTeam({
     createdAt: new Date(Date.now() + 5),
     userId,
@@ -39,13 +34,71 @@ export default async function createTeamAndLeader(user: IUser, newTeam: ValidNew
     orgId
   })
 
+  const pg = getKysely()
+  const suggestedAction = {
+    id: generateUID(),
+    userId,
+    teamId,
+    type: 'inviteYourTeam' as const,
+    priority: 2
+  }
   await Promise.all([
-    catchAndLog(() => insertTeamQuery.run(verifiedTeam, getPg())),
-    // add meeting settings
-    r.table('MeetingSettings').insert(meetingSettings).run(),
-    // denormalize common fields to team member
-    insertNewTeamMember(user, teamId),
-    r.table('TimelineEvent').insert(timelineEvent).run(),
-    addTeamIdToTMS(userId, teamId)
+    pg
+      .with('TeamInsert', (qc) => qc.insertInto('Team').values(verifiedTeam))
+      .with('UserUpdate', (qc) =>
+        qc
+          .updateTable('User')
+          .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+          .where('id', '=', userId)
+      )
+      .with('TeamMemberInsert', (qc) =>
+        qc.insertInto('TeamMember').values({
+          id: TeamMemberId.join(teamId, userId),
+          teamId,
+          userId,
+          picture,
+          preferredName,
+          email,
+          isLead: true,
+          openDrawer: 'manageTeam'
+        })
+      )
+      .with('SuggestedActionInsert', (qc) =>
+        qc
+          .insertInto('SuggestedAction')
+          .values(suggestedAction)
+          .onConflict((oc) => oc.columns(['userId', 'type']).doNothing())
+      )
+      .with('MeetingSettingsInsert', (qc) =>
+        qc.insertInto('MeetingSettings').values([
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'retrospective',
+            phaseTypes: ['checkin', 'TEAM_HEALTH', 'reflect', 'group', 'vote', 'discuss'],
+            disableAnonymity: false,
+            maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
+            totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
+            selectedTemplateId: 'workingStuckTemplate'
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'action',
+            phaseTypes: ['checkin', 'updates', 'firstcall', 'agendaitems', 'lastcall']
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'poker',
+            phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
+            selectedTemplateId: 'estimatedEffortTemplate'
+          }
+        ])
+      )
+      .insertInto('TimelineEvent')
+      .values(timelineEvent)
+      .execute()
   ])
+  dataLoader.clearAll(['teams', 'users', 'teamMembers', 'timelineEvents', 'meetingSettings'])
 }

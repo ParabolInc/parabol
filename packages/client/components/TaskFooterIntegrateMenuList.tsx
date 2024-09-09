@@ -4,15 +4,15 @@ import React, {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
+import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
-import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
 import {SearchMenuItem} from './SearchMenuItem'
 import TaskIntegrationMenuItem from './TaskIntegrationMenuItem'
-import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 
 interface Props {
   menuProps: MenuProps
@@ -110,10 +110,12 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
 
   useEffect(() => {
     // if searching for a repoIntegration that doesnt exist in the cache, it could be stale so use the network
+    // It is possible that user has a lot of repositories, if nothing was found in initial request, query everything
+    const veryBigNumberOfRepositories = 10000
     if (!networkOnly && filteredIntegrations.length === 0) {
       setNetworkOnly(true)
       setKeepParentFocus(false)
-      setFirst((first) => first + 50)
+      setFirst((first) => first + veryBigNumberOfRepositories)
     }
   }, [filteredIntegrations.length])
 

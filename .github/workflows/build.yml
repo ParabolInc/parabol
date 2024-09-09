@@ -7,21 +7,23 @@ on:
   push:
     branches:
       - "release-please--**"
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 env:
-  PARABOL_DOCKERFILE: ./docker/parabol-ubi/docker-build/dockerfiles/pipeline.dockerfile
-  PARABOL_BUILD_ENV_PATH: docker/parabol-ubi/docker-build/environments/pipeline
+  PARABOL_DOCKERFILE: ./docker/images/parabol-ubi/dockerfiles/basic.dockerfile
+  PARABOL_BUILD_ENV_PATH: docker/images/parabol-ubi/environments/pipeline
 jobs:
   build:
     runs-on: ubuntu-8cores
+    timeout-minutes: 30
     permissions:
       contents: "read"
       id-token: "write"
     services:
       postgres:
-        image: postgres:15.4
+        image: pgvector/pgvector:0.7.0-pg16
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
@@ -113,7 +115,6 @@ jobs:
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
-            "_SECURITY_ENABLED=true"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
@@ -137,3 +138,12 @@ jobs:
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
             --minified-path-prefix=${{env.CDN_BUILD_URL}}
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

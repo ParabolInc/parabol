@@ -65,6 +65,11 @@ const emailPasswordReset = {
         (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
       )
       if (googleIdentity) return {error: {message: AuthenticationError.USER_EXISTS_GOOGLE}}
+      const microsoftIdentity = identities.find(
+        (identity) => identity.type === AuthIdentityTypeEnum.MICROSOFT
+      )
+      if (microsoftIdentity) return {error: {message: AuthenticationError.USER_EXISTS_MICROSOFT}}
+
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal

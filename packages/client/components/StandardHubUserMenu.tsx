@@ -4,10 +4,10 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
+import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
-import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -48,7 +48,7 @@ const StandardHubUserMenu = (props: Props) => {
         }
         organizations {
           id
-          tier
+          billingTier
         }
       }
     `,
@@ -56,7 +56,7 @@ const StandardHubUserMenu = (props: Props) => {
   )
   const {email, featureFlags, organizations} = viewer
   const {insights} = featureFlags
-  const ownedFreeOrgs = organizations.filter((org) => org.tier === 'starter')
+  const ownedFreeOrgs = organizations.filter((org) => org.billingTier === 'starter')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 

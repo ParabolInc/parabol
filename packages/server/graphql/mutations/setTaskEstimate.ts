@@ -10,11 +10,11 @@ import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrati
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import updateJiraDimensionFieldMap from '../../postgres/queries/updateJiraDimensionFieldMap'
 import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
-import {analytics} from '../../utils/analytics/analytics'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
+import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
-import AzureDevOpsServerManager from '../../utils/AzureDevOpsServerManager'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
@@ -45,9 +45,10 @@ const setTaskEstimate = {
     const {taskId, value, dimensionName, meetingId} = taskEstimate
 
     //AUTH
-    const [task, meeting] = await Promise.all([
+    const [task, meeting, viewer] = await Promise.all([
       dataLoader.get('tasks').load(taskId),
-      dataLoader.get('newMeetings').load(meetingId)
+      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -373,7 +374,7 @@ const setTaskEstimate = {
       }
     }
 
-    analytics.taskEstimateSet(viewerId, {
+    analytics.taskEstimateSet(viewer, {
       taskId,
       meetingId,
       dimensionName,

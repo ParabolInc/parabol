@@ -3,10 +3,11 @@ import safetyPatchRes from '../safetyPatchRes'
 import getReqAuth from '../utils/getReqAuth'
 import sendToSentry from '../utils/sendToSentry'
 
-export type uWSHandler = (res: HttpResponse, req: HttpRequest) => void
+export type uWSHandler = (res: HttpResponse, req: HttpRequest) => Promise<void>
 const uWSAsyncHandler =
   (handler: uWSHandler, ignoreDone?: boolean) => async (res: HttpResponse, req: HttpRequest) => {
     safetyPatchRes(res)
+    const authToken = getReqAuth(req)
     try {
       await handler(res, req)
       if (!ignoreDone && !res.done) {
@@ -15,7 +16,6 @@ const uWSAsyncHandler =
     } catch (e) {
       res.writeStatus('503').end()
       const error = e instanceof Error ? e : new Error('uWSAsyncHandler failed')
-      const authToken = getReqAuth(req)
       sendToSentry(error, {userId: authToken.sub})
     }
   }

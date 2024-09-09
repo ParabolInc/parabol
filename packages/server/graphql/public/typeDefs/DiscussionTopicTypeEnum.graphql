@@ -1,0 +1,11 @@
+"""
+The topic being discussed
+"""
+enum DiscussionTopicTypeEnum {
+  agendaItem
+  reflectionGroup
+  task
+  githubIssue
+  jiraIssue
+  teamPromptResponse
+}

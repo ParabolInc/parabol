@@ -1,14 +1,14 @@
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import {Close} from '@mui/icons-material'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import React from 'react'
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
+import RaisedButton from '../../../../components/RaisedButton'
+import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import VideoConferencingMenu from './VideoConferencingMenu'
-import RaisedButton from '../../../../components/RaisedButton'
 import {Elevation} from '../../../../styles/elevation'
-import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
-import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
-import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+import VideoConferencingMenu from './VideoConferencingMenu'
 
 type Props = {
   videoType: GcalVideoTypeEnum | null
@@ -26,7 +26,7 @@ const VideoConferencing = (props: Props) => {
       {videoType ? (
         <div className='bg-gray-100 flex items-center rounded py-3 px-2'>
           {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
-          <span className='text-gray-500 text-md h-[38px] py-2 pl-2 font-normal'>
+          <span className='text-gray-500 h-[38px] py-2 pl-2 text-base font-normal'>
             {selectedOptionLabel}
           </span>
           <Close

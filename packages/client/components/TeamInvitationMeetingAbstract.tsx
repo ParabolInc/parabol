@@ -10,7 +10,8 @@ const PageContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',
-  minHeight: '100vh',
+  height: '100%',
+  maxHeight: '100%',
   position: 'relative'
 })
 
@@ -28,7 +29,8 @@ const CenteredBlock = styled('div')({
 
 const Backdrop = styled('div')({
   backgroundColor: PALETTE.SLATE_700_30,
-  height: '100vh',
+  bottom: 0,
+  height: '100%',
   left: 0,
   position: 'absolute',
   top: 0,
@@ -53,7 +55,7 @@ const AbstractSidebar = styled('div')({
     display: 'block',
     backgroundColor: 'white',
     flexShrink: 0,
-    height: '100vh',
+    height: '100%',
     width: 240
   }
 })

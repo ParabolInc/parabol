@@ -5,10 +5,11 @@
  - Does the variable come from the GraphQL schema? If so, import it from a file in the __generated__ folder
  - Is the variable a string? Create a string union & pass in a plain string to get type safety
 */
-import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
 import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
+import {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
+import {Threshold} from '../types/constEnums'
 
 /* Meeting Misc. */
 export const MEETING_NAME = 'Check-in Meeting'
@@ -99,7 +100,7 @@ export const AUTHENTICATION_PAGE = 'authentication'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
-export const MONTHLY_PRICE = 6
+export const MONTHLY_PRICE = 8
 
 export const FAILED = 'FAILED'
 
@@ -160,10 +161,16 @@ export const SPOTLIGHT_TOP_SECTION_HEIGHT = 236
 
 export const PARABOL_AI_USER_ID = 'parabolAIUser'
 
+export const StarterBenefits = [
+  `${Threshold.MAX_STARTER_TIER_TEAMS} teams`,
+  'Retrospectives, Sprint Poker, Standups, Check-Ins',
+  'Unlimited meeting templates',
+  'Unlimited team members'
+]
+
 export const TeamBenefits = [
   'Unlimited teams',
-  'Premium templates',
-  'Custom templates',
+  'Unlimited custom templates',
   'Unlimited meeting history',
   'Priority customer support',
   'AI Summaries',
@@ -172,6 +179,7 @@ export const TeamBenefits = [
 
 export const EnterpriseBenefits = [
   'Single Sign-On (SSO)',
+  'Org Admin Role',
   'Annual Billing',
   'Domain Whitelisting',
   'Uptime Service Level Agreement (SLA)',

@@ -4,16 +4,15 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   noAISummary: ({noAISummary}) => !!noAISummary,
   standupAISummary: ({standupAISummary}) => !!standupAISummary,
   noPromptToJoinOrg: ({noPromptToJoinOrg}) => !!noPromptToJoinOrg,
-  AIGeneratedDiscussionPrompt: ({AIGeneratedDiscussionPrompt}) => !!AIGeneratedDiscussionPrompt,
   zoomTranscription: ({zoomTranscription}) => !!zoomTranscription,
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
-  teamInsights: ({teamInsights}) => !!teamInsights,
-  oneOnOne: ({oneOnOne}) => !!oneOnOne,
+  noTeamInsights: ({noTeamInsights}) => !!noTeamInsights,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
-  meetingInception: ({meetingInception}) => !!meetingInception
+  aiTemplate: ({aiTemplate}) => !!aiTemplate,
+  relatedDiscussions: ({relatedDiscussions}) => !!relatedDiscussions
 }
 
 export default OrganizationFeatureFlags

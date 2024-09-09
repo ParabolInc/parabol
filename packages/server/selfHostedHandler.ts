@@ -21,7 +21,7 @@ const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
   try {
     stats = fs.statSync(url)
   } catch (e) {
-    res.writeStatus('404').end()
+    res.cork(() => res.writeStatus('404').end())
     return
   }
   const {size} = stats

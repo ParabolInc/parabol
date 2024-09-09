@@ -1,16 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
-import Meeting from '../../database/types/Meeting'
+import getKysely from '../../postgres/getKysely'
 import getPg from '../../postgres/getPg'
 import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import PayLaterPayload from '../types/PayLaterPayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(PayLaterPayload),
@@ -32,7 +31,10 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as Meeting | null
+    const [meeting, viewer] = await Promise.all([
+      r.table('NewMeeting').get(meetingId).run(),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!meeting) {
       return standardError(new Error('Invalid meeting'), {userId: viewerId})
     }
@@ -47,13 +49,13 @@ export default {
     // RESOLUTION
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    await r
-      .table('Organization')
-      .get(orgId)
-      .update((row: RValue) => ({
-        payLaterClickCount: row('payLaterClickCount').default(0).add(1)
+    await getKysely()
+      .updateTable('Organization')
+      .set((eb) => ({
+        payLaterClickCount: eb('payLaterClickCount', '+', 1)
       }))
-      .run()
+      .where('id', '=', orgId)
+      .execute()
     await r
       .table('NewMeeting')
       .get(meetingId)
@@ -64,7 +66,7 @@ export default {
 
     await incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())
 
-    analytics.conversionModalPayLaterClicked(viewerId)
+    analytics.conversionModalPayLaterClicked(viewer)
     const data = {orgId, meetingId}
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'PayLaterPayload', data, subOptions)
     return {orgId, meetingId}

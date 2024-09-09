@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw, Editor, EditorState} from 'draft-js'
+import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {taskStatusColors} from 'parabol-client/utils/taskStatus'
-import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import React, {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
+import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
 
 interface Props {
   task: EmailTaskCard_task$key | null

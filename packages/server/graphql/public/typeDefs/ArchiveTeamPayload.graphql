@@ -1,0 +1,19 @@
+type ArchiveTeamPayload {
+  error: StandardMutationError
+  team: Team
+
+  """
+  A notification explaining that the team was archived and removed from view
+  """
+  notification: NotifyTeamArchived
+
+  """
+  all the suggested actions that never happened
+  """
+  removedSuggestedActionIds: [ID]
+
+  """
+  A list of the ids of templates created by a team
+  """
+  teamTemplateIds: [ID!]!
+}

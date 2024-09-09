@@ -1,5 +1,5 @@
-import {MutableRefObject} from 'react'
-import {RecordProxy} from 'relay-runtime'
+import type {MutableRefObject} from 'react'
+import type {RecordProxy} from 'relay-runtime'
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
 export type Subtract<T, K> = Omit<T, keyof K>
@@ -7,24 +7,24 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends (infer U)[]
     ? DeepPartial<U>[]
     : T[P] extends readonly (infer U)[]
-    ? readonly DeepPartial<U>[]
-    : DeepPartial<T[P]>
+      ? readonly DeepPartial<U>[]
+      : DeepPartial<T[P]>
 }
 export type DeepNullable<T> = {
   [P in keyof T]: T[P] extends (infer U)[]
     ? DeepNullable<U>[] | null
     : T[P] extends readonly (infer U)[]
-    ? readonly DeepNullable<U>[] | null
-    : DeepNullable<T[P]> | null
+      ? readonly DeepNullable<U>[] | null
+      : DeepNullable<T[P]> | null
 }
 
 export type DeepNonNullable<T> = T extends (...args: any[]) => any
   ? T
   : T extends any[]
-  ? DeepNonNullableArray<T[number]>
-  : T extends object
-  ? DeepNonNullableObject<T>
-  : T
+    ? DeepNonNullableArray<T[number]>
+    : T extends object
+      ? DeepNonNullableObject<T>
+      : T
 
 interface DeepNonNullableArray<T> extends Array<DeepNonNullable<NonNullable<T>>> {}
 
@@ -96,9 +96,12 @@ export type WithFieldsAsType<TObj, NType, F> = {
   [K in keyof TObj]: K extends F
     ? NType
     : TObj[K] extends object
-    ? WithFieldsAsType<TObj[K], NType, F>
-    : TObj[K]
+      ? WithFieldsAsType<TObj[K], NType, F>
+      : TObj[K]
 }
+
+export type Tuple<T, N, R extends T[] = []> = R['length'] extends N ? R : Tuple<T, N, [...R, T]>
+export type ParseInt<T extends string> = T extends `${infer Digit extends number}` ? Digit : never
 
 declare global {
   interface Array<T> {

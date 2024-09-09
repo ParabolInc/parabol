@@ -1,8 +1,8 @@
+import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
-import Atmosphere from '../Atmosphere'
 
 class GcalClientManager {
   static SCOPES = 'https://www.googleapis.com/auth/calendar.events'

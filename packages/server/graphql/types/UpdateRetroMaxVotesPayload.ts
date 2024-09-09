@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
+import makeMutationPayload from './makeMutationPayload'
 
 export const UpdateRetroMaxVotesSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateRetroMaxVotesSuccess',

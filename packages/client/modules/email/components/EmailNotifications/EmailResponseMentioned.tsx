@@ -46,11 +46,13 @@ const EmailResponseMentioned = (props: Props) => {
     }
   })
 
+  const message = `${authorName} mentioned you in their response in ${meetingName}.`
+
   // :TODO: (jmtaber129): Show mention preview.
   return (
     <EmailNotificationTemplate
       avatar={authorPicture}
-      message={`${authorName} mentioned you in their response in ${meetingName}.`}
+      message={message}
       notificationRef={notification}
       linkLabel={'See their response'}
       linkUrl={linkUrl}

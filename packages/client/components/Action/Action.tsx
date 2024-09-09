@@ -3,9 +3,10 @@ import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
-import {LoaderSize} from '../../types/constEnums'
+import {GlobalBanner, LoaderSize} from '../../types/constEnums'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
+import Banner from '../GlobalBanner'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
@@ -33,53 +34,68 @@ const Action = memo(() => {
   useTrebuchetEvents()
   useServiceWorkerUpdater()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
+  // Global Banner
+  const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
+  const bannerText = window.__ACTION__.GLOBAL_BANNER_TEXT
+  const bannerBgColor = window.__ACTION__.GLOBAL_BANNER_BG_COLOR
+  const bannerColor = window.__ACTION__.GLOBAL_BANNER_COLOR
   return (
     <>
       <ErrorBoundary>
         <Snackbar />
         <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.WHOLE_PAGE} />}>
           <AnalyticsPage />
-          <Switch>
-            <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
-            <Route
-              exact
-              path={`/${SIGNIN_SLUG}`}
-              render={(p) => <AuthenticationPage {...p} page={'signin'} />}
-            />
-            <Route
-              exact
-              path={`/${CREATE_ACCOUNT_SLUG}`}
-              render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
-            />
-            <Route exact path={`/auth/:provider`} component={AuthProvider} />
-            <Route path={`/saml-redirect`} component={SAMLRedirect} />
-            <Route
-              path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
-              component={DemoMeeting}
-            />
-            <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
-            {isInternalAuthEnabled && (
+          {isGlobalBannerEnabled && (
+            <Banner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
+          )}
+          <div
+            className='w-100 flex flex-col'
+            style={{
+              height: isGlobalBannerEnabled ? `calc(100vh - ${GlobalBanner.HEIGHT}px)` : '100vh'
+            }}
+          >
+            <Switch>
+              <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
               <Route
                 exact
-                path={`/forgot-password`}
-                render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
+                path={`/${SIGNIN_SLUG}`}
+                render={(p) => <AuthenticationPage {...p} page={'signin'} />}
               />
-            )}
-            {isInternalAuthEnabled && (
               <Route
-                path={`/forgot-password/submitted`}
-                render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
+                exact
+                path={`/${CREATE_ACCOUNT_SLUG}`}
+                render={(p) => <AuthenticationPage {...p} page={'create-account'} />}
               />
-            )}
-            <Route
-              path='/verify-email/:verificationToken/:invitationToken?'
-              component={VerifyEmail}
-            />
-            <Route path='/reset-password/:token' component={SetNewPassword} />
-            <Route path='/team-invitation/:token' component={TeamInvitation} />
-            <Route path='/invitation-link/:token' component={InvitationLink} />
-            <Route component={PrivateRoutes} />
-          </Switch>
+              <Route exact path={`/auth/:provider`} component={AuthProvider} />
+              <Route path={`/saml-redirect`} component={SAMLRedirect} />
+              <Route
+                path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
+                component={DemoMeeting}
+              />
+              <Route path='/retrospective-demo-summary/:urlAction?' component={DemoSummary} />
+              {isInternalAuthEnabled && (
+                <Route
+                  exact
+                  path={`/forgot-password`}
+                  render={(p) => <AuthenticationPage {...p} page={'forgot-password'} />}
+                />
+              )}
+              {isInternalAuthEnabled && (
+                <Route
+                  path={`/forgot-password/submitted`}
+                  render={(p) => <AuthenticationPage {...p} page={`forgot-password/submitted`} />}
+                />
+              )}
+              <Route
+                path='/verify-email/:verificationToken/:invitationToken?'
+                component={VerifyEmail}
+              />
+              <Route path='/reset-password/:token' component={SetNewPassword} />
+              <Route path='/team-invitation/:token' component={TeamInvitation} />
+              <Route path='/invitation-link/:token' component={InvitationLink} />
+              <Route component={PrivateRoutes} />
+            </Switch>
+          </div>
         </Suspense>
       </ErrorBoundary>
     </>

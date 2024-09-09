@@ -1,6 +1,6 @@
 import Atmosphere from '../../Atmosphere'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {LocalStorageKey} from '../../types/constEnums'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const signout = (atmosphere: Atmosphere, history: any) => {
   window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

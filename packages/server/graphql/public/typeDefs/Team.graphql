@@ -8,16 +8,6 @@ type Team {
   id: ID!
 
   """
-  Whether or not new users with the same domain and a verified email should auto-join the team
-  """
-  autoJoin: Boolean!
-
-  """
-  Whether the viewer belongs to the team
-  """
-  isViewerOnTeam: Boolean!
-
-  """
   The datetime the team was created
   """
   createdAt: DateTime!
@@ -86,7 +76,7 @@ type Team {
   """
   true if the viewer is the team lead, else false
   """
-  isLead: Boolean!
+  isViewerLead: Boolean!
 
   """
   The team-specific settings for running all available types of meetings
@@ -119,6 +109,11 @@ type Team {
   activeMeetings: [NewMeeting!]!
 
   """
+  The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections
+  """
+  qualAIMeetingsCount: Int!
+
+  """
   The new meeting in progress, if any
   """
   meeting(
@@ -127,11 +122,6 @@ type Team {
     """
     meetingId: ID!
   ): NewMeeting
-
-  """
-  The level of access to features on the parabol site
-  """
-  tier: TierEnum!
   organization: Organization!
 
   """
@@ -167,11 +157,34 @@ type Team {
   isArchived: Boolean
 
   """
+  Whether or not new users with the same domain and a verified email should auto-join the team
+  """
+  autoJoin: Boolean!
+
+  """
+  Whether the viewer belongs to the team
+  """
+  isViewerOnTeam: Boolean!
+
+  """
+  true if the viewer is an admin for the team's org, else false
+  """
+  isOrgAdmin: Boolean!
+  tier: TierEnum!
+  billingTier: TierEnum!
+
+  """
   Insights for the team, null if not enough data or feature flag isn't set
   """
   insights: TeamInsights
+
   """
   The team member that is the viewer
   """
   viewerTeamMember: TeamMember
+
+  """
+  The team member that is the team lead
+  """
+  teamLead: TeamMember!
 }

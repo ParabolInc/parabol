@@ -85,7 +85,7 @@ const pokerResetDimension = {
     ])
     const data = {meetingId, stageId}
 
-    sendPokerMeetingRevoteEvent(meeting, teamMembers, meetingMembers)
+    sendPokerMeetingRevoteEvent(meeting, teamMembers, meetingMembers, dataLoader)
 
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerResetDimensionSuccess', data, subOptions)
     return data

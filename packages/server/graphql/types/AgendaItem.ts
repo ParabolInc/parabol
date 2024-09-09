@@ -1,80 +1,15 @@
-import {
-  GraphQLBoolean,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import CommentorDetails from './CommentorDetails'
-import GraphQLISO8601Type from './GraphQLISO8601Type'
 import TeamMember from './TeamMember'
 
 const AgendaItem = new GraphQLObjectType<any, GQLContext>({
   name: 'AgendaItem',
   description: 'A request placeholder that will likely turn into 1 or more tasks',
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique agenda item id teamId::shortid'
-    },
-    commentors: {
-      type: new GraphQLList(new GraphQLNonNull(CommentorDetails)),
-      deprecationReason: 'Moved to ThreadConnection. Can remove Jun-01-2021',
-      description: 'A list of users currently commenting',
-      resolve: ({commentors = []}) => {
-        return commentors
-      }
-    },
-    content: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The body of the agenda item'
-    },
-    createdAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the agenda item was created'
-    },
-    isActive: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the agenda item has not been processed or deleted',
-      resolve: ({isActive}) => !!isActive
-    },
-    pinned: {
-      type: GraphQLBoolean,
-      description: 'True if the agenda item has been pinned'
-    },
-    pinnedParentId: {
-      type: GraphQLID,
-      description: 'If pinned, this is the unique id of the original agenda item'
-    },
-    sortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
-      description: 'The sort order of the agenda item in the list'
-    },
-    teamId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: '*The team for this agenda item'
-    },
-    teamMemberId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamMemberId that created this agenda item'
-    },
-    meetingId: {
-      type: GraphQLID,
-      description: 'The meetingId of the agenda item'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The timestamp the agenda item was updated'
-    },
+    // ideally all fields would be moved to codegen, but something brakes in merging schemes if this particular field is removed. No need to investigate further, we can get rid of of this whole object once it's no longer referenced by other legacy graphql definitions
     teamMember: {
       type: new GraphQLNonNull(TeamMember),
-      description: 'The team member that created the agenda item',
-      resolve: async ({teamMemberId}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(teamMemberId)
-      }
+      description: 'The team member that created the agenda item'
     }
   })
 })

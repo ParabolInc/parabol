@@ -1,14 +1,14 @@
+import * as amplitude from '@amplitude/analytics-browser'
 import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import ReactGA from 'react-ga4'
+import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
-import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import getContentGroup from '../utils/getContentGroup'
-import * as amplitude from '@amplitude/analytics-browser'
 
 const query = graphql`
   query AnalyticsPageQuery {
@@ -133,7 +133,6 @@ const AnalyticsPage = () => {
     configGA()
   }, [ReactGA.isInitialized, atmosphere.viewerId])
 
-  /* eslint-disable */
   const {href, pathname} = location
 
   useEffect(() => {

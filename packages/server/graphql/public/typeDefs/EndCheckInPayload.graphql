@@ -1,0 +1,4 @@
+"""
+Return object for EndCheckInPayload
+"""
+union EndCheckInPayload = ErrorPayload | EndCheckInSuccess

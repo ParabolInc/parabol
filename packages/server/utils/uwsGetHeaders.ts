@@ -1,7 +1,7 @@
 import {HttpRequest} from 'uWebSockets.js'
 
 const uwsGetHeaders = (req: HttpRequest) => {
-  const reqHeaders = {}
+  const reqHeaders: Record<string, string> = {}
   req.forEach((key, value) => {
     reqHeaders[key] = value
   })

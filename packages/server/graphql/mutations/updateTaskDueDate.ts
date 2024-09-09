@@ -2,13 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import getRethink from '../../database/rethinkDriver'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
 import {GQLContext} from './../graphql'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: UpdateTaskDueDatePayload,
@@ -38,7 +38,10 @@ export default {
     // VALIDATION
     const formattedDueDate = dueDate && new Date(dueDate)
     const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
-    const task = await r.table('Task').get(taskId).run()
+    const [task, viewer] = await Promise.all([
+      r.table('Task').get(taskId).run(),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     if (!task || !isTeamMember(authToken, task.teamId)) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -65,7 +68,7 @@ export default {
         publish(SubscriptionChannel.TASK, userId, 'UpdateTaskDueDatePayload', data, subOptions)
       })
     }
-    analytics.taskDueDateSet(viewerId, task.teamId, taskId)
+    analytics.taskDueDateSet(viewer, task.teamId, taskId)
     return data
   }
 }

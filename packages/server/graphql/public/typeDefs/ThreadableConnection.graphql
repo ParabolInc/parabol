@@ -1,0 +1,19 @@
+"""
+A connection to a list of items.
+"""
+type ThreadableConnection {
+  """
+  Page info with strings (sortOrder) as cursors
+  """
+  pageInfo: PageInfo
+
+  """
+  A list of edges.
+  """
+  edges: [ThreadableEdge!]!
+
+  """
+  Any errors that prevented the query from returning the full results
+  """
+  error: String
+}

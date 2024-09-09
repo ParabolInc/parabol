@@ -1,5 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation_team$data} from '../__generated__/ArchiveTeamMutation_team.graphql'
 import {
   HistoryLocalHandler,
   OnNextHandler,
@@ -10,12 +12,10 @@ import {
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
-import {ArchiveTeamMutation_team$data} from '../__generated__/ArchiveTeamMutation_team.graphql'
+import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
-import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
@@ -29,6 +29,14 @@ graphql`
       name
       activeMeetings {
         id
+      }
+      organization {
+        allTeams {
+          id
+        }
+        viewerTeams {
+          id
+        }
       }
     }
     teamTemplateIds
@@ -98,6 +106,7 @@ export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team$data
   const orgs = viewer.getLinkedRecords('organizations')!
   orgs.forEach((org) => {
     safeRemoveNodeFromArray(teamId, org, 'teams')
+    safeRemoveNodeFromArray(teamId, org, 'allTeams')
   })
 
   const notification = payload.getLinkedRecord('notification')

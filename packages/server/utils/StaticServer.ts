@@ -2,6 +2,7 @@ import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
 import {brotliCompressSync} from 'zlib'
+import {Logger} from './Logger'
 import isCompressible from './isCompressible'
 class StaticFileMeta {
   mtime: string
@@ -63,7 +64,7 @@ export default class StaticServer {
         }
         makePathnames(dirname, this.pathnames, '')
       } catch (e) {
-        console.log(e)
+        Logger.log(e)
       }
     })
   }

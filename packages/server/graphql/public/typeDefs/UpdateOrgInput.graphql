@@ -1,0 +1,11 @@
+input UpdateOrgInput {
+  """
+  The unique action ID
+  """
+  id: ID!
+
+  """
+  The name of the org
+  """
+  name: String
+}

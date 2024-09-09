@@ -1,10 +1,10 @@
-name: Ironbank S3 Upload
+name: Ironbank Image Upload
 
 on:
   workflow_dispatch:
     inputs:
       version_number:
-        description: "Version number of the Parabol image to process"
+        description: "Version number of the Parabol application image to process"
         required: true
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       id-token: "write"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup environment variables
         run: |
@@ -27,13 +27,13 @@ jobs:
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@v2"
         with:
           token_format: "access_token"
           workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
 
-      - uses: "docker/login-action@v2"
+      - uses: "docker/login-action@v3"
         with:
           registry: ${{ secrets.GCP_DOCKER_REGISTRY }}
           username: "oauth2accesstoken"
@@ -50,12 +50,13 @@ jobs:
         run: |
           docker cp temp-container:/home/node/parabol/dist ./dist
           docker cp temp-container:/home/node/parabol/build ./build
+          docker cp temp-container:/home/node/tools/ip-to-server_id ./ip-to-server_id
 
       - name: Zip the files
-        run: zip -r ${{ github.event.inputs.version_number }}.zip dist build
+        run: zip -r ${{ github.event.inputs.version_number }}.zip dist build ip-to-server_id
 
       - name: Set up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.IRONBANK_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.IRONBANK_AWS_SECRET_ACCESS_KEY }}
@@ -64,3 +65,11 @@ jobs:
       - name: Upload to S3
         run: |
           aws s3 cp ${{ github.event.inputs.version_number }}.zip s3://ironbank-proving-ground-action-files.parabol.co/${{ github.event.inputs.version_number }}.zip
+
+      - name: Upload to GCS
+        uses: actions-hub/gcloud@master
+        env:
+          CLOUDSDK_AUTH_ACCESS_TOKEN: "${{ steps.auth.outputs.access_token }}"
+        with:
+          args: storage cp ${{ github.event.inputs.version_number }}.zip gs://ironbank-proving-ground/${{ github.event.inputs.version_number }}.zip
+          cli: gcloud

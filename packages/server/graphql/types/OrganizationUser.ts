@@ -3,9 +3,8 @@ import connectionDefinitions from '../connectionDefinitions'
 import {GQLContext} from '../graphql'
 import {resolveOrganization} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import Organization from './Organization'
 import OrgUserRole from './OrgUserRole'
-import TierEnum from './TierEnum'
+import Organization from './Organization'
 import User from './User'
 
 const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
@@ -24,11 +23,6 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
     joinedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the datetime the user first joined the org'
-    },
-    newUserUntil: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description:
-        'The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd'
     },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -57,10 +51,6 @@ const OrganizationUser = new GraphQLObjectType<any, GQLContext>({
       resolve: async ({userId}, _args, {dataLoader}) => {
         return dataLoader.get('users').load(userId)
       }
-    },
-    tier: {
-      type: TierEnum,
-      description: 'Their level of access to features on the parabol site'
     }
   })
 })

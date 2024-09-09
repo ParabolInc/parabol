@@ -31,6 +31,21 @@ module.exports = {
       }
     },
     {
+      name: 'Embedder',
+      script: 'dist/embedder.js',
+      instances: 1,
+      increment_var: 'SERVER_ID',
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '4096M',
+      env: {
+        SERVER_ID: 5
+      },
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
+    {
       name: 'GQL Executor',
       script: 'dist/gqlExecutor.js',
       instances: 2,
@@ -39,7 +54,7 @@ module.exports = {
       watch: false,
       max_memory_restart: '24576M',
       env: {
-        SERVER_ID: 5
+        SERVER_ID: 6
       },
       env_production: {
         NODE_ENV: 'production'

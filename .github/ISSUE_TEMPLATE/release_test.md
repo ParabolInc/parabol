@@ -31,6 +31,8 @@ Run through this list at least once at [staging](https://action.parabol.fun):
 - [ ] Created a 2nd team
 - [ ] Created a 2nd organization
 - [ ] Upgraded to Team (Credit card number: `4242 4242 4242 4242`, expiration date: any month in the future, CVC: `123`)
+- [ ] Upgraded to Team with a 3D Secure card (Credit card number: `4000 0000 0000 3220`, expiration date: any month in the future, CVC: `123`)
+- [ ] Tried and failed to upgrade with a card with insufficient funds (Credit card number: `4000 0000 0000 9995`, expiration date: any month in the future, CVC: `123`). Error feedback is shown in the UI.
 - [ ] Smoke tested the app on a mobile device (e.g. navigate between views, smoke test a Retro meeting, etc.)
 - [ ] Test previously existed meetings to make sure that existing data is not corrupted
 - [ ] Create a task in the discussion thread of a meeting

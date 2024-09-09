@@ -15,7 +15,7 @@ const NodeTypes = [
   'mention',
   'horizontalRule'
 ]
-type NodeType = typeof NodeTypes[number]
+type NodeType = (typeof NodeTypes)[number]
 type NodeTypeHandler = (node: JSONContent, depth?: number) => string
 
 const isSupportedNodeType = (value?: string): value is NodeType => {
@@ -67,7 +67,7 @@ const tiptapNodeHandlersLookup: Record<NodeType, NodeTypeHandler> = {
 }
 
 const MarkTypes = ['bold', 'italic', 'link', 'strike', 'code']
-type MarkType = typeof MarkTypes[number]
+type MarkType = (typeof MarkTypes)[number]
 type MarkTypeHandler = (text: string, mark: {type: string; attrs?: any}) => string
 
 const textMarkHandlersLookup: Record<MarkType, MarkTypeHandler> = {

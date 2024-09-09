@@ -1,27 +1,27 @@
 import styled from '@emotion/styled'
+import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import dayjs from 'dayjs'
-import React, {useState} from 'react'
+import dayjs, {Dayjs} from 'dayjs'
+import React, {useEffect, useState} from 'react'
+import {useFragment} from 'react-relay'
+import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
+import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
+import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+import Checkbox from '../../../../components/Checkbox'
+import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
-import {DialogActions} from '../../../../ui/Dialog/DialogActions'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import {PALETTE} from '../../../../styles/paletteV3'
-import DateTimePickers from './DateTimePickers'
-import Checkbox from '../../../../components/Checkbox'
-import useForm from '../../../../hooks/useForm'
-import Legitity from '../../../../validation/Legitity'
-import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
-import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
-import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
-import {useFragment} from 'react-relay'
-import StyledError from '../../../../components/StyledError'
-import DialogContainer from '../../../../components/DialogContainer'
-import {Close} from '@mui/icons-material'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
+import PrimaryButton from '../../../../components/PrimaryButton'
+import StyledError from '../../../../components/StyledError'
+import useForm from '../../../../hooks/useForm'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {DialogActions} from '../../../../ui/Dialog/DialogActions'
+import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
+import Legitity from '../../../../validation/Legitity'
+import DateTimePickers from './DateTimePickers'
 import VideoConferencing from './VideoConferencing'
-import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -30,7 +30,8 @@ const Wrapper = styled('div')({
 })
 
 const StyledDialogContainer = styled(DialogContainer)({
-  width: 'auto'
+  width: 'auto',
+  overflowY: 'scroll'
 })
 
 const CloseIcon = styled(Close)({
@@ -82,7 +83,7 @@ const GcalModal = (props: Props) => {
   const endOfNextHour = dayjs().add(2, 'hour').startOf('hour')
   const [start, setStart] = useState(startOfNextHour)
   const [end, setEnd] = useState(endOfNextHour)
-  const [inviteAll, setInviteAll] = useState(false)
+  const [inviteAll, setInviteAll] = useState(true)
   const [inviteError, setInviteError] = useState<null | string>(null)
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
@@ -159,34 +160,69 @@ const GcalModal = (props: Props) => {
     setInvitees(uniqueInvitees)
   }
 
+  const addAllTeamMembers = () => {
+    const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+    const currentInvitees = parsedInvitees
+      ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
+      : []
+    const emailsToAdd = teamMemberEmails.filter((email) => !currentInvitees.includes(email))
+    const lastInvitee = currentInvitees[currentInvitees.length - 1]
+    const formattedCurrentInvitees =
+      currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
+        ? `${currentInvitees.join(', ')}, `
+        : currentInvitees.join(', ')
+    setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
+    setInvitees([...currentInvitees, ...emailsToAdd])
+  }
+
+  useEffect(() => {
+    if (hasTeamMemberEmails) {
+      addAllTeamMembers()
+    }
+  }, [hasTeamMemberEmails])
+
+  const removeAllTeamMembers = () => {
+    const {parsedInvitees} = parseEmailAddressList(rawInvitees)
+    const currentInvitees = parsedInvitees
+      ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
+      : []
+    const remainingInvitees = currentInvitees.filter((email) => !teamMemberEmails.includes(email))
+    setRawInvitees(remainingInvitees.join(', '))
+    setInvitees(remainingInvitees)
+  }
+
   const handleToggleInviteAll = () => {
     if (!inviteAll) {
-      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
-      const currentInvitees = parsedInvitees
-        ? (parsedInvitees as emailAddresses.ParsedMailbox[]).map((invitee) => invitee.address)
-        : []
-      const emailsToAdd = teamMemberEmails.filter((email) => !currentInvitees.includes(email))
-      const lastInvitee = currentInvitees[currentInvitees.length - 1]
-      const formattedCurrentInvitees =
-        currentInvitees.length && lastInvitee && !lastInvitee.endsWith(',')
-          ? `${currentInvitees.join(', ')}, `
-          : currentInvitees.join(', ')
-      setRawInvitees(`${formattedCurrentInvitees}${emailsToAdd.join(', ')}`)
-      setInvitees([...currentInvitees, ...emailsToAdd])
+      addAllTeamMembers()
     } else {
-      const {parsedInvitees} = parseEmailAddressList(rawInvitees)
-      const currentInvitees = parsedInvitees
-        ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
-        : []
-      const remainingInvitees = currentInvitees.filter((email) => !teamMemberEmails.includes(email))
-      setRawInvitees(remainingInvitees.join(', '))
-      setInvitees(remainingInvitees)
+      removeAllTeamMembers()
     }
     setInviteAll((inviteAll) => !inviteAll)
   }
 
   const handleChangeVideoType = (option: GcalVideoTypeEnum | null) => {
     setVideoType(option)
+  }
+
+  const handleChangeStart = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newValue = date.hour(time.hour()).minute(time.minute())
+      setStart(newValue)
+      setEnd(newValue.add(1, 'hour'))
+    }
+  }
+
+  const handleChangeEnd = (date: Dayjs | null, time: Dayjs | null) => {
+    if (date && time) {
+      const newValue = date.hour(time.hour()).minute(time.minute())
+      if (newValue.isAfter(start)) {
+        setEnd(newValue)
+      } else {
+        const newStartValue = newValue.subtract(1, 'hour')
+        setStart(newStartValue)
+        setEnd(newValue)
+      }
+    }
   }
 
   return (
@@ -219,8 +255,8 @@ const GcalModal = (props: Props) => {
             <DateTimePickers
               startValue={start}
               endValue={end}
-              setStart={setStart}
-              setEnd={setEnd}
+              handleChangeStart={handleChangeStart}
+              handleChangeEnd={handleChangeEnd}
             />
           </div>
           <VideoConferencing videoType={videoType} handleChangeVideoType={handleChangeVideoType} />

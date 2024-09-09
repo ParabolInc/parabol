@@ -65,7 +65,7 @@
     2) prevent a horizontal scrollbar from causing a vertical scrollbar due to the 100vh
   */
   #root {
-    @apply w-full h-screen p-0 m-0 bg-slate-200;
+    @apply m-0 h-screen w-full bg-slate-200 p-0;
   }
 
   *,
@@ -186,4 +186,9 @@
 
 .draft-codeblock {
   @apply m-0 rounded-[1px] border-l-2 border-solid border-l-slate-500 bg-slate-200 py-0 px-[8px] font-mono font-[13px] leading-normal;
+}
+
+.summary-link-style a {
+  @apply text-sky-500;
+  text-decoration: underline;
 }

@@ -7,7 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   _source,
-  {},
+  _args,
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)
@@ -17,7 +17,7 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   // RESOLUTION
   const {sendSummaryEmail} = viewer
   await updateUser({sendSummaryEmail: !sendSummaryEmail}, viewerId)
-  analytics.toggleSubToSummaryEmail(viewerId, !sendSummaryEmail)
+  analytics.toggleSubToSummaryEmail(viewer, !sendSummaryEmail)
 
   return true
 }

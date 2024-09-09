@@ -1,13 +1,14 @@
 import styled from '@emotion/styled'
 import React from 'react'
+import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {TierLabel} from '../../types/constEnums'
-import {TierEnum} from '../../__generated__/NewMeetingQuery.graphql'
 import BaseTag from './BaseTag'
 
 interface Props {
   className?: string
   tier: TierEnum | null
+  billingTier: TierEnum | null
 }
 
 const StarterTag = styled(BaseTag)({
@@ -26,7 +27,8 @@ const EnterpriseTag = styled(BaseTag)({
 })
 
 const TierTag = (props: Props) => {
-  const {className, tier} = props
+  const {className, tier, billingTier} = props
+  if (tier !== billingTier) return <StarterTag className={className}>{'Free Trial'}</StarterTag>
   if (tier === 'starter') return <StarterTag className={className}>{TierLabel.STARTER}</StarterTag>
   if (tier === 'team') return <TeamTag className={className}>{TierLabel.TEAM}</TeamTag>
   if (tier === 'enterprise')

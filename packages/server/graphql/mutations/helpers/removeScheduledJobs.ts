@@ -1,8 +1,19 @@
-import getRethink from '../../../database/rethinkDriver'
+import {Updateable} from 'kysely'
+import getKysely from '../../../postgres/getKysely'
+import {DB} from '../../../postgres/pg'
 
-const removeScheduledJobs = async (runAt: Date, filter: {[key: string]: any}) => {
-  const r = await getRethink()
-  return r.table('ScheduledJob').getAll(runAt, {index: 'runAt'}).filter(filter).delete().run()
+type FilterType = Omit<Updateable<DB['ScheduledJob']>, 'runAt'>
+
+const removeScheduledJobs = async (runAt: Date, filter?: FilterType) => {
+  const pg = getKysely()
+  let query = pg.deleteFrom('ScheduledJob').where('runAt', '=', runAt)
+  if (filter) {
+    Object.keys(filter).forEach((key) => {
+      const value = filter[key as keyof FilterType]
+      if (value) query = query.where(key as keyof FilterType, '=', value)
+    })
+  }
+  return query.execute()
 }
 
 export default removeScheduledJobs

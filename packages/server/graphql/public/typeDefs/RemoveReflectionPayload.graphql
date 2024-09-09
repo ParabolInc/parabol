@@ -1,0 +1,10 @@
+type RemoveReflectionPayload {
+  error: StandardMutationError
+  meeting: NewMeeting
+  reflection: RetroReflection
+
+  """
+  The stages that were unlocked by navigating
+  """
+  unlockedStages: [NewMeetingStage!]
+}

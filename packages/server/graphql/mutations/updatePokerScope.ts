@@ -1,17 +1,18 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import {Insertable} from 'kysely'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import {Writeable} from '../../../client/types/generics'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import {TaskServiceEnum} from '../../database/types/Task'
-import insertDiscussions, {InputDiscussions} from '../../postgres/queries/insertDiscussions'
+import getKysely from '../../postgres/getKysely'
+import {Discussion} from '../../postgres/pg'
+import RedisLockQueue from '../../utils/RedisLockQueue'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
-import RedisLockQueue from '../../utils/RedisLockQueue'
 import {GQLContext} from '../graphql'
 import UpdatePokerScopeItemInput from '../types/UpdatePokerScopeItemInput'
 import UpdatePokerScopePayload from '../types/UpdatePokerScopePayload'
@@ -112,7 +113,7 @@ const updatePokerScope = {
       // add stages
       const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
       const {dimensions} = templateRef
-      const newDiscussions = [] as Writeable<InputDiscussions>
+      const newDiscussions = [] as Insertable<Discussion>[]
       const additiveUpdates = updates.filter((update) => {
         const {action, serviceTaskId} = update
         return action === 'ADD' && !stages.find((stage) => stage.serviceTaskId === serviceTaskId)
@@ -168,7 +169,7 @@ const updatePokerScope = {
         })
         .run()
       if (newDiscussions.length > 0) {
-        await insertDiscussions(newDiscussions)
+        await getKysely().insertInto('Discussion').values(newDiscussions).execute()
       }
       const data = {meetingId, newStageIds}
       publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)

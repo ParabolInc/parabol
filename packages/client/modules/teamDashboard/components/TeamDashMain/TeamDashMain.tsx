@@ -2,14 +2,16 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Route, Switch} from 'react-router-dom'
 import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import getTeamIdFromPathname from '../../../../utils/getTeamIdFromPathname'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
-import TeamDrawer from './TeamDrawer'
-import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
 import TeamDashActivityTab from '../TeamDashActivityTab/TeamDashActivityTab'
-import {Route, Switch} from 'react-router-dom'
+import TeamDashIntegrationsTab from '../TeamDashIntegrationsTab/TeamDashIntegrationsTab'
+import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
+import TeamDrawer from './TeamDrawer'
 
 const AbsoluteFab = styled(StartMeetingFAB)({
   position: 'absolute'
@@ -30,9 +32,6 @@ const TeamDashMain = (props: Props) => {
             ...TeamTasksHeaderContainer_team
             ...TeamDashActivityTab_team
           }
-          featureFlags {
-            retrosInDisguise
-          }
           ...TeamDashTasksTab_viewer
           ...TeamDrawer_viewer
         }
@@ -44,6 +43,7 @@ const TeamDashMain = (props: Props) => {
   const {viewer} = data
   const team = viewer.team!
   const {name: teamName} = team
+  const teamId = getTeamIdFromPathname()
   useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
 
   return (
@@ -56,12 +56,15 @@ const TeamDashMain = (props: Props) => {
           <Route path='/team/:teamId/tasks'>
             <TeamDashTasksTab viewerRef={viewer} />
           </Route>
+          <Route path='/team/:teamId/integrations'>
+            <TeamDashIntegrationsTab teamRef={teamId} />
+          </Route>
           {/*Fall back to activity view if nothing is specified*/}
           <Route path='/team/:teamId'>
             <TeamDashActivityTab teamRef={team} />
           </Route>
         </Switch>
-        <AbsoluteFab hasRid={viewer.featureFlags.retrosInDisguise} />
+        <AbsoluteFab />
       </div>
       <TeamDrawer viewer={viewer} />
     </div>

@@ -1,7 +1,7 @@
 import React, {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
-import useNoIndex from '~/hooks/useNoIndex'
 import teamInvitationQuery, {TeamInvitationQuery} from '~/__generated__/TeamInvitationQuery.graphql'
+import useNoIndex from '~/hooks/useNoIndex'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import TeamInvitation from './TeamInvitation'
 

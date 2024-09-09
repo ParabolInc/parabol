@@ -1,5 +1,4 @@
-import {Client} from 'pg'
-import {r} from 'rethinkdb-ts'
+import {r, RDatum} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
 
 /**
@@ -12,13 +11,13 @@ export async function up() {
     .insert(
       r
         .table('ReflectPrompt')
-        .filter((row) => row('id').count().gt(100))
-        .map((row) => row.merge({id: row('id').slice(0, 100)}))
+        .filter((row: RDatum) => row('id').count().gt(100))
+        .map((row: RDatum) => row.merge({id: row('id').slice(0, 100)}))
     )
     .run()
   await r
     .table('ReflectPrompt')
-    .filter((row) => row('id').count().gt(100))
+    .filter((row: RDatum) => row('id').count().gt(100))
     .delete()
     .run()
   await r.getPoolMaster()?.drain()

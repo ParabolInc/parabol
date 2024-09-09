@@ -1,0 +1,9 @@
+"""
+The type of meeting
+"""
+enum MeetingTypeEnum {
+  action
+  retrospective
+  poker
+  teamPrompt
+}

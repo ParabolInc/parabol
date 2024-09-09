@@ -15,7 +15,7 @@ interface Input {
   id?: string
   teamId: string
   meetingCount: number
-  name?: string
+  name: string
   phases: [GenericMeetingPhase, ...GenericMeetingPhase[]]
   facilitatorUserId: string
   showConversionModal?: boolean
@@ -28,6 +28,8 @@ interface Input {
   resetReflectionGroups?: AutogroupReflectionGroupType[]
   recallBotId?: string
   videoMeetingURL?: string
+  meetingSeriesId?: number
+  scheduledEndTime?: Date
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {
@@ -71,7 +73,9 @@ export default class MeetingRetrospective extends Meeting {
       autogroupReflectionGroups,
       resetReflectionGroups,
       recallBotId,
-      videoMeetingURL
+      videoMeetingURL,
+      meetingSeriesId,
+      scheduledEndTime
     } = input
     super({
       id,
@@ -80,7 +84,9 @@ export default class MeetingRetrospective extends Meeting {
       phases,
       facilitatorUserId,
       meetingType: 'retrospective',
-      name: name ?? `Retro #${meetingCount + 1}`
+      name,
+      meetingSeriesId,
+      scheduledEndTime
     })
     this.totalVotes = totalVotes
     this.maxVotesPerGroup = maxVotesPerGroup

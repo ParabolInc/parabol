@@ -1,0 +1,125 @@
+"""
+A team meeting history for all previous meetings
+"""
+interface NewMeeting {
+  """
+  The unique meeting id. shortid.
+  """
+  id: ID!
+
+  """
+  The timestamp the meeting was created
+  """
+  createdAt: DateTime!
+
+  """
+  The id of the user that created the meeting, null if user was hard deleted
+  """
+  createdBy: ID
+
+  """
+  The user that created the meeting, null if user was hard deleted
+  """
+  createdByUser: User
+
+  """
+  The timestamp the meeting officially ended
+  """
+  endedAt: DateTime
+
+  """
+  The location of the facilitator in the meeting
+  """
+  facilitatorStageId: ID!
+
+  """
+  The userId (or anonymousId) of the most recent facilitator
+  """
+  facilitatorUserId: ID!
+
+  """
+  The facilitator team member
+  """
+  facilitator: TeamMember!
+
+  """
+  Is this locked for starter plans?
+  """
+  locked: Boolean!
+
+  """
+  The team members that were active during the time of the meeting
+  """
+  meetingMembers: [MeetingMember!]!
+
+  """
+  The auto-incrementing meeting number for the team
+  """
+  meetingNumber: Int!
+
+  """
+  The id of the meeting series this meeting belongs to
+  """
+  meetingSeriesId: ID
+
+  """
+  The meeting series this meeting is associated with if the meeting is recurring
+  """
+  meetingSeries: MeetingSeries
+  meetingType: MeetingTypeEnum!
+
+  """
+  The name of the meeting
+  """
+  name: String!
+
+  """
+  The organization this meeting belongs to
+  """
+  organization: Organization!
+
+  """
+  The phases the meeting will go through, including all phase-specific state
+  """
+  phases: [NewMeetingPhase!]!
+
+  """
+  If meeting has a meeting series associated, this is the time the meeting will end
+  """
+  scheduledEndTime: DateTime
+
+  """
+  true if should show the org the conversion modal, else false
+  """
+  showConversionModal: Boolean!
+
+  """
+  The OpenAI generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
+  """
+  summary: String
+
+  """
+  The time the meeting summary was emailed to the team
+  """
+  summarySentAt: DateTime
+
+  """
+  foreign key for team
+  """
+  teamId: ID!
+
+  """
+  The team that ran the meeting
+  """
+  team: Team!
+
+  """
+  The last time a meeting was updated (stage completed, finished, etc)
+  """
+  updatedAt: DateTime
+
+  """
+  The meeting member of the viewer
+  """
+  viewerMeetingMember: MeetingMember
+}

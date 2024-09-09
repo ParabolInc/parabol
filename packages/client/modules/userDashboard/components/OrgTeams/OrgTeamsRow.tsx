@@ -1,10 +1,11 @@
-import React from 'react'
-import {Link} from 'react-router-dom'
+import {ChevronRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import Row from '../../../../components/Row/Row'
+import React from 'react'
 import {useFragment} from 'react-relay'
-import plural from '../../../../utils/plural'
+import {Link} from 'react-router-dom'
+
 import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
+import plural from '../../../../utils/plural'
 
 type Props = {
   teamRef: OrgTeamsRow_team$key
@@ -18,10 +19,9 @@ const OrgTeamsRow = (props: Props) => {
         id
         name
         teamMembers {
-          id
-          isLead
           isSelf
-          email
+          isLead
+          preferredName
         }
       }
     `,
@@ -29,40 +29,41 @@ const OrgTeamsRow = (props: Props) => {
   )
   const {id: teamId, teamMembers, name} = team
   const teamMembersCount = teamMembers.length
-  const teamLeadEmail = teamMembers.find((member) => member.isLead)?.email ?? ''
-  const isViewerTeamLead = teamMembers.some((member) => member.isSelf && member.isLead)
+  const viewerTeamMember = teamMembers.find((m) => m.isSelf)
+  const isLead = viewerTeamMember?.isLead
+  const isMember = !!viewerTeamMember && !isLead
+
   return (
-    <Row>
-      <div className='flex w-full flex-col px-4 py-1'>
-        <div className='text-gray-700 text-lg font-bold'>{name}</div>
-        <div className='flex items-center justify-between'>
-          <div className='text-gray-600'>
-            {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
-            {isViewerTeamLead && (
-              <>
-                <span className='mx-2'>•</span>
-                <Link
-                  to={`/team/${teamId}/settings`}
-                  className='cursor-pointer font-bold text-sky-500 hover:underline'
-                >
-                  {'Manage Team'}
-                </Link>
-              </>
+    <Link
+      className='block hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset'
+      to={`teams/${teamId}`}
+    >
+      <div className='flex items-center p-4'>
+        <div className='flex flex-1 flex-col py-1'>
+          <div className='text-gray-700 flex items-center text-lg font-bold'>
+            {name}
+            {isLead && (
+              <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+                Team Lead
+              </span>
+            )}
+            {isMember && (
+              <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
+                Member
+              </span>
             )}
           </div>
-
-          <a
-            href={`mailto:${teamLeadEmail}`}
-            target='_blank'
-            title='Email'
-            className='text-gray-600 hover:underline'
-            rel='noreferrer'
-          >
-            {`${teamLeadEmail} ${isViewerTeamLead ? '(You)' : ''}`}
-          </a>
+          <div className='flex items-center justify-between'>
+            <div className='text-gray-600'>
+              {`${teamMembersCount} ${plural(teamMembersCount, 'member')}`}
+            </div>
+          </div>
+        </div>
+        <div className='flex items-center justify-center'>
+          <ChevronRight />
         </div>
       </div>
-    </Row>
+    </Link>
   )
 }
 

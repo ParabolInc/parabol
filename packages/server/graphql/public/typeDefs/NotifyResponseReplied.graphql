@@ -21,14 +21,14 @@ type NotifyResponseReplied implements Notification {
   userId: ID!
 
   """
-  The id of the user that replied to the response
+  The id of the user that replied to the response, null if anonymous
   """
-  authorId: ID!
+  authorId: ID
 
   """
-  The user that replied to the response
+  The user that replied to the response, null if anonymous
   """
-  author: User!
+  author: User
 
   """
   The id of the meeting the response was replied to in.

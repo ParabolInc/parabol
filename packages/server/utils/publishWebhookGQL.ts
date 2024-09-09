@@ -3,13 +3,22 @@ import ServerAuthToken from '../database/types/ServerAuthToken'
 import getGraphQLExecutor from './getGraphQLExecutor'
 import sendToSentry from './sendToSentry'
 
-const publishWebhookGQL = async (query: string, variables: Variables) => {
+interface PublishOptions {
+  longRunning?: boolean
+}
+
+const publishWebhookGQL = async <NarrowResponse>(
+  query: string,
+  variables: Variables,
+  options?: PublishOptions
+) => {
   try {
-    return await getGraphQLExecutor().publish({
+    return await getGraphQLExecutor().publish<NarrowResponse>({
       authToken: new ServerAuthToken(),
       query,
       variables,
-      isPrivate: true
+      isPrivate: true,
+      ...options
     })
   } catch (e) {
     const error = e instanceof Error ? e : new Error('GQL executor failed to publish')

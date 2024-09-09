@@ -6,13 +6,14 @@ import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegration
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import AzureDevOpsServerManager, {
   ProjectRes,
   Resource,
   TeamProjectReference,
   WorkItem
 } from '../utils/AzureDevOpsServerManager'
+import {Logger} from '../utils/Logger'
+import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
 
@@ -102,6 +103,8 @@ export interface AzureDevOpsWorkItem {
   type: string
   descriptionHTML: string
   service: 'azureDevOps'
+  teamId: string
+  userId: string
 }
 
 export interface AzureUserInfo {
@@ -122,7 +125,7 @@ export interface AzureAccountProject extends TeamProjectReference {
   service: 'azureDevOps'
 }
 
-interface AzureProject extends ProjectRes {
+export interface AzureProject extends ProjectRes {
   userId: string
   teamId: string
   service: 'azureDevOps'
@@ -215,7 +218,7 @@ export const azureDevOpsAllWorkItems = (
 
           const {error, workItems} = restResult
           if (error !== undefined || workItems === undefined) {
-            console.log(error)
+            Logger.log(error)
             return [] as AzureDevOpsWorkItem[]
           }
 
@@ -223,11 +226,11 @@ export const azureDevOpsAllWorkItems = (
             workItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
               const instanceId = getInstanceId(new URL(returnedWorkItem.url))
               const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
-                manager,
                 userId,
                 teamId,
                 instanceId,
-                returnedWorkItem
+                returnedWorkItem,
+                parent
               )
               return mappedWorkItem
             })
@@ -264,7 +267,7 @@ export const azureDevUserInfo = (
           const restResult = await manager.getMe()
           const {error, azureDevOpsUser} = restResult
           if (error !== undefined || azureDevOpsUser === undefined) {
-            console.log(error)
+            Logger.log(error)
             return undefined
           }
           return {
@@ -303,7 +306,7 @@ export const allAzureDevOpsAccessibleOrgs = (
           const results = await manager.getAccessibleOrgs(id)
           const {error, accessibleOrgs} = results
           // handle error if defined
-          console.log(error)
+          Logger.log(error)
           return accessibleOrgs.map((resource) => ({
             ...resource
           }))
@@ -340,7 +343,7 @@ export const allAzureDevOpsProjects = (
           )
           const {error, projects} = await manager.getAllUserProjects()
           if (error !== undefined) {
-            console.log(error)
+            Logger.log(error)
             return []
           }
           if (projects !== null) resultReferences.push(...projects)
@@ -383,7 +386,7 @@ export const azureDevOpsProject = (
           )
           const projectRes = await manager.getProject(instanceId, projectId)
           if (projectRes instanceof Error) {
-            console.log(projectRes)
+            Logger.log(projectRes)
             return null
           }
           return {
@@ -475,16 +478,16 @@ export const azureDevOpsUserStory = (
           const restResult = await manager.getWorkItemData(instanceId, workItemIds)
           const {error, workItems} = restResult
           if (error !== undefined || workItems.length !== 1 || !workItems[0]) {
-            console.log(error)
+            Logger.log(error)
             return null
           } else {
             const returnedWorkItem: WorkItem = workItems[0]
             const azureDevOpsWorkItem = await getMappedAzureDevOpsWorkItem(
-              manager,
               userId,
               teamId,
               instanceId,
-              returnedWorkItem
+              returnedWorkItem,
+              parent
             )
             return azureDevOpsWorkItem
           }
@@ -527,11 +530,11 @@ export const azureDevOpsWorkItem = (
           if (returnedWorkItems.length !== 1 || !returnedWorkItems[0]) return null
           const returnedWorkItem = returnedWorkItems[0]
           const azureDevOpsWorkItem = await getMappedAzureDevOpsWorkItem(
-            manager,
             userId,
             teamId,
             instanceId,
-            returnedWorkItem
+            returnedWorkItem,
+            parent
           )
 
           // update our records
@@ -577,12 +580,57 @@ export const azureDevOpsWorkItem = (
   )
 }
 
-export const getMappedAzureDevOpsWorkItem = async (
-  manager: AzureDevOpsServerManager,
+export type AzureDevOpsProjectProcessTemplateKey = {
+  userId: string
+  teamId: string
+  instanceId: string
+  projectId: string
+}
+export type AzureDevOpsProjectProcessTemplate = {
+  error?: Error
+  projectTemplate?: string
+}
+
+export const azureDevOpsProjectProcessTemplate = (parent: RootDataLoader) => {
+  return new DataLoader<
+    AzureDevOpsProjectProcessTemplateKey,
+    AzureDevOpsProjectProcessTemplate,
+    string
+  >(
+    async (keys) => {
+      const results = await Promise.allSettled(
+        keys.map(async ({userId, teamId, instanceId, projectId}) => {
+          const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
+          if (!auth) return null
+          const provider = await parent.get('integrationProviders').loadNonNull(auth.providerId)
+          const manager = new AzureDevOpsServerManager(
+            auth,
+            provider as IntegrationProviderAzureDevOps
+          )
+
+          return manager.getProjectProcessTemplate(instanceId, projectId)
+        })
+      )
+      return results.map((result) =>
+        result.status === 'fulfilled' && result.value
+          ? result.value
+          : {error: new Error('Failed to get project process template')}
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({userId, teamId, instanceId, projectId}) =>
+        `${userId}:${teamId}:${instanceId}:${projectId}`
+    }
+  )
+}
+
+const getMappedAzureDevOpsWorkItem = async (
   userId: string,
   teamId: string,
   instanceId: string,
-  returnedWorkItem: WorkItem
+  returnedWorkItem: WorkItem,
+  dataLoader: RootDataLoader
 ) => {
   const mappedUrl = returnedWorkItem._links['html']?.href ?? returnedWorkItem.url
   const azureDevOpsWorkItem = {
@@ -600,10 +648,12 @@ export const getMappedAzureDevOpsWorkItem = async (
     userId
   } as AzureDevOpsWorkItem
 
-  const projectResult = await manager.getProjectProcessTemplate(
+  const projectResult = await dataLoader.get('azureDevOpsProjectProcessTemplate').load({
+    userId,
+    teamId,
     instanceId,
-    azureDevOpsWorkItem.teamProject
-  )
+    projectId: azureDevOpsWorkItem.teamProject
+  })
   const {error: projectResultError, projectTemplate} = projectResult
   if (!!projectResultError) {
     const workItemId = returnedWorkItem.id.toString()
@@ -637,18 +687,18 @@ export const azureDevOpsWorkItems = (
           const workItemData = await manager.getWorkItemData(instanceId, workItemIds)
           const {error: workItemDataError, workItems: returnedWorkItems} = workItemData
           if (workItemDataError !== undefined) {
-            console.log(error)
+            Logger.log(error)
             return []
           }
 
           const mappedWorkItems: AzureDevOpsWorkItem[] = await Promise.all(
             returnedWorkItems.map(async (returnedWorkItem): Promise<AzureDevOpsWorkItem> => {
               const mappedWorkItem = await getMappedAzureDevOpsWorkItem(
-                manager,
                 userId,
                 teamId,
                 instanceId,
-                returnedWorkItem
+                returnedWorkItem,
+                parent
               )
               return mappedWorkItem
             })

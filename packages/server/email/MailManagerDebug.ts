@@ -1,5 +1,5 @@
-import MailManager, {MailManagerOptions} from './MailManager'
 import fs from 'fs'
+import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerDebug extends MailManager {
   async sendEmail(options: MailManagerOptions) {
@@ -9,9 +9,11 @@ export default class MailManagerDebug extends MailManager {
     Subject: ${subject}
     Body: ${body}`)
 
+    const toStr = to.toString()
+
     const {html} = options
     // limit filename length so it does not exceed filesystem limits
-    const filename = `${to.slice(0, 50)}-${subject.replaceAll(' ', '-').slice(0, 180)}.html`
+    const filename = `${toStr.slice(0, 50)}-${subject.replaceAll(' ', '-').slice(0, 180)}.html`
     const folder = '/tmp'
     fs.writeFileSync(`${folder}/${filename}`, html)
     // make it a link so you can click it in the terminal

@@ -20,20 +20,6 @@ export function isMeetingTeamPrompt(meeting: Meeting): meeting is MeetingTeamPro
   return meeting.meetingType === 'teamPrompt'
 }
 
-export function createTeamPromptTitle(
-  meetingSeriesName: string,
-  startTime: Date,
-  timeZone: string
-) {
-  const formattedDate = startTime.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    timeZone
-  })
-
-  return `${meetingSeriesName} - ${formattedDate}`
-}
-
 export default class MeetingTeamPrompt extends Meeting {
   meetingType!: 'teamPrompt'
   meetingPrompt: string

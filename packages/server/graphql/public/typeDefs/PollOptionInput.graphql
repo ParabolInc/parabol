@@ -1,0 +1,6 @@
+input PollOptionInput {
+  """
+  Poll option title
+  """
+  title: String!
+}

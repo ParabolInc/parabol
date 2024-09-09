@@ -1,18 +1,19 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../database/rethinkDriver'
 import Team from '../../database/types/Team'
 import User from '../../database/types/User'
+import getKysely from '../../postgres/getKysely'
 import IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
-import {analytics} from '../../utils/analytics/analytics'
 
 export default {
   type: new GraphQLNonNull(ArchiveOrganizationPayload),
@@ -27,10 +28,8 @@ export default {
     {orgId}: {orgId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const now = new Date()
 
     // AUTH
     const viewerId = getUserId(authToken)
@@ -40,7 +39,10 @@ export default {
       }
     }
 
-    const organization = await dataLoader.get('organizations').load(orgId)
+    const [organization, viewer] = await Promise.all([
+      dataLoader.get('organizations').loadNonNull(orgId),
+      dataLoader.get('users').loadNonNull(viewerId)
+    ])
     const {tier} = organization
     if (tier !== 'starter') {
       return standardError(new Error('You must first downgrade before archiving'), {
@@ -49,7 +51,7 @@ export default {
     }
 
     // RESOLUTION
-    analytics.archiveOrganization(viewerId, orgId)
+    analytics.archiveOrganization(viewer, orgId)
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)
     const teamArchiveResults = (await Promise.all(
@@ -78,14 +80,12 @@ export default {
     const uniqueUserIds = Array.from(new Set(allUserIds))
 
     await Promise.all([
-      r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null})
-        .update({
-          removedAt: now
-        })
-        .run(),
+      getKysely()
+        .updateTable('OrganizationUser')
+        .set({removedAt: sql`CURRENT_TIMESTAMP`})
+        .where('orgId', '=', orgId)
+        .where('removedAt', 'is', null)
+        .execute(),
       removeTeamsLimitObjects(orgId, dataLoader)
     ])
 

@@ -1,0 +1,19 @@
+"""
+A GitHub search query including all filters selected when the query was executed
+"""
+type GitHubSearchQuery {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The query string in GitHub format, including repository filters. e.g. is:issue is:open
+  """
+  queryString: String!
+
+  """
+  the time the search query was last used. Used for sorting
+  """
+  lastUsedAt: DateTime!
+}

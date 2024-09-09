@@ -10,7 +10,7 @@ const UpdateOrgPayload: UpdateOrgPayloadResolvers = {
   organization: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null
     const {orgId} = source
-    return dataLoader.get('organizations').load(orgId)
+    return dataLoader.get('organizations').loadNonNull(orgId)
   }
 }
 

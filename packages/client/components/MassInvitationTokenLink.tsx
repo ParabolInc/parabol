@@ -5,13 +5,13 @@ import React, {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
+import {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
-import {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
   borderRadius: 4,
@@ -66,7 +66,7 @@ const MassInvitationTokenLink = (props: Props) => {
       CreateMassInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
     }
     doFetch().catch()
-  }, [])
+  }, [isTokenValid, submitting])
   const onCopy = () => {
     SendClientSideEvent(atmosphere, 'Copied Invite Link', {
       teamId: teamId,

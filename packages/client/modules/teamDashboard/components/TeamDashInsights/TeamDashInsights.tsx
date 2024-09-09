@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamDashInsights_insights$key} from '~/__generated__/TeamDashInsights_insights.graphql'
-import MostUsedEmojisCard from './MostUsedEmojisCard'
 import MeetingEngagementCard from './MeetingEngagementCard'
+import MostUsedEmojisCard from './MostUsedEmojisCard'
 import TopRetroTemplatesCard from './TopRetroTemplatesCard'
 
 interface Props {

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
-import {StandardMutation} from '../types/relayMutations'
 import {AddReactjiToReactableMutation as TAddReactjiToReactableMutation} from '../__generated__/AddReactjiToReactableMutation.graphql'
+import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment AddReactjiToReactableMutation_meeting on AddReactjiToReactableSuccess {

@@ -1,34 +1,10 @@
 {
   "git.ignoreLimitWarning": true,
-  "eslint.packageManager": "yarn",
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.tabSize": 2,
-  "eslint.workingDirectories": [
-    {
-      "directory": "./packages/server",
-      "changeProcessCWD": true
-    },
-    {
-      "directory": "./packages/client",
-      "changeProcessCWD": true
-    }
-  ],
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    {
-      "language": "typescript",
-      "autoFix": true
-    },
-    {
-      "language": "typescriptreact",
-      "autoFix": true
-    }
-  ],
   "npm.packageManager": "yarn",
   "editor.codeActionsOnSave": {
-    // .eslint is important! otherwise it'll remove unreachable code on save
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
@@ -54,5 +30,6 @@
     "**/graphql/private/schema.graphql": true,
     "**/graphql/public/schema.graphql": true,
     "**/resolverTypes.ts": true
-  }
+  },
+  "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]]
 }

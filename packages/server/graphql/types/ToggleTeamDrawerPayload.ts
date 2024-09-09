@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
-import makeMutationPayload from './makeMutationPayload'
 import TeamMember from './TeamMember'
+import makeMutationPayload from './makeMutationPayload'
 
 export const ToggleTeamDrawerSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'ToggleTeamDrawerSuccess',

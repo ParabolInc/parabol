@@ -1,0 +1,132 @@
+name: Release to Staging
+on:
+  pull_request:
+    branches:
+      - master
+      - hotfix**
+    types: [closed]
+jobs:
+  release:
+    if: ${{ github.event.pull_request.merged == true && startsWith(github.head_ref, 'release-please--') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: "write"
+      id-token: "write"
+      pull-requests: "write"
+    steps:
+      - name: Checkout production
+        uses: actions/checkout@v3
+        with:
+          ref: production
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup environment variables
+        run: |
+          ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+          echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          token_format: "access_token"
+          workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+      - name: "Tag image with production version"
+        run: |-
+          gcloud container images add-tag -q \
+          ${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.event.pull_request.head.sha}} \
+          ${{ secrets.GCP_AR_PARABOL }}:v${{ env.ACTION_VERSION }}
+      - name: Push Version Commit to Staging Server
+        run: |
+          COMMIT_ID=$(curl  "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/repository/commits" \
+            --request POST \
+            --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}' \
+            --form "branch=main" \
+            --form "commit_message=release v${{ env.ACTION_VERSION }}" \
+            --form "actions[][action]=update" \
+            --form "actions[][file_path]=version.yaml" \
+            --form "actions[][content]=
+          # Change it to use a valid docker tag, which are the same of the GitHub tags. Ex: v6.110.0
+          applicationVersion: &applicationVersion v${{ env.ACTION_VERSION }}
+
+          global:
+            image:
+              tag: *applicationVersion" | jq .id)
+          echo "COMMIT_ID=${COMMIT_ID}" >> $GITHUB_ENV
+      - name: Poll for new pipeline
+        env:
+          STAGING_JOB: staging-release
+          PRODUCTION_JOB: prod-release
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 100
+          retry_wait_seconds: 5
+          command: |
+            echo ${{ env.COMMIT_ID }}
+            PIPELINES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines" \
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
+            PIPELINE_ID=$(echo $PIPELINES | jq ".[] | select(.sha == \"${{ env.COMMIT_ID }}\")" | jq .id)
+            [ -z "$PIPELINE_ID" ] && exit 1
+            JOBS=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/pipelines/$PIPELINE_ID/jobs?per_page=100" \
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
+            JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.STAGING_JOB }}")' | jq .id)
+            PROD_JOB_ID=$(echo $JOBS | jq '.[] | select(.name == "${{ env.PRODUCTION_JOB}}")' | jq .id)
+            echo "JOB_ID=${JOB_ID}" >> $GITHUB_ENV
+            echo "PROD_JOB_ID=${PROD_JOB_ID}" >> $GITHUB_ENV
+      - name: Push to staging
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 5
+          max_attempts: 100
+          retry_wait_seconds: 5
+          # If the job isn't created yet, will return {"message":"400 Bad request - Unplayable Job"}
+          command: |
+            RES=$(curl "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}/play" \
+              --request POST \
+              --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}')
+            echo $RES
+            JOB_ID_DONE=$(echo $RES | jq '.id // empty')
+            [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
+      - name: Open PR to Push to Prod
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # gh cli does not interpret \n, so we first write to a file
+        run: |
+          BACKLINK="Production Job Id: $PROD_JOB_ID\nStaging Job Id: $JOB_ID"
+          TEMPLATE=$(tail -n +12 .github/ISSUE_TEMPLATE/release_test.md)
+          CHANGES=$(perl -0777ne 'print "$1\n" and exit if m/\n##\s[^\n]*\n+(.*?\n)##?\s|$/gs;' CHANGELOG.md)
+          echo -e "${BACKLINK}\n\n${TEMPLATE}\n\n\n${CHANGES}" > BODY
+          export BODY=$(cat BODY)
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b "release/v${{ env.ACTION_VERSION }}"
+          git merge -s ours origin/production --allow-unrelated-histories
+          git push --set-upstream origin "release/v${{ env.ACTION_VERSION }}"
+          gh pr create \
+            --assignee ${{ github.actor }} \
+            --base production \
+            --head release/v${{ env.ACTION_VERSION }} \
+            --title "chore(release): Test v${{ env.ACTION_VERSION }}" \
+            --body "$BODY"
+      - name: Poll Staging Release
+        uses: artiz/poll-endpoint@1.0.2
+        with:
+          url: https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}?access_token=${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}
+          method: GET
+          expect-status: 200
+          expect-response-regex: '"status":"success"'
+          timeout: 120000
+          interval: 3000
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}

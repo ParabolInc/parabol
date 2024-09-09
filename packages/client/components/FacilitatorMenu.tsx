@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
 import Menu from '../components/Menu'
 import MenuItem from '../components/MenuItem'
 import MenuItemLabel from '../components/MenuItemLabel'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuProps} from '../hooks/useMenu'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
-import {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
 
 interface Props {
   menuProps: MenuProps

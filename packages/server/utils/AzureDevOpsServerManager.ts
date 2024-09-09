@@ -6,7 +6,6 @@ import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
@@ -15,6 +14,7 @@ import {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../integrations/TaskIntegrationManagerFactory'
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
@@ -266,7 +266,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       grant_type: 'authorization_code',
       code: code,
       code_verifier: codeVerifier,
-      redirect_uri: makeAppURL(appOrigin, 'auth/ado')
+      redirect_uri: makeAppURL(appOrigin, 'auth/ado2')
     })
   }
 
@@ -425,21 +425,23 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const workItems = [] as WorkItem[]
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
-    const payload = !!fields
-      ? {ids: workItemIds, fields: fields}
-      : {ids: workItemIds, $expand: 'Links'}
-    const res = await this.post<WorkItemBatchResponse>(uri, payload)
-    if (res instanceof Error) {
-      if (!firstError) {
-        firstError = res
-      }
-    } else {
-      const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
-        return {
-          ...workItem
+    // we can fetch at most 200 items at once VS403474
+    for (let i = 0; i < workItemIds.length; i += 200) {
+      const ids = workItemIds.slice(i, i + 200)
+      const payload = !!fields ? {ids, fields: fields} : {ids, $expand: 'Links'}
+      const res = await this.post<WorkItemBatchResponse>(uri, payload)
+      if (res instanceof Error) {
+        if (!firstError) {
+          firstError = res
         }
-      })
-      workItems.push(...mappedWorkItems)
+      } else {
+        const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
+          return {
+            ...workItem
+          }
+        })
+        workItems.push(...mappedWorkItems)
+      }
     }
     return {error: firstError, workItems: workItems}
   }
@@ -589,7 +591,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     return {error: undefined, projects: teamProjectReferences}
   }
 
-  async getProjectProperties(instanceId: string, projectId: string) {
+  private async getProjectProperties(instanceId: string, projectId: string) {
     let firstError: Error | undefined
     const uri = `https://${instanceId}/_apis/projects/${projectId}/properties?keys=System.CurrentProcessTemplateId`
     const result = await this.get<ProjectProperties>(uri)
@@ -702,16 +704,14 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
     const body = {
       ...params,
-      client_id: this.provider.clientId
+      client_id: this.provider.clientId,
+      client_secret: this.provider.clientSecret
     }
 
-    const additonalHeaders = {
-      Origin: appOrigin
-    }
     const tenantId = this.provider.tenantId
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
     const contentType = 'application/x-www-form-urlencoded'
-    const oAuthRes = await authorizeOAuth2({authUrl, body, additonalHeaders, contentType})
+    const oAuthRes = await authorizeOAuth2({authUrl, body, contentType})
     if (!isError(oAuthRes)) {
       this.accessToken = oAuthRes.accessToken
     }

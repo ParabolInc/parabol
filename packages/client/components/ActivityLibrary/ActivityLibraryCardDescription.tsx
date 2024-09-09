@@ -1,10 +1,10 @@
+import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import * as ScrollArea from '@radix-ui/react-scroll-area'
 import React from 'react'
 import {
-  ActivityLibraryCardDescription_template$key,
-  ActivityLibraryCardDescription_template$data
+  ActivityLibraryCardDescription_template$data,
+  ActivityLibraryCardDescription_template$key
 } from '~/__generated__/ActivityLibraryCardDescription_template.graphql'
 
 import {Comment, LinearScale, Update} from '@mui/icons-material'
@@ -14,18 +14,20 @@ interface RetroDescriptionProps {
   prompts: ActivityLibraryCardDescription_template$data['prompts']
 }
 
-const RetroDescription = (props: RetroDescriptionProps) => {
+export const RetroDescription = (props: RetroDescriptionProps) => {
   const {prompts} = props
-
   return (
     <>
-      {prompts!.map((prompt, index) => (
-        <div key={index} className='flex items-center gap-x-2'>
+      {prompts!.map((prompt) => (
+        <div key={prompt.id} className='mb-1 flex flex-col items-start py-1 sm:flex-row'>
           <div
-            className='mt-1 h-3 w-3 shrink-0 self-start rounded-full'
+            className='mt-1 mr-4 h-3 w-3 shrink-0 self-start rounded-full'
             style={{backgroundColor: prompt.groupColor}}
           />
-          <div className='text-sm font-medium'>{prompt.question}</div>
+          <div className='flex min-w-0 flex-grow flex-col'>
+            <div className='text-sm font-semibold'>{prompt.question}</div>
+            <div className='text-sm font-normal'>{prompt.description}</div>
+          </div>
         </div>
       ))}
     </>
@@ -38,16 +40,16 @@ interface PokerDescriptionProps {
 
 const PokerDescription = (props: PokerDescriptionProps) => {
   const {dimensions} = props
-
   return (
     <>
-      {dimensions!.map((dimension, index) => (
-        <div key={index} className='flex items-center gap-x-2'>
-          <div className='mt-1 shrink-0 self-start'>
+      {dimensions!.map((dimension) => (
+        <div key={dimension.id} className='mb-1 flex items-center py-1 sm:flex-row'>
+          <div className='mr-4 shrink-0 self-start'>
             <LinearScale className='h-4 w-4' />
           </div>
-          <div className='text-sm font-medium'>
-            {dimension.name}: <span className='font-semibold'>{dimension.selectedScale.name}</span>
+          <div className='flex min-w-0 flex-grow flex-col'>
+            <div className='text-sm font-semibold'>{dimension.name}</div>
+            <div className='text-sm font-normal'>{dimension.selectedScale.name}</div>
           </div>
         </div>
       ))}
@@ -70,9 +72,11 @@ const ActionDescription = () => {
   return (
     <>
       {items.map((item, index) => (
-        <div key={index} className='flex items-center gap-x-2'>
-          <div className='mt-1 shrink-0 self-start'>{item.icon}</div>
-          <div className='text-sm font-medium'>{item.description}</div>
+        <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
+          <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
+          <div className='flex min-w-0 flex-grow flex-col'>
+            <div className='text-sm font-normal'>{item.description}</div>
+          </div>
         </div>
       ))}
     </>
@@ -90,9 +94,11 @@ const TeamPromptDescription = () => {
   return (
     <>
       {items.map((item, index) => (
-        <div key={index} className='flex items-center gap-x-2'>
-          <div className='mt-1 shrink-0 self-start'>{item.icon}</div>
-          <div className='text-sm font-medium'>{item.description}</div>
+        <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
+          <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
+          <div className='flex min-w-0 flex-grow flex-col'>
+            <div className='text-sm font-normal'>{item.description}</div>
+          </div>
         </div>
       ))}
     </>
@@ -113,6 +119,7 @@ export const ActivityLibraryCardDescription = (props: Props) => {
         type
         ... on PokerTemplate {
           dimensions {
+            id
             name
             description
             selectedScale {
@@ -122,8 +129,10 @@ export const ActivityLibraryCardDescription = (props: Props) => {
         }
         ... on ReflectTemplate {
           prompts {
+            id
             question
             groupColor
+            description
           }
         }
       }

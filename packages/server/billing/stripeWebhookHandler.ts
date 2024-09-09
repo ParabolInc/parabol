@@ -51,23 +51,6 @@ const eventLookup = {
           stripeInvoicePaid(invoiceId: $invoiceId)
         }
       `
-    },
-    finalized: {
-      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
-      query: `
-      mutation StripeInvoiceFinalized($invoiceId: ID!) {
-        stripeInvoiceFinalized(invoiceId: $invoiceId)
-      }`
-    }
-  },
-  invoiceitem: {
-    created: {
-      getVars: ({id: invoiceItemId}: {id: string}) => ({invoiceItemId}),
-      query: `
-        mutation StripeUpdateInvoiceItem($invoiceItemId: ID!) {
-          stripeUpdateInvoiceItem(invoiceItemId: $invoiceItemId)
-        }
-      `
     }
   },
   customer: {
@@ -77,6 +60,30 @@ const eventLookup = {
         query: `
         mutation StripeUpdateCreditCard($customerId: ID!) {
           stripeUpdateCreditCard(customerId: $customerId)
+        }
+      `
+      }
+    },
+    subscription: {
+      created: {
+        getVars: ({customer, id}: {customer: string; id: string}) => ({
+          customerId: customer,
+          subscriptionId: id
+        }),
+        query: `
+        mutation StripeCreateSubscription($customerId: ID!, $subscriptionId: ID!) {
+          stripeCreateSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
+        }
+      `
+      },
+      deleted: {
+        getVars: ({customer, id}: {customer: string; id: string}) => ({
+          customerId: customer,
+          subscriptionId: id
+        }),
+        query: `
+        mutation StripeDeleteSubscription($customerId: ID!, $subscriptionId: ID!) {
+          stripeDeleteSubscription(customerId: $customerId, subscriptionId: $subscriptionId)
         }
       `
       }
@@ -134,7 +141,7 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  const result = await publishWebhookGQL(query, variables)
+  const result = await publishWebhookGQL<{data: any}>(query, variables)
   if (result?.data) {
     res.writeStatus('200').end()
   } else {
