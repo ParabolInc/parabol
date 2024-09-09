@@ -8,10 +8,8 @@ import {MutationResolvers} from '../resolverTypes'
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
   {flagName, subjects},
-  {authToken, dataLoader}
+  {authToken}
 ) => {
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
   const pg = getKysely()
 
   const viewerId = getUserId(authToken)
@@ -40,41 +38,35 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   const teamIds: string[] = []
   const orgIds: string[] = []
 
-  for (const subjectType of subjectKeys) {
-    const subjectValue = subjects[subjectType as keyof typeof subjects]
-    if (!subjectValue || subjectValue.length === 0) continue
+  if (subjects.emails) {
+    const users = await getUsersByEmails(subjects.emails)
+    userIds.push(...users.map((user) => user.id))
+  }
 
-    switch (subjectType) {
-      case 'emails':
-        const users = await getUsersByEmails(subjectValue)
-        userIds.push(...users.map((user) => user.id))
-        break
-      case 'domains':
-        for (const domain of subjectValue) {
-          const domainUsers = await getUsersByDomain(domain)
-          userIds.push(...domainUsers.map((user) => user.id))
-        }
-        break
-      case 'userIds':
-        userIds.push(...subjectValue)
-        break
-      case 'teamIds':
-        teamIds.push(...subjectValue)
-        break
-      case 'orgIds':
-        orgIds.push(...subjectValue)
-        break
+  if (subjects.domains) {
+    for (const domain of subjects.domains) {
+      const domainUsers = await getUsersByDomain(domain)
+      userIds.push(...domainUsers.map((user) => user.id))
     }
   }
 
-  const targetIds = [...userIds, ...teamIds, ...orgIds]
+  if (subjects.userIds) {
+    userIds.push(...subjects.userIds)
+  }
 
-  const values = targetIds.map((targetId) => ({
-    featureFlagId,
-    userId: userIds.includes(targetId) ? targetId : null,
-    teamId: teamIds.includes(targetId) ? targetId : null,
-    orgId: orgIds.includes(targetId) ? targetId : null
-  }))
+  if (subjects.teamIds) {
+    teamIds.push(...subjects.teamIds)
+  }
+
+  if (subjects.orgIds) {
+    orgIds.push(...subjects.orgIds)
+  }
+
+  const values = [
+    ...userIds.map((userId) => ({userId, featureFlagId})),
+    ...teamIds.map((teamId) => ({teamId, featureFlagId})),
+    ...orgIds.map((orgId) => ({orgId, featureFlagId}))
+  ]
 
   await pg
     .insertInto('FeatureFlagOwner')
