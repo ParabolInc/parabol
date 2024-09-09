@@ -26,7 +26,7 @@ const removeReflectTemplatePrompt = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r.table('ReflectPrompt').get(promptId).run()
+    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -39,16 +39,9 @@ const removeReflectTemplatePrompt = {
 
     // VALIDATION
     const {teamId, templateId} = prompt
-    const promptCount = await r
-      .table('ReflectPrompt')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        removedAt: null,
-        templateId: templateId
-      })
-      .count()
-      .default(0)
-      .run()
+    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+    const activePrompts = prompts.filter((p) => !p.removedAt)
+    const promptCount = activePrompts.length
 
     if (promptCount <= 1) {
       return standardError(new Error('No prompts remain'), {userId: viewerId})
@@ -64,9 +57,9 @@ const removeReflectTemplatePrompt = {
           updatedAt: now
         })
         .run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
+      pg.updateTable('ReflectPrompt').set({removedAt: now}).where('id', '=', promptId).execute()
     ])
-
+    dataLoader.clearAll('reflectPrompts')
     const data = {promptId, templateId}
     publish(
       SubscriptionChannel.TEAM,

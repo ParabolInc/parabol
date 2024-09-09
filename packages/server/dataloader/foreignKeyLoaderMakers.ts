@@ -221,6 +221,9 @@ export const _pgreflectPromptsByTemplateId = foreignKeyLoaderMaker(
   '_pgreflectPrompts',
   'templateId',
   async (templateIds) => {
-    return selectReflectPrompts().where('templateId', 'in', templateIds).execute()
+    return selectReflectPrompts()
+      .where('templateId', 'in', templateIds)
+      .orderBy('sortOrder')
+      .execute()
   }
 )

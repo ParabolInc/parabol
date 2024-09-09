@@ -29,7 +29,7 @@ const reflectTemplatePromptUpdateDescription = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r.table('ReflectPrompt').get(promptId).run()
+    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -41,7 +41,7 @@ const reflectTemplatePromptUpdateDescription = {
     }
 
     // VALIDATION
-    const {teamId, templateId} = prompt
+    const {teamId} = prompt
     const normalizedDescription = description.trim().slice(0, 256) || ''
 
     // RESOLUTION
@@ -54,9 +54,13 @@ const reflectTemplatePromptUpdateDescription = {
           updatedAt: now
         })
         .run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
+      pg
+        .updateTable('ReflectPrompt')
+        .set({description: normalizedDescription})
+        .where('id', '=', promptId)
+        .execute()
     ])
-
+    dataLoader.clearAll('reflectPrompts')
     const data = {promptId}
     publish(
       SubscriptionChannel.TEAM,

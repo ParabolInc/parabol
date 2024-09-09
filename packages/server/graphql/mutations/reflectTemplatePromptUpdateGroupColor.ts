@@ -31,7 +31,7 @@ const reflectTemplatePromptUpdateGroupColor = {
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
-    const prompt = await r.table('ReflectPrompt').get(promptId).run()
+    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
 
     // AUTH
     if (!prompt || prompt.removedAt) {
@@ -42,7 +42,7 @@ const reflectTemplatePromptUpdateGroupColor = {
     }
 
     // VALIDATION
-    const {teamId, templateId} = prompt
+    const {teamId} = prompt
 
     // RESOLUTION
     await Promise.all([
@@ -54,9 +54,9 @@ const reflectTemplatePromptUpdateGroupColor = {
           updatedAt: now
         })
         .run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
+      pg.updateTable('ReflectPrompt').set({groupColor}).where('id', '=', promptId).execute()
     ])
-
+    dataLoader.clearAll('reflectPrompts')
     const data = {promptId}
     publish(
       SubscriptionChannel.TEAM,

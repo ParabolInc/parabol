@@ -1,10 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
+import {positionAfter} from '../../../client/shared/sortOrder'
 import palettePickerOptions from '../../../client/styles/palettePickerOptions'
 import {PALETTE} from '../../../client/styles/paletteV3'
 import getRethink from '../../database/rethinkDriver'
-import RetrospectivePrompt from '../../database/types/RetrospectivePrompt'
+import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -42,26 +43,24 @@ const addReflectTemplatePrompt = {
 
     // VALIDATION
     const {teamId} = template
-    const activePrompts = await r
-      .table('ReflectPrompt')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        templateId,
-        removedAt: null
-      })
-      .run()
+    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+    const activePrompts = prompts.filter(({removedAt}) => !removedAt)
+
     if (activePrompts.length >= Threshold.MAX_REFLECTION_PROMPTS) {
       return standardError(new Error('Too many prompts'), {userId: viewerId})
     }
 
     // RESOLUTION
-    const sortOrder =
-      Math.max(0, ...activePrompts.map((prompt) => prompt.sortOrder)) + 1 + dndNoise()
+    const lastPrompt = activePrompts.at(-1)!
+    const sortOrder = lastPrompt.sortOrder + 1 + dndNoise()
+    // can remove String coercion after ReflectPrompt is in PG
+    const pgSortOrder = positionAfter(String(lastPrompt.sortOrder))
     const pickedColors = activePrompts.map((prompt) => prompt.groupColor)
     const availableNewColor = palettePickerOptions.find(
       (color) => !pickedColors.includes(color.hex)
     )
-    const reflectPrompt = new RetrospectivePrompt({
+    const reflectPrompt = {
+      id: generateUID(),
       templateId: template.id,
       teamId: template.teamId,
       sortOrder,
@@ -69,17 +68,16 @@ const addReflectTemplatePrompt = {
       description: '',
       groupColor: availableNewColor?.hex ?? PALETTE.JADE_400,
       removedAt: null
-    })
+    }
 
     await Promise.all([
-      await r.table('ReflectPrompt').insert(reflectPrompt).run(),
+      r.table('ReflectPrompt').insert(reflectPrompt).run(),
       pg
-        .updateTable('MeetingTemplate')
-        .set({updatedAt: new Date()})
-        .where('id', '=', templateId)
+        .insertInto('ReflectPrompt')
+        .values({...reflectPrompt, sortOrder: pgSortOrder})
         .execute()
     ])
-
+    dataLoader.clearAll('reflectPrompts')
     const promptId = reflectPrompt.id
     const data = {promptId}
     publish(SubscriptionChannel.TEAM, teamId, 'AddReflectTemplatePromptPayload', data, subOptions)

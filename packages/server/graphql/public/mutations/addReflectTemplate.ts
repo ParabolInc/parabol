@@ -2,9 +2,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import getRethink from '../../../database/rethinkDriver'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
-import RetrospectivePrompt from '../../../database/types/RetrospectivePrompt'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
-import insertMeetingTemplate from '../../../postgres/queries/insertMeetingTemplate'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -18,6 +18,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   {teamId, parentTemplateId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
@@ -76,20 +77,24 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       mainCategory: parentTemplate.mainCategory
     })
     const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(parentTemplate.id)
-    const activePrompts = prompts.filter(({removedAt}: RetrospectivePrompt) => !removedAt)
-    const newTemplatePrompts = activePrompts.map((prompt: RetrospectivePrompt) => {
-      return new RetrospectivePrompt({
+    const activePrompts = prompts.filter(({removedAt}) => !removedAt)
+    const newTemplatePrompts = activePrompts.map((prompt) => {
+      return {
         ...prompt,
+        id: generateUID(),
         teamId,
         templateId: newTemplate.id,
         parentPromptId: prompt.id,
         removedAt: null
-      })
+      }
     })
-
     await Promise.all([
       r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
-      insertMeetingTemplate(newTemplate),
+      pg
+        .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
+        .insertInto('ReflectPrompt')
+        .values(newTemplatePrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
+        .execute(),
       decrementFreeTemplatesRemaining(viewerId, 'retro')
     ])
     viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1
@@ -114,7 +119,11 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     const {id: templateId} = newTemplate
     await Promise.all([
       r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
-      insertMeetingTemplate(newTemplate),
+      pg
+        .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
+        .insertInto('ReflectPrompt')
+        .values(newTemplatePrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
+        .execute(),
       decrementFreeTemplatesRemaining(viewerId, 'retro')
     ])
     viewer.freeCustomRetroTemplatesRemaining = viewer.freeCustomRetroTemplatesRemaining - 1

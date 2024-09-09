@@ -31,6 +31,10 @@ export async function up() {
     CREATE INDEX IF NOT EXISTS "idx_ReflectPrompt_teamId" ON "ReflectPrompt"("teamId");
     CREATE INDEX IF NOT EXISTS "idx_ReflectPrompt_templateId" ON "ReflectPrompt"("templateId");
     CREATE INDEX IF NOT EXISTS "idx_ReflectPrompt_parentPromptId" ON "ReflectPrompt"("templateId");
+    CREATE OR REPLACE TRIGGER "update_MeetingTemplate_updatedAt_from_ReflectPrompt"
+    AFTER INSERT OR UPDATE OR DELETE ON "ReflectPrompt"
+    FOR EACH ROW
+    EXECUTE FUNCTION "set_MeetingTemplate_updatedAt"();
   END $$;
 `)
   // TODO add constraint parentPromptId constraint

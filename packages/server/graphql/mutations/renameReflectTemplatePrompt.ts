@@ -29,7 +29,7 @@ const renameReflectTemplatePrompt = {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const prompt = await r.table('ReflectPrompt').get(promptId).run()
+    const prompt = await dataLoader.get('reflectPrompts').load(promptId)
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -45,14 +45,8 @@ const renameReflectTemplatePrompt = {
     const trimmedQuestion = question.trim().slice(0, 100)
     const normalizedQuestion = trimmedQuestion || 'Unnamed Prompt'
 
-    const allPrompts = await r
-      .table('ReflectPrompt')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        removedAt: null,
-        templateId
-      })
-      .run()
+    const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
+    const allPrompts = prompts.filter(({removedAt}) => !removedAt)
     if (allPrompts.find((prompt) => prompt.question === normalizedQuestion)) {
       return standardError(new Error('Duplicate question template'), {userId: viewerId})
     }
@@ -67,9 +61,13 @@ const renameReflectTemplatePrompt = {
           updatedAt: now
         })
         .run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
+      pg
+        .updateTable('ReflectPrompt')
+        .set({question: normalizedQuestion})
+        .where('id', '=', promptId)
+        .execute()
     ])
-
+    dataLoader.clearAll('reflectPrompts')
     const data = {promptId}
     publish(
       SubscriptionChannel.TEAM,
