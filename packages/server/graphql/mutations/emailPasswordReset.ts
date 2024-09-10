@@ -35,29 +35,26 @@ const emailPasswordReset = {
       const yesterday = new Date(Date.now() - ms('1d'))
       const user = await getUserByEmail(email)
       const pg = getKysely()
-      const {failOnAccount, failOnTime} = await pg
-        .with('FailOnAccount', (qb) =>
-          qb
-            .selectFrom('PasswordResetRequest')
-            .where('ip', '=', ip)
-            .where('email', '=', email)
-            .where('time', '>=', yesterday)
-            .select(({eb, fn}) =>
-              eb(fn.count('id'), '>=', Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS).as(
-                'failOnAccount'
-              )
-            )
-        )
-        .selectFrom(['FailOnAccount', 'PasswordResetRequest'])
-        .where('ip', '=', ip)
-        .where('time', '>=', yesterday)
-        .select(({eb, fn}) => [
-          'FailOnAccount.failOnAccount',
-          eb(fn.count('id'), '>=', Threshold.MAX_DAILY_PASSWORD_RESETS).as('failOnTime')
-        ])
-        .executeTakeFirstOrThrow()
-
-      if (failOnAccount || failOnTime) {
+      const [failOnAccount, failOnTime] = await Promise.all([
+        pg
+          .selectFrom('PasswordResetRequest')
+          .where('ip', '=', ip)
+          .where('email', '=', email)
+          .where('time', '>=', yesterday)
+          .select(({eb, fn}) =>
+            eb(fn.count('id'), '>=', Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS).as('res')
+          )
+          .executeTakeFirstOrThrow(),
+        pg
+          .selectFrom('PasswordResetRequest')
+          .where('ip', '=', ip)
+          .where('time', '>=', yesterday)
+          .select(({eb, fn}) =>
+            eb(fn.count('id'), '>=', Threshold.MAX_DAILY_PASSWORD_RESETS).as('res')
+          )
+          .executeTakeFirstOrThrow()
+      ])
+      if (failOnAccount.res || failOnTime.res) {
         return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
       }
       const domain = getSSODomainFromEmail(email)
