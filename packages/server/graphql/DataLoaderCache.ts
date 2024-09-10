@@ -1,41 +1,19 @@
-import getLoaderNameByTable from '../dataloader/getLoaderNameByTable'
-import {Loaders, TypedDataLoader} from '../dataloader/RootDataLoader'
-
-export interface DataLoaderBase {
-  get: (loaderName: any) => unknown
-  loaders: {
-    [key: string]: {
-      clear(id: string): void
-    }
-  }
-}
-
-export class CacheWorker<T extends DataLoaderBase> {
-  cache: DataLoaderCache<T>
-  dataLoaderBase: T
+export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: (id: any) => any}> {
+  cache: DataLoaderCache
+  dataLoaderWorker: T
   did: string
   disposeId: NodeJS.Timeout | undefined
   shared = false
-
-  constructor(dataLoaderBase: T, did: string, cache: DataLoaderCache<T>) {
-    this.dataLoaderBase = dataLoaderBase
+  get: T['get']
+  clearAll: T['clearAll']
+  constructor(dataLoaderWorker: T, did: string, cache: DataLoaderCache) {
+    this.dataLoaderWorker = dataLoaderWorker
     this.did = did
     this.cache = cache
+    this.get = this.dataLoaderWorker.get
+    this.clearAll = this.dataLoaderWorker.clearAll
   }
 
-  get = <LoaderName extends Loaders>(dataLoaderName: LoaderName) => {
-    // Using Loaders here breaks the abstraction.
-    // However, when using T['get'], typescript control flow analysis breaks
-    // e.g. loader.load() // null | any[], but doesn't catch the null!
-    // I'm OK with breaking the abstraction because we only have 1 RootDataLoader
-    // Given more time, could probably use a refactor here
-    return this.dataLoaderBase.get(dataLoaderName) as TypedDataLoader<LoaderName>
-  }
-
-  clear = (table: string, id: string) => {
-    const loaderName = getLoaderNameByTable(table)
-    this.dataLoaderBase.loaders[loaderName]?.clear(id)
-  }
   dispose(force?: boolean) {
     const ttl = force || !this.shared ? 0 : this.cache.ttl
     clearTimeout(this.disposeId!)
@@ -53,16 +31,21 @@ export class CacheWorker<T extends DataLoaderBase> {
 /**
  * A cache of dataloaders, see {@link getDataLoader} for usage
  */
-export default class DataLoaderCache<T extends DataLoaderBase> {
+export default class DataLoaderCache<
+  T extends new (...args: any) => any = new (...args: any) => any
+> {
   ttl: number
-  workers: {[did: string]: CacheWorker<T>} = {}
+  workers: {[did: string]: CacheWorker<InstanceType<T>>} = {}
   nextId = 0
-  constructor({ttl} = {ttl: 500}) {
+  DataLoaderWorkerConstructor: T
+  constructor(DataLoaderWorkerConstructor: T, {ttl} = {ttl: 500}) {
+    this.DataLoaderWorkerConstructor = DataLoaderWorkerConstructor
     this.ttl = ttl
   }
 
-  add<T>(did: string, dataLoaderBase: T) {
-    this.workers[did] = new CacheWorker<any>(dataLoaderBase, did, this)
+  add(did: string) {
+    const dataLoaderWorker = new this.DataLoaderWorkerConstructor()
+    this.workers[did] = new CacheWorker(dataLoaderWorker, did, this)
     return this.workers[did]!
   }
 

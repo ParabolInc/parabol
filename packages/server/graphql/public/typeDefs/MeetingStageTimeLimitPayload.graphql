@@ -1,0 +1,6 @@
+type MeetingStageTimeLimitPayload {
+  """
+  The new notification that was just created
+  """
+  notification: NotificationMeetingStageTimeLimitEnd!
+}

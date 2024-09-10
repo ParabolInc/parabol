@@ -1,0 +1,14 @@
+"""
+A field that exists on a 3rd party service
+"""
+type ServiceField {
+  """
+  The name of the field as provided by the service
+  """
+  name: String!
+
+  """
+  The field type, to be used for validation and analytics
+  """
+  type: String!
+}

@@ -94,7 +94,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     viewerId,
     dataLoader
   )
-  activatePrevSlackAuth(viewerId, teamId)
+  activatePrevSlackAuth(viewerId, teamId, dataLoader)
   await redisLock.unlock()
   const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
   // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest

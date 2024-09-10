@@ -15,6 +15,7 @@ export interface GQLContext {
   dataLoader: DataLoaderWorker
 }
 
+export type SubscriptionContext = Omit<GQLContext, 'dataLoader'>
 export interface InternalContext {
   dataLoader: DataLoaderWorker
   authToken: AuthToken

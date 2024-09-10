@@ -1,0 +1,26 @@
+input CreateGcalEventInput {
+  """
+  The start timestamp of the event
+  """
+  startTimestamp: Int!
+
+  """
+  The end timestamp of the event
+  """
+  endTimestamp: Int!
+
+  """
+  The timezone of the event
+  """
+  timeZone: String!
+
+  """
+  The emails that will be invited to the gcal event. If not provided, the no one will be invited
+  """
+  invitees: [Email!]
+
+  """
+  The type of video call to added to the gcal event. If not provided, no video call will be added
+  """
+  videoType: GcalVideoTypeEnum
+}

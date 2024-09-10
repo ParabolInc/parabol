@@ -4,7 +4,6 @@ import ensureDate from './ensureDate'
 import roundDateToNearestHalfHour from './roundDateToNearestHalfHour'
 
 // the ICS doesn't get the 'Add your conference' line because it doesn't accept line breaks. that's cool though because it isn't editable
-// eslint-disable-next-line max-len
 const description = `Our weekly meeting to update each other on our progress, build and process an agenda to unblock one another and track new tasks.
 Add your conference or dial-in bridge information here.`
 
@@ -29,7 +28,6 @@ export const createGoogleCalendarInviteURL = (
 ) => {
   const createdAt = ensureDate(maybeCreatedAt)
   const text = `${MEETING_NAME} for ${teamName}`
-  // eslint-disable-next-line max-len
   return encodeURI(
     `http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(
       createdAt

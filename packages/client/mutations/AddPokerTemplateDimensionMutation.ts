@@ -9,7 +9,7 @@ import handleAddPokerTemplateDimension from './handlers/handleAddPokerTemplateDi
 
 interface Handlers extends BaseLocalHandlers {
   dimensionCount: number
-  sortOrder: number
+  sortOrder: string
 }
 
 graphql`

@@ -130,6 +130,7 @@ const MSTeamsPanel = (props: Props) => {
         {
           provider: {
             id: activeProvider.id,
+            teamId,
             scope: 'team',
             webhookProviderMetadataInput: {
               webhookUrl

@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -30,7 +30,6 @@ export default {
     {orgId, stripeToken}: {orgId: string; stripeToken: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -65,12 +64,13 @@ export default {
     const activeMeetings = await hideConversionModal(orgId, dataLoader)
     const meetingIds = activeMeetings.map(({id}) => id)
 
-    await r
-      .table('OrganizationUser')
-      .getAll(viewerId, {index: 'userId'})
-      .filter({removedAt: null, orgId})
-      .update({role: 'BILLING_LEADER'})
-      .run()
+    await getKysely()
+      .updateTable('OrganizationUser')
+      .set({role: 'BILLING_LEADER'})
+      .where('userId', '=', viewerId)
+      .where('orgId', '=', orgId)
+      .where('removedAt', 'is', null)
+      .execute()
 
     const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
     const teamIds = teams.map(({id}) => id)

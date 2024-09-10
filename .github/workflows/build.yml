@@ -17,12 +17,13 @@ env:
 jobs:
   build:
     runs-on: ubuntu-8cores
+    timeout-minutes: 30
     permissions:
       contents: "read"
       id-token: "write"
     services:
       postgres:
-        image: pgvector/pgvector:0.7.0-pg15
+        image: pgvector/pgvector:0.7.0-pg16
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"

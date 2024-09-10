@@ -1,0 +1,8 @@
+"""
+The pay tier of the team
+"""
+enum TierEnum {
+  starter
+  team
+  enterprise
+}

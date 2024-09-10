@@ -3,6 +3,7 @@ import getRethink from '../../../database/rethinkDriver'
 import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -17,7 +18,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
   _source,
-  {teamId, gcalInput},
+  {teamId, name, gcalInput},
   context
 ) => {
   const r = await getRethink()
@@ -59,6 +60,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meeting = new MeetingAction({
     id: meetingId,
     teamId,
+    name: name ?? `Check-in #${meetingCount + 1}`,
     meetingCount,
     phases,
     facilitatorUserId: viewerId
@@ -88,11 +90,23 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
       .run(),
     updateTeamByTeamId(updates, teamId),
-    r.table('AgendaItem').getAll(r.args(agendaItemIds)).update({meetingId}).run()
+    agendaItemIds.length &&
+      getKysely()
+        .updateTable('AgendaItem')
+        .set({meetingId})
+        .where('id', 'in', agendaItemIds)
+        .execute()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)
-  const {error} = await createGcalEvent({gcalInput, teamId, meetingId, viewerId, dataLoader})
+  const {error} = await createGcalEvent({
+    name: meeting.name,
+    gcalInput,
+    teamId,
+    meetingId,
+    viewerId,
+    dataLoader
+  })
   const data = {teamId, meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartCheckInSuccess', data, subOptions)
   return data

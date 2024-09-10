@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -25,7 +25,6 @@ const selectTemplate = {
     {selectedTemplateId, teamId}: {selectedTemplateId: string; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -53,21 +52,13 @@ const selectTemplate = {
     }
 
     // RESOLUTION
-    const meetingSettingsId = await r
-      .table('MeetingSettings')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        meetingType: template.type
-      })
-      .update(
-        {
-          selectedTemplateId
-        },
-        {returnChanges: true}
-      )('changes')(0)('old_val')('id')
-      .default(null)
-      .run()
-
+    const meetingSettingsId = await getKysely()
+      .updateTable('MeetingSettings')
+      .set({selectedTemplateId})
+      .where('teamId', '=', teamId)
+      .where('meetingType', '=', template.type)
+      .returning('id')
+      .executeTakeFirst()
     // No need to check if a non-null 'meetingSettingsId' was returned - the Activity Library client
     // will always attempt to update the template, even if it's already selected, and we don't need
     // to return a 'meetingSettingsId' if no updates took place.

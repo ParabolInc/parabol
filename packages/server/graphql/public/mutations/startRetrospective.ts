@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
@@ -20,10 +19,11 @@ import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
-  {teamId, recurrenceSettings, gcalInput},
+  {teamId, name, rrule, gcalInput},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const DUPLICATE_THRESHOLD = 3000
@@ -36,25 +36,27 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   // RESOLUTION
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-
   const meetingType: MeetingTypeEnum = 'retrospective'
-  const meetingSettings = (await dataLoader
-    .get('meetingSettingsByType')
-    .load({teamId, meetingType})) as MeetingSettingsRetrospective
+  const [viewer, meetingSettings, meetingCount] = await Promise.all([
+    dataLoader.get('users').loadNonNull(viewerId),
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
+    dataLoader.get('meetingCount').load({teamId, meetingType})
+  ])
 
   const {
     id: meetingSettingsId,
     totalVotes,
     maxVotesPerGroup,
-    selectedTemplateId,
     disableAnonymity,
     videoMeetingURL
-  } = meetingSettings
-
-  const name = recurrenceSettings?.name
-    ? createMeetingSeriesTitle(recurrenceSettings.name, new Date(), 'UTC')
-    : undefined
+  } = meetingSettings as typeof meetingSettings & {meetingType: 'retrospective'}
+  const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
+  const meetingName = !name
+    ? `Retro #${meetingCount + 1}`
+    : rrule
+      ? createMeetingSeriesTitle(name, new Date(), 'UTC')
+      : name
+  const meetingSeriesName = name || meetingName
 
   const meeting = await safeCreateRetrospective(
     {
@@ -65,7 +67,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       disableAnonymity,
       templateId: selectedTemplateId,
       videoMeetingURL: videoMeetingURL ?? undefined,
-      name
+      name: meetingName
     },
     dataLoader
   )
@@ -93,8 +95,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     lastMeetingType: meetingType
   }
   const [meetingSeries] = await Promise.all([
-    recurrenceSettings?.rrule &&
-      startNewMeetingSeries(meeting, recurrenceSettings.rrule, recurrenceSettings.name),
+    rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
     r
       .table('MeetingMember')
       .insert(
@@ -103,13 +104,11 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       .run(),
     updateTeamByTeamId(updates, teamId),
     videoMeetingURL &&
-      r
-        .table('MeetingSettings')
-        .get(meetingSettingsId)
-        .update({
-          videoMeetingURL: null
-        })
-        .run()
+      pg
+        .updateTable('MeetingSettings')
+        .set({videoMeetingURL: null})
+        .where('id', '=', meetingSettingsId)
+        .execute()
   ])
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
@@ -120,15 +119,15 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting, template)
   const {error, gcalSeriesId} = await createGcalEvent({
+    name: meetingSeriesName,
     gcalInput,
     meetingId,
     teamId,
     viewerId,
-    rrule: recurrenceSettings?.rrule,
+    rrule,
     dataLoader
   })
   if (meetingSeries && gcalSeriesId) {
-    const pg = getKysely()
     await pg
       .updateTable('MeetingSeries')
       .set({gcalSeriesId})

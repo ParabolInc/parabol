@@ -1,0 +1,10 @@
+"""
+An edge in a connection.
+"""
+type InvoiceEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Invoice!
+  cursor: DateTime
+}

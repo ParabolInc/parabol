@@ -7,7 +7,6 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       service: 'gitlab',
       authStrategy: 'oauth2',
       scope: 'global',
-      teamId: 'aGhostTeam',
       serverBaseUrl: process.env.GITLAB_SERVER_URL,
       clientId: process.env.GITLAB_CLIENT_ID,
       clientSecret: process.env.GITLAB_CLIENT_SECRET
@@ -16,7 +15,6 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       service: 'azureDevOps',
       authStrategy: 'oauth2',
       scope: 'global',
-      teamId: 'aGhostTeam',
       serverBaseUrl: 'https://dev.azure.com',
       clientId: process.env.AZURE_DEVOPS_CLIENT_ID,
       clientSecret: process.env.AZURE_DEVOPS_CLIENT_SECRET,
@@ -27,7 +25,6 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       service: 'gcal',
       authStrategy: 'oauth2',
       scope: 'global',
-      teamId: 'aGhostTeam',
       serverBaseUrl: 'https://www.googleapis.com/calendar/v3',
       clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET
@@ -44,9 +41,7 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
 
 const primeIntegrations = async () => {
   console.log('⛓️ Prime Integrationgs Started')
-  const pg = getPg()
   await upsertGlobalIntegrationProvidersFromEnv()
-  await pg.end()
   console.log('⛓️ Prime Integrations Complete')
 }
 

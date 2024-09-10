@@ -1,0 +1,8 @@
+type FlagOverLimitPayload {
+  error: StandardMutationError
+
+  """
+  the users with the limit added or removed
+  """
+  users: [User!]
+}

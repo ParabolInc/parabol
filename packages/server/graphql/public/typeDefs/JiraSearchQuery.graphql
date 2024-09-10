@@ -1,0 +1,29 @@
+"""
+A jira search query including all filters selected when the query was executed
+"""
+type JiraSearchQuery {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The query string, either simple or JQL depending on the isJQL flag
+  """
+  queryString: String!
+
+  """
+  true if the queryString is JQL, else false
+  """
+  isJQL: Boolean!
+
+  """
+  The list of project keys selected as a filter. null if not set
+  """
+  projectKeyFilters: [ID!]!
+
+  """
+  the time the search query was last used. Used for sorting
+  """
+  lastUsedAt: DateTime!
+}

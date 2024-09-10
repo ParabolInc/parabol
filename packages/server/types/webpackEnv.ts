@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // Type definitions for webpack (module API) 1.16
 // Project: https://github.com/webpack/webpack

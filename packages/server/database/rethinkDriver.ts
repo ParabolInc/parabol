@@ -1,20 +1,9 @@
 import {MasterPool, r} from 'rethinkdb-ts'
-import SlackAuth from '../database/types/SlackAuth'
-import SlackNotification from '../database/types/SlackNotification'
 import TeamInvitation from '../database/types/TeamInvitation'
-import TeamMember from '../database/types/TeamMember'
-import {AnyMeeting, AnyMeetingSettings, AnyMeetingTeamMember} from '../postgres/types/Meeting'
-import {ScheduledJobUnion} from '../types/custom'
+import {AnyMeeting, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import AgendaItem from './types/AgendaItem'
-import AtlassianAuth from './types/AtlassianAuth'
-import Comment from './types/Comment'
-import FailedAuthRequest from './types/FailedAuthRequest'
-import Invoice from './types/Invoice'
-import InvoiceItemHook from './types/InvoiceItemHook'
 import MassInvitation from './types/MassInvitation'
-import MeetingTemplate from './types/MeetingTemplate'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationMentioned from './types/NotificationMentioned'
@@ -25,61 +14,19 @@ import NotificationResponseReplied from './types/NotificationResponseReplied'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import OrganizationUser from './types/OrganizationUser'
 import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import RetrospectivePrompt from './types/RetrospectivePrompt'
-import SuggestedActionCreateNewTeam from './types/SuggestedActionCreateNewTeam'
-import SuggestedActionInviteYourTeam from './types/SuggestedActionInviteYourTeam'
-import SuggestedActionTryTheDemo from './types/SuggestedActionTryTheDemo'
 import Task from './types/Task'
-import TemplateDimension from './types/TemplateDimension'
-import TemplateScale from './types/TemplateScale'
 
 export type RethinkSchema = {
-  AgendaItem: {
-    type: AgendaItem
-    index: 'teamId' | 'meetingId'
-  }
-  AtlassianAuth: {
-    type: AtlassianAuth
-    index: 'atlassianUserId' | 'userId' | 'teamId'
-  }
-  Comment: {
-    type: Comment
-    index: 'discussionId'
-  }
   ReflectPrompt: {
     type: RetrospectivePrompt
     index: 'teamId' | 'templateId'
   }
-  EmailVerification: {
-    type: any
-    index: 'email' | 'token'
-  }
-  FailedAuthRequest: {
-    type: FailedAuthRequest
-    index: 'email' | 'ip'
-  }
-  GQLRequest: {
-    type: any
-    index: 'id'
-  }
-  Invoice: {
-    type: Invoice
-    index: 'orgIdStartAt'
-  }
-  InvoiceItemHook: {
-    type: InvoiceItemHook
-    index: 'prorationDate' | 'stripeSubscriptionId'
-  }
   MassInvitation: {
     type: MassInvitation
     index: 'teamMemberId'
-  }
-  MeetingSettings: {
-    type: AnyMeetingSettings
-    index: 'teamId'
   }
   MeetingMember: {
     type: AnyMeetingTeamMember
@@ -112,10 +59,6 @@ export type RethinkSchema = {
       | NotificationMentioned
     index: 'userId'
   }
-  OrganizationUser: {
-    type: OrganizationUser
-    index: 'orgId' | 'userId'
-  }
   PasswordResetRequest: {
     type: PasswordResetRequest
     index: 'email' | 'ip' | 'token'
@@ -123,32 +66,6 @@ export type RethinkSchema = {
   PushInvitation: {
     type: PushInvitation
     index: 'userId'
-  }
-  QueryMap: {
-    type: any
-    index: ''
-  }
-  MeetingTemplate: {
-    type: MeetingTemplate
-    index: 'teamId' | 'orgId'
-  }
-  ScheduledJob: {
-    type: ScheduledJobUnion
-    index: 'runAt' | 'type'
-  }
-  SlackAuth: {
-    type: SlackAuth
-    index: 'teamId' | 'userId'
-  }
-  SlackNotification: {
-    type: SlackNotification
-    index: 'teamId' | 'userId'
-  }
-  SuggestedAction: {
-    // tryRetroMeeting = 'tryRetroMeeting',
-    // tryActionMeeting = 'tryActionMeeting'
-    type: SuggestedActionCreateNewTeam | SuggestedActionInviteYourTeam | SuggestedActionTryTheDemo
-    index: 'userId' | 'teamId'
   }
   Task: {
     type: Task
@@ -161,25 +78,9 @@ export type RethinkSchema = {
       | 'userId'
       | 'integrationHash'
   }
-  TaskHistory: {
-    type: any
-    index: 'taskIdUpdatedAt' | 'teamMemberId'
-  }
   TeamInvitation: {
     type: TeamInvitation
     index: 'email' | 'teamId' | 'token'
-  }
-  TeamMember: {
-    type: TeamMember
-    index: 'teamId' | 'userId'
-  }
-  TemplateDimension: {
-    type: TemplateDimension
-    index: 'teamId' | 'templateId' | 'scaleId'
-  }
-  TemplateScale: {
-    type: TemplateScale
-    index: 'teamId'
   }
 }
 

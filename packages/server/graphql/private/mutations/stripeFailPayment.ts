@@ -2,7 +2,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -76,15 +75,11 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     // Not to handle this particular case in 23 hours, we do it now
     await terminateSubscription(orgId)
   }
-
-  const billingLeaderUserIds = (await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null})
-    .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))(
-      'userId'
-    )
-    .run()) as string[]
+  const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const billingLeaderOrgUsers = orgUsers.filter(
+    ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+  )
+  const billingLeaderUserIds = billingLeaderOrgUsers.map(({userId}) => userId)
 
   const {default_source} = customer
 
@@ -106,7 +101,6 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   )
 
   await r({
-    update: r.table('Invoice').get(invoiceId).update({status: 'FAILED'}),
     insert: r.table('Notification').insert(notifications)
   }).run()
 

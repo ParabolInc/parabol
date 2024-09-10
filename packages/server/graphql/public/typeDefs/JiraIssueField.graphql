@@ -1,0 +1,14 @@
+"""
+Possible voting field
+"""
+type JiraIssueField {
+  """
+  ID of the field in Jira
+  """
+  fieldId: ID!
+
+  """
+  Name of the field
+  """
+  fieldName: String!
+}

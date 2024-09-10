@@ -2,8 +2,6 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {Client} from 'pg'
 import {r} from 'rethinkdb-ts'
 import connectRethinkDB from '../../database/connectRethinkDB'
-import TemplateDimension from '../../database/types/TemplateDimension'
-import TemplateScale from '../../database/types/TemplateScale'
 import getPgConfig from '../getPgConfig'
 import getPgp from '../getPgp'
 
@@ -46,7 +44,7 @@ const getTemplateIllustrationUrl = (filename: string) => {
   throw new Error('Mssing Env: FILE_STORE_PROVIDER')
 }
 
-const MOSCOW_SCALE_CONFIG: TemplateScale = {
+const MOSCOW_SCALE_CONFIG = {
   createdAt,
   id: 'moscowScale',
   isStarter: true,
@@ -134,7 +132,7 @@ type DimensionInfo = {
   templateId: string
 }
 
-const makeDimension = (dimensionInfo: DimensionInfo): TemplateDimension => {
+const makeDimension = (dimensionInfo: DimensionInfo) => {
   const {id, name, scaleId, sortOrder, templateId} = dimensionInfo
   return {
     createdAt,

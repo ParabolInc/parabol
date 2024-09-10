@@ -4,7 +4,7 @@ import RedisLockQueue from '../RedisLockQueue'
 import getRedis from '../getRedis'
 
 afterAll(async () => {
-  getRedis().quit()
+  await getRedis().quit()
 })
 
 test('lock calls are queued properly', async () => {

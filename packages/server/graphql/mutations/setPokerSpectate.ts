@@ -4,6 +4,7 @@ import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -29,8 +30,8 @@ const setPokerSpectate = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -60,14 +61,15 @@ const setPokerSpectate = {
 
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, viewerId)
+    await pg
+      .updateTable('TeamMember')
+      .set({isSpectatingPoker: isSpectating})
+      .where('id', '=', teamMemberId)
+      .execute()
     await r({
-      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating}),
-      teamMember: r
-        .table('TeamMember')
-        .get(teamMemberId)
-        .update({isSpectatingPoker: isSpectating, updatedAt: now})
+      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating})
     }).run()
-
+    dataLoader.clearAll('teamMembers')
     // mutate the dataLoader cache
     meetingMember.isSpectating = isSpectating
     const dirtyStages: EstimateStage[] = []

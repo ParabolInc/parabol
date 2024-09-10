@@ -1,0 +1,510 @@
+type Mutation {
+  """
+  Updates the user email
+  """
+  updateEmail(
+    """
+    User current email
+    """
+    oldEmail: Email!
+
+    """
+    User new email
+    """
+    newEmail: Email!
+  ): Boolean!
+
+  """
+  broadcast a new feature to the entire userbase
+  """
+  addNewFeature(
+    """
+    The text of the action button in the snackbar
+    """
+    actionButtonCopy: String!
+
+    """
+    The description of the new feature
+    """
+    snackbarMessage: String!
+
+    """
+    The permalink to the blog post describing the new feature
+    """
+    url: String!
+  ): AddNewFeaturePayload
+
+  """
+  automatically pause users that have been inactive for 30 days. returns the number of users paused
+  """
+  autopauseUsers: Int
+
+  """
+  copies all the records from RethinkDB for a list of organizations
+  """
+  backupOrganization(orgIds: [ID!]!): String!
+
+  """
+  check equality of a table between rethinkdb and postgres
+  """
+  checkRethinkPgEquality(
+    """
+    The table name to be compared
+    """
+    tableName: String!
+
+    """
+    How many errors should be returned
+    """
+    maxErrors: Int
+
+    """
+    Whether the output should be written to file
+    """
+    writeToFile: Boolean
+  ): String!
+
+  """
+  a server-side mutation called when a client connects
+  """
+  connectSocket(
+    """
+    The ID of the server this socket is connected to
+    """
+    socketInstanceId: ID!
+  ): User!
+
+  """
+  profile the CPU
+  """
+  profileCPU: String
+
+  """
+  a server-side mutation called when a client disconnects
+  """
+  disconnectSocket(
+    """
+    the userId to disconnect
+    """
+    userId: ID!
+  ): DisconnectSocketPayload
+
+  """
+  Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license
+  """
+  draftEnterpriseInvoice(
+    """
+    the org requesting the upgrade
+    """
+    orgId: ID!
+
+    """
+    The number of users the license grants the organization
+    """
+    quantity: Int!
+
+    """
+    Email address of billing leader, if different from the org billing leader
+    """
+    email: ID
+
+    """
+    The email address for Accounts Payable. Use only if the invoice will be sent to a non-user!
+    """
+    apEmail: ID
+
+    """
+    the stripe id of the plan in stripe, if not using the default plan
+    """
+    plan: ID
+  ): DraftEnterpriseInvoicePayload
+
+  """
+  dump the memory heap to a file
+  """
+  dumpHeap(
+    """
+    must pass true to make it work
+    """
+    isDangerous: Boolean!
+  ): String
+
+  """
+  add/remove a flag on an org asking them to pay
+  """
+  flagConversionModal(
+    """
+    true to turn the modal on, false to turn it off
+    """
+    active: Boolean!
+
+    """
+    the orgId to toggle the flag for
+    """
+    orgId: ID!
+  ): FlagConversionModalPayload
+
+  """
+  hard deletes a user and all its associated objects
+  """
+  hardDeleteUser(
+    """
+    a userId
+    """
+    userId: ID
+
+    """
+    the user email
+    """
+    email: ID
+
+    """
+    the reason why the user wants to delete their account
+    """
+    reasonText: String
+  ): DeleteUserPayload!
+
+  """
+  Lock/Unlock teams, flagging them as unpaid/paid. Return true if successful
+  """
+  lockTeams(
+    """
+    List of teams to target
+    """
+    teamIds: [ID!]!
+
+    """
+    true to unlock the teams, false to lock
+    """
+    isPaid: Boolean!
+
+    """
+    The HTML to show if isPaid is false
+    """
+    message: String
+  ): Boolean!
+
+  """
+  Send a message to all authorised Slack users
+  """
+  messageAllSlackUsers(
+    """
+    The slack message that will be sent to all Slack users
+    """
+    message: String!
+  ): MessageAllSlackUsersPayload!
+
+  """
+  Remove Slack integrations for all users
+  """
+  removeAllSlackAuths: RemoveAllSlackAuthsPayload!
+
+  """
+  schedule upcoming jobs to be run
+  """
+  runScheduledJobs(
+    """
+    Queue up all jobs that are scheduled to run within this many seconds
+    """
+    seconds: Int!
+  ): Int
+
+  """
+  Send summary emails of unread notifications to all users who have not been seen within the last 24 hours
+  """
+  sendBatchNotificationEmails: [String]
+
+  """
+  send an email to organizations including all the users that were added in the current billing cycle
+  """
+  sendUpcomingInvoiceEmails: [String]
+
+  """
+  manually set the domain that the organization belongs to
+  """
+  setOrganizationDomain(
+    """
+    The unique identifier for the organization
+    """
+    orgId: ID!
+
+    """
+    The top level domain of the company. Usually the part after the "@" in their email address
+    """
+    domain: ID!
+  ): Boolean!
+
+  """
+  When stripe tells us an invoice is ready, create a pretty version
+  """
+  stripeCreateInvoice(
+    """
+    The stripe invoice ID
+    """
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us an invoice payment failed, update it in our DB
+  """
+  stripeFailPayment(
+    """
+    The stripe invoice ID
+    """
+    invoiceId: ID!
+  ): StripeFailPaymentPayload
+
+  """
+  When stripe tells us an invoice payment was successful, update it in our DB
+  """
+  stripeSucceedPayment(
+    """
+    The stripe invoice ID
+    """
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us a credit card was updated, update the details in our own DB
+  """
+  stripeUpdateCreditCard(
+    """
+    The stripe customer ID, or stripeId
+    """
+    customerId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us a subscription was updated, update the details in our own DB
+  """
+  stripeCreateSubscription(
+    """
+    The stripe customer ID, or stripeId
+    """
+    customerId: ID!
+
+    """
+    The stripe subscription ID
+    """
+    subscriptionId: ID!
+  ): Boolean
+
+  """
+  When stripe tells us a subscription was deleted, update the details in our own DB
+  """
+  stripeDeleteSubscription(
+    """
+    The stripe customer ID, or stripeId
+    """
+    customerId: ID!
+
+    """
+    The stripe subscription ID
+    """
+    subscriptionId: ID!
+  ): Boolean
+
+  """
+  add/remove user(s) to/from the watchlist so that we start/stop recording their sessions
+  """
+  updateWatchlist(
+    """
+    a list of email addresses of users whose sessions we want to start/stop recording
+    """
+    emails: [String!]
+
+    """
+    add/remove the entire domain to/from the watchlist. The part of the email after the @
+    """
+    domain: String
+
+    """
+    true if the user should be added to the watchlist, false if not
+    """
+    includeInWatchlist: Boolean!
+  ): UpdateWatchlistPayload!
+
+  """
+  Updates Atlassian OAuth tokens that haven't been updated since the date specified in input
+  """
+  updateOAuthRefreshTokens(
+    """
+    Threshold date for `updatedAt` from AtlassianAuth
+    """
+    updatedBefore: DateTime!
+  ): Int
+
+  """
+  Change a company's domain so that affected users can only log in with the new domain
+  """
+  changeEmailDomain(
+    """
+    The company's old domain that we want to change
+    """
+    oldDomain: String!
+
+    """
+    The new domain that we're changing to
+    """
+    newDomain: String!
+  ): ChangeEmailDomainPayload!
+
+  """
+  Ends the trial for an org iff there is an active trial.
+  """
+  endTrial(
+    """
+    ID of the org on which to end the trial
+    """
+    orgId: ID!
+  ): EndTrialPayload!
+
+  """
+  add/remove a flag on a user saying they are over the free tier
+  """
+  flagOverLimit(
+    """
+    The text body of the over limit message, null to remove the previous value
+    """
+    copy: String = ""
+
+    """
+    the user orgId that went over the limit
+    """
+    orgId: ID!
+  ): FlagOverLimitPayload
+
+  """
+  Log in using SAML single sign on (SSO)
+  """
+  loginSAML(
+    """
+    The querystring provided by the IdP including SAMLResponse and RelayState
+    """
+    queryString: String!
+
+    """
+    The name of the SAML identifier. The slug used in the redirect URL
+    """
+    samlName: ID!
+  ): UserLogInPayload!
+
+  """
+  Processes recurrence for meetings that should start and end.
+  """
+  processRecurrence: ProcessRecurrencePayload!
+
+  """
+  Remove the auth identity for users with a specific domain. Example use case: signed up with Gmail but they're deleting their Google account
+  """
+  removeAuthIdentity(
+    """
+    Change the auth identity for users with this domain
+    """
+    domain: String!
+
+    """
+    The type of auth to remove
+    """
+    identityType: AuthIdentityTypeEnum!
+
+    """
+    Add a local auth with a dummy hashed password
+    """
+    addLocal: Boolean!
+  ): RemoveAuthIdentityPayload!
+
+  """
+  Set the isFree tier on a meeting template to determine if it's accessible to free users
+  """
+  setIsFreeMeetingTemplate(
+    isFree: Boolean!
+    templateIds: [ID!]
+    templateNames: [String!]
+  ): SetIsFreeMeetingTemplatePayload!
+
+  """
+  Starts a free trial for the org iff the org is on a free tier.
+  """
+  startTrial(
+    """
+    ID of the org on which to start the trial
+    """
+    orgId: ID!
+  ): StartTrialPayload!
+
+  """
+  When stripe tells us an invoice is paid (inside or outside of stripe), update it in our DB
+  """
+  stripeInvoicePaid(
+    """
+    The stripe invoice ID
+    """
+    invoiceId: ID!
+  ): Boolean
+
+  """
+  Allow or deny the User to view insights for the provided domain
+  """
+  toggleAllowInsights(
+    """
+    The tier we are squeezing the user to upgrade to. If null, will unset previous value
+    """
+    suggestedTier: TierEnum
+
+    """
+    The domain (e.g. parabol.co) that the user should be able to view insights on
+    """
+    domain: String!
+
+    """
+    emails to give the insights priviledge to
+    """
+    emails: [String!]!
+  ): ToggleAllowInsightsPayload!
+
+  """
+  Give some organizations advanced features in a flag
+  """
+  updateOrgFeatureFlag(
+    """
+    a list of organization ids
+    """
+    orgIds: [String!]!
+
+    """
+    the flag that you want to give to the organization
+    """
+    flag: OrganizationFeatureFlagsEnum!
+
+    """
+    whether or not you want to give the organization the flag
+    """
+    addFlag: Boolean!
+  ): UpdateOrgFeatureFlagPayload!
+
+  """
+  Describe the mutation here
+  """
+  verifyDomain(
+    """
+    Add the following domains to the list that org has control over. A domain is usually the part after the @ of their email.
+    """
+    addDomains: [ID!]
+
+    """
+    organization id. If the record already exists, this will overwite the value
+    """
+    orgId: ID!
+
+    """
+    The name of the company, used as a slug in signon URLs. Usually the domain without the tld
+    """
+    slug: ID!
+
+    """
+    A list of domains to remove from the control of the org. Useful if you previously added the incorrect domains
+    """
+    removeDomains: [ID!]
+  ): VerifyDomainPayload!
+}

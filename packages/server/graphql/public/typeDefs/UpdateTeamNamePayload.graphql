@@ -1,0 +1,4 @@
+type UpdateTeamNamePayload {
+  error: StandardMutationError
+  team: Team
+}

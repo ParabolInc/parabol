@@ -1,0 +1,34 @@
+"""
+An Integration Provider configuration
+"""
+input UpdateIntegrationProviderInput {
+  """
+  The the id of the Integration Provider to update
+  """
+  id: ID!
+
+  """
+  The new scope for this provider (org, team)
+  """
+  scope: IntegrationProviderEditableScopeEnum
+
+  """
+  The new team id for this provider for team scope
+  """
+  teamId: ID
+
+  """
+  The new org id for this provider for org scope
+  """
+  orgId: ID
+
+  """
+  Webhook provider metadata, has to be non-null if token type is webhook, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+  """
+  webhookProviderMetadataInput: IntegrationProviderMetadataInputWebhook
+
+  """
+  OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
+  """
+  oAuth2ProviderMetadataInput: IntegrationProviderMetadataInputOAuth2
+}

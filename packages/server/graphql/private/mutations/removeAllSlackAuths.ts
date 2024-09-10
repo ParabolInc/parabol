@@ -1,20 +1,17 @@
-import getRethink from '../../../database/rethinkDriver'
+import {sql} from 'kysely'
+import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
 const removeAllSlackAuths: MutationResolvers['removeAllSlackAuths'] = async () => {
-  const r = await getRethink()
-  const now = new Date()
-
+  const pg = getKysely()
   // RESOLUTION
-  const allSlackAuths = await r.table('SlackAuth').filter({isActive: true}).run()
-  const allSlackAuthIds = allSlackAuths.map(({id}) => id)
   const [slackAuthRes, slackNotificationRes] = await Promise.all([
-    r
-      .table('SlackAuth')
-      .getAll(r.args(allSlackAuthIds))
-      .update({botAccessToken: null, isActive: false, updatedAt: now})
-      .run(),
-    r.table('SlackNotification').delete().run()
+    pg
+      .updateTable('SlackAuth')
+      .set({botAccessToken: null, isActive: false})
+      .returning('id')
+      .execute(),
+    sql`TRUNCATE TABLE "SlackNotification"`.execute(pg)
   ])
   const data = {
     slackAuthRes: JSON.stringify(slackAuthRes),

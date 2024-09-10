@@ -1,0 +1,6 @@
+type StartTrialSuccess {
+  """
+  The updated organization
+  """
+  organization: Organization!
+}

@@ -51,23 +51,6 @@ const eventLookup = {
           stripeInvoicePaid(invoiceId: $invoiceId)
         }
       `
-    },
-    finalized: {
-      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
-      query: `
-      mutation StripeInvoiceFinalized($invoiceId: ID!) {
-        stripeInvoiceFinalized(invoiceId: $invoiceId)
-      }`
-    }
-  },
-  invoiceitem: {
-    created: {
-      getVars: ({id: invoiceItemId}: {id: string}) => ({invoiceItemId}),
-      query: `
-        mutation StripeUpdateInvoiceItem($invoiceItemId: ID!) {
-          stripeUpdateInvoiceItem(invoiceItemId: $invoiceItemId)
-        }
-      `
     }
   },
   customer: {
@@ -158,7 +141,7 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  const result = await publishWebhookGQL(query, variables)
+  const result = await publishWebhookGQL<{data: any}>(query, variables)
   if (result?.data) {
     res.writeStatus('200').end()
   } else {

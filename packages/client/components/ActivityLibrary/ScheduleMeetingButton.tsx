@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {RRule} from 'rrule'
 import {ScheduleMeetingButton_team$key} from '~/__generated__/ScheduleMeetingButton_team.graphql'
-import {
-  CreateGcalEventInput,
-  RecurrenceSettingsInput
-} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useModal from '../../hooks/useModal'
 import {MenuMutationProps} from '../../hooks/useMutationProps'
 import DialogContainer from '../DialogContainer'
@@ -14,10 +12,7 @@ import SecondaryButton from '../SecondaryButton'
 
 type Props = {
   mutationProps: MenuMutationProps
-  handleStartActivity: (
-    gcalInput?: CreateGcalEventInput,
-    recurrenceInput?: RecurrenceSettingsInput
-  ) => void
+  handleStartActivity: (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => void
   teamRef: ScheduleMeetingButton_team$key
   placeholder: string
   withRecurrence?: boolean
@@ -60,11 +55,8 @@ const ScheduleMeetingButton = (props: Props) => {
   const handleClick = () => {
     toggleModal()
   }
-  const onStartActivity = (
-    gcalInput?: CreateGcalEventInput,
-    recurrenceInput?: RecurrenceSettingsInput
-  ) => {
-    handleStartActivity(gcalInput, recurrenceInput)
+  const onStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
+    handleStartActivity(name, rrule, gcalInput)
     closeModal()
   }
 

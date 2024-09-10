@@ -1,34 +1,4 @@
 """
-A suggested reflection group created by OpenAI'
-"""
-type AutogroupReflectionGroup {
-  """
-  The smart title for the reflection group created by OpenAI
-  """
-  groupTitle: String!
-
-  """
-  The ids of the reflections in the group
-  """
-  reflectionIds: [ID!]!
-}
-
-"""
-A block of the meeting transcription with a speaker and text
-"""
-type TranscriptBlock {
-  """
-  The speaker who said the words
-  """
-  speaker: String!
-
-  """
-  The words that the speaker said
-  """
-  words: String!
-}
-
-"""
 A retrospective meeting
 """
 type RetrospectiveMeeting implements NewMeeting {
@@ -63,14 +33,14 @@ type RetrospectiveMeeting implements NewMeeting {
   createdAt: DateTime!
 
   """
-  The id of the user that created the meeting
+  The id of the user that created the meeting, null if user was hard deleted
   """
-  createdBy: ID!
+  createdBy: ID
 
   """
-  The user that created the meeting
+  The user that created the meeting, null if user was hard deleted
   """
-  createdByUser: User!
+  createdByUser: User
 
   """
   Disables anonymity of reflections
@@ -116,7 +86,6 @@ type RetrospectiveMeeting implements NewMeeting {
   The meeting series this meeting is associated with if the meeting is recurring
   """
   meetingSeries: MeetingSeries
-
   meetingType: MeetingTypeEnum!
 
   """
@@ -153,7 +122,6 @@ type RetrospectiveMeeting implements NewMeeting {
   The time the meeting summary was emailed to the team
   """
   summarySentAt: DateTime
-
   teamId: ID!
 
   """

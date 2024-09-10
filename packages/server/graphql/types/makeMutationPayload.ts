@@ -7,7 +7,7 @@ const makeMutationPayload = (name: string, successType: GraphQLObjectType) => {
     description: `Return object for ${name}`,
     types: [ErrorPayload, successType],
     resolveType: ({error}) => {
-      return error ? ErrorPayload : successType
+      return error ? ErrorPayload.name : successType.name
     }
   })
 }

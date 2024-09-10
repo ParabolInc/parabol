@@ -1,0 +1,39 @@
+"""
+Poll options for a given poll
+"""
+type PollOption {
+  """
+  Poll option id in a format of `pollOption:idGeneratedByDatabase`
+  """
+  id: ID!
+
+  """
+  The timestamp the item was created
+  """
+  createdAt: DateTime!
+
+  """
+  The timestamp the item was updated
+  """
+  updatedAt: DateTime!
+
+  """
+  The foreign key of the poll this option belongs to in a format of `poll:idGeneratedByDatabase`
+  """
+  pollId: ID!
+
+  """
+  The poll this option belongs to
+  """
+  poll: Poll!
+
+  """
+  The ids of the users who voted for this option
+  """
+  voteUserIds: [ID!]!
+
+  """
+  Poll option title
+  """
+  title: String!
+}

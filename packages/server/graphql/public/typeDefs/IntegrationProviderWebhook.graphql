@@ -1,0 +1,54 @@
+"""
+An integration provider that connects via webhook
+"""
+type IntegrationProviderWebhook implements IntegrationProvider {
+  """
+  The provider's unique identifier
+  """
+  id: ID!
+
+  """
+  The team that created the provider, null if not team scoped
+  """
+  teamId: ID
+
+  """
+  The org that created the provider, null if not org scoped
+  """
+  orgId: ID
+
+  """
+  The timestamp the provider was created
+  """
+  createdAt: DateTime!
+
+  """
+  The timestamp the token was updated at
+  """
+  updatedAt: DateTime!
+
+  """
+  The name of the integration service (GitLab, Mattermost, etc)
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
+  The kind of token used by this provider (OAuth2, PAT, Webhook)
+  """
+  authStrategy: IntegrationProviderAuthStrategyEnum!
+
+  """
+  The scope this provider configuration was created at (globally, org-wide, or by the team)
+  """
+  scope: IntegrationProviderScopeEnum!
+
+  """
+  true if the provider configuration should be used
+  """
+  isActive: Boolean!
+
+  """
+  The webhook URL
+  """
+  webhookUrl: URL!
+}

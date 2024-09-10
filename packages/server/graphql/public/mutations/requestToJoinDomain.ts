@@ -2,11 +2,11 @@ import ms from 'ms'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationRequestToJoinOrg from '../../../database/types/NotificationRequestToJoinOrg'
 import getKysely from '../../../postgres/getKysely'
-import getTeamIdsByOrgIds from '../../../postgres/queries/getTeamIdsByOrgIds'
 import {getUserId} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import {getEligibleOrgIdsByDomain} from '../../../utils/isRequestToJoinDomainAllowed'
 import standardError from '../../../utils/standardError'
+import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 
@@ -14,7 +14,7 @@ const REQUEST_EXPIRATION_DAYS = 30
 
 const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   _source,
-  {},
+  _args,
   {authToken, dataLoader}
 ) => {
   const r = await getRethink()
@@ -48,18 +48,13 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
     return {success: true}
   }
 
-  const teamIds = await getTeamIdsByOrgIds(orgIds)
-
-  const leadUserIds = (await r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({
-      isNotRemoved: true,
-      isLead: true
-    })
-    .pluck('userId')
-    .distinct()('userId')
-    .run()) as string[]
+  const orgTeams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
+  const teamIds = orgTeams.map(({id}) => id)
+  const teamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
+    .filter(isValid)
+    .flat()
+  const leadTeamMembers = teamMembers.filter(({isLead}) => isLead)
+  const leadUserIds = [...new Set(leadTeamMembers.map(({userId}) => userId))]
 
   const notificationsToInsert = leadUserIds.map((userId) => {
     return new NotificationRequestToJoinOrg({

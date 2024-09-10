@@ -1,4 +1,4 @@
-import {getUserTeams, sendPublic, signUp} from './common'
+import {getUserOrgs, getUserTeams, sendPublic, signUp} from './common'
 
 const serverBaseUrl = 'https://jira.example.com/'
 const consumerKey = 'CvSE+9fww8PLH07mWTHKUZMiGyX7liUSFbB1pRLVDyQ='
@@ -22,6 +22,7 @@ xCRxttXw+TEbs5T2EQJBANPcs2ztuKos+j0eYBKzhFDWccEYtBOLvJE5uUaxUa8v
 test('Add integration provider', async () => {
   const {userId, authToken} = await signUp()
 
+  const orgId = (await getUserOrgs(userId))[0].id
   const teamId = (await getUserTeams(userId))[0].id
 
   const addIntegrationProvider = await sendPublic({
@@ -34,6 +35,7 @@ test('Add integration provider', async () => {
               id
               isActive
               teamId
+              orgId
               ... on IntegrationProviderOAuth1 {
                 serverBaseUrl
               }
@@ -44,7 +46,7 @@ test('Add integration provider', async () => {
     `,
     variables: {
       input: {
-        teamId,
+        orgId,
         service: 'jiraServer',
         authStrategy: 'oauth1',
         scope: 'org',
@@ -65,7 +67,8 @@ test('Add integration provider', async () => {
         provider: {
           id: expect.anything(),
           isActive: true,
-          teamId,
+          orgId,
+          teamId: null,
           serverBaseUrl
         }
       }

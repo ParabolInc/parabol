@@ -2,6 +2,7 @@ import {
   GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLString
 } from 'graphql'
@@ -41,7 +42,7 @@ const CreateTaskInput = new GraphQLInputObjectType({
       description: 'foreign key for the thread this was created in'
     },
     threadSortOrder: {
-      type: GraphQLFloat
+      type: GraphQLInt
     },
     threadParentId: {
       type: GraphQLID

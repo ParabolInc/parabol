@@ -1,0 +1,6 @@
+type AddIntegrationProviderSuccess {
+  """
+  The provider that was added
+  """
+  provider: IntegrationProvider!
+}

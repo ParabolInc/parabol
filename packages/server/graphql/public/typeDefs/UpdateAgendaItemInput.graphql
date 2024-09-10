@@ -1,0 +1,26 @@
+input UpdateAgendaItemInput {
+  """
+  The unique agenda item ID, composed of a teamId::shortid
+  """
+  id: ID!
+
+  """
+  The content of the agenda item
+  """
+  content: String
+
+  """
+  True if agenda item has been pinned
+  """
+  pinned: Boolean
+
+  """
+  True if not processed or deleted
+  """
+  isActive: Boolean
+
+  """
+  The sort order of the agenda item in the list
+  """
+  sortOrder: String
+}

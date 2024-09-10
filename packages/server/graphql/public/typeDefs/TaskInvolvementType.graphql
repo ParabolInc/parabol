@@ -1,0 +1,7 @@
+"""
+How a user is involved with a task (listed in hierarchical order)
+"""
+enum TaskInvolvementType {
+  ASSIGNEE
+  MENTIONEE
+}

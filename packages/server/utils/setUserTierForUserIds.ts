@@ -1,4 +1,3 @@
-import getRethink from '../database/rethinkDriver'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
 import {analytics} from './analytics/analytics'
@@ -10,14 +9,13 @@ import {analytics} from './analytics/analytics'
 // 'setTierForOrgUsers'.
 
 const setUserTierForUserId = async (userId: string) => {
-  const r = await getRethink()
   const pg = getKysely()
-
-  const orgUsers = await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .filter({removedAt: null})
-    .run()
+  const orgUsers = await pg
+    .selectFrom('OrganizationUser')
+    .selectAll()
+    .where('userId', '=', userId)
+    .where('removedAt', 'is', null)
+    .execute()
 
   const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
   if (orgIds.length === 0) return

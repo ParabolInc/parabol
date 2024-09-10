@@ -19,7 +19,6 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         isOrgAdmin
-        isBillingLeader
         featureFlags {
           publicTeams
         }
@@ -38,17 +37,19 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isBillingLeader, isOrgAdmin, featureFlags} = organization
+  const {allTeams, isOrgAdmin, featureFlags} = organization
   const hasPublicTeamsFlag = featureFlags.publicTeams
-  const showAllTeams = isBillingLeader || isOrgAdmin || hasPublicTeamsFlag
+  const showAllTeams = isOrgAdmin || hasPublicTeamsFlag
   return (
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
         <div>
           <h1 className='text-2xl font-semibold leading-7'>Teams</h1>
-          {!showAllTeams && (
-            <p className='text-gray-600 mb-2'>Only showing teams you're a member of</p>
-          )}
+          <p className='text-gray-600 mb-2'>
+            {!showAllTeams
+              ? "Only showing teams you're a member of"
+              : 'Showing all teams in the organization'}
+          </p>
         </div>
         <div className='ml-auto'>
           <Button

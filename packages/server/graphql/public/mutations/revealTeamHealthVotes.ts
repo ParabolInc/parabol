@@ -55,9 +55,11 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
   const data = {
     meetingId,
     stageId,
+    teamId,
     stage: {
       ...stage,
-      meetingId
+      meetingId,
+      teamId
     }
   }
 

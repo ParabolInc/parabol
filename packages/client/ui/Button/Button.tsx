@@ -3,12 +3,12 @@ import clsx from 'clsx'
 import React from 'react'
 import {twMerge} from 'tailwind-merge'
 
-type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link' | 'outline'
+type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link' | 'outline' | 'flat'
 type Size = 'sm' | 'md' | 'lg' | 'default'
 type Shape = 'pill' | 'circle' | 'default'
 
 const BASE_STYLES =
-  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap  transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap  transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
 
 // TODO: make sure the styles match the designs
 const VARIANT_STYLES: Record<Variant, string> = {
@@ -18,7 +18,8 @@ const VARIANT_STYLES: Record<Variant, string> = {
     'text-slate-900 border border-slate-400 hover:bg-slate-200 px-2.5 py-1 bg-transparent font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
-  link: 'text-primary underline-offset-4 hover:underline'
+  link: 'text-primary underline-offset-4 hover:underline',
+  flat: 'rounded-full bg-transparent outline-none shadow-none hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 focus-visible:ring-0'
 }
 
 const SIZE_STYLES: Record<Size, string> = {
@@ -41,7 +42,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   shape?: Shape
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({className, variant, size = 'default', shape = 'default', asChild = false, ...props}, ref) => {
     const Comp = asChild ? Slot : 'button'
     return (
@@ -63,5 +64,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 
 Button.displayName = 'Button'
-
-export {Button}

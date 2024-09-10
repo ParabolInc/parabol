@@ -4,7 +4,6 @@ import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import util from 'util'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
-import getTeamsByIds from '../../postgres/queries/getTeamsByIds'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import IUser from '../../postgres/types/IUser'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
@@ -59,11 +58,10 @@ export default {
         meetingId: maybeMeetingId,
         teamId
       } = teamInvitation
-      const [teams, inviter] = await Promise.all([
-        getTeamsByIds([teamId]),
+      const [team, inviter] = await Promise.all([
+        dataLoader.get('teams').loadNonNull(teamId),
         dataLoader.get('users').load(invitedBy)
       ])
-      const team = teams[0]!
       const bestMeeting = await getBestInvitationMeeting(teamId, maybeMeetingId, dataLoader)
       const meetingType = bestMeeting?.meetingType ?? null
       const meetingId = bestMeeting?.id ?? null

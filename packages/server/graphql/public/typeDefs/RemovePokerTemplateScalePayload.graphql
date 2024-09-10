@@ -1,0 +1,9 @@
+type RemovePokerTemplateScalePayload {
+  error: StandardMutationError
+  scale: TemplateScale
+
+  """
+  A list of dimensions that were using the archived scale
+  """
+  dimensions: [TemplateDimension!]!
+}

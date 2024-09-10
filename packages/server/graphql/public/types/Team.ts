@@ -1,12 +1,8 @@
 import TeamInsightsId from 'parabol-client/shared/gqlIds/TeamInsightsId'
-import {ExtractTypeFromQueryBuilderSelect} from '../../../../client/types/generics'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {selectTeams} from '../../../dataloader/primaryKeyLoaderMakers'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {TeamResolvers} from '../resolverTypes'
-
-export interface TeamSource extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 const Team: TeamResolvers = {
   insights: async (
@@ -37,7 +33,7 @@ const Team: TeamResolvers = {
     const viewerId = getUserId(authToken)
     if (!viewerId) return null
     const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     return teamMember
   },
   isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),

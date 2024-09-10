@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -18,7 +19,7 @@ const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, recurrenceSettings, gcalInput},
+  {teamId, name, rrule, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const r = await getRethink()
@@ -46,11 +47,8 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   }
 
   //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
-  const meetingName = createMeetingSeriesTitle(
-    recurrenceSettings?.name || 'Standup',
-    new Date(),
-    'UTC'
-  )
+  const meetingName = createMeetingSeriesTitle(name || 'Standup', new Date(), 'UTC')
+  const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, r, dataLoader)
 
   await Promise.all([
@@ -64,19 +62,31 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
 
   const {id: meetingId} = meeting
-  if (recurrenceSettings?.rrule) {
-    const meetingSeries = await startNewMeetingSeries(
-      meeting,
-      recurrenceSettings.rrule,
-      recurrenceSettings.name
-    )
+  const meetingSeries = rrule && (await startNewMeetingSeries(meeting, rrule, name))
+  if (meetingSeries) {
     // meeting was modified if a new meeting series was created
     dataLoader.get('newMeetings').clear(meetingId)
     analytics.recurrenceStarted(viewer, meetingSeries)
   }
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)
-  const {error} = await createGcalEvent({gcalInput, meetingId, teamId, viewerId, dataLoader})
+  const {error, gcalSeriesId} = await createGcalEvent({
+    name: eventName,
+    gcalInput,
+    meetingId,
+    teamId,
+    viewerId,
+    rrule,
+    dataLoader
+  })
+  if (meetingSeries && gcalSeriesId) {
+    const pg = getKysely()
+    await pg
+      .updateTable('MeetingSeries')
+      .set({gcalSeriesId})
+      .where('id', '=', meetingSeries.id)
+      .execute()
+  }
   const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data

@@ -8,12 +8,12 @@ import NotificationTeamsLimitExceeded from '../../database/types/NotificationTea
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
-import {OrganizationSource} from '../../graphql/public/types/Organization'
 import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
 import {getFeatureTier} from '../../graphql/types/helpers/getFeatureTier'
 import {domainHasActiveDeals} from '../../hubSpot/hubSpotApi'
 import getKysely from '../../postgres/getKysely'
 import getTeamIdsByOrgIds from '../../postgres/queries/getTeamIdsByOrgIds'
+import {Organization} from '../../postgres/types'
 import {getBillingLeadersByOrgId} from '../../utils/getBillingLeadersByOrgId'
 import sendToSentry from '../../utils/sendToSentry'
 import removeTeamsLimitObjects from './removeTeamsLimitObjects'
@@ -21,12 +21,13 @@ import sendTeamsLimitEmail from './sendTeamsLimitEmail'
 
 const enableUsageStats = async (userIds: string[], orgId: string) => {
   const pg = getKysely()
-  await r
-    .table('OrganizationUser')
-    .getAll(r.args(userIds), {index: 'userId'})
-    .filter({orgId})
-    .update({suggestedTier: 'team'})
-    .run()
+  await pg
+    .updateTable('OrganizationUser')
+    .set({suggestedTier: 'team'})
+    .where('orgId', '=', orgId)
+    .where('userId', 'in', userIds)
+    .where('removedAt', 'is', null)
+    .execute()
   await pg
     .updateTable('User')
     .set({featureFlags: sql`arr_append_uniq("featureFlags", 'insights')`})
@@ -35,7 +36,7 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
 }
 
 const sendWebsiteNotifications = async (
-  organization: OrganizationSource,
+  organization: Organization,
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
@@ -87,12 +88,13 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
         .set({tierLimitExceededAt: null, scheduledLockAt: null, lockedAt: null})
         .where('id', '=', orgId)
         .execute(),
-      r
-        .table('OrganizationUser')
-        .getAll(r.args(billingLeadersIds), {index: 'userId'})
-        .filter({orgId})
-        .update({suggestedTier: 'starter'})
-        .run(),
+      pg
+        .updateTable('OrganizationUser')
+        .set({suggestedTier: 'starter'})
+        .where('orgId', '=', orgId)
+        .where('userId', 'in', billingLeadersIds)
+        .where('removedAt', 'is', null)
+        .execute(),
       removeTeamsLimitObjects(orgId, dataLoader)
     ])
     dataLoader.get('organizations').clear(orgId)

@@ -3,15 +3,17 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
+import {positionAfter} from '../../../client/shared/sortOrder'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import AgendaItem from '../../database/types/AgendaItem'
 import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
+import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
+import {AgendaItem} from '../../postgres/types'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../utils/Logger'
@@ -21,6 +23,7 @@ import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
+import isValid from '../isValid'
 import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
@@ -61,41 +64,41 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
   return tasks
 }
 
-const clearAgendaItems = async (teamId: string) => {
-  const r = await getRethink()
-  return r
-    .table('AgendaItem')
-    .getAll(teamId, {index: 'teamId'})
-    .update({
-      isActive: false
-    })
-    .run()
+const clearAgendaItems = async (teamId: string, dataLoader: DataLoaderInstance) => {
+  await getKysely()
+    .updateTable('AgendaItem')
+    .set({isActive: false})
+    .where('teamId', '=', teamId)
+    .execute()
+  dataLoader.clearAll('agendaItems')
 }
 
-const getPinnedAgendaItems = async (teamId: string) => {
-  const r = await getRethink()
-  return r
-    .table('AgendaItem')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({isActive: true, pinned: true})
-    .run()
+const getPinnedAgendaItems = async (teamId: string, dataLoader: DataLoaderInstance) => {
+  const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+  return agendaItems.filter((agendaItem) => agendaItem.pinned)
 }
 
-const clonePinnedAgendaItems = async (pinnedAgendaItems: AgendaItem[]) => {
-  const r = await getRethink()
+const clonePinnedAgendaItems = async (
+  pinnedAgendaItems: AgendaItem[],
+  dataLoader: DataLoaderInstance
+) => {
+  let curSortOrder = ''
   const clonedPins = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
-    return new AgendaItem({
+    const sortOrder = positionAfter(curSortOrder)
+    curSortOrder = sortOrder
+    return {
       id: agendaItemId,
       content: agendaItem.content,
       pinned: agendaItem.pinned,
       pinnedParentId: agendaItem.pinnedParentId ? agendaItem.pinnedParentId : agendaItemId,
-      sortOrder: agendaItem.sortOrder,
+      sortOrder,
       teamId: agendaItem.teamId,
       teamMemberId: agendaItem.teamMemberId
-    })
+    }
   })
-  await r.table('AgendaItem').insert(clonedPins).run()
+  await getKysely().insertInto('AgendaItem').values(clonedPins).execute()
+  dataLoader.clearAll('agendaItems')
 }
 
 const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
@@ -120,7 +123,7 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
       .filter({status: DONE})
       .filter((task: RDatum) => task('tags').contains('archived').not())
       .run(),
-    r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).filter({isActive: true}).run()
+    dataLoader.get('agendaItemsByTeamId').load(teamId)
   ])
 
   const agendaItemPhase = getPhase(phases, 'agendaitems')
@@ -128,12 +131,16 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
   const discussionIds = stages.map((stage) => stage.discussionId)
   const userIds = meetingMembers.map(({userId}) => userId)
   const meetingPhase = getMeetingPhase(phases)
-  const pinnedAgendaItems = await getPinnedAgendaItems(teamId)
+  const pinnedAgendaItems = await getPinnedAgendaItems(teamId, dataLoader)
   const isKill = !!(meetingPhase && ![AGENDA_ITEMS, LAST_CALL].includes(meetingPhase.phaseType))
-  if (!isKill) await clearAgendaItems(teamId)
+  if (!isKill) await clearAgendaItems(teamId, dataLoader)
+  const commentCounts = (
+    await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
+  ).filter(isValid)
+  const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
   await Promise.all([
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
-    isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems),
+    isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems, dataLoader),
     updateTaskSortOrders(userIds, tasks),
     r
       .table('NewMeeting')
@@ -141,11 +148,7 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
       .update(
         {
           agendaItemCount: activeAgendaItems.length,
-          commentCount: r
-            .table('Comment')
-            .getAll(r.args(discussionIds), {index: 'discussionId'})
-            .count()
-            .default(0) as unknown as number,
+          commentCount,
           taskCount: tasks.length
         },
         {nonAtomic: true}
@@ -248,12 +251,9 @@ export default {
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     if (team.isOnboardTeam) {
-      const teamLeadUserId = await r
-        .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({isLead: true})
-        .nth(0)('userId')
-        .run()
+      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+      const teamLeader = teamMembers.find(({isLead}) => isLead)!
+      const {userId: teamLeadUserId} = teamLeader
 
       const removedSuggestedActionId = await removeSuggestedAction(
         teamLeadUserId,

@@ -5,16 +5,14 @@ import clsx from 'clsx'
 import React, {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
+import {RRule} from 'rrule'
 import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
 import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import {
-  CreateGcalEventInput,
-  RecurrenceSettingsInput
-} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
@@ -28,6 +26,7 @@ import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import StyledError from '../StyledError'
+import StyledLink from '../StyledLink'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -104,7 +103,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     () =>
       availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
-      sortByTier(availableTeams)[0]!
+      sortByTier(availableTeams)[0]
   )
 
   const onSelectTeam = (teamId: string) => {
@@ -116,10 +115,16 @@ const ActivityDetailsSidebar = (props: Props) => {
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
 
-  const handleStartActivity = (
-    gcalInput?: CreateGcalEventInput,
-    recurrenceSettings?: RecurrenceSettingsInput
-  ) => {
+  // user has no teams
+  if (!selectedTeam)
+    return (
+      <div className='flex w-full flex-col items-center border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
+        <div className='self-center italic'>You have no teams to start a meeting with!</div>
+        <StyledLink to='/newteam'>Create a team</StyledLink>
+      </div>
+    )
+
+  const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
     if (submitting) return
     submitMutation()
     if (type === 'teamPrompt') {
@@ -127,12 +132,8 @@ const ActivityDetailsSidebar = (props: Props) => {
         atmosphere,
         {
           teamId: selectedTeam.id,
-          recurrenceSettings: recurrenceSettings
-            ? {
-                rrule: recurrenceSettings.rrule?.toString(),
-                name: recurrenceSettings.name
-              }
-            : undefined,
+          name,
+          rrule: rrule?.toString(),
           gcalInput
         },
         {history, onError, onCompleted}
@@ -155,12 +156,8 @@ const ActivityDetailsSidebar = (props: Props) => {
                 atmosphere,
                 {
                   teamId: selectedTeam.id,
-                  recurrenceSettings: recurrenceSettings
-                    ? {
-                        rrule: recurrenceSettings.rrule?.toString(),
-                        name: recurrenceSettings.name
-                      }
-                    : undefined,
+                  name,
+                  rrule: rrule?.toString(),
                   gcalInput
                 },
                 {history, onError, onCompleted}

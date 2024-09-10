@@ -1,0 +1,6 @@
+type PromoteToTeamLeadPayload {
+  error: StandardMutationError
+  team: Team
+  oldLeader: TeamMember
+  newLeader: TeamMember
+}

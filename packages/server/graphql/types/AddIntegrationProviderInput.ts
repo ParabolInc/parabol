@@ -19,7 +19,8 @@ import IntegrationProviderMetadataInputWebhook, {
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 
 export interface IAddIntegrationProviderInput {
-  teamId: string
+  teamId: string | null
+  orgId: string | null
   service: TIntegrationProviderServiceEnum
   authStrategy: TIntegrationProviderAuthStrategyEnum
   scope: TIntegrationProviderEditableScopeEnum
@@ -33,8 +34,12 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
   description: 'An Integration Provider configuration',
   fields: () => ({
     teamId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The team that the token is linked to'
+    },
+    orgId: {
+      type: GraphQLID,
+      description: 'The organization that the token is linked to'
     },
     service: {
       type: new GraphQLNonNull(IntegrationProviderServiceEnum),

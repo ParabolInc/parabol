@@ -4,13 +4,9 @@ import getKysely from '../../../postgres/getKysely'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
-  compareRValOptionalPluckedObject,
-  compareRValStringAsNumber,
-  compareRValUndefinedAsEmptyArray,
   compareRValUndefinedAsFalse,
   compareRValUndefinedAsNull,
   compareRValUndefinedAsNullAndTruncateRVal,
-  compareRValUndefinedAsZero,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -37,12 +33,12 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'Organization') {
+  if (tableName === 'TeamMember') {
     const rowCountResult = await checkRowCount(tableName)
-    const rethinkQuery = (updatedAt: Date, id: string | number) => {
+    const rethinkQuery = (joinedAt: Date, id: string | number) => {
       return r
-        .table('Organization' as any)
-        .between([updatedAt, id], [r.maxval, r.maxval], {
+        .table('TeamMember' as any)
+        .between([joinedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',
           rightBound: 'closed'
@@ -50,42 +46,24 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         .orderBy({index: 'updatedAtId'}) as any
     }
     const pgQuery = async (ids: string[]) => {
-      return getKysely()
-        .selectFrom('Organization')
-        .selectAll()
-        .select(({fn}) => [fn('to_json', ['creditCard']).as('creditCard')])
-        .where('id', 'in', ids)
-        .execute()
+      return getKysely().selectFrom('TeamMember').selectAll().where('id', 'in', ids).execute()
     }
     const errors = await checkTableEq(
       rethinkQuery,
       pgQuery,
       {
         id: defaultEqFn,
-        activeDomain: compareRValUndefinedAsNullAndTruncateRVal(100),
-        isActiveDomainTouched: compareRValUndefinedAsFalse,
-        creditCard: compareRValOptionalPluckedObject({
-          brand: compareRValUndefinedAsNull,
-          expiry: compareRValUndefinedAsNull,
-          last4: compareRValStringAsNumber
-        }),
-        createdAt: defaultEqFn,
-        name: compareRValUndefinedAsNullAndTruncateRVal(100),
-        payLaterClickCount: compareRValUndefinedAsZero,
-        periodEnd: compareRValUndefinedAsNull,
-        periodStart: compareRValUndefinedAsNull,
-        picture: compareRValUndefinedAsNull,
-        showConversionModal: compareRValUndefinedAsFalse,
-        stripeId: compareRValUndefinedAsNull,
-        stripeSubscriptionId: compareRValUndefinedAsNull,
-        upcomingInvoiceEmailSentAt: compareRValUndefinedAsNull,
-        tier: defaultEqFn,
-        tierLimitExceededAt: compareRValUndefinedAsNull,
-        trialStartDate: compareRValUndefinedAsNull,
-        scheduledLockAt: compareRValUndefinedAsNull,
-        lockedAt: compareRValUndefinedAsNull,
-        updatedAt: compareDateAlmostEqual,
-        featureFlags: compareRValUndefinedAsEmptyArray
+        isNotRemoved: compareRValUndefinedAsFalse,
+        isLead: compareRValUndefinedAsFalse,
+        isSpectatingPoker: compareRValUndefinedAsFalse,
+        email: defaultEqFn,
+        openDrawer: compareRValUndefinedAsNull,
+        picture: defaultEqFn,
+        preferredName: compareRValUndefinedAsNullAndTruncateRVal(100),
+        teamId: defaultEqFn,
+        userId: defaultEqFn,
+        createdAt: compareDateAlmostEqual,
+        updatedAt: compareDateAlmostEqual
       },
       maxErrors
     )

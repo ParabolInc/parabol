@@ -1,9 +1,7 @@
+import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
-import OrganizationUser from '../../../database/types/OrganizationUser'
-import getTeamsByOrgIds from '../../../postgres/queries/getTeamsByOrgIds'
+import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
 import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
@@ -16,15 +14,15 @@ const removeFromOrg = async (
   evictorUserId: string | undefined,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
-  const now = new Date()
-  const orgTeams = await getTeamsByOrgIds([orgId])
+  const pg = getKysely()
+  // TODO consider a teamMembersByOrgId dataloader if this pattern pops up more
+  const [orgTeams, allTeamMembers] = await Promise.all([
+    dataLoader.get('teamsByOrgIds').load(orgId),
+    dataLoader.get('teamMembersByUserId').load(userId)
+  ])
   const teamIds = orgTeams.map((team) => team.id)
-  const teamMemberIds = (await r
-    .table('TeamMember')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter({userId, isNotRemoved: true})('id')
-    .run()) as string[]
+  const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
+  const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
 
   const perTeamRes = await Promise.all(
     teamMemberIds.map((teamMemberId) => {
@@ -43,46 +41,36 @@ const removeFromOrg = async (
   }, [])
 
   const [organizationUser, user] = await Promise.all([
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({orgId, removedAt: null})
-      .nth(0)
-      .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
-      .default(null)
-      .run() as unknown as OrganizationUser,
+    pg
+      .updateTable('OrganizationUser')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('userId', '=', userId)
+      .where('orgId', '=', orgId)
+      .where('removedAt', 'is', null)
+      .returning(['id', 'role'])
+      .executeTakeFirstOrThrow(),
     dataLoader.get('users').loadNonNull(userId)
   ])
-
+  dataLoader.clearAll('organizationUsers')
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
   if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {
     const organization = await dataLoader.get('organizations').loadNonNull(orgId)
     // if no other billing leader, promote the oldest
     // if team tier & no other member, downgrade to starter
-    const otherBillingLeaders = await r
-      .table('OrganizationUser')
-      .getAll(orgId, {index: 'orgId'})
-      .filter({removedAt: null})
-      .filter((row: RDatum) => r.expr(['BILLING_LEADER', 'ORG_ADMIN']).contains(row('role')))
-      .run()
+    const allOrgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+    const otherBillingLeaders = allOrgUsers.filter(
+      ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
+    )
     if (otherBillingLeaders.length === 0) {
-      const nextInLine = await r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null})
-        .orderBy('joinedAt')
-        .nth(0)
-        .default(null)
-        .run()
+      const orgUsersByJoinAt = allOrgUsers.sort((a, b) => (a.joinedAt < b.joinedAt ? -1 : 1))
+      const nextInLine = orgUsersByJoinAt[0]
       if (nextInLine) {
-        await r
-          .table('OrganizationUser')
-          .get(nextInLine.id)
-          .update({
-            role: 'BILLING_LEADER'
-          })
-          .run()
+        await pg
+          .updateTable('OrganizationUser')
+          .set({role: 'BILLING_LEADER'})
+          .where('id', '=', nextInLine.id)
+          .execute()
       } else if (organization.tier !== 'starter') {
         await resolveDowngradeToStarter(orgId, organization.stripeSubscriptionId!, user, dataLoader)
       }

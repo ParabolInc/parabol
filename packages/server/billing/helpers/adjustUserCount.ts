@@ -1,14 +1,12 @@
+import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import OrganizationUser from '../../database/types/OrganizationUser'
+import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
 import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
 import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
-import updateUser from '../../postgres/queries/updateUser'
 import IUser from '../../postgres/types/IUser'
 import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
@@ -36,7 +34,7 @@ const maybeUpdateOrganizationActiveDomain = async (
     return
 
   // don't modify if we can't guess the domain or the domain we guess is the current domain
-  const domain = await getActiveDomainForOrgId(orgId)
+  const domain = await getActiveDomainForOrgId(orgId, dataLoader)
   if (!domain || domain === activeDomain) return
   organization.activeDomain = domain
   const pg = getKysely()
@@ -44,7 +42,7 @@ const maybeUpdateOrganizationActiveDomain = async (
 }
 
 const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {id: userId, email} = user
   inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
   analytics.identify({
@@ -52,33 +50,20 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
     email,
     isActive: !inactive
   })
-  return Promise.all([
-    updateUser(
-      {
-        inactive
-      },
-      userId
-    ),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})
-      .update({inactive})
-      .run()
-  ])
+  await pg
+    .with('User', (qb) => qb.updateTable('User').set({inactive}).where('id', '=', userId))
+    .updateTable('OrganizationUser')
+    .set({inactive})
+    .where('userId', '=', userId)
+    .where('removedAt', 'is', null)
+    .execute()
 }
 
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
-  const r = await getRethink()
   const [rawOrganizations, organizationUsers] = await Promise.all([
     dataLoader.get('organizations').loadMany(orgIds),
-    r
-      .table('OrganizationUser')
-      .getAll(userId, {index: 'userId'})
-      .orderBy(r.desc('newUserUntil'))
-      .coerceTo('array')
-      .run()
+    dataLoader.get('organizationUsersByUserId').load(userId)
   ])
   const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
@@ -87,20 +72,19 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     )
     const organization = organizations.find((organization) => organization.id === orgId)!
     // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
-    const newUserUntil =
-      (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
-      organization.periodEnd ||
-      new Date()
-    return new OrganizationUser({
-      id: oldOrganizationUser?.id,
+    return {
+      id: oldOrganizationUser?.id || generateUID(),
       orgId,
       userId,
-      newUserUntil,
       tier: organization.tier
-    })
+    }
   })
-
-  await r.table('OrganizationUser').insert(docs, {conflict: 'replace'}).run()
+  dataLoader.clearAll('organizationUsers')
+  await getKysely()
+    .insertInto('OrganizationUser')
+    .values(docs)
+    .onConflict((oc) => oc.doNothing())
+    .execute()
   await Promise.all(
     orgIds.map((orgId) => {
       return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
@@ -109,16 +93,13 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
 }
 
 const deleteUser = async (orgIds: string[], user: IUser) => {
-  const r = await getRethink()
   orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
-  return r
-    .table('OrganizationUser')
-    .getAll(user.id, {index: 'userId'})
-    .filter((row: RDatum) => r.expr(orgIds).contains(row('orgId')))
-    .update({
-      removedAt: new Date()
-    })
-    .run()
+  await getKysely()
+    .updateTable('OrganizationUser')
+    .set({removedAt: sql`CURRENT_TIMESTAMP`})
+    .where('userId', '=', user.id)
+    .where('orgId', 'in', orgIds)
+    .execute()
 }
 
 const dbActionTypeLookup = {
@@ -152,7 +133,6 @@ export default async function adjustUserCount(
 
   const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, user, dataLoader)
-
   const auditEventType = auditEventTypeLookup[type]
   await insertOrgUserAudit(orgIds, userId, auditEventType)
 

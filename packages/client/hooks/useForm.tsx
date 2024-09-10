@@ -94,9 +94,7 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
           }
           return obj
         }, {} as FieldState<T>),
-      [
-        /* eslint-disable-line react-hooks/exhaustive-deps */
-      ]
+      []
     )
   )
 

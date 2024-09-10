@@ -1,7 +1,7 @@
-import {OrganizationSource} from '../../graphql/public/types/Organization'
+import {Organization} from '../../postgres/types'
 import updateSubscriptionQuantity from './updateSubscriptionQuantity'
 
-const handleTeamOrgQuantityChanges = async (paidOrgs: OrganizationSource[]) => {
+const handleTeamOrgQuantityChanges = async (paidOrgs: Organization[]) => {
   const teamOrgs = paidOrgs.filter((org) => org.tier === 'team')
   if (teamOrgs.length === 0) return
 

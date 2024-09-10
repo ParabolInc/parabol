@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -24,14 +23,11 @@ const updatePokerTemplateDimensionScale = {
     {dimensionId, scaleId}: {dimensionId: string; scaleId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
-    const dimension = await r.table('TemplateDimension').get(dimensionId).run()
+    const dimension = await dataLoader.get('templateDimensions').load(dimensionId)
     const viewerId = getUserId(authToken)
-    const teamId = dimension.teamId
 
     // AUTH
     if (!dimension || dimension.removedAt) {
@@ -42,17 +38,14 @@ const updatePokerTemplateDimensionScale = {
     }
 
     // VALIDATION
-    const scale = await r.table('TemplateScale').get(scaleId).run()
+    const {teamId} = dimension
+    const scale = await dataLoader.get('templateScales').load(scaleId)
     if (!scale || scale.removedAt || (!scale.isStarter && scale.teamId !== teamId)) {
       return standardError(new Error('Scale not found'), {userId: viewerId})
     }
 
-    const {templateId} = dimension
-    await Promise.all([
-      r.table('TemplateDimension').get(dimensionId).update({scaleId, updatedAt: now}).run(),
-      pg.updateTable('MeetingTemplate').set({updatedAt: now}).where('id', '=', templateId).execute()
-    ])
-
+    await pg.updateTable('TemplateDimension').set({scaleId}).where('id', '=', dimensionId).execute()
+    dataLoader.get('templateDimensions').clear(dimensionId)
     const data = {dimensionId}
     publish(
       SubscriptionChannel.TEAM,

@@ -194,6 +194,9 @@ export default class StripeManager {
     return this.stripe.customers.list({email})
   }
 
+  async listInvoices(stripeId: string, startingAfter?: string) {
+    return this.stripe.invoices.list({customer: stripeId, starting_after: startingAfter})
+  }
   async getSubscriptionItem(subscriptionId: string) {
     const allSubscriptionItems = await this.stripe.subscriptionItems.list({
       subscription: subscriptionId

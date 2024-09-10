@@ -1,0 +1,154 @@
+"""
+A long-term task shared across the team, assigned to a single user
+"""
+type Task implements Threadable {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The rich text body of the item
+  """
+  content: String!
+
+  """
+  The timestamp the item was created
+  """
+  createdAt: DateTime!
+
+  """
+  The userId that created the item
+  """
+  createdBy: ID!
+
+  """
+  The user that created the item
+  """
+  createdByUser: User!
+
+  """
+  the replies to this threadable item
+  """
+  replies: [Threadable!]!
+
+  """
+  The FK of the discussion this task was created in. Null if task was not created in a discussion
+  """
+  discussionId: ID
+
+  """
+  the parent, if this threadable is a reply, else null
+  """
+  threadParentId: ID
+
+  """
+  the order of this threadable, relative to threadParentId
+  """
+  threadSortOrder: Int
+
+  """
+  The timestamp the item was updated
+  """
+  updatedAt: DateTime!
+
+  """
+  The agenda item that the task was created in, if any
+  """
+  agendaItem: AgendaItem
+
+  """
+  Type of the integration if there is one
+  """
+  taskService: TaskServiceEnum
+
+  """
+  a user-defined due date
+  """
+  dueDate: DateTime
+
+  """
+  A list of the most recent estimates for the task
+  """
+  estimates: [TaskEstimate!]!
+
+  """
+  a list of users currently editing the task (fed by a subscription, so queries return null)
+  """
+  editors: [TaskEditorDetails!]!
+
+  """
+  The reference to the single source of truth for this task
+  """
+  integration: TaskIntegration
+
+  """
+  A hash of the integrated task
+  """
+  integrationHash: ID
+
+  """
+  the foreign key for the meeting the task was created in
+  """
+  meetingId: ID
+
+  """
+  the foreign key for the meeting the task was marked as complete
+  """
+  doneMeetingId: ID
+
+  """
+  the plain text content of the task
+  """
+  plaintextContent: String!
+
+  """
+  the shared sort order for tasks on the team dash & user dash
+  """
+  sortOrder: Float!
+
+  """
+  The status of the task
+  """
+  status: TaskStatusEnum!
+
+  """
+  The tags associated with the task
+  """
+  tags: [String!]!
+
+  """
+  The id of the team (indexed). Needed for subscribing to archived tasks
+  """
+  teamId: ID!
+
+  """
+  The team this task belongs to
+  """
+  team: Team!
+
+  """
+  The first block of the content
+  """
+  title: String!
+
+  """
+  * The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.
+  """
+  userId: ID
+
+  """
+  The user the task is assigned to. Null if it is not assigned to anyone.
+  """
+  user: User
+
+  """
+  The owner hovers over the task in their solo update of a checkin
+  """
+  isHighlighted(
+    """
+    Meeting for which the highlight is checked
+    """
+    meetingId: ID
+  ): Boolean!
+}

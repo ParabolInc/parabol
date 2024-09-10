@@ -1,0 +1,5 @@
+type MeetingStat {
+  id: ID!
+  meetingType: MeetingTypeEnum!
+  createdAt: DateTime!
+}

@@ -1,0 +1,11 @@
+type AddReflectTemplateSuccess {
+  """
+  The reflect template that was created
+  """
+  reflectTemplate: ReflectTemplate!
+
+  """
+  The user that created the template
+  """
+  user: User!
+}

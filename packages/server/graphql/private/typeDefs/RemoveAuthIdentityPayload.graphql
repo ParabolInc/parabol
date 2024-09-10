@@ -1,0 +1,4 @@
+"""
+Return value for removeAuthIdentity, which could be an error
+"""
+union RemoveAuthIdentityPayload = ErrorPayload | RemoveAuthIdentitySuccess

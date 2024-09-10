@@ -5,6 +5,7 @@ import mode from 'parabol-client/utils/mode'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -136,15 +137,15 @@ const updateRetroMaxVotes = {
 
     // RESOLUTION
     await Promise.all([
-      r
-        .table('MeetingSettings')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({meetingType: 'retrospective'})
-        .update({
+      getKysely()
+        .updateTable('MeetingSettings')
+        .set({
           totalVotes,
           maxVotesPerGroup
         })
-        .run(),
+        .where('teamId', '=', teamId)
+        .where('meetingType', '=', 'retrospective')
+        .execute(),
       r
         .table('NewMeeting')
         .get(meetingId)

@@ -133,7 +133,6 @@ const AnalyticsPage = () => {
     configGA()
   }, [ReactGA.isInitialized, atmosphere.viewerId])
 
-  /* eslint-disable */
   const {href, pathname} = location
 
   useEffect(() => {
@@ -172,21 +171,24 @@ const AnalyticsPage = () => {
       const translated = !!document.querySelector(
         'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
       )
-      amplitude.track(
-        'Loaded a Page',
-        {
-          name: pageName,
-          referrer: document.referrer,
-          title,
-          path: pathname,
-          url: href,
-          translated,
-          search: location.search
-        },
-        {
-          user_id: atmosphere.viewerId
-        }
-      )
+      const userId = atmosphere.viewerId
+      if (!!userId) {
+        amplitude.track(
+          'Loaded a Page',
+          {
+            name: pageName,
+            referrer: document.referrer,
+            title,
+            path: pathname,
+            url: href,
+            translated,
+            search: location.search
+          },
+          {
+            user_id: userId
+          }
+        )
+      }
     }, TIME_TO_RENDER_TREE)
   }, [pathname, location.search, atmosphere.viewerId])
 

@@ -1,0 +1,9 @@
+type StripeFailPaymentPayload {
+  error: StandardMutationError
+  organization: Organization
+
+  """
+  The notification to a billing leader stating the payment was rejected
+  """
+  notification: NotifyPaymentRejected!
+}

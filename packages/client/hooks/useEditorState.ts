@@ -41,7 +41,9 @@ const useEditorState = (content?: string | null | undefined) => {
           editorStateKey,
           timeSinceLastRender: diff
         }
-        Sentry.captureException(new Error(`useEditorState fired in last ${minTime}ms. ${error}`))
+        Sentry.captureException(
+          new Error(`useEditorState fired in last ${minTime}ms. ${JSON.stringify(error)}`)
+        )
         isErrorSentToSentryRef.current = true
       }
       return

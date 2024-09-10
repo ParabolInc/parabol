@@ -1,5 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import SlackServerManager from '../../../utils/SlackServerManager'
@@ -88,17 +86,11 @@ const dailyPulse: QueryResolvers['dailyPulse'] = async (
   {after, email, channelId},
   {dataLoader}
 ) => {
-  const r = await getRethink()
   const user = await getUserByEmail(email)
   if (!user) throw new Error('Bad user')
   const {id: userId} = user
-  const slackAuth = await r
-    .table('SlackAuth')
-    .getAll(userId, {index: 'userId'})
-    .filter((row: RValue) => row('botAccessToken').default(null).ne(null))
-    .nth(0)
-    .default(null)
-    .run()
+  const slackAuths = await dataLoader.get('slackAuthByUserId').load(userId)
+  const slackAuth = slackAuths.find((auth) => auth.isActive && auth.botAccessToken)
   if (!slackAuth) throw new Error('No Slack Auth Found!')
   const {botAccessToken} = slackAuth
   const [rawSignups, rawLogins] = await Promise.all([

@@ -13,8 +13,12 @@ export const integrationProviderFields = () => ({
     resolve: ({id}: TIntegrationProvider) => IntegrationProviderId.join(id)
   },
   teamId: {
-    type: new GraphQLNonNull(GraphQLID),
-    description: 'The team that created the provider. "aGhostTeam" if global'
+    type: GraphQLID,
+    description: 'The team that belongs to the provider if team scoped'
+  },
+  orgId: {
+    type: GraphQLID,
+    description: 'The organization that belongs to the provider if org scoped'
   },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),

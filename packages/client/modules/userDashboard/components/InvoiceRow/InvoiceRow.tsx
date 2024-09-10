@@ -64,38 +64,21 @@ const InvoiceRow = (props: Props) => {
     graphql`
       fragment InvoiceRow_invoice on Invoice {
         id
-        amountDue
-        creditCard {
-          brand
-        }
-        endAt
-        nextPeriodCharges {
-          nextPeriodEnd
-        }
-        paidAt
+        periodEndAt
+        total
         payUrl
         status
       }
     `,
     invoiceRef
   )
-  const {
-    id: invoiceId,
-    amountDue,
-    creditCard,
-    endAt,
-    nextPeriodCharges,
-    paidAt,
-    payUrl,
-    status
-  } = invoice
-  const {nextPeriodEnd} = nextPeriodCharges
+  const {periodEndAt, total, payUrl, status} = invoice
   const isEstimate = status === 'UPCOMING'
 
   return (
     <Row>
       <a
-        href={payUrl || `/invoice/${invoiceId}`}
+        href={payUrl}
         target='_blank'
         rel='noopener noreferrer'
         className='flex w-full flex-row items-center justify-between text-slate-700 no-underline'
@@ -105,40 +88,26 @@ const InvoiceRow = (props: Props) => {
           <InfoRow>
             <InvoiceTitle>
               {status === 'UPCOMING'
-                ? `Due on ${makeDateString(endAt)}`
-                : `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`}
+                ? `Due on ${makeDateString(periodEndAt)}`
+                : `${makeDateString(periodEndAt)}`}
             </InvoiceTitle>
             <InfoRowRight>
               <InvoiceAmount>
                 {isEstimate && '*'}
-                {invoiceLineFormat(amountDue)}
+                {invoiceLineFormat(total)}
               </InvoiceAmount>
             </InfoRowRight>
           </InfoRow>
           <InfoRow>
             {status === 'UPCOMING' && (
-              <StyledDate styledToPay>
-                {isEstimate && '*Current estimate. '}
-                {creditCard
-                  ? `Card will be charged on ${makeDateString(endAt)}`
-                  : `Make sure to add billing info before ${makeDateString(endAt)}!`}
-              </StyledDate>
+              <StyledDate styledToPay>{isEstimate && '*Current estimate. '}</StyledDate>
             )}
-            {status === 'PAID' && (
-              <StyledDate styledPaid>
-                {'Paid on '}
-                {makeDateString(paidAt)}
-              </StyledDate>
-            )}
+            {status === 'PAID' && <StyledDate styledPaid>{'Paid'}</StyledDate>}
             {status !== 'PAID' && status !== 'UPCOMING' && (
               <StyledDate styledPaid={status === 'PENDING'}>
-                {payUrl ? (
-                  <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>
-                    {'PAY NOW'}
-                  </PayURL>
-                ) : (
-                  `Status: ${status}`
-                )}
+                <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>
+                  {'PAY NOW'}
+                </PayURL>
               </StyledDate>
             )}
           </InfoRow>

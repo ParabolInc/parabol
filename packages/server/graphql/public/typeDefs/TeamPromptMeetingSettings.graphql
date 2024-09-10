@@ -1,0 +1,26 @@
+"""
+The team prompt specific meeting settings
+"""
+type TeamPromptMeetingSettings implements TeamMeetingSettings {
+  id: ID!
+
+  """
+  The type of meeting these settings apply to
+  """
+  meetingType: MeetingTypeEnum!
+
+  """
+  The broad phase types that will be addressed during the meeting
+  """
+  phaseTypes: [NewMeetingPhaseTypeEnum!]!
+
+  """
+  FK
+  """
+  teamId: ID!
+
+  """
+  The team these settings belong to
+  """
+  team: Team!
+}

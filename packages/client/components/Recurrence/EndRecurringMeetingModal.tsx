@@ -86,7 +86,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     if (!isMeetingOnly) {
       UpdateRecurrenceSettingsMutation(
         atmosphere,
-        {meetingId, recurrenceSettings: {name: null, rrule: null}},
+        {meetingId, name: null, rrule: null},
         {onError, onCompleted}
       )
     } else {

@@ -11,6 +11,7 @@ import handleAddPokerTemplateScale from './handlers/handleAddPokerTemplateScale'
 graphql`
   fragment AddPokerTemplateScaleMutation_scale on AddPokerTemplateScalePayload {
     scale {
+      ...ScaleDropdownMenuItem_scale
       id
       name
       values {

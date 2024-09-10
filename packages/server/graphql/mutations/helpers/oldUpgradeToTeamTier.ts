@@ -1,5 +1,4 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {fromEpochSeconds} from '../../../utils/epochTime'
@@ -15,7 +14,6 @@ const oldUpgradeToTeamTier = async (
   email: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
 
@@ -23,12 +21,9 @@ const oldUpgradeToTeamTier = async (
   if (!organization) throw new Error('Bad orgId')
 
   const {stripeId, stripeSubscriptionId} = organization
-  const quantity = await r
-    .table('OrganizationUser')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({removedAt: null, inactive: false})
-    .count()
-    .run()
+  const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+  const quantity = activeOrgUsers.length
 
   const manager = getStripeManager()
   const customer = stripeId

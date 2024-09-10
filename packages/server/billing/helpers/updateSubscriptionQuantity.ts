@@ -1,4 +1,3 @@
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import RedisLockQueue from '../../utils/RedisLockQueue'
@@ -10,10 +9,10 @@ import {getStripeManager} from '../../utils/stripe'
  * @param logMismatch Pass true if a quantity mismatch should be logged
  */
 const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const manager = getStripeManager()
 
-  const org = await getKysely()
+  const org = await pg
     .selectFrom('Organization')
     .selectAll()
     .where('id', '=', orgId)
@@ -34,15 +33,17 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
       return
     }
 
-    const [orgUserCount, teamSubscription] = await Promise.all([
-      r
-        .table('OrganizationUser')
-        .getAll(orgId, {index: 'orgId'})
-        .filter({removedAt: null, inactive: false})
-        .count()
-        .run(),
-      await manager.getSubscriptionItem(stripeSubscriptionId)
+    const [orgUserCountRes, teamSubscription] = await Promise.all([
+      pg
+        .selectFrom('OrganizationUser')
+        .select(({fn}) => fn.count<number>('id').as('count'))
+        .where('orgId', '=', orgId)
+        .where('removedAt', 'is', null)
+        .where('inactive', '=', false)
+        .executeTakeFirstOrThrow(),
+      manager.getSubscriptionItem(stripeSubscriptionId)
     ])
+    const {count: orgUserCount} = orgUserCountRes
     if (
       teamSubscription &&
       teamSubscription.quantity !== undefined &&

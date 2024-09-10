@@ -12,12 +12,13 @@ env:
 jobs:
   test:
     runs-on: ubuntu-8cores
+    timeout-minutes: 30
     permissions:
       contents: "read"
       id-token: "write"
     services:
       postgres:
-        image: pgvector/pgvector:0.7.0-pg15
+        image: pgvector/pgvector:0.7.0-pg16
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
@@ -99,8 +100,8 @@ jobs:
       - name: Kysely Codegen
         run: yarn pg:generate
 
-      - name: Check Code Quality
-        run: yarn codecheck
+      - name: Typecheck
+        run: yarn typecheck
 
       - name: Run server tests
         run: yarn test:server -- --reporters=default --reporters=jest-junit

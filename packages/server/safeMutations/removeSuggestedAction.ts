@@ -1,14 +1,15 @@
-import getRethink from '../database/rethinkDriver'
-import {TSuggestedActionTypeEnum} from '../graphql/types/SuggestedActionTypeEnum'
+import {sql} from 'kysely'
+import getKysely from '../postgres/getKysely'
+import {SuggestedAction} from '../postgres/pg'
 
-const removeSuggestedAction = async (userId: string, type: TSuggestedActionTypeEnum) => {
-  const r = await getRethink()
-  return r
-    .table('SuggestedAction')
-    .getAll(userId, {index: 'userId'})
-    .filter({removedAt: null, type})
-    .update({removedAt: new Date()}, {returnChanges: true})('changes')(0)('new_val')('id')
-    .default(null)
-    .run()
+const removeSuggestedAction = async (userId: string, type: SuggestedAction['type']) => {
+  const removedAction = await getKysely()
+    .updateTable('SuggestedAction')
+    .set({removedAt: sql`CURRENT_TIMESTAMP`})
+    .where('userId', '=', userId)
+    .where('type', '=', type)
+    .returning('id')
+    .executeTakeFirst()
+  return removedAction?.id
 }
 export default removeSuggestedAction
