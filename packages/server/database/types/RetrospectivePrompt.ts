@@ -22,7 +22,7 @@ export default class RetrospectivePrompt {
   question: string
   removedAt: Date | null
   updatedAt = new Date()
-  parentPromptId?: string
+  parentPromptId?: string | null
 
   constructor(input: Input) {
     const {
@@ -43,6 +43,6 @@ export default class RetrospectivePrompt {
     this.description = description || ''
     this.groupColor = groupColor
     this.removedAt = removedAt
-    this.parentPromptId = parentPromptId
+    this.parentPromptId = parentPromptId || null
   }
 }
