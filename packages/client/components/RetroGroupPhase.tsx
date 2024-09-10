@@ -64,9 +64,7 @@ const RetroGroupPhase = (props: Props) => {
         }
         organization {
           tier
-          featureFlags {
-            suggestGroups
-          }
+          hasSuggestGroupsFlag: featureFlag(featureName: "suggestGroups")
         }
       }
     `,
@@ -83,8 +81,7 @@ const RetroGroupPhase = (props: Props) => {
     autogroupReflectionGroups,
     resetReflectionGroups
   } = meeting
-  const {featureFlags, tier} = organization
-  const {suggestGroups: hasSuggestGroupsFlag} = featureFlags
+  const {hasSuggestGroupsFlag, tier} = organization
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )

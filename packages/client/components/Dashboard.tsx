@@ -105,9 +105,7 @@ const Dashboard = (props: Props) => {
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
           overLimitCopy
-          featureFlags {
-            insights
-          }
+          insights: featureFlag(featureName: "insights")
           teams {
             activeMeetings {
               ...useSnacksForNewMeetings_meetings
@@ -119,8 +117,7 @@ const Dashboard = (props: Props) => {
     queryRef
   )
   const {viewer} = data
-  const {teams, featureFlags} = viewer
-  const {insights} = featureFlags
+  const {teams, insights} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)

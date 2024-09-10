@@ -43,9 +43,7 @@ const StandardHubUserMenu = (props: Props) => {
     graphql`
       fragment StandardHubUserMenu_viewer on User {
         email
-        featureFlags {
-          insights
-        }
+        insights: featureFlag(featureName: "insights")
         organizations {
           id
           billingTier
@@ -54,8 +52,7 @@ const StandardHubUserMenu = (props: Props) => {
     `,
     viewerRef
   )
-  const {email, featureFlags, organizations} = viewer
-  const {insights} = featureFlags
+  const {email, insights, organizations} = viewer
   const ownedFreeOrgs = organizations.filter((org) => org.billingTier === 'starter')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''

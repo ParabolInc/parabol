@@ -89,17 +89,14 @@ const TeamPromptMeeting = (props: Props) => {
           }
         }
         organization {
-          featureFlags {
-            singleColumnStandups
-          }
+          singleColumnStandups: featureFlag(featureName: "singleColumnStandups")
         }
       }
     `,
     meetingRef
   )
   const {phases, organization} = meeting
-  const {featureFlags} = organization
-  const {singleColumnStandups} = featureFlags
+  const {singleColumnStandups} = organization
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
