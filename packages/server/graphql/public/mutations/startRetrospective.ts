@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingSettingsRetrospective from '../../../database/types/MeetingSettingsRetrospective'
 import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
@@ -24,6 +23,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const DUPLICATE_THRESHOLD = 3000
@@ -39,9 +39,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingType: MeetingTypeEnum = 'retrospective'
   const [viewer, meetingSettings, meetingCount] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader
-      .get('meetingSettingsByType')
-      .load({teamId, meetingType}) as Promise<MeetingSettingsRetrospective>,
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
     dataLoader.get('meetingCount').load({teamId, meetingType})
   ])
 
@@ -49,11 +47,10 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     id: meetingSettingsId,
     totalVotes,
     maxVotesPerGroup,
-    selectedTemplateId,
     disableAnonymity,
     videoMeetingURL
-  } = meetingSettings
-
+  } = meetingSettings as typeof meetingSettings & {meetingType: 'retrospective'}
+  const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
   const meetingName = !name
     ? `Retro #${meetingCount + 1}`
     : rrule
@@ -107,13 +104,11 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       .run(),
     updateTeamByTeamId(updates, teamId),
     videoMeetingURL &&
-      r
-        .table('MeetingSettings')
-        .get(meetingSettingsId)
-        .update({
-          videoMeetingURL: null
-        })
-        .run()
+      pg
+        .updateTable('MeetingSettings')
+        .set({videoMeetingURL: null})
+        .where('id', '=', meetingSettingsId)
+        .execute()
   ])
   if (meetingSeries) {
     // meeting was modified if a new meeting series was created
@@ -133,7 +128,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     dataLoader
   })
   if (meetingSeries && gcalSeriesId) {
-    const pg = getKysely()
     await pg
       .updateTable('MeetingSeries')
       .set({gcalSeriesId})

@@ -1,7 +1,7 @@
 import {
-  GraphQLFloat,
   GraphQLID,
   GraphQLInputObjectType,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLString
@@ -16,7 +16,7 @@ const CreatePollInput = new GraphQLInputObjectType({
       description: 'Foreign key for the discussion this was created in'
     },
     threadSortOrder: {
-      type: new GraphQLNonNull(GraphQLFloat),
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The order of this threadable'
     },
     title: {

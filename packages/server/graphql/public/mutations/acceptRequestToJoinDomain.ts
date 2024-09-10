@@ -106,7 +106,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
           email,
           openDrawer: 'manageTeam'
         })
-        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true}))
+        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
         .execute()
     ])
 

@@ -1,7 +1,6 @@
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
-import RetrospectiveMeetingSettings from '../../../server/database/types/MeetingSettingsRetrospective'
 import ITask from '../../../server/database/types/Task'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
@@ -35,7 +34,7 @@ type IRetrospectiveMeeting = Omit<
   votesRemaining: number
 }
 
-type IRetrospectiveMeetingSettings = RetrospectiveMeetingSettings & {
+type IRetrospectiveMeetingSettings = {
   team: any
 }
 
@@ -528,6 +527,7 @@ const initNewMeeting = (
     votesRemaining: teamMembers.length * 5,
     phases: initPhases() as any[],
     summarySentAt: null,
+    summary: `The team are feeling the strain of too many meetings and over-packed sprints, which is stifling creativity, especially for the interns and junior staff. Clarifying processes, reducing unproductive group chats, and giving everyone more space to share ideas should help.`,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
     teamId: demoTeamId

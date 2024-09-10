@@ -26,6 +26,7 @@ import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import StyledError from '../StyledError'
+import StyledLink from '../StyledLink'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
 
 interface Props {
@@ -102,7 +103,7 @@ const ActivityDetailsSidebar = (props: Props) => {
     () =>
       availableTeams.find((team) => team.id === preferredTeamId) ??
       templateTeam ??
-      sortByTier(availableTeams)[0]!
+      sortByTier(availableTeams)[0]
   )
 
   const onSelectTeam = (teamId: string) => {
@@ -113,6 +114,15 @@ const ActivityDetailsSidebar = (props: Props) => {
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
   const history = useHistory()
+
+  // user has no teams
+  if (!selectedTeam)
+    return (
+      <div className='flex w-full flex-col items-center border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:right-0 lg:top-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
+        <div className='self-center italic'>You have no teams to start a meeting with!</div>
+        <StyledLink to='/newteam'>Create a team</StyledLink>
+      </div>
+    )
 
   const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
     if (submitting) return

@@ -49,12 +49,6 @@ const handleGraphQLTrebuchetRequest = async (
           ip,
           carrier
         })
-        if (result.errors?.[0]) {
-          const [firstError] = result.errors
-          const safeError = new Error(firstError.message)
-          safeError.stack = firstError.stack
-          sendToSentry(safeError)
-        }
         const safeResult = sanitizeGraphQLErrors(result)
         // TODO if multiple results, send GQL_DATA for all but the last
         const messageType = result.data ? 'complete' : 'error'

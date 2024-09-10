@@ -37,8 +37,8 @@ export default {
       removeSlackAuths(viewerId, teamId, true),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
-    if (res.error) {
-      return standardError(res.error, {userId: viewerId})
+    if (!res.authIds) {
+      return {error: {message: res.error}}
     }
     const authId = res.authIds[0]
 

@@ -305,26 +305,6 @@ type Mutation {
   ): Boolean
 
   """
-  When a new invoiceitem is sent from stripe, tag it with metadata
-  """
-  stripeUpdateInvoiceItem(
-    """
-    The stripe invoice ID
-    """
-    invoiceItemId: ID!
-  ): Boolean
-
-  """
-  An invice has been sent from stripe, meaning it is finalized
-  """
-  stripeInvoiceFinalized(
-    """
-    The stripe invoice ID
-    """
-    invoiceId: ID!
-  ): Boolean
-
-  """
   add/remove user(s) to/from the watchlist so that we start/stop recording their sessions
   """
   updateWatchlist(

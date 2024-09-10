@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
-import {ServiceEnumType} from 'parabol-server/graphql/types/ServiceEnum'
 import React, {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
+import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
@@ -38,7 +38,7 @@ interface Props {
   queryString: string
   meetingId: string
   linkedRecordName: string
-  service: ServiceEnumType
+  service: TaskServiceEnum
   defaultInput?: string
 }
 

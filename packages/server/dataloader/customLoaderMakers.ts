@@ -2,15 +2,13 @@ import DataLoader from 'dataloader'
 import tracer from 'dd-trace'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
-import getRethink, {RethinkSchema} from '../database/rethinkDriver'
+import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
-import MeetingSettingsTeamPrompt from '../database/types/MeetingSettingsTeamPrompt'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import {Reactable, ReactableEnum} from '../database/types/Reactable'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
+import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
-import {TeamSource} from '../graphql/public/types/Team'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
@@ -27,7 +25,8 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {OrganizationUser} from '../postgres/types'
+import {selectMeetingSettings, selectTeams} from '../postgres/select'
+import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -36,7 +35,6 @@ import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
-import {selectTeams} from './primaryKeyLoaderMakers'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -49,26 +47,20 @@ export interface MeetingTemplateKey {
 }
 
 export interface ReactablesKey {
-  id: string
+  id: string | number
   type: ReactableEnum
 }
 
 export interface UserTasksKey {
   first: number
-  after?: Date
+  after?: Date | null
   userIds: string[]
   teamIds: string[]
   archived?: boolean
-  statusFilters: TaskStatusEnum[]
-  filterQuery?: string
+  statusFilters?: TaskStatusEnum[] | null
+  filterQuery?: string | null
   includeUnassigned?: boolean
 }
-
-const reactableLoaders = [
-  {type: 'COMMENT', loader: 'comments'},
-  {type: 'REFLECTION', loader: 'retroReflections'},
-  {type: 'RESPONSE', loader: 'teamPromptResponses'}
-] as const
 
 export const serializeUserTasksKey = (key: UserTasksKey) => {
   const {userIds, teamIds, first, after, archived, statusFilters, filterQuery} = key
@@ -91,31 +83,21 @@ export const commentCountByDiscussionId = (
   dependsOn('comments')
   return new DataLoader<string, number, string>(
     async (discussionIds) => {
-      const r = await getRethink()
-      const groups = (await (
-        r
-          .table('Comment')
-          .getAll(r.args(discussionIds as string[]), {index: 'discussionId'})
-          .filter((row: RDatum) =>
-            row('isActive').eq(true).and(row('createdBy').ne(PARABOL_AI_USER_ID))
-          )
-          .group('discussionId') as any
+      const commentsByDiscussionId = await Promise.all(
+        discussionIds.map((discussionId) => parent.get('commentsByDiscussionId').load(discussionId))
       )
-        .count()
-        .ungroup()
-        .run()) as {group: string; reduction: number}[]
-      const lookup: Record<string, number> = {}
-      groups.forEach(({group, reduction}) => {
-        lookup[group] = reduction
+      return commentsByDiscussionId.map((commentArr) => {
+        const activeHumanComments = commentArr.filter(
+          (comment) => comment.isActive && comment.createdBy !== PARABOL_AI_USER_ID
+        )
+        return activeHumanComments.length
       })
-      return discussionIds.map((discussionId) => lookup[discussionId] || 0)
     },
     {
       ...parent.dataLoaderOptions
     }
   )
 }
-
 export const latestTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
     async (taskIds) => {
@@ -142,28 +124,6 @@ export const meetingTaskEstimates = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.meetingId}:${key.taskId}`
-    }
-  )
-}
-
-export const reactables = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn(reactableLoaders.map((a) => a.loader))
-  return new DataLoader<ReactablesKey, Reactable, string>(
-    async (keys) => {
-      const reactableResults = (await Promise.all(
-        reactableLoaders.map(async (val) => {
-          const ids = keys.filter((key) => key.type === val.type).map(({id}) => id)
-          return parent.get(val.loader).loadMany(ids)
-        })
-      )) as Reactable[][]
-      const reactables = reactableResults.flat()
-      const keyIds = keys.map(({id}) => id)
-      const ret = normalizeResults(keyIds, reactables)
-      return ret
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.id}:${key.type}`
     }
   )
 }
@@ -317,35 +277,21 @@ export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
 
 export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingSettings')
-  return new DataLoader<MeetingSettingsKey, RethinkSchema['MeetingSettings']['type'], string>(
+  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
     async (keys) => {
-      const r = await getRethink()
-      const types = {} as Record<MeetingTypeEnum, string[]>
-      keys.forEach((key) => {
-        const {meetingType} = key
-        types[meetingType] = types[meetingType] || []
-        types[meetingType]!.push(key.teamId)
-      })
-      const entries = Object.entries(types) as [MeetingTypeEnum, string[]][]
-      const resultsByType = await Promise.all(
-        entries.map((entry) => {
-          const [meetingType, teamIds] = entry
-          return r
-            .table('MeetingSettings')
-            .getAll(r.args(teamIds), {index: 'teamId'})
-            .filter({meetingType: meetingType})
-            .run()
-        })
+      const res = await selectMeetingSettings()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'meetingType'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.meetingType))
+          )
+        )
+        .execute()
+      return keys.map(
+        (key) =>
+          res.find((doc) => doc.teamId === key.teamId && doc.meetingType === key.meetingType)!
       )
-      const docs = resultsByType.flat()
-      return keys.map((key) => {
-        const {teamId, meetingType} = key
-        // until we decide the final shape of the team prompt settings, let's return a temporary hardcoded value
-        if (meetingType === 'teamPrompt') {
-          return new MeetingSettingsTeamPrompt({teamId})
-        }
-        return docs.find((doc) => doc.teamId === teamId && doc.meetingType === meetingType)!
-      })
     },
     {
       ...parent.dataLoaderOptions,
@@ -779,7 +725,7 @@ export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDepends
 
 export const autoJoinTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('teams')
-  return new DataLoader<string, TeamSource[], string>(
+  return new DataLoader<string, Team[], string>(
     async (orgIds) => {
       const verificationResults = await parent.get('isOrgVerified').loadMany(orgIds)
       const verifiedOrgIds = orgIds.filter((_, index) => verificationResults[index])
@@ -873,7 +819,7 @@ export const fileStoreAsset = (parent: RootDataLoader) => {
 }
 
 export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('selectTeams')
+  dependsOn('newMeetings')
   return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
     async (keys) => {
       const r = await getRethink()

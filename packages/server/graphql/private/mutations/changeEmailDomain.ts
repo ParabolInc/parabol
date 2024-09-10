@@ -1,6 +1,4 @@
 import {sql} from 'kysely'
-import {r} from 'rethinkdb-ts'
-import {RDatum, RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
 import {MutationResolvers} from '../../private/resolverTypes'
@@ -81,24 +79,7 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
       })
       .where('id', 'in', userIdsToUpdate)
       .returning('id')
-      .execute(),
-    r
-      .table('Invoice')
-      .filter((row: RDatum) =>
-        row('billingLeaderEmails').contains((email: RValue) =>
-          email.split('@').nth(1).eq(normalizedOldDomain)
-        )
-      )
-      .update((row: RDatum) => ({
-        billingLeaderEmails: row('billingLeaderEmails').map((email: RValue) =>
-          r.branch(
-            email.split('@').nth(1).eq(normalizedOldDomain),
-            email.split('@').nth(0).add(`@${normalizedNewDomain}`),
-            email
-          )
-        )
-      }))
-      .run()
+      .execute()
   ])
 
   const usersUpdatedIds = updatedUserRes.map(({id}) => id)

@@ -63,7 +63,7 @@ type User {
     The id of the organization
     """
     orgId: ID!
-  ): InvoiceConnection
+  ): InvoiceConnection!
 
   """
   true if the user is a billing leader on any organization, else false
@@ -207,16 +207,6 @@ type User {
   ): NewMeeting
 
   """
-  A previous meeting that the user was in (present or absent)
-  """
-  newMeeting(
-    """
-    The meeting ID
-    """
-    meetingId: ID!
-  ): NewMeeting
-
-  """
   all the notifications for a single user
   """
   notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
@@ -289,7 +279,7 @@ type User {
     """
     a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.
     """
-    userIds: [ID]
+    userIds: [ID!]
 
     """
     a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
@@ -407,12 +397,6 @@ type User {
   Any super power given to the user via a super user
   """
   featureFlags: UserFeatureFlags!
-  invoiceDetails(
-    """
-    The id of the invoice
-    """
-    invoiceId: ID!
-  ): Invoice
 
   """
   url of user’s profile picture

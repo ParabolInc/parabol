@@ -1,7 +1,7 @@
-import Comment from 'parabol-server/database/types/Comment'
 import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
 import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
+import {Comment} from '../../server/postgres/types'
 import {inferLanguage} from '../inferLanguage'
 import {ISO6391} from '../iso6393To1'
 
@@ -154,7 +154,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
       }) as Comment[]
 
     const filteredComments = sortedComments.filter(
-      (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy)
+      (c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!)
     )
     if (filteredComments.length) {
       markdown += `Further discussion was made:\n`

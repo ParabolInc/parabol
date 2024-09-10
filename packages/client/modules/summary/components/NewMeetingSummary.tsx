@@ -26,7 +26,7 @@ const query = graphql`
     ...DashTopBar_query
     viewer {
       ...DashSidebar_viewer
-      newMeeting(meetingId: $meetingId) {
+      meeting(meetingId: $meetingId) {
         ...MeetingSummaryEmail_meeting
         ...MeetingLockedOverlay_meeting
         id
@@ -49,7 +49,7 @@ const NewMeetingSummary = (props: Props) => {
   const {urlAction, queryRef} = props
   const data = usePreloadedQuery<NewMeetingSummaryQuery>(query, queryRef)
   const {viewer} = data
-  const {newMeeting, teams} = viewer
+  const {meeting: newMeeting, teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {history} = useRouter()
   useEffect(() => {
@@ -60,7 +60,7 @@ const NewMeetingSummary = (props: Props) => {
   if (!newMeeting) {
     return null
   }
-  // eslint-disable react-hooks/rules-of-hooks -- return above violates these rules, but is just a safeguard and not normal usage
+  /* eslint-disable react-hooks/rules-of-hooks */
   const {id: meetingId, name: meetingName, team} = newMeeting
   const {id: teamId, name: teamName} = team
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`

@@ -11,7 +11,7 @@ type Props = {
   closeModal: () => void
 }
 
-const UserAvatarInput = (props: Props) => {
+const ArchiveAllDoneTasksModal = (props: Props) => {
   const {closeModal, taskIds} = props
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -54,4 +54,4 @@ const UserAvatarInput = (props: Props) => {
   )
 }
 
-export default UserAvatarInput
+export default ArchiveAllDoneTasksModal

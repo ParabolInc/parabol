@@ -54,10 +54,6 @@ const DashNavList = (props: Props) => {
 
   const teams = organizations.flatMap((org) => org.viewerTeams)
 
-  if (teams?.length === 0) {
-    return <EmptyTeams>{'It appears you are not a member of any team!'}</EmptyTeams>
-  }
-
   return (
     <div className='w-full p-3 pt-4 pb-0'>
       {sortedOrgs.map((org) => (
@@ -83,6 +79,9 @@ const DashNavList = (props: Props) => {
           <DashNavListTeams onClick={onClick} organizationRef={org} />
         </div>
       ))}
+      {teams?.length === 0 && (
+        <EmptyTeams>{'It appears you are not a member of any team!'}</EmptyTeams>
+      )}
     </div>
   )
 }

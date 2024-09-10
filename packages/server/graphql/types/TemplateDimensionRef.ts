@@ -3,6 +3,13 @@ import TemplateDimensionRefId from '../../../client/shared/gqlIds/TemplateDimens
 import {GQLContext} from '../graphql'
 import TemplateScaleRef from './TemplateScaleRef'
 
+export interface TemplateDimensionRefSource {
+  name: string
+  scaleRefId: string
+  dimensionRefIdx: number
+  meetingId: string
+}
+
 const TemplateDimensionRef = new GraphQLObjectType<any, GQLContext>({
   name: 'TemplateDimensionRef',
   description: 'An immutable TemplateDimension',

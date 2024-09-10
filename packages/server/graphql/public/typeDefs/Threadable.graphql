@@ -8,11 +8,6 @@ interface Threadable {
   id: ID!
 
   """
-  The rich text body of the item
-  """
-  content: String!
-
-  """
   The timestamp the item was created
   """
   createdAt: DateTime!
@@ -45,7 +40,7 @@ interface Threadable {
   """
   the order of this threadable, relative to threadParentId
   """
-  threadSortOrder: Float
+  threadSortOrder: Int
 
   """
   The timestamp the item was updated

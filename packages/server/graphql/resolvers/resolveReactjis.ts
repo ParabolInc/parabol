@@ -1,10 +1,10 @@
-import Reactji from '../../database/types/Reactji'
+import {ReactjiDB} from '../../postgres/types'
 import {getUserId} from '../../utils/authorization'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
 import {GQLContext} from './../graphql'
 
 const resolveReactjis = (
-  {reactjis, id}: {reactjis: Reactji[]; id: string},
+  {reactjis, id}: {reactjis: ReactjiDB[]; id: string},
   _args: unknown,
   {authToken}: GQLContext
 ) => {

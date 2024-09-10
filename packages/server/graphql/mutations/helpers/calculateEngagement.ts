@@ -1,7 +1,6 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import EstimatePhase from '../../../database/types/EstimatePhase'
 import Meeting from '../../../database/types/Meeting'
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -57,7 +56,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
 
   // Team prompt responses
   if (getPhase(phases, 'RESPONSES')) {
-    const responses = await getTeamPromptResponsesByMeetingId(meetingId)
+    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
     responses.forEach(({userId, reactjis}) => {
       passiveMembers.delete(userId)
       reactjis.forEach(({userId}) => {
@@ -89,7 +88,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   ])
   const threadables = [...discussions.flat(), ...tasks.flat()]
   threadables.forEach(({createdBy}) => {
-    passiveMembers.delete(createdBy)
+    createdBy && passiveMembers.delete(createdBy)
   })
 
   discussions.forEach((comments) => {

@@ -1,3 +1,4 @@
+import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import React, {ReactNode} from 'react'
 import {DECELERATE} from '../../styles/animation'
@@ -5,16 +6,16 @@ import {modalShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius, ZIndex} from '../../types/constEnums'
 
-const animateIn = {
-  '0%': {
-    opacity: '0',
-    transform: 'translate3d(0, -50px, 0)'
-  },
-  '100%': {
-    opacity: '1',
-    transform: 'translate3d(0, 0, 0)'
+export const animateIn = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -50px, 0);
   }
-}
+	100% {
+	  opacity: 1;
+	  transform: translate3d(0, 0, 0);
+	}
+`
 
 const Backdrop = styled('div')({
   alignItems: 'center',
@@ -34,7 +35,7 @@ const Backdrop = styled('div')({
 
 const Modal = styled('div')({
   animationIterationCount: 1,
-  animation: `${animateIn} 200ms ${DECELERATE}`,
+  animation: `${animateIn.toString()} 200ms ${DECELERATE}`,
   background: '#FFFFFF',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,

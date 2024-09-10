@@ -55,7 +55,6 @@ const AgendaListAndInput = (props: Props) => {
         agendaItems {
           id
           content
-          sortOrder
           ...AgendaList_agendaItems
         }
       }

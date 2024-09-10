@@ -1,7 +1,19 @@
 import getKysely from '../postgres/getKysely'
-import {selectTemplateDimension, selectTemplateScale} from '../postgres/select'
+import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {
+  selectAgendaItems,
+  selectComments,
+  selectOrganizations,
+  selectRetroReflections,
+  selectSlackAuths,
+  selectSlackNotifications,
+  selectSuggestedAction,
+  selectTeams,
+  selectTemplateDimension,
+  selectTemplateScale,
+  selectTimelineEvent
+} from '../postgres/select'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
-import {selectOrganizations, selectRetroReflections, selectTeams} from './primaryKeyLoaderMakers'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
   selectTeams().where('orgId', 'in', orgIds).where('isArchived', '=', false).execute()
@@ -82,10 +94,7 @@ export const timelineEventsByMeetingId = foreignKeyLoaderMaker(
   'timelineEvents',
   'meetingId',
   async (meetingIds) => {
-    const pg = getKysely()
-    return pg
-      .selectFrom('TimelineEvent')
-      .selectAll()
+    return selectTimelineEvent()
       .where('meetingId', 'in', meetingIds)
       .where('isActive', '=', true)
       .execute()
@@ -149,5 +158,60 @@ export const templateDimensionsByScaleId = foreignKeyLoaderMaker(
   'scaleId',
   async (scaleIds) => {
     return selectTemplateDimension().where('scaleId', 'in', scaleIds).orderBy('sortOrder').execute()
+  }
+)
+
+export const suggestedActionsByUserId = foreignKeyLoaderMaker(
+  'suggestedActions',
+  'userId',
+  async (userIds) => {
+    return selectSuggestedAction().where('userId', 'in', userIds).execute()
+  }
+)
+
+export const teamPromptResponsesByMeetingId = foreignKeyLoaderMaker(
+  'teamPromptResponses',
+  'meetingId',
+  getTeamPromptResponsesByMeetingIds
+)
+
+export const agendaItemsByTeamId = foreignKeyLoaderMaker(
+  'agendaItems',
+  'teamId',
+  async (teamIds) => {
+    return selectAgendaItems()
+      .where('teamId', 'in', teamIds)
+      .where('isActive', '=', true)
+      .orderBy('sortOrder')
+      .execute()
+  }
+)
+
+export const agendaItemsByMeetingId = foreignKeyLoaderMaker(
+  'agendaItems',
+  'meetingId',
+  async (meetingIds) => {
+    return selectAgendaItems().where('meetingId', 'in', meetingIds).orderBy('sortOrder').execute()
+  }
+)
+
+export const slackAuthByUserId = foreignKeyLoaderMaker('slackAuths', 'userId', async (userIds) => {
+  return selectSlackAuths().where('userId', 'in', userIds).execute()
+})
+
+export const slackNotificationsByTeamId = foreignKeyLoaderMaker(
+  'slackNotifications',
+  'teamId',
+  async (teamIds) => {
+    return selectSlackNotifications().where('teamId', 'in', teamIds).execute()
+  }
+)
+
+export const commentsByDiscussionId = foreignKeyLoaderMaker(
+  'comments',
+  'discussionId',
+  async (discussionIds) => {
+    // include deleted comments so we can replace them with tombstones
+    return selectComments().where('discussionId', 'in', discussionIds).execute()
   }
 )

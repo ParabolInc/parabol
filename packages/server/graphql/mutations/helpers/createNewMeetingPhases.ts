@@ -21,10 +21,9 @@ import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import ReflectPhase from '../../../database/types/ReflectPhase'
 import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
 import TeamHealthStage from '../../../database/types/TeamHealthStage'
-import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import insertDiscussions from '../../../postgres/queries/insertDiscussions'
+import getKysely from '../../../postgres/getKysely'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 import {DataLoaderWorker} from '../../graphql'
@@ -78,6 +77,7 @@ const createNewMeetingPhases = async (
   meetingType: MeetingTypeEnum,
   dataLoader: DataLoaderWorker
 ) => {
+  const pg = getKysely()
   const [meetingSettings, stageDurations, team] = await Promise.all([
     dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
     getPastStageDurations(teamId),
@@ -109,17 +109,22 @@ const createNewMeetingPhases = async (
         case DISCUSS:
           const discussPhase = new DiscussPhase(durations)
           const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
-          asyncSideEffects.push(
-            insertDiscussions(
-              discussStages.map((stage) => ({
-                id: stage.discussionId,
-                teamId,
-                meetingId,
-                discussionTopicId: stage.reflectionGroupId,
-                discussionTopicType: 'reflectionGroup' as const
-              }))
+          if (discussStages.length > 0) {
+            asyncSideEffects.push(
+              pg
+                .insertInto('Discussion')
+                .values(
+                  discussStages.map((stage) => ({
+                    id: stage.discussionId,
+                    teamId,
+                    meetingId,
+                    discussionTopicId: stage.reflectionGroupId,
+                    discussionTopicType: 'reflectionGroup'
+                  }))
+                )
+                .execute()
             )
-          )
+          }
           return discussPhase
         case UPDATES:
           return new UpdatesPhase({durations, stages: [new UpdatesStage(facilitatorTeamMemberId)]})
@@ -128,14 +133,22 @@ const createNewMeetingPhases = async (
           const agendaItemIds = agendaItems.map(({id}) => id)
           const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
           const {stages} = agendaItemPhase
-          const discussions = stages.map((stage) => ({
-            id: stage.discussionId,
-            teamId,
-            meetingId,
-            discussionTopicId: stage.agendaItemId,
-            discussionTopicType: 'agendaItem' as const
-          }))
-          asyncSideEffects.push(insertDiscussions(discussions))
+          if (stages.length > 0) {
+            asyncSideEffects.push(
+              pg
+                .insertInto('Discussion')
+                .values(
+                  stages.map((stage) => ({
+                    id: stage.discussionId,
+                    teamId,
+                    meetingId,
+                    discussionTopicId: stage.agendaItemId,
+                    discussionTopicType: 'agendaItem'
+                  }))
+                )
+                .execute()
+            )
+          }
           return agendaItemPhase
         case 'ESTIMATE':
           return new EstimatePhase()
@@ -145,20 +158,6 @@ const createNewMeetingPhases = async (
         case LAST_CALL:
         case 'SCOPE':
           return new GenericMeetingPhase(phaseType, durations)
-        case 'RESPONSES':
-          const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-          const teamMemberIds = teamMembers.map(({id}) => id)
-          const teamPromptResponsesPhase = new TeamPromptResponsesPhase(teamMemberIds)
-          const {stages: teamPromptStages} = teamPromptResponsesPhase
-          const teamMemberResponseDiscussion = teamPromptStages.map((stage) => ({
-            id: stage.discussionId,
-            teamId,
-            meetingId,
-            discussionTopicId: stage.teamMemberId,
-            discussionTopicType: 'teamPromptResponse' as const
-          }))
-          asyncSideEffects.push(insertDiscussions(teamMemberResponseDiscussion))
-          return teamPromptResponsesPhase
         default:
           throw new Error(`Unhandled phaseType: ${phaseType}`)
       }

@@ -67,7 +67,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     dataLoader.get('meetingMembersByUserId').load(userIdToDelete)
   ])
   const teamIds = teamMembers.map(({teamId}) => teamId)
-  const teamMemberIds = teamMembers.map(({id}) => id)
   const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
 
   const discussions = await pg.query(`SELECT "id" FROM "Discussion" WHERE "teamId" = ANY ($1);`, [
@@ -76,7 +75,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const teamDiscussionIds = discussions.rows.map(({id}) => id)
 
   // soft delete first for side effects
-  const tombstoneId = await softDeleteUser(userIdToDelete, dataLoader)
+  await softDeleteUser(userIdToDelete, dataLoader)
 
   // all other writes
   await setFacilitatedUserIdOrDelete(userIdToDelete, teamIds, dataLoader)
@@ -89,22 +88,12 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .run(),
     meetingMember: r.table('MeetingMember').getAll(userIdToDelete, {index: 'userId'}).delete(),
     notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete(),
-    suggestedAction: r.table('SuggestedAction').getAll(userIdToDelete, {index: 'userId'}).delete(),
     createdTasks: r
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .delete(),
-    agendaItem: r
-      .table('AgendaItem')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => r(teamMemberIds).contains(row('teamMemberId')))
-      .delete(),
     pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
-    slackNotification: r
-      .table('SlackNotification')
-      .getAll(userIdToDelete, {index: 'userId'})
-      .delete(),
     invitedByTeamInvitation: r
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
@@ -114,15 +103,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('acceptedBy').eq(userIdToDelete))
-      .update({acceptedBy: ''}),
-    comment: r
-      .table('Comment')
-      .getAll(r.args(teamDiscussionIds), {index: 'discussionId'})
-      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .update({
-        createdBy: tombstoneId,
-        isAnonymous: true
-      })
+      .update({acceptedBy: ''})
   }).run()
 
   // now postgres, after FKs are added then triggers should take care of children

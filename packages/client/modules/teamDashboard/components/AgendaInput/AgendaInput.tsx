@@ -12,11 +12,11 @@ import useHotkey from '../../../../hooks/useHotkey'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useTooltip from '../../../../hooks/useTooltip'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
+import {positionAfter} from '../../../../shared/sortOrder'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
 import {PALETTE} from '../../../../styles/paletteV3'
 import ui from '../../../../styles/ui'
-import getNextSortOrder from '../../../../utils/getNextSortOrder'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 
 const AgendaInputBlock = styled('div')({
@@ -123,7 +123,7 @@ const AgendaInput = (props: Props) => {
     const newAgendaItem = {
       content,
       pinned: false,
-      sortOrder: getNextSortOrder(agendaItems),
+      sortOrder: positionAfter(agendaItems.at(-1)?.sortOrder ?? ''),
       teamId,
       teamMemberId: toTeamMemberId(teamId, atmosphere.viewerId)
     }

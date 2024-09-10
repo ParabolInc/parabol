@@ -67,9 +67,7 @@ test.describe('retrospective-demo / group page', () => {
 
     // Then it auto-generates a header
     await expect(
-      page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Documenting things in"]`
-      )
+      page.locator(`[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things"]`)
     ).toBeVisible()
 
     // Then it shows all cards when clicking the group
@@ -106,7 +104,9 @@ test.describe('retrospective-demo / group page', () => {
     await page.type(stopTextbox, 'Making decisions in one-on-one meetings')
     await page.press(stopTextbox, 'Enter')
     await expect(
-      page.locator('[data-cy="reflection-column-Stop"] :text("Making decisions in one-on-one meetings")')
+      page.locator(
+        '[data-cy="reflection-column-Stop"] :text("Making decisions in one-on-one meetings")'
+      )
     ).toBeVisible()
 
     await goToNextPhase(page)
@@ -119,7 +119,7 @@ test.describe('retrospective-demo / group page', () => {
     // Then it auto-generates a header
     await expect(
       page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Documenting things in"]`
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things Notion"]`
       )
     ).toBeVisible()
 

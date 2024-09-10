@@ -15,50 +15,6 @@ export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
       .run()
   }
 )
-
-export const agendaItemsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'agendaItems',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('AgendaItem')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isActive: true})
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
-export const agendaItemsByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'agendaItems',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r
-      .table('AgendaItem')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
-export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
-  'comments',
-  'discussionId',
-  async (discussionIds) => {
-    const r = await getRethink()
-    return (
-      r
-        .table('Comment')
-        .getAll(r.args(discussionIds), {index: 'discussionId'})
-        // include deleted comments so we can replace them with tombstones
-        // .filter({isActive: true})
-        .run()
-    )
-  }
-)
-
 export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   'newMeetings',
   'teamId',
@@ -113,37 +69,6 @@ export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
   async (userIds) => {
     const r = await getRethink()
     return r.table('MeetingMember').getAll(r.args(userIds), {index: 'userId'}).run()
-  }
-)
-
-export const slackAuthByUserId = new RethinkForeignKeyLoaderMaker(
-  'slackAuths',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r.table('SlackAuth').getAll(r.args(userIds), {index: 'userId'}).run()
-  }
-)
-
-export const slackNotificationsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'slackNotifications',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r.table('SlackNotification').getAll(r.args(teamIds), {index: 'teamId'}).run()
-  }
-)
-
-export const suggestedActionsByUserId = new RethinkForeignKeyLoaderMaker(
-  'suggestedActions',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r
-      .table('SuggestedAction')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter({removedAt: null})
-      .run()
   }
 )
 

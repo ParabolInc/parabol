@@ -29,18 +29,16 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
   cloudProvider: async (_source, _args, {dataLoader}) => {
     const [globalProvider] = await dataLoader
       .get('sharedIntegrationProviders')
-      .load({service: 'gitlab', orgTeamIds: ['aGhostTeam'], teamIds: []})
+      .load({service: 'gitlab', orgIds: [], teamIds: []})
     return globalProvider!
   },
 
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    const orgTeams = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const orgTeamIds = orgTeams.map(({id}) => id)
     return dataLoader
       .get('sharedIntegrationProviders')
-      .load({service: 'gitlab', orgTeamIds, teamIds: [teamId]})
+      .load({service: 'gitlab', orgIds: [orgId], teamIds: [teamId]})
   },
 
   gitlabSearchQueries: async () => [],
