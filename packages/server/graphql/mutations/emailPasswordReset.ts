@@ -3,9 +3,8 @@ import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
+import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
@@ -31,26 +30,33 @@ const emailPasswordReset = {
         return {error: {message: 'Resetting password is disabled'}}
       }
       const email = denormEmail.toLowerCase().trim()
-      const r = await getRethink()
 
       // we only wanna send like 2 emails/min or 5 per day to the same person
       const yesterday = new Date(Date.now() - ms('1d'))
       const user = await getUserByEmail(email)
-      const {failOnAccount, failOnTime} = await r({
-        failOnAccount: r
-          .table('PasswordResetRequest')
-          .getAll(ip, {index: 'ip'})
-          .filter({email})
-          .filter((row: RDatum) => row('time').ge(yesterday))
-          .count()
-          .ge(Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS) as unknown as boolean,
-        failOnTime: r
-          .table('PasswordResetRequest')
-          .getAll(ip, {index: 'ip'})
-          .filter((row: RDatum) => row('time').ge(yesterday))
-          .count()
-          .ge(Threshold.MAX_DAILY_PASSWORD_RESETS) as unknown as boolean
-      }).run()
+      const pg = getKysely()
+      const {failOnAccount, failOnTime} = await pg
+        .with('FailOnAccount', (qb) =>
+          qb
+            .selectFrom('PasswordResetRequest')
+            .where('ip', '=', ip)
+            .where('email', '=', email)
+            .where('time', '>=', yesterday)
+            .select(({eb, fn}) =>
+              eb(fn.count('id'), '>=', Threshold.MAX_ACCOUNT_DAILY_PASSWORD_RESETS).as(
+                'failOnAccount'
+              )
+            )
+        )
+        .selectFrom(['FailOnAccount', 'PasswordResetRequest'])
+        .where('ip', '=', ip)
+        .where('time', '>=', yesterday)
+        .select(({eb, fn}) => [
+          'FailOnAccount.failOnAccount',
+          eb(fn.count('id'), '>=', Threshold.MAX_DAILY_PASSWORD_RESETS).as('failOnTime')
+        ])
+        .executeTakeFirstOrThrow()
+
       if (failOnAccount || failOnTime) {
         return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
       }
