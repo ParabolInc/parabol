@@ -217,8 +217,8 @@ export const commentsByDiscussionId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgreflectPromptsByTemplateId = foreignKeyLoaderMaker(
-  '_pgreflectPrompts',
+export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
+  'reflectPrompts',
   'templateId',
   async (templateIds) => {
     return selectReflectPrompts()

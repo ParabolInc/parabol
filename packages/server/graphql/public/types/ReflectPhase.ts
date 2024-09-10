@@ -5,7 +5,7 @@ const ReflectPhase: ReflectPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'reflect',
   focusedPrompt: ({focusedPromptId}, _args, {dataLoader}) => {
     if (!focusedPromptId) return null
-    return dataLoader.get('reflectPrompts').load(focusedPromptId)
+    return dataLoader.get('reflectPrompts').loadNonNull(focusedPromptId)
   },
 
   reflectPrompts: async ({meetingId}, _args, {dataLoader}) => {
