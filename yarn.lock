@@ -17204,22 +17204,10 @@ openapi-fetch@^0.10.0:
   dependencies:
     openapi-typescript-helpers "^0.0.9"
 
-openapi-fetch@^0.9.3:
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/openapi-fetch/-/openapi-fetch-0.9.3.tgz#37c1dbde7faec885eaa40f351cab1c231b794761"
-  integrity sha512-tC1NDn71vJHeCzu+lYdrnIpgRt4GxR0B4eSwXNb15ypWpZcpaEOwHFkoz8FcfG5Fvqkz2P0Fl9zQF1JJwBjuvA==
-  dependencies:
-    openapi-typescript-helpers "^0.0.7"
-
 openapi-types@^12.1.0:
   version "12.1.1"
   resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-12.1.1.tgz#0aface4e05ba60efbf51153ed6af23988796617d"
   integrity sha512-m/DJaEqOUDSU8KoI74E6A3TokccuDOJ81ewZ6kLFwUT1KEIE0GDWvErtnJJDU4sySx8JKF5kk2GzHUuK6f+VHA==
-
-openapi-typescript-helpers@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/openapi-typescript-helpers/-/openapi-typescript-helpers-0.0.7.tgz#1d0ead67c35864d189c2cb2d0556854ccbb16c38"
-  integrity sha512-7nwlAtdA1fULipibFRBWE/rnF114q6ejRYzNvhdA/x+qTWAZhXGLc/368dlwMlyJDvCQMCnADjpzb5BS5ZmNSA==
 
 openapi-typescript-helpers@^0.0.9:
   version "0.0.9"
