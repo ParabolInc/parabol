@@ -49,7 +49,16 @@ const OrgBillingDangerZone = (props: Props) => {
   )
   const {history} = useRouter()
   const {id, isBillingLeader, billingTier} = organization
-  if (!isBillingLeader) return null
+  if (!isBillingLeader)
+    return (
+      <StyledPanel isWide={isWide} label='Danger Zone'>
+        <PanelRow>
+          <div className='text-slate-700'>
+            {'Only the billing leader can manage this organization'}
+          </div>
+        </PanelRow>
+      </StyledPanel>
+    )
   const isStarter = billingTier === 'starter'
   const isTeam = billingTier === 'team'
 
