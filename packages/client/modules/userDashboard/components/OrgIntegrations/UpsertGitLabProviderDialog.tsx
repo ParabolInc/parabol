@@ -81,9 +81,15 @@ const UpsertGitLabProviderDialog = (props: Props) => {
             <div className='w-36'>Name</div>
             <div>Parabol</div>
           </div>
-          <div className='flex items-center p-2'>
+          <div className='flex items-center px-2'>
             <div className='w-36'>Redirect URI</div>
-            <CopyShortLink url={redirectUri} title='Redirect URL' tooltip='Copy Redirect URL' />
+            <CopyShortLink
+              className='h-10 rounded border border-dashed px-2'
+              icon='link'
+              url={redirectUri}
+              title='Redirect URL'
+              tooltip='Copied Redirect URL'
+            />
           </div>
           <div className='flex items-center p-2'>
             <div className='w-36'>Trusted</div>
