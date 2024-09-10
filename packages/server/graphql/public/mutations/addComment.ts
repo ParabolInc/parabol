@@ -108,7 +108,7 @@ const addComment: MutationResolvers['addComment'] = async (
     .values({
       id: commentId,
       content,
-      isAnonymous,
+      isAnonymous: isAnonymous ?? undefined,
       plaintextContent: extractTextFromDraftString(content),
       createdBy: viewerId,
       threadSortOrder,
