@@ -78,16 +78,14 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     .insertInto('OrganizationUser')
     .values(docs)
     .onConflict((oc) =>
-      oc
-        .constraint('unique_org_user')
-        .doUpdateSet({
-          joinedAt: sql`CURRENT_TIMESTAMP`,
-          removedAt: null,
-          inactive: false,
-          role: null,
-          suggestedTier: null,
-          tier: (eb) => eb.ref('excluded.tier')
-        })
+      oc.constraint('unique_org_user').doUpdateSet({
+        joinedAt: sql`CURRENT_TIMESTAMP`,
+        removedAt: null,
+        inactive: false,
+        role: null,
+        suggestedTier: null,
+        tier: (eb) => eb.ref('excluded.tier')
+      })
     )
     .execute()
   await Promise.all(
