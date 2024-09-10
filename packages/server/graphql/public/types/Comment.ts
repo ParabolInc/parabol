@@ -7,7 +7,7 @@ const TOMBSTONE = convertToTaskContent('[deleted]')
 
 const Comment: CommentResolvers = {
   content: ({isActive, content}) => {
-    return isActive ? content : TOMBSTONE
+    return isActive ? JSON.stringify(content) : TOMBSTONE
   },
 
   createdBy: ({createdBy, isAnonymous}) => {
@@ -15,7 +15,9 @@ const Comment: CommentResolvers = {
   },
 
   createdByUser: ({createdBy, isActive, isAnonymous}, _args, {dataLoader}) => {
-    return isAnonymous || !isActive ? null : dataLoader.get('users').loadNonNull(createdBy)
+    return isAnonymous || !isActive || !createdBy
+      ? null
+      : dataLoader.get('users').loadNonNull(createdBy)
   },
 
   isActive: ({isActive}) => !!isActive,

@@ -18,13 +18,11 @@ interface Props {
 }
 
 graphql`
-  fragment MattermostProviderRowTeamMember on TeamMember {
-    integrations {
-      mattermost {
-        auth {
-          provider {
-            id
-          }
+  fragment MattermostProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
+    mattermost {
+      auth {
+        provider {
+          id
         }
       }
     }
@@ -37,7 +35,9 @@ const MattermostProviderRow = (props: Props) => {
       fragment MattermostProviderRow_viewer on User {
         ...MattermostPanel_viewer
         teamMember(teamId: $teamId) {
-          ...MattermostProviderRowTeamMember @relay(mask: false)
+          integrations {
+            ...MattermostProviderRowTeamMemberIntegrations @relay(mask: false)
+          }
         }
       }
     `,

@@ -85,12 +85,10 @@ const getGroupMatrix = (distanceMatrix: number[][], groupingOptions: GroupingOpt
     distancesArr = Array.from(res.distanceSet).sort()
     const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length
     if (reduction < MIN_REDUCTION_PERCENT) {
-      // eslint-disable-next-line no-loop-func
       const nextDistance = distancesArr.find((d) => d > thresh)
       if (!nextDistance || nextDistance >= 1) break
       thresh = Math.ceil(nextDistance * 100) / 100
     } else if (reduction > maxReductionPercent) {
-      // eslint-disable-next-line no-loop-func
       const nextDistance = distancesArr.find((d) => d < thresh)
       if (!nextDistance || nextDistance >= 1) break
       thresh = Math.floor(nextDistance * 100) / 100

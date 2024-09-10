@@ -3,9 +3,6 @@ import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptRespons
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {ValueOf} from '../../../../client/types/generics'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
-import Comment from '../../../database/types/Comment'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -42,10 +39,8 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   {reactableId, reactableType, reactji, isRemove, meetingId},
   {authToken, dataLoader, socketId: mutatorId}: GQLContext
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const viewerId = getUserId(authToken)
-  const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -87,13 +82,11 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   }
 
   // RESOLUTION
-  const subDoc = {id: reactji, userId: viewerId}
   const tableName = tableLookup[reactableType]
   const dbId =
     tableName === 'TeamPromptResponse' ? TeamPromptResponseId.split(reactableId) : reactableId
 
   const updatePG = async (pgTable: ValueOf<typeof tableLookup>) => {
-    if (pgTable === 'Comment') return
     if (isRemove) {
       await pg
         .updateTable(pgTable)
@@ -111,37 +104,9 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     }
   }
 
-  const updateRethink = async (rethinkDbTable: ValueOf<typeof tableLookup>) => {
-    if (rethinkDbTable === 'TeamPromptResponse' || rethinkDbTable === 'RetroReflection') return
-    if (isRemove) {
-      await r
-        .table(rethinkDbTable)
-        .get(dbId)
-        .update((row: RDatum<Comment>) => ({
-          reactjis: row('reactjis').difference([subDoc]),
-          updatedAt: now
-        }))
-        .run()
-    } else {
-      await r
-        .table(rethinkDbTable)
-        .get(dbId)
-        .update((row: RDatum<Comment>) => ({
-          reactjis: r.branch(
-            row('reactjis').contains(subDoc),
-            row('reactjis'),
-            // don't use distinct, it sorts the fields
-            row('reactjis').append(subDoc)
-          ),
-          updatedAt: now
-        }))
-        .run()
-    }
-  }
   const [meeting] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
-    updatePG(tableName),
-    updateRethink(tableName)
+    updatePG(tableName)
   ])
   dataLoader.clearAll(['comments', 'teamPromptResponses', 'retroReflections'])
 

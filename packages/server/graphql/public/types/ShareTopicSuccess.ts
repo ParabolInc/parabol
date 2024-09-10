@@ -5,7 +5,7 @@ export type ShareTopicSuccessSource = {
 }
 
 const ShareTopicSuccess: ShareTopicSuccessResolvers = {
-  meeting: async ({meetingId}, {}, {dataLoader}) => {
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
     return dataLoader.get('newMeetings').load(meetingId)
   }
 }

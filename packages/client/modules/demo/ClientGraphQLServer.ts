@@ -1085,7 +1085,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             retroReflectionGroup: reflectionGroup as any,
             updatedAt: now
           })
-          reflectionGroup.reflections!.push(reflection as any)
+          reflectionGroup.reflections.push(reflection as any)
           reflectionGroup.reflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
           oldReflections.splice(
             oldReflections.findIndex((reflection) => reflection === reflection),
@@ -1233,7 +1233,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflectionGroup.voteCount = voterIds.length
       reflectionGroup.viewerVoteCount = voterIds.filter((id) => id === demoViewerId).length
       const voteCount = this.db.reflectionGroups.reduce(
-        (sum, group) => sum + group.voterIds!.length,
+        (sum, group) => sum + group.voterIds.length,
         0
       )
 

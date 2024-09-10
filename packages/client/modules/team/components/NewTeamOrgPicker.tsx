@@ -56,17 +56,12 @@ const NewTeamOrgPicker = (props: Props) => {
     organizationsRef
   )
   const sortedOrgs = useMemo(() => sortByTier(organizations), [organizations])
-  useEffect(
-    () => {
-      const [firstOrg] = sortedOrgs
-      if (firstOrg) {
-        onChange(firstOrg.id)
-      }
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
+  useEffect(() => {
+    const [firstOrg] = sortedOrgs
+    if (firstOrg) {
+      onChange(firstOrg.id)
+    }
+  }, [])
   const orgIdx = orgId ? sortedOrgs.findIndex((org) => org.id === orgId) : 0
   const org = sortedOrgs[orgIdx]
   const defaultText = org ? org.name : NO_ORGS

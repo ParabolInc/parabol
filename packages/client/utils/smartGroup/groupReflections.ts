@@ -31,7 +31,7 @@ const groupReflections = <T extends {entities: any[]; reflectionGroupId: string;
   reflections: T[],
   groupingOptions: GroupingOptions
 ) => {
-  const allReflectionEntities = reflections.map(({entities}) => entities!)
+  const allReflectionEntities = reflections.map(({entities}) => entities)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 
   // create a unique array of all entity names mentioned in the meeting's reflect phase

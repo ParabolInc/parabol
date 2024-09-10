@@ -1,5 +1,5 @@
-import Comment from '../../database/types/Comment'
 import TaskDB from '../../database/types/Task'
+import {Comment} from '../../postgres/types'
 import {ThreadableSource} from '../public/types/Threadable'
 import {DataLoaderWorker} from './../graphql'
 

@@ -60,7 +60,7 @@ const NewMeetingSummary = (props: Props) => {
   if (!newMeeting) {
     return null
   }
-  // eslint-disable react-hooks/rules-of-hooks -- return above violates these rules, but is just a safeguard and not normal usage
+  /* eslint-disable react-hooks/rules-of-hooks */
   const {id: meetingId, name: meetingName, team} = newMeeting
   const {id: teamId, name: teamName} = team
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`

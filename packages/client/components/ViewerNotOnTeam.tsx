@@ -46,24 +46,19 @@ const ViewerNotOnTeam = (props: Props) => {
   const {history} = useRouter()
   const {onError, onCompleted} = useMutationProps()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
-  useEffect(
-    () => {
-      if (teamInvitation) {
-        // if an invitation already exists, accept it
-        AcceptTeamInvitationMutation(
-          atmosphere,
-          {invitationToken: teamInvitation.token},
-          {history, meetingId}
-        )
-        return
-      } else if (teamId)
-        PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
-      return undefined
-    },
-    [
-      /* eslint-disable-line react-hooks/exhaustive-deps*/
-    ]
-  )
+  useEffect(() => {
+    if (teamInvitation) {
+      // if an invitation already exists, accept it
+      AcceptTeamInvitationMutation(
+        atmosphere,
+        {invitationToken: teamInvitation.token},
+        {history, meetingId}
+      )
+      return
+    } else if (teamId)
+      PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
+    return undefined
+  }, [])
 
   if (teamInvitation) return null
   return (

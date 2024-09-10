@@ -7,7 +7,6 @@ const GraphQLURLType = new GraphQLScalarType({
   serialize: (value) => String(value),
   parseValue: (value) => String(value),
   parseLiteral: (ast: any) => {
-    // eslint-disable-next-line max-len, no-useless-escape
     if (!urlRegex.test(ast.value)) {
       throw new Error('Query error: Not a valid URL')
     }

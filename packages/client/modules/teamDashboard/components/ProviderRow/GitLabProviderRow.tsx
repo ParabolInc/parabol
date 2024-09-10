@@ -1,15 +1,22 @@
+import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
+import FlatButton from '../../../../components/FlatButton'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
+import ProviderActions from '../../../../components/ProviderActions'
+import RowInfo from '../../../../components/Row/RowInfo'
+import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import {Breakpoint} from '../../../../types/constEnums'
 import GitLabClientManager from '../../../../utils/GitLabClientManager'
+import ConnectButton from './ConnectButton'
 import GitLabConfigMenu from './GitLabConfigMenu'
-import ProviderRow from './ProviderRow'
 
 interface Props {
   teamId: string
@@ -22,10 +29,16 @@ graphql`
       gitlab {
         auth {
           provider {
+            id
             scope
           }
         }
         cloudProvider {
+          id
+          clientId
+          serverBaseUrl
+        }
+        sharedProviders {
           id
           clientId
           serverBaseUrl
@@ -56,6 +69,7 @@ const GitLabProviderRow = (props: Props) => {
     menuProps,
     togglePortal
   } = useMenu(MenuPosition.UPPER_RIGHT)
+  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const viewer = useFragment(
     graphql`
@@ -70,22 +84,78 @@ const GitLabProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {gitlab} = integrations
-  const {auth, cloudProvider} = gitlab
-  if (!cloudProvider) return null
-  const {clientId, id: cloudProviderId, serverBaseUrl} = cloudProvider
+  const {auth, cloudProvider, sharedProviders} = gitlab
+  const connected = !!auth
+  const connectedProviderId = auth?.provider?.id
+  const availableProviders = [...(cloudProvider ? [cloudProvider] : []), ...sharedProviders]
+
+  if (availableProviders.length === 0) return null
 
   return (
     <>
-      <ProviderRow
-        connected={!!auth}
-        onConnectClick={() => openOAuth(cloudProviderId, clientId, serverBaseUrl)}
-        submitting={submitting}
-        togglePortal={togglePortal}
-        menuRef={menuRef}
-        providerName={'GitLab'}
-        providerDescription={'Use GitLab Issues from within Parabol'}
-        providerLogo={<GitLabProviderLogo />}
-      />
+      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded bg-white shadow-card'>
+        <div className='flex justify-start p-row-gutter pb-0'>
+          <GitLabProviderLogo />
+          <div className='flex w-full flex-col'>
+            {availableProviders.map(({id, serverBaseUrl, clientId}) => {
+              const showProvider = !connected || id === connectedProviderId
+              const isCloudProvider = cloudProvider?.id === id
+              if (!showProvider) return null
+              return (
+                <div key={id} className='flex w-full flex-row pb-4'>
+                  <RowInfo>
+                    <div className='mr-4 flex items-center align-middle font-semibold leading-6 text-slate-700'>
+                      {isCloudProvider ? 'GitLab' : serverBaseUrl.replace(/https:\/\//, '')}
+                    </div>
+                    <RowInfoCopy>
+                      {isCloudProvider
+                        ? 'Use GitLab Issues from within Parabol.'
+                        : 'Connect to your own GitLab server.'}
+                    </RowInfoCopy>
+                  </RowInfo>
+                  <ProviderActions>
+                    {!connected && (
+                      <ConnectButton
+                        onConnectClick={() => openOAuth(id, clientId, serverBaseUrl)}
+                        submitting={submitting}
+                      />
+                    )}
+                    {id === connectedProviderId && (
+                      <>
+                        {isDesktop ? (
+                          <>
+                            <div className='flex items-center pr-6'>
+                              <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
+                              <div className='pl-[6px] text-sm font-semibold text-slate-700'>
+                                Connected
+                              </div>
+                            </div>
+                            <FlatButton
+                              className='min-w-[30px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                              onClick={togglePortal}
+                              ref={menuRef}
+                            >
+                              <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
+                            </FlatButton>
+                          </>
+                        ) : (
+                          <FlatButton
+                            className='min-w-[36px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                            onClick={togglePortal}
+                            ref={menuRef}
+                          >
+                            <MoreVertIcon />
+                          </FlatButton>
+                        )}
+                      </>
+                    )}
+                  </ProviderActions>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
       {menuPortal(
         <GitLabConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />
       )}

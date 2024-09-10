@@ -10,6 +10,7 @@ import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
   MEMBERS_PAGE,
+  ORG_INTEGRATIONS_PAGE,
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../utils/constants'
@@ -168,6 +169,12 @@ const MobileDashSidebar = (props: Props) => {
                 icon={'work'}
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
+              />
+              <NavItem
+                onClick={handleMenuClick}
+                icon={'appRegistration'}
+                href={`/me/organizations/${orgId}/${ORG_INTEGRATIONS_PAGE}`}
+                label={'Integration Settings'}
               />
               <NavItem
                 onClick={handleMenuClick}

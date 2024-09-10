@@ -66,15 +66,9 @@ const Menu = forwardRef((props: Props, ref: any) => {
     handleKeyDown
   }))
 
-  useEffect(
-    () => {
-      if (!keepParentFocus) menuRef.current && menuRef.current.focus()
-    },
-    resetActiveOnChanges ||
-      [
-        /* eslint-disable-line react-hooks/exhaustive-deps*/
-      ]
-  )
+  useEffect(() => {
+    if (!keepParentFocus) menuRef.current && menuRef.current.focus()
+  }, resetActiveOnChanges || [])
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {

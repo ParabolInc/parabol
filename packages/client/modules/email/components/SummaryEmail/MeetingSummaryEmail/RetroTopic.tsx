@@ -120,7 +120,7 @@ const RetroTopic = (props: Props) => {
 
   const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
-  const {reflections, title, voteCount} = reflectionGroup!
+  const {reflections, title, voteCount} = reflectionGroup
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${ExternalLinks.EMAIL_CDN}${icon}`

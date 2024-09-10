@@ -45,7 +45,7 @@ type Task implements Threadable {
   """
   the order of this threadable, relative to threadParentId
   """
-  threadSortOrder: Float
+  threadSortOrder: Int
 
   """
   The timestamp the item was updated

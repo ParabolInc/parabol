@@ -14,7 +14,7 @@ const REQUEST_EXPIRATION_DAYS = 30
 
 const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   _source,
-  {},
+  _args,
   {authToken, dataLoader}
 ) => {
   const r = await getRethink()

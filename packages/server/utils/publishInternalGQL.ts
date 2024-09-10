@@ -14,7 +14,7 @@ interface Options {
 const publishInternalGQL = async <NarrowResponse>(options: Options) => {
   const {socketId, query, ip, authToken, variables} = options
   try {
-    return (await getGraphQLExecutor().publish)<NarrowResponse>({
+    return await getGraphQLExecutor().publish<NarrowResponse>({
       socketId,
       authToken,
       query,

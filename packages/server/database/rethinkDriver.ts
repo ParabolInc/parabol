@@ -3,7 +3,6 @@ import TeamInvitation from '../database/types/TeamInvitation'
 import {AnyMeeting, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import Comment from './types/Comment'
 import MassInvitation from './types/MassInvitation'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
@@ -21,10 +20,6 @@ import RetrospectivePrompt from './types/RetrospectivePrompt'
 import Task from './types/Task'
 
 export type RethinkSchema = {
-  Comment: {
-    type: Comment
-    index: 'discussionId'
-  }
   ReflectPrompt: {
     type: RetrospectivePrompt
     index: 'teamId' | 'templateId'
