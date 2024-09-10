@@ -1,4 +1,3 @@
-import getKysely from '../../../postgres/getKysely'
 import {
   getUserId,
   isSuperUser,
@@ -28,31 +27,10 @@ const Organization: OrganizationResolvers = {
     if (!featureFlags) return {}
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
-  // TODO: refactor to dataloader
-  featureFlag: async ({id: orgId}, {featureName}) => {
-    const pg = getKysely()
-    const featureFlag = await pg
-      .selectFrom('FeatureFlag')
-      .where('FeatureFlag.featureName', '=', featureName)
-      .select('FeatureFlag.id')
-      .executeTakeFirst()
-
-    if (!featureFlag) {
-      throw new Error(
-        `Feature flag "${featureName}" does not exist. Please check the feature name.`
-      )
-    }
-
-    const flagOwnership = await pg
-      .selectFrom('FeatureFlag')
-      .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
-      .where('FeatureFlagOwner.orgId', '=', orgId)
-      .where('FeatureFlag.featureName', '=', featureName)
-      .where('FeatureFlag.expiresAt', '>', new Date()) // Check if the feature flag is not expired
-      .select('FeatureFlag.id') // We only need to know if there's a match
-      .executeTakeFirst()
-
-    return !!flagOwnership
+  featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
+    return await dataLoader
+      .get('featureFlagsByOwnerId')
+      .load({ownerId: orgId, ownerType: 'Organization', featureName})
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null

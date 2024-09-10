@@ -843,58 +843,79 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
   )
 }
 
-// export const featureFlagsByOwnerId = (parent: RootDataLoader) => {
-//   // dependsOn('')
-//   return new DataLoader<
-//     {ownerId: string; scope: 'User' | 'Team' | 'Organization'},
-//     FeatureFlag[],
-//     string
-//   >(
-//     async (keys) => {
-//       const pg = getKysely()
+export const featureFlagsByOwnerId = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {ownerId: string; ownerType: 'User' | 'Team' | 'Organization'; featureName: string},
+    boolean,
+    string
+  >(
+    async (keys) => {
+      const pg = getKysely()
 
-//       const userIds = keys.filter((k) => k.scope === 'User').map((k) => k.ownerId)
-//       const teamIds = keys.filter((k) => k.scope === 'Team').map((k) => k.ownerId)
-//       const orgIds = keys.filter((k) => k.scope === 'Organization').map((k) => k.ownerId)
+      const featureNames = [...new Set(keys.map(({featureName}) => featureName))]
+      const existingFeatureNames = await pg
+        .selectFrom('FeatureFlag')
+        .select('featureName')
+        .where('featureName', 'in', featureNames)
+        .execute()
 
-//       let query = pg
-//         .selectFrom('FeatureFlagOwner')
-//         .innerJoin('FeatureFlag', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
-//         .selectAll('FeatureFlag')
+      const existingFeatureNameSet = new Set(existingFeatureNames.map((row) => row.featureName))
 
-//       if (userIds.length > 0) {
-//         query = query.where('FeatureFlagOwner.userId', 'in', userIds)
-//       }
+      const missingFeatureNames = featureNames.filter((name) => !existingFeatureNameSet.has(name))
+      if (missingFeatureNames.length > 0) {
+        throw new Error(`Feature flag name(s) not found: ${missingFeatureNames.join(', ')}`)
+      }
 
-//       if (teamIds.length > 0) {
-//         query = query.where('FeatureFlagOwner.teamId', 'in', teamIds)
-//       }
+      const userKeys = keys.filter(({ownerType}) => ownerType === 'User')
+      const teamKeys = keys.filter(({ownerType}) => ownerType === 'Team')
+      const orgKeys = keys.filter(({ownerType}) => ownerType === 'Organization')
 
-//       if (orgIds.length > 0) {
-//         query = query.where('FeatureFlagOwner.orgId', 'in', orgIds)
-//       }
+      const userIds = userKeys.map(({ownerId}) => ownerId)
+      const teamIds = teamKeys.map(({ownerId}) => ownerId)
+      const orgIds = orgKeys.map(({ownerId}) => ownerId)
 
-//       const featureFlags = await query.execute()
+      const results = await pg
+        .selectFrom('FeatureFlag')
+        .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
+        .where((eb) =>
+          eb.and([
+            eb('FeatureFlag.expiresAt', '>', new Date()),
+            eb.or([
+              userIds.length > 0
+                ? eb('FeatureFlagOwner.userId', 'in', userIds)
+                : eb('FeatureFlagOwner.userId', '=', null),
+              teamIds.length > 0
+                ? eb('FeatureFlagOwner.teamId', 'in', teamIds)
+                : eb('FeatureFlagOwner.teamId', '=', null),
+              orgIds.length > 0
+                ? eb('FeatureFlagOwner.orgId', 'in', orgIds)
+                : eb('FeatureFlagOwner.orgId', '=', null)
+            ]),
+            eb('FeatureFlag.featureName', 'in', featureNames)
+          ])
+        )
+        .select([
+          'FeatureFlagOwner.userId',
+          'FeatureFlagOwner.teamId',
+          'FeatureFlagOwner.orgId',
+          'FeatureFlag.featureName'
+        ])
+        .execute()
 
-//       const featureFlagsByOwner = new Map<string, FeatureFlag[]>()
-//       for (const key of keys) {
-//         featureFlagsByOwner.set(
-//           `${key.ownerId}:${key.scope}`,
-//           featureFlags.filter((flag) => {
-//             return (
-//               (key.scope === 'User' && flag.userId === key.ownerId) ||
-//               (key.scope === 'Team' && flag.teamId === key.ownerId) ||
-//               (key.scope === 'Organization' && flag.orgId === key.ownerId)
-//             )
-//           })
-//         )
-//       }
+      const featureFlagMap = new Map<string, boolean>()
+      results.forEach(({userId, teamId, orgId, featureName}) => {
+        const ownerId = userId || teamId || orgId
+        const ownerType = userId ? 'User' : teamId ? 'Team' : 'Organization'
+        featureFlagMap.set(`${ownerId}:${ownerType}:${featureName}`, true)
+      })
 
-//       return keys.map((key) => featureFlagsByOwner.get(`${key.ownerId}:${key.scope}`) || [])
-//     },
-//     {
-//       ...parent.dataLoaderOptions,
-//       cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
-//     }
-//   )
-// }
+      return keys.map(({ownerId, ownerType, featureName}) =>
+        featureFlagMap.has(`${ownerId}:${ownerType}:${featureName}`)
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.ownerId}:${key.ownerType}:${key.featureName}`
+    }
+  )
+}
