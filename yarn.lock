@@ -18178,34 +18178,22 @@ openai@^4.53.0:
     node-fetch "^2.6.7"
     web-streams-polyfill "^3.2.1"
 
-openapi-fetch@^0.9.3:
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/openapi-fetch/-/openapi-fetch-0.9.3.tgz#37c1dbde7faec885eaa40f351cab1c231b794761"
-  integrity sha512-tC1NDn71vJHeCzu+lYdrnIpgRt4GxR0B4eSwXNb15ypWpZcpaEOwHFkoz8FcfG5Fvqkz2P0Fl9zQF1JJwBjuvA==
+openapi-fetch@^0.10.0:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/openapi-fetch/-/openapi-fetch-0.10.2.tgz#2c16bda62cf182ba780a9d94818294731de0b2d6"
+  integrity sha512-GCzgKIZchnxZRnztiOlRTKk9tQT0NHvs5MNXYFtOwG7xaj1iCJOGDsTLbn/2QUP37PjGTT890qERFjvmjxzQMg==
   dependencies:
-    openapi-typescript-helpers "^0.0.7"
-
-openapi-fetch@^0.9.7:
-  version "0.9.7"
-  resolved "https://registry.yarnpkg.com/openapi-fetch/-/openapi-fetch-0.9.7.tgz#e224d1176e11ec68671caf0df6b736d649be97ed"
-  integrity sha512-NMp/GEmWSGO0b2d731IdGXcMP2PF85Rk1q+oy2Mx/DYMdP3pgTZTRamKxgZpkHhM4iOVsyD1iP5HKL9Fr6CH2Q==
-  dependencies:
-    openapi-typescript-helpers "^0.0.8"
+    openapi-typescript-helpers "^0.0.9"
 
 openapi-types@^12.1.0:
   version "12.1.1"
   resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-12.1.1.tgz#0aface4e05ba60efbf51153ed6af23988796617d"
   integrity sha512-m/DJaEqOUDSU8KoI74E6A3TokccuDOJ81ewZ6kLFwUT1KEIE0GDWvErtnJJDU4sySx8JKF5kk2GzHUuK6f+VHA==
 
-openapi-typescript-helpers@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/openapi-typescript-helpers/-/openapi-typescript-helpers-0.0.7.tgz#1d0ead67c35864d189c2cb2d0556854ccbb16c38"
-  integrity sha512-7nwlAtdA1fULipibFRBWE/rnF114q6ejRYzNvhdA/x+qTWAZhXGLc/368dlwMlyJDvCQMCnADjpzb5BS5ZmNSA==
-
-openapi-typescript-helpers@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/openapi-typescript-helpers/-/openapi-typescript-helpers-0.0.8.tgz#460f395362cc16e4a5de56264b7b1c5a03746e35"
-  integrity sha512-1eNjQtbfNi5Z/kFhagDIaIRj6qqDzhjNJKz8cmMW0CVdGwT6e1GLbAfgI0d28VTJa1A8jz82jm/4dG8qNoNS8g==
+openapi-typescript-helpers@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/openapi-typescript-helpers/-/openapi-typescript-helpers-0.0.9.tgz#bb20cc0b79bf56d4a31a96477d7b2c8d33b9c836"
+  integrity sha512-BO2TvIDAO/FPVKz1Nj2gy+pUOHfaoENdK5UP3H0Jbh0VXBf3dwYMs58ZwOjiezrbHA2LamdquoyQgahTPvIxGA==
 
 opener@^1.5.2:
   version "1.5.2"
