@@ -1,0 +1,55 @@
+extend type Mutation {
+  """
+  Run org activity report
+  """
+  runOrgActivityReport(
+    """
+    the start date for the query
+    """
+    startDate: DateTime
+
+    """
+    the end date for the query
+    """
+    endDate: DateTime
+  ): String!
+}
+
+"""
+Return value for runOrgActivityReport, which could be an error
+"""
+union RunOrgActivityReportPayload = ErrorPayload | RunOrgActivityReportSuccess
+
+type RunOrgActivityReportSuccess {
+  """
+  The rows of the report
+  """
+  rows: [OrgActivityRow!]!
+}
+
+type OrgActivityRow {
+  """
+  The start date of the month
+  """
+  monthStart: DateTime!
+
+  """
+  The last day of the month
+  """
+  lastDayOfMonth: DateTime!
+
+  """
+  The name of the organization
+  """
+  orgName: String!
+
+  """
+  The number of signups in the month
+  """
+  signupCount: Int!
+
+  """
+  The number of logins in the month
+  """
+  loginCount: Int!
+}

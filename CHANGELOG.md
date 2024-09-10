@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.0](https://github.com/ParabolInc/parabol/compare/v7.46.3...v7.47.0) (2024-09-10)
+
+
+### Added
+
+* Enable connecting to different GitLab integration providers ([#10025](https://github.com/ParabolInc/parabol/issues/10025)) ([8806839](https://github.com/ParabolInc/parabol/commit/880683996e4afb117ed21918a2c91574b649d4d9))
+
+
+### Fixed
+
+* Anonymous comments ([#10206](https://github.com/ParabolInc/parabol/issues/10206)) ([45501a3](https://github.com/ParabolInc/parabol/commit/45501a3950f1d511bfc428c80bbb8e537cae8837))
+* **orgAdmin:** user should be able to remove themselves from the org ([#10201](https://github.com/ParabolInc/parabol/issues/10201)) ([4368c0b](https://github.com/ParabolInc/parabol/commit/4368c0bc6af2310f62133ae07c331912bb048628))
+
+
+### Changed
+
+* **deps-dev:** bump webpack from 5.89.0 to 5.94.0 ([#10168](https://github.com/ParabolInc/parabol/issues/10168)) ([e7d25ea](https://github.com/ParabolInc/parabol/commit/e7d25ea4048a0f2c4716968be072ca139ee09485))
+* **deps:** bump fast-xml-parser from 4.3.2 to 4.4.1 ([#10047](https://github.com/ParabolInc/parabol/issues/10047)) ([e3b528f](https://github.com/ParabolInc/parabol/commit/e3b528ff2eda697797c0731df9041df34e77afd5))
+* **Snyk:** Upgrade openapi-fetch from 0.9.8 to 0.10.0 ([#9955](https://github.com/ParabolInc/parabol/issues/9955)) ([06f0b0b](https://github.com/ParabolInc/parabol/commit/06f0b0b5491db2d4049d06758ea7afb35298e4a2))
+
 ## [7.46.3](https://github.com/ParabolInc/parabol/compare/v7.46.2...v7.46.3) (2024-09-09)
 
 
