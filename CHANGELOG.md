@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.2](https://github.com/ParabolInc/parabol/compare/v7.47.1...v7.47.2) (2024-09-11)
+
+
+### Changed
+
+* **rethinkdb:** PasswordResetRequest: One-shot ([#10210](https://github.com/ParabolInc/parabol/issues/10210)) ([12315b0](https://github.com/ParabolInc/parabol/commit/12315b05e741f4de7289d020d63579e109465d1f))
+* **rethinkdb:** PushInvitation: One-shot ([#10213](https://github.com/ParabolInc/parabol/issues/10213)) ([7f95a81](https://github.com/ParabolInc/parabol/commit/7f95a81b5facdd780f2c9e3a99470636c884d941))
+* **rethinkdb:** ReflectPhase: Phase 2 ([#10208](https://github.com/ParabolInc/parabol/issues/10208)) ([3fddb97](https://github.com/ParabolInc/parabol/commit/3fddb9750746c5b27ab6d9c59d9e785e5d7d6cd0))
+* **rethinkdb:** ReflectPhase: Phase 3 ([#10209](https://github.com/ParabolInc/parabol/issues/10209)) ([1131785](https://github.com/ParabolInc/parabol/commit/1131785e26e870909f5cb2db2c99322b007e4546))
+
 ## [7.47.1](https://github.com/ParabolInc/parabol/compare/v7.47.0...v7.47.1) (2024-09-11)
 
 
