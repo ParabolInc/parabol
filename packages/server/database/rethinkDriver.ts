@@ -14,7 +14,6 @@ import NotificationResponseReplied from './types/NotificationResponseReplied'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import PasswordResetRequest from './types/PasswordResetRequest'
 import PushInvitation from './types/PushInvitation'
 import Task from './types/Task'
 
@@ -53,10 +52,6 @@ export type RethinkSchema = {
       | NotificationResponseReplied
       | NotificationMentioned
     index: 'userId'
-  }
-  PasswordResetRequest: {
-    type: PasswordResetRequest
-    index: 'email' | 'ip' | 'token'
   }
   PushInvitation: {
     type: PushInvitation
