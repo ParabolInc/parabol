@@ -4,7 +4,6 @@ type TeamSubscriptionPayload {
   AddAgendaItemPayload: AddAgendaItemPayload
   AddAtlassianAuthPayload: AddAtlassianAuthPayload
   AddGitHubAuthPayload: AddGitHubAuthPayload
-  AddIntegrationProviderSuccess: AddIntegrationProviderSuccess
   AddSlackAuthPayload: AddSlackAuthPayload
   AddTeamPayload: AddTeamPayload
   ArchiveTeamPayload: ArchiveTeamPayload

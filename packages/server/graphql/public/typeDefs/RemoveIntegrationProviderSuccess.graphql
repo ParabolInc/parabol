@@ -1,11 +1,16 @@
 type RemoveIntegrationProviderSuccess {
   """
-  The team member with the updated auth
+  The ID of the integration provider that was removed
   """
-  teamMember: TeamMember!
+  providerId: ID!
 
   """
-  The user who updated TeamMemberIntegrationAuth object
+  The updated set of organization integration providers if there were changes
   """
-  user: User!
+  orgIntegrationProviders: OrgIntegrationProviders
+
+  """
+  Updated team member integrations if there were changes
+  """
+  teamMemberIntegrations: TeamMemberIntegrations
 }

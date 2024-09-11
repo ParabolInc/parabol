@@ -92,9 +92,6 @@ const addIntegrationProvider = {
       return {error: {message: 'Exactly 1 metadata provider is expected'}}
     }
 
-    const resolvedOrgId =
-      orgId || (teamId ? (await dataLoader.get('teams').loadNonNull(teamId)).orgId : null)
-
     // RESOLUTION
     const providerId = await upsertIntegrationProvider({
       authStrategy,
@@ -109,11 +106,15 @@ const addIntegrationProvider = {
           : {orgId: null, teamId})
     })
 
-    const data = {providerId}
-    if (resolvedOrgId) {
+    const data = {
+      providerId,
+      orgId,
+      teamId
+    }
+    if (orgId) {
       publish(
         SubscriptionChannel.ORGANIZATION,
-        resolvedOrgId,
+        orgId,
         'AddIntegrationProviderSuccess',
         data,
         subOptions

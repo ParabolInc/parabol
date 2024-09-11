@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {
   AccountBox,
   Add,
+  AppRegistration,
   ArrowBack,
   AutoAwesome,
   CreditScore,
@@ -72,6 +73,7 @@ const iconLookup = {
   groups: <Groups fontSize='inherit' />,
   warning: <Warning fontSize='inherit' />,
   work: <WorkOutline fontSize='inherit' />,
+  appRegistration: <AppRegistration fontSize='inherit' />,
   timeline: <Timeline fontSize='inherit' />,
   key: <Key fontSize='inherit' />
 }

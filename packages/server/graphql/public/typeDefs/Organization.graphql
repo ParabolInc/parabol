@@ -185,4 +185,9 @@ type Organization {
   Empty if all domains are allowed
   """
   approvedDomains: [String!]!
+
+  """
+  Custom integration providers with organization scope
+  """
+  integrationProviders: OrgIntegrationProviders!
 }

@@ -1,6 +1,6 @@
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {MSTeamsNotifier} from '../../mutations/helpers/notifications/MSTeamsNotifier'
@@ -16,6 +16,7 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
+  const pg = getKysely()
 
   const {
     id: providerId,
@@ -28,18 +29,15 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
 
   // INPUT VALIDATION
   const providerDbId = IntegrationProviderId.split(providerId)
-  const currentProvider = await dataLoader.get('integrationProviders').load(providerDbId)
-  dataLoader.get('integrationProviders').clear(providerDbId)
+  const currentProvider = await pg
+    .selectFrom('IntegrationProvider')
+    .selectAll()
+    .where('id', '=', providerDbId)
+    .executeTakeFirst()
   if (!currentProvider) {
     return {error: {message: 'Invalid provider ID'}}
   }
-  const {
-    teamId: oldTeamId,
-    orgId: oldOrgId,
-    scope: oldScope,
-    service,
-    authStrategy
-  } = currentProvider
+  const {teamId: oldTeamId, orgId: oldOrgId, scope: oldScope, authStrategy} = currentProvider
 
   const [oldTeam, newTeam] = await Promise.all([
     oldTeamId ? dataLoader.get('teams').load(oldTeamId) : null,
@@ -88,49 +86,58 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
   if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {
     return {error: {message: 'Provided 2 metadata types, expected 1'}}
   }
-  if (!oAuth2ProviderMetadataInput && !webhookProviderMetadataInput) {
-    return {error: {message: 'Provided 0 metadata types, expected 1'}}
+  if (authStrategy === 'webhook') {
+    if (!webhookProviderMetadataInput) {
+      return {error: {message: 'Expected webhook metadata'}}
+    }
+  } else if (authStrategy === 'oauth2') {
+    if (!oAuth2ProviderMetadataInput) {
+      return {error: {message: 'Expected OAuth2 metadata'}}
+    }
+  } else {
+    return {error: {message: 'Unsupported authStrategy'}}
   }
 
-  const resolvedOrgId =
-    newOrgId || (newTeamId ? (await dataLoader.get('teams').loadNonNull(newTeamId)).orgId : null)
-  const scope = newScope || oldScope
+  const teamId = newTeamId || oldTeamId
+  const orgId = newOrgId || oldOrgId
+  const scope = newScope ?? oldScope
 
   // RESOLUTION
-  await upsertIntegrationProvider({
-    ...oAuth2ProviderMetadataInput,
-    ...webhookProviderMetadataInput,
-    service,
-    authStrategy,
-    scope: newScope,
-    ...(scope === 'global'
-      ? {orgId: null, teamId: null}
-      : scope === 'org'
-        ? {orgId: newOrgId!, teamId: null}
-        : {orgId: null, teamId: newTeamId!})
-  })
-
+  await pg
+    .updateTable('IntegrationProvider')
+    .set({
+      ...oAuth2ProviderMetadataInput,
+      ...webhookProviderMetadataInput,
+      scope,
+      ...(scope === 'global'
+        ? {orgId: null, teamId: null}
+        : scope === 'org'
+          ? {orgId, teamId: null}
+          : {orgId: null, teamId})
+    })
+    .where('id', '=', providerDbId)
+    .execute()
   if (currentProvider.service === 'mattermost') {
     const {webhookUrl} = currentProvider
     const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
-    if (newTeamId && newWebhookUrl && newWebhookUrl !== webhookUrl) {
+    if (teamId && newWebhookUrl && newWebhookUrl !== webhookUrl) {
       Object.assign(currentProvider, webhookProviderMetadataInput)
-      await MattermostNotifier.integrationUpdated(dataLoader, newTeamId, viewerId)
+      await MattermostNotifier.integrationUpdated(dataLoader, teamId, viewerId)
     }
   }
   if (currentProvider.service === 'msTeams') {
     const {webhookUrl} = currentProvider
     const newWebhookUrl = webhookProviderMetadataInput?.webhookUrl
-    if (newTeamId && newWebhookUrl && newWebhookUrl !== webhookUrl) {
+    if (teamId && newWebhookUrl && newWebhookUrl !== webhookUrl) {
       Object.assign(currentProvider, webhookProviderMetadataInput)
-      await MSTeamsNotifier.integrationUpdated(dataLoader, newTeamId, viewerId)
+      await MSTeamsNotifier.integrationUpdated(dataLoader, teamId, viewerId)
     }
   }
   const data = {userId: viewerId, providerId: providerDbId}
-  if (resolvedOrgId) {
+  if (orgId) {
     publish(
       SubscriptionChannel.ORGANIZATION,
-      resolvedOrgId,
+      orgId,
       'UpdateIntegrationProviderSuccess',
       data,
       subOptions
