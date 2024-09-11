@@ -1,8 +1,10 @@
+import {Insertable} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
-import getRethink from '../../../database/rethinkDriver'
-import Comment from '../../../database/types/Comment'
+import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
 import DiscussStage from '../../../database/types/DiscussStage'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
+import {Comment} from '../../../postgres/pg'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -16,27 +18,25 @@ export const buildCommentContentBlock = (
   return convertHtmlToTaskContent(html)
 }
 
-export const createAIComment = (discussionId: string, content: string, order: number) =>
-  new Comment({
-    discussionId,
-    content,
-    threadSortOrder: order,
-    createdBy: PARABOL_AI_USER_ID
-  })
+export const createAIComment = (discussionId: string, content: string, order: number) => ({
+  id: generateUID(),
+  discussionId,
+  content,
+  plaintextContent: extractTextFromDraftString(content),
+  threadSortOrder: order,
+  createdBy: PARABOL_AI_USER_ID
+})
 
 const addAIGeneratedContentToThreads = async (
   stages: DiscussStage[],
   meetingId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [r, groups] = await Promise.all([
-    getRethink(),
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
-  ])
+  const groups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const commentPromises = stages.map(async ({discussionId, reflectionGroupId}) => {
     const group = groups.find((group) => group.id === reflectionGroupId)
     if (!group?.discussionPromptQuestion) return
-    const comments: Comment[] = []
+    const comments: Insertable<Comment>[] = []
 
     if (group.discussionPromptQuestion) {
       const topicSummaryComment = createAIComment(
@@ -46,16 +46,7 @@ const addAIGeneratedContentToThreads = async (
       )
       comments.push(topicSummaryComment)
     }
-    const pgComments = comments.map((comment) => ({
-      id: comment.id,
-      content: comment.content,
-      plaintextContent: comment.plaintextContent,
-      createdBy: comment.createdBy,
-      threadSortOrder: comment.threadSortOrder,
-      discussionId: comment.discussionId
-    }))
-    await getKysely().insertInto('Comment').values(pgComments).execute()
-    return r.table('Comment').insert(comments).run()
+    await getKysely().insertInto('Comment').values(comments).execute()
   })
   await Promise.all(commentPromises)
 }

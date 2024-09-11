@@ -88,7 +88,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   ])
   const threadables = [...discussions.flat(), ...tasks.flat()]
   threadables.forEach(({createdBy}) => {
-    passiveMembers.delete(createdBy)
+    createdBy && passiveMembers.delete(createdBy)
   })
 
   discussions.forEach((comments) => {

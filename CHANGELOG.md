@@ -5,6 +5,66 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.0](https://github.com/ParabolInc/parabol/compare/v7.46.3...v7.47.0) (2024-09-10)
+
+
+### Added
+
+* Enable connecting to different GitLab integration providers ([#10025](https://github.com/ParabolInc/parabol/issues/10025)) ([8806839](https://github.com/ParabolInc/parabol/commit/880683996e4afb117ed21918a2c91574b649d4d9))
+
+
+### Fixed
+
+* Anonymous comments ([#10206](https://github.com/ParabolInc/parabol/issues/10206)) ([45501a3](https://github.com/ParabolInc/parabol/commit/45501a3950f1d511bfc428c80bbb8e537cae8837))
+* **orgAdmin:** user should be able to remove themselves from the org ([#10201](https://github.com/ParabolInc/parabol/issues/10201)) ([4368c0b](https://github.com/ParabolInc/parabol/commit/4368c0bc6af2310f62133ae07c331912bb048628))
+
+
+### Changed
+
+* **deps-dev:** bump webpack from 5.89.0 to 5.94.0 ([#10168](https://github.com/ParabolInc/parabol/issues/10168)) ([e7d25ea](https://github.com/ParabolInc/parabol/commit/e7d25ea4048a0f2c4716968be072ca139ee09485))
+* **deps:** bump fast-xml-parser from 4.3.2 to 4.4.1 ([#10047](https://github.com/ParabolInc/parabol/issues/10047)) ([e3b528f](https://github.com/ParabolInc/parabol/commit/e3b528ff2eda697797c0731df9041df34e77afd5))
+* **Snyk:** Upgrade openapi-fetch from 0.9.8 to 0.10.0 ([#9955](https://github.com/ParabolInc/parabol/issues/9955)) ([06f0b0b](https://github.com/ParabolInc/parabol/commit/06f0b0b5491db2d4049d06758ea7afb35298e4a2))
+
+## [7.46.3](https://github.com/ParabolInc/parabol/compare/v7.46.2...v7.46.3) (2024-09-09)
+
+
+### Changed
+
+* **metrics:** Only track 'Loaded a Page' event to Amplitude when userId is known ([#9193](https://github.com/ParabolInc/parabol/issues/9193)) ([be5d28a](https://github.com/ParabolInc/parabol/commit/be5d28a05d3d839ead0924fe79b736bd49abbce8))
+* **rethinkdb:** Comment: Phase 3 ([#10172](https://github.com/ParabolInc/parabol/issues/10172)) ([22c3b5b](https://github.com/ParabolInc/parabol/commit/22c3b5bfa392d0bcaeed997ce7698a72edf9b23c))
+
+## [7.46.2](https://github.com/ParabolInc/parabol/compare/v7.46.1...v7.46.2) (2024-09-06)
+
+
+### Fixed
+
+* insert discussion before comment ([#10194](https://github.com/ParabolInc/parabol/issues/10194)) ([724a340](https://github.com/ParabolInc/parabol/commit/724a340e5872fc13963cad278bb13017f0ec1270))
+
+## [7.46.1](https://github.com/ParabolInc/parabol/compare/v7.46.0...v7.46.1) (2024-09-06)
+
+
+### Fixed
+
+* multiple slack notifications ([#10190](https://github.com/ParabolInc/parabol/issues/10190)) ([c4444ef](https://github.com/ParabolInc/parabol/commit/c4444ef9814a30bb2659427d17f639dbf151f46e))
+
+
+### Changed
+
+* **rethinkdb:** Comment: Phase 2 ([#10180](https://github.com/ParabolInc/parabol/issues/10180)) ([9148205](https://github.com/ParabolInc/parabol/commit/91482054870809d133fbc70af078b033d55c6ace))
+
+## [7.46.0](https://github.com/ParabolInc/parabol/compare/v7.45.2...v7.46.0) (2024-09-04)
+
+
+### Added
+
+* **orgAdmin:** search in org members page ([#10187](https://github.com/ParabolInc/parabol/issues/10187)) ([968452e](https://github.com/ParabolInc/parabol/commit/968452e28003b188f6706f10b005d84508e11634))
+* **orgAdmins:** Make org members view sortable ([#10146](https://github.com/ParabolInc/parabol/issues/10146)) ([97bb948](https://github.com/ParabolInc/parabol/commit/97bb948330e1e57a331113e267ec5965a84ea6e4))
+
+
+### Changed
+
+* **deps:** bump micromatch from 4.0.5 to 4.0.8 ([#10164](https://github.com/ParabolInc/parabol/issues/10164)) ([70f69ce](https://github.com/ParabolInc/parabol/commit/70f69ce039f9550c52f391c0f556919a7fe4589b))
+
 ## [7.45.2](https://github.com/ParabolInc/parabol/compare/v7.45.1...v7.45.2) (2024-08-29)
 
 

@@ -13,7 +13,7 @@ import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
-import insertDiscussions from '../../postgres/queries/insertDiscussions'
+import getKysely from '../../postgres/getKysely'
 import {TeamMember} from '../../postgres/types'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -145,15 +145,16 @@ const joinMeeting = {
       // only add a new stage for the new users (ie. invited to the team after the meeting was started)
       if (teamMemberResponseStage) return
       const responsesStage = new TeamPromptResponseStage({teamMemberId})
-      await insertDiscussions([
-        {
+      await getKysely()
+        .insertInto('Discussion')
+        .values({
           id: responsesStage.discussionId,
           teamId,
           meetingId,
           discussionTopicId: teamMemberId,
-          discussionTopicType: 'teamPromptResponse' as const
-        }
-      ])
+          discussionTopicType: 'teamPromptResponse'
+        })
+        .execute()
       return addStageToPhase(responsesStage, 'RESPONSES')
     }
 

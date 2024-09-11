@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -12,7 +11,6 @@ const deleteComment: MutationResolvers['deleteComment'] = async (
   {commentId, meetingId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -40,7 +38,6 @@ const deleteComment: MutationResolvers['deleteComment'] = async (
     return {error: {message: 'Can only delete your own comment or Parabol AI comments'}}
   }
 
-  await r.table('Comment').get(commentId).update({isActive: false, updatedAt: now}).run()
   await getKysely()
     .updateTable('Comment')
     .set({updatedAt: now})

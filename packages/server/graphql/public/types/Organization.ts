@@ -129,7 +129,8 @@ const Organization: OrganizationResolvers = {
       (organizationUser) =>
         organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
     )
-  }
+  },
+  integrationProviders: ({id: orgId}) => ({orgId})
 }
 
 export default Organization

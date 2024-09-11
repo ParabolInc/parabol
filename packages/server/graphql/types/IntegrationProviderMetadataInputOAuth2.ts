@@ -24,7 +24,7 @@ export const IntegrationProviderMetadataInputOAuth2 = new GraphQLInputObjectType
       description: 'The client secret to give to the provider'
     },
     tenantId: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The tenant id to give to the provider'
     }
   })
