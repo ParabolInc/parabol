@@ -96,6 +96,7 @@ export const BILLING_PAGE = 'billing'
 export const MEMBERS_PAGE = 'members'
 export const TEAMS_PAGE = 'teams'
 export const ORG_SETTINGS_PAGE = 'settings'
+export const ORG_INTEGRATIONS_PAGE = 'integrations'
 export const AUTHENTICATION_PAGE = 'authentication'
 
 /* Stripe */

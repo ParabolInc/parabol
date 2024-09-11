@@ -20,5 +20,5 @@ input IntegrationProviderMetadataInputOAuth2 {
   """
   The tenant id to give to the provider
   """
-  tenantId: String!
+  tenantId: String
 }
