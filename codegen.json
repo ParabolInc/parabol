@@ -4,7 +4,7 @@
     "defaultScalarType": "string",
     "enumsAsTypes": true,
     "optionalResolveType": true,
-    "scalars": {"DateTime": "Date", "File": "TFile", "RRule": "RRule"}
+    "scalars": {"DateTime": "Date", "File": "TFile", "RRule": "RRuleSet"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -55,6 +55,7 @@
           "SetSlackNotificationPayload": "./types/SetSlackNotificationPayload#SetSlackNotificationPayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",
+          "AddIntegrationProviderSuccess": "./types/AddIntegrationProviderSuccess#AddIntegrationProviderSuccessSource",
           "DeleteCommentSuccess": "./types/DeleteCommentSuccess#DeleteCommentSuccessSource",
           "UpdateCommentContentSuccess": "./types/UpdateCommentContentSuccess#UpdateCommentContentSuccessSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
@@ -140,11 +141,12 @@
           "TemplateScale": "../../postgres/types/index#TemplateScale as TemplateScaleDB",
           "TemplateScaleRef": "../../postgres/types/index#TemplateScaleRef as TemplateScaleRefDB",
           "Threadable": "./types/Threadable#ThreadableSource",
+          "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "PokerMeetingMember": "../../database/types/MeetingPokerMeetingMember#default as PokerMeetingMemberDB",
           "PokerTemplate": "../../database/types/PokerTemplate#default as PokerTemplateDB",
-          "RRule": "rrule#RRule",
+          "RRule": "rrule-rust#RRuleSet",
           "Reactable": "../../database/types/Reactable#Reactable",
           "Reactji": "../types/Reactji#ReactjiSource",
           "ReflectPrompt": "../../database/types/RetrospectivePrompt#default",

@@ -1,13 +1,15 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeIntegrationProviderQuery from '../../postgres/queries/removeIntegrationProvider'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
+import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RemoveIntegrationProviderPayload from '../types/RemoveIntegrationProviderPayload'
 
 const removeIntegrationProvider = {
-  name: 'RemoveIntegrationProvider',
+  name: 'removeIntegrationProvider',
   type: new GraphQLNonNull(RemoveIntegrationProviderPayload),
   description: 'Remove an Integration Provider, and any associated tokens',
   args: {
@@ -19,9 +21,11 @@ const removeIntegrationProvider = {
   resolve: async (
     _source: unknown,
     {providerId}: {providerId: string},
-    {authToken, dataLoader}: GQLContext
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
     const providerDbId = IntegrationProviderId.split(providerId)
@@ -37,14 +41,31 @@ const removeIntegrationProvider = {
         return {error: {message: 'Must be a member of the organization that created the provider'}}
       }
       if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
-        return {error: {message: 'Must be on the team that created the provider'}}
+        const team = await dataLoader.get('teams').load(teamId!)
+        if (!team || !isUserOrgAdmin(viewerId, team.orgId, dataLoader)) {
+          return {error: {message: 'Must be on the team that created the provider'}}
+        }
       }
     }
 
     // RESOLUTION
     await removeIntegrationProviderQuery(providerDbId)
 
-    const data = {userId: viewerId, teamId}
+    const data = {
+      providerId,
+      orgIntegrationProviders: orgId ? {orgId} : null,
+      teamMemberIntegrations: teamId ? {teamId, userId: viewerId} : null
+    }
+
+    if (orgId) {
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        orgId,
+        'RemoveIntegrationProviderSuccess',
+        data,
+        subOptions
+      )
+    }
     return data
   }
 }

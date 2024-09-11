@@ -20,8 +20,8 @@ const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
 }
 
 const openAPIWithTimeout =
-  (client: ClientMethod<any, any>, toError: (error: unknown) => any, timeout: number) =>
-  async (...args: Parameters<ClientMethod<any, any>>) => {
+  (client: ClientMethod<any, any, any>, toError: (error: unknown) => any, timeout: number) =>
+  async (...args: Parameters<ClientMethod<any, any, any>>) => {
     const controller = new AbortController()
     const {signal} = controller
     const timeoutId = setTimeout(() => {
