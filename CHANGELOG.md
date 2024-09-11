@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.1](https://github.com/ParabolInc/parabol/compare/v7.47.0...v7.47.1) (2024-09-11)
+
+
+### Fixed
+
+* move to rrule-rust ([#10181](https://github.com/ParabolInc/parabol/issues/10181)) ([2952c3d](https://github.com/ParabolInc/parabol/commit/2952c3d88b60aa3ebc6001ecd10eca10357b7570))
+
+
+### Changed
+
+* **rethinkdb:** ReflectPrompt: Phase 1 ([#10193](https://github.com/ParabolInc/parabol/issues/10193)) ([e48732b](https://github.com/ParabolInc/parabol/commit/e48732b73e1c52de05ded693bc5e8b69d628dcba))
+
 ## [7.47.0](https://github.com/ParabolInc/parabol/compare/v7.46.3...v7.47.0) (2024-09-10)
 
 
