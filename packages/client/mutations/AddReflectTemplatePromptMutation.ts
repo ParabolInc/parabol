@@ -8,7 +8,7 @@ import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplateP
 
 interface Handlers extends BaseLocalHandlers {
   promptCount: number
-  sortOrder: number
+  sortOrder: string
 }
 
 graphql`

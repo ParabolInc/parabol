@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -8,9 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const reflectTemplatePromptUpdateDescription: MutationResolvers['reflectTemplatePromptUpdateDescription'] =
   async (_source, {promptId, description}, {authToken, dataLoader, socketId: mutatorId}) => {
-    const r = await getRethink()
     const pg = getKysely()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await dataLoader.get('reflectPrompts').load(promptId)
@@ -29,21 +26,11 @@ const reflectTemplatePromptUpdateDescription: MutationResolvers['reflectTemplate
     const normalizedDescription = description.trim().slice(0, 256) || ''
 
     // RESOLUTION
-    await Promise.all([
-      r
-        .table('ReflectPrompt')
-        .get(promptId)
-        .update({
-          description: normalizedDescription,
-          updatedAt: now
-        })
-        .run(),
-      pg
-        .updateTable('ReflectPrompt')
-        .set({description: normalizedDescription})
-        .where('id', '=', promptId)
-        .execute()
-    ])
+    await pg
+      .updateTable('ReflectPrompt')
+      .set({description: normalizedDescription})
+      .where('id', '=', promptId)
+      .execute()
     dataLoader.clearAll('reflectPrompts')
     const data = {promptId}
     publish(

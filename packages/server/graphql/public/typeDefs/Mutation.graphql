@@ -433,7 +433,7 @@ type Mutation {
   """
   Move a reflect template
   """
-  moveReflectTemplatePrompt(promptId: ID!, sortOrder: Float!): MoveReflectTemplatePromptPayload
+  moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
 
   """
   Move a team to a different org. Requires billing leader rights on both orgs!

@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {PALETTE} from '../../../../client/styles/paletteV3'
-import getRethink from '../../../database/rethinkDriver'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -19,7 +18,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
@@ -92,7 +90,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       }
     })
     await Promise.all([
-      r.table('ReflectPrompt').insert(newTemplatePrompts).run(),
       pg
         .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
         .insertInto('ReflectPrompt')
@@ -121,10 +118,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
     const newTemplate = templates[0]!
     const {id: templateId} = newTemplate
     await Promise.all([
-      r
-        .table('ReflectPrompt')
-        .insert(newTemplatePrompts.map((p, idx) => ({...p, sortOrder: idx})))
-        .run(),
       pg
         .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
         .insertInto('ReflectPrompt')

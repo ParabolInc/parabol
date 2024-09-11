@@ -22,7 +22,7 @@ type ReflectPrompt {
   """
   the order of the items in the template
   """
-  sortOrder: Float!
+  sortOrder: String!
 
   """
   FK for template

@@ -112,6 +112,6 @@ export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
 })
 
-export const _pgreflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectReflectPrompts().where('id', 'in', ids).execute()
 })
