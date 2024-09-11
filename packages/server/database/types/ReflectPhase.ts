@@ -4,7 +4,8 @@ import GenericMeetingStage from './GenericMeetingStage'
 
 export default class ReflectPhase extends GenericMeetingPhase {
   stages: [GenericMeetingStage, ...GenericMeetingStage[]]
-  focusedPromptId?: string
+  focusedPromptId?: string;
+  [k: string]: any
 
   constructor(
     public teamId: string,

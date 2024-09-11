@@ -2,13 +2,11 @@ import dayjs from 'dayjs'
 import ms from 'ms'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../client/shared/rruleUtil'
-import getRethink from '../database/rethinkDriver'
 import DiscussPhase from '../database/types/DiscussPhase'
-import MeetingRetrospective from '../database/types/MeetingRetrospective'
-import MeetingTeamPrompt from '../database/types/MeetingTeamPrompt'
 import ReflectPhase from '../database/types/ReflectPhase'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import generateUID from '../generateUID'
+import getKysely from '../postgres/getKysely'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../postgres/queries/insertMeetingSeries'
 import {getUserTeams, sendIntranet, signUp} from './common'
 
@@ -60,22 +58,28 @@ const assertIdempotency = async () => {
 }
 
 test('Should not end meetings that are not scheduled to end', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?'
-  })
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      facilitatorStageId: phase.stages[0]?.id
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -93,28 +97,38 @@ test('Should not end meetings that are not scheduled to end', async () => {
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeFalsy()
 })
 
 test('Should not end meetings that are scheduled to end in the future', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() + ms('5m'))
-  })
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      scheduledEndTime: new Date(Date.now() + ms('5m')),
+      facilitatorStageId: phase.stages[0]?.id
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -132,30 +146,39 @@ test('Should not end meetings that are scheduled to end in the future', async ()
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeFalsy()
-
-  await r.table('NewMeeting').get(meetingId).delete().run()
+  await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
 })
 
 test('Should end meetings that are scheduled to end in the past', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() - ms('5m'))
-  })
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      scheduledEndTime: new Date(Date.now() - ms('5m')),
+      facilitatorStageId: phase.stages[0]?.id
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -173,12 +196,16 @@ test('Should end meetings that are scheduled to end in the past', async () => {
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeTruthy()
 }, 10000)
 
 test('Should end the current team prompt meeting and start a new meeting', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
@@ -197,22 +224,27 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   })
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() - ms('5m')),
-    meetingSeriesId
-  })
-
-  // The last meeting in the series was created just over 24h ago, so the next one should start
-  // soon.
-  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      scheduledEndTime: new Date(Date.now() - ms('5m')),
+      facilitatorStageId: phase.stages[0]?.id,
+      meetingSeriesId,
+      // The last meeting in the series was created just over 24h ago, so the next one should start
+      // soon.
+      createdAt: new Date(Date.now() - ms('25h'))
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -230,15 +262,20 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeTruthy()
 
-  const lastMeeting = await r
-    .table('NewMeeting')
-    .filter({meetingType: 'teamPrompt', meetingSeriesId})
-    .orderBy(r.desc('createdAt'))
-    .nth(0)
-    .run()
+  const lastMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('meetingType', '=', 'teamPrompt')
+    .orderBy('createdAt desc')
+    .limit(1)
+    .executeTakeFirst()
 
   expect(lastMeeting).toMatchObject({
     name: expect.stringMatching(/Daily Test Standup.*/),
@@ -247,7 +284,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 })
 
 test('Should end the current retro meeting and start a new meeting', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
@@ -267,26 +304,31 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   })
 
   const meetingId = generateUID()
-  const meeting = new MeetingRetrospective({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new ReflectPhase(teamId, []), new DiscussPhase(undefined)],
-    facilitatorUserId: userId,
-    scheduledEndTime: new Date(Date.now() - ms('5m')),
-    meetingSeriesId,
-    templateId: 'startStopContinueTemplate',
-    disableAnonymity: false,
-    totalVotes: 5,
-    name: '',
-    maxVotesPerGroup: 5
-  })
-
-  // The last meeting in the series was created just over 24h ago, so the next one should start
-  // soon.
-  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phases = [new ReflectPhase(teamId, []), new DiscussPhase(undefined)]
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases,
+      facilitatorUserId: userId,
+      meetingType: 'retrospective',
+      scheduledEndTime: new Date(Date.now() - ms('5m')),
+      facilitatorStageId: phases[0]?.stages[0]?.id,
+      meetingSeriesId,
+      templateId: 'startStopContinueTemplate',
+      disableAnonymity: false,
+      totalVotes: 5,
+      name: '',
+      maxVotesPerGroup: 5,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      // The last meeting in the series was created just over 24h ago, so the next one should start
+      // soon.
+      createdAt: new Date(Date.now() - ms('25h'))
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -304,15 +346,20 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeTruthy()
 
-  const lastMeeting = await r
-    .table('NewMeeting')
-    .filter({meetingType: 'retrospective', meetingSeriesId})
-    .orderBy(r.desc('createdAt'))
-    .nth(0)
-    .run()
+  const lastMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('meetingType', '=', 'teamPrompt')
+    .orderBy('createdAt desc')
+    .limit(1)
+    .executeTakeFirst()
 
   expect(lastMeeting).toMatchObject({
     meetingSeriesId
@@ -320,7 +367,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 })
 
 test('Should only start a new meeting if it would still be active', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
@@ -340,23 +387,28 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   })
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() - ms('73h')),
-    meetingSeriesId: newMeetingSeriesId
-  })
-
-  // The last meeting in the series was created just over 72h ago, so 3 meetings should have started
-  // since then, but only 1 meeting should start as a result of the mutation.
-  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('73h'))
-  meeting.endedAt = new Date(Date.now() - ms('49h'))
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      facilitatorStageId: phase.stages[0]?.id,
+      scheduledEndTime: new Date(Date.now() - ms('73h')),
+      meetingSeriesId: newMeetingSeriesId,
+      // The last meeting in the series was created just over 72h ago, so 3 meetings should have started
+      // since then, but only 1 meeting should start as a result of the mutation.
+      createdAt: new Date(Date.now() - ms('73h')),
+      endedAt: new Date(Date.now() - ms('49h'))
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -374,12 +426,16 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeTruthy()
 }, 10000)
 
 test('Should not start a new meeting if the rrule has not started', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
@@ -399,23 +455,28 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   })
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() - ms('1h')),
-    meetingSeriesId: newMeetingSeriesId
-  })
-
-  // The last meeting in the series was created just over 24h ago, but the active rrule doesn't
-  // start until tomorrow.
-  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
-  meeting.endedAt = new Date(Date.now() - ms('1h'))
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      facilitatorStageId: phase.stages[0]?.id,
+      scheduledEndTime: new Date(Date.now() - ms('1h')),
+      meetingSeriesId: newMeetingSeriesId,
+      // The last meeting in the series was created just over 24h ago, but the active rrule doesn't
+      // start until tomorrow.
+      createdAt: new Date(Date.now() - ms('25h')),
+      endedAt: new Date(Date.now() - ms('1h'))
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -433,12 +494,16 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeTruthy()
 })
 
 test('Should not hang if the rrule interval is invalid', async () => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {userId} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
   const teamMemberId = TeamMemberId.join(teamId, userId)
@@ -458,22 +523,27 @@ RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   })
 
   const meetingId = generateUID()
-  const meeting = new MeetingTeamPrompt({
-    id: meetingId,
-    teamId,
-    meetingCount: 0,
-    phases: [new TeamPromptResponsesPhase([teamMemberId])],
-    facilitatorUserId: userId,
-    meetingPrompt: 'What are you working on today? Stuck on anything?',
-    scheduledEndTime: new Date(Date.now() - ms('5m')),
-    meetingSeriesId: newMeetingSeriesId
-  })
-
-  // The last meeting in the series was created just over 24h ago, so the next one should start soon
-  // but the rrule is invalid, so it won't happen
-  meeting.createdAt = new Date(meeting.createdAt.getTime() - ms('25h'))
-
-  await r.table('NewMeeting').insert(meeting).run()
+  const phase = new TeamPromptResponsesPhase([teamMemberId])
+  await pg
+    .insertInto('NewMeeting')
+    .values({
+      id: meetingId,
+      teamId,
+      meetingCount: 0,
+      meetingNumber: 1,
+      phases: [phase],
+      facilitatorUserId: userId,
+      meetingPrompt: 'What are you working on today? Stuck on anything?',
+      name: `Team Prompt #1`,
+      meetingType: 'teamPrompt',
+      facilitatorStageId: phase.stages[0]?.id,
+      scheduledEndTime: new Date(Date.now() - ms('5m')),
+      meetingSeriesId: newMeetingSeriesId,
+      // The last meeting in the series was created just over 24h ago, so the next one should start soon
+      // but the rrule is invalid, so it won't happen
+      createdAt: new Date(Date.now() - ms('25h'))
+    })
+    .execute()
 
   const update = await sendIntranet({
     query: PROCESS_RECURRENCE,
@@ -491,6 +561,10 @@ RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
   await assertIdempotency()
 
-  const actualMeeting = await r.table('NewMeeting').get(meetingId).run()
+  const actualMeeting = await pg
+    .selectFrom('NewMeeting')
+    .selectAll()
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
   expect(actualMeeting.endedAt).toBeTruthy()
 })
