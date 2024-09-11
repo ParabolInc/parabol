@@ -36,9 +36,10 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    return dataLoader
+    const sharedProviders = await dataLoader
       .get('sharedIntegrationProviders')
       .load({service: 'gitlab', orgIds: [orgId], teamIds: [teamId]})
+    return sharedProviders.filter(({scope}) => scope !== 'global')
   },
 
   gitlabSearchQueries: async () => [],

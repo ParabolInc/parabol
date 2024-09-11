@@ -18,13 +18,11 @@ interface Props {
 }
 
 graphql`
-  fragment MSTeamsProviderRowTeamMember on TeamMember {
-    integrations {
-      msTeams {
-        auth {
-          provider {
-            id
-          }
+  fragment MSTeamsProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
+    msTeams {
+      auth {
+        provider {
+          id
         }
       }
     }
@@ -37,7 +35,9 @@ const MSTeamsProviderRow = (props: Props) => {
       fragment MSTeamsProviderRow_viewer on User {
         ...MSTeamsPanel_viewer
         teamMember(teamId: $teamId) {
-          ...MSTeamsProviderRowTeamMember @relay(mask: false)
+          integrations {
+            ...MSTeamsProviderRowTeamMemberIntegrations @relay(mask: false)
+          }
         }
       }
     `,

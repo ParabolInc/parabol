@@ -4,12 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   transform: {
     '\\.(gql|graphql)$': '../server/__tests__/jest-transform-graphql-shim.js',
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        diagnostics: false
-      }
-    ]
+    '^.+\\.(t|j)sx?$': ['@swc/jest']
   },
   modulePaths: ['<rootDir>/packages/'],
   moduleNameMapper: {

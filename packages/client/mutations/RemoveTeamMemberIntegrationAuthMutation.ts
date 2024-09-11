@@ -7,11 +7,13 @@ graphql`
   fragment RemoveTeamMemberIntegrationAuthMutation_team on RemoveTeamMemberIntegrationAuthSuccess {
     teamMember {
       ...GitLabProviderRowTeamMember
-      ...MattermostProviderRowTeamMember
       ...JiraServerProviderRowTeamMember
       ...AzureDevOpsProviderRowTeamMember
-      ...MSTeamsProviderRowTeamMember
       ...GcalProviderRowTeamMember
+      integrations {
+        ...MattermostProviderRowTeamMemberIntegrations
+        ...MSTeamsProviderRowTeamMemberIntegrations
+      }
     }
   }
 `
