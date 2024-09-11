@@ -13,7 +13,7 @@ interface Input {
   facilitatorUserId: string
   showConversionModal?: boolean
   meetingSeriesId?: number
-  scheduledEndTime?: Date
+  scheduledEndTime?: Date | null
   summary?: string
   sentimentScore?: number
 }

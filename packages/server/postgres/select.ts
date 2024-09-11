@@ -228,3 +228,5 @@ export const selectComments = () =>
       'threadSortOrder'
     ])
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
+
+export const selectReflectPrompts = () => getKysely().selectFrom('ReflectPrompt').selectAll()

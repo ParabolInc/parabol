@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import ms from 'ms'
 import React from 'react'
 import {MenuProps} from '../../hooks/useMenu'
@@ -7,7 +7,7 @@ import MenuItem from '../MenuItem'
 
 interface Props {
   menuProps: MenuProps
-  onClick: (n: Date) => void
+  onClick: (n: Dayjs) => void
 }
 
 const OPTIONS = [...Array(96).keys()].map((n) => n * ms('15m'))
@@ -16,7 +16,6 @@ const DEFAULT_MEETING_START_TIME_IDX = OPTIONS.findIndex((n) => n === ms('6h'))
 
 export const RecurrenceTimePicker = (props: Props) => {
   const {menuProps, onClick} = props
-  const startOfToday = new Date().setHours(0, 0, 0, 0)
   return (
     <Menu
       {...menuProps}
@@ -24,12 +23,12 @@ export const RecurrenceTimePicker = (props: Props) => {
       defaultActiveIdx={DEFAULT_MEETING_START_TIME_IDX}
     >
       {OPTIONS.map((n, idx) => {
-        const proposedTime = dayjs(startOfToday + n).add(1, 'day')
+        const proposedTime = dayjs().add(1, 'day').startOf('day').add(n, 'ms')
         return (
           <MenuItem
             key={idx}
             label={proposedTime.format('h:mm A')}
-            onClick={() => onClick(proposedTime.toDate())}
+            onClick={() => onClick(proposedTime)}
           />
         )
       })}
