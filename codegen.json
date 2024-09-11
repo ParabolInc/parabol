@@ -46,6 +46,12 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
+          "ReflectTemplatePromptUpdateGroupColorPayload": "./types/ReflectTemplatePromptUpdateGroupColorPayload#ReflectTemplatePromptUpdateGroupColorPayloadSource",
+          "RemoveReflectTemplatePromptPayload": "./types/RemoveReflectTemplatePromptPayload#RemoveReflectTemplatePromptPayloadSource",
+          "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",
+          "MoveReflectTemplatePromptPayload": "./types/MoveReflectTemplatePromptPayload#MoveReflectTemplatePromptPayloadSource",
+          "AddReflectTemplatePromptPayload": "./types/AddReflectTemplatePromptPayload#AddReflectTemplatePromptPayloadSource",
           "SetSlackNotificationPayload": "./types/SetSlackNotificationPayload#SetSlackNotificationPayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",
