@@ -20,7 +20,7 @@ export default class LocalFileStoreManager extends FileStoreManager {
   protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const fsAbsLocation = path.join(process.cwd(), fullPath)
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
-    await fs.promises.writeFile(fsAbsLocation, Buffer.from(file))
+    await fs.promises.writeFile(fsAbsLocation, Buffer.from(file) as any)
     return this.getPublicFileLocation(fullPath)
   }
 
