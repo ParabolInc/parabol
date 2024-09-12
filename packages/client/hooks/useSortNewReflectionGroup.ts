@@ -31,7 +31,7 @@ const useSortNewReflectionGroup = (
           ) as string
           reflectionGroup.setValue(parseInt(smallestSubColumnIdx), 'subColumnIdx')
         } else {
-          subColumnIdxCounts[currentSubColumnIdx] += 1
+          subColumnIdxCounts[currentSubColumnIdx]! += 1
         }
       })
     })
