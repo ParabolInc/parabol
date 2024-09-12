@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {RValue} from '../../database/stricterR'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -33,9 +32,12 @@ const pokerResetDimension = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
+    }
+    if (meeting.meetingType !== 'poker') {
+      return {error: {message: 'Not a poker meeting'}}
     }
     const {endedAt, phases, meetingType, teamId, createdBy, facilitatorUserId} = meeting
     if (!isTeamMember(authToken, teamId)) {

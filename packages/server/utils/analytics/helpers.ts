@@ -1,11 +1,10 @@
 import {CHECKIN} from '../../../client/utils/constants'
-import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
+import {AnyMeeting, RetrospectiveMeeting} from '../../postgres/types/Meeting'
 
 export const createMeetingProperties = (
-  meeting: Meeting,
+  meeting: AnyMeeting,
   meetingMembers?: MeetingMember[],
   template?: MeetingTemplate
 ) => {
@@ -29,7 +28,7 @@ export const createMeetingProperties = (
     meetingSeriesId: meeting.meetingSeriesId,
     disableAnonymity:
       meetingType === 'retrospective'
-        ? (meeting as MeetingRetrospective).disableAnonymity ?? false
+        ? (meeting as RetrospectiveMeeting).disableAnonymity ?? false
         : undefined
   }
 }

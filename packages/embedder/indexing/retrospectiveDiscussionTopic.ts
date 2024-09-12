@@ -1,4 +1,3 @@
-import {isMeetingRetrospective} from 'parabol-server/database/types/MeetingRetrospective'
 import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
 import {Comment} from '../../server/postgres/types'
@@ -73,7 +72,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
     dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
   ])
-  if (!isMeetingRetrospective(newMeeting)) throw new Error('Meeting is not a retro')
+  if (newMeeting.meetingType !== 'retrospective') throw new Error('Meeting is not a retro')
   // It should never be undefined, but our data integrity in RethinkDB is bad
   const templateId = newMeeting?.templateId ?? ''
 

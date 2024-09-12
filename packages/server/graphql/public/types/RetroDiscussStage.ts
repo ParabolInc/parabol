@@ -1,5 +1,5 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {RetroDiscussStageResolvers} from '../resolverTypes'
 
 // note: this is the GraphQL type, not source DB type
@@ -27,7 +27,7 @@ const RetroDiscussStage: RetroDiscussStageResolvers = {
 
   reflectionGroup: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {
     if (!reflectionGroupId) {
-      const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
+      const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as RetrospectiveMeeting
       const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
       return new ReflectionGroup({
         id: `${meetingId}:dummyGroup`,

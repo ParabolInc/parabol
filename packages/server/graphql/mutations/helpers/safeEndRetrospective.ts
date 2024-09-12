@@ -4,9 +4,9 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../../utils/Logger'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
@@ -33,14 +33,14 @@ const getTranscription = async (recallBotId?: string | null) => {
   return await manager.getBotTranscript(recallBotId)
 }
 
-const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: InternalContext) => {
+const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const r = await getRethink()
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId, dataLoader)
+    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId!, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
@@ -48,7 +48,7 @@ const summarizeRetroMeeting = async (meeting: MeetingRetrospective, context: Int
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
   const [summary, transcription] = await Promise.all([
-    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId, dataLoader),
+    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId!, dataLoader),
     getTranscription(recallBotId)
   ])
   const commentCounts = (
@@ -93,7 +93,7 @@ const safeEndRetrospective = async ({
   context,
   now
 }: {
-  meeting: MeetingRetrospective
+  meeting: RetrospectiveMeeting
   context: InternalContext
   now: Date
 }) => {
@@ -127,7 +127,7 @@ const safeEndRetrospective = async ({
       {returnChanges: true}
     )('changes')(0)('new_val')
     .default(null)
-    .run()) as unknown as MeetingRetrospective
+    .run()) as unknown as RetrospectiveMeeting
 
   if (!completedRetrospective) {
     return standardError(new Error('Completed retrospective meeting does not exist'), {

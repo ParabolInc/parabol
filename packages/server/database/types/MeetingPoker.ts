@@ -1,22 +1,15 @@
-import CheckInPhase from './CheckInPhase'
-import EstimatePhase from './EstimatePhase'
-import GenericMeetingPhase from './GenericMeetingPhase'
+import {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import Meeting from './Meeting'
 
-type PokerPhase = CheckInPhase | EstimatePhase | GenericMeetingPhase
 interface Input {
   id: string
   teamId: string
   meetingCount: number
   name: string
-  phases: [PokerPhase, ...PokerPhase[]]
+  phases: [PokerMeetingPhase, ...PokerMeetingPhase[]]
   facilitatorUserId: string
   templateId: string
   templateRefId: string
-}
-
-export function isMeetingPoker(meeting: Meeting): meeting is MeetingPoker {
-  return meeting.meetingType === 'poker'
 }
 
 export default class MeetingPoker extends Meeting {

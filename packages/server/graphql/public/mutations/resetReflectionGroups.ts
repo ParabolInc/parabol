@@ -75,7 +75,7 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
     .get(meetingId)
     .replace(r.row.without('resetReflectionGroups') as any)
     .run()
-  meeting.resetReflectionGroups = undefined
+  meeting.resetReflectionGroups = null
   analytics.resetGroupsClicked(viewer, meetingId, teamId)
   const data = {meetingId}
   publish(SubscriptionChannel.MEETING, meetingId, 'ResetReflectionGroupsSuccess', data, subOptions)

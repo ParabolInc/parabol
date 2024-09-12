@@ -20,7 +20,7 @@ export async function up() {
       "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
       "createdBy" VARCHAR(100),
       "endedAt" TIMESTAMP WITH TIME ZONE,
-      "facilitatorStageId" VARCHAR(100),
+      "facilitatorStageId" VARCHAR(100) NOT NULL,
       "facilitatorUserId" VARCHAR(100),
       "meetingCount" INT NOT NULL,
       "meetingNumber" INT NOT NULL,

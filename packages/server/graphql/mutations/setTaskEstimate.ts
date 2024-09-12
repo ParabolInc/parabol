@@ -3,7 +3,6 @@ import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-clien
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
@@ -69,10 +68,10 @@ const setTaskEstimate = {
       return {error: {message: 'Invalid dimension name'}}
     }
 
-    const {phases, meetingType, templateRefId, name: meetingName} = meeting as MeetingPoker
-    if (meetingType !== 'poker') {
+    if (meeting.meetingType !== 'poker') {
       return {error: {message: 'Invalid poker meeting'}}
     }
+    const {phases, templateRefId, name: meetingName} = meeting
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const dimensionRefIdx = dimensions.findIndex((dimension) => dimension.name === dimensionName)

@@ -8,13 +8,15 @@ import stringSimilarity from 'string-similarity'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import DiscussPhase from '../../../server/database/types/DiscussPhase'
-import DiscussStage from '../../../server/database/types/DiscussStage'
-import NewMeetingPhase from '../../../server/database/types/GenericMeetingPhase'
-import NewMeetingStage from '../../../server/database/types/GenericMeetingStage'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import ITask from '../../../server/database/types/Task'
+import {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
+import {
+  DiscussPhase,
+  DiscussStage,
+  NewMeetingPhase
+} from '../../../server/postgres/types/NewMeetingPhase'
 import {
   ExternalLinks,
   MeetingSettingsThreshold,
@@ -100,11 +102,7 @@ export type DemoReflectionGroup = {
   voterIds: string[]
 }
 
-export type IDiscussPhase = Omit<DiscussPhase, 'readyToAdvance' | 'endAt' | 'startAt'> & {
-  readyToAdvance: any
-  startAt: string | Date
-  endAt: string | Date
-}
+export type IDiscussPhase = DiscussPhase
 
 export type IReflectPhase = Omit<ReflectPhase, 'endAt' | 'startAt'> & {
   startAt: string | Date
@@ -1048,7 +1046,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           reflectionGroupId: newReflectionGroupId,
           updatedAt: now
         })
-        this.db.newMeeting.nextAutoGroupThreshold = null
         const nextTitle = getGroupSmartTitle([reflection as DemoReflection])
         newReflectionGroup.smartTitle = nextTitle
         newReflectionGroup.title = nextTitle
@@ -1523,7 +1520,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     EndRetrospectiveMutation: ({meetingId}: {meetingId: string}, userId: string) => {
       const phases = this.db.newMeeting.phases as INewMeetingPhase[]
-      const lastPhase = phases[phases.length - 1] as IDiscussPhase
+      const lastPhase = phases[phases.length - 1]!
       const currentStage = lastPhase.stages.find(
         (stage) => stage.startAt && !stage.endAt
       ) as IDiscussStage

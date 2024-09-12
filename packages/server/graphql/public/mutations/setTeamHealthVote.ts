@@ -3,12 +3,44 @@ import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import TeamHealthVote from '../../../database/types/TeamHealthVote'
 import updateStage from '../../../database/updateStage'
+import getKysely from '../../../postgres/getKysely'
+import {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase.d'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 
 const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealthVote) => {
+  const pg = getKysely()
+  await pg.transaction().execute(async (trx) => {
+    // console.log('start transaction', newVote)
+    const meeting = await trx
+      .selectFrom('NewMeeting')
+      .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
+      .where('id', '=', meetingId)
+      .forUpdate()
+      // NewMeeting: add OrThrow in phase 3
+      .executeTakeFirst()
+    if (!meeting) return
+    // console.log('got lock', newVote)
+    const {phases} = meeting
+    const phase = getPhase(phases, 'TEAM_HEALTH')
+    const {stages} = phase
+    const [stage] = stages
+    const {votes} = stage
+    const existingVote = votes.find((vote) => vote.userId === newVote.userId)
+    if (existingVote) {
+      existingVote.vote = newVote.vote
+    } else {
+      votes.push(newVote)
+    }
+    await trx
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(phases)})
+      .where('id', '=', meetingId)
+      .execute()
+    // console.log('wrote update, commit', newVote)
+  })
   const r = await getRethink()
   const updater = (stage: RValue) =>
     stage.merge({

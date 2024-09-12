@@ -8,7 +8,8 @@ import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingTypeEnum, PokerMeeting} from '../../postgres/types/Meeting'
+import {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
@@ -123,7 +124,7 @@ export default {
       .default(0)
       .run()
 
-    const phases = await createNewMeetingPhases(
+    const phases = await createNewMeetingPhases<PokerMeetingPhase>(
       viewerId,
       teamId,
       meetingId,
@@ -149,7 +150,7 @@ export default {
       facilitatorUserId: viewerId,
       templateId: selectedTemplateId,
       templateRefId
-    })
+    }) as PokerMeeting
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     await Promise.all([

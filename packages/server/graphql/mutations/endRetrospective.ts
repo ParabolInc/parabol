@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -27,7 +27,7 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-      .run()) as MeetingRetrospective | null
+      .run()) as RetrospectiveMeeting | null
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, teamId} = meeting
 

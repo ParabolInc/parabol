@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getRethink from '../../database/rethinkDriver'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
+import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -43,7 +43,7 @@ export default {
       })
     }
     const {meetingId} = reflectionGroup
-    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as RetrospectiveMeeting
     const {endedAt, phases, maxVotesPerGroup, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

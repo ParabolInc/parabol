@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import updateStage from '../../database/updateStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -71,19 +70,19 @@ const voteForPokerStory = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
-    const {endedAt, phases, meetingType, teamId, templateRefId} = meeting
+    if (meeting.meetingType !== 'poker') {
+      return {error: {message: 'Not a poker meeting'}}
+    }
+    const {endedAt, phases, teamId, templateRefId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
-    }
-    if (meetingType !== 'poker') {
-      return {error: {message: 'Not a poker meeting'}}
     }
     // No need to check for now (https://github.com/ParabolInc/parabol/issues/7191)
     // if (isPhaseComplete('ESTIMATE', phases)) {

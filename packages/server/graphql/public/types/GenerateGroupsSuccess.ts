@@ -1,4 +1,4 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {GenerateGroupsSuccessResolvers} from '../resolverTypes'
 
 export type GenerateGroupsSuccessSource = {
@@ -8,7 +8,7 @@ export type GenerateGroupsSuccessSource = {
 const GenerateGroupsSuccess: GenerateGroupsSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    return meeting as MeetingRetrospective
+    return meeting as RetrospectiveMeeting
   }
 }
 

@@ -5,11 +5,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective, {
-  isMeetingRetrospective
-} from '../../../database/types/MeetingRetrospective'
-import MeetingTeamPrompt, {isMeetingTeamPrompt} from '../../../database/types/MeetingTeamPrompt'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
+import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
@@ -52,7 +49,7 @@ const startRecurringMeeting = async (
   const meetingName = createMeetingSeriesTitle(meetingSeries.title, startTime, rrule.tzid)
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
-      const teamPromptMeeting = lastMeeting as MeetingTeamPrompt | null
+      const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
       const meeting = await safeCreateTeamPrompt(
         meetingName,
         teamId,
@@ -71,7 +68,7 @@ const startRecurringMeeting = async (
       return meeting
     } else if (meetingSeries.meetingType === 'retrospective') {
       const {totalVotes, maxVotesPerGroup, disableAnonymity, templateId} =
-        (lastMeeting as MeetingRetrospective) ?? {
+        (lastMeeting as RetrospectiveMeeting) ?? {
           templateId: meetingSettings.selectedTemplateId,
           ...meetingSettings
         }
@@ -130,9 +127,9 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
   const res = await tracer.trace('processRecurrence.endMeetings', async () =>
     Promise.all(
       meetingsToEnd.map((meeting) => {
-        if (isMeetingTeamPrompt(meeting)) {
+        if (meeting.meetingType === 'teamPrompt') {
           return safeEndTeamPrompt({meeting, now, context, r, subOptions})
-        } else if (isMeetingRetrospective(meeting)) {
+        } else if (meeting.meetingType === 'retrospective') {
           return safeEndRetrospective({meeting, now, context})
         } else {
           return standardError(new Error('Unhandled recurring meeting type'), {

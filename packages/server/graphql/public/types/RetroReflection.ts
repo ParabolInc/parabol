@@ -1,4 +1,4 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import {RetroReflectionResolvers} from '../resolverTypes'
@@ -35,7 +35,7 @@ const RetroReflection: RetroReflectionResolvers = {
 
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    return meeting as MeetingRetrospective
+    return meeting as RetrospectiveMeeting
   },
 
   prompt: ({promptId}, _args, {dataLoader}) => {

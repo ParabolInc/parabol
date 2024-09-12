@@ -6,8 +6,6 @@ import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
 import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
-import Meeting from '../../database/types/Meeting'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
@@ -15,6 +13,7 @@ import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStag
 import UpdatesStage from '../../database/types/UpdatesStage'
 import getKysely from '../../postgres/getKysely'
 import {TeamMember} from '../../postgres/types'
+import {AnyMeeting, RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -22,13 +21,13 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JoinMeetingPayload from '../types/JoinMeetingPayload'
 
-const createMeetingMember = (meeting: Meeting, teamMember: TeamMember) => {
+const createMeetingMember = (meeting: AnyMeeting, teamMember: TeamMember) => {
   const {userId, teamId, isSpectatingPoker} = teamMember
   switch (meeting.meetingType) {
     case 'action':
       return new ActionMeetingMember({teamId, userId, meetingId: meeting.id})
     case 'retrospective':
-      const {id: meetingId, totalVotes} = meeting as MeetingRetrospective
+      const {id: meetingId, totalVotes} = meeting as RetrospectiveMeeting
       return new RetroMeetingMember({
         teamId,
         userId,

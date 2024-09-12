@@ -1,4 +1,4 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {StartRetrospectiveSuccessResolvers} from '../resolverTypes'
 
 export type StartRetrospectiveSuccessSource = {
@@ -9,7 +9,7 @@ export type StartRetrospectiveSuccessSource = {
 
 const StartRetrospectiveSuccess: StartRetrospectiveSuccessResolvers = {
   meeting: ({meetingId}, _args: unknown, {dataLoader}) => {
-    return dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingRetrospective>
+    return dataLoader.get('newMeetings').load(meetingId) as Promise<RetrospectiveMeeting>
   },
   team: ({teamId}, _args: unknown, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)

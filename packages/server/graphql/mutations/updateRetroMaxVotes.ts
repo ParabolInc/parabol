@@ -4,8 +4,8 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import mode from 'parabol-client/utils/mode'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import getKysely from '../../postgres/getKysely'
+import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -44,7 +44,7 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
+    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as RetrospectiveMeeting
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}

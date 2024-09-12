@@ -1,6 +1,6 @@
 import {Selectable} from 'kysely'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/pg'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import {RetroReflectionGroupResolvers} from '../resolverTypes'
 
@@ -9,7 +9,7 @@ export interface RetroReflectionGroupSource extends Selectable<TRetroReflectionG
 const RetroReflectionGroup: RetroReflectionGroupResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const retroMeeting = await dataLoader.get('newMeetings').load(meetingId)
-    return retroMeeting as MeetingRetrospective
+    return retroMeeting as RetrospectiveMeeting
   },
   prompt: ({promptId}, _args, {dataLoader}) => {
     return dataLoader.get('reflectPrompts').loadNonNull(promptId)

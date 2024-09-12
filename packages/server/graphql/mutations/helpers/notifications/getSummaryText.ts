@@ -1,16 +1,15 @@
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
-import Meeting from '../../../../database/types/Meeting'
-import {isMeetingAction} from '../../../../database/types/MeetingAction'
-import {isMeetingPoker} from '../../../../database/types/MeetingPoker'
-import {isMeetingRetrospective} from '../../../../database/types/MeetingRetrospective'
-import {isMeetingTeamPrompt} from '../../../../database/types/MeetingTeamPrompt'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {AnyMeeting} from '../../../../postgres/types/Meeting'
 import sendToSentry from '../../../../utils/sendToSentry'
 
-const getSummaryText = async (meeting: Meeting) => {
-  if (isMeetingRetrospective(meeting)) {
-    const {commentCount = 0, reflectionCount = 0, topicCount = 0, taskCount = 0} = meeting
+const getSummaryText = async (meeting: AnyMeeting) => {
+  if (meeting.meetingType === 'retrospective') {
+    const commentCount = meeting.commentCount || 0
+    const reflectionCount = meeting.reflectionCount || 0
+    const topicCount = meeting.topicCount || 0
+    const taskCount = meeting.taskCount || 0
     const hasNonZeroStat = commentCount || reflectionCount || topicCount || taskCount
     if (!hasNonZeroStat && meeting.summary) {
       sendToSentry(new Error('No stats found for meeting'), {
@@ -24,8 +23,11 @@ const getSummaryText = async (meeting: Meeting) => {
       commentCount,
       'comment'
     )} and created ${taskCount} ${plural(taskCount, 'task')}.`
-  } else if (isMeetingAction(meeting)) {
-    const {createdAt, endedAt, agendaItemCount = 0, commentCount = 0, taskCount = 0} = meeting
+  } else if (meeting.meetingType === 'action') {
+    const agendaItemCount = meeting.agendaItemCount || 0
+    const commentCount = meeting.commentCount || 0
+    const taskCount = meeting.taskCount || 0
+    const {createdAt, endedAt} = meeting
     const meetingDuration = relativeDate(createdAt, {
       now: endedAt,
       max: 2,
@@ -39,21 +41,22 @@ const getSummaryText = async (meeting: Meeting) => {
       commentCount,
       'comment'
     )}.`
-  } else if (isMeetingTeamPrompt(meeting)) {
+  } else if (meeting.meetingType === 'teamPrompt') {
     const responseCount = (await getTeamPromptResponsesByMeetingId(meeting.id)).filter(
       (response) => !!response.plaintextContent
     ).length
     // :TODO: (jmtaber129): Add additional stats here.
     return `Your team shared ${responseCount} ${plural(responseCount, 'response', 'responses')}.`
-  } else if (isMeetingPoker(meeting)) {
-    const {storyCount = 0, commentCount = 0} = meeting
+  } else if (meeting.meetingType === 'poker') {
+    const storyCount = meeting.storyCount || 0
+    const commentCount = meeting.commentCount || 0
     return `You voted on ${storyCount} ${plural(
       storyCount,
       'story',
       'stories'
     )} and added ${commentCount} ${plural(commentCount, 'comment')}.`
   } else {
-    throw new Error(`Meeting type not supported ${meeting.meetingType}`)
+    throw new Error(`Meeting type not supported ${(meeting as any).meetingType}`)
   }
 }
 

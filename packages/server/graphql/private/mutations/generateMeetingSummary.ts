@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import getPhase from '../../../utils/getPhase'
 import {MutationResolvers} from '../resolverTypes'
@@ -32,7 +32,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
         .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
-    .run()) as MeetingRetrospective[]
+    .run()) as RetrospectiveMeeting[]
 
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
@@ -87,7 +87,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
     return comments
   }
 
-  const getMeetingsContent = async (meeting: MeetingRetrospective) => {
+  const getMeetingsContent = async (meeting: RetrospectiveMeeting) => {
     const pg = getKysely()
     const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
     const rawReflectionGroups = await dataLoader

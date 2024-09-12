@@ -1,7 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
@@ -28,7 +28,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .limit(1)
       .run()
 
-    return meetings[0] as MeetingTeamPrompt
+    return meetings[0] as TeamPromptMeeting
   },
   nextMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return null
@@ -48,7 +48,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .limit(1)
       .run()
 
-    return meetings[0] as MeetingTeamPrompt
+    return meetings[0] as TeamPromptMeeting
   },
   tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

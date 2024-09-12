@@ -40,7 +40,7 @@ const removeStagesFromMeetings = async (
               nextStage.viewCount = nextStage.viewCount ? nextStage.viewCount + 1 : 1
               nextStage.isNavigable = true
             }
-            const stageIdx = stages.indexOf(stage)
+            const stageIdx = (stages as any).indexOf(stage)
             stages.splice(stageIdx, 1)
           }
         }

@@ -1,6 +1,5 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import MeetingPoker from '../../../database/types/MeetingPoker'
 import {JiraIssue} from '../../../dataloader/atlassianLoaders'
 import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -38,7 +37,10 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
   if (!meeting) {
     return {error: {message: 'Invalid meetingId'}}
   }
-  const {teamId, templateRefId} = meeting as MeetingPoker
+  if (meeting.meetingType !== 'poker') {
+    return {error: {message: 'Not a poker meeting'}}
+  }
+  const {teamId, templateRefId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return {error: {message: 'Not on team'}}
   }

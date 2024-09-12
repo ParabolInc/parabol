@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
 import getRethink from '../../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import getKysely from '../../../../postgres/getKysely'
+import {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../../utils/sendToSentry'
 import standardError from '../../../../utils/standardError'
@@ -134,7 +134,7 @@ export const getTopics = async (
         disableAnonymity,
         name: meetingName,
         createdAt: meetingDate
-      } = meeting as MeetingRetrospective
+      } = meeting as RetrospectiveMeeting
       const rawReflectionGroups = await dataLoader
         .get('retroReflectionGroupsByMeetingId')
         .load(meetingId)

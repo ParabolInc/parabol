@@ -36,17 +36,17 @@ export interface GenericMeetingStageInput {
 
 export default class GenericMeetingStage {
   id: string
-  isAsync: boolean | undefined | null
+  isAsync?: boolean | undefined | null
   isComplete = false
   isNavigable: boolean
   isNavigableByFacilitator: boolean
-  startAt: Date | undefined
-  endAt: Date | undefined = undefined
-  scheduledEndTime: Date | undefined | null
-  suggestedEndTime: Date | undefined
-  suggestedTimeLimit: number | undefined
+  startAt?: Date | undefined
+  endAt?: Date | undefined = undefined
+  scheduledEndTime?: Date | undefined | null
+  suggestedEndTime?: Date | undefined
+  suggestedTimeLimit?: number | undefined
   viewCount: number
-  readyToAdvance: string[] | undefined = []
+  readyToAdvance?: string[] | undefined = []
   phaseType: string
   constructor(input: GenericMeetingStageInput) {
     const {durations, phaseType, id, isNavigable, isNavigableByFacilitator, startAt, viewCount} =

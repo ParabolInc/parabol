@@ -6,7 +6,6 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import appOrigin from '../../../appOrigin'
-import MeetingPoker from '../../../database/types/MeetingPoker'
 import {
   AddCommentMutation,
   AddCommentMutationVariables,
@@ -50,6 +49,9 @@ const pushEstimateToGitHub = async (
     return new Error('Meeting does not exist')
   }
 
+  if (meeting.meetingType !== 'poker') {
+    return new Error('Not a poker meeting')
+  }
   const githubIntegration = task.integration as Extract<
     typeof task.integration,
     {service: 'github'}
@@ -92,6 +94,7 @@ const pushEstimateToGitHub = async (
 
     const {id: issueId} = issue
     const {name: meetingName, phases} = meeting
+
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stageIdx = stages.findIndex((stage) => stage.id === stageId)
@@ -150,7 +153,7 @@ const pushEstimateToGitHub = async (
   if (!matchingLabel) {
     let color = PALETTE.GRAPE_500.slice(1)
     if (meeting) {
-      const {templateRefId} = meeting as MeetingPoker
+      const {templateRefId} = meeting
       const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
       const {dimensions} = templateRef
       const dimensionRef = dimensions.find((dimension) => dimension.name === dimensionName)
