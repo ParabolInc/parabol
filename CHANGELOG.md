@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.3](https://github.com/ParabolInc/parabol/compare/v7.47.2...v7.47.3) (2024-09-12)
+
+
+### Fixed
+
+* threadParent can exist outside comment table ([#10228](https://github.com/ParabolInc/parabol/issues/10228)) ([05ac90b](https://github.com/ParabolInc/parabol/commit/05ac90b3830b9ff0cbf65ebea21cf4907e6b2916))
+
+
+### Changed
+
+* Speed up processRecurrence test ([#10204](https://github.com/ParabolInc/parabol/issues/10204)) ([45964d1](https://github.com/ParabolInc/parabol/commit/45964d128679ea7c50634d9ad3ef2cd3c6dbde7d))
+
 ## [7.47.2](https://github.com/ParabolInc/parabol/compare/v7.47.1...v7.47.2) (2024-09-11)
 
 
