@@ -33,8 +33,7 @@
     "openapi-fetch": "^0.10.0",
     "sucrase": "^3.32.0",
     "ts-jest": "^29.1.0",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^5.3.3"
+    "ts-node-dev": "^1.0.0-pre.44"
   },
   "dependencies": {
     "dd-trace": "^4.2.0",
