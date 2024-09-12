@@ -77,10 +77,10 @@ export async function up() {
     );
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_createdAt" ON "NewMeeting"("createdAt");
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_facilitatorUserId" ON "NewMeeting"("facilitatorUserId");
-    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_scheduledEndTime" ON "NewMeeting"("scheduledEndTime");
-    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_meetingSeriesId" ON "NewMeeting"("meetingSeriesId");
+    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_scheduledEndTime" ON "NewMeeting"("scheduledEndTime") WHERE "scheduledEndTime" IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_meetingSeriesId" ON "NewMeeting"("meetingSeriesId") WHERE "meetingSeriesId" IS NOT NULL;
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_teamId" ON "NewMeeting"("teamId");
-    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_templateId" ON "NewMeeting"("templateId");
+    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_templateId" ON "NewMeeting"("templateId") WHERE "templateId" IS NOT NULL;
     DROP TRIGGER IF EXISTS "update_NewMeeting_updatedAt" ON "NewMeeting";
     CREATE TRIGGER "update_NewMeeting_updatedAt" BEFORE UPDATE ON "NewMeeting" FOR EACH ROW EXECUTE PROCEDURE "set_updatedAt"();
   END $$;
