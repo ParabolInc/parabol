@@ -13,7 +13,7 @@ import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStag
 import UpdatesStage from '../../database/types/UpdatesStage'
 import getKysely from '../../postgres/getKysely'
 import {TeamMember} from '../../postgres/types'
-import {AnyMeeting, RetrospectiveMeeting} from '../../postgres/types/Meeting'
+import {AnyMeeting} from '../../postgres/types/Meeting'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -27,7 +27,7 @@ const createMeetingMember = (meeting: AnyMeeting, teamMember: TeamMember) => {
     case 'action':
       return new ActionMeetingMember({teamId, userId, meetingId: meeting.id})
     case 'retrospective':
-      const {id: meetingId, totalVotes} = meeting as RetrospectiveMeeting
+      const {id: meetingId, totalVotes} = meeting
       return new RetroMeetingMember({
         teamId,
         userId,

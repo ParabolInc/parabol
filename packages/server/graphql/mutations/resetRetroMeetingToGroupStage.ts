@@ -5,7 +5,6 @@ import getRethink from '../../database/rethinkDriver'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import getKysely from '../../postgres/getKysely'
-import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {RetroMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -35,7 +34,7 @@ const resetRetroMeetingToGroupStage = {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as RetrospectiveMeeting
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {createdBy, facilitatorUserId, phases, meetingType} = meeting
     if (meetingType !== 'retrospective') {

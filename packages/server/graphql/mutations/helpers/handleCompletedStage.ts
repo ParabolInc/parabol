@@ -115,7 +115,7 @@ const handleCompletedStage = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (meeting.meetingType === 'retrospective') {
-    return handleCompletedRetrospectiveStage(stage, meeting as RetrospectiveMeeting, dataLoader)
+    return handleCompletedRetrospectiveStage(stage, meeting, dataLoader)
   }
   return {}
 }

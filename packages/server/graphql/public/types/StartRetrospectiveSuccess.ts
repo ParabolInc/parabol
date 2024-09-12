@@ -1,4 +1,3 @@
-import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {StartRetrospectiveSuccessResolvers} from '../resolverTypes'
 
 export type StartRetrospectiveSuccessSource = {
@@ -8,8 +7,10 @@ export type StartRetrospectiveSuccessSource = {
 }
 
 const StartRetrospectiveSuccess: StartRetrospectiveSuccessResolvers = {
-  meeting: ({meetingId}, _args: unknown, {dataLoader}) => {
-    return dataLoader.get('newMeetings').load(meetingId) as Promise<RetrospectiveMeeting>
+  meeting: async ({meetingId}, _args: unknown, {dataLoader}) => {
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (meeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
+    return meeting
   },
   team: ({teamId}, _args: unknown, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)

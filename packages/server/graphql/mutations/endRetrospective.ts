@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from '../../database/rethinkDriver'
-import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -23,12 +22,11 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()) as RetrospectiveMeeting | null
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (meeting.meetingType !== 'retrospective') {
+      return standardError(new Error('Meeting not found'), {userId: viewerId})
+    }
     const {endedAt, teamId} = meeting
 
     // VALIDATION

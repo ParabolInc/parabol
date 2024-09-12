@@ -115,7 +115,7 @@ const safeEndRetrospective = async ({
   const phase = getMeetingPhase(phases)
 
   const insights = await gatherInsights(meeting, dataLoader)
-  const completedRetrospective = (await r
+  const completedRetrospective = await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
@@ -127,14 +127,18 @@ const safeEndRetrospective = async ({
       {returnChanges: true}
     )('changes')(0)('new_val')
     .default(null)
-    .run()) as unknown as RetrospectiveMeeting
+    .run()
 
   if (!completedRetrospective) {
     return standardError(new Error('Completed retrospective meeting does not exist'), {
       userId: viewerId
     })
   }
-
+  if (completedRetrospective.meetingType !== 'retrospective') {
+    return standardError(new Error('Meeting type is not retrospective'), {
+      userId: viewerId
+    })
+  }
   // remove any empty tasks
   const {templateId} = completedRetrospective
   const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([

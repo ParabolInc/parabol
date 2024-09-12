@@ -1,4 +1,3 @@
-import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import {RetroReflectionResolvers} from '../resolverTypes'
@@ -35,7 +34,8 @@ const RetroReflection: RetroReflectionResolvers = {
 
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    return meeting as RetrospectiveMeeting
+    if (meeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
+    return meeting
   },
 
   prompt: ({promptId}, _args, {dataLoader}) => {

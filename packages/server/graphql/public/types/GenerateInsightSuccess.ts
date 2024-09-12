@@ -1,4 +1,4 @@
-import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
+import isValid from '../../isValid'
 import {GenerateInsightSuccessResolvers} from '../resolverTypes'
 
 export type GenerateInsightSuccessSource = {
@@ -11,10 +11,8 @@ const GenerateInsightSuccess: GenerateInsightSuccessResolvers = {
   wins: ({wins}) => wins,
   challenges: ({challenges}) => challenges,
   meetings: async ({meetingIds}, _args, {dataLoader}) => {
-    const meetings = (await dataLoader
-      .get('newMeetings')
-      .loadMany(meetingIds)) as RetrospectiveMeeting[]
-    return meetings
+    const meetings = await dataLoader.get('newMeetings').loadMany(meetingIds)
+    return meetings.filter(isValid).filter((m) => m.meetingType === 'retrospective')
   }
 }
 

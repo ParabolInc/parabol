@@ -20,7 +20,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
   const twoYearsAgo = new Date()
   twoYearsAgo.setFullYear(endDate.getFullYear() - 2)
 
-  const rawMeetings = (await r
+  const rawMeetings = await r
     .table('NewMeeting')
     .getAll(r.args(teamIds), {index: 'teamId'})
     .filter((row: any) =>
@@ -32,7 +32,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
         .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
-    .run()) as RetrospectiveMeeting[]
+    .run()
 
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
@@ -157,6 +157,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
 
   const updatedMeetingIds = await Promise.all(
     rawMeetings.map(async (meeting) => {
+      if (meeting.meetingType !== 'retrospective') return null
       const meetingsContent = await getMeetingsContent(meeting)
       if (!meetingsContent || meetingsContent.length === 0) {
         return null

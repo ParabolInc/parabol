@@ -94,7 +94,6 @@ const pushEstimateToGitHub = async (
 
     const {id: issueId} = issue
     const {name: meetingName, phases} = meeting
-
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     const {stages} = estimatePhase
     const stageIdx = stages.findIndex((stage) => stage.id === stageId)

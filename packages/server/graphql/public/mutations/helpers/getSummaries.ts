@@ -1,6 +1,5 @@
 import yaml from 'js-yaml'
 import getRethink from '../../../../database/rethinkDriver'
-import {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import standardError from '../../../../utils/standardError'
 
@@ -14,7 +13,7 @@ export const getSummaries = async (
   const MIN_MILLISECONDS = 60 * 1000 // 1 minute
   const MIN_REFLECTION_COUNT = 3
 
-  const rawMeetings = (await r
+  const rawMeetings = await r
     .table('NewMeeting')
     .getAll(teamId, {index: 'teamId'})
     .filter((row: any) =>
@@ -27,7 +26,7 @@ export const getSummaries = async (
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
         .and(row.hasFields('summary'))
     )
-    .run()) as RetrospectiveMeeting[]
+    .run()
 
   if (!rawMeetings.length) {
     return standardError(new Error('No meetings found'))

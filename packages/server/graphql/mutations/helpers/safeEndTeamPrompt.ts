@@ -66,7 +66,7 @@ const safeEndTeamPrompt = async ({
 
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)
-  const completedTeamPrompt = (await r
+  const completedTeamPrompt = await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
@@ -77,12 +77,16 @@ const safeEndTeamPrompt = async ({
       {returnChanges: true}
     )('changes')(0)('new_val')
     .default(null)
-    .run()) as unknown as TeamPromptMeeting
+    .run()
 
   if (!completedTeamPrompt) {
     return standardError(new Error('Completed team prompt meeting does not exist'), {
       userId: viewerId
     })
+  }
+
+  if (completedTeamPrompt.meetingType !== 'teamPrompt') {
+    return standardError(new Error('Meeting is not a team prompt'), {userId: viewerId})
   }
 
   const [meetingMembers, team, teamMembers, responses] = await Promise.all([
