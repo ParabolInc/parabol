@@ -29,7 +29,11 @@ const parseRes = (res: HttpResponse) => {
     let buffer: Buffer
     res.onData((ab, isLast) => {
       const curBuf = Buffer.from(ab)
-      buffer = buffer ? Buffer.concat([buffer, curBuf]) : isLast ? curBuf : Buffer.concat([curBuf])
+      buffer = buffer
+        ? Buffer.concat([buffer as any, curBuf])
+        : isLast
+          ? curBuf
+          : Buffer.concat([curBuf as any])
       // give an extra MB for the rest of the payload
       if (buffer.length > Threshold.MAX_AVATAR_FILE_SIZE * 2) resolve(null)
       if (isLast) resolve(buffer)
