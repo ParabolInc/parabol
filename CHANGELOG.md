@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.4](https://github.com/ParabolInc/parabol/compare/v7.47.3...v7.47.4) (2024-09-12)
+
+
+### Fixed
+
+* add quotes to constraint ([#10230](https://github.com/ParabolInc/parabol/issues/10230)) ([7071759](https://github.com/ParabolInc/parabol/commit/7071759492febb7df44d3189a4e9fae103ca1cef))
+
 ## [7.47.3](https://github.com/ParabolInc/parabol/compare/v7.47.2...v7.47.3) (2024-09-12)
 
 
