@@ -62,8 +62,7 @@ const OrgMembers = (props: Props) => {
   )
   const {data} = paginationRes
   const {viewer} = data
-  const {organization} = viewer
-  if (!organization) return null
+  const organization = viewer.organization!
   const {organizationUsers, name: orgName, isBillingLeader} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
     (count, {node}) =>

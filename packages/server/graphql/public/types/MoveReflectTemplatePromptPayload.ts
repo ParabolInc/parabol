@@ -8,7 +8,9 @@ export type MoveReflectTemplatePromptPayloadSource =
 
 const MoveReflectTemplatePromptPayload: MoveReflectTemplatePromptPayloadResolvers = {
   prompt: (source, _args, {dataLoader}) => {
-    return 'promptId' in source ? dataLoader.get('reflectPrompts').load(source.promptId) : null
+    return 'promptId' in source
+      ? dataLoader.get('reflectPrompts').loadNonNull(source.promptId)
+      : null
   }
 }
 

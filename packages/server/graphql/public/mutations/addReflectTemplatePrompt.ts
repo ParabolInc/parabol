@@ -1,9 +1,7 @@
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import dndNoise from 'parabol-client/utils/dndNoise'
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import palettePickerOptions from '../../../../client/styles/palettePickerOptions'
 import {PALETTE} from '../../../../client/styles/paletteV3'
-import getRethink from '../../../database/rethinkDriver'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -16,7 +14,6 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
   {templateId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
@@ -41,10 +38,8 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
   }
 
   // RESOLUTION
-  const lastPrompt = activePrompts.at(-1)!
-  const sortOrder = lastPrompt.sortOrder + 1 + dndNoise()
-  // can remove String coercion after ReflectPrompt is in PG
-  const pgSortOrder = positionAfter(String(lastPrompt.sortOrder))
+  const lastPrompt = activePrompts.at(-1)
+  const sortOrder = positionAfter(lastPrompt?.sortOrder ?? '')
   const pickedColors = activePrompts.map((prompt) => prompt.groupColor)
   const availableNewColor = palettePickerOptions.find((color) => !pickedColors.includes(color.hex))
   const reflectPrompt = {
@@ -58,13 +53,8 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
     removedAt: null
   }
 
-  await Promise.all([
-    r.table('ReflectPrompt').insert(reflectPrompt).run(),
-    pg
-      .insertInto('ReflectPrompt')
-      .values({...reflectPrompt, sortOrder: pgSortOrder})
-      .execute()
-  ])
+  await pg.insertInto('ReflectPrompt').values(reflectPrompt).execute()
+
   dataLoader.clearAll('reflectPrompts')
   const promptId = reflectPrompt.id
   const data = {promptId}

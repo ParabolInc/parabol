@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -8,9 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const reflectTemplatePromptUpdateGroupColor: MutationResolvers['reflectTemplatePromptUpdateGroupColor'] =
   async (_source, {promptId, groupColor}, {authToken, dataLoader, socketId: mutatorId}) => {
-    const r = await getRethink()
     const pg = getKysely()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
@@ -29,17 +26,7 @@ const reflectTemplatePromptUpdateGroupColor: MutationResolvers['reflectTemplateP
     const {teamId} = prompt
 
     // RESOLUTION
-    await Promise.all([
-      r
-        .table('ReflectPrompt')
-        .get(promptId)
-        .update({
-          groupColor,
-          updatedAt: now
-        })
-        .run(),
-      pg.updateTable('ReflectPrompt').set({groupColor}).where('id', '=', promptId).execute()
-    ])
+    await pg.updateTable('ReflectPrompt').set({groupColor}).where('id', '=', promptId).execute()
     dataLoader.clearAll('reflectPrompts')
     const data = {promptId}
     publish(

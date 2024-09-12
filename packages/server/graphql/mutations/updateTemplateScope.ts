@@ -100,23 +100,19 @@ const updateTemplateScope = {
           removedAt: null
         }
       })
-      await Promise.all([
-        pg
-          .with('MeetingTemplateInsert', (qc) =>
-            qc.insertInto('MeetingTemplate').values(clonedTemplate)
-          )
-          .with('MeetingTemplateDeactivate', (qc) =>
-            qc.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
-          )
-          .with('RemovePrompts', (qc) =>
-            qc.updateTable('ReflectPrompt').set({removedAt: now}).where('id', 'in', promptIds)
-          )
-          .insertInto('ReflectPrompt')
-          .values(clonedPrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
-          .execute(),
-        r.table('ReflectPrompt').insert(clonedPrompts).run(),
-        r.table('ReflectPrompt').getAll(r.args(promptIds)).update({removedAt: now}).run()
-      ])
+      await pg
+        .with('MeetingTemplateInsert', (qc) =>
+          qc.insertInto('MeetingTemplate').values(clonedTemplate)
+        )
+        .with('MeetingTemplateDeactivate', (qc) =>
+          qc.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
+        )
+        .with('RemovePrompts', (qc) =>
+          qc.updateTable('ReflectPrompt').set({removedAt: now}).where('id', 'in', promptIds)
+        )
+        .insertInto('ReflectPrompt')
+        .values(clonedPrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
+        .execute()
       dataLoader.clearAll(['reflectPrompts', 'meetingTemplates'])
     }
 

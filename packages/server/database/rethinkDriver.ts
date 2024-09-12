@@ -14,16 +14,9 @@ import NotificationResponseReplied from './types/NotificationResponseReplied'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import PasswordResetRequest from './types/PasswordResetRequest'
-import PushInvitation from './types/PushInvitation'
-import RetrospectivePrompt from './types/RetrospectivePrompt'
 import Task from './types/Task'
 
 export type RethinkSchema = {
-  ReflectPrompt: {
-    type: RetrospectivePrompt
-    index: 'teamId' | 'templateId'
-  }
   MassInvitation: {
     type: MassInvitation
     index: 'teamMemberId'
@@ -57,14 +50,6 @@ export type RethinkSchema = {
       | NotificationResponseMentioned
       | NotificationResponseReplied
       | NotificationMentioned
-    index: 'userId'
-  }
-  PasswordResetRequest: {
-    type: PasswordResetRequest
-    index: 'email' | 'ip' | 'token'
-  }
-  PushInvitation: {
-    type: PushInvitation
     index: 'userId'
   }
   Task: {

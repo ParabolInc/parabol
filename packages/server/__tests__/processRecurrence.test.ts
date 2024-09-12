@@ -59,11 +59,24 @@ const assertIdempotency = async () => {
   })
 }
 
+let userId: string
+let teamId: string
+let teamMemberId: string
+
+beforeAll(async () => {
+  userId = (await signUp()).userId
+  teamId = (await getUserTeams(userId))[0].id
+  teamMemberId = TeamMemberId.join(teamId, userId)
+
+  // in case there are pending recurrence events
+  await sendIntranet({
+    query: PROCESS_RECURRENCE,
+    isPrivate: true
+  })
+})
+
 test('Should not end meetings that are not scheduled to end', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
@@ -99,9 +112,6 @@ test('Should not end meetings that are not scheduled to end', async () => {
 
 test('Should not end meetings that are scheduled to end in the future', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
@@ -140,9 +150,6 @@ test('Should not end meetings that are scheduled to end in the future', async ()
 
 test('Should end meetings that are scheduled to end in the past', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const meetingId = generateUID()
   const meeting = new MeetingTeamPrompt({
@@ -179,9 +186,6 @@ test('Should end meetings that are scheduled to end in the past', async () => {
 
 test('Should end the current team prompt meeting and start a new meeting', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
   const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
   const dateTime = toDateTime(startDate, 'UTC')
   const recurrenceRule = `DTSTART:${dateTime}
@@ -248,8 +252,6 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
 test('Should end the current retro meeting and start a new meeting', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
 
   // Create a meeting series that's been going on for a few days, and happens daily at 9a UTC.
   const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
@@ -321,9 +323,6 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
 test('Should only start a new meeting if it would still be active', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
   const dateTime = toDateTime(startDate, 'UTC')
@@ -380,9 +379,6 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
 test('Should not start a new meeting if the rrule has not started', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const startDate = dayjs().utc().add(1, 'day').set('hour', 9)
   const dateTime = toDateTime(startDate, 'UTC')
@@ -439,9 +435,6 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
 test('Should not hang if the rrule interval is invalid', async () => {
   const r = await getRethink()
-  const {userId} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-  const teamMemberId = TeamMemberId.join(teamId, userId)
 
   const startDate = dayjs().utc().subtract(2, 'day').set('hour', 9)
   const dateTime = toDateTime(startDate, 'UTC')
