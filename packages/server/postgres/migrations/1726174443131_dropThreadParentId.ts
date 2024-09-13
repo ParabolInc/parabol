@@ -8,7 +8,7 @@ export async function up() {
   await client.connect()
   // threadParentId can exist outside comment table (task, poll, etc)
   await client.query(
-    `ALTER TABLE "Comment" DROP CONSTRAINT IF EXISTS fk_threadParentId;` /* Do good magic */
+    `ALTER TABLE "Comment" DROP CONSTRAINT IF EXISTS "fk_threadParentId";` /* Do good magic */
   )
   await client.end()
 }
