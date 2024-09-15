@@ -107,6 +107,7 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
    */
 
   const {id: meetingId, teamId, phases} = meeting
+  const pg = getKysely()
   const r = await getRethink()
   const [meetingMembers, tasks, doneTasks, activeAgendaItems] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
@@ -142,6 +143,15 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems, dataLoader),
     updateTaskSortOrders(userIds, tasks),
+    pg
+      .updateTable('NewMeeting')
+      .set({
+        agendaItemCount: activeAgendaItems.length,
+        commentCount,
+        taskCount: tasks.length
+      })
+      .where('id', '=', meetingId)
+      .execute(),
     r
       .table('NewMeeting')
       .get(meetingId)
@@ -155,7 +165,7 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
       )
       .run()
   ])
-
+  dataLoader.clearAll('newMeetings')
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
@@ -170,6 +180,7 @@ export default {
   },
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -177,7 +188,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     if (meeting.meetingType !== 'action') {
       return standardError(new Error('Not a check-in meeting'), {userId: viewerId})
@@ -213,7 +224,12 @@ export default {
       )('changes')(0)('new_val')
       .default(null)
       .run()
-
+    await pg
+      .updateTable('NewMeeting')
+      .set({endedAt: now, phases: JSON.stringify(phases), ...insights})
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     if (!completedCheckIn) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
         userId: viewerId
@@ -252,7 +268,6 @@ export default {
         })
     )
     const timelineEventId = events[0]!.id
-    const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     if (team.isOnboardTeam) {
       const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)

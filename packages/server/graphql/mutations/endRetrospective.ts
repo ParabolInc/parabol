@@ -1,5 +1,4 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from '../../database/rethinkDriver'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -16,13 +15,12 @@ export default {
     }
   },
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
-    const {authToken} = context
-    const r = await getRethink()
+    const {authToken, dataLoader} = context
     const now = new Date()
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     if (meeting.meetingType !== 'retrospective') {
       return standardError(new Error('Meeting not found'), {userId: viewerId})

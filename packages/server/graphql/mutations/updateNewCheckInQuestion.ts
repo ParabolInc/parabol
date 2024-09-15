@@ -4,6 +4,7 @@ import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskCont
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -29,6 +30,7 @@ export default {
     {meetingId, checkInQuestion}: {meetingId: string; checkInQuestion: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -36,7 +38,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -64,7 +66,12 @@ export default {
         updatedAt: now
       })
       .run()
-
+    await pg
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(phases)})
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     const data = {meetingId}
     publish(
       SubscriptionChannel.MEETING,

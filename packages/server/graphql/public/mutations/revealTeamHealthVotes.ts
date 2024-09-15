@@ -1,5 +1,7 @@
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import updateStage from '../../../database/updateStage'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -10,6 +12,7 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
   {meetingId, stageId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -42,6 +45,9 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
   const teamHealthPhase = getPhase(phases, 'TEAM_HEALTH')
   const {stages} = teamHealthPhase
   const stage = stages.find((stage) => stage.id === stageId)
+  const phaseIdx = phases.indexOf(teamHealthPhase)
+  const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+
   if (!stage || stage.phaseType !== 'TEAM_HEALTH') {
     return {error: {message: 'Invalid stageId provided'}}
   }
@@ -49,6 +55,13 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
     return {error: {message: 'Votes are already revealed'}}
   }
 
+  await pg
+    .updateTable('NewMeeting')
+    .set({
+      phases: sql`jsonb_set(phases, ${sql.lit(`{${phaseIdx},stages,${stageIdx},"isRevealed"}`)}, 'true'::jsonb, false)`
+    })
+    .where('id', '=', meetingId)
+    .execute()
   updateStage(meetingId, stageId, 'TEAM_HEALTH', (stage) => stage.merge({isRevealed: true}))
   stage.isRevealed = true
 

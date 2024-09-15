@@ -25,7 +25,7 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {selectMeetingSettings, selectTeams} from '../postgres/select'
+import {selectMeetingSettings, selectNewMeetings, selectTeams} from '../postgres/select'
 import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
@@ -510,6 +510,37 @@ export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterD
   )
 }
 
+export const _pgmeetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('newMeetings')
+  return new DataLoader<string, MeetingStat[], string>(
+    async (orgIds) => {
+      const pg = getKysely()
+      const r = await getRethink()
+      const meetingStatsByOrgId = await Promise.all(
+        orgIds.map(async (orgId) => {
+          // note: does not include archived teams!
+          const teams = await parent.get('teamsByOrgIds').load(orgId)
+          const teamIds = teams.map(({id}) => id)
+          const stats = await pg
+            .selectFrom('NewMeeting')
+            .select(['createdAt', 'meetingType'])
+            .where('teamId', 'in', teamIds)
+            .execute()
+          return stats.map((stat) => ({
+            createdAt: stat.createdAt,
+            meetingType: stat.meetingType,
+            id: `ms${stat.createdAt.getTime()}`
+          }))
+        })
+      )
+      return meetingStatsByOrgId
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const teamStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('teams')
   return new DataLoader<string, {id: string; createdAt: Date}[], string>(
@@ -595,6 +626,27 @@ export const activeMeetingsByMeetingSeriesId = (
   )
 }
 
+export const _pgactiveMeetingsByMeetingSeriesId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('newMeetings')
+  return new DataLoader<number, AnyMeeting[], string>(
+    async (keys) => {
+      const res = await selectNewMeetings()
+        .where('meetingSeriesId', 'in', keys)
+        .where('endedAt', 'is', null)
+        .orderBy('createdAt')
+        .$narrowType<AnyMeeting>()
+        .execute()
+      return normalizeArrayResults(keys, res, 'meetingSeriesId')
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const lastMeetingByMeetingSeriesId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
@@ -617,6 +669,31 @@ export const lastMeetingByMeetingSeriesId = (
           .run()
         return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
       }),
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const _pglastMeetingByMeetingSeriesId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('newMeetings')
+  return new DataLoader<number, AnyMeeting | null, string>(
+    async (keys) => {
+      return await Promise.all(
+        keys.map(async (key) => {
+          const latestMeeting = await selectNewMeetings()
+            .where('meetingSeriesId', '=', key)
+            .orderBy('createdAt desc')
+            .limit(1)
+            .$narrowType<AnyMeeting>()
+            .executeTakeFirst()
+          return latestMeeting || null
+        })
+      )
+    },
     {
       ...parent.dataLoaderOptions
     }
@@ -835,6 +912,29 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
         })
       )
       return res
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const _pgmeetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('newMeetings')
+  return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
+    async (keys) => {
+      return await Promise.all(
+        keys.map(async ({teamId, meetingType}) => {
+          const row = await getKysely()
+            .selectFrom('NewMeeting')
+            .select(({fn}) => fn.count('id').as('count'))
+            .where('teamId', '=', teamId)
+            .where('meetingType', '=', meetingType)
+            .executeTakeFirstOrThrow()
+          return Number(row.count)
+        })
+      )
     },
     {
       ...parent.dataLoaderOptions,

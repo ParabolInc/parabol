@@ -5,7 +5,6 @@ import rMapIf from '../../database/rMapIf'
 import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import RetroMeetingMember from '../../database/types/RetroMeetingMember'
 import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
@@ -14,6 +13,7 @@ import UpdatesStage from '../../database/types/UpdatesStage'
 import getKysely from '../../postgres/getKysely'
 import {TeamMember} from '../../postgres/types'
 import {AnyMeeting} from '../../postgres/types/Meeting'
+import {NewMeetingPhase, NewMeetingStages} from '../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -91,10 +91,37 @@ const joinMeeting = {
 
     const mapIf = rMapIf(r)
 
-    const addStageToPhase = (
+    const addStageToPhase = async (
       stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,
-      phaseType: NewMeetingPhaseTypeEnum
+      phaseType: NewMeetingPhase['phaseType']
     ) => {
+      await getKysely()
+        .transaction()
+        .execute(async (trx) => {
+          const meeting = await trx
+            .selectFrom('NewMeeting')
+            .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
+            .where('id', '=', meetingId)
+            .forUpdate()
+            // NewMeeting: add OrThrow in phase 3
+            .executeTakeFirst()
+          if (!meeting) return
+          const {phases} = meeting
+          const phase = getPhase(phases, phaseType)
+          const stages = phase.stages as NewMeetingStages[]
+          stages.push({
+            ...stage,
+            isNavigable: true,
+            isNavigableByFacilitator: true,
+            // the stage is complete if all other stages are complete & there's at least 1
+            isComplete: stages.length >= 1 && stages.every((stage) => stage.isComplete)
+          })
+          await trx
+            .updateTable('NewMeeting')
+            .set({phases: JSON.stringify(phases)})
+            .where('id', '=', meetingId)
+            .execute()
+        })
       return r
         .table('NewMeeting')
         .get(meetingId)
@@ -160,7 +187,7 @@ const joinMeeting = {
     // effort is taken here to run both at the same time
     // so e.g.the 5th person in check-in is the 5th person in updates
     await Promise.all([appendToCheckin(), appendToUpdate(), appendToTeamPromptResponses()])
-    dataLoader.get('newMeetings').clear(meetingId)
+    dataLoader.clearAll('newMeetings')
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)

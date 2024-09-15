@@ -68,6 +68,11 @@ export default {
           phases
         })
         .run()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+        .execute()
     }
     const data = {meetingId, reflectionId, unlockedStageIds}
     publish(SubscriptionChannel.MEETING, meetingId, 'RemoveReflectionPayload', data, subOptions)

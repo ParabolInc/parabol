@@ -104,17 +104,32 @@ const resetRetroMeetingToGroupStage = {
     reflectionGroups.forEach((rg) => (rg.voterIds = []))
 
     await Promise.all([
-      pg.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete).execute(),
-      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
       pg
-        .updateTable('RetroReflectionGroup')
-        .set({voterIds: [], discussionPromptQuestion: null})
-        .where('id', 'in', reflectionGroupIds)
+        .with('DeleteComments', (qb) =>
+          qb.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete)
+        )
+        .with('ResetGroups', (qb) =>
+          qb
+            .updateTable('RetroReflectionGroup')
+            .set({voterIds: [], discussionPromptQuestion: null})
+            .where('id', 'in', reflectionGroupIds)
+        )
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(newPhases)})
+        .where('id', '=', meetingId)
         .execute(),
+      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
       r.table('NewMeeting').get(meetingId).update({phases: newPhases}).run(),
       (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
         .update({votesRemaining: meeting.totalVotes})
         .run()
+    ])
+    dataLoader.clearAll([
+      'newMeetings',
+      'comments',
+      'retroReflectionGroups',
+      'tasks',
+      'meetingMembers'
     ])
     const data = {
       meetingId

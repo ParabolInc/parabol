@@ -43,7 +43,7 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
@@ -140,6 +140,12 @@ const updateRetroMaxVotes = {
     // RESOLUTION
     await Promise.all([
       getKysely()
+        .with('MeetingUpdates', (qb) =>
+          qb
+            .updateTable('NewMeeting')
+            .set({totalVotes, maxVotesPerGroup})
+            .where('id', '=', meetingId)
+        )
         .updateTable('MeetingSettings')
         .set({
           totalVotes,
@@ -157,7 +163,7 @@ const updateRetroMaxVotes = {
         })
         .run()
     ])
-
+    dataLoader.get('newMeetings').clear(meetingId)
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesSuccess', data, subOptions)
     return data

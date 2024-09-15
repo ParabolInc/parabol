@@ -97,6 +97,7 @@ export default {
     }: {teamId: string; name: string | null | undefined; gcalInput?: CreateGcalEventInputType},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -116,13 +117,7 @@ export default {
 
     // RESOLUTION
     const meetingId = generateUID()
-    const meetingCount = await r
-      .table('NewMeeting')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({meetingType})
-      .count()
-      .default(0)
-      .run()
+    const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
 
     const phases = await createNewMeetingPhases<PokerMeetingPhase>(
       viewerId,
@@ -153,11 +148,15 @@ export default {
     }) as PokerMeeting
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    await Promise.all([
+    await Promise.allSettled([
+      pg
+        .insertInto('NewMeeting')
+        .values({...meeting, phases: JSON.stringify(phases)})
+        .execute(),
       r.table('NewMeeting').insert(meeting).run(),
       updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
-
+    dataLoader.clearAll('newMeetings')
     // Disallow accidental starts (2 meetings within 2 seconds)
     const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
     const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {

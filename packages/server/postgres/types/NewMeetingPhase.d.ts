@@ -202,3 +202,4 @@ export type NewMeetingPhase =
 
 type TupleToArray<T> = T extends (infer U)[] ? U : never
 export type NewMeetingStages = TupleToArray<NewMeetingPhase['stages']>
+// export type NewMeetingPhaseType = NewMeetingPhase['phaseType']

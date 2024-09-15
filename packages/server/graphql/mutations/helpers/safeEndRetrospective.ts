@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
@@ -128,7 +129,16 @@ const safeEndRetrospective = async ({
     )('changes')(0)('new_val')
     .default(null)
     .run()
-
+  await getKysely()
+    .updateTable('NewMeeting')
+    .set({
+      endedAt: sql`CURRENT_TIMESTAMP`,
+      phases: JSON.stringify(phases),
+      ...insights
+    })
+    .where('id', '=', meetingId)
+    .executeTakeFirst()
+  dataLoader.clearAll('newMeetings')
   if (!completedRetrospective) {
     return standardError(new Error('Completed retrospective meeting does not exist'), {
       userId: viewerId
