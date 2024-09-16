@@ -843,7 +843,7 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
   )
 }
 
-export const featureFlagsByOwnerId = (parent: RootDataLoader) => {
+export const featureFlagByOwnerId = (parent: RootDataLoader) => {
   return new DataLoader<
     {ownerId: string; ownerType: 'User' | 'Team' | 'Organization'; featureName: string},
     boolean,

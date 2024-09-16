@@ -399,11 +399,6 @@ type User {
   featureFlag(featureName: String!): Boolean!
 
   """
-  Any super power given to the user via a super user
-  """
-  featureFlags: UserFeatureFlags!
-
-  """
   url of user’s profile picture
   """
   picture: URL!

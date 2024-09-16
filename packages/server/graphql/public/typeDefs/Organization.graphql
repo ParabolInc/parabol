@@ -170,8 +170,6 @@ type Organization {
   """
   teamStats: [TeamStat!]!
 
-  featureFlags: OrganizationFeatureFlags!
-
   """
   Whether the org has a feature flag enabled or not
   """

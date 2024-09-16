@@ -17,7 +17,7 @@ const generateGroups = async (
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const hasSuggestGroupsFlag = await dataLoader
-    .get('featureFlagsByOwnerId')
+    .get('featureFlagByOwnerId')
     .load({ownerId: team.orgId, ownerType: 'Organization', featureName: 'suggestGroups'})
   if (!hasSuggestGroupsFlag) return
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)

@@ -682,11 +682,8 @@ const User: ReqResolvers<'User'> = {
   },
   featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
     return await dataLoader
-      .get('featureFlagsByOwnerId')
+      .get('featureFlagByOwnerId')
       .load({ownerId: userId, ownerType: 'User', featureName})
-  },
-  featureFlags: ({featureFlags}) => {
-    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

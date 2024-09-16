@@ -30,7 +30,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     dataLoader.get('users').loadNonNull(viewerId)
   ])
   const hasTranscriptFlag = await dataLoader
-    .get('featureFlagsByOwnerId')
+    .get('featureFlagByOwnerId')
     .load({ownerId: team.orgId, ownerType: 'Organization', featureName: 'zoomTranscription'})
 
   const firstPhases: NewMeetingPhaseTypeEnum[] = []
