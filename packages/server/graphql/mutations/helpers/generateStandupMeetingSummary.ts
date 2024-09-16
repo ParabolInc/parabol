@@ -14,9 +14,9 @@ const generateStandupMeetingSummary = async (
   ])
   const isAISummaryAccessible = await canAccessAISummary(
     team,
-    facilitator.featureFlags,
-    dataLoader,
-    'standup'
+    facilitator.id,
+    'standup',
+    dataLoader
   )
 
   if (!isAISummaryAccessible) return

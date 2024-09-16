@@ -5,16 +5,21 @@ import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const canAccessAISummary = async (
   team: Team,
-  featureFlags: string[],
-  dataLoader: DataLoaderWorker,
-  meetingType: 'standup' | 'retrospective'
+  userId: string,
+  meetingType: 'standup' | 'retrospective',
+  dataLoader: DataLoaderWorker
 ) => {
-  if (featureFlags.includes('noAISummary') || !team) return false
   const {qualAIMeetingsCount, orgId} = team
-  const noAISummary = await dataLoader
-    .get('featureFlagsByOwnerId')
-    .load({ownerId: orgId, ownerType: 'Organization', featureName: 'noAISummary'})
-  if (noAISummary) return false
+  const [noAIOrgSummary, noAIUserSummary] = await Promise.all([
+    dataLoader
+      .get('featureFlagsByOwnerId')
+      .load({ownerId: orgId, ownerType: 'Organization', featureName: 'noAISummary'}),
+    dataLoader
+      .get('featureFlagsByOwnerId')
+      .load({ownerId: userId, ownerType: 'User', featureName: 'noAISummary'})
+  ])
+
+  if (noAIOrgSummary || noAIUserSummary) return false
   if (meetingType === 'standup') {
     const hasStandupFlag = await dataLoader
       .get('featureFlagsByOwnerId')
