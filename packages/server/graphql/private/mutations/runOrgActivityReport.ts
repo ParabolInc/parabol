@@ -13,46 +13,62 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
   const queryEndDate = endDate || now
   const queryStartDate = startDate || new Date(0) // Unix epoch start if not provided
 
-  const query = sql`
-    WITH months AS (
-      SELECT generate_series(
-        date_trunc('month', ${queryStartDate}::date),
-        date_trunc('month', ${queryEndDate}::date),
-        '1 month'::interval
-      ) AS monthStart
-    ),
-    user_signups AS (
-      SELECT
-        date_trunc('month', "createdAt") AS month,
-        COUNT(DISTINCT "id") AS signup_count
-      FROM "User"
-      WHERE "createdAt" BETWEEN ${queryStartDate} AND ${queryEndDate}
-      GROUP BY month
-    ),
-    user_logins AS (
-      SELECT
-        date_trunc('month', "lastSeenAt") AS month,
-        COUNT(DISTINCT "id") AS login_count
-      FROM "User"
-      WHERE "lastSeenAt" BETWEEN ${queryStartDate} AND ${queryEndDate}
-      GROUP BY month
+  const months = pg
+    .selectFrom(
+      pg
+        .selectFrom(
+          sql<Date>`generate_series(date_trunc('month', ${queryStartDate}::date), date_trunc('month', ${queryEndDate}::date), '1 month'::interval)`.as(
+            'series'
+          )
+        )
+        .select(sql`series`.as('monthStart'))
+        .as('months')
     )
-    SELECT
-      m.monthStart as "monthStart",
-      (m.monthStart + interval '1 month' - interval '1 day')::date AS "lastDayOfMonth",
-      'All Organizations' AS "orgName",
-      COALESCE(us.signup_count, 0) AS "signupCount",
-      COALESCE(ul.login_count, 0) AS "loginCount"
-    FROM months m
-    LEFT JOIN user_signups us ON m.monthStart = us.month
-    LEFT JOIN user_logins ul ON m.monthStart = ul.month
-    ORDER BY m.monthStart
-  `
+    .select(sql`months."monthStart"`.as('monthStart'))
+
+  console.log(months.compile())
+
+  const userSignups = pg
+    .selectFrom('User')
+    .select([
+      sql`date_trunc('month', "createdAt")`.as('month'),
+      sql`COUNT(DISTINCT "id")`.as('signup_count')
+    ])
+    .where('createdAt', '>=', queryStartDate)
+    .where('createdAt', '<=', queryEndDate)
+    .groupBy(sql`date_trunc('month', "createdAt")`)
+
+  const userLogins = pg
+    .selectFrom('User')
+    .select([
+      sql`date_trunc('month', "lastSeenAt")`.as('month'),
+      sql`COUNT(DISTINCT "id")`.as('login_count')
+    ])
+    .where('lastSeenAt', '>=', queryStartDate)
+    .where('lastSeenAt', '<=', queryEndDate)
+    .groupBy(sql`date_trunc('month', "lastSeenAt")`)
+
+  const query = pg
+    .selectFrom(months.as('m'))
+    .leftJoin(userSignups.as('us'), (join) =>
+      join.onRef('m.monthStart', '=', sql`us.month::timestamp`)
+    )
+    .leftJoin(userLogins.as('ul'), (join) =>
+      join.onRef('m.monthStart', '=', sql`ul.month::timestamp`)
+    )
+    .select([
+      sql`m."monthStart"`.as('monthStart'),
+      sql`(m."monthStart" + interval '1 month' - interval '1 day')::date`.as('lastDayOfMonth'),
+      sql`'All Organizations'`.as('orgName'),
+      sql`COALESCE(us.signup_count, 0)`.as('signupCount'),
+      sql`COALESCE(ul.login_count, 0)`.as('loginCount')
+    ])
+    .orderBy('monthStart')
 
   const r = await getRethink()
   try {
     const [pgResults, rethinkResults] = await Promise.all([
-      query.execute(pg),
+      query.execute(),
       r
         .table('NewMeeting')
         .between(
@@ -87,7 +103,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
     ])
 
     // Combine PostgreSQL and RethinkDB results
-    const combinedResults = pgResults.rows.map((pgRow: any) => {
+    const combinedResults = pgResults.map((pgRow: any) => {
       const monthStart = new Date(pgRow.monthStart)
       const rethinkParticipants = rethinkResults.find(
         (r: any) =>
