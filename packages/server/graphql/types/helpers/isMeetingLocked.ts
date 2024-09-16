@@ -12,17 +12,15 @@ const isMeetingLocked = async (
   if (!endedAt || endedAt > freeLimit) {
     return false
   }
-  const [team, viewer] = await Promise.all([
+  const [team, hasNoMeetingHistoryLimit] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: viewerId, ownerType: 'User', featureName: 'noMeetingHistoryLimit'})
   ])
 
-  const {featureFlags} = viewer
+  if (hasNoMeetingHistoryLimit) return false
   const {tier, trialStartDate, isPaid, orgId, isArchived} = team
-
-  if (featureFlags.includes('noMeetingHistoryLimit')) {
-    return false
-  }
 
   if ((tier !== 'starter' && isPaid) || trialStartDate) {
     return false
