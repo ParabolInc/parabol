@@ -83,16 +83,18 @@ if (datadogEnabled) {
   datadogRum.startSessionReplayRecording()
 }
 
-amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
-  defaultTracking: {
-    attribution: false,
-    pageViews: false,
-    sessions: false,
-    formInteractions: false,
-    fileDownloads: false
-  },
-  logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
-})
+if (window.__ACTION__.AMPLITUDE_WRITE_KEY) {
+  amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
+    defaultTracking: {
+      attribution: false,
+      pageViews: false,
+      sessions: false,
+      formInteractions: false,
+      fileDownloads: false
+    },
+    logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
+  })
+}
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()

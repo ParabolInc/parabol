@@ -1,12 +1,11 @@
+import {sql} from 'kysely'
 import '../../../scripts/webpack/utils/dotenv'
-import getRethink from '../database/rethinkDriver'
+import getKysely from '../postgres/getKysely'
 
 async function setup() {
-  const r = await getRethink()
   // The IP address is always localhost
   // so the safety checks will eventually fail if run too much
-
-  await Promise.all([r.table('PasswordResetRequest').delete().run()])
+  await sql`TRUNCATE TABLE "PasswordResetRequest"`.execute(getKysely())
 }
 
 export default setup

@@ -29,19 +29,6 @@ export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   }
 )
 
-export const reflectPromptsByTemplateId = new RethinkForeignKeyLoaderMaker(
-  'reflectPrompts',
-  'templateId',
-  async (templateIds) => {
-    const r = await getRethink()
-    return r
-      .table('ReflectPrompt')
-      .getAll(r.args(templateIds), {index: 'templateId'})
-      .orderBy('sortOrder')
-      .run()
-  }
-)
-
 export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
   'massInvitations',
   'teamMemberId',

@@ -4,7 +4,7 @@
     "defaultScalarType": "string",
     "enumsAsTypes": true,
     "optionalResolveType": true,
-    "scalars": {"DateTime": "Date", "File": "TFile", "RRule": "RRule"}
+    "scalars": {"DateTime": "Date", "File": "TFile", "RRule": "RRuleSet"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -46,6 +46,12 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
+          "ReflectTemplatePromptUpdateGroupColorPayload": "./types/ReflectTemplatePromptUpdateGroupColorPayload#ReflectTemplatePromptUpdateGroupColorPayloadSource",
+          "RemoveReflectTemplatePromptPayload": "./types/RemoveReflectTemplatePromptPayload#RemoveReflectTemplatePromptPayloadSource",
+          "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",
+          "MoveReflectTemplatePromptPayload": "./types/MoveReflectTemplatePromptPayload#MoveReflectTemplatePromptPayloadSource",
+          "AddReflectTemplatePromptPayload": "./types/AddReflectTemplatePromptPayload#AddReflectTemplatePromptPayloadSource",
           "SetSlackNotificationPayload": "./types/SetSlackNotificationPayload#SetSlackNotificationPayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",
@@ -140,10 +146,10 @@
           "PokerMeeting": "../../database/types/MeetingPoker#default as MeetingPoker",
           "PokerMeetingMember": "../../database/types/MeetingPokerMeetingMember#default as PokerMeetingMemberDB",
           "PokerTemplate": "../../database/types/PokerTemplate#default as PokerTemplateDB",
-          "RRule": "rrule#RRule",
+          "RRule": "rrule-rust#RRuleSet",
           "Reactable": "../../database/types/Reactable#Reactable",
           "Reactji": "../types/Reactji#ReactjiSource",
-          "ReflectPrompt": "../../database/types/RetrospectivePrompt#default",
+          "ReflectPrompt": "../../postgres/types/index#ReflectPrompt",
           "ReflectTemplate": "../../database/types/ReflectTemplate#default",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
