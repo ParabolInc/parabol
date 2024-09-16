@@ -1,0 +1,4 @@
+"""
+Return value for getFeatureFlag, which could be an error
+"""
+union GetFeatureFlagPayload = ErrorPayload | GetFeatureFlagSuccess

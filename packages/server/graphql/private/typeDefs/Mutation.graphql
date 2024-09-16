@@ -44,6 +44,11 @@ type Mutation {
   ): DeleteFeatureFlagPayload!
 
   """
+  Get all of the feature flags for a user, team, or org
+  """
+  getFeatureFlags(userId: ID, teamId: ID, orgId: ID): GetFeatureFlagSuccess!
+
+  """
   Update an existing feature flag
   """
   updateFeatureFlag(

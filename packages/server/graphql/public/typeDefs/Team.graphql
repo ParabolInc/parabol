@@ -119,11 +119,6 @@ type Team {
   qualAIMeetingsCount: Int!
 
   """
-  Whether the team has a feature flag enabled or not
-  """
-  featureFlag(featureName: String!): Boolean!
-
-  """
   The new meeting in progress, if any
   """
   meeting(

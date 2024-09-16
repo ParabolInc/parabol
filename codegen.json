@@ -14,6 +14,7 @@
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "DeleteFeatureFlagSuccess": "./types/DeleteFeatureFlagSuccess#DeleteFeatureFlagSuccessSource",
+          "GetFeatureFlagSuccess": "./types/GetFeatureFlagSuccess#GetFeatureFlagSuccessSource",
           "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
