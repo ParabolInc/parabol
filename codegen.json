@@ -165,6 +165,7 @@
           "RetrospectiveMeeting": "../../database/types/MeetingRetrospective#default",
           "RetrospectiveMeetingMember": "../../database/types/RetroMeetingMember#default",
           "SAML": "./types/SAML#SAMLSource",
+          "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",
           "ShareTopicSuccess": "./types/ShareTopicSuccess#ShareTopicSuccessSource",
