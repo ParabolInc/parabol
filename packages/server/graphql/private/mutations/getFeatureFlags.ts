@@ -1,8 +1,8 @@
 import getKysely from '../../../postgres/getKysely'
 import standardError from '../../../utils/standardError'
-import {QueryResolvers} from '../resolverTypes'
+import {MutationResolvers} from '../resolverTypes'
 
-const getFeatureFlags: QueryResolvers['getFeatureFlags'] = async (
+const getFeatureFlags: MutationResolvers['getFeatureFlags'] = async (
   _source,
   {userId, orgId, teamId}
 ) => {
