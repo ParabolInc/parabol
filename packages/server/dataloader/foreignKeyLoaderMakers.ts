@@ -4,6 +4,7 @@ import {
   selectAgendaItems,
   selectComments,
   selectOrganizations,
+  selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
@@ -207,11 +208,22 @@ export const slackNotificationsByTeamId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgcommentsByDiscussionId = foreignKeyLoaderMaker(
-  '_pgcomments',
+export const commentsByDiscussionId = foreignKeyLoaderMaker(
+  'comments',
   'discussionId',
   async (discussionIds) => {
     // include deleted comments so we can replace them with tombstones
     return selectComments().where('discussionId', 'in', discussionIds).execute()
+  }
+)
+
+export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
+  'reflectPrompts',
+  'templateId',
+  async (templateIds) => {
+    return selectReflectPrompts()
+      .where('templateId', 'in', templateIds)
+      .orderBy('sortOrder')
+      .execute()
   }
 )

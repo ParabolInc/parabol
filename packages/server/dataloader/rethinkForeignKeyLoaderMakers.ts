@@ -15,23 +15,6 @@ export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
       .run()
   }
 )
-
-export const commentsByDiscussionId = new RethinkForeignKeyLoaderMaker(
-  'comments',
-  'discussionId',
-  async (discussionIds) => {
-    const r = await getRethink()
-    return (
-      r
-        .table('Comment')
-        .getAll(r.args(discussionIds), {index: 'discussionId'})
-        // include deleted comments so we can replace them with tombstones
-        // .filter({isActive: true})
-        .run()
-    )
-  }
-)
-
 export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
   'newMeetings',
   'teamId',
@@ -42,19 +25,6 @@ export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RDatum) => row('endedAt').default(null).ne(null))
       .orderBy(r.desc('endedAt'))
-      .run()
-  }
-)
-
-export const reflectPromptsByTemplateId = new RethinkForeignKeyLoaderMaker(
-  'reflectPrompts',
-  'templateId',
-  async (templateIds) => {
-    const r = await getRethink()
-    return r
-      .table('ReflectPrompt')
-      .getAll(r.args(templateIds), {index: 'templateId'})
-      .orderBy('sortOrder')
       .run()
   }
 )

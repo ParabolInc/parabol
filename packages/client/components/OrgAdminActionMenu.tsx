@@ -1,5 +1,4 @@
 import {MoreVert} from '@mui/icons-material'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -63,10 +62,11 @@ export const OrgAdminActionMenu = (props: Props) => {
   const {viewerId} = atmosphere
   const {role, user} = organizationUser
   const {id: userId} = user
+  const isSelf = viewerId === userId
   const orgAdminCount = billingLeaders.filter(
     (billingLeader) => billingLeader.role === 'ORG_ADMIN'
   ).length
-  const canEdit = isViewerOrgAdmin || (isViewerBillingLeaderPlus && role !== 'ORG_ADMIN')
+  const canEdit = isSelf || isViewerOrgAdmin || (isViewerBillingLeaderPlus && role !== 'ORG_ADMIN')
   const isViewerLastOrgAdmin = isViewerOrgAdmin && orgAdminCount === 1
   const isViewerLastRole = isViewerBillingLeaderPlus && billingLeaders.length === 1
 
@@ -81,7 +81,6 @@ export const OrgAdminActionMenu = (props: Props) => {
 
   const isOrgAdmin = role === 'ORG_ADMIN'
   const isBillingLeader = role === 'BILLING_LEADER'
-  const isSelf = viewerId === userId
   const roleName = role === 'ORG_ADMIN' ? 'Org Admin' : 'Billing Leader'
   const canRemoveRole =
     role &&
@@ -123,9 +122,14 @@ export const OrgAdminActionMenu = (props: Props) => {
         )}
         {isSelf &&
           ((isOrgAdmin && isViewerLastOrgAdmin) || (isBillingLeader && isViewerLastRole)) && (
-            <DropdownMenu.Label className='select-none p-2'>
+            <MenuItem
+              onClick={() => {
+                window.location.href =
+                  'mailto:support@parabol.co?subject=Request to be removed from organization'
+              }}
+            >
               {'Contact support@parabol.co to be removed'}
-            </DropdownMenu.Label>
+            </MenuItem>
           )}
       </MenuContent>
     </Menu>

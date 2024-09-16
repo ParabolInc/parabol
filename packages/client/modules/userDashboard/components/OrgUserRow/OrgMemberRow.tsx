@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {format} from 'date-fns'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import {
@@ -11,7 +12,6 @@ import {
   OrgMemberRow_organizationUser$key
 } from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
-import Row from '../../../../components/Row/Row'
 import RowActions from '../../../../components/Row/RowActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
@@ -22,27 +22,7 @@ import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
 import useModal from '../../../../hooks/useModal'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
-import {Breakpoint} from '../../../../types/constEnums'
 import lazyPreload from '../../../../utils/lazyPreload'
-
-const AvatarBlock = styled('div')({
-  display: 'none',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    display: 'block',
-    marginRight: 16
-  }
-})
-
-const StyledRow = styled(Row)({
-  padding: '12px 8px 12px 16px',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    padding: '16px 8px 16px 16px'
-  }
-})
-
-const StyledRowInfo = styled(RowInfo)({
-  paddingLeft: 0
-})
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -51,6 +31,8 @@ const ActionsBlock = styled('div')({
 })
 
 interface Props {
+  billingLeaderCount: number
+  orgAdminCount: number
   organizationUser: OrgMemberRow_organizationUser$key
   organization: OrgMemberRow_organization$key
 }
@@ -74,13 +56,13 @@ interface UserAvatarProps {
 }
 
 const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
-  <AvatarBlock>
+  <div className='mr-4 hidden md:block'>
     {picture ? (
       <Avatar picture={picture} className='h-11 w-11' />
     ) : (
       <img alt='default avatar' src={defaultUserAvatar} />
     )}
-  </AvatarBlock>
+  </div>
 )
 
 interface UserInfoProps {
@@ -98,7 +80,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
   isOrgAdmin,
   inactive
 }) => (
-  <StyledRowInfo>
+  <RowInfo className='pl-0'>
     <RowInfoHeader>
       <RowInfoHeading>{preferredName}</RowInfoHeading>
       {isBillingLeader && <RoleTag>Billing Leader</RoleTag>}
@@ -108,7 +90,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
     <RowInfoLink href={`mailto:${email}`} title='Send an email'>
       {email}
     </RowInfoLink>
-  </StyledRowInfo>
+  </RowInfo>
 )
 
 interface UserActionsProps {
@@ -168,6 +150,7 @@ const OrgMemberRow = (props: Props) => {
           inactive
           picture
           preferredName
+          lastSeenAt
         }
         role
         ...OrgAdminActionMenu_organizationUser
@@ -177,28 +160,41 @@ const OrgMemberRow = (props: Props) => {
   )
 
   const {
-    user: {email, inactive, picture, preferredName},
+    user: {email, inactive, picture, preferredName, lastSeenAt},
     role
   } = organizationUser
 
   const isBillingLeader = role === 'BILLING_LEADER'
   const isOrgAdmin = role === 'ORG_ADMIN'
+  const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
+
   return (
-    <StyledRow>
-      <UserAvatar picture={picture} />
-      <UserInfo
-        preferredName={preferredName}
-        email={email}
-        isBillingLeader={isBillingLeader}
-        isOrgAdmin={isOrgAdmin}
-        inactive={inactive}
-      />
-      <UserActions
-        organizationUser={organizationUser}
-        organization={organization}
-        preferredName={preferredName}
-      />
-    </StyledRow>
+    <tr className='border-b border-slate-300 last:border-b-0'>
+      <td className='w-1/2 py-3 px-2 align-middle'>
+        <div className='flex w-full items-center overflow-hidden'>
+          <UserAvatar picture={picture} />
+          <div className='min-w-0 flex-grow'>
+            <UserInfo
+              preferredName={preferredName}
+              email={email}
+              isBillingLeader={isBillingLeader}
+              isOrgAdmin={isOrgAdmin}
+              inactive={inactive}
+            />
+          </div>
+        </div>
+      </td>
+      <td className='w-3/10 py-3 px-2 align-middle'>
+        <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
+      </td>
+      <td className='w-1/5 py-3 px-2 align-middle'>
+        <UserActions
+          organizationUser={organizationUser}
+          organization={organization}
+          preferredName={preferredName}
+        />
+      </td>
+    </tr>
   )
 }
 

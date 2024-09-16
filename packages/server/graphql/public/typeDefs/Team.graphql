@@ -66,7 +66,6 @@ type Team {
   The datetime the team was last updated
   """
   updatedAt: DateTime
-  customPhaseItems: [ReflectPrompt] @deprecated(reason: "Field no longer needs to exist for now")
 
   """
   The outstanding invitations to join the team

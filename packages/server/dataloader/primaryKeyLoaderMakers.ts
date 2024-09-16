@@ -10,6 +10,7 @@ import {
   selectComments,
   selectMeetingSettings,
   selectOrganizations,
+  selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
@@ -111,6 +112,10 @@ export const featureFlags = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return getKysely().selectFrom('FeatureFlag').selectAll().where('id', 'in', ids).execute()
 })
 
-export const _pgcomments = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
+})
+
+export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectReflectPrompts().where('id', 'in', ids).execute()
 })

@@ -45,7 +45,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
     if (!discussion) return null
     const {id: discussionId} = discussion
     const rawComments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
-    const humanComments = rawComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy))
+    const humanComments = rawComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!))
     const rootComments = humanComments.filter((c) => !c.threadParentId)
     rootComments.sort((a, b) => {
       return a.createdAt.getTime() < b.createdAt.getTime() ? -1 : 1
@@ -53,8 +53,8 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
     const comments = await Promise.all(
       rootComments.map(async (comment) => {
         const {createdBy, isAnonymous, plaintextContent} = comment
-        const creator = await dataLoader.get('users').loadNonNull(createdBy)
-        const commentAuthor = isAnonymous ? 'Anonymous' : creator.preferredName
+        const creator = createdBy ? await dataLoader.get('users').loadNonNull(createdBy) : null
+        const commentAuthor = isAnonymous || !creator ? 'Anonymous' : creator.preferredName
         const commentReplies = await Promise.all(
           humanComments
             .filter((c) => c.threadParentId === comment.id)
@@ -63,8 +63,10 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
             })
             .map(async (reply) => {
               const {createdBy, isAnonymous, plaintextContent} = reply
-              const creator = await dataLoader.get('users').loadNonNull(createdBy)
-              const replyAuthor = isAnonymous ? 'Anonymous' : creator.preferredName
+              const creator = createdBy
+                ? await dataLoader.get('users').loadNonNull(createdBy)
+                : null
+              const replyAuthor = isAnonymous || !creator ? 'Anonymous' : creator.preferredName
               return {
                 text: plaintextContent,
                 author: replyAuthor
@@ -117,7 +119,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
             rawReflections.map(async (reflection) => {
               const {promptId, creatorId, plaintextContent} = reflection
               const [prompt, creator] = await Promise.all([
-                dataLoader.get('reflectPrompts').load(promptId),
+                dataLoader.get('reflectPrompts').loadNonNull(promptId),
                 creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
               ])
               const {question} = prompt

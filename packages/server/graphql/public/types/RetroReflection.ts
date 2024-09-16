@@ -39,7 +39,7 @@ const RetroReflection: RetroReflectionResolvers = {
   },
 
   prompt: ({promptId}, _args, {dataLoader}) => {
-    return dataLoader.get('reflectPrompts').load(promptId)
+    return dataLoader.get('reflectPrompts').loadNonNull(promptId)
   },
 
   reactjis: ({reactjis, id}, _args, {authToken}) => {

@@ -193,6 +193,7 @@ export const enum Layout {
   LAYOUT_GRID = 8, // 1x
   ROW_GUTTER = 16, // 2x
   SETTINGS_MAX_WIDTH = 768,
+  SETTINGS_NARROW_MAX_WIDTH = 644,
   TASK_COLUMNS_MAX_WIDTH = 1360
 }
 
@@ -293,21 +294,21 @@ export const enum Pricing {
 
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
-  ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol',
+  ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol.',
   JIRA_SERVER_NAME = 'Jira Server',
-  JIRA_SERVER_DESC = 'Use Jira Server Issues from within Parabol',
+  JIRA_SERVER_DESC = 'Use Jira Server Issues from within Parabol.',
   GITHUB_NAME = 'GitHub',
   GCAL_NAME = 'Google Calendar',
-  GCAL_DESC = 'Create Google Calendar events from within Parabol',
-  GITHUB_DESC = 'Use GitHub Issues from within Parabol',
+  GCAL_DESC = 'Create Google Calendar events from within Parabol.',
+  GITHUB_DESC = 'Use GitHub Issues from within Parabol.',
   GITHUB_SCOPE = 'read:org,repo',
   GITLAB_SCOPE = 'api',
   MATTERMOST_NAME = 'Mattermost',
-  MATTERMOST_DESC = 'Push notifications to Mattermost',
+  MATTERMOST_DESC = 'Push notifications to Mattermost.',
   SLACK_NAME = 'Slack',
-  SLACK_DESC = 'Push notifications to Slack',
+  SLACK_DESC = 'Push notifications to Slack.',
   AZUREDEVOPS_NAME = 'Azure DevOps',
-  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol',
+  AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol.',
   MSTEAMS_NAME = 'Microsoft Teams',
   MSTEAMS_DESC = 'Push notifications to Microsoft Teams'
 }

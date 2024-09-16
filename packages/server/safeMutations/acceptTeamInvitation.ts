@@ -130,7 +130,11 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
   }
 
   // if accepted to team, don't count it towards the global denial count
-  await r.table('PushInvitation').getAll(userId, {index: 'userId'}).filter({teamId}).delete().run()
+  await pg
+    .deleteFrom('PushInvitation')
+    .where('userId', '=', userId)
+    .where('teamId', '=', teamId)
+    .execute()
   return {
     teamLeadUserIdWithNewActions,
     invitationNotificationIds: invitationNotificationIds as string[]

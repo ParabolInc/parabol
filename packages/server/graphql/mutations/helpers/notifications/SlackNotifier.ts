@@ -257,7 +257,7 @@ const getSlackMessageForNotification = async (
       return null
     }
     const author = await dataLoader.get('users').loadNonNull(notification.authorId)
-    const comment = await dataLoader.get('comments').load(notification.commentId)
+    const comment = await dataLoader.get('comments').loadNonNull(notification.commentId)
 
     const authorName = comment.isAnonymous ? 'Anonymous' : author.preferredName
 

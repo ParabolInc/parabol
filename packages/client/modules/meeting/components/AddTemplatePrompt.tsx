@@ -8,7 +8,7 @@ import {Threshold} from '~/types/constEnums'
 import {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
 import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
-import dndNoise from '../../../utils/dndNoise'
+import {positionAfter} from '../../../shared/sortOrder'
 import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
 
 const AddPromptLink = styled(LinkButton)({
@@ -51,8 +51,8 @@ const AddTemplatePrompt = (props: Props) => {
     const {templateId, onError, onCompleted, submitMutation, submitting} = props
     if (submitting) return
     submitMutation()
-    const sortOrders = prompts.map(({sortOrder}) => sortOrder)
-    const sortOrder = Math.max(0, ...sortOrders) + 1 + dndNoise()
+    const lastPrompt = prompts.at(-1)!
+    const sortOrder = positionAfter(lastPrompt.sortOrder)
     const promptCount = prompts.length
     AddReflectTemplatePromptMutation(
       atmosphere,
