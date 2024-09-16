@@ -15,18 +15,13 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
 
   const months = pg
     .selectFrom(
-      pg
-        .selectFrom(
-          sql<Date>`generate_series(date_trunc('month', ${queryStartDate}::date), date_trunc('month', ${queryEndDate}::date), '1 month'::interval)`.as(
-            'series'
-          )
-        )
-        .select(sql`series`.as('monthStart'))
-        .as('months')
+      sql`generate_series(
+      date_trunc('month', ${queryStartDate}::date),
+      date_trunc('month', ${queryEndDate}::date),
+      ${sql`'1 month'::interval`}
+    )`.as('monthStart')
     )
-    .select(sql`months."monthStart"`.as('monthStart'))
-
-  console.log(months.compile())
+    .selectAll()
 
   const userSignups = pg
     .selectFrom('User')
@@ -35,7 +30,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
       sql`COUNT(DISTINCT "id")`.as('signup_count')
     ])
     .where('createdAt', '>=', queryStartDate)
-    .where('createdAt', '<=', queryEndDate)
+    .where('createdAt', '<', queryEndDate)
     .groupBy(sql`date_trunc('month', "createdAt")`)
 
   const userLogins = pg
@@ -45,16 +40,16 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
       sql`COUNT(DISTINCT "id")`.as('login_count')
     ])
     .where('lastSeenAt', '>=', queryStartDate)
-    .where('lastSeenAt', '<=', queryEndDate)
+    .where('lastSeenAt', '<', queryEndDate)
     .groupBy(sql`date_trunc('month', "lastSeenAt")`)
 
   const query = pg
     .selectFrom(months.as('m'))
     .leftJoin(userSignups.as('us'), (join) =>
-      join.onRef('m.monthStart', '=', sql`us.month::timestamp`)
+      join.onRef(sql`m."monthStart"`, '=', sql`us.month::timestamp`)
     )
     .leftJoin(userLogins.as('ul'), (join) =>
-      join.onRef('m.monthStart', '=', sql`ul.month::timestamp`)
+      join.onRef(sql`m."monthStart"`, '=', sql`ul.month::timestamp`)
     )
     .select([
       sql`m."monthStart"`.as('monthStart'),
