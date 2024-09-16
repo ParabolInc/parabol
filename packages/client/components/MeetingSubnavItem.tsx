@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
-import React, {ReactNode, useRef} from 'react'
+import React, {ReactNode, useRef, useState} from 'react'
 import useScrollIntoView from '../hooks/useScrollIntoVIew'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -88,6 +91,16 @@ const MeetingSubnavItem = (props: Props) => {
   } = props
   const ref = useRef(null)
   useScrollIntoView(ref, isActive)
+  const [openTooltip, setOpenTooltip] = useState(false)
+
+  const handleMouseEnter = () => {
+    setOpenTooltip(true)
+  }
+
+  const handleMouseLeave = () => {
+    setOpenTooltip(false)
+  }
+
   return (
     <ItemRoot
       ref={ref}
@@ -98,7 +111,18 @@ const MeetingSubnavItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <ItemLabel isComplete={isComplete}>{children}</ItemLabel>
+      <Tooltip open={openTooltip}>
+        <TooltipTrigger asChild>
+          <ItemLabel
+            isComplete={isComplete}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {children}
+          </ItemLabel>
+        </TooltipTrigger>
+        <TooltipContent>{children}</TooltipContent>
+      </Tooltip>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
   )
