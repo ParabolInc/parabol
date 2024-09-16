@@ -853,17 +853,19 @@ export const featureFlagsByOwnerId = (parent: RootDataLoader) => {
       const pg = getKysely()
 
       const featureNames = [...new Set(keys.map(({featureName}) => featureName))]
-      const existingFeatureNames = await pg
-        .selectFrom('FeatureFlag')
-        .select('featureName')
-        .where('featureName', 'in', featureNames)
-        .execute()
+      if (!__PRODUCTION__) {
+        const existingFeatureNames = await pg
+          .selectFrom('FeatureFlag')
+          .select('featureName')
+          .where('featureName', 'in', featureNames)
+          .execute()
 
-      const existingFeatureNameSet = new Set(existingFeatureNames.map((row) => row.featureName))
+        const existingFeatureNameSet = new Set(existingFeatureNames.map((row) => row.featureName))
 
-      const missingFeatureNames = featureNames.filter((name) => !existingFeatureNameSet.has(name))
-      if (missingFeatureNames.length > 0) {
-        throw new Error(`Feature flag name(s) not found: ${missingFeatureNames.join(', ')}`)
+        const missingFeatureNames = featureNames.filter((name) => !existingFeatureNameSet.has(name))
+        if (missingFeatureNames.length > 0) {
+          throw new Error(`Feature flag name(s) not found: ${missingFeatureNames.join(', ')}`)
+        }
       }
 
       const userKeys = keys.filter(({ownerType}) => ownerType === 'User')
@@ -879,7 +881,6 @@ export const featureFlagsByOwnerId = (parent: RootDataLoader) => {
         .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
         .where((eb) =>
           eb.and([
-            eb('FeatureFlag.expiresAt', '>', new Date()),
             eb.or([
               userIds.length > 0
                 ? eb('FeatureFlagOwner.userId', 'in', userIds)
@@ -891,7 +892,8 @@ export const featureFlagsByOwnerId = (parent: RootDataLoader) => {
                 ? eb('FeatureFlagOwner.orgId', 'in', orgIds)
                 : eb('FeatureFlagOwner.orgId', '=', null)
             ]),
-            eb('FeatureFlag.featureName', 'in', featureNames)
+            eb('FeatureFlag.featureName', 'in', featureNames),
+            eb('FeatureFlag.expiresAt', '>', new Date())
           ])
         )
         .select([

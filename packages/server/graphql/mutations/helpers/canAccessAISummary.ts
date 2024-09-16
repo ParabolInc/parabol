@@ -11,11 +11,15 @@ const canAccessAISummary = async (
 ) => {
   if (featureFlags.includes('noAISummary') || !team) return false
   const {qualAIMeetingsCount, orgId} = team
-  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
-  if (organization.featureFlags?.includes('noAISummary')) return false
+  const noAISummary = await dataLoader
+    .get('featureFlagsByOwnerId')
+    .load({ownerId: orgId, ownerType: 'Organization', featureName: 'noAISummary'})
+  if (noAISummary) return false
   if (meetingType === 'standup') {
-    if (!organization.featureFlags?.includes('standupAISummary')) return false
-    return true
+    const hasStandupFlag = await dataLoader
+      .get('featureFlagsByOwnerId')
+      .load({ownerId: orgId, ownerType: 'Organization', featureName: 'standupAISummary'})
+    return hasStandupFlag
   }
 
   if (getFeatureTier(team) !== 'starter') return true

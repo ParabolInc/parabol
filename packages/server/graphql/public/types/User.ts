@@ -680,30 +680,10 @@ const User: ReqResolvers<'User'> = {
   favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
   },
-  featureFlag: async ({id: userId}, {featureName}) => {
-    const pg = getKysely()
-    const featureFlag = await pg
-      .selectFrom('FeatureFlag')
-      .where('FeatureFlag.featureName', '=', featureName)
-      .select('FeatureFlag.id')
-      .executeTakeFirst()
-
-    if (!featureFlag) {
-      throw new Error(
-        `Feature flag "${featureName}" does not exist. Please check the feature name.`
-      )
-    }
-
-    const flagOwnership = await pg
-      .selectFrom('FeatureFlag')
-      .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
-      .where('FeatureFlagOwner.userId', '=', userId)
-      .where('FeatureFlag.featureName', '=', featureName)
-      .where('FeatureFlag.expiresAt', '>', new Date()) // Check if the feature flag is not expired
-      .select('FeatureFlag.id') // We only need to know if there's a match
-      .executeTakeFirst()
-
-    return !!flagOwnership
+  featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
+    return await dataLoader
+      .get('featureFlagsByOwnerId')
+      .load({ownerId: userId, ownerType: 'User', featureName})
   },
   featureFlags: ({featureFlags}) => {
     return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
