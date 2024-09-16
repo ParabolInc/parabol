@@ -527,26 +527,6 @@ type Mutation {
   ): ToggleAllowInsightsPayload!
 
   """
-  Give some organizations advanced features in a flag
-  """
-  updateOrgFeatureFlag(
-    """
-    a list of organization ids
-    """
-    orgIds: [String!]!
-
-    """
-    the flag that you want to give to the organization
-    """
-    flag: OrganizationFeatureFlagsEnum!
-
-    """
-    whether or not you want to give the organization the flag
-    """
-    addFlag: Boolean!
-  ): UpdateOrgFeatureFlagPayload!
-
-  """
   Describe the mutation here
   """
   verifyDomain(

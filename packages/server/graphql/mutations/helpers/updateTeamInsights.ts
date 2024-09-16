@@ -17,8 +17,10 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   // team is loaded anyways by the callers, so no harm in loading it here again for a more concise argument list
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
-  const organization = await dataLoader.get('organizations').load(orgId)
-  if (organization?.featureFlags?.includes('noTeamInsights')) return
+  const hasNoTeamInsightsFlag = await dataLoader
+    .get('featureFlagsByOwnerId')
+    .load({ownerId: orgId, ownerType: 'Organization', featureName: 'noTeamInsights'})
+  if (hasNoTeamInsightsFlag) return
 
   // actual update
   const r = await getRethink()
