@@ -19,7 +19,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
         date_trunc('month', ${queryStartDate}::date),
         date_trunc('month', ${queryEndDate}::date),
         '1 month'::interval
-      ) AS month_start
+      ) AS monthStart
     ),
     user_signups AS (
       SELECT
@@ -38,15 +38,15 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
       GROUP BY month
     )
     SELECT
-      m.month_start,
-      (m.month_start + interval '1 month' - interval '1 day')::date AS "lastDayOfMonth",
+      m.monthStart as "monthStart",
+      (m.monthStart + interval '1 month' - interval '1 day')::date AS "lastDayOfMonth",
       'All Organizations' AS "orgName",
       COALESCE(us.signup_count, 0) AS "signupCount",
       COALESCE(ul.login_count, 0) AS "loginCount"
     FROM months m
-    LEFT JOIN user_signups us ON m.month_start = us.month
-    LEFT JOIN user_logins ul ON m.month_start = ul.month
-    ORDER BY m.month_start
+    LEFT JOIN user_signups us ON m.monthStart = us.month
+    LEFT JOIN user_logins ul ON m.monthStart = ul.month
+    ORDER BY m.monthStart
   `
 
   const r = await getRethink()
@@ -88,7 +88,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
 
     // Combine PostgreSQL and RethinkDB results
     const combinedResults = pgResults.rows.map((pgRow: any) => {
-      const monthStart = new Date(pgRow.month_start)
+      const monthStart = new Date(pgRow.monthStart)
       const rethinkParticipants = rethinkResults.find(
         (r: any) =>
           r.yearMonth.month === monthStart.getMonth() &&
@@ -106,11 +106,10 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
         meetingCount: rethinkMeetings ? rethinkMeetings.meetingCount : 0
       }
     })
-
-    return JSON.stringify(combinedResults, null, 2)
+    return {rows: combinedResults}
   } catch (error) {
     console.error('Error executing Org Activity Report:', error)
-    return 'Error executing Org Activity Report'
+    return {error: {message: 'Error executing Org Activity Report'}}
   }
 }
 

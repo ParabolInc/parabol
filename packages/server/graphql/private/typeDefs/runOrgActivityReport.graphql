@@ -12,7 +12,7 @@ extend type Mutation {
     the end date for the query
     """
     endDate: DateTime
-  ): String!
+  ): RunOrgActivityReportPayload!
 }
 
 """
@@ -52,4 +52,14 @@ type OrgActivityRow {
   The number of logins in the month
   """
   loginCount: Int!
+
+  """
+  The number of unique meeting participants in the month
+  """
+  participantCount: Int!
+
+  """
+  The number of meetings run in the month
+  """
+  meetingCount: Int!
 }
