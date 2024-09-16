@@ -16,8 +16,8 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
   const months = pg
     .selectFrom(
       sql`generate_series(
-      date_trunc('month', ${queryStartDate}::date),
-      date_trunc('month', ${queryEndDate}::date),
+      date_trunc('month', ${queryStartDate.toISOString()}::date),
+      date_trunc('month', ${queryEndDate.toISOString()}::date),
       ${sql`'1 month'::interval`}
     )`.as('monthStart')
     )
@@ -102,13 +102,13 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
       const monthStart = new Date(pgRow.monthStart)
       const rethinkParticipants = rethinkResults.find(
         (r: any) =>
-          r.yearMonth.month === monthStart.getMonth() &&
-          r.yearMonth.year === monthStart.getFullYear()
+          r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
+          r.yearMonth.year === monthStart.getUTCFullYear()
       )
       const rethinkMeetings = rethinkResults.find(
         (r: any) =>
-          r.yearMonth.month === monthStart.getMonth() &&
-          r.yearMonth.year === monthStart.getFullYear()
+          r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
+          r.yearMonth.year === monthStart.getUTCFullYear()
       )
 
       return {
