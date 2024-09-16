@@ -1,5 +1,7 @@
-import getKysely from '../../../postgres/getKysely'
 import {sql} from 'kysely'
+import getRethink from '../../../database/rethinkDriver'
+import {RDatum, RValue} from '../../../database/stricterR'
+import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
 const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
@@ -47,9 +49,65 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
     ORDER BY m.month_start
   `
 
+  const r = await getRethink()
   try {
-    const results = await query.execute(pg)
-    return JSON.stringify(results, null, 2)
+    const [pgResults, rethinkResults] = await Promise.all([
+      query.execute(pg),
+      r
+        .table('NewMeeting')
+        .between(
+          r.epochTime(queryStartDate.getTime() / 1000),
+          r.epochTime(queryEndDate.getTime() / 1000),
+          {index: 'createdAt'}
+        )
+        .merge((row: RValue) => ({
+          yearMonth: {
+            year: row('createdAt').year(),
+            month: row('createdAt').month()
+          }
+        }))
+        .group((row) => row('yearMonth'))
+        .ungroup()
+        .map((group: RDatum) => ({
+          yearMonth: group('group'),
+          meetingCount: group('reduction').count(),
+          participantIds: group('reduction')
+            .concatMap((row: RDatum) =>
+              r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'})('userId')
+            )
+            .distinct()
+        }))
+        .map((row: RDatum) =>
+          row.merge({
+            participantCount: row('participantIds').count()
+          })
+        )
+        .without('participantIds')
+        .run()
+    ])
+
+    // Combine PostgreSQL and RethinkDB results
+    const combinedResults = pgResults.rows.map((pgRow: any) => {
+      const monthStart = new Date(pgRow.month_start)
+      const rethinkParticipants = rethinkResults.find(
+        (r: any) =>
+          r.yearMonth.month === monthStart.getMonth() &&
+          r.yearMonth.year === monthStart.getFullYear()
+      )
+      const rethinkMeetings = rethinkResults.find(
+        (r: any) =>
+          r.yearMonth.month === monthStart.getMonth() &&
+          r.yearMonth.year === monthStart.getFullYear()
+      )
+
+      return {
+        ...pgRow,
+        participantCount: rethinkParticipants ? rethinkParticipants.participantCount : 0,
+        meetingCount: rethinkMeetings ? rethinkMeetings.meetingCount : 0
+      }
+    })
+
+    return JSON.stringify(combinedResults, null, 2)
   } catch (error) {
     console.error('Error executing Org Activity Report:', error)
     return 'Error executing Org Activity Report'
