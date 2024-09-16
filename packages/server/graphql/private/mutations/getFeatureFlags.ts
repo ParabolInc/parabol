@@ -6,7 +6,8 @@ const getFeatureFlags: QueryResolvers['getFeatureFlags'] = async (
   _source,
   {userId, orgId, teamId}
 ) => {
-  if ([userId, orgId, teamId].length !== 1) {
+  const providedIds = [userId, orgId, teamId].filter(Boolean)
+  if (providedIds.length !== 1) {
     const error = new Error('Exactly one of userId, orgId, or teamId must be provided')
     return standardError(error)
   }
@@ -15,7 +16,7 @@ const getFeatureFlags: QueryResolvers['getFeatureFlags'] = async (
   const query = pg
     .selectFrom('FeatureFlag as ff')
     .innerJoin('FeatureFlagOwner as ffo', 'ff.id', 'ffo.featureFlagId')
-    .selectAll('ff')
+    .select(['ff.id'])
 
   if (userId) {
     query.where('ffo.userId', '=', userId)

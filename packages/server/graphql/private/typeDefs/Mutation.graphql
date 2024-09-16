@@ -46,7 +46,7 @@ type Mutation {
   """
   Get all of the feature flags for a user, team, or org
   """
-  getFeatureFlags(userId: ID, teamId: ID, orgId: ID): GetFeatureFlagSuccess!
+  getFeatureFlags(userId: ID, teamId: ID, orgId: ID): GetFeatureFlagPayload!
 
   """
   Update an existing feature flag

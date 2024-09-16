@@ -2,5 +2,5 @@ type GetFeatureFlagSuccess {
   """
   The feature flags for the user, team, or org
   """
-  featureFlags: [FeatureFlag!]!
+  featureFlags: [FeatureFlag!]
 }
