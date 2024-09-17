@@ -121,7 +121,7 @@ const MeetingSubnavItem = (props: Props) => {
             {children}
           </ItemLabel>
         </TooltipTrigger>
-        <TooltipContent>{children}</TooltipContent>
+        <TooltipContent className='text-xs'>{children}</TooltipContent>
       </Tooltip>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
