@@ -7,7 +7,6 @@ import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
-import updateMeetingSeriesQuery from '../../../postgres/queries/updateMeetingSeries'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -110,7 +109,6 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
 const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const pg = getKysely()
   const r = await getRethink()
-  const now = new Date()
   await pg
     .with('NewMeetingUpdateEnd', (qb) =>
       qb
@@ -123,7 +121,6 @@ const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .set({cancelledAt: sql`CURRENT_TIMESTAMP`})
     .where('id', '=', meetingSeries.id)
     .execute()
-  await updateMeetingSeriesQuery({cancelledAt: now}, meetingSeries.id)
   await r
     .table('NewMeeting')
     .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
@@ -148,6 +145,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   {meetingId, name, rrule},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -193,10 +191,12 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     }
 
     if (name) {
-      await updateMeetingSeriesQuery({title: name}, meetingSeries.id)
+      await pg
+        .updateTable('MeetingSeries')
+        .set({title: name})
+        .where('id', '=', meetingSeries.id)
+        .execute()
     }
-
-    dataLoader.get('meetingSeries').clear(meetingSeries.id)
   } else {
     if (!rrule) {
       return standardError(
@@ -209,7 +209,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     analytics.recurrenceStarted(viewer, newMeetingSeries)
   }
 
-  dataLoader.get('newMeetings').clear(meetingId)
+  dataLoader.clearAll(['newMeetings', 'meetingSeries'])
 
   // RESOLUTION
   const data = {meetingId}

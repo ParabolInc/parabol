@@ -27,8 +27,8 @@ export async function up() {
     RETURN NEW;
   END;
   $$ LANGUAGE plpgsql;
-  DROP TRIGGER IF EXISTS check_meeting_overlap;
-  CREATE TRIGGER check_meeting_overlap
+  DROP TRIGGER IF EXISTS "check_meeting_overlap" ON "NewMeeting";
+  CREATE TRIGGER "check_meeting_overlap"
   BEFORE INSERT ON "NewMeeting"
   FOR EACH ROW
   EXECUTE FUNCTION prevent_meeting_overlap();

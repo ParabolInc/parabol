@@ -61,7 +61,6 @@ const TeamHealth = (props: Props) => {
 
   const isFacilitator = facilitatorUserId === viewerId
   const canVote = !isRevealed && !endedAt
-  console.log({canVote, isRevealed, endedAt})
   const canReveal = isFacilitator && votedUserIds && votedUserIds.length > 0 && canVote
 
   const onVote = (label: string) => {

@@ -62,14 +62,10 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     facilitatorUserId: viewerId
   }) as CheckInMeeting
   await r.table('NewMeeting').insert(meeting).run()
-  try {
-    await pg
-      .insertInto('NewMeeting')
-      .values({...meeting, phases: JSON.stringify(phases)})
-      .executeTakeFirst()
-  } catch (e) {
-    return standardError(new Error('Failed to create meeting'), {userId: viewerId})
-  }
+  await pg
+    .insertInto('NewMeeting')
+    .values({...meeting, phases: JSON.stringify(phases)})
+    .execute()
   // Disallow 2 active check-in meetings
   const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
