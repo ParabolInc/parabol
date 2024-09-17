@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.47.5](https://github.com/ParabolInc/parabol/compare/v7.47.4...v7.47.5) (2024-09-16)
+
+
+### Fixed
+
+* Remove duplicate org users ([#10198](https://github.com/ParabolInc/parabol/issues/10198)) ([cafbf32](https://github.com/ParabolInc/parabol/commit/cafbf320f02f652ba9b011a4a06b0606a4faf81e))
+
 ## [7.47.4](https://github.com/ParabolInc/parabol/compare/v7.47.3...v7.47.4) (2024-09-12)
 
 
