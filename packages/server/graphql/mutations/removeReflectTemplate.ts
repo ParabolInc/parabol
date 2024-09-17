@@ -1,8 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
-import removeMeetingTemplate from '../../postgres/queries/removeMeetingTemplate'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -22,8 +21,7 @@ const removeReflectTemplate = {
     {templateId}: {templateId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await dataLoader.get('meetingTemplates').load(templateId)
@@ -46,21 +44,15 @@ const removeReflectTemplate = {
 
     // RESOLUTION
     const {id: settingsId} = settings
-    await Promise.all([
-      removeMeetingTemplate(templateId),
-      r
-        .table('ReflectPrompt')
-        .getAll(teamId, {index: 'teamId'})
-        .filter({
-          templateId
-        })
-        .update({
-          removedAt: now,
-          updatedAt: now
-        })
-        .run()
-    ])
-
+    await pg
+      .with('RemoveTemplate', (qb) =>
+        qb.updateTable('MeetingTemplate').set({isActive: false}).where('id', '=', templateId)
+      )
+      .updateTable('ReflectPrompt')
+      .set({removedAt: sql`CURRENT_TIMESTAMP`})
+      .where('templateId', '=', templateId)
+      .execute()
+    dataLoader.clearAll('reflectPrompts')
     if (settings.selectedTemplateId === templateId) {
       const nextTemplate = templates.find((template) => template.id !== templateId)
       const nextTemplateId = nextTemplate?.id ?? 'workingStuckTemplate'

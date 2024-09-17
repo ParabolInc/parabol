@@ -29,7 +29,7 @@ interface Input {
   recallBotId?: string
   videoMeetingURL?: string
   meetingSeriesId?: number
-  scheduledEndTime?: Date
+  scheduledEndTime?: Date | null
 }
 
 export function isMeetingRetrospective(meeting: Meeting): meeting is MeetingRetrospective {

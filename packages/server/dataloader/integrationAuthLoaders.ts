@@ -82,7 +82,9 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
       ) as TIntegrationProvider[][]
     },
     {
-      ...parent.dataLoaderOptions
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({service, orgIds, teamIds}) =>
+        `${service}-${orgIds.toSorted().join(',')}-${teamIds.toSorted().join(',')}`
     }
   )
 }
@@ -187,6 +189,7 @@ export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
       .flat()
 
     return keys.map((key) => {
+      const usedChannelIds = new Set<string>()
       return res
         .filter((doc) => doc.teamId === key.teamId && doc.event === key.event)
         .map((notification) => {
@@ -200,6 +203,11 @@ export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
           }
         })
         .filter(isValid)
+        .filter(({channelId}) => {
+          if (!channelId || usedChannelIds.has(channelId)) return false
+          usedChannelIds.add(channelId)
+          return true
+        })
     })
   })
 }

@@ -27,11 +27,13 @@ const mutation = graphql`
         teamMember {
           ...GitLabProviderRowTeamMember
           ...ScopePhaseAreaGitLab_teamMember
-          ...MattermostProviderRowTeamMember
           ...JiraServerProviderRowTeamMember
           ...AzureDevOpsProviderRowTeamMember
-          ...MSTeamsProviderRowTeamMember
           ...GcalProviderRowTeamMember
+          integrations {
+            ...MattermostProviderRowTeamMemberIntegrations
+            ...MSTeamsProviderRowTeamMemberIntegrations
+          }
         }
       }
     }

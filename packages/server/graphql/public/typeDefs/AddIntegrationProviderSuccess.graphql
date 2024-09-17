@@ -3,4 +3,14 @@ type AddIntegrationProviderSuccess {
   The provider that was added
   """
   provider: IntegrationProvider!
+
+  """
+  The updated set of organization integration providers if there were changes
+  """
+  orgIntegrationProviders: OrgIntegrationProviders
+
+  """
+  Updated team member integrations if there were changes
+  """
+  teamMemberIntegrations: TeamMemberIntegrations
 }

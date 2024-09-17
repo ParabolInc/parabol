@@ -6,8 +6,8 @@ import {useFragment} from 'react-relay'
 import {TemplatePromptList_prompts$key} from '../../../__generated__/TemplatePromptList_prompts.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import MoveReflectTemplatePromptMutation from '../../../mutations/MoveReflectTemplatePromptMutation'
+import {getSortOrder} from '../../../shared/sortOrder'
 import {TEMPLATE_PROMPT} from '../../../utils/constants'
-import dndNoise from '../../../utils/dndNoise'
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {
@@ -53,19 +53,7 @@ const TemplatePromptList = (props: Props) => {
     ) {
       return
     }
-
-    let sortOrder
-    if (destination.index === 0) {
-      sortOrder = destinationPrompt.sortOrder - 1 + dndNoise()
-    } else if (destination.index === prompts.length - 1) {
-      sortOrder = destinationPrompt.sortOrder + 1 + dndNoise()
-    } else {
-      const offset = source.index > destination.index ? -1 : 1
-      sortOrder =
-        ((prompts[destination.index + offset]?.sortOrder ?? 0) + destinationPrompt.sortOrder) / 2 +
-        dndNoise()
-    }
-
+    const sortOrder = getSortOrder(prompts, source.index, destination.index)
     const {id: promptId} = sourcePrompt
     const variables = {promptId, sortOrder}
     MoveReflectTemplatePromptMutation(atmosphere, variables, {templateId})

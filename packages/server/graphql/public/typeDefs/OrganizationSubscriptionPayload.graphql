@@ -1,16 +1,18 @@
 type OrganizationSubscriptionPayload {
   fieldName: String!
+  AddIntegrationProviderSuccess: AddIntegrationProviderSuccess
   AddOrgPayload: AddOrgPayload
   ArchiveOrganizationPayload: ArchiveOrganizationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload
+  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
+  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   PayLaterPayload: PayLaterPayload
+  RemoveIntegrationProviderSuccess: RemoveIntegrationProviderSuccess
   RemoveOrgUserPayload: RemoveOrgUserPayload
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
-  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
-  UpdateOrgPayload: UpdateOrgPayload
-  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
-  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   UpdateIntegrationProviderSuccess: UpdateIntegrationProviderSuccess
+  UpdateOrgPayload: UpdateOrgPayload
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
+  UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
 }

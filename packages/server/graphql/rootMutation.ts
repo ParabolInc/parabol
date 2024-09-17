@@ -7,7 +7,6 @@ import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addReflectTemplatePrompt from './mutations/addReflectTemplatePrompt'
 import addTeam from './mutations/addTeam'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
@@ -41,7 +40,6 @@ import inviteToTeam from './mutations/inviteToTeam'
 import joinMeeting from './mutations/joinMeeting'
 import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
-import moveReflectTemplatePrompt from './mutations/moveReflectTemplatePrompt'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
 import newMeetingCheckIn from './mutations/newMeetingCheckIn'
@@ -57,8 +55,6 @@ import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDi
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
-import reflectTemplatePromptUpdateDescription from './mutations/reflectTemplatePromptUpdateDescription'
-import reflectTemplatePromptUpdateGroupColor from './mutations/reflectTemplatePromptUpdateGroupColor'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeIntegrationProvider from './mutations/removeIntegrationProvider'
@@ -67,7 +63,6 @@ import removePokerTemplateDimension from './mutations/removePokerTemplateDimensi
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
 import removeReflectTemplate from './mutations/removeReflectTemplate'
-import removeReflectTemplatePrompt from './mutations/removeReflectTemplatePrompt'
 import removeReflection from './mutations/removeReflection'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
@@ -75,7 +70,6 @@ import renameMeeting from './mutations/renameMeeting'
 import renameMeetingTemplate from './mutations/renameMeetingTemplate'
 import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
-import renameReflectTemplatePrompt from './mutations/renameReflectTemplatePrompt'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import selectTemplate from './mutations/selectTemplate'
@@ -114,7 +108,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
-      addReflectTemplatePrompt,
       addGitHubAuth,
       addOrg,
       addTeam,
@@ -148,7 +141,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       invalidateSessions,
       inviteToTeam,
       movePokerTemplateDimension,
-      moveReflectTemplatePrompt,
       moveTeamToOrg,
       navigateMeeting,
       newMeetingCheckIn,
@@ -157,18 +149,14 @@ export default new GraphQLObjectType<any, GQLContext>({
       pushInvitation,
       promoteNewMeetingFacilitator,
       promoteToTeamLead,
-      reflectTemplatePromptUpdateDescription,
       pokerTemplateDimensionUpdateDescription,
-      reflectTemplatePromptUpdateGroupColor,
       removeAtlassianAuth,
       removeGitHubAuth,
       removeOrgUser,
       removeReflectTemplate,
-      removeReflectTemplatePrompt,
       removePokerTemplateDimension,
       renameMeeting,
       renameMeetingTemplate,
-      renameReflectTemplatePrompt,
       renamePokerTemplateDimension,
       renamePokerTemplateScale,
       removePokerTemplateScale,

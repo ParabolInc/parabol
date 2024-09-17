@@ -24,7 +24,6 @@ import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
-import ReflectPrompt from './ReflectPrompt'
 import {TaskConnection} from './Task'
 import TeamInvitation from './TeamInvitation'
 import TeamMeetingSettings from './TeamMeetingSettings'
@@ -121,14 +120,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the team was last updated'
-    },
-    customPhaseItems: {
-      type: new GraphQLList(ReflectPrompt),
-      deprecationReason: 'Field no longer needs to exist for now',
-      resolve: () => {
-        // not useful for retros since there is no templateId filter
-        return []
-      }
     },
     teamInvitations: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),

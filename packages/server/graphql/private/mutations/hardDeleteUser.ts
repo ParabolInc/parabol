@@ -75,7 +75,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const teamDiscussionIds = discussions.rows.map(({id}) => id)
 
   // soft delete first for side effects
-  const tombstoneId = await softDeleteUser(userIdToDelete, dataLoader)
+  await softDeleteUser(userIdToDelete, dataLoader)
 
   // all other writes
   await setFacilitatedUserIdOrDelete(userIdToDelete, teamIds, dataLoader)
@@ -93,7 +93,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
       .delete(),
-    pushInvitation: r.table('PushInvitation').getAll(userIdToDelete, {index: 'userId'}).delete(),
     invitedByTeamInvitation: r
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
@@ -103,15 +102,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .table('TeamInvitation')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('acceptedBy').eq(userIdToDelete))
-      .update({acceptedBy: ''}),
-    comment: r
-      .table('Comment')
-      .getAll(r.args(teamDiscussionIds), {index: 'discussionId'})
-      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .update({
-        createdBy: tombstoneId,
-        isAnonymous: true
-      })
+      .update({acceptedBy: ''})
   }).run()
 
   // now postgres, after FKs are added then triggers should take care of children

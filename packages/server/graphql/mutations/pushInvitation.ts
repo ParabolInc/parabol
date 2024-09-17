@@ -1,8 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import PushInvitation from '../../database/types/PushInvitation'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isAuthenticated} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -36,7 +35,7 @@ export default {
       {meetingId, teamId}: {meetingId?: string | null; teamId: string},
       {authToken, dataLoader, socketId: mutatorId}: GQLContext
     ) => {
-      const r = await getRethink()
+      const pg = getKysely()
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
       const viewerId = getUserId(authToken)
@@ -56,10 +55,12 @@ export default {
       if (approvalError instanceof Error) {
         return {error: {message: approvalError.message}}
       }
-      const pushInvitations = (await r
-        .table('PushInvitation')
-        .getAll(viewerId, {index: 'userId'})
-        .run()) as PushInvitation[]
+      const pushInvitations = await pg
+        .selectFrom('PushInvitation')
+        .selectAll()
+        .where('userId', '=', viewerId)
+        .execute()
+
       const teamPushInvitation = pushInvitations.find((row) => row.teamId === teamId)
       if (teamPushInvitation) {
         const {denialCount, lastDenialAt} = teamPushInvitation
@@ -82,10 +83,13 @@ export default {
       // RESOLUTION
       if (!teamPushInvitation) {
         // create a row so we know there was a request so denials are substantiated
-        await r
-          .table('PushInvitation')
-          .insert(new PushInvitation({userId: viewerId, teamId}))
-          .run()
+        await pg
+          .insertInto('PushInvitation')
+          .values({
+            userId: viewerId,
+            teamId
+          })
+          .execute()
       }
 
       const data = {userId: viewerId, teamId, meetingId}
