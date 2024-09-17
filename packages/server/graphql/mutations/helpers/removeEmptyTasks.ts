@@ -1,9 +1,8 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import getRethink from '../../../database/rethinkDriver'
 
-const removeEmptyTasks = async (meetingId: string) => {
+const removeEmptyTasks = async (meetingId: string, teamId: string) => {
   const r = await getRethink()
-  const teamId = await r.table('NewMeeting').get(meetingId)('teamId').run()
   const createdTasks = await r
     .table('Task')
     .getAll(teamId, {index: 'teamId'})

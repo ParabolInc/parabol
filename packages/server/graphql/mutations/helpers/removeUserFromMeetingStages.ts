@@ -1,4 +1,5 @@
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {DataLoaderWorker} from '../../graphql'
 import {isEstimateStage} from '../../meetingTypePredicates'
 
@@ -12,6 +13,7 @@ const removeUserFromMeetingStages = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
+  const pg = getKysely()
   const now = new Date()
   const r = await getRethink()
   const [activeMeetings, completedMeetings] = await Promise.all([
@@ -21,7 +23,7 @@ const removeUserFromMeetingStages = async (
   const meetings = activeMeetings.concat(completedMeetings)
 
   await Promise.all(
-    meetings.map((meeting) => {
+    meetings.map(async (meeting) => {
       const {id: meetingId, phases} = meeting
       let isChanged = false
       phases.forEach((phase) => {
@@ -45,6 +47,11 @@ const removeUserFromMeetingStages = async (
         }
       })
       if (!isChanged) return Promise.resolve(undefined)
+      await pg
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+        .execute()
       return r
         .table('NewMeeting')
         .get(meetingId)

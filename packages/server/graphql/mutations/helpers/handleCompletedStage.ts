@@ -62,6 +62,11 @@ const handleCompletedRetrospectiveStage = async (
     } else if (stage.phaseType === GROUP) {
       const {facilitatorUserId, phases, teamId} = meeting
       unlockAllStagesForPhase(phases, 'discuss', true)
+      await pg
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meeting.id)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meeting.id)

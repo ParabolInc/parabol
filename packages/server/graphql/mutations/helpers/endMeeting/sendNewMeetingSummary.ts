@@ -1,6 +1,8 @@
+import {sql} from 'kysely'
 import getRethink from '../../../../database/rethinkDriver'
 import getMailManager from '../../../../email/getMailManager'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
+import getKysely from '../../../../postgres/getKysely'
 import {AnyMeeting} from '../../../../postgres/types/Meeting'
 import {GQLContext} from '../../../graphql'
 import isValid from '../../../isValid'
@@ -11,13 +13,19 @@ export default async function sendNewMeetingSummary(
 ) {
   const {id: meetingId, teamId, summarySentAt} = newMeeting
   if (summarySentAt) return
+  const pg = getKysely()
   const now = new Date()
   const r = await getRethink()
   const {dataLoader} = context
   const [teamMembers, team] = await Promise.all([
     dataLoader.get('teamMembersByTeamId').load(teamId),
     dataLoader.get('teams').loadNonNull(teamId),
-    r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run()
+    r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run(),
+    pg
+      .updateTable('NewMeeting')
+      .set({summarySentAt: sql`CURRENT_TIMESTAMP`})
+      .where('id', '=', meetingId)
+      .execute()
   ])
   const {name: teamName, orgId} = team
   const userIds = teamMembers.map(({userId}) => userId)

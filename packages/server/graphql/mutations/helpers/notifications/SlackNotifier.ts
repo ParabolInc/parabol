@@ -360,6 +360,11 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     if ('ts' in res) {
       const r = await getRethink()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({slackTs: Number(res.ts)})
+        .where('id', '=', meeting.id)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meeting.id)
@@ -402,6 +407,11 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     if ('ts' in res) {
       const r = await getRethink()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({slackTs: Number(res.ts)})
+        .where('id', '=', meeting.id)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meeting.id)

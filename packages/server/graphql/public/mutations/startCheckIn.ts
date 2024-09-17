@@ -41,13 +41,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meetingType: MeetingTypeEnum = 'action'
 
   // RESOLUTION
-  const meetingCount = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingType})
-    .count()
-    .default(0)
-    .run()
+  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
 
   const phases = await createNewMeetingPhases<CheckInPhase>(
@@ -87,6 +81,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     await r.table('NewMeeting').get(meetingId).delete().run()
     return {error: {message: 'Meeting already started'}}
   }
+  dataLoader.clearAll('newMeetings')
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
 

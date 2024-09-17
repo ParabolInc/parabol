@@ -515,7 +515,6 @@ export const _pgmeetingStatsByOrgId = (parent: RootDataLoader, dependsOn: Regist
   return new DataLoader<string, MeetingStat[], string>(
     async (orgIds) => {
       const pg = getKysely()
-      const r = await getRethink()
       const meetingStatsByOrgId = await Promise.all(
         orgIds.map(async (orgId) => {
           // note: does not include archived teams!

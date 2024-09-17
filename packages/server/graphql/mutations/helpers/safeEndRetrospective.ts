@@ -37,6 +37,7 @@ const getTranscription = async (recallBotId?: string | null) => {
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
+  const pg = getKysely()
   const r = await getRethink()
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
@@ -56,17 +57,32 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
   ).filter(isValid)
   const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
+  const taskCount = await r
+    .table('Task')
+    .getAll(r.args(discussionIds), {index: 'discussionId'})
+    .count()
+    .default(0)
+    .run()
+  await pg
+    .updateTable('NewMeeting')
+    .set({
+      commentCount,
+      taskCount,
+      topicCount: reflectionGroupIds.length,
+      reflectionCount: reflections.length,
+      sentimentScore,
+      summary,
+      transcription
+    })
+    .where('id', '=', meetingId)
+    .execute()
   await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
       {
         commentCount,
-        taskCount: r
-          .table('Task')
-          .getAll(r.args(discussionIds), {index: 'discussionId'})
-          .count()
-          .default(0) as unknown as number,
+        taskCount,
         topicCount: reflectionGroupIds.length,
         reflectionCount: reflections.length,
         sentimentScore,
@@ -77,7 +93,7 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     )
     .run()
 
-  dataLoader.get('newMeetings').clear(meetingId)
+  dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
@@ -134,7 +150,8 @@ const safeEndRetrospective = async ({
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
       phases: JSON.stringify(phases),
-      ...insights
+      usedReactjis: JSON.stringify(insights.usedReactjis),
+      engagement: insights.engagement
     })
     .where('id', '=', meetingId)
     .executeTakeFirst()
@@ -155,7 +172,7 @@ const safeEndRetrospective = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
+    removeEmptyTasks(meetingId, teamId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId),
     updateTeamInsights(teamId, dataLoader)
   ])

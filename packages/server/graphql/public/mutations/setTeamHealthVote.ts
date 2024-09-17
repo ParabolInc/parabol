@@ -13,7 +13,6 @@ import {MutationResolvers} from '../resolverTypes'
 const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealthVote) => {
   const pg = getKysely()
   await pg.transaction().execute(async (trx) => {
-    console.log('start transaction', newVote)
     const meeting = await trx
       .selectFrom('NewMeeting')
       .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
@@ -22,7 +21,6 @@ const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealt
       // NewMeeting: add OrThrow in phase 3
       .executeTakeFirst()
     if (!meeting) return
-    console.log('got lock', newVote)
     const {phases} = meeting
     const phase = getPhase(phases, 'TEAM_HEALTH')
     const {stages} = phase
@@ -39,7 +37,6 @@ const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealt
       .set({phases: JSON.stringify(phases)})
       .where('id', '=', meetingId)
       .execute()
-    console.log('wrote update, commit', newVote)
   })
   const r = await getRethink()
   const updater = (stage: RValue) =>

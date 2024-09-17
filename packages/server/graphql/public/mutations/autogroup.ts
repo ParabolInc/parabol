@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -13,6 +14,7 @@ const autogroup: MutationResolvers['autogroup'] = async (
   {meetingId}: {meetingId: string},
   context: GQLContext
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
@@ -70,7 +72,12 @@ const autogroup: MutationResolvers['autogroup'] = async (
         )
       )
     }),
-    r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run()
+    r.table('NewMeeting').get(meetingId).update({resetReflectionGroups}).run(),
+    pg
+      .updateTable('NewMeeting')
+      .set({resetReflectionGroups: JSON.stringify(resetReflectionGroups)})
+      .where('id', '=', meetingId)
+      .execute()
   ])
   meeting.resetReflectionGroups = resetReflectionGroups
   analytics.suggestGroupsClicked(viewer, meetingId, teamId)

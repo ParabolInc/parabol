@@ -1,8 +1,10 @@
 import dayjs from 'dayjs'
+import {sql} from 'kysely'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
 import updateMeetingSeriesQuery from '../../../postgres/queries/updateMeetingSeries'
@@ -34,6 +36,7 @@ export const startNewMeetingSeries = async (
     name: meetingName,
     facilitatorUserId: facilitatorId
   } = meeting
+  const pg = getKysely()
   const r = await getRethink()
   if (!facilitatorId) {
     throw new Error('No facilitatorId')
@@ -58,7 +61,11 @@ export const startNewMeetingSeries = async (
       scheduledEndTime: nextMeetingStartDate
     })
     .run()
-
+  await pg
+    .updateTable('NewMeeting')
+    .set({meetingSeriesId: newMeetingSeriesId, scheduledEndTime: nextMeetingStartDate})
+    .where('id', '=', meetingId)
+    .execute()
   return {
     id: newMeetingSeriesId,
     ...newMeetingSeriesParams
@@ -66,6 +73,7 @@ export const startNewMeetingSeries = async (
 }
 
 const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRule: RRuleSet) => {
+  const pg = getKysely()
   const r = await getRethink()
   const {id: meetingSeriesId} = meetingSeries
 
@@ -78,22 +86,43 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
     .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
     .filter({endedAt: null}, {default: true})
     .run()
-  const updates = activeMeetings.map((meeting) =>
-    r
-      .table('NewMeeting')
-      .get(meeting.id)
-      .update({
-        scheduledEndTime: getNextRRuleDate(newRecurrenceRule)
-      })
-      .run()
-  )
-  await Promise.all(updates)
+  if (activeMeetings.length > 0) {
+    const meetingIds = activeMeetings.map(({id}) => id)
+    const scheduledEndTime = getNextRRuleDate(newRecurrenceRule)
+    await pg
+      .updateTable('NewMeeting')
+      .set({scheduledEndTime})
+      .where('id', 'in', meetingIds)
+      .execute()
+    const updates = activeMeetings.map((meeting) =>
+      r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({
+          scheduledEndTime
+        })
+        .run()
+    )
+    await Promise.all(updates)
+  }
 }
 
 const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
+  const pg = getKysely()
   const r = await getRethink()
   const now = new Date()
-
+  await pg
+    .with('NewMeetingUpdateEnd', (qb) =>
+      qb
+        .updateTable('NewMeeting')
+        .set({scheduledEndTime: null})
+        .where('meetingSeriesId', '=', meetingSeries.id)
+        .where('endedAt', 'is', null)
+    )
+    .updateTable('MeetingSeries')
+    .set({cancelledAt: sql`CURRENT_TIMESTAMP`})
+    .where('id', '=', meetingSeries.id)
+    .execute()
   await updateMeetingSeriesQuery({cancelledAt: now}, meetingSeries.id)
   await r
     .table('NewMeeting')

@@ -46,6 +46,12 @@ const addAgendaItemToActiveActionMeeting = async (
       })
       .run(),
     getKysely()
+      .with('UpdatePhases', (qb) =>
+        qb
+          .updateTable('NewMeeting')
+          .set({phases: JSON.stringify(phases)})
+          .where('id', '=', meetingId)
+      )
       .with('InsertDiscussion', (qb) =>
         qb.insertInto('Discussion').values({
           id: discussionId,

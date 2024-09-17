@@ -226,7 +226,12 @@ export default {
       .run()
     await pg
       .updateTable('NewMeeting')
-      .set({endedAt: now, phases: JSON.stringify(phases), ...insights})
+      .set({
+        endedAt: now,
+        phases: JSON.stringify(phases),
+        usedReactjis: JSON.stringify(insights.usedReactjis),
+        engagement: insights.engagement
+      })
       .where('id', '=', meetingId)
       .execute()
     dataLoader.clearAll('newMeetings')
@@ -246,7 +251,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
+      removeEmptyTasks(meetingId, teamId),
       updateTeamInsights(teamId, dataLoader)
     ])
     // need to wait for removeEmptyTasks before finishing the meeting

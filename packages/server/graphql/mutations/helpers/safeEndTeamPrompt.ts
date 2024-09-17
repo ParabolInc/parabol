@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
@@ -19,10 +20,11 @@ import updateTeamInsights from './updateTeamInsights'
 
 const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
+  const pg = getKysely()
   const r = await getRethink()
 
   const summary = await generateStandupMeetingSummary(meeting, dataLoader)
-
+  await pg.updateTable('NewMeeting').set({summary}).where('id', '=', meeting.id).execute()
   await r
     .table('NewMeeting')
     .get(meeting.id)
@@ -31,7 +33,7 @@ const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: Internal
     })
     .run()
 
-  dataLoader.get('newMeetings').clear(meeting.id)
+  dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
@@ -58,6 +60,7 @@ const safeEndTeamPrompt = async ({
   context: InternalContext
   subOptions: SubOptions
 }) => {
+  const pg = getKysely()
   const {dataLoader} = context
 
   const {endedAt, id: meetingId, teamId} = meeting
@@ -66,6 +69,14 @@ const safeEndTeamPrompt = async ({
 
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)
+  await pg
+    .updateTable('NewMeeting')
+    .set({
+      endedAt: sql`CURRENT_TIMESTAMP`,
+      usedReactjis: JSON.stringify(insights.usedReactjis),
+      engagement: insights.engagement
+    })
+    .execute()
   const completedTeamPrompt = await r
     .table('NewMeeting')
     .get(meetingId)
@@ -107,7 +118,6 @@ const safeEndTeamPrompt = async ({
       })
   )
   const timelineEventId = events[0]!.id
-  const pg = getKysely()
   await pg.insertInto('TimelineEvent').values(events).execute()
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
