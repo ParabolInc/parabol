@@ -23,6 +23,10 @@ export async function up() {
   }
 
   console.log('Adding index complete')
+
+  // must truncate because some rows didn't have a threadParentId
+  await sql`TRUNCATE TABLE "Comment"`.execute(pg)
+
   const MAX_PG_PARAMS = 65545
   const PG_COLS = [
     'id',

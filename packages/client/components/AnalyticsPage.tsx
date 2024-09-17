@@ -83,16 +83,18 @@ if (datadogEnabled) {
   datadogRum.startSessionReplayRecording()
 }
 
-amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
-  defaultTracking: {
-    attribution: false,
-    pageViews: false,
-    sessions: false,
-    formInteractions: false,
-    fileDownloads: false
-  },
-  logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
-})
+if (window.__ACTION__.AMPLITUDE_WRITE_KEY) {
+  amplitude.init(window.__ACTION__.AMPLITUDE_WRITE_KEY, {
+    defaultTracking: {
+      attribution: false,
+      pageViews: false,
+      sessions: false,
+      formInteractions: false,
+      fileDownloads: false
+    },
+    logLevel: __PRODUCTION__ ? amplitude.Types.LogLevel.None : amplitude.Types.LogLevel.Debug
+  })
+}
 
 const AnalyticsPage = () => {
   const atmosphere = useAtmosphere()
@@ -171,21 +173,24 @@ const AnalyticsPage = () => {
       const translated = !!document.querySelector(
         'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
       )
-      amplitude.track(
-        'Loaded a Page',
-        {
-          name: pageName,
-          referrer: document.referrer,
-          title,
-          path: pathname,
-          url: href,
-          translated,
-          search: location.search
-        },
-        {
-          user_id: atmosphere.viewerId
-        }
-      )
+      const userId = atmosphere.viewerId
+      if (!!userId) {
+        amplitude.track(
+          'Loaded a Page',
+          {
+            name: pageName,
+            referrer: document.referrer,
+            title,
+            path: pathname,
+            url: href,
+            translated,
+            search: location.search
+          },
+          {
+            user_id: userId
+          }
+        )
+      }
     }, TIME_TO_RENDER_TREE)
   }, [pathname, location.search, atmosphere.viewerId])
 

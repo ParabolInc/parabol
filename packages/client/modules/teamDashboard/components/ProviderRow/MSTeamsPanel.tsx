@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent} from 'react'
+import React, {FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {MSTeamsPanel_viewer$key} from '~/__generated__/MSTeamsPanel_viewer.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
@@ -105,6 +105,12 @@ const MSTeamsPanel = (props: Props) => {
       }
     }
   })
+  // because we render this panel also when isConnectClicked, we cannot guarantee the serverWebhookUrl is correct on first render
+  useEffect(() => {
+    if (serverWebhookUrl && !fields.webhookUrl.value) {
+      fields.webhookUrl.resetValue(serverWebhookUrl)
+    }
+  }, [serverWebhookUrl])
 
   const {
     submitting,

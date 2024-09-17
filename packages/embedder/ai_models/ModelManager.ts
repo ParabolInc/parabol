@@ -17,8 +17,8 @@ export class ModelManager {
   generationModels: Map<string, AbstractGenerationModel>
   getEmbedder(tableName?: EmbeddingsTableName): AbstractEmbeddingsModel {
     return tableName
-      ? this.embeddingModels.get(tableName)
-      : this.embeddingModels.values().next().value
+      ? this.embeddingModels.get(tableName)!
+      : this.embeddingModels.values().next().value!
   }
 
   private parseModelEnvVars(envVar: 'AI_EMBEDDING_MODELS' | 'AI_GENERATION_MODELS'): ModelConfig[] {

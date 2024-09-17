@@ -41,7 +41,7 @@ type Mutation {
   """
   Add a new template full of prompts
   """
-  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload
+  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
   addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
 
@@ -433,7 +433,7 @@ type Mutation {
   """
   Move a reflect template
   """
-  moveReflectTemplatePrompt(promptId: ID!, sortOrder: Float!): MoveReflectTemplatePromptPayload
+  moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
 
   """
   Move a team to a different org. Requires billing leader rights on both orgs!

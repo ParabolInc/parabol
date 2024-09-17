@@ -12,7 +12,7 @@ const RetroReflectionGroup: RetroReflectionGroupResolvers = {
     return retroMeeting as MeetingRetrospective
   },
   prompt: ({promptId}, _args, {dataLoader}) => {
-    return dataLoader.get('reflectPrompts').load(promptId)
+    return dataLoader.get('reflectPrompts').loadNonNull(promptId)
   },
   reflections: async ({id: reflectionGroupId, meetingId}, _args, {dataLoader}) => {
     // use meetingId so we only hit the DB once instead of once per group

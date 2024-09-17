@@ -1,0 +1,14 @@
+"""
+Custom integration providers for this organization
+"""
+type OrgIntegrationProviders {
+  """
+  composite
+  """
+  id: ID!
+
+  """
+  Organization specific GitLab integrations
+  """
+  gitlab: [IntegrationProviderOAuth2!]!
+}

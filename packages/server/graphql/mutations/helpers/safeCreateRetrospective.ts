@@ -14,7 +14,7 @@ const safeCreateRetrospective = async (
     templateId: string
     videoMeetingURL?: string
     meetingSeriesId?: number
-    scheduledEndTime?: Date
+    scheduledEndTime?: Date | null
     name: string
   },
   dataLoader: DataLoaderWorker

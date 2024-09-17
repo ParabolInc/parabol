@@ -14,13 +14,13 @@ const NotifyResponseReplied: NotifyResponseRepliedResolvers = {
     return responses.find(({userId: responseUserId}) => responseUserId === userId)!
   },
   author: async ({authorId, commentId}, _args: unknown, {dataLoader}) => {
-    const comment = await dataLoader.get('comments').load(commentId)
+    const comment = await dataLoader.get('comments').loadNonNull(commentId)
     if (comment.isAnonymous) return null
 
     return dataLoader.get('users').loadNonNull(authorId)
   },
   comment: ({commentId}, _args: unknown, {dataLoader}) => {
-    return dataLoader.get('comments').load(commentId)
+    return dataLoader.get('comments').loadNonNull(commentId)
   }
 }
 

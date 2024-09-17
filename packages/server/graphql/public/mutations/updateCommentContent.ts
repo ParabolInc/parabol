@@ -3,7 +3,6 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -15,9 +14,7 @@ const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
   {commentId, content, meetingId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const operationId = dataLoader.share()
-  const now = new Date()
   const subOptions = {operationId, mutatorId}
 
   // AUTH
@@ -47,11 +44,6 @@ const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
 
   // RESOLUTION
   const plaintextContent = extractTextFromDraftString(normalizedContent)
-  await r
-    .table('Comment')
-    .get(commentId)
-    .update({content: normalizedContent, plaintextContent, updatedAt: now})
-    .run()
   await getKysely()
     .updateTable('Comment')
     .set({content: normalizedContent, plaintextContent})

@@ -13,3 +13,4 @@ const AlertDialogTitle = React.forwardRef<
   />
 ))
 AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName
+export {AlertDialogTitle}

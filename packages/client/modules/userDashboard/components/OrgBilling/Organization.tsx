@@ -7,6 +7,7 @@ import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
   MEMBERS_PAGE,
+  ORG_INTEGRATIONS_PAGE,
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../../../utils/constants'
@@ -26,6 +27,11 @@ const OrgTeamMembers = lazy(
 )
 
 const OrgDetails = lazy(() => import(/* webpackChunkName: 'OrgDetails' */ './OrgDetails'))
+
+const OrgIntegrations = lazy(
+  () => import(/* webpackChunkName: 'OrgIntegrations' */ '../OrgIntegrations/OrgIntegrations')
+)
+
 const Authentication = lazy(
   () =>
     import(
@@ -46,6 +52,7 @@ const query = graphql`
         ...OrgPlansAndBillingRoot_organization
         ...OrgDetails_organization
         ...OrgTeams_organization
+        ...OrgIntegrations_organization
         isBillingLeader
       }
     }
@@ -84,6 +91,11 @@ const Organization = (props: Props) => {
           exact
           path={`${match.url}/${ORG_SETTINGS_PAGE}`}
           render={(p) => <OrgDetails {...p} organizationRef={organization} />}
+        />
+        <Route
+          exact
+          path={`${match.url}/${ORG_INTEGRATIONS_PAGE}`}
+          render={(p) => <OrgIntegrations {...p} organizationRef={organization} />}
         />
         <Route
           exact

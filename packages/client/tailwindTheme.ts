@@ -153,7 +153,11 @@ export default {
         '700': '#444258',
         '800': '#2D2D39',
         '900': '#1C1C21'
-      }
+      },
+      'success-light': '#2db553',
+      starter: '#F2E1F7',
+      team: '#CBECF0',
+      enterprise: '#FFE2E0'
     },
     keyframes: {
       overlayShow: {

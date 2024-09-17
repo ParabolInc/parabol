@@ -8,45 +8,14 @@ import {GroupingKanbanColumn_reflectionGroups$key} from '~/__generated__/Groupin
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import useDeepEqual from '~/hooks/useDeepEqual'
 import useSubColumns from '~/hooks/useSubColumns'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
-import {PALETTE} from '../styles/paletteV3'
-import {
-  BezierCurve,
-  Breakpoint,
-  DragAttribute,
-  ElementWidth,
-  MeetingControlBarEnum
-} from '../types/constEnums'
+import {BezierCurve, DragAttribute, ElementWidth, MeetingControlBarEnum} from '../types/constEnums'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-
-const Column = styled('div')<{
-  isLengthExpanded: boolean
-  isFirstColumn: boolean
-  isLastColumn: boolean
-}>(({isLengthExpanded, isFirstColumn, isLastColumn}) => ({
-  alignContent: 'flex-start',
-  background: PALETTE.SLATE_300,
-  borderRadius: 8,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  minWidth: ElementWidth.REFLECTION_COLUMN,
-  padding: 0,
-  position: 'relative',
-  transition: `all 100ms ${BezierCurve.DECELERATE}`,
-  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-    height: isLengthExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
-    margin: `0 ${isLastColumn ? 16 : 8}px 0px ${isFirstColumn ? 16 : 8}px`,
-    maxWidth: 'min-content'
-  }
-}))
 
 const ColumnScrollContainer = styled('div')({
   display: 'flex',
@@ -160,8 +129,6 @@ const GroupingKanbanColumn = (props: Props) => {
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) ||
     !!endedAt
-  const isFirstColumn = prompt.sortOrder === 0
-  const isLastColumn = Math.round(prompt.sortOrder) === reflectPromptsCount - 1
   const groups = useDeepEqual(reflectionGroups)
   // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
   const filteredReflectionGroups = useMemo(
@@ -188,12 +155,13 @@ const GroupingKanbanColumn = (props: Props) => {
     submitMutation()
     CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
   }
-
   return (
-    <Column
-      isLengthExpanded={isLengthExpanded}
-      isFirstColumn={isFirstColumn}
-      isLastColumn={isLastColumn}
+    <div
+      className={`relative ml-2 mr-2 flex h-full min-w-[320px] flex-1
+    flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4
+    single-reflection-column:max-w-min
+    ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-56px)]'}
+    max-w-min`}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >
@@ -240,7 +208,7 @@ const GroupingKanbanColumn = (props: Props) => {
           )
         })}
       </ColumnScrollContainer>
-    </Column>
+    </div>
   )
 }
 

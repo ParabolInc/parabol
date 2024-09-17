@@ -7,7 +7,7 @@ export type AddCommentSuccessSource = {
 
 const AddCommentSuccess: AddCommentSuccessResolvers = {
   comment: async ({commentId}, _args, {dataLoader}) => {
-    return dataLoader.get('comments').load(commentId)
+    return dataLoader.get('comments').loadNonNull(commentId)
   }
 }
 
