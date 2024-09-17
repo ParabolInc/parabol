@@ -47,6 +47,7 @@ module.exports = {
     },
     hot: true,
     historyApiFallback: true,
+    allowedHosts: 'all',
     port: PORT,
     proxy: [
       'sse',
