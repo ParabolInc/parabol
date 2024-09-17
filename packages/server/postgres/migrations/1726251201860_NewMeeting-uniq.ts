@@ -41,5 +41,5 @@ export async function down() {
       pool: getPg()
     })
   })
-  await sql`DROP TRIGGER IF EXISTS check_meeting_overlap;`.execute(pg)
+  await sql`DROP TRIGGER IF EXISTS "check_meeting_overlap" ON "NewMeeting";`.execute(pg)
 }
