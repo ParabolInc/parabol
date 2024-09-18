@@ -1,6 +1,8 @@
+import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
 import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'
 import {Button} from '../../../../ui/Button/Button'
@@ -31,6 +33,8 @@ const OrgTeams = (props: Props) => {
     organizationRef
   )
 
+  const history = useHistory()
+
   const {
     open: openAddTeamDialog,
     close: closeAddTeamDialog,
@@ -40,6 +44,11 @@ const OrgTeams = (props: Props) => {
   const {allTeams, isOrgAdmin, featureFlags} = organization
   const hasPublicTeamsFlag = featureFlags.publicTeams
   const showAllTeams = isOrgAdmin || hasPublicTeamsFlag
+
+  const handleSeePlansClick = () => {
+    history.push(`/me/organizations/${organization.id}/billing`)
+  }
+
   return (
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
@@ -74,6 +83,24 @@ const OrgTeams = (props: Props) => {
         {allTeams.map((team) => (
           <OrgTeamsRow key={team.id} teamRef={team} />
         ))}
+      </div>
+
+      <div className='mt-4 flex items-center justify-between rounded-md border border-slate-300 bg-white p-4'>
+        <div className='flex items-center'>
+          <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
+          <p className='ml-3 text-sm text-slate-700'>
+            Parabol Enterprise includes our Org Admin role, which allows you to see{' '}
+            <strong>all</strong> teams in your organization
+          </p>
+        </div>
+        <Button
+          variant='destructive'
+          shape='pill'
+          className='w-32 py-2 text-base'
+          onClick={handleSeePlansClick}
+        >
+          See plans
+        </Button>
       </div>
 
       {isAddTeamDialogOpened ? (
