@@ -21,6 +21,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         isOrgAdmin
+        tier
         featureFlags {
           publicTeams
         }
@@ -41,7 +42,7 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isOrgAdmin, featureFlags} = organization
+  const {allTeams, isOrgAdmin, featureFlags, tier} = organization
   const hasPublicTeamsFlag = featureFlags.publicTeams
   const showAllTeams = isOrgAdmin || hasPublicTeamsFlag
 
@@ -84,23 +85,25 @@ const OrgTeams = (props: Props) => {
           <OrgTeamsRow key={team.id} teamRef={team} />
         ))}
 
-        <div className='mt-4 flex items-center justify-between bg-white p-4'>
-          <div className='flex items-center'>
-            <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
-            <p className='ml-3 text-sm text-slate-700'>
-              Parabol Enterprise includes our Org Admin role, which allows you to see{' '}
-              <strong>all</strong> teams in your organization
-            </p>
+        {tier !== 'enterprise' && (
+          <div className='mt-4 flex items-center justify-between bg-white p-4'>
+            <div className='flex items-center'>
+              <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
+              <p className='ml-3 text-sm text-slate-700'>
+                Parabol Enterprise includes our Org Admin role, which allows you to see{' '}
+                <strong>all</strong> teams in your organization
+              </p>
+            </div>
+            <Button
+              variant='destructive'
+              shape='pill'
+              className='w-32 py-2 text-base'
+              onClick={handleSeePlansClick}
+            >
+              See plans
+            </Button>
           </div>
-          <Button
-            variant='destructive'
-            shape='pill'
-            className='w-32 py-2 text-base'
-            onClick={handleSeePlansClick}
-          >
-            See plans
-          </Button>
-        </div>
+        )}
       </div>
 
       {isAddTeamDialogOpened ? (
