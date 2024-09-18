@@ -164,6 +164,7 @@ const TeamDashHeader = (props: Props) => {
         <Tab label='Activity' onClick={() => history.push(`/team/${teamId}/activity`)} />
         <Tab label='Tasks' onClick={() => history.push(`/team/${teamId}/tasks`)} />
         <Tab label='Integrations' onClick={() => history.push(`/team/${teamId}/integrations`)} />
+        <Tab label='Insights' onClick={() => history.push(`/team/${teamId}/insights`)} />
       </Tabs>
     </DashSectionHeader>
   )
