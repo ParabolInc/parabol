@@ -9,6 +9,7 @@ import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import plural from '../../../../utils/plural'
 import OrgTeamsRow from './OrgTeamsRow'
+import TeaserOrgTeamsRow from './TeaserOrgTeamsRow'
 
 type Props = {
   organizationRef: OrgTeams_organization$key
@@ -86,23 +87,26 @@ const OrgTeams = (props: Props) => {
         ))}
 
         {tier !== 'enterprise' && (
-          <div className='flex items-center justify-between bg-white p-4'>
-            <div className='flex items-center'>
-              <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
-              <p className='ml-3 text-sm text-slate-700'>
-                Parabol Enterprise includes our Org Admin role, which allows you to see{' '}
-                <strong>all</strong> teams in your organization
-              </p>
+          <>
+            <TeaserOrgTeamsRow />
+            <div className='flex cursor-not-allowed items-center justify-between bg-white p-4'>
+              <div className='flex items-center'>
+                <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
+                <p className='ml-3 text-sm text-slate-700'>
+                  Parabol Enterprise includes our Org Admin role, which allows you to see{' '}
+                  <strong>all</strong> teams in your organization
+                </p>
+              </div>
+              <Button
+                variant='destructive'
+                shape='pill'
+                className='w-32 py-2 text-base'
+                onClick={handleSeePlansClick}
+              >
+                See plans
+              </Button>
             </div>
-            <Button
-              variant='destructive'
-              shape='pill'
-              className='w-32 py-2 text-base'
-              onClick={handleSeePlansClick}
-            >
-              See plans
-            </Button>
-          </div>
+          </>
         )}
       </div>
 
