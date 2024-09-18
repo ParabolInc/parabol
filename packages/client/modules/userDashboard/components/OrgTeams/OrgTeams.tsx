@@ -82,7 +82,7 @@ const OrgTeams = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className='divide-y divide-slate-300 border border-slate-300'>
+        <div className='divide-y divide-slate-300 border-y border-slate-300'>
           {allTeams.map((team) => (
             <OrgTeamsRow key={team.id} teamRef={team} />
           ))}
