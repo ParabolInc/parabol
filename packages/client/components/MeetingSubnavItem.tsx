@@ -91,6 +91,9 @@ const MeetingSubnavItem = (props: Props) => {
   } = props
   const ref = useRef(null)
   useScrollIntoView(ref, isActive)
+  const labelRef = useRef<HTMLDivElement>(null)
+  const isOverflowing =
+    labelRef.current && labelRef.current.scrollWidth > labelRef.current.clientWidth
 
   return (
     <ItemRoot
@@ -104,9 +107,11 @@ const MeetingSubnavItem = (props: Props) => {
     >
       <Tooltip>
         <TooltipTrigger asChild>
-          <ItemLabel isComplete={isComplete}>{children}</ItemLabel>
+          <ItemLabel ref={labelRef} isComplete={isComplete}>
+            {children}
+          </ItemLabel>
         </TooltipTrigger>
-        <TooltipContent className='text-xs'>{children}</TooltipContent>
+        {isOverflowing && <TooltipContent className='text-xs'>{children}</TooltipContent>}
       </Tooltip>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
