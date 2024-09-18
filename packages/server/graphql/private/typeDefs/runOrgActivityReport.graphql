@@ -1,6 +1,6 @@
 extend type Mutation {
   """
-  Run org activity report
+  Get org activity by month
   """
   runOrgActivityReport(
     """
@@ -32,16 +32,6 @@ type OrgActivityRow {
   The start date of the month
   """
   monthStart: DateTime!
-
-  """
-  The last day of the month
-  """
-  lastDayOfMonth: DateTime!
-
-  """
-  The name of the organization
-  """
-  orgName: String!
 
   """
   The number of signups in the month

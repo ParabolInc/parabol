@@ -53,8 +53,6 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
     )
     .select([
       sql`m."monthStart"`.as('monthStart'),
-      sql`(m."monthStart" + interval '1 month' - interval '1 day')::date`.as('lastDayOfMonth'),
-      sql`'All Organizations'`.as('orgName'),
       sql`COALESCE(us.signup_count, 0)`.as('signupCount'),
       sql`COALESCE(ul.login_count, 0)`.as('loginCount')
     ])
