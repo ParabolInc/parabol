@@ -3,7 +3,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
@@ -112,9 +111,18 @@ const TeamDashHeader = (props: Props) => {
   )
   const {organization, id: teamId, name: teamName, teamMembers} = team
   const {name: orgName, id: orgId} = organization
-  const isTasks = useRouteMatch('/team/:teamId/tasks')
-  const isIntegrations = useRouteMatch('/team/:teamId/integrations')
   const {history} = useRouter()
+
+  const activeTab = location.pathname.split('/').pop()
+
+  const tabs = [
+    {label: 'Activity', path: 'activity'},
+    {label: 'Tasks', path: 'tasks'},
+    {label: 'Integrations', path: 'integrations'},
+    {label: 'Insights', path: 'insights'}
+  ]
+
+  const activeIdx = tabs.findIndex((tab) => tab.path === activeTab)
 
   return (
     <DashSectionHeader>
@@ -158,13 +166,16 @@ const TeamDashHeader = (props: Props) => {
         </Avatars>
       </TeamHeaderAndAvatars>
       <Tabs
-        activeIdx={isTasks ? 1 : isIntegrations ? 2 : 0}
+        activeIdx={activeIdx}
         className='full-w max-w-none border-b border-solid border-slate-300'
       >
-        <Tab label='Activity' onClick={() => history.push(`/team/${teamId}/activity`)} />
-        <Tab label='Tasks' onClick={() => history.push(`/team/${teamId}/tasks`)} />
-        <Tab label='Integrations' onClick={() => history.push(`/team/${teamId}/integrations`)} />
-        <Tab label='Insights' onClick={() => history.push(`/team/${teamId}/insights`)} />
+        {tabs.map((tab) => (
+          <Tab
+            key={tab.path}
+            label={tab.label}
+            onClick={() => history.push(`/team/${teamId}/${tab.path}`)}
+          />
+        ))}
       </Tabs>
     </DashSectionHeader>
   )
