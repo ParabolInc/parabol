@@ -74,7 +74,7 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+      <div className='overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
@@ -82,14 +82,16 @@ const OrgTeams = (props: Props) => {
             </div>
           </div>
         </div>
-        {allTeams.map((team) => (
-          <OrgTeamsRow key={team.id} teamRef={team} />
-        ))}
+        <div className='divide-y divide-slate-300 border border-slate-300'>
+          {allTeams.map((team) => (
+            <OrgTeamsRow key={team.id} teamRef={team} />
+          ))}
+        </div>
 
         {tier !== 'enterprise' && (
           <>
             <TeaserOrgTeamsRow />
-            <div className='flex cursor-not-allowed items-center justify-between bg-white p-4'>
+            <div className='flex items-center justify-between bg-white px-4 pb-4'>
               <div className='flex items-center'>
                 <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
                 <p className='ml-3 text-sm text-slate-700'>
