@@ -86,7 +86,7 @@ const OrgTeams = (props: Props) => {
         ))}
 
         {tier !== 'enterprise' && (
-          <div className='mt-4 flex items-center justify-between bg-white p-4'>
+          <div className='flex items-center justify-between bg-white p-4'>
             <div className='flex items-center'>
               <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
               <p className='ml-3 text-sm text-slate-700'>
