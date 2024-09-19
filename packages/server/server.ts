@@ -23,6 +23,7 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
+import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 
 tracer.init({
   service: `web`,
@@ -67,6 +68,7 @@ uws
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
+  .post('/mattermost', mattermostWebhookHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)
