@@ -105,6 +105,7 @@
     "graphql-relay": "^0.10.0",
     "graphql-shield": "^7.5.0",
     "html-minifier-terser": "^5.0.2",
+    "http-message-signatures": "^1.0.4",
     "immutable": "3.8.2",
     "ioredis": "^5.2.3",
     "jsdom": "^20.0.0",
