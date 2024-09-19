@@ -61,7 +61,7 @@ const TeamDashMain = (props: Props) => {
             <TeamDashIntegrationsTab teamRef={teamId} />
           </Route>
           <Route path='/team/:teamId/insights'>
-            <TeamDashInsightsTab teamRef={teamId} />
+            <TeamDashInsightsTab teamId={teamId} />
           </Route>
           {/*Fall back to activity view if nothing is specified*/}
           <Route path='/team/:teamId'>
