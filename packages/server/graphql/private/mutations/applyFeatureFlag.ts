@@ -7,7 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
-  {flagName, subjects},
+  {flagName, scope, subjects},
   {authToken}
 ) => {
   const pg = getKysely()
@@ -26,6 +26,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     .selectFrom('FeatureFlag')
     .select(['id'])
     .where('featureName', '=', flagName)
+    .where('scope', '=', scope)
     .executeTakeFirst()
 
   if (!featureFlag) {
@@ -38,35 +39,38 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   const teamIds: string[] = []
   const orgIds: string[] = []
 
-  if (subjects.emails) {
-    const users = await getUsersByEmails(subjects.emails)
-    userIds.push(...users.map((user) => user.id))
-  }
+  if (scope === 'User') {
+    if (subjects.emails) {
+      const users = await getUsersByEmails(subjects.emails)
+      userIds.push(...users.map((user) => user.id))
+    }
 
-  if (subjects.domains) {
-    for (const domain of subjects.domains) {
-      const domainUsers = await getUsersByDomain(domain)
-      userIds.push(...domainUsers.map((user) => user.id))
+    if (subjects.domains) {
+      for (const domain of subjects.domains) {
+        const domainUsers = await getUsersByDomain(domain)
+        userIds.push(...domainUsers.map((user) => user.id))
+      }
+    }
+
+    if (subjects.userIds) {
+      userIds.push(...subjects.userIds)
+    }
+  } else if (scope === 'Team') {
+    if (subjects.teamIds) {
+      teamIds.push(...subjects.teamIds)
+    }
+  } else if (scope === 'Organization') {
+    if (subjects.orgIds) {
+      orgIds.push(...subjects.orgIds)
     }
   }
 
-  if (subjects.userIds) {
-    userIds.push(...subjects.userIds)
-  }
-
-  if (subjects.teamIds) {
-    teamIds.push(...subjects.teamIds)
-  }
-
-  if (subjects.orgIds) {
-    orgIds.push(...subjects.orgIds)
-  }
-
-  const values = [
-    ...userIds.map((userId) => ({userId, featureFlagId})),
-    ...teamIds.map((teamId) => ({teamId, featureFlagId})),
-    ...orgIds.map((orgId) => ({orgId, featureFlagId}))
-  ]
+  const values =
+    scope === 'User'
+      ? userIds.map((userId) => ({userId, featureFlagId}))
+      : scope === 'Team'
+        ? teamIds.map((teamId) => ({teamId, featureFlagId}))
+        : orgIds.map((orgId) => ({orgId, featureFlagId}))
 
   await pg
     .insertInto('FeatureFlagOwner')
@@ -76,9 +80,9 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
 
   return {
     featureFlagId,
-    userIds,
-    teamIds,
-    orgIds
+    userIds: scope === 'User' ? userIds : [],
+    teamIds: scope === 'Team' ? teamIds : [],
+    orgIds: scope === 'Organization' ? orgIds : []
   }
 }
 

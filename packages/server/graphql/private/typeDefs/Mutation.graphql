@@ -17,6 +17,11 @@ type Mutation {
     The expiration date of the feature flag
     """
     expiresAt: DateTime!
+
+    """
+    The scope of the feature flag
+    """
+    scope: FeatureFlagScope!
   ): AddFeatureFlagPayload!
 
   """
@@ -31,6 +36,10 @@ type Mutation {
     The subjects to which the feature flag will be applied
     """
     subjects: SubjectsInput!
+    """
+    The scope of the feature flag
+    """
+    scope: FeatureFlagScope!
   ): ApplyFeatureFlagPayload!
 
   """
