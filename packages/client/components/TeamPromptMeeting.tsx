@@ -89,7 +89,10 @@ const TeamPromptMeeting = (props: Props) => {
           }
         }
         organization {
-          singleColumnStandups: featureFlag(featureName: "singleColumnStandups")
+          singleColumnStandups: featureFlag(
+            featureName: "singleColumnStandups"
+            scope: Organization
+          )
         }
       }
     `,

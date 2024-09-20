@@ -7,7 +7,7 @@ import {RDatum} from '../database/stricterR'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
-import {ReactableEnum} from '../graphql/public/resolverTypes'
+import {FeatureFlagScope, ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
@@ -845,7 +845,7 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
 
 export const featureFlagByOwnerId = (parent: RootDataLoader) => {
   return new DataLoader<
-    {ownerId: string; ownerType: 'User' | 'Team' | 'Organization'; featureName: string},
+    {ownerId: string; scope: FeatureFlagScope; featureName: string},
     boolean,
     string
   >(
@@ -868,9 +868,9 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
         }
       }
 
-      const userKeys = keys.filter(({ownerType}) => ownerType === 'User')
-      const teamKeys = keys.filter(({ownerType}) => ownerType === 'Team')
-      const orgKeys = keys.filter(({ownerType}) => ownerType === 'Organization')
+      const userKeys = keys.filter(({scope}) => scope === 'User')
+      const teamKeys = keys.filter(({scope}) => scope === 'Team')
+      const orgKeys = keys.filter(({scope}) => scope === 'Organization')
 
       const userIds = userKeys.map(({ownerId}) => ownerId)
       const teamIds = teamKeys.map(({ownerId}) => ownerId)
@@ -907,17 +907,17 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
       const featureFlagMap = new Map<string, boolean>()
       results.forEach(({userId, teamId, orgId, featureName}) => {
         const ownerId = userId || teamId || orgId
-        const ownerType = userId ? 'User' : teamId ? 'Team' : 'Organization'
-        featureFlagMap.set(`${ownerId}:${ownerType}:${featureName}`, true)
+        const scope = userId ? 'User' : teamId ? 'Team' : 'Organization'
+        featureFlagMap.set(`${ownerId}:${scope}:${featureName}`, true)
       })
 
-      return keys.map(({ownerId, ownerType, featureName}) =>
-        featureFlagMap.has(`${ownerId}:${ownerType}:${featureName}`)
+      return keys.map(({ownerId, scope, featureName}) =>
+        featureFlagMap.has(`${ownerId}:${scope}:${featureName}`)
       )
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.ownerId}:${key.ownerType}:${key.featureName}`
+      cacheKeyFn: (key) => `${key.ownerId}:${key.scope}:${key.featureName}`
     }
   )
 }

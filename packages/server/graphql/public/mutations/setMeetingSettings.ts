@@ -31,7 +31,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   ])
   const hasTranscriptFlag = await dataLoader
     .get('featureFlagByOwnerId')
-    .load({ownerId: team.orgId, ownerType: 'Organization', featureName: 'zoomTranscription'})
+    .load({ownerId: team.orgId, scope: 'Organization', featureName: 'zoomTranscription'})
 
   const firstPhases: NewMeetingPhaseTypeEnum[] = []
   if (checkinEnabled || (checkinEnabled !== false && phaseTypes.includes('checkin'))) {

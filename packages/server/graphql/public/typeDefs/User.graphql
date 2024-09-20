@@ -396,7 +396,7 @@ type User {
   """
   Whether the user has a feature flag enabled or not
   """
-  featureFlag(featureName: String!): Boolean!
+  featureFlag(featureName: String!, scope: FeatureFlagScope!): Boolean!
 
   """
   url of user’s profile picture

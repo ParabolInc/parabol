@@ -29,7 +29,7 @@ const DashNavListTeams = (props: Props) => {
         id
         name
         tier
-        publicTeamsEnabled: featureFlag(featureName: "publicTeams")
+        publicTeamsEnabled: featureFlag(featureName: "publicTeams", scope: Organization)
         viewerTeams {
           ...DashNavListTeam @relay(mask: false)
         }

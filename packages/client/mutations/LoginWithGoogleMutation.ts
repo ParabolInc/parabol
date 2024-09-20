@@ -25,7 +25,7 @@ const mutation = graphql`
       }
       isNewUser
       user {
-        signUpDestinationTeam: featureFlag(featureName: "signUpDestinationTeam")
+        signUpDestinationTeam: featureFlag(featureName: "signUpDestinationTeam", scope: User)
         teams {
           id
         }

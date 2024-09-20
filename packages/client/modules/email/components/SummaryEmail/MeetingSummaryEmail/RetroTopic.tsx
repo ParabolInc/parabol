@@ -105,7 +105,7 @@ const RetroTopic = (props: Props) => {
       fragment RetroTopic_meeting on RetrospectiveMeeting {
         id
         organization {
-          shareSummary: featureFlag(featureName: "shareSummary")
+          shareSummary: featureFlag(featureName: "shareSummary", scope: Organization)
         }
       }
     `,

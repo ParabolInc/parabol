@@ -12,7 +12,7 @@ const Team: TeamResolvers = {
   ) => {
     const noTeamInsights = await dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, ownerType: 'Organization', featureName: 'noTeamInsights'})
+      .load({ownerId: orgId, scope: 'Organization', featureName: 'noTeamInsights'})
 
     if (noTeamInsights) return null
     if (!mostUsedEmojis && !meetingEngagement && !topRetroTemplates) return null
@@ -55,10 +55,12 @@ const Team: TeamResolvers = {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
   },
-  featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
-    return await dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: teamId, ownerType: 'Team', featureName})
+  featureFlag: async ({id: teamId}, {featureName, scope}, {dataLoader}) => {
+    if (scope !== 'Team') {
+      console.error('Invalid scope: ', scope)
+      return false
+    }
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, scope, featureName})
   }
 }
 

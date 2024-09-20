@@ -32,7 +32,7 @@ graphql`
         groupTitle
       }
       organization {
-        hasNoAISummaryFlag: featureFlag(featureName: "noAISummary")
+        hasNoAISummaryFlag: featureFlag(featureName: "noAISummary", scope: Organization)
       }
       reflectionGroups(sortBy: voteCount) {
         reflections {

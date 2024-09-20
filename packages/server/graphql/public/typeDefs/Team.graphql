@@ -110,7 +110,7 @@ type Team {
   """
   Whether the team has a feature flag enabled or not
   """
-  featureFlag(featureName: String!): Boolean!
+  featureFlag(featureName: String!, scope: FeatureFlagScope!): Boolean!
 
   """
   The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections

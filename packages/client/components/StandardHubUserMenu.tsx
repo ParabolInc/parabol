@@ -43,7 +43,7 @@ const StandardHubUserMenu = (props: Props) => {
     graphql`
       fragment StandardHubUserMenu_viewer on User {
         email
-        insights: featureFlag(featureName: "insights")
+        insights: featureFlag(featureName: "insights", scope: User)
         organizations {
           id
           billingTier

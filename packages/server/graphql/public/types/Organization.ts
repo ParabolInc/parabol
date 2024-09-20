@@ -23,10 +23,12 @@ const Organization: OrganizationResolvers = {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
   },
-  featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
-    return await dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, ownerType: 'Organization', featureName})
+  featureFlag: async ({id: orgId}, {featureName, scope}, {dataLoader}) => {
+    if (scope !== 'Organization') {
+      console.error('Invalid scope: ', scope)
+      return false
+    }
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, scope, featureName})
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null
@@ -65,7 +67,7 @@ const Organization: OrganizationResolvers = {
     const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
     const hasPublicTeamsFlag = await dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: organization.id, ownerType: 'Organization', featureName: 'publicTeams'})
+      .load({ownerId: organization.id, scope: 'Organization', featureName: 'publicTeams'})
     if (isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
       const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
@@ -87,7 +89,7 @@ const Organization: OrganizationResolvers = {
       dataLoader.get('teamsByOrgIds').load(orgId),
       dataLoader
         .get('featureFlagByOwnerId')
-        .load({ownerId: orgId, ownerType: 'Organization', featureName: 'publicTeams'})
+        .load({ownerId: orgId, scope: 'Organization', featureName: 'publicTeams'})
     ])
     if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []
     const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))

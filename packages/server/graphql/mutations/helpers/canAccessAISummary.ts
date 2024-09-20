@@ -13,17 +13,17 @@ const canAccessAISummary = async (
   const [noAIOrgSummary, noAIUserSummary] = await Promise.all([
     dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, ownerType: 'Organization', featureName: 'noAISummary'}),
+      .load({ownerId: orgId, scope: 'Organization', featureName: 'noAISummary'}),
     dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: userId, ownerType: 'User', featureName: 'noAISummary'})
+      .load({ownerId: userId, scope: 'User', featureName: 'noAISummary'})
   ])
 
   if (noAIOrgSummary || noAIUserSummary) return false
   if (meetingType === 'standup') {
     const hasStandupFlag = await dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, ownerType: 'Organization', featureName: 'standupAISummary'})
+      .load({ownerId: orgId, scope: 'Organization', featureName: 'standupAISummary'})
     return hasStandupFlag
   }
 

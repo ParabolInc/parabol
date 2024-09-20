@@ -11,7 +11,7 @@ const generateWholeMeetingSentimentScore = async (
   ])
   const hasNoAISummary = await dataLoader
     .get('featureFlagByOwnerId')
-    .load({ownerId: facilitator.id, ownerType: 'User', featureName: 'noAISummary'})
+    .load({ownerId: facilitator.id, scope: 'User', featureName: 'noAISummary'})
   if (hasNoAISummary || reflections.length === 0) return undefined
   const reflectionsWithSentimentScores = reflections.filter(
     ({sentimentScore}) => sentimentScore !== undefined
