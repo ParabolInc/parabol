@@ -3,6 +3,9 @@ import React, {ReactNode, useRef} from 'react'
 import useScrollIntoView from '../hooks/useScrollIntoVIew'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 const lineHeight = NavSidebar.SUB_LINE_HEIGHT
 
@@ -88,6 +91,10 @@ const MeetingSubnavItem = (props: Props) => {
   } = props
   const ref = useRef(null)
   useScrollIntoView(ref, isActive)
+  const labelRef = useRef<HTMLDivElement>(null)
+  const isOverflowing =
+    labelRef.current && labelRef.current.scrollWidth > labelRef.current.clientWidth
+
   return (
     <ItemRoot
       ref={ref}
@@ -98,7 +105,14 @@ const MeetingSubnavItem = (props: Props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : undefined}
     >
-      <ItemLabel isComplete={isComplete}>{children}</ItemLabel>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <ItemLabel ref={labelRef} isComplete={isComplete}>
+            {children}
+          </ItemLabel>
+        </TooltipTrigger>
+        {isOverflowing && <TooltipContent className='text-xs'>{children}</TooltipContent>}
+      </Tooltip>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
   )
