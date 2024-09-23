@@ -36,34 +36,17 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
     .where('User.createdAt', '<', queryEndDate)
     .groupBy(['month', 'Organization.name'])
 
-  const userLogins = pg
-    .selectFrom('User')
-    .innerJoin('OrganizationUser', 'User.id', 'OrganizationUser.userId')
-    .innerJoin('Organization', 'OrganizationUser.orgId', 'Organization.id')
-    .select([
-      sql`date_trunc('month', "User"."lastSeenAt")`.as('month'),
-      'Organization.name as orgName',
-      sql`COUNT(DISTINCT "User"."id")`.as('login_count')
-    ])
-    .where('User.lastSeenAt', '>=', queryStartDate)
-    .where('User.lastSeenAt', '<', queryEndDate)
-    .groupBy(['month', 'Organization.name'])
+  // Remove userLogins query
 
   const query = pg
     .selectFrom(months.as('m'))
     .leftJoin(userSignups.as('us'), (join) =>
       join.onRef(sql`m."monthStart"`, '=', sql`us.month::timestamp`)
     )
-    .leftJoin(userLogins.as('ul'), (join) =>
-      join
-        .onRef(sql`m."monthStart"`, '=', sql`ul.month::timestamp`)
-        .onRef('us.orgName', '=', 'ul.orgName')
-    )
     .select([
       sql`m."monthStart"`.as('monthStart'),
       'us.orgName',
-      sql`COALESCE(us.signup_count, 0)`.as('signupCount'),
-      sql`COALESCE(ul.login_count, 0)`.as('loginCount')
+      sql`COALESCE(us.signup_count, 0)`.as('signupCount')
     ])
     .orderBy('monthStart')
 
@@ -123,12 +106,6 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
           {
             orgName: pgRow.orgName,
             signupCount: pgRow.signupCount
-          }
-        ],
-        logins: [
-          {
-            orgName: pgRow.orgName,
-            loginCount: pgRow.loginCount
           }
         ],
         participantCount: rethinkParticipants ? rethinkParticipants.participantCount : 0,

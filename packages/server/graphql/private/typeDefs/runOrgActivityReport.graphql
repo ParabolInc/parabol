@@ -39,11 +39,6 @@ type OrgActivityRow {
   signups: [OrgSignupCount!]!
 
   """
-  The number of logins in the month, grouped by organization
-  """
-  logins: [OrgLoginCount!]!
-
-  """
   The number of unique meeting participants in the month
   """
   participantCount: Int!
@@ -64,16 +59,4 @@ type OrgSignupCount {
   The number of signups for this organization
   """
   signupCount: Int!
-}
-
-type OrgLoginCount {
-  """
-  The name of the organization
-  """
-  orgName: String
-
-  """
-  The number of logins for this organization
-  """
-  loginCount: Int!
 }
