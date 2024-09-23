@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {AccountBalance, AccountBox, BarChart, ExitToApp, Star} from '@mui/icons-material'
+import {AccountBalance, AccountBox, ExitToApp, Star} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -83,18 +83,6 @@ const StandardHubUserMenu = (props: Props) => {
           </MenuItemLink>
         }
       />
-      {insights && (
-        <MenuItem
-          label={
-            <MenuItemLink to={'/usage'}>
-              <MenuItemIcon>
-                <BarChart />
-              </MenuItemIcon>
-              {'Usage'}
-            </MenuItemLink>
-          }
-        />
-      )}
       {showUpgradeCTA && <MenuItemHR key='HR0' />}
       {showUpgradeCTA && (
         <MenuItem

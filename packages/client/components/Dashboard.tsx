@@ -11,7 +11,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import useSidebar from '../hooks/useSidebar'
-import useUsageSnackNag from '../hooks/useUsageSnackNag'
 import DashTopBar from './DashTopBar'
 import DashSidebar from './Dashboard/DashSidebar'
 import MobileDashSidebar from './Dashboard/MobileDashSidebar'
@@ -19,9 +18,6 @@ import MobileDashTopBar from './MobileDashTopBar'
 import RequestToJoinComponent from './RequestToJoin'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
 
-const InsightsRoot = lazy(
-  () => import(/* webpackChunkName: 'Insights' */ '../components/InsightsRoot')
-)
 const MeetingsDash = lazy(
   () => import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
 )
@@ -105,9 +101,6 @@ const Dashboard = (props: Props) => {
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
           overLimitCopy
-          featureFlags {
-            insights
-          }
           teams {
             activeMeetings {
               ...useSnacksForNewMeetings_meetings
@@ -119,15 +112,13 @@ const Dashboard = (props: Props) => {
     queryRef
   )
   const {viewer} = data
-  const {teams, featureFlags} = viewer
-  const {insights} = featureFlags
+  const {teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
   const {isOpen, toggle, handleMenuClick} = useSidebar()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const overLimitCopy = viewer?.overLimitCopy
   const meetingsDashRef = useRef<HTMLDivElement>(null)
   useSnackNag(overLimitCopy)
-  useUsageSnackNag(insights)
   useSnacksForNewMeetings(activeMeetings)
   useNewFeatureSnackbar(viewer)
 
@@ -165,7 +156,6 @@ const Dashboard = (props: Props) => {
             />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-            <Route path='/usage' component={InsightsRoot} />
           </Switch>
         </DashMain>
       </DashPanel>

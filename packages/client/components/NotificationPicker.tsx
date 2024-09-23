@@ -19,12 +19,6 @@ const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
   PROMOTE_TO_BILLING_LEADER: lazyPreload(
     () => import(/* webpackChunkName: 'PromoteToBillingLeader' */ './PromoteToBillingLeader')
   ),
-  TEAMS_LIMIT_EXCEEDED: lazyPreload(
-    () =>
-      import(
-        /* webpackChunkName: 'TeamsLimitExceededNotification' */ './TeamsLimitExceededNotification'
-      )
-  ),
   TEAMS_LIMIT_REMINDER: lazyPreload(
     () =>
       import(
@@ -79,7 +73,6 @@ const NotificationPicker = (props: Props) => {
         ...ResponseMentioned_notification
         ...Mentioned_notification
         ...ResponseReplied_notification
-        ...TeamsLimitExceededNotification_notification
         ...TeamsLimitReminderNotification_notification
         ...PromptToJoinOrgNotification_notification
         ...RequestToJoinOrgNotification_notification
