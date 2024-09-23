@@ -72,16 +72,13 @@ const OrgPlans = (props: Props) => {
         ...LimitExceededWarning_organization
         id
         billingTier
-        scheduledLockAt
-        lockedAt
       }
     `,
     organizationRef
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, scheduledLockAt, lockedAt, billingTier} = organization
-  const showNudge = scheduledLockAt || lockedAt
+  const {id: orgId, billingTier} = organization
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const plans = [
