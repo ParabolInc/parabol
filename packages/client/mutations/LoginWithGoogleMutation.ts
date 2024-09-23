@@ -57,7 +57,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithGoogle)
-        const authToken = acceptTeamInvitation?.authToken ?? loginWithGoogle.authToken
+        const authToken = acceptTeamInvitation?.authToken || loginWithGoogle.authToken!
         atmosphere.setAuthToken(authToken)
         const redirectPath =
           isNewUser && user?.featureFlags.signUpDestinationTeam

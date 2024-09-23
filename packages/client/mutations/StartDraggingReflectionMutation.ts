@@ -81,7 +81,7 @@ export const startDraggingReflectionMeetingUpdater: SharedUpdater<
       reflection.setValue(false, 'isDropping')
       reflection.setLinkedRecord(remoteDrag, 'remoteDrag')
       // cancel spotlight, too
-      const meeting = meetingId !== null ? store.get(meetingId) : null
+      const meeting = meetingId ? store.get(meetingId) : null
       meeting?.setValue(null, 'spotlightReflection')
     } else {
       // viewer wins

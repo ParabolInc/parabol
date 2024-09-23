@@ -43,7 +43,7 @@ const Group = styled('div')<{staticReflectionCount: number; isSpotlightSource: b
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number
-  isDropping: boolean | null
+  isDropping: boolean | null | undefined
   groupCount: number
   isHiddenSpotlightSource: boolean
 }>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}) => {

@@ -129,7 +129,7 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
         isNavigable: batch.some(({isNavigable}) => isNavigable),
         isActive: !!batch.find(({id}) => id === localStageId),
         stageIds: batch.map(({id}) => id) as [string, ...string[]],
-        finalScores: batch.map(({finalScore}) => finalScore),
+        finalScores: batch.map(({finalScore}) => finalScore || null),
         taskId
       })
       i += batch.length - 1
