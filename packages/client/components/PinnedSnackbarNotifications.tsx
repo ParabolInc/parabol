@@ -31,12 +31,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
         viewer {
           pinnedNotifications: notifications(
             first: 10
-            types: [
-              TEAMS_LIMIT_EXCEEDED
-              TEAMS_LIMIT_REMINDER
-              PROMPT_TO_JOIN_ORG
-              REQUEST_TO_JOIN_ORG
-            ]
+            types: [TEAMS_LIMIT_REMINDER, PROMPT_TO_JOIN_ORG, REQUEST_TO_JOIN_ORG]
           ) {
             edges {
               node {
