@@ -11,7 +11,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
   const pg = getKysely()
   const now = new Date()
   const queryEndDate = endDate || now
-  const queryStartDate = startDate || new Date(0)
+  const queryStartDate = startDate || new Date(0) // Unix epoch start if not provided
 
   const months = pg
     .selectFrom(
@@ -25,18 +25,13 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
 
   const userSignups = pg
     .selectFrom('User')
-    .innerJoin('OrganizationUser', 'User.id', 'OrganizationUser.userId')
-    .innerJoin('Organization', 'OrganizationUser.orgId', 'Organization.id')
     .select([
-      sql`date_trunc('month', "User"."createdAt")`.as('month'),
-      'Organization.name as orgName',
-      sql`COUNT(DISTINCT "User"."id")`.as('signup_count')
+      sql`date_trunc('month', "createdAt")`.as('month'),
+      sql`COUNT(DISTINCT "id")`.as('signup_count')
     ])
-    .where('User.createdAt', '>=', queryStartDate)
-    .where('User.createdAt', '<', queryEndDate)
-    .groupBy(['month', 'Organization.name'])
-
-  // Remove userLogins query
+    .where('createdAt', '>=', queryStartDate)
+    .where('createdAt', '<', queryEndDate)
+    .groupBy(sql`date_trunc('month', "createdAt")`)
 
   const query = pg
     .selectFrom(months.as('m'))
@@ -45,7 +40,6 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
     )
     .select([
       sql`m."monthStart"`.as('monthStart'),
-      'us.orgName',
       sql`COALESCE(us.signup_count, 0)`.as('signupCount')
     ])
     .orderBy('monthStart')
@@ -87,6 +81,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
         .run()
     ])
 
+    // Combine PostgreSQL and RethinkDB results
     const combinedResults = pgResults.map((pgRow: any) => {
       const monthStart = new Date(pgRow.monthStart)
       const rethinkParticipants = rethinkResults.find(
@@ -102,12 +97,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
 
       return {
         monthStart: pgRow.monthStart,
-        signups: [
-          {
-            orgName: pgRow.orgName,
-            signupCount: pgRow.signupCount
-          }
-        ],
+        signupCount: pgRow.signupCount ? pgRow.signupCount : 0,
         participantCount: rethinkParticipants ? rethinkParticipants.participantCount : 0,
         meetingCount: rethinkMeetings ? rethinkMeetings.meetingCount : 0
       }
