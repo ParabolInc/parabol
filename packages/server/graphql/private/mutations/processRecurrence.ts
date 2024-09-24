@@ -160,11 +160,11 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
       activeMeetingSeries.map(async (meetingSeries) => {
         const {teamId, id: meetingSeriesId, recurrenceRule, facilitatorId} = meetingSeries
         const teamMemberId = TeamMemberId.join(teamId, facilitatorId)
-        const [seriesTeam, facilitatorTeamMemberId] = await Promise.all([
+        const [seriesTeam, facilitatorTeamMember] = await Promise.all([
           dataLoader.get('teams').loadNonNull(teamId),
           dataLoader.get('teamMembers').loadNonNull(teamMemberId)
         ])
-        if (seriesTeam.isArchived || !facilitatorTeamMemberId.isNotRemoved) {
+        if (seriesTeam.isArchived || !facilitatorTeamMember.isNotRemoved) {
           return await stopMeetingSeries(meetingSeries)
         }
         if (!seriesTeam.isPaid) {
