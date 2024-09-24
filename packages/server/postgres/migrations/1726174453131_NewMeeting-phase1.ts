@@ -65,7 +65,7 @@ export async function up() {
       CONSTRAINT "fk_teamId"
         FOREIGN KEY("teamId")
           REFERENCES "Team"("id")
-          ON DELETE SET NULL,
+          ON DELETE CASCADE,
       CONSTRAINT "fk_meetingSeriesId"
         FOREIGN KEY("meetingSeriesId")
           REFERENCES "MeetingSeries"("id")
@@ -73,7 +73,7 @@ export async function up() {
       CONSTRAINT "fk_templateId"
         FOREIGN KEY("templateId")
           REFERENCES "MeetingTemplate"("id")
-          ON DELETE SET NULL
+          ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_createdAt" ON "NewMeeting"("createdAt");
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_facilitatorUserId" ON "NewMeeting"("facilitatorUserId");
