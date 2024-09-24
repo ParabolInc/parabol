@@ -11,7 +11,7 @@ import cloneReflection from '~/utils/retroGroup/cloneReflection'
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,
-  reflectionId: string | null,
+  reflectionId: string | null | undefined,
   dragIdRef: MutableRefObject<string | undefined>
 ) => {
   const atmosphere = useAtmosphere()

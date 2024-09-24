@@ -77,7 +77,7 @@ const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
 
 const getValidationError = (
   title: string | null,
-  reflectionGroups: readonly {id: string; title: string | null}[],
+  reflectionGroups: readonly {id: string; title: string | null | undefined}[],
   reflectionGroupId: string
 ) => {
   if (!title || title.length < 1) {

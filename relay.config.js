@@ -9,7 +9,7 @@ module.exports = {
   },
   language: 'typescript',
   src: path.join(__dirname, 'packages'),
-  customScalars: {
+  customScalarTypes: {
     Email: 'string',
     DateTime: 'string',
     URL: 'string',

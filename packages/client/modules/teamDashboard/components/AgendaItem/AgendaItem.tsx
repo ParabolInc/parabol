@@ -238,7 +238,9 @@ const AgendaItem = (props: Props) => {
         />
       </AgendaItemStyles>
       {tooltipPortal(
-        pinned ? `Unpin "${content}" from every check-in` : `Pin "${content}" to every check-in`
+        pinned
+          ? `Unpin this agenda topic from every check-in`
+          : `Pin this agenda topic to every check-in`
       )}
     </>
   )
