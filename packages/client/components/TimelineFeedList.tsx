@@ -120,7 +120,9 @@ const TimelineFeedList = (props: Props) => {
       ))}
       {lockedHistory && (
         <>
-          <TimelineHistoryLockedCard organizationRef={lockedHistory[0]!.node.organization} />
+          <TimelineHistoryLockedCard
+            organizationRef={lockedHistory[0]!.node.organization ?? null}
+          />
           {lockedHistory.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
           ))}

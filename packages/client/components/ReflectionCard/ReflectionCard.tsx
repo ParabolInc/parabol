@@ -72,7 +72,11 @@ interface Props {
 }
 
 const getReadOnly = (
-  reflection: {id: string; isViewerCreator: boolean | null; isEditing: boolean | null},
+  reflection: {
+    id: string
+    isViewerCreator: boolean | null | undefined
+    isEditing: boolean | null | undefined
+  },
   phaseType: NewMeetingPhaseTypeEnum,
   stackCount: number | undefined,
   phases: any | null,

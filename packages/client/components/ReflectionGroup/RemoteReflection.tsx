@@ -135,7 +135,7 @@ const getHeaderTransform = (ref: RefObject<HTMLDivElement>, topPadding = 18) => 
 */
 const getStyle = (
   remoteDrag: RemoteReflection_reflection$data['remoteDrag'],
-  isDropping: boolean | null,
+  isDropping: boolean | null | undefined,
   isSpotlight: boolean,
   style: React.CSSProperties
 ) => {
