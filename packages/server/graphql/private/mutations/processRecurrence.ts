@@ -3,6 +3,7 @@ import tracer from 'dd-trace'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import getRethink from '../../../database/rethinkDriver'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
@@ -20,6 +21,7 @@ import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospec
 import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
+import {stopMeetingSeries} from '../../public/mutations/updateRecurrenceSettings'
 import {MutationResolvers} from '../resolverTypes'
 
 const startRecurringMeeting = async (
@@ -153,14 +155,22 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
   await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
     Promise.allSettled(
       activeMeetingSeries.map(async (meetingSeries) => {
-        const seriesTeam = await dataLoader.get('teams').loadNonNull(meetingSeries.teamId)
-        if (seriesTeam.isArchived || !seriesTeam.isPaid) {
+        const {teamId, id: meetingSeriesId, recurrenceRule, facilitatorId} = meetingSeries
+        const teamMemberId = TeamMemberId.join(teamId, facilitatorId)
+        const [seriesTeam, facilitatorTeamMember] = await Promise.all([
+          dataLoader.get('teams').loadNonNull(teamId),
+          dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+        ])
+        if (seriesTeam.isArchived || !facilitatorTeamMember.isNotRemoved) {
+          return await stopMeetingSeries(meetingSeries)
+        }
+        if (!seriesTeam.isPaid) {
           return
         }
 
         const [seriesOrg, lastMeeting] = await Promise.all([
           dataLoader.get('organizations').loadNonNull(seriesTeam.orgId),
-          dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeries.id)
+          dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId)
         ])
 
         if (seriesOrg.lockedAt) {
@@ -169,7 +179,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
 
         // For meetings that should still be active, start the meeting and set its end time.
         // Any subscriptions are handled by the shared meeting start code
-        const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
+        const rrule = RRuleSet.parse(recurrenceRule)
 
         // Only get meetings that should currently be active, i.e. meetings that should have started
         // within the last 24 hours, started after the last meeting in the series, and started before
@@ -185,7 +195,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
         )
         for (const startTime of newMeetingsStartTimes) {
           const err = await tracer.trace('startRecurringMeeting', async (span) => {
-            span?.addTags({meetingSeriesId: meetingSeries.id})
+            span?.addTags({meetingSeriesId})
             return startRecurringMeeting(
               meetingSeries,
               fromDateTime(startTime.toString(), rrule.tzid).toDate(),

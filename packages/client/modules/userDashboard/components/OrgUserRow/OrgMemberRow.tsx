@@ -70,7 +70,7 @@ interface UserInfoProps {
   email: string
   isBillingLeader: boolean
   isOrgAdmin: boolean
-  inactive: boolean | null
+  inactive: boolean | null | undefined
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({

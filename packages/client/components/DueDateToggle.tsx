@@ -114,7 +114,7 @@ const formatDueDate = (dueDate: string) => {
 }
 
 const action = 'tap to change'
-const getDateInfo = (dueDate: string | null) => {
+const getDateInfo = (dueDate: string | null | undefined) => {
   if (!dueDate) return {title: 'Add a Due Date'}
   const date = new Date(dueDate)
   const timeDiff = date.getTime() - Date.now()

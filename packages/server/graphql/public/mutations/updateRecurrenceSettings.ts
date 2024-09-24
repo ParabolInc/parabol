@@ -90,7 +90,7 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
   await Promise.all(updates)
 }
 
-const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
+export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const r = await getRethink()
   const now = new Date()
 
