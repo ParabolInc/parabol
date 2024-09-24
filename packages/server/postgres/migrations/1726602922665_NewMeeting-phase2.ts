@@ -128,7 +128,7 @@ export async function up() {
         autogroupReflectionGroups,
         resetReflectionGroups,
         meetingPrompt,
-
+        meetingCount,
         ...rest
       } = row as any
       return {
@@ -141,7 +141,8 @@ export async function up() {
         transcription: JSON.stringify(transcription),
         autogroupReflectionGroups: JSON.stringify(autogroupReflectionGroups),
         resetReflectionGroups: JSON.stringify(resetReflectionGroups),
-        meetingPrompt: meetingPrompt ? meetingPrompt.slice(0, 255) : null
+        meetingPrompt: meetingPrompt ? meetingPrompt.slice(0, 255) : null,
+        meetingCount: meetingCount || 0
       }
     })
 
