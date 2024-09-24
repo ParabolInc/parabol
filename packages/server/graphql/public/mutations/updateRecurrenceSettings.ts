@@ -108,6 +108,7 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
 
 export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const pg = getKysely()
+  const r = await getRethink()
   await pg
     .with('NewMeetingUpdateEnd', (qb) =>
       qb
@@ -120,6 +121,14 @@ export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .set({cancelledAt: sql`CURRENT_TIMESTAMP`})
     .where('id', '=', meetingSeries.id)
     .execute()
+  await r
+    .table('NewMeeting')
+    .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
+    .filter({endedAt: null}, {default: true})
+    .update({
+      scheduledEndTime: null
+    })
+    .run()
 }
 
 const updateGCalRecurrenceRule = (oldRule: RRuleSet, newRule: RRuleSet | null | undefined) => {
