@@ -6,7 +6,6 @@ import DemoMeetingCard from '../../../../components/DemoMeetingCard'
 import MeetingCard from '../../../../components/MeetingCard'
 import TutorialMeetingCard from '../../../../components/TutorialMeetingCard'
 import useTransition from '../../../../hooks/useTransition'
-import TeamDashInsights from '../TeamDashInsights/TeamDashInsights'
 
 interface Props {
   teamRef: TeamDashActivityTab_team$key
@@ -20,10 +19,6 @@ const TeamDashActivityTab = (props: Props) => {
         activeMeetings {
           id
           ...MeetingCard_meeting
-        }
-        insights {
-          id
-          ...TeamDashInsights_insights
         }
       }
     `,
@@ -71,11 +66,6 @@ const TeamDashActivityTab = (props: Props) => {
           </>
         )}
       </div>
-      {insights && (
-        <div className='flex w-full flex-wrap pr-4'>
-          <TeamDashInsights teamInsightsRef={insights} />
-        </div>
-      )}
     </div>
   )
 }

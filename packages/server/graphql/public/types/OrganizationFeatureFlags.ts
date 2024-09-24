@@ -8,7 +8,6 @@ const OrganizationFeatureFlags: OrganizationFeatureFlagsResolvers = {
   shareSummary: ({shareSummary}) => !!shareSummary,
   suggestGroups: ({suggestGroups}) => !!suggestGroups,
   teamsLimit: ({teamsLimit}) => !!teamsLimit,
-  noTeamInsights: ({noTeamInsights}) => !!noTeamInsights,
   publicTeams: ({publicTeams}) => !!publicTeams,
   singleColumnStandups: ({singleColumnStandups}) => !!singleColumnStandups,
   aiTemplate: ({aiTemplate}) => !!aiTemplate,
