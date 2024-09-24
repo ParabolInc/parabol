@@ -25,7 +25,7 @@ const TeamDashActivityTab = (props: Props) => {
     teamRef
   )
 
-  const {activeMeetings, insights} = team
+  const {activeMeetings} = team
   const transitioningMeetings = useTransition(
     activeMeetings.map((meeting, displayIdx) => ({
       ...meeting,
