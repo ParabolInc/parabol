@@ -75,7 +75,7 @@ const moveToOrg = async (
   // RESOLUTION
   const updates = {
     orgId,
-    isPaid: !!isPaidResult?.isPaid,
+    isPaid: isPaidResult?.isPaid ?? true,
     tier: org.tier,
     trialStartDate: org.trialStartDate,
     updatedAt: new Date()

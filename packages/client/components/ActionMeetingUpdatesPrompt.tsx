@@ -28,7 +28,11 @@ const StyledHeader = styled(PhaseHeaderTitle)({
   overflowWrap: 'break-word'
 })
 
-const getQuestion = (isConnected: boolean | null, taskCount: number, preferredName: string) => {
+const getQuestion = (
+  isConnected: boolean | null | undefined,
+  taskCount: number,
+  preferredName: string
+) => {
   if (isConnected) {
     return taskCount > 0 ? 'what’s changed with your tasks?' : 'what are you working on?'
   }
