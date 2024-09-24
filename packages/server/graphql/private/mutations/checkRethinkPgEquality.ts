@@ -1,12 +1,15 @@
 import getRethink from '../../../database/rethinkDriver'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
-import getKysely from '../../../postgres/getKysely'
+import {selectNewMeetings} from '../../../postgres/select'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
+  compareRealNumber,
+  compareRValStringAsNumber,
   compareRValUndefinedAsFalse,
   compareRValUndefinedAsNull,
   compareRValUndefinedAsNullAndTruncateRVal,
+  compareRValUndefinedAsZero,
   defaultEqFn
 } from '../../../postgres/utils/rethinkEqualityFns'
 import {MutationResolvers} from '../resolverTypes'
@@ -33,12 +36,12 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'TeamMember') {
+  if (tableName === 'NewMeting') {
     const rowCountResult = await checkRowCount(tableName)
-    const rethinkQuery = (joinedAt: Date, id: string | number) => {
+    const rethinkQuery = (updatedAt: Date, id: string | number) => {
       return r
-        .table('TeamMember' as any)
-        .between([joinedAt, id], [r.maxval, r.maxval], {
+        .table('NewMeting' as any)
+        .between([updatedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',
           rightBound: 'closed'
@@ -46,24 +49,52 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         .orderBy({index: 'updatedAtId'}) as any
     }
     const pgQuery = async (ids: string[]) => {
-      return getKysely().selectFrom('TeamMember').selectAll().where('id', 'in', ids).execute()
+      return selectNewMeetings().where('id', 'in', ids).execute()
     }
     const errors = await checkTableEq(
       rethinkQuery,
       pgQuery,
       {
         id: defaultEqFn,
-        isNotRemoved: compareRValUndefinedAsFalse,
-        isLead: compareRValUndefinedAsFalse,
-        isSpectatingPoker: compareRValUndefinedAsFalse,
-        email: defaultEqFn,
-        openDrawer: compareRValUndefinedAsNull,
-        picture: defaultEqFn,
-        preferredName: compareRValUndefinedAsNullAndTruncateRVal(100),
-        teamId: defaultEqFn,
-        userId: defaultEqFn,
+        isLegacy: compareRValUndefinedAsFalse,
         createdAt: compareDateAlmostEqual,
-        updatedAt: compareDateAlmostEqual
+        updatedAt: compareDateAlmostEqual,
+        createdBy: defaultEqFn,
+        endedAt: compareDateAlmostEqual,
+        facilitatorStageId: defaultEqFn,
+        facilitatorUserId: defaultEqFn,
+        meetingCount: compareRValUndefinedAsZero,
+        meetingNumber: compareRValUndefinedAsZero,
+        name: compareRValUndefinedAsNullAndTruncateRVal(100),
+        summarySentAt: compareDateAlmostEqual,
+        teamId: defaultEqFn,
+        meetingType: defaultEqFn,
+        phases: defaultEqFn,
+        showConversionModal: compareRValUndefinedAsFalse,
+        meetingSeriesId: defaultEqFn,
+        scheduledEndTime: compareDateAlmostEqual,
+        summary: compareRValUndefinedAsNullAndTruncateRVal(10000),
+        sentimentScore: compareRealNumber,
+        usedReactjis: defaultEqFn,
+        slackTs: compareRValStringAsNumber,
+        engagement: compareRealNumber,
+        totalVotes: compareRealNumber,
+        maxVotesPerGroup: compareRealNumber,
+        disableAnonymity: compareRValUndefinedAsFalse,
+        commentCount: compareRealNumber,
+        taskCount: compareRealNumber,
+        agendaItemCount: compareRealNumber,
+        storyCount: compareRealNumber,
+        templateId: defaultEqFn,
+        topicCount: compareRealNumber,
+        reflectionCount: compareRealNumber,
+        transcription: defaultEqFn,
+        recallBotId: compareRValUndefinedAsNull,
+        videoMeetingURL: compareRValUndefinedAsNull,
+        autogroupReflectionGroups: defaultEqFn,
+        resetReflectionGroups: defaultEqFn,
+        templateRefId: compareRValUndefinedAsNull,
+        meetingPrompt: compareRValUndefinedAsNull
       },
       maxErrors
     )

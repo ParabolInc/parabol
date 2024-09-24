@@ -76,6 +76,10 @@ export async function up() {
   let curId = r.minval
 
   const insertRow = async (row) => {
+    if (!row.facilitatorStageId) {
+      console.log('Meeting has no facilitatorId, skipping insert', row.id, row.teamId)
+      return
+    }
     try {
       await pg
         .insertInto('NewMeeting')
