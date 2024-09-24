@@ -14,12 +14,12 @@ export async function up() {
   CREATE OR REPLACE FUNCTION prevent_meeting_overlap()
   RETURNS TRIGGER AS $$
   BEGIN
-    -- Check if a meeting exists within a 2-second window of the new start_time
+    -- Check if a meeting exists within a 2-second window of the new createdAt
     IF EXISTS (
       SELECT 1 FROM "NewMeeting"
       WHERE "teamId" = NEW."teamId"
       AND "meetingType" = NEW."meetingType"
-      AND ABS(EXTRACT(EPOCH FROM (NEW.start_time - start_time))) < 2
+      AND ABS(EXTRACT(EPOCH FROM (NEW."createdAt" - "createdAt"))) < 2
     ) THEN
       RAISE EXCEPTION 'Cannot insert meeting. A meeting exists within a 2-second window.';
     END IF;

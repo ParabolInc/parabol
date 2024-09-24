@@ -24,6 +24,7 @@ export async function up() {
 
   console.log('Adding index complete')
 
+  await sql`ALTER TABLE "NewMeeting" DISABLE TRIGGER "check_meeting_overlap"`.execute(pg)
   const MAX_PG_PARAMS = 65545
   const PG_COLS = [
     'id',
@@ -156,6 +157,7 @@ export async function up() {
     curId = lastRow.id
     await Promise.all(rowsToInsert.map(async (row) => insertRow(row)))
   }
+  await sql`ALTER TABLE "NewMeeting" ENABLE TRIGGER "check_meeting_overlap"`.execute(pg)
 }
 
 export async function down() {
