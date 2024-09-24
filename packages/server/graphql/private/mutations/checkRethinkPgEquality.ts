@@ -4,7 +4,6 @@ import {selectNewMeetings} from '../../../postgres/select'
 import {checkRowCount, checkTableEq} from '../../../postgres/utils/checkEqBase'
 import {
   compareDateAlmostEqual,
-  compareRealNumber,
   compareRValStringAsNumber,
   compareRValUndefinedAsFalse,
   compareRValUndefinedAsNull,
@@ -36,11 +35,11 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
 ) => {
   const r = await getRethink()
 
-  if (tableName === 'NewMeting') {
+  if (tableName === 'NewMeeting') {
     const rowCountResult = await checkRowCount(tableName)
     const rethinkQuery = (updatedAt: Date, id: string | number) => {
       return r
-        .table('NewMeting' as any)
+        .table('NewMeeting' as any)
         .between([updatedAt, id], [r.maxval, r.maxval], {
           index: 'updatedAtId',
           leftBound: 'open',
@@ -60,39 +59,39 @@ const checkRethinkPgEquality: MutationResolvers['checkRethinkPgEquality'] = asyn
         createdAt: compareDateAlmostEqual,
         updatedAt: compareDateAlmostEqual,
         createdBy: defaultEqFn,
-        endedAt: compareDateAlmostEqual,
+        endedAt: compareRValUndefinedAsNull,
         facilitatorStageId: defaultEqFn,
         facilitatorUserId: defaultEqFn,
         meetingCount: compareRValUndefinedAsZero,
         meetingNumber: compareRValUndefinedAsZero,
         name: compareRValUndefinedAsNullAndTruncateRVal(100),
-        summarySentAt: compareDateAlmostEqual,
+        summarySentAt: compareRValUndefinedAsNull,
         teamId: defaultEqFn,
         meetingType: defaultEqFn,
         phases: defaultEqFn,
         showConversionModal: compareRValUndefinedAsFalse,
-        meetingSeriesId: defaultEqFn,
-        scheduledEndTime: compareDateAlmostEqual,
+        meetingSeriesId: compareRValUndefinedAsNull,
+        scheduledEndTime: compareRValUndefinedAsNull,
         summary: compareRValUndefinedAsNullAndTruncateRVal(10000),
-        sentimentScore: compareRealNumber,
-        usedReactjis: defaultEqFn,
+        sentimentScore: compareRValUndefinedAsNull,
+        usedReactjis: compareRValUndefinedAsNull,
         slackTs: compareRValStringAsNumber,
-        engagement: compareRealNumber,
-        totalVotes: compareRealNumber,
-        maxVotesPerGroup: compareRealNumber,
-        disableAnonymity: compareRValUndefinedAsFalse,
-        commentCount: compareRealNumber,
-        taskCount: compareRealNumber,
-        agendaItemCount: compareRealNumber,
-        storyCount: compareRealNumber,
-        templateId: defaultEqFn,
-        topicCount: compareRealNumber,
-        reflectionCount: compareRealNumber,
-        transcription: defaultEqFn,
+        engagement: compareRValUndefinedAsNull,
+        totalVotes: compareRValUndefinedAsNull,
+        maxVotesPerGroup: compareRValUndefinedAsNull,
+        disableAnonymity: compareRValUndefinedAsNull,
+        commentCount: compareRValUndefinedAsNull,
+        taskCount: compareRValUndefinedAsNull,
+        agendaItemCount: compareRValUndefinedAsNull,
+        storyCount: compareRValUndefinedAsNull,
+        templateId: compareRValUndefinedAsNull,
+        topicCount: compareRValUndefinedAsNull,
+        reflectionCount: compareRValUndefinedAsNull,
+        transcription: compareRValUndefinedAsNull,
         recallBotId: compareRValUndefinedAsNull,
         videoMeetingURL: compareRValUndefinedAsNull,
-        autogroupReflectionGroups: defaultEqFn,
-        resetReflectionGroups: defaultEqFn,
+        autogroupReflectionGroups: compareRValUndefinedAsNull,
+        resetReflectionGroups: compareRValUndefinedAsNull,
         templateRefId: compareRValUndefinedAsNull,
         meetingPrompt: compareRValUndefinedAsNull
       },
