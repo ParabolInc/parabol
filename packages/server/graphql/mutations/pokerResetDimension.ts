@@ -2,8 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {RValue} from '../../database/stricterR'
-import updateStage from '../../database/updateStage'
 import getKysely from '../../postgres/getKysely'
 import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -84,11 +82,9 @@ const pokerResetDimension = {
     // mutate the cached meeting
 
     Object.assign(stage, updates)
-    const updater = (estimateStage: RValue) => estimateStage.merge(updates)
     const [meetingMembers, teamMembers] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      updateStage(meetingId, stageId, 'ESTIMATE', updater),
       pg
         .updateTable('NewMeeting')
         .set({
