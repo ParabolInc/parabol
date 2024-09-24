@@ -1,24 +1,25 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
-import publishWebhookGQL from '../../utils/publishWebhookGQL'
 import {createVerifier, httpbis} from 'http-message-signatures'
-
-interface InvoiceEventCallBackArg {
-  id: string
-}
+import {Variables} from 'relay-runtime'
+import getGraphQLExecutor from '../../utils/getGraphQLExecutor'
+import sendToSentry from '../../utils/sendToSentry'
+import AuthToken from '../../database/types/AuthToken'
+import getKysely from '../../postgres/getKysely'
 
 const eventLookup = {
   meetingTemplates: {
     getVars: (email: string) => ({email}),
     query: `
       query MeetingTemplates($email: String!) {
-        user(email: $email) {
+        viewer {
           availableTemplates(first: 2000) {
             edges {
               node {
                 id
                 name
+                type
                 illustrationUrl
                 orgId
                 teamId
@@ -33,7 +34,53 @@ const eventLookup = {
       }
     `
   },
+  startRetrospective: {
+    getVars: (selectedTemplateId: string, teamId: string) => ({selectedTemplateId, teamId}),
+    query: `
+      mutation StartActivity(
+        $selectedTemplateId: ID!
+        $teamId: ID!
+      ) {
+        selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
+          meetingSettings {
+            id
+          }
+        }
+        startRetrospective(teamId: $teamId) {
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+        }
+      }
+    `
+  },
+
 } as const
+
+const publishWebhookGQL = async <NarrowResponse>(
+  query: string,
+  variables: Variables,
+  email: string,
+) => {
+  const pg = getKysely()
+  const user = await pg.selectFrom('User').selectAll().where('email', '=', email).executeTakeFirstOrThrow()
+  try {
+    const authToken = new AuthToken({sub: user.id, tms: user.tms})
+    return await getGraphQLExecutor().publish<NarrowResponse>({
+      authToken,
+      query,
+      variables,
+      isPrivate: false,
+    })
+  } catch (e) {
+    const error = e instanceof Error ? e : new Error('GQL executor failed to publish')
+    sendToSentry(error, {tags: {query: query.slice(0, 50)}})
+    return undefined
+  }
+}
+
 
 const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const headers = {
@@ -75,19 +122,20 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
 
   const body = (await parseBody({res})) as any
 
-  const {query, variables} = body ?? {}
+  const {query, variables, email} = body ?? {}
   
   const event = eventLookup[query as keyof typeof eventLookup]
   if (!event) {
+    console.log('GEORG event not found', query)
     res.writeStatus('400').end()
     return
   }
-  const result = await publishWebhookGQL<{data: any}>(event.query, variables)
+  const result = await publishWebhookGQL<{data: any}>(event.query, variables, email)
   if (result?.data) {
     // restructure the data to make it easier to digest
     const restructured = {
-      availableTemplates: result.data.user.availableTemplates.edges.map((edge: any) => edge.node),
-      teams: result.data.user.teams,
+      availableTemplates: result.data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
+      teams: result.data.viewer.teams,
     }
     console.log('GEORG result', JSON.stringify(restructured, null, 2))
     res.writeStatus('200').writeHeader('Content-Type', 'application/json').end(JSON.stringify(restructured))
