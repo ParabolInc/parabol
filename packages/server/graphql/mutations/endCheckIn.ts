@@ -220,7 +220,7 @@ export default {
       })
     }
 
-    if (completedCheckIn.meetingType === 'action') {
+    if (completedCheckIn.meetingType !== 'action') {
       return standardError(new Error('Completed check-in meeting is not an action'), {
         userId: viewerId
       })
