@@ -23,6 +23,7 @@ import {
   selectTemplateScaleRef,
   selectTimelineEvent
 } from '../postgres/select'
+import {AnyMeeting} from '../postgres/types/Meeting'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
 export const users = primaryKeyLoaderMaker(getUsersByIds)
@@ -117,6 +118,6 @@ export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => 
   return selectReflectPrompts().where('id', 'in', ids).execute()
 })
 
-export const _pgnewMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
-  return selectNewMeetings().where('id', 'in', ids).execute()
+export const newMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectNewMeetings().where('id', 'in', ids).$narrowType<AnyMeeting>().execute()
 })

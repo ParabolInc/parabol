@@ -229,8 +229,8 @@ export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgactiveMeetingsByTeamId = foreignKeyLoaderMaker(
-  '_pgnewMeetings',
+export const activeMeetingsByTeamId = foreignKeyLoaderMaker(
+  'newMeetings',
   'teamId',
   async (teamIds) => {
     return selectNewMeetings()
@@ -240,8 +240,8 @@ export const _pgactiveMeetingsByTeamId = foreignKeyLoaderMaker(
       .execute()
   }
 )
-export const _pgcompletedMeetingsByTeamId = foreignKeyLoaderMaker(
-  '_pgnewMeetings',
+export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
+  'newMeetings',
   'teamId',
   async (teamIds) => {
     return selectNewMeetings()

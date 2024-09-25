@@ -112,13 +112,6 @@ export default {
     let unlockedStageIds
     if (!groupStage?.isNavigableByFacilitator) {
       unlockedStageIds = unlockAllStagesForPhase(phases, 'group', true)
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          phases
-        })
-        .run()
       await pg
         .updateTable('NewMeeting')
         .set({phases: JSON.stringify(phases)})

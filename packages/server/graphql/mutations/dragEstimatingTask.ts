@@ -87,13 +87,6 @@ export default {
     stages.sort((a, b) => {
       return a.sortOrder > b.sortOrder ? 1 : -1
     })
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        phases
-      })
-      .run()
     await pg
       .updateTable('NewMeeting')
       .set({phases: JSON.stringify(phases)})
