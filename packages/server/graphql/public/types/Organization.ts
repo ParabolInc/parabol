@@ -23,12 +23,10 @@ const Organization: OrganizationResolvers = {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
   },
-  featureFlag: async ({id: orgId}, {featureName, scope}, {dataLoader}) => {
-    if (scope !== 'Organization') {
-      console.error('Invalid scope: ', scope)
-      return false
-    }
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, scope, featureName})
+  featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: orgId, scope: 'Organization', featureName})
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null

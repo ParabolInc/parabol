@@ -105,7 +105,7 @@ const Dashboard = (props: Props) => {
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
           overLimitCopy
-          insights: featureFlag(featureName: "insights", scope: User)
+          insights: featureFlag(featureName: "insights")
           teams {
             activeMeetings {
               ...useSnacksForNewMeetings_meetings

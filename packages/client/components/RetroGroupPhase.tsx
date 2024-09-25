@@ -64,7 +64,7 @@ const RetroGroupPhase = (props: Props) => {
         }
         organization {
           tier
-          hasSuggestGroupsFlag: featureFlag(featureName: "suggestGroups", scope: Organization)
+          hasSuggestGroupsFlag: featureFlag(featureName: "suggestGroups")
         }
       }
     `,

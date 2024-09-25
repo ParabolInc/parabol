@@ -19,7 +19,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         isOrgAdmin
-        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams", scope: Organization)
+        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         allTeams {
           id
           ...OrgTeamsRow_team

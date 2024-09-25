@@ -680,12 +680,10 @@ const User: ReqResolvers<'User'> = {
   favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
   },
-  featureFlag: async ({id: userId}, {featureName, scope}, {dataLoader}) => {
-    if (scope !== 'User') {
-      console.error('Invalid scope: ', scope)
-      return false
-    }
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, scope, featureName})
+  featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: userId, scope: 'User', featureName})
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

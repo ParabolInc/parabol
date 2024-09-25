@@ -87,7 +87,7 @@ const NewCheckInQuestion = (props: Props) => {
         }
         team {
           organization {
-            noAISummary: featureFlag(featureName: "noAISummary", scope: Organization)
+            noAISummary: featureFlag(featureName: "noAISummary")
           }
         }
       }

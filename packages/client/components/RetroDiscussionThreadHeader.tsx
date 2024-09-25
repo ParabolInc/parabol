@@ -51,7 +51,7 @@ const RetroDiscussionThreadHeader = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment RetroDiscussionThreadHeader_organization on Organization {
-        zoomTranscription: featureFlag(featureName: "zoomTranscription", scope: Organization)
+        zoomTranscription: featureFlag(featureName: "zoomTranscription")
       }
     `,
     organizationRef ?? null

@@ -173,7 +173,7 @@ type Organization {
   """
   Whether the org has a feature flag enabled or not
   """
-  featureFlag(featureName: String!, scope: FeatureFlagScope!): Boolean!
+  featureFlag(featureName: String!): Boolean!
 
   """
   The SAML record attached to the Organization, if any

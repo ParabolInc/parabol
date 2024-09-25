@@ -55,12 +55,10 @@ const Team: TeamResolvers = {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
   },
-  featureFlag: async ({id: teamId}, {featureName, scope}, {dataLoader}) => {
-    if (scope !== 'Team') {
-      console.error('Invalid scope: ', scope)
-      return false
-    }
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, scope, featureName})
+  featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: teamId, scope: 'Team', featureName})
   }
 }
 

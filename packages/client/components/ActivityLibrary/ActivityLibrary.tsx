@@ -118,7 +118,7 @@ const query = graphql`
         }
       }
       organizations {
-        aiTemplate: featureFlag(featureName: "aiTemplate", scope: Organization)
+        aiTemplate: featureFlag(featureName: "aiTemplate")
       }
     }
   }
