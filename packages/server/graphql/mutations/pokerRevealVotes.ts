@@ -107,8 +107,8 @@ const pokerRevealVotes = {
           )`
       })
       .where('id', '=', meetingId)
-      .execute(),
-      await updateStage(meetingId, stageId, 'ESTIMATE', updater)
+      .execute()
+    await updateStage(meetingId, stageId, 'ESTIMATE', updater)
     dataLoader.clearAll('newMeetings')
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesSuccess', data, subOptions)
