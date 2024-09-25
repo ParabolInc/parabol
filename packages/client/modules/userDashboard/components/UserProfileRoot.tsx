@@ -15,7 +15,7 @@ const UserProfileRoot = (props: Props) => {
     }
   } = props
   useSubscription('UserProfileRoot', NotificationSubscription)
-  const queryRef = useQueryLoaderNow<UserProfileQuery>(userProfileQuery, {teamId})
+  const queryRef = useQueryLoaderNow<UserProfileQuery>(userProfileQuery, {})
   return (
     <Suspense fallback={''}>
       {queryRef && <UserProfile queryRef={queryRef} teamId={teamId} />}

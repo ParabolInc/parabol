@@ -15,11 +15,11 @@ type Task = RecordProxy<{
   readonly id: string
   readonly teamId: string
   readonly tags: readonly string[]
-  readonly discussionId: string | null
-  readonly threadParentId: string | null
-  readonly meetingId: string | null
-  readonly updatedAt: string | null
-  readonly userId: string | null
+  readonly discussionId: string | null | undefined
+  readonly threadParentId: string | null | undefined
+  readonly meetingId: string | null | undefined
+  readonly updatedAt: string | null | undefined
+  readonly userId: string | null | undefined
 }>
 
 const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<any>) => {

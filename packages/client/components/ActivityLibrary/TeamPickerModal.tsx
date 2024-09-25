@@ -22,7 +22,7 @@ const ACTION_BUTTON_CLASSES =
   'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
 
 interface Props {
-  preferredTeamId: string | null
+  preferredTeamId: string | null | undefined
   teamsRef: TeamPickerModal_teams$key
   category: string
   parentTemplateId: string
