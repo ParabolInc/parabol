@@ -26,7 +26,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const DUPLICATE_THRESHOLD = 3000
   // AUTH
   const viewerId = getUserId(authToken)
   if (!isTeamMember(authToken, teamId)) {
@@ -74,25 +73,14 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingId = meeting.id
 
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-  await Promise.allSettled([
-    r.table('NewMeeting').insert(meeting).run(),
+  const [newMeetingRes] = await Promise.allSettled([
     pg
       .insertInto('NewMeeting')
       .values({...meeting, phases: JSON.stringify(meeting.phases)})
       .execute(),
     updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
-
-  // Disallow accidental starts (2 meetings within 2 seconds)
-  const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-    const {createdAt, id} = activeMeeting
-    if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-    return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
-  })
-  if (otherActiveMeeting) {
-    // trigger exists in PG to prevent this
-    await r.table('NewMeeting').get(meetingId).delete().run()
+  if (newMeetingRes.status === 'rejected') {
     return {error: {message: 'Meeting already started'}}
   }
 

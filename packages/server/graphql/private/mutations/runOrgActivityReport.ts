@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
+import {RValue} from 'rethinkdb-ts'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum, RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -26,8 +26,8 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
   const userSignups = pg
     .selectFrom('User')
     .select([
-      sql`date_trunc('month', "createdAt")`.as('month'),
-      sql`COUNT(DISTINCT "id")`.as('signup_count')
+      sql<Date>`date_trunc('month', "createdAt")`.as('month'),
+      sql<bigint>`COUNT(DISTINCT "id")`.as('signup_count')
     ])
     .where('createdAt', '>=', queryStartDate)
     .where('createdAt', '<', queryEndDate)
@@ -39,67 +39,55 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
       join.onRef(sql`m."monthStart"`, '=', sql`us.month::timestamp`)
     )
     .select([
-      sql`m."monthStart"`.as('monthStart'),
-      sql`COALESCE(us.signup_count, 0)`.as('signupCount')
+      sql<Date>`m."monthStart"`.as('monthStart'),
+      sql<bigint>`COALESCE(us.signup_count, 0)`.as('signupCount')
     ])
     .orderBy('monthStart')
 
   const r = await getRethink()
   try {
-    const [pgResults, rethinkResults] = await Promise.all([
+    const [signupCounts, rawMeetingCounts] = await Promise.all([
       query.execute(),
-      r
-        .table('NewMeeting')
-        .between(
-          r.epochTime(queryStartDate.getTime() / 1000),
-          r.epochTime(queryEndDate.getTime() / 1000),
-          {index: 'createdAt'}
-        )
-        .merge((row: RValue) => ({
-          yearMonth: {
-            year: row('createdAt').year(),
-            month: row('createdAt').month()
-          }
-        }))
-        .group((row) => row('yearMonth'))
-        .ungroup()
-        .map((group: RDatum) => ({
-          yearMonth: group('group'),
-          meetingCount: group('reduction').count(),
-          participantIds: group('reduction')
-            .concatMap((row: RDatum) =>
-              r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'})('userId')
-            )
-            .distinct()
-        }))
-        .map((row: RDatum) =>
-          row.merge({
-            participantCount: row('participantIds').count()
-          })
-        )
-        .without('participantIds')
-        .run()
+      pg
+        .selectFrom('NewMeeting')
+        .select(({fn, ref, val}) => [
+          fn<Date>('date_trunc', [val('month'), ref('createdAt')]).as('monthStart'),
+          fn<string[]>('array_agg', ['id']).as('meetingIds')
+        ])
+        .where('createdAt', '>=', queryStartDate)
+        .where('createdAt', '<', queryEndDate)
+        .groupBy('monthStart')
+        .execute()
     ])
+    const meetingIds = rawMeetingCounts.flatMap((row) => row.meetingIds)
+    const participantCounts = (await (
+      r
+        .table('MeetingMember')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .group('meetingId') as any
+    )
+      .count()
+      .ungroup()
+      .map((group: RValue) => ({
+        meetingId: group('group'),
+        participantCount: group('reduction')
+      }))
+      .run()) as {meetingId: string; participantCount: number}[]
 
     // Combine PostgreSQL and RethinkDB results
-    const combinedResults = pgResults.map((pgRow: any) => {
-      const monthStart = new Date(pgRow.monthStart)
-      const rethinkParticipants = rethinkResults.find(
-        (r: any) =>
-          r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
-          r.yearMonth.year === monthStart.getUTCFullYear()
+    const combinedResults = signupCounts.map((pgRow) => {
+      const epochMonthStart = pgRow.monthStart.getTime()
+      const meetingCount = rawMeetingCounts.find(
+        (rmc) => rmc.monthStart.getTime() === epochMonthStart
       )
-      const rethinkMeetings = rethinkResults.find(
-        (r: any) =>
-          r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
-          r.yearMonth.year === monthStart.getUTCFullYear()
+      const participantCount = participantCounts.find((pc) =>
+        meetingCount?.meetingIds.includes(pc.meetingId)
       )
-
       return {
         monthStart: pgRow.monthStart,
-        signupCount: pgRow.signupCount ? pgRow.signupCount : 0,
-        participantCount: rethinkParticipants ? rethinkParticipants.participantCount : 0,
-        meetingCount: rethinkMeetings ? rethinkMeetings.meetingCount : 0
+        signupCount: pgRow.signupCount ? Number(pgRow.signupCount) : 0,
+        participantCount: participantCount?.participantCount ?? 0,
+        meetingCount: meetingCount?.meetingIds.length ?? 0
       }
     })
     return {rows: combinedResults}

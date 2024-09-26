@@ -40,15 +40,12 @@ const pokerResetDimension = {
     if (meeting.meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    const {endedAt, phases, meetingType, teamId, createdBy, facilitatorUserId} = meeting
+    const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
-    }
-    if (meetingType !== 'poker') {
-      return {error: {message: 'Not a poker meeting'}}
     }
     if (isPhaseComplete('ESTIMATE', phases)) {
       return {error: {message: 'Estimate phase is already complete'}}

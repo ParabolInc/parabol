@@ -1,6 +1,5 @@
+import {NotNull} from 'kysely'
 import ms from 'ms'
-import {RValue} from 'rethinkdb-ts'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -21,30 +20,27 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   if (organization?.featureFlags?.includes('noTeamInsights')) return
 
   // actual update
-  const r = await getRethink()
   const pg = getKysely()
   const now = new Date()
   const insightsPeriod = new Date(now.getTime() - TEAM_INSIGHTS_PERIOD)
   const topRetroTemplatesPeriod = new Date(now.getTime() - TOP_RETRO_TEMPLATES_PERIOD)
 
   const [meetingInsights, retroTemplates] = await Promise.all([
-    r
-      .table('NewMeeting')
-      .getAll(teamId, {index: 'teamId'})
-      .filter((row: RValue) => row('createdAt').gt(insightsPeriod))
-      .pluck('endedAt', 'usedReactjis', 'meetingType', 'templateId', 'engagement')
-      .run(),
-    (
-      r
-        .table('NewMeeting')
-        .getAll(teamId, {index: 'teamId'})
-        .filter((row: RValue) =>
-          row('meetingType').eq('retrospective').and(row('createdAt').gt(topRetroTemplatesPeriod))
-        ) as any
-    )
-      .group('templateId')
-      .count()
-      .run() as Promise<{group: string; reduction: number}[]>
+    pg
+      .selectFrom('NewMeeting')
+      .select(['endedAt', 'usedReactjis', 'meetingType', 'templateId', 'engagement'])
+      .where('teamId', '=', teamId)
+      .where('createdAt', '>', insightsPeriod)
+      .execute(),
+    pg
+      .selectFrom('NewMeeting')
+      .select(({fn}) => ['templateId as group', fn.count<bigint>('id').as('reduction')])
+      .where('teamId', '=', teamId)
+      .where('meetingType', '==', 'retrospective')
+      .where('createdAt', '>', topRetroTemplatesPeriod)
+      .groupBy('templateId')
+      .$narrowType<{group: NotNull}>()
+      .execute()
   ])
 
   // emojis
@@ -88,12 +84,10 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   )
 
   // top retro template
-  const topRetroTemplates = retroTemplates.map(
-    ({group, reduction}: {group: string; reduction: number}) => ({
-      reflectTemplateId: group,
-      count: reduction
-    })
-  )
+  const topRetroTemplates = retroTemplates.map(({group, reduction}) => ({
+    reflectTemplateId: group,
+    count: Number(reduction)
+  }))
   topRetroTemplates.sort((a, b) => b.count - a.count)
 
   const update = {

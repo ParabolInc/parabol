@@ -102,7 +102,6 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
-    const DUPLICATE_THRESHOLD = 3000
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
@@ -148,26 +147,17 @@ export default {
     }) as PokerMeeting
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    await Promise.allSettled([
+    const [newMeetingRes] = await Promise.allSettled([
       pg
         .insertInto('NewMeeting')
         .values({...meeting, phases: JSON.stringify(phases)})
         .execute(),
-      r.table('NewMeeting').insert(meeting).run(),
       updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
-    dataLoader.clearAll('newMeetings')
-    // Disallow accidental starts (2 meetings within 2 seconds)
-    const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-    const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-      const {createdAt, id} = activeMeeting
-      if (id === meetingId || activeMeeting.meetingType !== 'poker') return false
-      return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
-    })
-    if (otherActiveMeeting) {
-      await r.table('NewMeeting').get(meetingId).delete().run()
+    if (newMeetingRes.status === 'rejected') {
       return {error: {message: 'Meeting already started'}}
     }
+    dataLoader.clearAll('newMeetings')
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)

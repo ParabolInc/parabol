@@ -10,10 +10,11 @@ export interface NewMeetingStageSource extends GenericMeetingStage {
 }
 
 const NewMeetingStage: NewMeetingStageResolvers = {
-  meeting: ({meetingId}, _args, {dataLoader}) => dataLoader.get('newMeetings').load(meetingId),
+  meeting: ({meetingId}, _args, {dataLoader}) =>
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
 
   phase: async ({meetingId, phaseType, teamId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {phases} = meeting
     const phase = phases.find((phase) => phase.phaseType === phaseType)!
     return {...phase, meetingId, teamId}
@@ -27,7 +28,7 @@ const NewMeetingStage: NewMeetingStageResolvers = {
   readyCount: async ({meetingId, readyToAdvance}, _args, {dataLoader}, ref) => {
     if (!readyToAdvance) return 0
     if (!meetingId) Logger.log('no meetingid', ref)
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {facilitatorUserId} = meeting
     return readyToAdvance.filter((userId: string) => userId !== facilitatorUserId).length
   },

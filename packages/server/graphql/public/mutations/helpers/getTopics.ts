@@ -1,10 +1,11 @@
 import yaml from 'js-yaml'
-import getRethink from '../../../../database/rethinkDriver'
+import {sql} from 'kysely'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../../utils/sendToSentry'
 import standardError from '../../../../utils/standardError'
 import {DataLoaderWorker} from '../../../graphql'
+import {RetrospectiveMeeting} from '../../resolverTypes'
 
 const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()
@@ -109,23 +110,29 @@ export const getTopics = async (
   dataLoader: DataLoaderWorker,
   prompt?: string | null
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const MIN_REFLECTION_COUNT = 3
   const MIN_MILLISECONDS = 60 * 1000 // 1 minute
-  const rawAnyMeetings = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter((row: any) =>
-      row('meetingType')
-        .eq('retrospective')
-        .and(row('createdAt').ge(startDate))
-        .and(row('createdAt').le(endDate))
-        .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-        .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
-    )
-    .run()
-  const rawMeetings = rawAnyMeetings.filter((m) => m.meetingType === 'retrospective')
+  const rawMeetingsWithAnyMembers = await pg
+    .selectFrom('NewMeeting')
+    .select(['id', 'name', 'createdAt', 'disableAnonymity'])
+    .where('teamId', '=', teamId)
+    .where('meetingType', '=', 'retrospective')
+    .where('createdAt', '>=', startDate)
+    .where('createdAt', '<=', endDate)
+    .where('reflectionCount', '>=', MIN_REFLECTION_COUNT)
+    .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_MILLISECONDS}`)
+    .$narrowType<RetrospectiveMeeting>()
+    .execute()
+  const allMeetingMembers = await dataLoader
+    .get('meetingMembersByMeetingId')
+    .loadMany(rawMeetingsWithAnyMembers.map(({id}) => id))
+
+  const rawMeetings = rawMeetingsWithAnyMembers.filter((_, idx) => {
+    const meetingMembers = allMeetingMembers[idx]
+    return Array.isArray(meetingMembers) && meetingMembers.length > 1
+  })
+
   const meetings = await Promise.all(
     rawMeetings.map(async (meeting) => {
       const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting

@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
@@ -12,8 +11,6 @@ const addAgendaItemToActiveActionMeeting = async (
   teamId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const now = new Date()
-  const r = await getRethink()
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const actionMeeting = activeMeetings.find(
     (activeMeeting) => activeMeeting.meetingType === 'action'
@@ -36,36 +33,26 @@ const addAgendaItemToActiveActionMeeting = async (
   const {discussionId} = newStage
   stages.push(newStage)
 
-  await Promise.all([
-    r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        phases,
-        updatedAt: now
+  await getKysely()
+    .with('UpdatePhases', (qb) =>
+      qb
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+    )
+    .with('InsertDiscussion', (qb) =>
+      qb.insertInto('Discussion').values({
+        id: discussionId,
+        teamId,
+        meetingId,
+        discussionTopicType: 'agendaItem',
+        discussionTopicId: agendaItemId
       })
-      .run(),
-    getKysely()
-      .with('UpdatePhases', (qb) =>
-        qb
-          .updateTable('NewMeeting')
-          .set({phases: JSON.stringify(phases)})
-          .where('id', '=', meetingId)
-      )
-      .with('InsertDiscussion', (qb) =>
-        qb.insertInto('Discussion').values({
-          id: discussionId,
-          teamId,
-          meetingId,
-          discussionTopicType: 'agendaItem',
-          discussionTopicId: agendaItemId
-        })
-      )
-      .updateTable('AgendaItem')
-      .set({meetingId})
-      .where('id', '=', agendaItemId)
-      .execute()
-  ])
+    )
+    .updateTable('AgendaItem')
+    .set({meetingId})
+    .where('id', '=', agendaItemId)
+    .execute()
 
   return meetingId
 }

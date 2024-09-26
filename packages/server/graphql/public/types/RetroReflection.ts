@@ -4,7 +4,7 @@ import {RetroReflectionResolvers} from '../resolverTypes'
 
 const RetroReflection: RetroReflectionResolvers = {
   creatorId: async ({creatorId, meetingId}, _args, {authToken, dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {meetingType} = meeting
     if (!isSuperUser(authToken) && (meetingType !== 'retrospective' || !meeting.disableAnonymity)) {
       return null
@@ -13,7 +13,7 @@ const RetroReflection: RetroReflectionResolvers = {
   },
 
   creator: async ({creatorId, meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {meetingType} = meeting
 
     // let's not allow super users to grap this in case the UI does not check `disableAnonymity` in which case
@@ -33,7 +33,7 @@ const RetroReflection: RetroReflectionResolvers = {
   },
 
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
     return meeting
   },
@@ -52,7 +52,7 @@ const RetroReflection: RetroReflectionResolvers = {
   },
 
   team: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return dataLoader.get('teams').loadNonNull(meeting.teamId)
   }
 }

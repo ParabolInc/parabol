@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -13,7 +12,6 @@ const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
   {updatedAgendaItem},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -62,13 +60,6 @@ const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
       .set({phases: JSON.stringify(phases)})
       .where('id', '=', meetingId)
       .execute()
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        phases
-      })
-      .run()
   }
   const data = {agendaItemId, meetingId}
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateAgendaItemPayload', data, subOptions)

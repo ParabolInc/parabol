@@ -1,6 +1,6 @@
 import {Threshold} from '~/types/constEnums'
 import getRethink from '../../../../database/rethinkDriver'
-import {RDatum, RValue} from '../../../../database/stricterR'
+import getKysely from '../../../../postgres/getKysely'
 // Uncomment for easier testing
 //import { ThresholdTest as Threshold } from "~/types/constEnums";
 
@@ -10,50 +10,48 @@ import {RDatum, RValue} from '../../../../database/stricterR'
 // TODO: store all calculations in the database, e.g. meeting.attendeeCount (see #7975)
 const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
   const r = await getRethink()
-
-  return r
-    .table('NewMeeting')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter((row: RDatum) => row('endedAt').default(null).ne(null))('id')
-    .coerceTo('array')
-    .distinct()
-    .do((endedMeetingIds: RValue) => {
-      return (
-        r
-          .table('MeetingMember')
-          .getAll(r.args(endedMeetingIds), {index: 'meetingId'})
-          .group('teamId', 'meetingId') as RDatum
-      )
-        .count()
-        .ungroup()
-        .map((row: RDatum) => ({
-          teamId: row('group')(0),
-          meetingId: row('group')(1),
-          meetingMembers: row('reduction')
-        }))
-        .filter((row: RDatum) =>
-          row('meetingMembers').ge(Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES)
-        )
-        .group('teamId')
-        .ungroup()
-        .filter((row: RDatum) => row('reduction').count().ge(Threshold.MIN_STICKY_TEAM_MEETINGS))
-        .filter((row: RValue) => {
-          const meetingIds = row('reduction')('meetingId')
-          return r
-            .table('NewMeeting')
-            .getAll(r.args(meetingIds))
-            .filter((meeting: RValue) => {
-              return meeting('endedAt').during(
-                r.now().sub(Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME),
-                r.now()
-              )
-            })
-            .count()
-            .gt(0)
-        })
-        .count()
-    })
+  const pg = getKysely()
+  const meetingIdsByTeamId = await pg
+    .selectFrom('NewMeeting')
+    .select(({fn}) => ['teamId', fn<string[]>('array_agg', ['id']).as('meetingIds')])
+    .where('teamId', 'in', teamIds)
+    .groupBy('teamId')
+    .execute()
+  const meetingIds = meetingIdsByTeamId.flatMap((row) => row.meetingIds)
+  const meetingMembers = await r
+    .table('MeetingMember')
+    .getAll(r.args(meetingIds), {index: 'meetingId'})
     .run()
+  const teamsIdsWithMinMeetingsAndMembers = meetingIdsByTeamId
+    .map(({teamId, meetingIds}) => ({
+      teamId,
+      meetingIds: meetingIds.filter((meetingId) => {
+        const memberCount = meetingMembers.filter(
+          (meetingMember) => meetingMember.meetingId === meetingId
+        ).length
+        return memberCount >= Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES
+      })
+    }))
+    .filter((row) => row.meetingIds.length > Threshold.MIN_STICKY_TEAM_MEETINGS)
+    .map((row) => row.teamId)
+  const recentMeetings = await pg
+    .selectFrom('NewMeeting')
+    .distinctOn('teamId')
+    .select(['teamId', 'createdAt'])
+    .where('teamId', 'in', teamsIdsWithMinMeetingsAndMembers)
+    .orderBy(['teamId', 'createdAt desc'])
+    .execute()
+
+  return teamsIdsWithMinMeetingsAndMembers.filter((teamId) => {
+    const recentMeetingsForTeam = recentMeetings.find(
+      (recentMeeting) => recentMeeting.teamId === teamId
+    )
+    if (!recentMeetingsForTeam) return false
+    return (
+      recentMeetingsForTeam.createdAt.getTime() >
+      Date.now() - Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME
+    )
+  }).length
 }
 
 export default getActiveTeamCountByTeamIds

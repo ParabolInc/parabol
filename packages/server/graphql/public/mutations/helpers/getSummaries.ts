@@ -1,5 +1,8 @@
 import yaml from 'js-yaml'
-import getRethink from '../../../../database/rethinkDriver'
+import {sql} from 'kysely'
+import {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import getKysely from '../../../../postgres/getKysely'
+import {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import standardError from '../../../../utils/standardError'
 
@@ -7,26 +10,32 @@ export const getSummaries = async (
   teamId: string,
   startDate: Date,
   endDate: Date,
+  dataLoader: DataLoaderInstance,
   prompt?: string | null
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const MIN_MILLISECONDS = 60 * 1000 // 1 minute
   const MIN_REFLECTION_COUNT = 3
+  const rawMeetingsWithAnyMembers = await pg
+    .selectFrom('NewMeeting')
+    .select(['id', 'name', 'createdAt', 'summary'])
+    .where('teamId', '=', teamId)
+    .where('summary', 'is not', null)
+    .where('meetingType', '=', 'retrospective')
+    .where('createdAt', '>=', startDate)
+    .where('createdAt', '<=', endDate)
+    .where('reflectionCount', '>=', MIN_REFLECTION_COUNT)
+    .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_MILLISECONDS}`)
+    .$narrowType<RetrospectiveMeeting>()
+    .execute()
+  const allMeetingMembers = await dataLoader
+    .get('meetingMembersByMeetingId')
+    .loadMany(rawMeetingsWithAnyMembers.map(({id}) => id))
 
-  const rawMeetings = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter((row: any) =>
-      row('meetingType')
-        .eq('retrospective')
-        .and(row('createdAt').ge(startDate))
-        .and(row('createdAt').le(endDate))
-        .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-        .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
-        .and(row.hasFields('summary'))
-    )
-    .run()
+  const rawMeetings = rawMeetingsWithAnyMembers.filter((_, idx) => {
+    const meetingMembers = allMeetingMembers[idx]
+    return Array.isArray(meetingMembers) && meetingMembers.length > 1
+  })
 
   if (!rawMeetings.length) {
     return standardError(new Error('No meetings found'))

@@ -27,7 +27,6 @@ const removeTeamMember = async (
   const {evictorUserId} = options
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
   const activeTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -141,13 +140,13 @@ const removeTeamMember = async (
     .run()
 
   // Reassign facilitator for meetings this user is facilitating.
-  const facilitatingMeetings = await r
-    .table('NewMeeting')
-    .getAll(r.args(meetingIds), {index: 'id'})
-    .filter({
-      facilitatorUserId: userId
-    })
-    .run()
+
+  const facilitatingMeetings = await pg
+    .selectFrom('NewMeeting')
+    .select('id')
+    .where('id', 'in', meetingIds)
+    .where('facilitatorUserId', '=', userId)
+    .execute()
 
   const newMeetingFacilitators = (
     await dataLoader
@@ -171,14 +170,6 @@ const removeTeamMember = async (
         .set({facilitatorUserId: newFacilitator.userId})
         .where('id', '=', newFacilitator.meetingId)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(newFacilitator.meetingId)
-        .update({
-          facilitatorUserId: newFacilitator.userId,
-          updatedAt: now
-        })
-        .run()
     })
   )
 
