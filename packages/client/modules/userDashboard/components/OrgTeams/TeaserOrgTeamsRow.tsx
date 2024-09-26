@@ -18,32 +18,36 @@ const TeaserOrgTeamsRow = (props: Props) => {
   }
 
   return (
-    <>
-      <div className='flex cursor-not-allowed items-center bg-slate-100 p-4 pb-0 opacity-50'>
-        <div className='flex flex-1 flex-col py-1 '>
-          <div className='text-gray-700 flex items-center text-lg font-bold'>
+    <div className='block cursor-default select-none'>
+      <div className='flex items-center p-4'>
+        <div className='flex flex-1 flex-col py-1'>
+          <div className='flex items-center text-lg font-bold'>
             {hiddenTeamCount} {plural(hiddenTeamCount, 'Hidden Team')}
+          </div>
+          <div className='flex items-center justify-between'>
+            <div className='text-gray-600'>
+              Parabol Enterprise includes our Org Admin role, which allows you to{' '}
+              <strong>see all teams</strong> in your organization.
+            </div>
+          </div>
+        </div>
+        <div className='flex items-center justify-center'>
+          <div className='flex h-12 w-8 flex-row items-center py-2'>
+            <Lock className='h-8 w-8 text-slate-600' />
           </div>
         </div>
       </div>
-      <div className='flex items-center justify-between bg-white px-4 pb-4'>
-        <div className='flex items-center'>
-          <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
-          <p className='ml-3 text-sm text-slate-700'>
-            Parabol Enterprise includes our Org Admin role, which allows you to see{' '}
-            <strong>all</strong> teams in your organization
-          </p>
-        </div>
+      <div className='px-4 pb-4'>
         <Button
-          variant='destructive'
+          variant='primary'
           shape='pill'
-          className='w-32 py-2 text-base'
+          className='bg-pink-500 hover:bg-pink-600 px-6 py-2 text-base text-white'
           onClick={handleSeePlansClick}
         >
-          See plans
+          See Plans
         </Button>
       </div>
-    </>
+    </div>
   )
 }
 
