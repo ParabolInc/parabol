@@ -21,15 +21,15 @@ const OrgTeams = (props: Props) => {
     graphql`
       fragment OrgTeams_organization on Organization {
         id
-        isOrgAdmin
         tier
-        featureFlags {
-          publicTeams
-        }
         allTeams {
           id
           ...OrgTeamsRow_team
         }
+        viewerTeams {
+          id
+        }
+        allTeamsCount
       }
     `,
     organizationRef
@@ -43,9 +43,9 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isOrgAdmin, featureFlags, tier} = organization
-  const hasPublicTeamsFlag = featureFlags.publicTeams
-  const showAllTeams = isOrgAdmin || hasPublicTeamsFlag
+  const {allTeams, tier, viewerTeams, allTeamsCount} = organization
+  const showAllTeams = allTeams.length === allTeamsCount
+  const viewerTeamCount = viewerTeams.length
 
   const handleSeePlansClick = () => {
     history.push(`/me/organizations/${organization.id}/billing`)
@@ -56,11 +56,6 @@ const OrgTeams = (props: Props) => {
       <div className='flex items-center justify-center py-1'>
         <div>
           <h1 className='text-2xl font-semibold leading-7'>Teams</h1>
-          <p className='text-gray-600 mb-2'>
-            {!showAllTeams
-              ? "Only showing teams you're a member of"
-              : 'Showing all teams in the organization'}
-          </p>
         </div>
         <div className='ml-auto'>
           <Button
@@ -78,7 +73,7 @@ const OrgTeams = (props: Props) => {
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
-              {allTeams.length} {plural(allTeams.length, 'Team')}
+              {allTeamsCount} {plural(allTeamsCount, 'Team')}
             </div>
           </div>
         </div>
@@ -88,9 +83,9 @@ const OrgTeams = (props: Props) => {
           ))}
         </div>
 
-        {tier !== 'enterprise' && (
+        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showAllTeams && (
           <>
-            <TeaserOrgTeamsRow />
+            <TeaserOrgTeamsRow hiddenTeamCount={allTeamsCount - viewerTeamCount} />
             <div className='flex items-center justify-between bg-white px-4 pb-4'>
               <div className='flex items-center'>
                 <Lock className='h-10 w-10 select-none rounded-full p-1.5 text-grape-500' />
