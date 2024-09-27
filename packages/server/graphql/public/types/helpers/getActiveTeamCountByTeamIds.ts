@@ -9,6 +9,7 @@ import getKysely from '../../../../postgres/getKysely'
 // Warning: the query is very expensive
 // TODO: store all calculations in the database, e.g. meeting.attendeeCount (see #7975)
 const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
+  if (!teamIds.length) return 0
   const r = await getRethink()
   const pg = getKysely()
   const meetingIdsByTeamId = await pg

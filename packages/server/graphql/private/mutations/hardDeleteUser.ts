@@ -69,11 +69,9 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const teamIds = teamMembers.map(({teamId}) => teamId)
   const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
 
-  const discussions = await pg
-    .selectFrom('Discussion')
-    .select('id')
-    .where('id', 'in', teamIds)
-    .execute()
+  const discussions = teamIds.length
+    ? await pg.selectFrom('Discussion').select('id').where('id', 'in', teamIds).execute()
+    : []
   const teamDiscussionIds = discussions.map(({id}) => id)
 
   // soft delete first for side effects

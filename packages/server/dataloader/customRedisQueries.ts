@@ -8,6 +8,7 @@ import getKysely from '../postgres/getKysely'
 // All results must be mapped to their ids!
 const customRedisQueries = {
   endTimesByTemplateId: async (templateIds: string[]) => {
+    if (!templateIds.length) return []
     const pg = getKysely()
     const aQuarterAgo = new Date(Date.now() - ms('90d'))
     const meetings = await pg

@@ -140,39 +140,39 @@ const removeTeamMember = async (
     .run()
 
   // Reassign facilitator for meetings this user is facilitating.
+  if (meetingIds) {
+    const facilitatingMeetings = await pg
+      .selectFrom('NewMeeting')
+      .select('id')
+      .where('id', 'in', meetingIds)
+      .where('facilitatorUserId', '=', userId)
+      .execute()
 
-  const facilitatingMeetings = await pg
-    .selectFrom('NewMeeting')
-    .select('id')
-    .where('id', 'in', meetingIds)
-    .where('facilitatorUserId', '=', userId)
-    .execute()
+    const newMeetingFacilitators = (
+      await dataLoader
+        .get('meetingMembersByMeetingId')
+        .loadMany(facilitatingMeetings.map((meeting) => meeting.id))
+    )
+      .filter(errorFilter)
+      .map((members) => members[0])
+      .filter((member) => !!member)
 
-  const newMeetingFacilitators = (
-    await dataLoader
-      .get('meetingMembersByMeetingId')
-      .loadMany(facilitatingMeetings.map((meeting) => meeting.id))
-  )
-    .filter(errorFilter)
-    .map((members) => members[0])
-    .filter((member) => !!member)
-
-  Promise.allSettled(
-    newMeetingFacilitators.map(async (newFacilitator) => {
-      if (!newFacilitator) {
-        // This user is the only meeting member, so do nothing.
-        // :TODO: (jmtaber129): Consider closing meetings where this user is the only meeting
-        // member.
-        return
-      }
-      await pg
-        .updateTable('NewMeeting')
-        .set({facilitatorUserId: newFacilitator.userId})
-        .where('id', '=', newFacilitator.meetingId)
-        .execute()
-    })
-  )
-
+    await Promise.allSettled(
+      newMeetingFacilitators.map(async (newFacilitator) => {
+        if (!newFacilitator) {
+          // This user is the only meeting member, so do nothing.
+          // :TODO: (jmtaber129): Consider closing meetings where this user is the only meeting
+          // member.
+          return
+        }
+        await pg
+          .updateTable('NewMeeting')
+          .set({facilitatorUserId: newFacilitator.userId})
+          .where('id', '=', newFacilitator.meetingId)
+          .execute()
+      })
+    )
+  }
   return {
     user,
     notificationId,

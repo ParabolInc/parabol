@@ -24,11 +24,13 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
         meeting.showConversionModal = false
       })
       const meetingIds = activeMeetings.map(({id}) => id)
-      await pg
-        .updateTable('NewMeeting')
-        .set({showConversionModal: false})
-        .where('id', 'in', meetingIds)
-        .execute()
+      if (meetingIds.length > 0) {
+        await pg
+          .updateTable('NewMeeting')
+          .set({showConversionModal: false})
+          .where('id', 'in', meetingIds)
+          .execute()
+      }
       return activeMeetings
     }
   }
