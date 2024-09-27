@@ -77,7 +77,7 @@ export async function up() {
     );
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_createdAt" ON "NewMeeting"("createdAt");
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_facilitatorUserId" ON "NewMeeting"("facilitatorUserId");
-    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_scheduledEndTime" ON "NewMeeting"("scheduledEndTime") WHERE "scheduledEndTime" IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS "idx_NewMeeting_scheduledEndTime" ON "NewMeeting"("scheduledEndTime") WHERE "scheduledEndTime" IS NOT NULL AND "endedAt" IS NULL;
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_meetingSeriesId" ON "NewMeeting"("meetingSeriesId") WHERE "meetingSeriesId" IS NOT NULL;
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_teamId" ON "NewMeeting"("teamId");
     CREATE INDEX IF NOT EXISTS "idx_NewMeeting_templateId" ON "NewMeeting"("templateId") WHERE "templateId" IS NOT NULL;
