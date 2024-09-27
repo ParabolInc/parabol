@@ -140,7 +140,7 @@ const removeTeamMember = async (
     .run()
 
   // Reassign facilitator for meetings this user is facilitating.
-  if (meetingIds) {
+  if (meetingIds.length > 0) {
     const facilitatingMeetings = await pg
       .selectFrom('NewMeeting')
       .select('id')
