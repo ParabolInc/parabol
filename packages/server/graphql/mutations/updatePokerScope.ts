@@ -42,6 +42,7 @@ const updatePokerScope = {
     {meetingId, updates}: {meetingId: string; updates: TUpdatePokerScopeItemInput[]},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    const pg = getKysely()
     const r = await getRethink()
     const redis = getRedis()
     const viewerId = getUserId(authToken)
@@ -156,6 +157,15 @@ const updatePokerScope = {
       if (stages.length > Threshold.MAX_POKER_STORIES * dimensions.length) {
         return {error: {message: 'Story limit reached'}}
       }
+
+      await pg
+        .updateTable('NewMeeting')
+        .set({
+          facilitatorStageId: meeting.facilitatorStageId,
+          phases: JSON.stringify(phases)
+        })
+        .where('id', '=', meetingId)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meetingId)
@@ -168,6 +178,7 @@ const updatePokerScope = {
       if (newDiscussions.length > 0) {
         await getKysely().insertInto('Discussion').values(newDiscussions).execute()
       }
+      dataLoader.clearAll(['newMeetings'])
       const data = {meetingId, newStageIds}
       publish(SubscriptionChannel.MEETING, meetingId, 'UpdatePokerScopeSuccess', data, subOptions)
       return data

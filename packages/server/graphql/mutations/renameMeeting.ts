@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -61,7 +62,7 @@ const renameMeeting = {
         name
       })
       .run()
-
+    await getKysely().updateTable('NewMeeting').set({name}).where('id', '=', meetingId).execute()
     const data = {meetingId}
     IntegrationNotifier.updateMeeting?.(dataLoader, meetingId, teamId)
     publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingSuccess', data, subOptions)

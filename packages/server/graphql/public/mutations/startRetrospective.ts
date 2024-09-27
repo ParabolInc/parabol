@@ -74,8 +74,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingId = meeting.id
 
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-  await Promise.all([
+  await Promise.allSettled([
     r.table('NewMeeting').insert(meeting).run(),
+    pg
+      .insertInto('NewMeeting')
+      .values({...meeting, phases: JSON.stringify(meeting.phases)})
+      .execute(),
     updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
 
@@ -87,6 +91,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
   })
   if (otherActiveMeeting) {
+    // trigger exists in PG to prevent this
     await r.table('NewMeeting').get(meetingId).delete().run()
     return {error: {message: 'Meeting already started'}}
   }

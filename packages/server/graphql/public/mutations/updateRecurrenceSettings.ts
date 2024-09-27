@@ -1,11 +1,12 @@
 import dayjs from 'dayjs'
+import {sql} from 'kysely'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
-import updateMeetingSeriesQuery from '../../../postgres/queries/updateMeetingSeries'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -34,6 +35,7 @@ export const startNewMeetingSeries = async (
     name: meetingName,
     facilitatorUserId: facilitatorId
   } = meeting
+  const pg = getKysely()
   const r = await getRethink()
   if (!facilitatorId) {
     throw new Error('No facilitatorId')
@@ -58,7 +60,11 @@ export const startNewMeetingSeries = async (
       scheduledEndTime: nextMeetingStartDate
     })
     .run()
-
+  await pg
+    .updateTable('NewMeeting')
+    .set({meetingSeriesId: newMeetingSeriesId, scheduledEndTime: nextMeetingStartDate})
+    .where('id', '=', meetingId)
+    .execute()
   return {
     id: newMeetingSeriesId,
     ...newMeetingSeriesParams
@@ -66,6 +72,7 @@ export const startNewMeetingSeries = async (
 }
 
 const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRule: RRuleSet) => {
+  const pg = getKysely()
   const r = await getRethink()
   const {id: meetingSeriesId} = meetingSeries
 
@@ -78,23 +85,42 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
     .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
     .filter({endedAt: null}, {default: true})
     .run()
-  const updates = activeMeetings.map((meeting) =>
-    r
-      .table('NewMeeting')
-      .get(meeting.id)
-      .update({
-        scheduledEndTime: getNextRRuleDate(newRecurrenceRule)
-      })
-      .run()
-  )
-  await Promise.all(updates)
+  if (activeMeetings.length > 0) {
+    const meetingIds = activeMeetings.map(({id}) => id)
+    const scheduledEndTime = getNextRRuleDate(newRecurrenceRule)
+    await pg
+      .updateTable('NewMeeting')
+      .set({scheduledEndTime})
+      .where('id', 'in', meetingIds)
+      .execute()
+    const updates = activeMeetings.map((meeting) =>
+      r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({
+          scheduledEndTime
+        })
+        .run()
+    )
+    await Promise.all(updates)
+  }
 }
 
 export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
+  const pg = getKysely()
   const r = await getRethink()
-  const now = new Date()
-
-  await updateMeetingSeriesQuery({cancelledAt: now}, meetingSeries.id)
+  await pg
+    .with('NewMeetingUpdateEnd', (qb) =>
+      qb
+        .updateTable('NewMeeting')
+        .set({scheduledEndTime: null})
+        .where('meetingSeriesId', '=', meetingSeries.id)
+        .where('endedAt', 'is', null)
+    )
+    .updateTable('MeetingSeries')
+    .set({cancelledAt: sql`CURRENT_TIMESTAMP`})
+    .where('id', '=', meetingSeries.id)
+    .execute()
   await r
     .table('NewMeeting')
     .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
@@ -119,6 +145,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   {meetingId, name, rrule},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -164,10 +191,12 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     }
 
     if (name) {
-      await updateMeetingSeriesQuery({title: name}, meetingSeries.id)
+      await pg
+        .updateTable('MeetingSeries')
+        .set({title: name})
+        .where('id', '=', meetingSeries.id)
+        .execute()
     }
-
-    dataLoader.get('meetingSeries').clear(meetingSeries.id)
   } else {
     if (!rrule) {
       return standardError(
@@ -180,7 +209,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     analytics.recurrenceStarted(viewer, newMeetingSeries)
   }
 
-  dataLoader.get('newMeetings').clear(meetingId)
+  dataLoader.clearAll(['newMeetings', 'meetingSeries'])
 
   // RESOLUTION
   const data = {meetingId}

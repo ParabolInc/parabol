@@ -6,6 +6,7 @@ import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
@@ -30,6 +31,7 @@ const startRecurringMeeting = async (
   dataLoader: DataLoaderWorker,
   subOptions: SubOptions
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const {id: meetingSeriesId, teamId, facilitatorId, meetingType} = meetingSeries
 
@@ -52,18 +54,15 @@ const startRecurringMeeting = async (
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
       const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
-      const meeting = await safeCreateTeamPrompt(
-        meetingName,
-        teamId,
-        facilitatorId,
-        r,
-        dataLoader,
-        {
-          scheduledEndTime,
-          meetingSeriesId: meetingSeries.id,
-          meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
-        }
-      )
+      const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, dataLoader, {
+        scheduledEndTime,
+        meetingSeriesId: meetingSeries.id,
+        meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
+      })
+      await pg
+        .insertInto('NewMeeting')
+        .values({...meeting, phases: JSON.stringify(meeting.phases)})
+        .execute()
       await r.table('NewMeeting').insert(meeting).run()
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
@@ -90,6 +89,10 @@ const startRecurringMeeting = async (
         dataLoader
       )
       await r.table('NewMeeting').insert(meeting).run()
+      await pg
+        .insertInto('NewMeeting')
+        .values({...meeting, phases: JSON.stringify(meeting.phases)})
+        .execute()
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
       return meeting

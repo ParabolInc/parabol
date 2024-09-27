@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
@@ -53,6 +54,11 @@ const generateGroups = async (
   }
 
   const r = await getRethink()
+  await getKysely()
+    .updateTable('NewMeeting')
+    .set({autogroupReflectionGroups: JSON.stringify(autogroupReflectionGroups)})
+    .where('id', '=', meetingId)
+    .execute()
   const meetingRes = await r
     .table('NewMeeting')
     .get(meetingId)

@@ -4,6 +4,8 @@ import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import updateStage from '../../database/updateStage'
+import getKysely from '../../postgres/getKysely'
+import {NewMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -11,6 +13,29 @@ import {GQLContext} from '../graphql'
 import VoteForPokerStoryPayload from '../types/VoteForPokerStoryPayload'
 
 export const removeVoteForUserId = async (userId: string, stageId: string, meetingId: string) => {
+  await getKysely()
+    .transaction()
+    .execute(async (trx) => {
+      const meeting = await trx
+        .selectFrom('NewMeeting')
+        .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
+        .where('id', '=', meetingId)
+        .forUpdate()
+        // NewMeeting: add OrThrow in phase 3
+        .executeTakeFirst()
+      if (!meeting) return
+      const {phases} = meeting
+      const phase = getPhase(phases, 'ESTIMATE')
+      const {stages} = phase
+      const stage = stages.find((stage) => stage.id === stageId)!
+      const {scores} = stage
+      stage.scores = scores.filter((score) => score.userId !== userId)
+      await trx
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+        .execute()
+    })
   const updater = (estimateStage: RValue) =>
     estimateStage.merge({
       scores: estimateStage('scores').deleteAt(
@@ -23,6 +48,30 @@ export const removeVoteForUserId = async (userId: string, stageId: string, meeti
 }
 
 const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: string) => {
+  await getKysely()
+    .transaction()
+    .execute(async (trx) => {
+      const meeting = await trx
+        .selectFrom('NewMeeting')
+        .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
+        .where('id', '=', meetingId)
+        .forUpdate()
+        // NewMeeting: add OrThrow in phase 3
+        .executeTakeFirst()
+      if (!meeting) return
+      const {phases} = meeting
+      const phase = getPhase(phases, 'ESTIMATE')
+      const {stages} = phase
+      const stage = stages.find((stage) => stage.id === stageId)!
+      const {scores} = stage
+      stage.scores = [...scores.filter((score) => score.userId !== vote.userId), vote]
+      await trx
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+        .execute()
+    })
+
   const r = await getRethink()
   const updater = (estimateStage: RValue) =>
     estimateStage.merge({

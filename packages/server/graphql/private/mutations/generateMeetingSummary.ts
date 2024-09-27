@@ -169,6 +169,11 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
       if (!newSummary) return null
 
       const now = new Date()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({summary: newSummary})
+        .where('id', '=', meeting.id)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meeting.id)

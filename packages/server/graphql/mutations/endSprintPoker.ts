@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
@@ -40,7 +41,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     if (meeting.meetingType !== 'poker') {
       return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
@@ -94,6 +95,19 @@ export default {
       )('changes')(0)('new_val')
       .default(null)
       .run()
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({
+        endedAt: sql`CURRENT_TIMESTAMP`,
+        phases: JSON.stringify(phases),
+        commentCount,
+        storyCount,
+        usedReactjis: JSON.stringify(insights.usedReactjis),
+        engagement: insights.engagement
+      })
+      .where('id', '=', meetingId)
+      .executeTakeFirst()
+    dataLoader.clearAll('newMeetings')
     if (!completedMeeting) {
       return standardError(new Error('Completed poker meeting does not exist'), {
         userId: viewerId
@@ -107,7 +121,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
+      removeEmptyTasks(meetingId, teamId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').loadNonNull(templateId),
       updateTeamInsights(teamId, dataLoader)

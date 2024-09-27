@@ -22,6 +22,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   {teamId, name, gcalInput},
   context
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const {authToken, socketId: mutatorId, dataLoader} = context
   const operationId = dataLoader.share()
@@ -40,13 +41,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meetingType: MeetingTypeEnum = 'action'
 
   // RESOLUTION
-  const meetingCount = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingType})
-    .count()
-    .default(0)
-    .run()
+  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
 
   const phases = await createNewMeetingPhases<CheckInPhase>(
@@ -67,7 +62,10 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     facilitatorUserId: viewerId
   }) as CheckInMeeting
   await r.table('NewMeeting').insert(meeting).run()
-
+  await pg
+    .insertInto('NewMeeting')
+    .values({...meeting, phases: JSON.stringify(phases)})
+    .execute()
   // Disallow 2 active check-in meetings
   const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
@@ -79,6 +77,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     await r.table('NewMeeting').get(meetingId).delete().run()
     return {error: {message: 'Meeting already started'}}
   }
+  dataLoader.clearAll('newMeetings')
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
 

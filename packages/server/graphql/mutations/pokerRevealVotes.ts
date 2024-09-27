@@ -1,9 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import updateStage from '../../database/updateStage'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -26,6 +28,7 @@ const pokerRevealVotes = {
     {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -67,8 +70,10 @@ const pokerRevealVotes = {
 
     // VALIDATION
     const estimatePhase = getPhase(phases, 'ESTIMATE')
+    const estimatePhaseIdx = phases.indexOf(estimatePhase)
     const {stages} = estimatePhase
-    const stage = stages.find((stage) => stage.id === stageId)
+    const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+    const stage = stages[stageIdx]
     if (!stage) {
       return {error: {message: 'Invalid stageId provided'}}
     }
@@ -93,7 +98,18 @@ const pokerRevealVotes = {
         // note that a race condition exists here. it's possible that i cast my vote after the meeting is fetched but before this update & that'll be overwritten
         scores
       })
+    await pg
+      .updateTable('NewMeeting')
+      .set({
+        phases: sql`jsonb_set(
+            jsonb_set(phases, ${sql.lit(`{${estimatePhaseIdx},stages,${stageIdx},"scores"}`)}, ${JSON.stringify(scores)}::jsonb, false),
+            ${sql.lit(`{${estimatePhaseIdx},stages,${stageIdx},"isVoting"}`)}, 'false'::jsonb, false
+          )`
+      })
+      .where('id', '=', meetingId)
+      .execute()
     await updateStage(meetingId, stageId, 'ESTIMATE', updater)
+    dataLoader.clearAll('newMeetings')
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesSuccess', data, subOptions)
     return data

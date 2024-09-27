@@ -1,8 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {RValue} from '../../database/stricterR'
 import updateStage from '../../database/updateStage'
+import getKysely from '../../postgres/getKysely'
 import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -27,6 +29,7 @@ const pokerResetDimension = {
     {meetingId, stageId}: {meetingId: string; stageId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -65,8 +68,10 @@ const pokerResetDimension = {
 
     // VALIDATION
     const estimatePhase = getPhase(phases, 'ESTIMATE')
+    const estimatePhaseIdx = phases.indexOf(estimatePhase)
     const {stages} = estimatePhase
-    const stage = stages.find((stage) => stage.id === stageId)
+    const stageIdx = stages.findIndex((stage) => stage.id === stageId)
+    const stage = stages[stageIdx]
     if (!stage) {
       return {error: {message: 'Invalid stageId provided'}}
     }
@@ -77,14 +82,26 @@ const pokerResetDimension = {
       scores: []
     }
     // mutate the cached meeting
+
     Object.assign(stage, updates)
     const updater = (estimateStage: RValue) => estimateStage.merge(updates)
     const [meetingMembers, teamMembers] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
       updateStage(meetingId, stageId, 'ESTIMATE', updater),
+      pg
+        .updateTable('NewMeeting')
+        .set({
+          phases: sql`jsonb_set(
+            jsonb_set(phases, ${sql.lit(`{${estimatePhaseIdx},stages,${stageIdx},"scores"}`)}, '[]'::jsonb, false),
+            ${sql.lit(`{${estimatePhaseIdx},stages,${stageIdx},"isVoting"}`)}, 'true'::jsonb, false
+          )`
+        })
+        .where('id', '=', meetingId)
+        .execute(),
       removeMeetingTaskEstimates(meetingId, stageId)
     ])
+    dataLoader.clearAll('newMeetings')
     const data = {meetingId, stageId}
 
     sendPokerMeetingRevoteEvent(meeting, teamMembers, meetingMembers, dataLoader)
