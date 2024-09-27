@@ -68,7 +68,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   if (!discussion) throw new Error(`Discussion not found: ${discussionId}`)
   const {discussionTopicId: reflectionGroupId, meetingId, summary: discussionSummary} = discussion
   const [newMeeting, reflectionGroup, reflections] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
     dataLoader.get('retroReflectionGroups').load(reflectionGroupId),
     dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
   ])
