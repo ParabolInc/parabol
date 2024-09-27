@@ -108,6 +108,7 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
 
 export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const pg = getKysely()
+  const r = await getRethink()
   await pg
     .with('NewMeetingUpdateEnd', (qb) =>
       qb
