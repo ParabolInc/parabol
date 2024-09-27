@@ -4,9 +4,8 @@ import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
+import {AnyMeeting, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
@@ -24,7 +23,7 @@ import removeEmptyReflections from './removeEmptyReflections'
  */
 const handleCompletedRetrospectiveStage = async (
   stage: GenericMeetingStage,
-  meeting: MeetingRetrospective,
+  meeting: RetrospectiveMeeting,
   dataLoader: DataLoaderWorker
 ) => {
   const pg = getKysely()
@@ -72,7 +71,7 @@ const handleCompletedRetrospectiveStage = async (
         .run()
       data.meeting = meeting
       // dont await for the OpenAI API response
-      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId)
+      generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId!)
     }
 
     return {[stage.phaseType]: data}
@@ -116,7 +115,7 @@ const handleCompletedStage = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (meeting.meetingType === 'retrospective') {
-    return handleCompletedRetrospectiveStage(stage, meeting as MeetingRetrospective, dataLoader)
+    return handleCompletedRetrospectiveStage(stage, meeting, dataLoader)
   }
   return {}
 }

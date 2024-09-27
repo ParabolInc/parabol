@@ -1,21 +1,17 @@
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
-import getRethink from '../../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from '../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
-  const r = await getRethink()
   const pg = getKysely()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId, promptId} = reflection
-  const [meetingReflectionGroups, meeting] = await Promise.all([
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('newMeetings').load(meetingId)
+  const [meetingReflectionGroups] = await Promise.all([
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   ])
   dataLoader.get('retroReflectionGroupsByMeetingId').clear(meetingId)
   dataLoader.get('retroReflectionGroups').clearAll()
@@ -52,14 +48,11 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
         reflectionGroupId
       })
       .where('id', '=', reflectionId)
-      .execute(),
-    r.table('NewMeeting').get(meetingId).update({nextAutoGroupThreshold: null}).run()
+      .execute()
   ])
   // mutates the dataloader response
   reflection.sortOrder = 0
   reflection.reflectionGroupId = reflectionGroupId
-  const retroMeeting = meeting as MeetingRetrospective
-  retroMeeting.nextAutoGroupThreshold = null
   const oldReflections = await dataLoader
     .get('retroReflectionsByGroupId')
     .load(oldReflectionGroupId)

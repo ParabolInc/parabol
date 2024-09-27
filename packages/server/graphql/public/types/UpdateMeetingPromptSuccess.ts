@@ -1,4 +1,3 @@
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {UpdateMeetingPromptSuccessResolvers} from '../resolverTypes'
 
 export type UpdateMeetingPromptSuccessSource = {
@@ -8,7 +7,9 @@ export type UpdateMeetingPromptSuccessSource = {
 const UpdateMeetingPromptSuccess: UpdateMeetingPromptSuccessResolvers = {
   meeting: async (source, _args, {dataLoader}) => {
     const {meetingId} = source
-    return dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingTeamPrompt>
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    if (meeting.meetingType !== 'teamPrompt') throw new Error('Not a team prompt meeting')
+    return meeting
   }
 }
 

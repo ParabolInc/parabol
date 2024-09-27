@@ -5,7 +5,8 @@ import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -48,7 +49,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     .run()
   const meetingId = generateUID()
 
-  const phases = await createNewMeetingPhases(
+  const phases = await createNewMeetingPhases<CheckInPhase>(
     viewerId,
     teamId,
     meetingId,
@@ -64,7 +65,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     meetingCount,
     phases,
     facilitatorUserId: viewerId
-  })
+  }) as CheckInMeeting
   await r.table('NewMeeting').insert(meeting).run()
 
   // Disallow 2 active check-in meetings

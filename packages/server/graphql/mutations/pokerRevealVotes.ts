@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import updateStage from '../../database/updateStage'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -36,11 +35,14 @@ const pokerRevealVotes = {
     // fetch meetingMembers up here to reduce chance of race condition that a vote gets cast in between now & when we update the scores
     const [meetingMembers, meeting] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingPoker>
+      dataLoader.get('newMeetings').load(meetingId)
     ])
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
+    }
+    if (meeting.meetingType !== 'poker') {
+      return {error: {message: 'Not a poker meeting'}}
     }
     const {endedAt, phases, meetingType, teamId, createdBy, facilitatorUserId} = meeting
     if (!isTeamMember(authToken, teamId)) {

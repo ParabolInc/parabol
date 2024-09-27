@@ -7,13 +7,13 @@ import {positionAfter} from '../../../client/shared/sortOrder'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {AgendaItem} from '../../postgres/types'
+import {CheckInMeeting} from '../../postgres/types/Meeting'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../utils/Logger'
@@ -101,7 +101,7 @@ const clonePinnedAgendaItems = async (
   dataLoader.clearAll('agendaItems')
 }
 
-const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
+const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: DataLoaderWorker) => {
   /* If isKill, no agenda items were processed so clear none of them.
    * Similarly, don't clone pins. the original ones will show up again.
    */
@@ -177,12 +177,11 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()) as MeetingAction | null
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (meeting.meetingType !== 'action') {
+      return standardError(new Error('Not a check-in meeting'), {userId: viewerId})
+    }
     const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
     // VALIDATION
@@ -201,7 +200,7 @@ export default {
     const phase = getMeetingPhase(phases)
     const insights = await gatherInsights(meeting, dataLoader)
 
-    const completedCheckIn = (await r
+    const completedCheckIn = await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
@@ -213,7 +212,7 @@ export default {
         {returnChanges: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run()) as unknown as MeetingAction
+      .run()
 
     if (!completedCheckIn) {
       return standardError(new Error('Completed check-in meeting does not exist'), {
@@ -221,6 +220,11 @@ export default {
       })
     }
 
+    if (completedCheckIn.meetingType !== 'action') {
+      return standardError(new Error('Completed check-in meeting is not an action'), {
+        userId: viewerId
+      })
+    }
     // remove any empty tasks
     const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),

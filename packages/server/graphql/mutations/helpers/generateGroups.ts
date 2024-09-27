@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
-import {RetroReflection} from '../../../postgres/types'
+import {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'

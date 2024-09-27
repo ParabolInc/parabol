@@ -1,12 +1,12 @@
 import getRethink from '../../../../database/rethinkDriver'
-import Meeting from '../../../../database/types/Meeting'
 import getMailManager from '../../../../email/getMailManager'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
+import {AnyMeeting} from '../../../../postgres/types/Meeting'
 import {GQLContext} from '../../../graphql'
 import isValid from '../../../isValid'
 
 export default async function sendNewMeetingSummary(
-  newMeeting: Meeting,
+  newMeeting: AnyMeeting,
   context: Pick<GQLContext, 'dataLoader' | 'authToken'>
 ) {
   const {id: meetingId, teamId, summarySentAt} = newMeeting

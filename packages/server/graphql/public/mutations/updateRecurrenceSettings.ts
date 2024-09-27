@@ -22,7 +22,7 @@ export const startNewMeetingSeries = async (
     teamId: string
     meetingType: MeetingTypeEnum
     name: string
-    facilitatorUserId: string
+    facilitatorUserId: string | null
   },
   recurrenceRule: RRuleSet,
   meetingSeriesName?: string | null
@@ -35,7 +35,9 @@ export const startNewMeetingSeries = async (
     facilitatorUserId: facilitatorId
   } = meeting
   const r = await getRethink()
-
+  if (!facilitatorId) {
+    throw new Error('No facilitatorId')
+  }
   const newMeetingSeriesParams = {
     meetingType,
     title: meetingSeriesName || meetingName.split('-')[0]!.trim(), // if no name is provided, we use the name of the first meeting without the date

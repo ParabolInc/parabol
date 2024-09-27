@@ -1,5 +1,4 @@
 import getRethink from '../../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
@@ -14,8 +13,11 @@ const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (_source, {meeti
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingTeamPrompt | null
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (meeting.meetingType !== 'teamPrompt') {
+    return {error: {message: 'Meeting type is not teamPrompt'}}
+  }
   const {teamId} = meeting
 
   // VALIDATION

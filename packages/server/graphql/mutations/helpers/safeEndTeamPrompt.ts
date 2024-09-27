@@ -1,10 +1,10 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import getRethink, {ParabolR} from '../../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
@@ -17,7 +17,7 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import updateTeamInsights from './updateTeamInsights'
 
-const summarizeTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
+const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
   const r = await getRethink()
 
@@ -51,7 +51,7 @@ const safeEndTeamPrompt = async ({
   context,
   subOptions
 }: {
-  meeting: MeetingTeamPrompt
+  meeting: TeamPromptMeeting
   now: Date
   viewerId?: string
   r: ParabolR
@@ -66,7 +66,7 @@ const safeEndTeamPrompt = async ({
 
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)
-  const completedTeamPrompt = (await r
+  const completedTeamPrompt = await r
     .table('NewMeeting')
     .get(meetingId)
     .update(
@@ -77,12 +77,16 @@ const safeEndTeamPrompt = async ({
       {returnChanges: true}
     )('changes')(0)('new_val')
     .default(null)
-    .run()) as unknown as MeetingTeamPrompt
+    .run()
 
   if (!completedTeamPrompt) {
     return standardError(new Error('Completed team prompt meeting does not exist'), {
       userId: viewerId
     })
+  }
+
+  if (completedTeamPrompt.meetingType !== 'teamPrompt') {
+    return standardError(new Error('Meeting is not a team prompt'), {userId: viewerId})
   }
 
   const [meetingMembers, team, teamMembers, responses] = await Promise.all([

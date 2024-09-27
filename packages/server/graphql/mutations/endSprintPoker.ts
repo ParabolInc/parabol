@@ -4,8 +4,6 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
-import Meeting from '../../database/types/Meeting'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
@@ -42,12 +40,11 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()) as Meeting | null
+    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (meeting.meetingType !== 'poker') {
+      return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
+    }
     const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
     // VALIDATION
@@ -82,7 +79,7 @@ export default {
       await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
     ).filter(isValid)
     const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-    const completedMeeting = (await r
+    const completedMeeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .update(
@@ -96,11 +93,14 @@ export default {
         {returnChanges: true, nonAtomic: true}
       )('changes')(0)('new_val')
       .default(null)
-      .run()) as unknown as MeetingPoker
+      .run()
     if (!completedMeeting) {
       return standardError(new Error('Completed poker meeting does not exist'), {
         userId: viewerId
       })
+    }
+    if (completedMeeting.meetingType !== 'poker') {
+      return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
     }
     const {templateId} = completedMeeting
     const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
