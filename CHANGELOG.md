@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.48.1](https://github.com/ParabolInc/parabol/compare/v7.48.0...v7.48.1) (2024-09-27)
+
+
+### Fixed
+
+* stop series when team is no more ([#10268](https://github.com/ParabolInc/parabol/issues/10268)) ([203835e](https://github.com/ParabolInc/parabol/commit/203835e4296f17f51c8d6f968b41f7fb64e820ab))
+
+
+### Changed
+
+* **rethinkdb:** NewMeeting: Phase 1a ([#10216](https://github.com/ParabolInc/parabol/issues/10216)) ([6273411](https://github.com/ParabolInc/parabol/commit/6273411f5c5e7e03dc569b3359a49902b88dc11c))
+* **rethinkdb:** NewMeeting: Phase 1b ([#10250](https://github.com/ParabolInc/parabol/issues/10250)) ([8070a7e](https://github.com/ParabolInc/parabol/commit/8070a7e82d156d7b587742f1bde8279419ea85db))
+
 ## [7.48.0](https://github.com/ParabolInc/parabol/compare/v7.47.5...v7.48.0) (2024-09-24)
 
 
