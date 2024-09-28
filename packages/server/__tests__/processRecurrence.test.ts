@@ -358,7 +358,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
   const lastMeeting = await pg
     .selectFrom('NewMeeting')
     .selectAll()
-    .where('meetingType', '=', 'teamPrompt')
+    .where('meetingType', '=', 'retrospective')
     .orderBy('createdAt desc')
     .limit(1)
     .executeTakeFirst()
