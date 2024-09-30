@@ -1,6 +1,0 @@
-type TopRetroTemplate {
-  id: ID!
-  reflectTemplateId: ID!
-  reflectTemplate: ReflectTemplate!
-  count: Int!
-}
