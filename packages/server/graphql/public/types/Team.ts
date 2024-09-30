@@ -12,7 +12,7 @@ const Team: TeamResolvers = {
   ) => {
     const noTeamInsights = await dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, scope: 'Organization', featureName: 'noTeamInsights'})
+      .load({ownerId: orgId, featureName: 'noTeamInsights'})
 
     if (noTeamInsights) return null
     if (!mostUsedEmojis && !meetingEngagement && !topRetroTemplates) return null

@@ -115,7 +115,7 @@ export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorke
 
   const hasTeamsLimitFlag = await dataLoader
     .get('featureFlagByOwnerId')
-    .load({ownerId: orgId, scope: 'Organization', featureName: 'teamsLimit'})
+    .load({ownerId: orgId, featureName: 'teamsLimit'})
   if (!hasTeamsLimitFlag) return
 
   if (tierLimitExceededAt || getFeatureTier({tier, trialStartDate}) !== 'starter') return

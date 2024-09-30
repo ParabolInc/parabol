@@ -24,9 +24,7 @@ const Organization: OrganizationResolvers = {
     return {id: activeDomain}
   },
   featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
-    return await dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: orgId, scope: 'Organization', featureName})
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName})
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null
@@ -65,7 +63,7 @@ const Organization: OrganizationResolvers = {
     const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
     const hasPublicTeamsFlag = await dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: organization.id, scope: 'Organization', featureName: 'publicTeams'})
+      .load({ownerId: organization.id, featureName: 'publicTeams'})
     if (isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
       const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
@@ -85,9 +83,7 @@ const Organization: OrganizationResolvers = {
   publicTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const [allTeamsOnOrg, hasPublicTeamsFlag] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
-      dataLoader
-        .get('featureFlagByOwnerId')
-        .load({ownerId: orgId, scope: 'Organization', featureName: 'publicTeams'})
+      dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'publicTeams'})
     ])
     if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []
     const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))

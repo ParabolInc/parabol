@@ -19,7 +19,7 @@ const updateTeamInsights = async (teamId: string, dataLoader: DataLoaderWorker) 
   const {orgId} = team
   const hasNoTeamInsightsFlag = await dataLoader
     .get('featureFlagByOwnerId')
-    .load({ownerId: orgId, scope: 'Organization', featureName: 'noTeamInsights'})
+    .load({ownerId: orgId, featureName: 'noTeamInsights'})
   if (hasNoTeamInsightsFlag) return
 
   // actual update
