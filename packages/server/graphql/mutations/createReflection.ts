@@ -43,7 +43,7 @@ export default {
     const viewerId = getUserId(authToken)
     const [reflectPrompt, meeting, viewer] = await Promise.all([
       dataLoader.get('reflectPrompts').load(promptId),
-      r.table('NewMeeting').get(meetingId).default(null).run(),
+      dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!reflectPrompt) {
@@ -119,6 +119,12 @@ export default {
           phases
         })
         .run()
+      await pg
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+        .execute()
+      dataLoader.clearAll('newMeetings')
     }
     analytics.reflectionAdded(viewer, teamId, meetingId)
     const data = {

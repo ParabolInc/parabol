@@ -3,16 +3,14 @@ import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTA
 import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
-import Meeting from '../../database/types/Meeting'
 import MeetingMember from '../../database/types/MeetingMember'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
 import {SlackNotification, TeamPromptResponse, TemplateScale} from '../../postgres/types'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum, RetrospectiveMeeting} from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
@@ -193,7 +191,7 @@ class Analytics {
 
   // meeting
   teamPromptEnd = async (
-    completedMeeting: Meeting,
+    completedMeeting: AnyMeeting,
     meetingMembers: MeetingMember[],
     responses: TeamPromptResponse[],
     dataLoader: DataLoaderWorker
@@ -220,7 +218,7 @@ class Analytics {
   }
 
   checkInEnd = async (
-    completedMeeting: Meeting,
+    completedMeeting: AnyMeeting,
     meetingMembers: MeetingMember[],
     dataLoader: DataLoaderWorker
   ) =>
@@ -238,7 +236,7 @@ class Analytics {
     )
 
   retrospectiveEnd = async (
-    completedMeeting: MeetingRetrospective,
+    completedMeeting: RetrospectiveMeeting,
     meetingMembers: MeetingMember[],
     template: MeetingTemplate,
     dataLoader: DataLoaderWorker
@@ -261,7 +259,7 @@ class Analytics {
   }
 
   sprintPokerEnd = (
-    completedMeeting: Meeting,
+    completedMeeting: AnyMeeting,
     meetingMembers: MeetingMember[],
     template: MeetingTemplate,
     dataLoader: DataLoaderWorker
@@ -282,7 +280,7 @@ class Analytics {
   private meetingEnd = async (
     dataloader: DataLoaderWorker,
     userId: string,
-    completedMeeting: Meeting,
+    completedMeeting: AnyMeeting,
     meetingMembers: MeetingMember[],
     template?: MeetingTemplate,
     meetingSpecificProperties?: any
@@ -295,7 +293,7 @@ class Analytics {
     })
   }
 
-  meetingStarted = (user: AnalyticsUser, meeting: Meeting, template?: MeetingTemplate) => {
+  meetingStarted = (user: AnalyticsUser, meeting: AnyMeeting, template?: MeetingTemplate) => {
     this.track(user, 'Meeting Started', createMeetingProperties(meeting, undefined, template))
   }
 
@@ -307,7 +305,7 @@ class Analytics {
     this.track(user, 'Meeting Recurrence Stopped', meetingSeries)
   }
 
-  meetingJoined = (user: AnalyticsUser, meeting: Meeting) => {
+  meetingJoined = (user: AnalyticsUser, meeting: AnyMeeting) => {
     this.track(user, 'Meeting Joined', createMeetingProperties(meeting, undefined, undefined))
   }
 
@@ -326,7 +324,7 @@ class Analytics {
 
   commentAdded = (
     user: AnalyticsUser,
-    meeting: Meeting,
+    meeting: AnyMeeting,
     isAnonymous: boolean,
     isAsync: boolean,
     isReply: boolean

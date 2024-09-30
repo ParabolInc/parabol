@@ -3,7 +3,6 @@ import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
-import Meeting from '../database/types/Meeting'
 import Organization from '../database/types/Organization'
 import Task from '../database/types/Task'
 import User from '../database/types/User'
@@ -116,7 +115,7 @@ export const resolveTeamMembers = (
     : teamMembers
 }
 
-export const resolveGQLStageFromId = (stageId: string | undefined, meeting: Meeting) => {
+export const resolveGQLStageFromId = (stageId: string | undefined, meeting: AnyMeeting) => {
   const {id: meetingId, phases} = meeting
   const stageRes = findStageById(phases, stageId)
   if (!stageRes) return undefined

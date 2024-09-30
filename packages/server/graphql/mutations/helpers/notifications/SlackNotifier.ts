@@ -7,7 +7,6 @@ import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPrompt
 import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
 import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
-import Meeting from '../../../../database/types/Meeting'
 import SlackAuth from '../../../../database/types/SlackAuth'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import getKysely from '../../../../postgres/getKysely'
@@ -91,7 +90,7 @@ const notifySlack = async (
   return res
 }
 
-const makeEndMeetingButtons = (meeting: Meeting) => {
+const makeEndMeetingButtons = (meeting: AnyMeeting) => {
   const {id: meetingId} = meeting
   const searchParams = {
     utm_source: 'slack summary',
@@ -136,11 +135,11 @@ const makeEndMeetingButtons = (meeting: Meeting) => {
 
 const createTeamSectionContent = (team: Team) => `*Team:*\n${team.name}`
 
-const createMeetingSectionContent = (meeting: Meeting) => `*Meeting:*\n${meeting.name}`
+const createMeetingSectionContent = (meeting: AnyMeeting) => `*Meeting:*\n${meeting.name}`
 
 const makeTeamPromptStartMeetingNotification = (
   team: Team,
-  meeting: Meeting,
+  meeting: AnyMeeting,
   meetingUrl: string
 ): SlackNotificationMessage => {
   const title = `*${meeting.name}* is open :speech_balloon: `
@@ -155,7 +154,7 @@ const makeTeamPromptStartMeetingNotification = (
 
 const makeGenericStartMeetingNotification = (
   team: Team,
-  meeting: Meeting,
+  meeting: AnyMeeting,
   meetingUrl: string
 ): SlackNotificationMessage => {
   const title = 'Meeting started :wave: '
@@ -170,7 +169,7 @@ const makeGenericStartMeetingNotification = (
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: Team, meeting: Meeting, meetingUrl: string) => SlackNotificationMessage
+  (team: Team, meeting: AnyMeeting, meetingUrl: string) => SlackNotificationMessage
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
@@ -183,7 +182,7 @@ const addStandupResponsesToThread = async (
   standupResponses: Array<{user: User; response: TeamPromptResponse}> | null,
   team: Team,
   user: User,
-  meeting: Meeting,
+  meeting: AnyMeeting,
   notificationChannel: NotificationChannel
 ) => {
   if (!standupResponses || standupResponses.length === 0) {
@@ -361,7 +360,16 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     }
     if ('ts' in res) {
       const r = await getRethink()
-      await r.table('NewMeeting').get(meeting.id).update({slackTs: res.ts}).run()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({slackTs: Number(res.ts)})
+        .where('id', '=', meeting.id)
+        .execute()
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({slackTs: Number(res.ts)})
+        .run()
     }
     return 'success'
   },
@@ -392,14 +400,23 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     )
 
     const manager = new SlackServerManager(botAccessToken)
-    const res = await manager.updateMessage(channelId, blocks, slackTs)
+    const res = await manager.updateMessage(channelId, blocks, String(slackTs))
 
     if ('error' in res) {
       return handleError(res, team.id, notificationChannel)
     }
     if ('ts' in res) {
       const r = await getRethink()
-      await r.table('NewMeeting').get(meeting.id).update({slackTs: res.ts}).run()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({slackTs: Number(res.ts)})
+        .where('id', '=', meeting.id)
+        .execute()
+      await r
+        .table('NewMeeting')
+        .get(meeting.id)
+        .update({slackTs: Number(res.ts)})
+        .run()
     }
     return 'success'
   },
@@ -546,7 +563,7 @@ async function getSlack(
 
 const getDmSlackForMeeting = async (
   dataLoader: DataLoaderWorker,
-  meeting: Meeting,
+  meeting: AnyMeeting,
   userId: string
 ) => {
   // Order of slack auth is:

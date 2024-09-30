@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -31,7 +32,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {facilitatorUserId: oldFacilitatorUserId, teamId, endedAt} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -59,7 +60,12 @@ export default {
         updatedAt: now
       })
       .run()
-
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({facilitatorUserId})
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     const data = {meetingId, oldFacilitatorUserId}
     publish(
       SubscriptionChannel.MEETING,

@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -22,6 +21,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   {teamId, name, rrule, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -49,16 +49,18 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
   const meetingName = createMeetingSeriesTitle(name || 'Standup', new Date(), 'UTC')
   const eventName = rrule ? name || 'Standup' : meetingName
-  const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, r, dataLoader)
+  const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
 
   await Promise.all([
     r.table('NewMeeting').insert(meeting).run(),
-    updateTeamByTeamId(
-      {
-        lastMeetingType: 'teamPrompt'
-      },
-      teamId
-    )
+    pg
+      .with('NewMeetingInsert', (qb) =>
+        qb.insertInto('NewMeeting').values({...meeting, phases: JSON.stringify(meeting.phases)})
+      )
+      .updateTable('Team')
+      .set({lastMeetingType: 'teamPrompt'})
+      .where('id', '=', teamId)
+      .execute()
   ])
 
   const {id: meetingId} = meeting

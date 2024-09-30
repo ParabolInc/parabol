@@ -32,6 +32,10 @@ type DeepNonNullableObject<T> = {
   [P in keyof T]-?: DeepNonNullable<NonNullable<T[P]>>
 }
 
+export type NonNullableProps<T> = {
+  [K in keyof T]: NonNullable<T[K]>
+}
+
 // export type DeepNullableObject<T> = {
 //   [P in keyof T]: T[P] extends Array<infer U>
 //     ? Array<DeepNullable<U>> | null

@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import getKysely from '../../../postgres/getKysely'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import getPhase from '../../../utils/getPhase'
 import {MutationResolvers} from '../resolverTypes'
@@ -20,7 +20,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
   const twoYearsAgo = new Date()
   twoYearsAgo.setFullYear(endDate.getFullYear() - 2)
 
-  const rawMeetings = (await r
+  const rawMeetings = await r
     .table('NewMeeting')
     .getAll(r.args(teamIds), {index: 'teamId'})
     .filter((row: any) =>
@@ -32,7 +32,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
         .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
-    .run()) as MeetingRetrospective[]
+    .run()
 
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
@@ -87,7 +87,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
     return comments
   }
 
-  const getMeetingsContent = async (meeting: MeetingRetrospective) => {
+  const getMeetingsContent = async (meeting: RetrospectiveMeeting) => {
     const pg = getKysely()
     const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
     const rawReflectionGroups = await dataLoader
@@ -157,6 +157,7 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
 
   const updatedMeetingIds = await Promise.all(
     rawMeetings.map(async (meeting) => {
+      if (meeting.meetingType !== 'retrospective') return null
       const meetingsContent = await getMeetingsContent(meeting)
       if (!meetingsContent || meetingsContent.length === 0) {
         return null
@@ -168,6 +169,11 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
       if (!newSummary) return null
 
       const now = new Date()
+      await getKysely()
+        .updateTable('NewMeeting')
+        .set({summary: newSummary})
+        .where('id', '=', meeting.id)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meeting.id)
