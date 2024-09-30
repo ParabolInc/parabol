@@ -7,7 +7,7 @@ import {RDatum} from '../database/stricterR'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
-import {FeatureFlagScope, ReactableEnum} from '../graphql/public/resolverTypes'
+import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {TeamMeetingTemplate} from '../postgres/pg.d'
@@ -844,15 +844,13 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
 }
 
 export const featureFlagByOwnerId = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {ownerId: string; scope: FeatureFlagScope; featureName: string},
-    boolean,
-    string
-  >(
+  return new DataLoader<{ownerId: string; featureName: string}, boolean, string>(
     async (keys) => {
       const pg = getKysely()
 
       const featureNames = [...new Set(keys.map(({featureName}) => featureName))]
+      const ownerIds = [...new Set(keys.map(({ownerId}) => ownerId))]
+
       if (!__PRODUCTION__) {
         const existingFeatureNames = await pg
           .selectFrom('FeatureFlag')
@@ -868,29 +866,15 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
         }
       }
 
-      const userKeys = keys.filter(({scope}) => scope === 'User')
-      const teamKeys = keys.filter(({scope}) => scope === 'Team')
-      const orgKeys = keys.filter(({scope}) => scope === 'Organization')
-
-      const userIds = userKeys.map(({ownerId}) => ownerId)
-      const teamIds = teamKeys.map(({ownerId}) => ownerId)
-      const orgIds = orgKeys.map(({ownerId}) => ownerId)
-
       const results = await pg
         .selectFrom('FeatureFlag')
         .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
         .where((eb) =>
           eb.and([
             eb.or([
-              userIds.length > 0
-                ? eb('FeatureFlagOwner.userId', 'in', userIds)
-                : eb('FeatureFlagOwner.userId', '=', null),
-              teamIds.length > 0
-                ? eb('FeatureFlagOwner.teamId', 'in', teamIds)
-                : eb('FeatureFlagOwner.teamId', '=', null),
-              orgIds.length > 0
-                ? eb('FeatureFlagOwner.orgId', 'in', orgIds)
-                : eb('FeatureFlagOwner.orgId', '=', null)
+              eb('FeatureFlagOwner.userId', 'in', ownerIds),
+              eb('FeatureFlagOwner.teamId', 'in', ownerIds),
+              eb('FeatureFlagOwner.orgId', 'in', ownerIds)
             ]),
             eb('FeatureFlag.featureName', 'in', featureNames),
             eb('FeatureFlag.expiresAt', '>', new Date())
@@ -907,17 +891,14 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
       const featureFlagMap = new Map<string, boolean>()
       results.forEach(({userId, teamId, orgId, featureName}) => {
         const ownerId = userId || teamId || orgId
-        const scope = userId ? 'User' : teamId ? 'Team' : 'Organization'
-        featureFlagMap.set(`${ownerId}:${scope}:${featureName}`, true)
+        featureFlagMap.set(`${ownerId}:${featureName}`, true)
       })
 
-      return keys.map(({ownerId, scope, featureName}) =>
-        featureFlagMap.has(`${ownerId}:${scope}:${featureName}`)
-      )
+      return keys.map(({ownerId, featureName}) => featureFlagMap.has(`${ownerId}:${featureName}`))
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.ownerId}:${key.scope}:${key.featureName}`
+      cacheKeyFn: (key) => `${key.ownerId}:${key.featureName}`
     }
   )
 }

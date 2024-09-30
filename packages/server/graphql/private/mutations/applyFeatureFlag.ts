@@ -7,7 +7,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
-  {flagName, scope, subjects},
+  {flagName, subjects},
   {authToken}
 ) => {
   const pg = getKysely()
@@ -24,16 +24,15 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
 
   const featureFlag = await pg
     .selectFrom('FeatureFlag')
-    .select(['id'])
+    .select(['id', 'scope'])
     .where('featureName', '=', flagName)
-    .where('scope', '=', scope)
     .executeTakeFirst()
 
   if (!featureFlag) {
     return standardError(new Error('Feature flag not found'), {userId: viewerId})
   }
 
-  const {id: featureFlagId} = featureFlag
+  const {id: featureFlagId, scope} = featureFlag
 
   const userIds: string[] = []
   const teamIds: string[] = []

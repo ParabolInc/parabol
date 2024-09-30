@@ -1,8 +1,0 @@
-"""
-The list of scopes available for feature flags
-"""
-enum FeatureFlagScope {
-  User
-  Team
-  Organization
-}

@@ -25,7 +25,7 @@ const WholeMeetingSummary = (props: Props) => {
         summary
         organization {
           standupAISummary: featureFlag(featureName: "standupAISummary")
-          noAISummary: featureFlag(featureName: "standupAInoAISummarySummary")
+          noAISummary: featureFlag(featureName: "noAISummary")
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {

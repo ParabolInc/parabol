@@ -36,10 +36,6 @@ type Mutation {
     The subjects to which the feature flag will be applied
     """
     subjects: SubjectsInput!
-    """
-    The scope of the feature flag
-    """
-    scope: FeatureFlagScope!
   ): ApplyFeatureFlagPayload!
 
   """
