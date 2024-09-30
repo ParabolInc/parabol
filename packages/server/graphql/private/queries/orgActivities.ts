@@ -2,7 +2,7 @@ import {sql} from 'kysely'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
-import {QueryResolvers} from '../resolverTypes'
+import {OrgActivityRow, QueryResolvers} from '../resolverTypes'
 
 const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDate, endDate}) => {
   const pg = getKysely()
@@ -22,13 +22,16 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
 
   const userSignups = pg
     .selectFrom('User')
+    .innerJoin('Organization', 'User.domain', 'Organization.activeDomain')
     .select([
-      sql`date_trunc('month', "createdAt")`.as('month'),
-      sql`COUNT(DISTINCT "id")`.as('signup_count')
+      sql`date_trunc('month', "User"."createdAt")`.as('month'),
+      'Organization.name as orgName',
+      sql`COUNT(DISTINCT "User"."id")`.as('signup_count')
     ])
-    .where('createdAt', '>=', queryStartDate)
-    .where('createdAt', '<', queryEndDate)
-    .groupBy(sql`date_trunc('month', "createdAt")`)
+    .where('User.createdAt', '>=', queryStartDate)
+    .where('User.createdAt', '<', queryEndDate)
+    .groupBy(sql`date_trunc('month', "User"."createdAt")`)
+    .groupBy('Organization.name')
 
   const query = pg
     .selectFrom(months.as('m'))
@@ -37,6 +40,7 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
     )
     .select([
       sql`m."monthStart"`.as('monthStart'),
+      sql`COALESCE(us."orgName", 'All Organizations')`.as('orgName'),
       sql`COALESCE(us.signup_count, 0)`.as('signupCount')
     ])
     .orderBy('monthStart')
@@ -79,27 +83,40 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
     ])
 
     // Combine PostgreSQL and RethinkDB results
-    const combinedResults = pgResults.map((pgRow: any) => {
+    const combinedResults: OrgActivityRow[] = pgResults.reduce((acc: any, pgRow: any) => {
       const monthStart = new Date(pgRow.monthStart)
-      const rethinkParticipants = rethinkResults.find(
-        (r: any) =>
-          r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
-          r.yearMonth.year === monthStart.getUTCFullYear()
-      )
-      const rethinkMeetings = rethinkResults.find(
+      const monthKey = monthStart.toISOString()
+
+      if (!acc[monthKey]) {
+        acc[monthKey] = {
+          monthStart: pgRow.monthStart,
+          signups: [],
+          participantCount: 0,
+          meetingCount: 0
+        }
+      }
+
+      acc[monthKey].signups.push({
+        orgName: pgRow.orgName,
+        count: pgRow.signupCount
+      })
+
+      const rethinkData = rethinkResults.find(
         (r: any) =>
           r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
           r.yearMonth.year === monthStart.getUTCFullYear()
       )
 
-      return {
-        monthStart: pgRow.monthStart,
-        signupCount: pgRow.signupCount ? pgRow.signupCount : 0,
-        participantCount: rethinkParticipants ? rethinkParticipants.participantCount : 0,
-        meetingCount: rethinkMeetings ? rethinkMeetings.meetingCount : 0
+      if (rethinkData) {
+        acc[monthKey].participantCount = rethinkData.participantCount
+        acc[monthKey].meetingCount = rethinkData.meetingCount
       }
-    })
-    return {rows: combinedResults}
+
+      return acc
+    }, {})
+
+    const rows = Object.values(combinedResults)
+    return {rows}
   } catch (error) {
     console.error('Error executing Org Activity Report:', error)
     return {error: {message: 'Error executing Org Activity Report'}}
