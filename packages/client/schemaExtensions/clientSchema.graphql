@@ -42,9 +42,12 @@ extend type RetrospectiveMeeting {
 }
 
 extend type TeamPromptMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
   localStageId: String
   isRightDrawerOpen: Boolean!
   showWorkSidebar: Boolean!
+  showSidebar: Boolean!
 }
 
 extend type Team {
@@ -117,6 +120,18 @@ extend type UpdatesStage {
 }
 
 extend type AgendaItemsStage {
+  localScheduledEndTime: String
+}
+
+extend type EstimateStage {
+  localScheduledEndTime: String
+}
+
+extend type TeamHealthStage {
+  localScheduledEndTime: String
+}
+
+extend type TeamPromptResponseStage {
   localScheduledEndTime: String
 }
 

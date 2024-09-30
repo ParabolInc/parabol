@@ -10,6 +10,7 @@ import ReflectPhase from '../database/types/ReflectPhase'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import generateUID from '../generateUID'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../postgres/queries/insertMeetingSeries'
+import {RetroMeetingPhase} from '../postgres/types/NewMeetingPhase'
 import {getUserTeams, sendIntranet, signUp} from './common'
 
 const PROCESS_RECURRENCE = `
@@ -273,7 +274,10 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     id: meetingId,
     teamId,
     meetingCount: 0,
-    phases: [new ReflectPhase(teamId, []), new DiscussPhase(undefined)],
+    phases: [
+      new ReflectPhase(teamId, []) as RetroMeetingPhase,
+      new DiscussPhase(undefined) as RetroMeetingPhase
+    ],
     facilitatorUserId: userId,
     scheduledEndTime: new Date(Date.now() - ms('5m')),
     meetingSeriesId,

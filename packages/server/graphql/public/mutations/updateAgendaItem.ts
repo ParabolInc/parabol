@@ -57,6 +57,11 @@ const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
       return (agendaItem && agendaItem.sortOrder) || 0
     }
     stages.sort((a, b) => (getSortOrder(a) > getSortOrder(b) ? 1 : -1))
+    await pg
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(phases)})
+      .where('id', '=', meetingId)
+      .execute()
     await r
       .table('NewMeeting')
       .get(meetingId)

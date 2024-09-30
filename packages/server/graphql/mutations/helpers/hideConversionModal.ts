@@ -8,7 +8,8 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
   const {showConversionModal} = organization
   if (showConversionModal) {
     const r = await getRethink()
-    await getKysely()
+    const pg = getKysely()
+    await pg
       .updateTable('Organization')
       .set({showConversionModal: false})
       .where('id', '=', orgId)
@@ -25,6 +26,11 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
         meeting.showConversionModal = false
       })
       const meetingIds = activeMeetings.map(({id}) => id)
+      await pg
+        .updateTable('NewMeeting')
+        .set({showConversionModal: false})
+        .where('id', 'in', meetingIds)
+        .execute()
       await r
         .table('NewMeeting')
         .getAll(r.args(meetingIds))

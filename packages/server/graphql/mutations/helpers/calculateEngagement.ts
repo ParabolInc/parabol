@@ -1,6 +1,7 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import EstimatePhase from '../../../database/types/EstimatePhase'
-import Meeting from '../../../database/types/Meeting'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
+import {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
 import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -13,7 +14,7 @@ import isValid from '../../isValid'
  * **sprint poker**: meeting members facilitated, voted discussed or reacted / total meeting members
  * **standup**: replied, commented or reacted / all members
  */
-const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
+const calculateEngagement = async (meeting: AnyMeeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, phases, meetingType, facilitatorUserId} = meeting
 
   if (meetingType === 'action') return undefined
@@ -78,7 +79,7 @@ const calculateEngagement = async (meeting: Meeting, dataLoader: DataLoaderWorke
   }
 
   // Discussions can happen in many different stage types: discuss, ESTIMATE, reflect, RESPONSES
-  const stages = phases.flatMap(({stages}) => stages)
+  const stages = phases.flatMap(({stages}) => stages as NewMeetingStages[])
   const discussionIds = stages
     .map((stage) => 'discussionId' in stage && stage.discussionId)
     .filter(isValid) as string[]

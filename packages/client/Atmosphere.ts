@@ -384,8 +384,8 @@ export default class Atmosphere extends Environment {
     window.location.href = '/'
   }
 
-  setAuthToken = async (authToken: string | null) => {
-    this.authToken = authToken
+  setAuthToken = async (authToken: string | null | undefined) => {
+    this.authToken = authToken || null
     if (!authToken) {
       this.authObj = null
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

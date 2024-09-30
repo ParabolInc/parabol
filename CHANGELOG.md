@@ -5,6 +5,40 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.48.1](https://github.com/ParabolInc/parabol/compare/v7.48.0...v7.48.1) (2024-09-27)
+
+
+### Fixed
+
+* stop series when team is no more ([#10268](https://github.com/ParabolInc/parabol/issues/10268)) ([203835e](https://github.com/ParabolInc/parabol/commit/203835e4296f17f51c8d6f968b41f7fb64e820ab))
+
+
+### Changed
+
+* **rethinkdb:** NewMeeting: Phase 1a ([#10216](https://github.com/ParabolInc/parabol/issues/10216)) ([6273411](https://github.com/ParabolInc/parabol/commit/6273411f5c5e7e03dc569b3359a49902b88dc11c))
+* **rethinkdb:** NewMeeting: Phase 1b ([#10250](https://github.com/ParabolInc/parabol/issues/10250)) ([8070a7e](https://github.com/ParabolInc/parabol/commit/8070a7e82d156d7b587742f1bde8279419ea85db))
+
+## [7.48.0](https://github.com/ParabolInc/parabol/compare/v7.47.5...v7.48.0) (2024-09-24)
+
+
+### Added
+
+* **metrics:** add mutation to generate usage report ([#10236](https://github.com/ParabolInc/parabol/issues/10236)) ([b72decd](https://github.com/ParabolInc/parabol/commit/b72decd56c08239ca990fa23552faf5d33182012))
+
+
+### Fixed
+
+* bump relay so it shares react's scheduler ([#10262](https://github.com/ParabolInc/parabol/issues/10262)) ([5893e38](https://github.com/ParabolInc/parabol/commit/5893e38a008597ec2e659b488ec0e3444338a2ff))
+* isPaid flag when moving teams to 0-team org ([#10263](https://github.com/ParabolInc/parabol/issues/10263)) ([b625d7e](https://github.com/ParabolInc/parabol/commit/b625d7e51b5ef4fe196251110699d99249d44fc9))
+* **misc:** show full length of agenda item text when hovering ([#10251](https://github.com/ParabolInc/parabol/issues/10251)) ([89661a7](https://github.com/ParabolInc/parabol/commit/89661a7425898418461aefb65428179622c70b78))
+
+## [7.47.5](https://github.com/ParabolInc/parabol/compare/v7.47.4...v7.47.5) (2024-09-16)
+
+
+### Fixed
+
+* Remove duplicate org users ([#10198](https://github.com/ParabolInc/parabol/issues/10198)) ([cafbf32](https://github.com/ParabolInc/parabol/commit/cafbf320f02f652ba9b011a4a06b0606a4faf81e))
+
 ## [7.47.4](https://github.com/ParabolInc/parabol/compare/v7.47.3...v7.47.4) (2024-09-12)
 
 

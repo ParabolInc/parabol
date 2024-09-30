@@ -25,6 +25,7 @@ import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import getKysely from '../../../postgres/getKysely'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 import {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
@@ -69,7 +70,7 @@ const getPastStageDurations = async (teamId: string) => {
   )
 }
 
-const createNewMeetingPhases = async (
+const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhase>(
   facilitatorUserId: string,
   teamId: string,
   meetingId: string,
@@ -162,7 +163,7 @@ const createNewMeetingPhases = async (
           throw new Error(`Unhandled phaseType: ${phaseType}`)
       }
     })
-  )) as [GenericMeetingPhase, ...GenericMeetingPhase[]]
+  )) as [T, ...T[]]
   primePhases(phases)
   await Promise.all(asyncSideEffects)
   return phases

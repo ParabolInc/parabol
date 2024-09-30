@@ -166,6 +166,11 @@ const removeTeamMember = async (
         // member.
         return
       }
+      await pg
+        .updateTable('NewMeeting')
+        .set({facilitatorUserId: newFacilitator.userId})
+        .where('id', '=', newFacilitator.meetingId)
+        .execute()
       await r
         .table('NewMeeting')
         .get(newFacilitator.meetingId)

@@ -3,6 +3,7 @@ import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPro
 import {
   selectAgendaItems,
   selectComments,
+  selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
@@ -224,6 +225,29 @@ export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
     return selectReflectPrompts()
       .where('templateId', 'in', templateIds)
       .orderBy('sortOrder')
+      .execute()
+  }
+)
+
+export const _pgactiveMeetingsByTeamId = foreignKeyLoaderMaker(
+  '_pgnewMeetings',
+  'teamId',
+  async (teamIds) => {
+    return selectNewMeetings()
+      .where('teamId', 'in', teamIds)
+      .where('endedAt', 'is', null)
+      .orderBy('createdAt desc')
+      .execute()
+  }
+)
+export const _pgcompletedMeetingsByTeamId = foreignKeyLoaderMaker(
+  '_pgnewMeetings',
+  'teamId',
+  async (teamIds) => {
+    return selectNewMeetings()
+      .where('teamId', 'in', teamIds)
+      .where('endedAt', 'is not', null)
+      .orderBy('endedAt desc')
       .execute()
   }
 )

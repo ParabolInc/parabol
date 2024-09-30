@@ -1,9 +1,8 @@
-import {ParabolR} from '../../../database/rethinkDriver'
 import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TeamPromptResponsesPhase from '../../../database/types/TeamPromptResponsesPhase'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {MeetingTypeEnum, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {DataLoaderWorker} from '../../graphql'
 import {primePhases} from './createNewMeetingPhases'
 
@@ -13,18 +12,11 @@ const safeCreateTeamPrompt = async (
   name: string,
   teamId: string,
   facilitatorId: string,
-  r: ParabolR,
   dataLoader: DataLoaderWorker,
   meetingOverrideProps = {}
 ) => {
   const meetingType: MeetingTypeEnum = 'teamPrompt'
-  const meetingCount = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingType})
-    .count()
-    .default(0)
-    .run()
+  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamMemberIds = teamMembers.map(({id}) => id)
@@ -52,7 +44,7 @@ const safeCreateTeamPrompt = async (
     facilitatorUserId: facilitatorId,
     meetingPrompt: DEFAULT_PROMPT, // :TODO: (jmtaber129): Get this from meeting settings.
     ...meetingOverrideProps
-  })
+  }) as TeamPromptMeeting
 }
 
 export default safeCreateTeamPrompt

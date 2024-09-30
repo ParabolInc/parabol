@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import upsertAzureDevOpsDimensionFieldMap, {
   AzureDevOpsFieldMapProps
 } from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
@@ -67,7 +66,10 @@ const updateAzureDevOpsDimensionField = {
     if (!meeting) {
       return {error: {message: 'Invalid meetingId'}}
     }
-    const {teamId, templateRefId} = meeting as MeetingPoker
+    if (meeting.meetingType !== 'poker') {
+      return {error: {message: 'Not a poker meeting'}}
+    }
+    const {teamId, templateRefId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on team'}}
     }

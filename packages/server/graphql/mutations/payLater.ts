@@ -32,7 +32,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const [meeting, viewer] = await Promise.all([
-      r.table('NewMeeting').get(meetingId).run(),
+      dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!meeting) {
@@ -63,7 +63,12 @@ export default {
         showConversionModal: false
       })
       .run()
-
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({showConversionModal: false})
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     await incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())
 
     analytics.conversionModalPayLaterClicked(viewer)

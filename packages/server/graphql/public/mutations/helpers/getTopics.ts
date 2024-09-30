@@ -1,6 +1,5 @@
 import yaml from 'js-yaml'
 import getRethink from '../../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../../database/types/MeetingRetrospective'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -113,7 +112,7 @@ export const getTopics = async (
   const r = await getRethink()
   const MIN_REFLECTION_COUNT = 3
   const MIN_MILLISECONDS = 60 * 1000 // 1 minute
-  const rawMeetings = await r
+  const rawAnyMeetings = await r
     .table('NewMeeting')
     .getAll(teamId, {index: 'teamId'})
     .filter((row: any) =>
@@ -126,15 +125,10 @@ export const getTopics = async (
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
     .run()
-
+  const rawMeetings = rawAnyMeetings.filter((m) => m.meetingType === 'retrospective')
   const meetings = await Promise.all(
     rawMeetings.map(async (meeting) => {
-      const {
-        id: meetingId,
-        disableAnonymity,
-        name: meetingName,
-        createdAt: meetingDate
-      } = meeting as MeetingRetrospective
+      const {id: meetingId, disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
       const rawReflectionGroups = await dataLoader
         .get('retroReflectionGroupsByMeetingId')
         .load(meetingId)
