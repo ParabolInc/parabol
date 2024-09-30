@@ -16,7 +16,7 @@ const isMeetingLocked = async (
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader
       .get('featureFlagByOwnerId')
-      .load({ownerId: viewerId, scope: 'User', featureName: 'noMeetingHistoryLimit'})
+      .load({ownerId: viewerId, featureName: 'noMeetingHistoryLimit'})
   ])
 
   if (hasNoMeetingHistoryLimit) return false

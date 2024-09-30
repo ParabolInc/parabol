@@ -4,11 +4,7 @@ import {QueryResolvers} from '../resolverTypes'
 const getAllFeatureFlags: QueryResolvers['getAllFeatureFlags'] = async () => {
   const pg = getKysely()
 
-  return await pg
-    .selectFrom('FeatureFlag')
-    .select(['featureName', 'scope', 'description'])
-    .orderBy('featureName')
-    .execute()
+  return await pg.selectFrom('FeatureFlag').selectAll().orderBy('featureName').execute()
 }
 
 export default getAllFeatureFlags

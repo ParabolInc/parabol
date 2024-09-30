@@ -681,9 +681,7 @@ const User: ReqResolvers<'User'> = {
     return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
   },
   featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
-    return await dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: userId, scope: 'User', featureName})
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, featureName})
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
