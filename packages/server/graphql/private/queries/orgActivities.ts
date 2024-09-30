@@ -2,12 +2,9 @@ import {sql} from 'kysely'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
+import {QueryResolvers} from '../resolverTypes'
 
-const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
-  _source,
-  {startDate, endDate}
-) => {
+const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDate, endDate}) => {
   const pg = getKysely()
   const now = new Date()
   const queryEndDate = endDate || now
@@ -109,4 +106,4 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
   }
 }
 
-export default runOrgActivityReport
+export default orgActivities

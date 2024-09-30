@@ -1,8 +1,8 @@
-extend type Mutation {
+extend type Query {
   """
-  Get org activity by month
+  Get org activities by month
   """
-  runOrgActivityReport(
+  orgActivities(
     """
     the start date for the query
     """
@@ -12,15 +12,15 @@ extend type Mutation {
     the end date for the query
     """
     endDate: DateTime
-  ): RunOrgActivityReportPayload!
+  ): OrgActivitiesPayload!
 }
 
 """
-Return value for runOrgActivityReport, which could be an error
+Return value for orgActivities, which could be an error
 """
-union RunOrgActivityReportPayload = ErrorPayload | RunOrgActivityReportSuccess
+union OrgActivitiesPayload = ErrorPayload | OrgActivitiesSuccess
 
-type RunOrgActivityReportSuccess {
+type OrgActivitiesSuccess {
   """
   The rows of the report
   """
