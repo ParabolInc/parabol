@@ -22,7 +22,8 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
 
   const userSignups = pg
     .selectFrom('User')
-    .innerJoin('Organization', 'User.domain', 'Organization.activeDomain')
+    .innerJoin('OrganizationUser', 'User.id', 'OrganizationUser.userId')
+    .innerJoin('Organization', 'OrganizationUser.orgId', 'Organization.id')
     .select([
       sql`date_trunc('month', "User"."createdAt")`.as('month'),
       'Organization.name as orgName',
