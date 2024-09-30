@@ -24,8 +24,8 @@ const WholeMeetingSummary = (props: Props) => {
         id
         summary
         organization {
-          standupAISummary: featureFlag(featureName: "standupAISummary")
-          noAISummary: featureFlag(featureName: "noAISummary")
+          hasStandupAISummaryFlag: featureFlag(featureName: "standupAISummary")
+          hasNoAISummaryFlag: featureFlag(featureName: "noAISummary")
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
@@ -47,14 +47,14 @@ const WholeMeetingSummary = (props: Props) => {
     const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
     const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
-    if (!hasMoreThanOneReflection || organization.noAISummary || !hasAI) return null
+    if (!hasMoreThanOneReflection || organization.hasNoAISummaryFlag || !hasAI) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting
     if (
-      !organization.standupAISummary ||
-      organization.noAISummary ||
+      !organization.hasStandupAISummaryFlag ||
+      organization.hasNoAISummaryFlag ||
       !hasAI ||
       !responses ||
       responses.length === 0

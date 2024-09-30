@@ -51,12 +51,12 @@ const RetroDiscussionThreadHeader = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment RetroDiscussionThreadHeader_organization on Organization {
-        zoomTranscription: featureFlag(featureName: "zoomTranscription")
+        hasZoomFlag: featureFlag(featureName: "zoomTranscription")
       }
     `,
     organizationRef ?? null
   )
-  const hasZoomFlag = organization?.zoomTranscription ?? false
+  const hasZoomFlag = organization?.hasZoomFlag ?? false
 
   const handleHeaderClick = (header: 'discussion' | 'transcription') => {
     if (showTranscription && header === 'transcription') return

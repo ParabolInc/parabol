@@ -118,7 +118,7 @@ const query = graphql`
         }
       }
       organizations {
-        aiTemplate: featureFlag(featureName: "aiTemplate")
+        hasAITemplateFlag: featureFlag(featureName: "aiTemplate")
       }
     }
   }
@@ -227,7 +227,7 @@ export const ActivityLibrary = (props: Props) => {
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
   const {availableTemplates, organizations} = viewer
-  const hasAITemplateFeatureFlag = organizations.some((org) => org.aiTemplate)
+  const hasAITemplateFeatureFlag = organizations.some((org) => org.hasAITemplateFlag)
 
   const [isSearching, setIsSearching] = React.useState(true)
   const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<

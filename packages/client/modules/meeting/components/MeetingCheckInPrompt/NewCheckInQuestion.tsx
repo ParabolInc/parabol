@@ -87,7 +87,7 @@ const NewCheckInQuestion = (props: Props) => {
         }
         team {
           organization {
-            noAISummary: featureFlag(featureName: "noAISummary")
+            hasNoAISummaryFlag: featureFlag(featureName: "noAISummary")
           }
         }
       }
@@ -101,7 +101,7 @@ const NewCheckInQuestion = (props: Props) => {
     localPhase,
     facilitatorUserId,
     team: {
-      organization: {noAISummary}
+      organization: {hasNoAISummaryFlag}
     }
   } = meeting
   const {checkInQuestion} = localPhase
@@ -226,7 +226,7 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const showAiIcebreaker = !noAISummary && isFacilitating && window.__ACTION__.hasOpenAI
+  const showAiIcebreaker = !hasNoAISummaryFlag && isFacilitating && window.__ACTION__.hasOpenAI
 
   return (
     <>
