@@ -79,7 +79,7 @@ const Insights = (props: Props) => {
 
   return (
     <div className='mb-8 space-y-6'>
-      <p className='text-sm text-slate-700'>
+      <p className='mb-6 mt-[20px] text-sm text-slate-900'>
         Only you (as <span className='font-bold'>Team Lead</span>) can see Team Insights. Insights
         are auto-generated.{' '}
         <a
@@ -90,11 +90,10 @@ const Insights = (props: Props) => {
         >
           Give us feedback
         </a>
-        .
       </p>
-      <div className='mx-auto aspect-[1/1.414] max-w-3xl overflow-y-auto rounded-lg bg-white py-6 px-12 shadow-md'>
-        <h2 className='mb-4 flex items-center text-2xl font-semibold'>
-          <AutoAwesomeIcon className='mr-2 text-grape-500' />
+      <div className='mx-auto aspect-[1/1.414] w-[640px] max-w-3xl overflow-y-auto rounded-lg bg-white px-[56px] pt-8 shadow-md'>
+        <h2 className='mb-4 mt-0 flex items-center pt-0 text-2xl font-semibold leading-9'>
+          <AutoAwesomeIcon className='mr-2 h-9 w-9 text-grape-500' />
           <span>Insights - {dateRange}</span>
         </h2>
         <p className='mb-6 text-sm text-slate-600'>Summarized {insight?.meetingsCount} meetings</p>
