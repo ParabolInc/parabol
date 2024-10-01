@@ -82,6 +82,7 @@ const clonePinnedAgendaItems = async (
   pinnedAgendaItems: AgendaItem[],
   dataLoader: DataLoaderInstance
 ) => {
+  if (!pinnedAgendaItems.length) return
   let curSortOrder = ''
   const clonedPins = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
