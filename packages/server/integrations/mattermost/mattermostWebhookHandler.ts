@@ -12,7 +12,7 @@ const eventLookup = {
   meetingTemplates: {
     getVars: (email: string) => ({email}),
     query: `
-      query MeetingTemplates($email: String!) {
+      query MeetingTemplates {
         viewer {
           availableTemplates(first: 2000) {
             edges {
@@ -23,12 +23,29 @@ const eventLookup = {
                 illustrationUrl
                 orgId
                 teamId
+                scope
               }
             }
           }
           teams {
             id
             name
+            orgId
+            retroSettings: meetingSettings(meetingType: retrospective) {
+              id
+              phaseTypes
+              ...on RetrospectiveMeetingSettings {
+                disableAnonymity
+              }
+            }
+            pokerSettings: meetingSettings(meetingType: poker) {
+              id
+              phaseTypes
+            }
+            actionSettings: meetingSettings(meetingType: action) {
+              id
+              phaseTypes
+            }
           }
         }
       }
@@ -56,7 +73,30 @@ const eventLookup = {
       }
     `
   },
-
+  setMeetingSettings: {
+    getVars: (settingsId: string, checkinEnabled: boolean, teamHealthEnabled: boolean, disableAnonymity: boolean) => ({settingsId, checkinEnabled, teamHealthEnabled, disableAnonymity}),
+    query: `
+      mutation SetMeetingSettings(
+        $settingsId: ID!
+        $checkinEnabled: Boolean
+        $teamHealthEnabled: Boolean
+        $disableAnonymity: Boolean
+      ) {
+        setMeetingSettings(
+          settingsId: $settingsId
+          checkinEnabled: $checkinEnabled
+          teamHealthEnabled: $teamHealthEnabled
+          disableAnonymity: $disableAnonymity
+        ) {
+          phaseTypes
+          ... on RetrospectiveMeetingSettings {
+            disableAnonymity
+            videoMeetingURL
+          }
+        }
+      }
+   `
+  }
 } as const
 
 const publishWebhookGQL = async <NarrowResponse>(
@@ -90,7 +130,6 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     'signature': req.getHeader('signature'),
     'signature-input': req.getHeader('signature-input'),
   }
-  console.log('GEORG headers', headers)
 
   const keys = new Map();
   keys.set('', {
@@ -98,7 +137,6 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
       algs: ['hmac-sha256'],
       verify: createVerifier(process.env.SERVER_SECRET!, 'hmac-sha256'),
   });
-  console.log('GEORG keys', keys)
   // minimal verification
   const verified = await httpbis.verifyMessage({
       // logic for finding a key based on the signature parameters
@@ -114,7 +152,6 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
       url: 'http://localhost:3001' + req.getUrl(),
       headers
   });
-  console.log('GEORG verified', verified);
   if (!verified) {
     res.writeStatus('401').end()
     return
