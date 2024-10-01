@@ -1,10 +1,32 @@
 import isValidDate from 'parabol-client/utils/isValidDate'
 import stringSimilarity from 'string-similarity'
 
+function sortObjectKeys(obj: any): any {
+  if (Array.isArray(obj)) {
+    // If it's an array, recurse into each element
+    return obj.map(sortObjectKeys)
+  } else if (obj !== null && typeof obj === 'object') {
+    if (obj instanceof Date) return obj
+    // If it's an object, sort the keys and recurse on each value
+    const sortedObj: {[key: string]: any} = {}
+    Object.keys(obj)
+      .sort()
+      .forEach((key) => {
+        sortedObj[key] = sortObjectKeys(obj[key])
+      })
+    return sortedObj
+  } else {
+    // If it's a primitive value, just return it
+    return obj
+  }
+}
+
 export const defaultEqFn = (a: unknown, b: unknown) => {
   if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime()
-  if (Array.isArray(a) && Array.isArray(b)) return JSON.stringify(a) === JSON.stringify(b)
-  if (typeof a === 'object' && typeof b === 'object') return JSON.stringify(a) === JSON.stringify(b)
+  if (Array.isArray(a) && Array.isArray(b))
+    return JSON.stringify(sortObjectKeys(a)) === JSON.stringify(sortObjectKeys(b))
+  if (typeof a === 'object' && typeof b === 'object')
+    return JSON.stringify(sortObjectKeys(a)) === JSON.stringify(sortObjectKeys(b))
   return a === b
 }
 export const compareDateAlmostEqual = (rVal: unknown, pgVal: unknown) => {
@@ -47,7 +69,7 @@ export const compareRValUndefinedAsEmptyArray = (rVal: unknown, pgVal: unknown) 
 }
 
 export const compareRValStringAsNumber = (rVal: unknown, pgVal: unknown) => {
-  const normalizedRVal = Number(rVal)
+  const normalizedRVal = rVal ? Number(rVal) : null
   return defaultEqFn(normalizedRVal, pgVal)
 }
 
