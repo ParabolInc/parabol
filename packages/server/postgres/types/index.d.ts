@@ -1,6 +1,7 @@
 import {SelectQueryBuilder, Selectable} from 'kysely'
 import {
   Discussion as DiscussionPG,
+  Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
   TeamMember as TeamMemberPG
 } from '../pg.d'
@@ -58,3 +59,4 @@ export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectS
 
 export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
 export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
+export type Insight = Selectable<InsightPG>

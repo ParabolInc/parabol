@@ -26,7 +26,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   if ('error' in response) {
     return response
   }
-  const {wins, challenges} = response
+  const {wins, challenges, meetingIds} = response
   const pg = getKysely()
 
   await pg
@@ -35,6 +35,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
       teamId,
       wins,
       challenges,
+      meetingsCount: meetingIds.length,
       startDateTime: startDate,
       endDateTime: endDate
     })

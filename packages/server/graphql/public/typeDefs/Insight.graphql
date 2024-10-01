@@ -1,6 +1,6 @@
 type Insight {
   id: ID!
-  teamId: String!
+  teamId: ID!
 
   """
   Start date and time of the insight period
@@ -21,6 +21,11 @@ type Insight {
   List of AI generated challenges
   """
   challenges: [String!]!
+
+  """
+  The count of the meetings used to generate the insight
+  """
+  meetingsCount: Int!
 
   """
   Timestamp when the insight was created
