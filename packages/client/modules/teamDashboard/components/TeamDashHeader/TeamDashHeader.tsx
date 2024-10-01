@@ -99,6 +99,7 @@ const TeamDashHeader = (props: Props) => {
           id
           name
         }
+        isViewerTeamLead
         teamMembers(sortBy: "preferredName") {
           ...InviteTeamMemberAvatar_teamMembers
           ...DashboardAvatar_teamMember
@@ -109,7 +110,7 @@ const TeamDashHeader = (props: Props) => {
     `,
     teamRef
   )
-  const {organization, id: teamId, name: teamName, teamMembers} = team
+  const {organization, id: teamId, name: teamName, teamMembers, isViewerTeamLead} = team
   const {name: orgName, id: orgId} = organization
   const {history} = useRouter()
 
@@ -117,7 +118,7 @@ const TeamDashHeader = (props: Props) => {
     {label: 'Activity', path: 'activity'},
     {label: 'Tasks', path: 'tasks'},
     {label: 'Integrations', path: 'integrations'},
-    {label: 'Insights', path: 'insights'}
+    ...(isViewerTeamLead ? [{label: 'Insights', path: 'insights'}] : [])
   ]
 
   const activePath = location.pathname.split('/').pop()

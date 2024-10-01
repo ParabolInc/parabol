@@ -188,6 +188,11 @@ type Team {
   viewerTeamMember: TeamMember
 
   """
+  If the viewer is the team lead
+  """
+  isViewerTeamLead: Boolean!
+
+  """
   The team member that is the team lead
   """
   teamLead: TeamMember!

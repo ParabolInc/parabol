@@ -52,6 +52,12 @@ const Team: TeamResolvers = {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
   },
+  isViewerTeamLead: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    return teamMember?.isLead || false
+  },
   insight: async ({id: teamId}, _args, {dataLoader}) => {
     const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
     return insight || null
