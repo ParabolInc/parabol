@@ -32,7 +32,9 @@ const query = graphql`
 const Insights = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<TeamInsightsQuery>(query, queryRef)
-  const insight = data.viewer.team?.insight
+  const {viewer} = data
+  const {team} = viewer
+  const {insight, name} = team ?? {}
 
   const renderMarkdown = (text: string) => {
     const renderedText = marked(text, {
@@ -99,13 +101,13 @@ const Insights = (props: Props) => {
 
         <h3 className='mb-0 text-lg font-semibold text-slate-700'>Wins</h3>
         <p className='mb-2 mt-0 text-sm italic text-slate-600'>
-          What wins has this team seen during this timeframe?
+          What wins has "{name}" seen during this timeframe?
         </p>
-        <ul className='mb-6 list-disc pl-6'>
+        <ul className='mb-6 list-disc space-y-0 pl-6'>
           {insight?.wins.map((win, index) => (
             <li key={index} className='text-sm text-slate-700'>
               <span
-                className='summary-link-style'
+                className='link-style'
                 dangerouslySetInnerHTML={{__html: renderMarkdown(win)}}
               />
             </li>
@@ -114,13 +116,13 @@ const Insights = (props: Props) => {
 
         <h3 className='mb-0 text-lg font-semibold text-slate-700'>Challenges</h3>
         <p className='mb-2 mt-0 text-sm italic text-slate-600'>
-          What challenges has this team faced during this timeframe?
+          What challenges has "{name}" faced during this timeframe?
         </p>
-        <ul className='list-disc pl-6'>
+        <ul className='list-disc space-y-0 pl-6'>
           {insight?.challenges.map((challenge, index) => (
             <li key={index} className='text-sm text-slate-700'>
               <span
-                className='summary-link-style'
+                className='link-style'
                 dangerouslySetInnerHTML={{__html: renderMarkdown(challenge)}}
               />
             </li>

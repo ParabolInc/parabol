@@ -53,7 +53,8 @@ const Team: TeamResolvers = {
     return teamMembers.find((teamMember) => teamMember.isLead)!
   },
   insight: async ({id: teamId}, _args, {dataLoader}) => {
-    return await dataLoader.get('latestInsightByTeamId').load(teamId)
+    const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
+    return insight || null
   }
 }
 
