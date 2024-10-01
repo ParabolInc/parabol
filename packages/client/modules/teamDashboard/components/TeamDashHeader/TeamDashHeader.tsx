@@ -113,8 +113,6 @@ const TeamDashHeader = (props: Props) => {
   const {name: orgName, id: orgId} = organization
   const {history} = useRouter()
 
-  const activeTab = location.pathname.split('/').pop()
-
   const tabs = [
     {label: 'Activity', path: 'activity'},
     {label: 'Tasks', path: 'tasks'},
@@ -122,6 +120,8 @@ const TeamDashHeader = (props: Props) => {
     {label: 'Insights', path: 'insights'}
   ]
 
+  const activePath = location.pathname.split('/').pop()
+  const activeTab = tabs.find((tab) => tab.path === activePath) ? activePath : 'activity'
   const activeIdx = tabs.findIndex((tab) => tab.path === activeTab)
 
   return (
