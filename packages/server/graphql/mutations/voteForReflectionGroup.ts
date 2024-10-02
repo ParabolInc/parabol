@@ -81,6 +81,7 @@ export default {
       )
       if (votingError) return votingError
     }
+    dataLoader.clearAll('meetingMembers')
 
     const data = {
       meetingId,

@@ -36,7 +36,7 @@ const TeamMember: TeamMemberResolvers = {
 
   meetingMember: async ({userId}, {meetingId}, {dataLoader}) => {
     const meetingMemberId = MeetingMemberId.join(meetingId, userId)
-    return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
+    return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : null
   },
 
   prevUsedRepoIntegrations: async ({teamId, userId}, {first}, context) => {

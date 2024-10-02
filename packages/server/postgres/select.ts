@@ -3,7 +3,7 @@ import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {ReactjiDB} from './types'
-import {AnyMeeting, AnyMeetingTeamMember} from './types/Meeting'
+import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -279,4 +279,4 @@ export const selectNewMeetings = () =>
     .$narrowType<AnyMeeting>()
 
 export const selectMeetingMembers = () =>
-  getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingTeamMember>()
+  getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()

@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -80,7 +79,8 @@ const pokerRevealVotes = {
     // add a pass card for everyone who was present but did not vote
     const {scores} = stage
     meetingMembers.forEach((meetingMember) => {
-      const {userId, isSpectating} = meetingMember as PokerMeetingMember
+      if (meetingMember.meetingType !== 'poker') return
+      const {userId, isSpectating} = meetingMember
       if (isSpectating) return
       const userScore = scores.find((score) => score.userId === userId)
       if (!userScore) {

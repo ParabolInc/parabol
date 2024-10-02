@@ -88,13 +88,24 @@ export interface MeetingMember {
   userId: string
 }
 
+export interface ActionMeetingMember extends MeetingMember {
+  meetingType: 'action'
+}
+
+export interface TeamPromptMeetingMember extends MeetingMember {
+  meetingType: 'teamPrompt'
+}
 export interface RetroMeetingMember extends MeetingMember {
   meetingType: 'retrospective'
   votesRemaining: number
 }
 
-export interface PokerMeetingMember extends MeetingMember {
+export type PokerMeetingMember = MeetingMember & {
   meetingType: 'poker'
   isSpectating: boolean
 }
-export type AnyMeetingTeamMember = PokerMeetingMember | RetroMeetingMember | MeetingMember
+export type AnyMeetingMember =
+  | PokerMeetingMember
+  | RetroMeetingMember
+  | ActionMeetingMember
+  | TeamPromptMeetingMember
