@@ -112,7 +112,7 @@ export const getTopics = async (
 ) => {
   const pg = getKysely()
   const MIN_REFLECTION_COUNT = 3
-  const MIN_MILLISECONDS = 60 * 1000 // 1 minute
+  const MIN_SECONDS = 60
   const rawMeetingsWithAnyMembers = await pg
     .selectFrom('NewMeeting')
     .select(['id', 'name', 'createdAt', 'disableAnonymity'])
@@ -121,7 +121,7 @@ export const getTopics = async (
     .where('createdAt', '>=', startDate)
     .where('createdAt', '<=', endDate)
     .where('reflectionCount', '>=', MIN_REFLECTION_COUNT)
-    .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_MILLISECONDS}`)
+    .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_SECONDS}`)
     .$narrowType<RetrospectiveMeeting>()
     .execute()
   const allMeetingMembers = await dataLoader

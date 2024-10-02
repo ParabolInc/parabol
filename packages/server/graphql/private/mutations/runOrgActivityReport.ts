@@ -73,20 +73,20 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
         participantCount: group('reduction')
       }))
       .run()) as {meetingId: string; participantCount: number}[]
-
     // Combine PostgreSQL and RethinkDB results
     const combinedResults = signupCounts.map((pgRow) => {
       const epochMonthStart = pgRow.monthStart.getTime()
       const meetingCount = rawMeetingCounts.find(
         (rmc) => rmc.monthStart.getTime() === epochMonthStart
       )
-      const participantCount = participantCounts.find((pc) =>
-        meetingCount?.meetingIds.includes(pc.meetingId)
-      )
+      const participantCount = participantCounts
+        .filter((pc) => meetingCount?.meetingIds.includes(pc.meetingId))
+        .map((pc) => pc.participantCount)
+        .reduce((a, b) => a + b, 0)
       return {
         monthStart: pgRow.monthStart,
         signupCount: pgRow.signupCount ? Number(pgRow.signupCount) : 0,
-        participantCount: participantCount?.participantCount ?? 0,
+        participantCount,
         meetingCount: meetingCount?.meetingIds.length ?? 0
       }
     })

@@ -35,6 +35,7 @@ const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
     }))
     .filter((row) => row.meetingIds.length > Threshold.MIN_STICKY_TEAM_MEETINGS)
     .map((row) => row.teamId)
+  if (teamsIdsWithMinMeetingsAndMembers.length === 0) return 0
   const recentMeetings = await pg
     .selectFrom('NewMeeting')
     .distinctOn('teamId')
