@@ -1,12 +1,7 @@
+import {Selectable} from 'kysely'
 import {NonNullableProps} from '../../../client/types/generics'
-import ActionMeetingMember from '../../database/types/ActionMeetingMember'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
-import RetroMeetingMember from '../../database/types/RetroMeetingMember'
-import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
-import {NewMeeting as NewMeetingDB} from '../pg'
-import {NewMeeting} from './index.d'
-
-import {Insertable} from 'kysely'
+import {NewMeeting as NewMeetingPG} from '../pg.d'
+import {AutogroupReflectionGroupType, UsedReactjis} from './index.d'
 import {
   CheckInMeetingPhase,
   NewMeetingPhase,
@@ -15,6 +10,7 @@ import {
   TeamPromptPhase
 } from './NewMeetingPhase'
 
+type NewMeeting = Selectable<NewMeetingPG>
 export type MeetingTypeEnum = NewMeeting['meetingType']
 
 type BaseNewMeeting = Pick<
@@ -38,19 +34,9 @@ type BaseNewMeeting = Pick<
   | 'scheduledEndTime'
   | 'summary'
   | 'sentimentScore'
-  | 'usedReactjis'
   | 'slackTs'
   | 'engagement'
-> & {phases: NewMeetingPhase[]}
-
-type InsertableRetrospectiveMeeting = Insertable<NewMeetingDB> & {
-  meetingType: 'retrospective'
-  phases: RetroMeetingPhase[]
-  totalVotes: number
-  maxVotesPerGroup: number
-  disableAnonymity: boolean
-  templateId: string
-}
+> & {phases: NewMeetingPhase[]; usedReactjis: UsedReactjis | null}
 
 export type RetrospectiveMeeting = BaseNewMeeting &
   NonNullableProps<
@@ -62,14 +48,14 @@ export type RetrospectiveMeeting = BaseNewMeeting &
     | 'taskCount'
     | 'topicCount'
     | 'reflectionCount'
-    | 'transcription'
     | 'recallBotId'
     | 'videoMeetingURL'
-    | 'autogroupReflectionGroups'
-    | 'resetReflectionGroups'
   > & {
     meetingType: 'retrospective'
     phases: RetroMeetingPhase[]
+    autogroupReflectionGroups: AutogroupReflectionGroupType[] | null
+    resetReflectionGroups: AutogroupReflectionGroupType[] | null
+    transcription: TranscriptBlock[] | null
   }
 
 export type PokerMeeting = BaseNewMeeting &
@@ -93,8 +79,22 @@ export type TeamPromptMeeting = BaseNewMeeting &
 
 export type AnyMeeting = RetrospectiveMeeting | PokerMeeting | CheckInMeeting | TeamPromptMeeting
 
-export type AnyMeetingTeamMember =
-  | PokerMeetingMember
-  | RetroMeetingMember
-  | ActionMeetingMember
-  | TeamPromptMeetingMember
+export interface MeetingMember {
+  id: string
+  meetingType: MeetingTypeEnum
+  meetingId: string
+  teamId: string
+  updatedAt: Date
+  userId: string
+}
+
+export interface RetroMeetingMember extends MeetingMember {
+  meetingType: 'retrospective'
+  votesRemaining: number
+}
+
+export interface PokerMeetingMember extends MeetingMember {
+  meetingType: 'poker'
+  isSpectating: boolean
+}
+export type AnyMeetingTeamMember = PokerMeetingMember | RetroMeetingMember | MeetingMember

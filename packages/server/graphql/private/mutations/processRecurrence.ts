@@ -9,7 +9,7 @@ import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import getKysely from '../../../postgres/getKysely'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {selectNewMeetings} from '../../../postgres/select'
-import {AnyMeeting, RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
@@ -124,7 +124,6 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
   const meetingsToEnd = await selectNewMeetings()
     .where('scheduledEndTime', '<', sql<Date>`CURRENT_TIMESTAMP`)
     .where('endedAt', 'is', null)
-    .$narrowType<AnyMeeting>()
     .execute()
 
   const res = await tracer.trace('processRecurrence.endMeetings', async () =>

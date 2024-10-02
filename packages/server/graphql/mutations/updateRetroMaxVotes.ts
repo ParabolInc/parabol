@@ -37,6 +37,7 @@ const updateRetroMaxVotes = {
     }: {totalVotes: number; maxVotesPerGroup: number; meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
+    const pg = getKysely()
     const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -119,6 +120,19 @@ const updateRetroMaxVotes = {
         )
       })
       .run()
+
+    await pg
+      .with('HasNegativeVotes', (qb) =>
+        qb
+          .selectFrom('MeetingMember')
+          .select(({fn}) => fn.count('id').as('count'))
+          .where('meetingId', '=', meetingId)
+          .where(({eb}) => eb(eb('votesRemaining', '+', delta), '<', 0))
+      )
+      .updateTable('MeetingMember')
+      .where('meetingId', '=', meetingId)
+      .where((eb) => eb(eb.selectFrom('HasNegativeVotes').select('count'), '=', 0))
+      .execute()
 
     if (hasError) {
       return {error: {message: 'Your team has already spent their votes'}}

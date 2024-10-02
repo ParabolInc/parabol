@@ -1,10 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -15,6 +13,7 @@ import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import {createMeetingMember} from '../../mutations/joinMeeting'
 import {MutationResolvers} from '../resolverTypes'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
@@ -72,22 +71,22 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   dataLoader.clearAll('newMeetings')
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
-
-  const updates = {
-    lastMeetingType: meetingType
-  }
+  const meetingMember = createMeetingMember(meeting, {
+    userId: viewerId,
+    teamId,
+    isSpectatingPoker: false
+  })
   await Promise.all([
-    r
-      .table('MeetingMember')
-      .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
-      .run(),
-    updateTeamByTeamId(updates, teamId),
+    pg
+      .with('TeamUpdates', (qb) =>
+        qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)
+      )
+      .insertInto('MeetingMember')
+      .values(meetingMember)
+      .execute(),
+    r.table('MeetingMember').insert(meetingMember).run(),
     agendaItemIds.length &&
-      getKysely()
-        .updateTable('AgendaItem')
-        .set({meetingId})
-        .where('id', 'in', agendaItemIds)
-        .execute()
+      pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)

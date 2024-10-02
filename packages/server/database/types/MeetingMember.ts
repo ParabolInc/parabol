@@ -17,6 +17,7 @@ export default abstract class MeetingMember {
   teamId: string
   updatedAt = new Date()
   userId: string
+
   constructor(input: MeetingMemberInput) {
     const {teamId, meetingType, id, updatedAt, meetingId, userId} = input
     this.id = id ?? toTeamMemberId(meetingId, userId)

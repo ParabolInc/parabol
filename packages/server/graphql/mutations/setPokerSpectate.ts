@@ -62,6 +62,12 @@ const setPokerSpectate = {
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     await pg
+      .with('MeetingMemberUpdate', (qb) =>
+        qb
+          .updateTable('MeetingMember')
+          .set({isSpectating: isSpectating})
+          .where('id', '=', meetingMemberId)
+      )
       .updateTable('TeamMember')
       .set({isSpectatingPoker: isSpectating})
       .where('id', '=', teamMemberId)

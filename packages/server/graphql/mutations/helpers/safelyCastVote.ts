@@ -39,28 +39,53 @@ const safelyCastVote = async (
     return standardError(new Error('No votes remaining'), {userId: viewerId})
   }
 
-  const voteAddedResult = await pg
-    .updateTable('RetroReflectionGroup')
-    .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
-    .where('id', '=', reflectionGroupId)
-    .where(
-      sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
-      '<',
-      maxVotesPerGroup
-    )
-    .executeTakeFirst()
+  // in a transaction add to the reflection group and the meeting member
+  try {
+    await pg.transaction().execute(async (trx) => {
+      const res = await trx
+        .with('MeetingMemberUpdate', (qb) =>
+          qb
+            .updateTable('MeetingMember')
+            .set((eb) => ({votesRemaining: eb('votesRemaining', '-', 1)}))
+            .where('id', '=', meetingMemberId)
+            .returning('id')
+        )
+        .updateTable('RetroReflectionGroup')
+        .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
+        .where('id', '=', reflectionGroupId)
+        .where(
+          sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
+          '<',
+          maxVotesPerGroup
+        )
+        .returning((eb) => [
+          'id',
+          eb.selectFrom('MeetingMemberUpdate').select('id').as('meetingMemberUpdate')
+        ])
+        .executeTakeFirst()
 
-  const isVoteAddedToGroup = voteAddedResult.numUpdatedRows === BigInt(1)
-
-  if (!isVoteAddedToGroup) {
-    await r
-      .table('MeetingMember')
-      .get(meetingMemberId)
-      .update((member: RValue) => ({
-        votesRemaining: member('votesRemaining').add(1)
-      }))
-      .run()
-    return standardError(new Error('Max votes per group exceeded'), {userId: viewerId})
+      if (!res) {
+        await r
+          .table('MeetingMember')
+          .get(meetingMemberId)
+          .update((member: RValue) => ({
+            votesRemaining: member('votesRemaining').add(1)
+          }))
+          .run()
+        throw new Error('Max votes per group exceeded')
+      }
+      if (!res.meetingMemberUpdate) {
+        // just for phase 2, make sure the row exists in the DB
+        const hasMember = await trx
+          .selectFrom('MeetingMember')
+          .select('id')
+          .where('id', '=', meetingMemberId)
+          .executeTakeFirst()
+        if (hasMember) throw new Error('No votes remaining')
+      }
+    })
+  } catch (e) {
+    return {error: {message: (e as Error).message}}
   }
   return undefined
 }

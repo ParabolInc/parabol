@@ -41,6 +41,11 @@ const safelyWithdrawVote = async (
       votesRemaining: member('votesRemaining').add(1)
     }))
     .run()
+  await pg
+    .updateTable('MeetingMember')
+    .set((eb) => ({votesRemaining: eb('votesRemaining', '+', 1)}))
+    .where('id', '=', meetingMemberId)
+    .execute()
   return undefined
 }
 

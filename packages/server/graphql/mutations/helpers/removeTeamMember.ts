@@ -132,16 +132,22 @@ const removeTeamMember = async (
   // TODO should probably just inactivate the meeting member
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const meetingIds = activeMeetings.map(({id}) => id)
-  await r
-    .table('MeetingMember')
-    .getAll(r.args(meetingIds), {index: 'meetingId'})
-    .filter({userId})
-    .delete()
-    .run()
 
   // Reassign facilitator for meetings this user is facilitating.
   if (meetingIds.length > 0) {
+    await r
+      .table('MeetingMember')
+      .getAll(r.args(meetingIds), {index: 'meetingId'})
+      .filter({userId})
+      .delete()
+      .run()
     const facilitatingMeetings = await pg
+      .with('DeleteMeetingMembers', (qb) =>
+        qb
+          .deleteFrom('MeetingMember')
+          .where('userId', '=', userId)
+          .where('meetingId', 'in', meetingIds)
+      )
       .selectFrom('NewMeeting')
       .select('id')
       .where('id', 'in', meetingIds)
