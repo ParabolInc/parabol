@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.49.0](https://github.com/ParabolInc/parabol/compare/v7.48.3...v7.49.0) (2024-10-03)
+
+
+### Added
+
+* **misc:** add timer control to more meeting phases ([#10279](https://github.com/ParabolInc/parabol/issues/10279)) ([1c87753](https://github.com/ParabolInc/parabol/commit/1c87753102fcb2268ae3863d33cf99b72e663990))
+
+
+### Fixed
+
+* deadlock on teamprompt ([#10290](https://github.com/ParabolInc/parabol/issues/10290)) ([ae72c0d](https://github.com/ParabolInc/parabol/commit/ae72c0d88e7329e05597eae40ba730f927a21537))
+
 ## [7.48.3](https://github.com/ParabolInc/parabol/compare/v7.48.2...v7.48.3) (2024-10-01)
 
 
