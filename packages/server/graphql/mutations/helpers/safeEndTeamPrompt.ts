@@ -76,6 +76,7 @@ const safeEndTeamPrompt = async ({
       usedReactjis: JSON.stringify(insights.usedReactjis),
       engagement: insights.engagement
     })
+    .where('id', '=', meetingId)
     .execute()
   const completedTeamPrompt = await r
     .table('NewMeeting')

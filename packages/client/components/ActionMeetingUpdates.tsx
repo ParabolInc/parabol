@@ -13,6 +13,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
+import StageTimerDisplay from './StageTimerDisplay'
 import PhaseCompleteTag from './Tag/PhaseCompleteTag'
 import TaskColumns from './TaskColumns/TaskColumns'
 
@@ -41,6 +42,8 @@ const ActionMeetingUpdates = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment ActionMeetingUpdates_meeting on ActionMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
         ...ActionMeetingUpdatesPrompt_meeting
         id
         endedAt
@@ -106,6 +109,7 @@ const ActionMeetingUpdates = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <PhaseCompleteTag isComplete={isPhaseComplete} />
+          <StageTimerDisplay meeting={meeting} />
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>
               <TaskColumns
