@@ -63,6 +63,7 @@ const safeEndTeamPrompt = async ({
       usedReactjis: JSON.stringify(insights.usedReactjis),
       engagement: insights.engagement
     })
+    .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
 
