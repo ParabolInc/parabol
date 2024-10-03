@@ -50,9 +50,6 @@ const updateRetroMaxVotes = {
       return {error: {message: 'Meeting not found'}}
     }
 
-    if (meeting.meetingType !== 'retrospective') {
-      return {error: {message: `Meeting not retrospective`}}
-    }
     const {
       endedAt,
       meetingType,
@@ -121,19 +118,6 @@ const updateRetroMaxVotes = {
       })
       .run()
 
-    await pg
-      .with('HasNegativeVotes', (qb) =>
-        qb
-          .selectFrom('MeetingMember')
-          .select(({fn}) => fn.count('id').as('count'))
-          .where('meetingId', '=', meetingId)
-          .where(({eb}) => eb(eb('votesRemaining', '+', delta), '<', 0))
-      )
-      .updateTable('MeetingMember')
-      .where('meetingId', '=', meetingId)
-      .where((eb) => eb(eb.selectFrom('HasNegativeVotes').select('count'), '=', 0))
-      .execute()
-
     if (hasError) {
       return {error: {message: 'Your team has already spent their votes'}}
     }
@@ -152,18 +136,79 @@ const updateRetroMaxVotes = {
     }
 
     // RESOLUTION
-    await getKysely()
-      .with('MeetingUpdates', (qb) =>
-        qb.updateTable('NewMeeting').set({totalVotes, maxVotesPerGroup}).where('id', '=', meetingId)
-      )
-      .updateTable('MeetingSettings')
-      .set({
-        totalVotes,
-        maxVotesPerGroup
+    try {
+      await pg.transaction().execute(async (trx) => {
+        const canChangeMaxVotesPerGroup =
+          maxVotesPerGroup >= oldMaxVotesPerGroup
+            ? true
+            : await trx
+                .with('GroupVotes', (qb) =>
+                  qb
+                    .selectFrom('RetroReflectionGroup')
+                    .where('meetingId', '=', meetingId)
+                    .where('isActive', '=', true)
+                    .select(({fn}) => ['id', fn('unnest', ['voterIds']).as('userIds')])
+                )
+                .with('GroupVoteCount', (qb) =>
+                  qb
+                    .selectFrom('GroupVotes')
+                    .select(({fn}) => ['id', fn.count('userIds').as('mode')])
+                    .groupBy(['id', 'userIds'])
+                )
+                .selectFrom('GroupVoteCount')
+                .select(({eb, fn}) => eb(fn.max('mode'), '<', maxVotesPerGroup).as('isValid'))
+                .executeTakeFirst()
+        if (!canChangeMaxVotesPerGroup) {
+          throw new Error('A topic already has too many votes')
+        }
+        const res = await trx
+          .with('MeetingMemberUpdates', (qb) =>
+            qb
+              .updateTable('MeetingMember')
+              .set((eb) => ({votesRemaining: eb('votesRemaining', '+', delta)}))
+              .where('meetingId', '=', meetingId)
+              // TURN THIS ON IN PHASE 2
+              // .$if(delta < 0, (qb) =>
+              //   qb.where(({selectFrom, eb}) =>
+              //     eb(
+              //       selectFrom('MeetingMember')
+              //         .select((eb) => eb.fn('min', ['votesRemaining']).as('min'))
+              //         .where('meetingId', '=', meetingId),
+              //       '>',
+              //       -delta
+              //     )
+              //   )
+              // )
+              .returning('id')
+          )
+          .with(
+            'NewMeetingUpdates',
+            (qb) =>
+              qb
+                .updateTable('NewMeeting')
+                .set({totalVotes, maxVotesPerGroup})
+                .where('id', '=', meetingId)
+            // TURN THIS ON IN PHASE 2
+            // .where(({exists, selectFrom}) => exists(selectFrom('MeetingMemberUpdates').select('id')))
+          )
+          .updateTable('MeetingSettings')
+          .set({
+            totalVotes,
+            maxVotesPerGroup
+          })
+          .where('teamId', '=', teamId)
+          .where('meetingType', '=', 'retrospective')
+          // TURN THIS ON IN PHASE 2
+          // .where(({exists, selectFrom}) => exists(selectFrom('MeetingMemberUpdates').select('id')))
+          .executeTakeFirstOrThrow()
+
+        if (res.numUpdatedRows === BigInt(0)) {
+          throw new Error('Your team has already spent their votes')
+        }
       })
-      .where('teamId', '=', teamId)
-      .where('meetingType', '=', 'retrospective')
-      .execute()
+    } catch (e) {
+      return {error: {message: (e as Error).message}}
+    }
     dataLoader.get('newMeetings').clear(meetingId)
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesSuccess', data, subOptions)

@@ -1,4 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
@@ -7,6 +8,7 @@ import CheckInStage from '../../database/types/CheckInStage'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import getKysely from '../../postgres/getKysely'
+import {MeetingMember} from '../../postgres/pg'
 import {TeamMember} from '../../postgres/types'
 import {AnyMeeting} from '../../postgres/types/Meeting'
 import {NewMeetingPhase, NewMeetingStages} from '../../postgres/types/NewMeetingPhase'
@@ -20,7 +22,7 @@ import JoinMeetingPayload from '../types/JoinMeetingPayload'
 export const createMeetingMember = (
   meeting: AnyMeeting,
   teamMember: Pick<TeamMember, 'userId' | 'teamId' | 'isSpectatingPoker'>
-) => {
+): Insertable<MeetingMember> => {
   const {userId, teamId, isSpectatingPoker} = teamMember
   const {id: meetingId, meetingType} = meeting
   return {
@@ -31,7 +33,7 @@ export const createMeetingMember = (
     meetingId,
     meetingType,
     isSpectating: meetingType === 'poker' ? isSpectatingPoker : null,
-    totalVotes: meetingType === 'retrospective' ? meeting.totalVotes : null
+    votesRemaining: meetingType === 'retrospective' ? meeting.totalVotes : null
   }
 }
 

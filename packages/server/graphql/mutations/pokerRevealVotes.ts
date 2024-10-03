@@ -3,6 +3,7 @@ import {sql} from 'kysely'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import getKysely from '../../postgres/getKysely'
+import {PokerMeetingMember} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -79,8 +80,7 @@ const pokerRevealVotes = {
     // add a pass card for everyone who was present but did not vote
     const {scores} = stage
     meetingMembers.forEach((meetingMember) => {
-      if (meetingMember.meetingType !== 'poker') return
-      const {userId, isSpectating} = meetingMember
+      const {userId, isSpectating} = meetingMember as PokerMeetingMember
       if (isSpectating) return
       const userScore = scores.find((score) => score.userId === userId)
       if (!userScore) {
