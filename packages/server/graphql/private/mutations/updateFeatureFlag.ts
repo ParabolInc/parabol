@@ -11,7 +11,7 @@ const updateFeatureFlag: MutationResolvers['updateFeatureFlag'] = async (
     .updateTable('FeatureFlag')
     .set({
       description,
-      expiresAt
+      expiresAt: expiresAt || undefined
     })
     .where('featureName', '=', featureName)
     .returning('id')

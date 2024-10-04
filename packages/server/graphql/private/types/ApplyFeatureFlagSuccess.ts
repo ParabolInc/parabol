@@ -9,9 +9,9 @@ export type ApplyFeatureFlagSuccessSource = {
 }
 
 const ApplyFeatureFlagSuccess: ApplyFeatureFlagSuccessResolvers = {
-  // featureFlag: async ({featureFlagId}, _args, {dataLoader}) => {
-  //   return null
-  // },
+  featureFlag: async ({featureFlagId}, _args, {dataLoader}) => {
+    return dataLoader.get('featureFlags').loadNonNull(featureFlagId)
+  },
   users: async ({userIds}, _args, {dataLoader}) => {
     if (!userIds) return null
     return (await dataLoader.get('users').loadMany(userIds)).filter(isValid)

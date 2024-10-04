@@ -19,9 +19,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         isOrgAdmin
-        featureFlags {
-          publicTeams
-        }
+        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         allTeams {
           id
           ...OrgTeamsRow_team
@@ -37,8 +35,7 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isOrgAdmin, featureFlags} = organization
-  const hasPublicTeamsFlag = featureFlags.publicTeams
+  const {allTeams, isOrgAdmin, hasPublicTeamsFlag} = organization
   const showAllTeams = isOrgAdmin || hasPublicTeamsFlag
   return (
     <div className='max-w-4xl pb-4'>

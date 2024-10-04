@@ -16,9 +16,9 @@ const generateGroups = async (
   if (reflections.length === 0) return
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
-  const {featureFlags} = organization
-  const hasSuggestGroupsFlag = featureFlags?.includes('suggestGroups')
+  const hasSuggestGroupsFlag = await dataLoader
+    .get('featureFlagByOwnerId')
+    .load({ownerId: team.orgId, featureName: 'suggestGroups'})
   if (!hasSuggestGroupsFlag) return
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()

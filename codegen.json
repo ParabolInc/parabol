@@ -37,7 +37,6 @@
           "StartTrialSuccess": "./types/StartTrialSuccess#StartTrialSuccessSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
           "Team": "../../postgres/types/index#Team as TeamDB",
-          "UpdateOrgFeatureFlagSuccess": "./types/UpdateOrgFeatureFlagSuccess#UpdateOrgFeatureFlagSuccessSource",
           "UpgradeToTeamTierSuccess": "./mutations/upgradeToTeamTier#UpgradeToTeamTierSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "VerifyDomainSuccess": "./types/VerifyDomainSuccess#VerifyDomainSuccessSource"

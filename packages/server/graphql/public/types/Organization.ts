@@ -23,21 +23,8 @@ const Organization: OrganizationResolvers = {
     if (!activeDomain || !isSuperUser(authToken)) return null
     return {id: activeDomain}
   },
-  featureFlags: async ({featureFlags}) => {
-    if (!featureFlags) return {}
-    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
-
-    // const pg = getKysely()
-    // // TODO: replace with dataloader
-    // const flags = await pg
-    //   .selectFrom('FeatureFlag')
-    //   .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
-    //   .where('FeatureFlagOwner.orgId', '=', orgId)
-    //   .where('FeatureFlag.expiresAt', '>', new Date())
-    //   .selectAll('FeatureFlag')
-    //   .execute()
-
-    // return flags
+  featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName})
   },
   picture: async ({picture}, _args, {dataLoader}) => {
     if (!picture) return null
@@ -74,7 +61,9 @@ const Organization: OrganizationResolvers = {
       isUserOrgAdmin(viewerId, orgId, dataLoader)
     ])
     const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
-    const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
+    const hasPublicTeamsFlag = await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: organization.id, featureName: 'publicTeams'})
     if (isOrgAdmin || isSuperUser(authToken) || hasPublicTeamsFlag) {
       const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
@@ -92,11 +81,10 @@ const Organization: OrganizationResolvers = {
   },
 
   publicTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
-    const [allTeamsOnOrg, organization] = await Promise.all([
+    const [allTeamsOnOrg, hasPublicTeamsFlag] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
-      dataLoader.get('organizations').loadNonNull(orgId)
+      dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'publicTeams'})
     ])
-    const hasPublicTeamsFlag = !!organization.featureFlags?.includes('publicTeams')
     if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []
     const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))
     return publicTeams

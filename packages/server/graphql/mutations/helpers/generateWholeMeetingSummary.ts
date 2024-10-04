@@ -17,9 +17,9 @@ const generateWholeMeetingSummary = async (
   ])
   const isAISummaryAccessible = await canAccessAISummary(
     team,
-    facilitator.featureFlags,
-    dataLoader,
-    'retrospective'
+    facilitator.id,
+    'retrospective',
+    dataLoader
   )
   if (!isAISummaryAccessible) return
   const [commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([

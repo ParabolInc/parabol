@@ -2,5 +2,5 @@ type UpdateFeatureFlagSuccess {
   """
   The newly updated feature flag
   """
-  featureFlag: FeatureFlagNew!
+  featureFlag: FeatureFlag!
 }
