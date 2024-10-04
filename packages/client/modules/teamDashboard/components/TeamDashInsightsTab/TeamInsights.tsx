@@ -6,6 +6,7 @@ import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import sanitizeHtml from 'sanitize-html'
 import {TeamInsightsQuery} from '../../../../__generated__/TeamInsightsQuery.graphql'
+import TeamInsightEmptyState from './TeamInsightEmptyState'
 
 interface Props {
   queryRef: PreloadedQuery<TeamInsightsQuery>
@@ -35,6 +36,7 @@ const Insights = (props: Props) => {
   const {viewer} = data
   const {team} = viewer
   const {insight, name} = team ?? {}
+  const meetingsCount = insight?.meetingsCount ?? 0
 
   const renderMarkdown = (text: string) => {
     const renderedText = marked(text, {
@@ -77,6 +79,10 @@ const Insights = (props: Props) => {
     ? formatDateRange(insight.startDateTime, insight.endDateTime)
     : 'Date range not available'
 
+  if (!insight) {
+    return <TeamInsightEmptyState meetingsCount={2} />
+  }
+
   return (
     <div className='mb-8 space-y-6'>
       <p className='mb-6 mt-[20px] text-sm text-slate-900'>
@@ -96,7 +102,7 @@ const Insights = (props: Props) => {
           <AutoAwesomeIcon className='mr-2 h-9 w-9 text-grape-500' />
           <span>Insights - {dateRange}</span>
         </h2>
-        <p className='mb-6 text-sm text-slate-600'>Summarized {insight?.meetingsCount} meetings</p>
+        <p className='mb-6 text-sm text-slate-600'>Summarized {meetingsCount} meetings</p>
 
         <h3 className='mb-0 text-lg font-semibold text-slate-700'>Wins</h3>
         <p className='mb-2 mt-0 text-sm italic text-slate-600'>
