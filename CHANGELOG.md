@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.49.1](https://github.com/ParabolInc/parabol/compare/v7.49.0...v7.49.1) (2024-10-04)
+
+
+### Fixed
+
+* endTeamPrompt bugs ([#10295](https://github.com/ParabolInc/parabol/issues/10295)) ([d18a7a4](https://github.com/ParabolInc/parabol/commit/d18a7a4bf2703ded03a807f6778c9e85e8d92b82))
+
 ## [7.49.0](https://github.com/ParabolInc/parabol/compare/v7.48.3...v7.49.0) (2024-10-03)
 
 
