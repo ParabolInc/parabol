@@ -253,16 +253,16 @@ export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgmeetingMembersByMeetingId = foreignKeyLoaderMaker(
-  '_pgmeetingMembers',
+export const meetingMembersByMeetingId = foreignKeyLoaderMaker(
+  'meetingMembers',
   'meetingId',
   async (meetingIds) => {
     return selectMeetingMembers().where('meetingId', 'in', meetingIds).execute()
   }
 )
 
-export const _pgmeetingMembersByUserId = foreignKeyLoaderMaker(
-  '_pgmeetingMembers',
+export const meetingMembersByUserId = foreignKeyLoaderMaker(
+  'meetingMembers',
   'userId',
   async (userIds) => {
     return selectMeetingMembers().where('userId', 'in', userIds).execute()

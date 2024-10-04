@@ -423,7 +423,7 @@ const User: ReqResolvers<'User'> = {
 
   meetingMember: async ({id: userId}, {meetingId}, {dataLoader}) => {
     const meetingMemberId = toTeamMemberId(meetingId, userId)
-    return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : null
+    return meetingId ? dataLoader.get('meetingMembers').loadNonNull(meetingMemberId) : null
   },
 
   organizationUser: async ({id: userId}, {orgId}, {authToken, dataLoader}) => {

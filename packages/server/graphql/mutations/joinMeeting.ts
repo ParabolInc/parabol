@@ -3,7 +3,6 @@ import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import CheckInStage from '../../database/types/CheckInStage'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
@@ -51,7 +50,6 @@ const joinMeeting = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const pg = getKysely()
-    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -73,11 +71,6 @@ const joinMeeting = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
-    const {errors} = await r.table('MeetingMember').insert(meetingMember).run()
-    // if this is called concurrently, only 1 will be error free
-    if (errors > 0) {
-      return {error: {message: 'Already joined meeting'}}
-    }
     await pg.insertInto('MeetingMember').values(meetingMember).execute()
     const addStageToPhase = async (
       stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,

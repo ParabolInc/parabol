@@ -1,7 +1,5 @@
 import {sql} from 'kysely'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -14,9 +12,7 @@ const safelyWithdrawVote = async (
   reflectionGroupId: string
 ) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
-  const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const viewerId = getUserId(authToken)
   const voteRemovedResult = await pg
     .updateTable('RetroReflectionGroup')
@@ -33,14 +29,6 @@ const safelyWithdrawVote = async (
   if (!isVoteRemovedFromGroup) {
     return standardError(new Error('Already removed vote'), {userId: viewerId})
   }
-  await r
-    .table('MeetingMember')
-    .get(meetingMemberId)
-    .update((member: RValue) => ({
-      updatedAt: now,
-      votesRemaining: member('votesRemaining').add(1)
-    }))
-    .run()
   await pg
     .updateTable('MeetingMember')
     .set((eb) => ({votesRemaining: eb('votesRemaining', '+', 1)}))

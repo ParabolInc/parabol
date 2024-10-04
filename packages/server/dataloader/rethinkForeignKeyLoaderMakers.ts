@@ -14,23 +14,6 @@ export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
       .run()
   }
 )
-export const meetingMembersByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'meetingMembers',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r.table('MeetingMember').getAll(r.args(meetingIds), {index: 'meetingId'}).run()
-  }
-)
-
-export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
-  'meetingMembers',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r.table('MeetingMember').getAll(r.args(userIds), {index: 'userId'}).run()
-  }
-)
 
 export const tasksByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'tasks',

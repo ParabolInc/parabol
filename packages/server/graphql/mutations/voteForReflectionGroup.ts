@@ -73,7 +73,6 @@ export default {
       if (votingError) return votingError
     } else {
       const votingError = await safelyCastVote(
-        authToken,
         meetingId,
         viewerId,
         reflectionGroupId,

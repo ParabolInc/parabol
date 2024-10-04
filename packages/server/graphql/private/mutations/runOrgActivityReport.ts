@@ -1,6 +1,4 @@
 import {sql} from 'kysely'
-import {RValue} from 'rethinkdb-ts'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -44,7 +42,6 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
     ])
     .orderBy('monthStart')
 
-  const r = await getRethink()
   try {
     const [signupCounts, rawMeetingCounts] = await Promise.all([
       query.execute(),
@@ -60,20 +57,13 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
         .execute()
     ])
     const meetingIds = rawMeetingCounts.flatMap((row) => row.meetingIds)
-    const participantCounts = (await (
-      r
-        .table('MeetingMember')
-        .getAll(r.args(meetingIds), {index: 'meetingId'})
-        .group('meetingId') as any
-    )
-      .count()
-      .ungroup()
-      .map((group: RValue) => ({
-        meetingId: group('group'),
-        participantCount: group('reduction')
-      }))
-      .run()) as {meetingId: string; participantCount: number}[]
-    // Combine PostgreSQL and RethinkDB results
+    const participantCounts = await pg
+      .selectFrom('MeetingMember')
+      .select(({fn}) => ['meetingId', fn.count('id').as('participantCount')])
+      .where('meetingId', 'in', meetingIds)
+      .groupBy('meetingId')
+      .execute()
+    // Combine results
     const combinedResults = signupCounts.map((pgRow) => {
       const epochMonthStart = pgRow.monthStart.getTime()
       const meetingCount = rawMeetingCounts.find(
@@ -81,7 +71,7 @@ const runOrgActivityReport: MutationResolvers['runOrgActivityReport'] = async (
       )
       const participantCount = participantCounts
         .filter((pc) => meetingCount?.meetingIds.includes(pc.meetingId))
-        .map((pc) => pc.participantCount)
+        .map((pc) => Number(pc.participantCount))
         .reduce((a, b) => a + b, 0)
       return {
         monthStart: pgRow.monthStart,

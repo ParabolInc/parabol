@@ -122,6 +122,6 @@ export const newMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectNewMeetings().where('id', 'in', ids).execute()
 })
 
-export const _pgmeetingMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const meetingMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectMeetingMembers().where('id', 'in', ids).execute()
 })

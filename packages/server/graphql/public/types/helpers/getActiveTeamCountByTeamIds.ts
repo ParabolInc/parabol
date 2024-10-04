@@ -1,6 +1,6 @@
 import {Threshold} from '~/types/constEnums'
-import getRethink from '../../../../database/rethinkDriver'
 import getKysely from '../../../../postgres/getKysely'
+import {selectMeetingMembers} from '../../../../postgres/select'
 // Uncomment for easier testing
 //import { ThresholdTest as Threshold } from "~/types/constEnums";
 
@@ -10,7 +10,6 @@ import getKysely from '../../../../postgres/getKysely'
 // TODO: store all calculations in the database, e.g. meeting.attendeeCount (see #7975)
 const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
   if (!teamIds.length) return 0
-  const r = await getRethink()
   const pg = getKysely()
   const meetingIdsByTeamId = await pg
     .selectFrom('NewMeeting')
@@ -19,10 +18,8 @@ const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
     .groupBy('teamId')
     .execute()
   const meetingIds = meetingIdsByTeamId.flatMap((row) => row.meetingIds)
-  const meetingMembers = await r
-    .table('MeetingMember')
-    .getAll(r.args(meetingIds), {index: 'meetingId'})
-    .run()
+  if (!meetingIds.length) return 0
+  const meetingMembers = await selectMeetingMembers().where('id', 'in', meetingIds).execute()
   const teamsIdsWithMinMeetingsAndMembers = meetingIdsByTeamId
     .map(({teamId, meetingIds}) => ({
       teamId,

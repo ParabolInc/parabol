@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
@@ -97,7 +96,6 @@ export default {
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -161,15 +159,12 @@ export default {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
-    await Promise.all([
-      pg
-        .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
-        .updateTable('Team')
-        .set({lastMeetingType: meetingType})
-        .where('id', '=', teamId)
-        .execute(),
-      r.table('MeetingMember').insert(meetingMember).run()
-    ])
+    await pg
+      .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
+      .updateTable('Team')
+      .set({lastMeetingType: meetingType})
+      .where('id', '=', teamId)
+      .execute()
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewer, meeting, template)
     const {error} = await createGcalEvent({

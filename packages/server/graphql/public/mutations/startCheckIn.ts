@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -22,7 +21,6 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   context
 ) => {
   const pg = getKysely()
-  const r = await getRethink()
   const {authToken, socketId: mutatorId, dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -84,7 +82,6 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
       .insertInto('MeetingMember')
       .values(meetingMember)
       .execute(),
-    r.table('MeetingMember').insert(meetingMember).run(),
     agendaItemIds.length &&
       pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute()
   ])
