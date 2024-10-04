@@ -108,6 +108,10 @@ export const slackNotifications = primaryKeyLoaderMaker((ids: readonly string[])
   return selectSlackNotifications().where('id', 'in', ids).execute()
 })
 
+export const featureFlags = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('FeatureFlag').selectAll().where('id', 'in', ids).execute()
+})
+
 export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
 })

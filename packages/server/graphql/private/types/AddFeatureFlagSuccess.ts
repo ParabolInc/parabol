@@ -1,4 +1,3 @@
-import getKysely from '../../../postgres/getKysely'
 import {AddFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type AddFeatureFlagSuccessSource = {
@@ -6,14 +5,8 @@ export type AddFeatureFlagSuccessSource = {
 }
 
 const AddFeatureFlagSuccess: AddFeatureFlagSuccessResolvers = {
-  featureFlag: async (source, _args, {dataLoader}) => {
-    const pg = getKysely()
-    const flag = await pg
-      .selectFrom('FeatureFlag')
-      .where('id', '=', source.featureFlagId)
-      .selectAll()
-      .executeTakeFirst()
-    return flag
+  featureFlag: async ({featureFlagId}, _, {dataLoader}) => {
+    return dataLoader.get('featureFlags').loadNonNull(featureFlagId)
   }
 }
 

@@ -14,10 +14,59 @@ type Mutation {
     description: String!
 
     """
-    The expiration date of the feature flag (optional)
+    The expiration date of the feature flag
     """
     expiresAt: DateTime!
+
+    """
+    The scope of the feature flag
+    """
+    scope: FeatureFlagScope!
   ): AddFeatureFlagPayload!
+
+  """
+  Apply a feature flag to specified subjects (users, teams, or organizations)
+  """
+  applyFeatureFlag(
+    """
+    The name of the feature flag to apply
+    """
+    flagName: String!
+    """
+    The subjects to which the feature flag will be applied
+    """
+    subjects: SubjectsInput!
+  ): ApplyFeatureFlagPayload!
+
+  """
+  Delete an existing feature flag
+  """
+  deleteFeatureFlag(
+    """
+    The name of the feature flag to delete
+    """
+    featureName: String!
+  ): DeleteFeatureFlagPayload!
+
+  """
+  Update an existing feature flag
+  """
+  updateFeatureFlag(
+    """
+    The name of the feature flag
+    """
+    featureName: String!
+
+    """
+    The new description of the feature flag (optional)
+    """
+    description: String
+
+    """
+    The new expiration date of the feature flag (optional)
+    """
+    expiresAt: DateTime
+  ): UpdateFeatureFlagPayload!
   """
   Updates the user email
   """
@@ -481,26 +530,6 @@ type Mutation {
     """
     emails: [String!]!
   ): ToggleAllowInsightsPayload!
-
-  """
-  Give some organizations advanced features in a flag
-  """
-  updateOrgFeatureFlag(
-    """
-    a list of organization ids
-    """
-    orgIds: [String!]!
-
-    """
-    the flag that you want to give to the organization
-    """
-    flag: OrganizationFeatureFlagsEnum!
-
-    """
-    whether or not you want to give the organization the flag
-    """
-    addFlag: Boolean!
-  ): UpdateOrgFeatureFlagPayload!
 
   """
   Describe the mutation here

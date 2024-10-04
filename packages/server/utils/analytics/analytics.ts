@@ -32,7 +32,6 @@ export type IdentifyOptions = {
   anonymousId?: string
   name?: string
   isActive?: boolean
-  featureFlags?: string[]
   highestTier?: string
   isPatient0?: boolean
   createdAt?: Date

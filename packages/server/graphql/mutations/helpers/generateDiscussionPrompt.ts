@@ -16,9 +16,9 @@ const generateDiscussionPrompt = async (
   ])
   const isAISummaryAccessible = await canAccessAISummary(
     team,
-    facilitator.featureFlags,
-    dataLoader,
-    'retrospective'
+    facilitator.id,
+    'retrospective',
+    dataLoader
   )
   if (!isAISummaryAccessible) return
   const [reflections, reflectionGroups] = await Promise.all([

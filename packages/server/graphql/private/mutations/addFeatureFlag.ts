@@ -4,7 +4,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
   _source,
-  {featureName, description, expiresAt}
+  {featureName, description, expiresAt, scope}
 ) => {
   const pg = getKysely()
 
@@ -13,7 +13,8 @@ const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
     .values({
       featureName,
       description,
-      expiresAt
+      expiresAt,
+      scope
     })
     .returning('id')
     .executeTakeFirst()

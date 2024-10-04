@@ -23,14 +23,13 @@ const addUsers = async (users: TestUser[]) => {
 const addOrg = async (
   activeDomain: string | null,
   members: TestOrganizationUser[],
-  rest?: {featureFlags?: string[]; tier?: TierEnum}
+  rest?: {tier?: TierEnum}
 ) => {
-  const {featureFlags, tier} = rest ?? {}
+  const {tier} = rest ?? {}
   const orgId = generateUID()
   const org = {
     id: orgId,
     activeDomain,
-    featureFlags,
     name: 'foog',
     tier: tier ?? 'starter'
   }
