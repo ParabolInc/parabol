@@ -1,7 +1,7 @@
 import getRethink from '../../../database/rethinkDriver'
 import {RValue} from '../../../database/stricterR'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
-import getPg from '../../../postgres/getPg'
+import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import blacklistJWT from '../../../utils/blacklistJWT'
@@ -15,6 +15,7 @@ const setFacilitatedUserIdOrDelete = async (
   teamIds: string[],
   dataLoader: DataLoaderInstance
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const facilitatedMeetings = await r
     .table('NewMeeting')
@@ -26,6 +27,11 @@ const setFacilitatedUserIdOrDelete = async (
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     const otherMember = meetingMembers.find(({userId}) => userId !== userIdToDelete)
     if (otherMember) {
+      await pg
+        .updateTable('NewMeeting')
+        .set({facilitatorUserId: otherMember.userId})
+        .where('id', '=', meetingId)
+        .execute()
       await r
         .table('NewMeeting')
         .get(meetingId)
@@ -34,6 +40,7 @@ const setFacilitatedUserIdOrDelete = async (
         })
         .run()
     } else {
+      await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
       // single-person meeting must be deleted because facilitatorUserId must be non-null
       await r.table('NewMeeting').get(meetingId).delete().run()
     }
@@ -53,7 +60,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     return {error: {message: 'Provide a userId or email'}}
   }
   const r = await getRethink()
-  const pg = getPg()
+  const pg = getKysely()
 
   const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
   if (!user) {
@@ -69,16 +76,24 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const teamIds = teamMembers.map(({teamId}) => teamId)
   const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
 
-  const discussions = await pg.query(`SELECT "id" FROM "Discussion" WHERE "teamId" = ANY ($1);`, [
-    teamIds
-  ])
-  const teamDiscussionIds = discussions.rows.map(({id}) => id)
+  const discussions = await pg
+    .selectFrom('Discussion')
+    .select('id')
+    .where('id', 'in', teamIds)
+    .execute()
+  const teamDiscussionIds = discussions.map(({id}) => id)
 
   // soft delete first for side effects
   await softDeleteUser(userIdToDelete, dataLoader)
 
   // all other writes
   await setFacilitatedUserIdOrDelete(userIdToDelete, teamIds, dataLoader)
+  await pg
+    .updateTable('NewMeeting')
+    .set({createdBy: null})
+    .where('teamId', 'in', teamIds)
+    .where('createdBy', '=', userIdToDelete)
+    .execute()
   await r({
     nullifyCreatedBy: r
       .table('NewMeeting')
@@ -107,24 +122,29 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
 
   // now postgres, after FKs are added then triggers should take care of children
   // TODO when we're done migrating to PG, these should have constraints that ON DELETE CASCADE
-  await Promise.all([
-    pg.query(`DELETE FROM "AtlassianAuth" WHERE "userId" = $1`, [userIdToDelete]),
-    pg.query(`DELETE FROM "GitHubAuth" WHERE "userId" = $1`, [userIdToDelete]),
-    pg.query(
-      `DELETE FROM "TaskEstimate" WHERE "meetingId" = ANY($1::varchar[]) AND "userId" = $2`,
-      [meetingIds, userIdToDelete]
-    ),
-    pg.query(
-      `DELETE FROM "Poll" WHERE "discussionId" = ANY($1::varchar[]) AND "createdById" = $2`,
-      [teamDiscussionIds, userIdToDelete]
+  await pg
+    .with('AtlassianAuthDelete', (qb) =>
+      qb.deleteFrom('AtlassianAuth').where('userId', '=', userIdToDelete)
     )
-  ])
+    .with('GitHubAuthDelete', (qb) =>
+      qb.deleteFrom('GitHubAuth').where('userId', '=', userIdToDelete)
+    )
+    .with('TaskEstimateDelete', (qb) =>
+      qb
+        .deleteFrom('TaskEstimate')
+        .where('userId', '=', userIdToDelete)
+        .where('meetingId', 'in', meetingIds)
+    )
+    .deleteFrom('Poll')
+    .where('discussionId', 'in', teamDiscussionIds)
+    .where('createdById', '=', userIdToDelete)
+    .execute()
 
   // Send metrics to HubSpot before the user is really deleted in DB
   await sendAccountRemovedEvent(userIdToDelete, user.email, reasonText ?? '')
 
   // User needs to be deleted after children
-  await pg.query(`DELETE FROM "User" WHERE "id" = $1`, [userIdToDelete])
+  await pg.deleteFrom('User').where('id', '=', userIdToDelete).execute()
 
   await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
   return {}

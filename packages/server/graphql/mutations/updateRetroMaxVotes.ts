@@ -4,7 +4,6 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import mode from 'parabol-client/utils/mode'
 import getRethink from '../../database/rethinkDriver'
 import {RValue} from '../../database/stricterR'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -44,12 +43,15 @@ const updateRetroMaxVotes = {
     const subOptions = {mutatorId, operationId}
 
     //AUTH
-    const meeting = (await r.table('NewMeeting').get(meetingId).run()) as MeetingRetrospective
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
 
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
     }
 
+    if (meeting.meetingType !== 'retrospective') {
+      return {error: {message: `Meeting not retrospective`}}
+    }
     const {
       endedAt,
       meetingType,
@@ -138,6 +140,12 @@ const updateRetroMaxVotes = {
     // RESOLUTION
     await Promise.all([
       getKysely()
+        .with('MeetingUpdates', (qb) =>
+          qb
+            .updateTable('NewMeeting')
+            .set({totalVotes, maxVotesPerGroup})
+            .where('id', '=', meetingId)
+        )
         .updateTable('MeetingSettings')
         .set({
           totalVotes,
@@ -155,7 +163,7 @@ const updateRetroMaxVotes = {
         })
         .run()
     ])
-
+    dataLoader.get('newMeetings').clear(meetingId)
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesSuccess', data, subOptions)
     return data

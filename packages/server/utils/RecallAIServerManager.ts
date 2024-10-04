@@ -2,7 +2,7 @@ import api from 'api'
 import axios from 'axios'
 import {ExternalLinks} from '../../client/types/constEnums'
 import appOrigin from '../appOrigin'
-import {TranscriptBlock} from '../database/types/MeetingRetrospective'
+import {TranscriptBlock} from '../postgres/types'
 import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 

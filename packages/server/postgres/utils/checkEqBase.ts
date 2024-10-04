@@ -65,7 +65,7 @@ export async function checkTableEq(
       const pgRow = pgRowsById[id]
 
       if (!pgRow) {
-        errors.push({id, prop: id, rVal: id, pgVal: null})
+        errors.push({id, prop: '', rVal: null, pgVal: null})
         if (errors.length >= maxErrors) return errors
         continue
       }

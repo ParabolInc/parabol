@@ -33,7 +33,7 @@ interface Props {
   selectedTemplateRef: ActivityDetailsSidebar_template$key
   teamsRef: ActivityDetailsSidebar_teams$key
   type: MeetingTypeEnum
-  preferredTeamId: string | null
+  preferredTeamId: string | null | undefined
 }
 
 const ActivityDetailsSidebar = (props: Props) => {

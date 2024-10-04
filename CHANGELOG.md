@@ -5,6 +5,64 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.49.0](https://github.com/ParabolInc/parabol/compare/v7.48.3...v7.49.0) (2024-10-03)
+
+
+### Added
+
+* **misc:** add timer control to more meeting phases ([#10279](https://github.com/ParabolInc/parabol/issues/10279)) ([1c87753](https://github.com/ParabolInc/parabol/commit/1c87753102fcb2268ae3863d33cf99b72e663990))
+
+
+### Fixed
+
+* deadlock on teamprompt ([#10290](https://github.com/ParabolInc/parabol/issues/10290)) ([ae72c0d](https://github.com/ParabolInc/parabol/commit/ae72c0d88e7329e05597eae40ba730f927a21537))
+
+## [7.48.3](https://github.com/ParabolInc/parabol/compare/v7.48.2...v7.48.3) (2024-10-01)
+
+
+### Changed
+
+* **rethinkdb:** NewMeeting: Phase 2 ([#10266](https://github.com/ParabolInc/parabol/issues/10266)) ([1a86d3c](https://github.com/ParabolInc/parabol/commit/1a86d3cddcb299880308211e8c8ffd7bd270f7be))
+
+## [7.48.2](https://github.com/ParabolInc/parabol/compare/v7.48.1...v7.48.2) (2024-10-01)
+
+
+### Fixed
+
+* Fix crash in end checkin without pinned agenda items ([#10282](https://github.com/ParabolInc/parabol/issues/10282)) ([66097b8](https://github.com/ParabolInc/parabol/commit/66097b8e6fc0d5f41c79f1b1b2a3ea3e5676526b))
+
+
+### Changed
+
+* **deps:** bump express from 4.19.2 to 4.20.0 ([#10212](https://github.com/ParabolInc/parabol/issues/10212)) ([b8e9925](https://github.com/ParabolInc/parabol/commit/b8e99253757735212b0e6979d5a7a47ab8417a99))
+
+## [7.48.1](https://github.com/ParabolInc/parabol/compare/v7.48.0...v7.48.1) (2024-09-27)
+
+
+### Fixed
+
+* stop series when team is no more ([#10268](https://github.com/ParabolInc/parabol/issues/10268)) ([203835e](https://github.com/ParabolInc/parabol/commit/203835e4296f17f51c8d6f968b41f7fb64e820ab))
+
+
+### Changed
+
+* **rethinkdb:** NewMeeting: Phase 1a ([#10216](https://github.com/ParabolInc/parabol/issues/10216)) ([6273411](https://github.com/ParabolInc/parabol/commit/6273411f5c5e7e03dc569b3359a49902b88dc11c))
+* **rethinkdb:** NewMeeting: Phase 1b ([#10250](https://github.com/ParabolInc/parabol/issues/10250)) ([8070a7e](https://github.com/ParabolInc/parabol/commit/8070a7e82d156d7b587742f1bde8279419ea85db))
+
+## [7.48.0](https://github.com/ParabolInc/parabol/compare/v7.47.5...v7.48.0) (2024-09-24)
+
+
+### Added
+
+* **metrics:** add mutation to generate usage report ([#10236](https://github.com/ParabolInc/parabol/issues/10236)) ([b72decd](https://github.com/ParabolInc/parabol/commit/b72decd56c08239ca990fa23552faf5d33182012))
+
+
+### Fixed
+
+* bump relay so it shares react's scheduler ([#10262](https://github.com/ParabolInc/parabol/issues/10262)) ([5893e38](https://github.com/ParabolInc/parabol/commit/5893e38a008597ec2e659b488ec0e3444338a2ff))
+* isPaid flag when moving teams to 0-team org ([#10263](https://github.com/ParabolInc/parabol/issues/10263)) ([b625d7e](https://github.com/ParabolInc/parabol/commit/b625d7e51b5ef4fe196251110699d99249d44fc9))
+* **misc:** show full length of agenda item text when hovering ([#10251](https://github.com/ParabolInc/parabol/issues/10251)) ([89661a7](https://github.com/ParabolInc/parabol/commit/89661a7425898418461aefb65428179622c70b78))
+
 ## [7.47.5](https://github.com/ParabolInc/parabol/compare/v7.47.4...v7.47.5) (2024-09-16)
 
 

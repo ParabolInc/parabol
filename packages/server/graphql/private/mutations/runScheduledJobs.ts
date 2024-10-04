@@ -31,11 +31,11 @@ const processMeetingStageTimeLimits = async (
 
   const notification = new NotificationMeetingStageTimeLimitEnd({
     meetingId,
-    userId: facilitatorUserId
+    userId: facilitatorUserId!
   })
   const r = await getRethink()
   await r.table('Notification').insert(notification).run()
-  publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
+  publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId!, 'MeetingStageTimeLimitPayload', {
     notification
   })
 }

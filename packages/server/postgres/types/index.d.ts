@@ -8,6 +8,7 @@ import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
+  selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
@@ -25,6 +26,17 @@ type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
 
 export type Discussion = Selectable<DiscussionPG>
 export type ReactjiDB = {id: string; userId: string}
+
+export type UsedReactjis = Record<string, number>
+export type TranscriptBlock = {
+  speaker: string
+  words: string
+}
+
+export type AutogroupReflectionGroupType = {
+  groupTitle: string
+  reflectionIds: string[]
+}
 
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
@@ -58,3 +70,5 @@ export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectS
 
 export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
 export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
+
+export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>

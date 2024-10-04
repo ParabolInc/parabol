@@ -43,7 +43,7 @@ const TaskSummarySection = (props: Props) => {
       <tr>
         <td>
           {grid((task) => (
-            <EmailTaskCard key={task.id} task={task} />
+            <EmailTaskCard key={task.id} task={task!} />
           ))}
         </td>
       </tr>
