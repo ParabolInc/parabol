@@ -171,7 +171,7 @@ const safeEndRetrospective = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
+    removeEmptyTasks(meetingId, teamId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
