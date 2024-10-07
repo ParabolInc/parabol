@@ -75,10 +75,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     return standardError(
       new Error(
         'No valid subjects found to apply the feature flag. Check the scope of the feature flag.'
-      ),
-      {
-        userId: viewerId
-      }
+      )
     )
   }
 
