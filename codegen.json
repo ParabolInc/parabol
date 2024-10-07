@@ -189,7 +189,6 @@
           "TimelineEventTeamPromptComplete": "./types/TimelineEventTeamPromptComplete#TimelineEventTeamPromptCompleteSource",
           "ToggleFavoriteTemplateSuccess": "./types/ToggleFavoriteTemplateSuccess#ToggleFavoriteTemplateSuccessSource",
           "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess#ToggleSummaryEmailSuccessSource",
-          "TopRetroTemplate": "./types/TopRetroTemplate#TopRetroTemplateSource",
           "UpdateAutoJoinSuccess": "./types/UpdateAutoJoinSuccess#UpdateAutoJoinSuccessSource",
           "UpdateCreditCardSuccess": "./types/UpdateCreditCardSuccess#UpdateCreditCardSuccessSource",
           "UpdateDimensionFieldSuccess": "./types/UpdateDimensionFieldSuccess#UpdateDimensionFieldSuccessSource",
