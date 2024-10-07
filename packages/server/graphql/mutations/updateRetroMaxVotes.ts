@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
+import mode from '../../../client/utils/mode'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -89,56 +90,42 @@ const updateRetroMaxVotes = {
     // RESOLUTION
     try {
       await pg.transaction().execute(async (trx) => {
-        const canChangeMaxVotesPerGroup =
-          maxVotesPerGroup >= oldMaxVotesPerGroup
-            ? true
-            : await trx
-                .with('GroupVotes', (qb) =>
-                  qb
-                    .selectFrom('RetroReflectionGroup')
-                    .where('meetingId', '=', meetingId)
-                    .where('isActive', '=', true)
-                    .select(({fn}) => ['id', fn('unnest', ['voterIds']).as('userIds')])
-                )
-                .with('GroupVoteCount', (qb) =>
-                  qb
-                    .selectFrom('GroupVotes')
-                    .select(({fn}) => ['id', fn.count('userIds').as('mode')])
-                    .groupBy(['id', 'userIds'])
-                )
-                .selectFrom('GroupVoteCount')
-                .select(({eb, fn}) => eb(fn.max('mode'), '<', maxVotesPerGroup).as('isValid'))
-                .executeTakeFirst()
-        if (!canChangeMaxVotesPerGroup) {
-          throw new Error('A topic already has too many votes')
+        if (maxVotesPerGroup < oldMaxVotesPerGroup) {
+          const reflectionGroups = await trx
+            .selectFrom('RetroReflectionGroup')
+            .select('voterIds')
+            .where('meetingId', '=', meetingId)
+            .where('isActive', '=', true)
+            .forUpdate()
+            .execute()
+          const maxVotesPerGroupSpent = Math.max(
+            ...reflectionGroups.map(({voterIds}) => mode(voterIds)[0])
+          )
+          if (maxVotesPerGroupSpent > maxVotesPerGroup)
+            throw new Error('A topic already has too many votes')
         }
-        const res = await trx
+        if (delta < 0) {
+          const res = await trx
+            .selectFrom('MeetingMember')
+            .select('votesRemaining')
+            .where('meetingId', '=', meetingId)
+            .forUpdate()
+            .execute()
+          const min = Math.min(...res.map((m) => Number(m.votesRemaining!)))
+          if (min < -delta) throw new Error('Your team has already spent their votes')
+        }
+        await trx
           .with('MeetingMemberUpdates', (qb) =>
             qb
               .updateTable('MeetingMember')
               .set((eb) => ({votesRemaining: eb('votesRemaining', '+', delta)}))
               .where('meetingId', '=', meetingId)
-              .$if(delta < 0, (qb) =>
-                qb.where(({selectFrom, eb}) =>
-                  eb(
-                    selectFrom('MeetingMember')
-                      .select((eb) => eb.fn('min', ['votesRemaining']).as('min'))
-                      .where('meetingId', '=', meetingId),
-                    '>',
-                    -delta
-                  )
-                )
-              )
-              .returning('id')
           )
           .with('NewMeetingUpdates', (qb) =>
             qb
               .updateTable('NewMeeting')
               .set({totalVotes, maxVotesPerGroup})
               .where('id', '=', meetingId)
-              .where(({exists, selectFrom}) =>
-                exists(selectFrom('MeetingMemberUpdates').select('id'))
-              )
           )
           .updateTable('MeetingSettings')
           .set({
@@ -147,12 +134,7 @@ const updateRetroMaxVotes = {
           })
           .where('teamId', '=', teamId)
           .where('meetingType', '=', 'retrospective')
-          .where(({exists, selectFrom}) => exists(selectFrom('MeetingMemberUpdates').select('id')))
           .executeTakeFirstOrThrow()
-
-        if (res.numUpdatedRows === BigInt(0)) {
-          throw new Error('Your team has already spent their votes')
-        }
       })
     } catch (e) {
       return {error: {message: (e as Error).message}}
