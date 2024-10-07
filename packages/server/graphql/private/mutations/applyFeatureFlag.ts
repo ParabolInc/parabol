@@ -71,6 +71,14 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
         ? teamIds.map((teamId) => ({teamId, featureFlagId}))
         : orgIds.map((orgId) => ({orgId, featureFlagId}))
 
+  if (values.length === 0) {
+    return standardError(
+      new Error(
+        'No valid subjects found to apply the feature flag. Check the scope of the feature flag.'
+      )
+    )
+  }
+
   await pg
     .insertInto('FeatureFlagOwner')
     .values(values)
