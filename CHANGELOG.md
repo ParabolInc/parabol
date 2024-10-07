@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.2](https://github.com/ParabolInc/parabol/compare/v7.50.1...v7.50.2) (2024-10-07)
+
+
+### Changed
+
+* **metrics:** update org activities GraphQL query ([#10278](https://github.com/ParabolInc/parabol/issues/10278)) ([ef99718](https://github.com/ParabolInc/parabol/commit/ef997187ffa92fce0e8866f93943abfbf59ea660))
+
+## [7.50.1](https://github.com/ParabolInc/parabol/compare/v7.50.0...v7.50.1) (2024-10-07)
+
+
+### Changed
+
+* improve feature flag error feedback ([#10304](https://github.com/ParabolInc/parabol/issues/10304)) ([6c058ac](https://github.com/ParabolInc/parabol/commit/6c058acf51b1031edb53feee0102602788d3bfca))
+
+## [7.50.0](https://github.com/ParabolInc/parabol/compare/v7.49.1...v7.50.0) (2024-10-07)
+
+
+### Added
+
+* add feature flag tables ([#10184](https://github.com/ParabolInc/parabol/issues/10184)) ([ff6c25e](https://github.com/ParabolInc/parabol/commit/ff6c25e38dbab78075bc7398f32939fec5b44f45))
+
 ## [7.49.1](https://github.com/ParabolInc/parabol/compare/v7.49.0...v7.49.1) (2024-10-04)
 
 
