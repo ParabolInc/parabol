@@ -2,7 +2,6 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis, {RedisPipelineResponse} from '../../utils/getRedis'
@@ -35,9 +34,12 @@ const pokerAnnounceDeckHover = {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingPoker
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: 'Meeting not found'}}
+    }
+    if (meeting.meetingType !== 'poker') {
+      return {error: {message: 'Not a poker meeting'}}
     }
     const {endedAt, phases, meetingType, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {

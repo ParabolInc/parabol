@@ -3,11 +3,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
-import Meeting from '../../../../database/types/Meeting'
 import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
-import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -360,7 +359,7 @@ function GenerateACMeetingTitle(meetingTitle: string) {
   return titleTextBlock
 }
 
-function GenerateACMeetingAndTeamsDetails(team: Team, meeting: Meeting) {
+function GenerateACMeetingAndTeamsDetails(team: Team, meeting: AnyMeeting) {
   const meetingDetailColumnSet = new AdaptiveCards.ColumnSet()
   const teamDetailColumn = new AdaptiveCards.Column()
   teamDetailColumn.width = 'stretch'

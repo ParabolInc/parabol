@@ -19,6 +19,7 @@ import findStageAfterId from '~/utils/meetings/findStageAfterId'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meeting.graphql'
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
+import showTimerInPhase from '../utils/showTimerInPhase'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
@@ -124,13 +125,12 @@ const MeetingControlBar = (props: Props) => {
   const {phaseType} = localPhase
   const {id: localStageId, isComplete} = localStage
   const isCheckIn = phaseType === 'checkin'
-  const isRetro = meetingType === 'retrospective'
   const isPoker = meetingType === 'poker'
   const getPossibleButtons = () => {
     const buttons = ['tips']
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if (isFacilitating && isRetro && !isCheckIn && !isComplete) buttons.push('timer')
+    if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
     if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
@@ -204,7 +204,7 @@ const MeetingControlBar = (props: Props) => {
                 <StageTimerControl
                   {...tranProps}
                   cancelConfirm={cancelConfirm}
-                  defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType]}
+                  defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType] ?? 1}
                   meeting={meeting}
                 />
               )

@@ -1,0 +1,21 @@
+"""
+Successful result of applying a feature flag
+"""
+type ApplyFeatureFlagSuccess {
+  """
+  The feature flag that was applied
+  """
+  featureFlag: FeatureFlag!
+  """
+  The Users to which the feature flag was applied
+  """
+  users: [User!]
+  """
+  The Teams to which the feature flag was applied
+  """
+  teams: [Team!]
+  """
+  The Organizations to which the feature flag was applied
+  """
+  organizations: [Organization!]
+}

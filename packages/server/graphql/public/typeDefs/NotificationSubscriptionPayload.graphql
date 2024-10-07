@@ -22,7 +22,6 @@ type NotificationSubscriptionPayload {
   PersistGitHubSearchQuerySuccess: PersistGitHubSearchQuerySuccess
   JiraServerIssue: JiraServerIssue
   AddedNotification: AddedNotification
-  UpdateFeatureFlagPayload: UpdateFeatureFlagPayload
   JiraIssue: JiraIssue
   UpdatedNotification: UpdatedNotification
   RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccess

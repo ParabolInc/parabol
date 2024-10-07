@@ -1,0 +1,21 @@
+type FeatureFlag {
+  """
+  The name of the feature flag
+  """
+  featureName: String!
+
+  """
+  Description of the feature flag
+  """
+  description: String
+
+  """
+  Expiration date of the feature flag
+  """
+  expiresAt: DateTime!
+
+  """
+  The scope of the feature flag
+  """
+  scope: FeatureFlagScope!
+}

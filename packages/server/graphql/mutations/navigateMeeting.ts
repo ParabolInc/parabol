@@ -4,6 +4,7 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import startStage_ from 'parabol-client/utils/startStage_'
 import unlockNextStages from 'parabol-client/utils/unlockNextStages'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -46,7 +47,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {createdBy, endedAt, facilitatorUserId, phases, teamId, meetingType} = meeting
     if (endedAt) {
@@ -123,7 +124,15 @@ export default {
       )('changes')(0)('old_val')('facilitatorStageId')
       .default(null)
       .run()
-
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({
+        facilitatorStageId: facilitatorStageId ?? undefined,
+        phases: JSON.stringify(phases)
+      })
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     if (!oldFacilitatorStageId) {
       return {error: {message: 'Stage already advanced'}}
     }

@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import updateDiscussions from '../../../postgres/queries/updateDiscussions'
+import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
@@ -9,19 +9,19 @@ import canAccessAISummary from './canAccessAISummary'
 
 const generateDiscussionSummary = async (
   discussionId: string,
-  meeting: MeetingRetrospective,
+  meeting: RetrospectiveMeeting,
   dataLoader: DataLoaderWorker
 ) => {
   const {id: meetingId, endedAt, facilitatorUserId, teamId} = meeting
   const [facilitator, team] = await Promise.all([
-    dataLoader.get('users').loadNonNull(facilitatorUserId),
+    dataLoader.get('users').loadNonNull(facilitatorUserId!),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
   const isAISummaryAccessible = await canAccessAISummary(
     team,
-    facilitator.featureFlags,
-    dataLoader,
-    'retrospective'
+    facilitator.id,
+    'retrospective',
+    dataLoader
   )
   if (!isAISummaryAccessible) return
   const [comments, tasks] = await Promise.all([

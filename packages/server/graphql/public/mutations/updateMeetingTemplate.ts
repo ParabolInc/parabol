@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
@@ -12,12 +12,14 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
   {meetingId, templateId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!('templateId' in meeting)) return {error: {message: 'Meeting has no template'}}
   if (!isTeamMember(authToken, meeting.teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
@@ -37,7 +39,7 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
       }
     )
   }
-
+  await pg.updateTable('NewMeeting').set({templateId}).where('id', '=', meetingId).execute()
   await r.table('NewMeeting').get(meetingId).update({templateId}).run()
   meeting.templateId = templateId
 

@@ -9,6 +9,7 @@ import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
+  selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
@@ -108,10 +109,18 @@ export const slackNotifications = primaryKeyLoaderMaker((ids: readonly string[])
   return selectSlackNotifications().where('id', 'in', ids).execute()
 })
 
+export const featureFlags = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('FeatureFlag').selectAll().where('id', 'in', ids).execute()
+})
+
 export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
 })
 
 export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectReflectPrompts().where('id', 'in', ids).execute()
+})
+
+export const _pgnewMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectNewMeetings().where('id', 'in', ids).execute()
 })

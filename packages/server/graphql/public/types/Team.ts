@@ -26,6 +26,9 @@ const Team: TeamResolvers = {
   teamLead: async ({id: teamId}, _args, {dataLoader}) => {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
+  },
+  featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
   }
 }
 

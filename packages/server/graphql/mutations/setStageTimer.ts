@@ -45,6 +45,7 @@ export default {
     }: {scheduledEndTime: Date | null; meetingId: string; timeRemaining: number | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -115,7 +116,11 @@ export default {
         updatedAt: now
       })
       .run()
-
+    await pg
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(phases)})
+      .where('id', '=', meetingId)
+      .execute()
     const data = {meetingId, stageId: facilitatorStageId}
     const {isAsync, phaseType, startAt, viewCount} = stage
     const stoppedOrStarted = newScheduledEndTime ? `Meeting Timer Started` : `Meeting Timer Stopped`
