@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.2](https://github.com/ParabolInc/parabol/compare/v7.50.1...v7.50.2) (2024-10-07)
+
+
+### Changed
+
+* **metrics:** update org activities GraphQL query ([#10278](https://github.com/ParabolInc/parabol/issues/10278)) ([ef99718](https://github.com/ParabolInc/parabol/commit/ef997187ffa92fce0e8866f93943abfbf59ea660))
+
 ## [7.50.1](https://github.com/ParabolInc/parabol/compare/v7.50.0...v7.50.1) (2024-10-07)
 
 
