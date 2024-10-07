@@ -51,6 +51,7 @@ process.on('SIGTERM', async (signal) => {
     })
   )
   console.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
+  process.exit()
 })
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
