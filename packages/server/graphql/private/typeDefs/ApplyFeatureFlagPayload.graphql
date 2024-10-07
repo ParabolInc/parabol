@@ -1,0 +1,4 @@
+"""
+Return value for applyFeatureFlag, which could be an error or success
+"""
+union ApplyFeatureFlagPayload = ErrorPayload | ApplyFeatureFlagSuccess
