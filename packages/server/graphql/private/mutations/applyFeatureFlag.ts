@@ -24,7 +24,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
 
   const featureFlag = await pg
     .selectFrom('FeatureFlag')
-    .select('id')
+    .select(['id', 'scope'])
     .where('featureName', '=', flagName)
     .executeTakeFirst()
 
@@ -32,46 +32,54 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     return standardError(new Error('Feature flag not found'), {userId: viewerId})
   }
 
-  const {id: featureFlagId} = featureFlag
+  const {id: featureFlagId, scope} = featureFlag
 
   const userIds: string[] = []
   const teamIds: string[] = []
   const orgIds: string[] = []
 
-  if (subjects.emails) {
-    const users = await getUsersByEmails(subjects.emails)
-    userIds.push(...users.map((user) => user.id))
-  }
+  if (scope === 'User') {
+    if (subjects.emails) {
+      const users = await getUsersByEmails(subjects.emails)
+      userIds.push(...users.map((user) => user.id))
+    }
 
-  if (subjects.domains) {
-    for (const domain of subjects.domains) {
-      const domainUsers = await getUsersByDomain(domain)
-      userIds.push(...domainUsers.map((user) => user.id))
+    if (subjects.domains) {
+      for (const domain of subjects.domains) {
+        const domainUsers = await getUsersByDomain(domain)
+        userIds.push(...domainUsers.map((user) => user.id))
+      }
+    }
+
+    if (subjects.userIds) {
+      userIds.push(...subjects.userIds)
+    }
+  } else if (scope === 'Team') {
+    if (subjects.teamIds) {
+      teamIds.push(...subjects.teamIds)
+    }
+  } else if (scope === 'Organization') {
+    if (subjects.orgIds) {
+      orgIds.push(...subjects.orgIds)
     }
   }
 
-  if (subjects.userIds) {
-    userIds.push(...subjects.userIds)
-  }
-
-  if (subjects.teamIds) {
-    teamIds.push(...subjects.teamIds)
-  }
-
-  if (subjects.orgIds) {
-    orgIds.push(...subjects.orgIds)
-  }
-
-  const values = [
-    ...userIds.map((userId) => ({userId, featureFlagId})),
-    ...teamIds.map((teamId) => ({teamId, featureFlagId})),
-    ...orgIds.map((orgId) => ({orgId, featureFlagId}))
-  ]
+  const values =
+    scope === 'User'
+      ? userIds.map((userId) => ({userId, featureFlagId}))
+      : scope === 'Team'
+        ? teamIds.map((teamId) => ({teamId, featureFlagId}))
+        : orgIds.map((orgId) => ({orgId, featureFlagId}))
 
   if (values.length === 0) {
-    return standardError(new Error('No valid subjects found to apply the feature flag'), {
-      userId: viewerId
-    })
+    return standardError(
+      new Error(
+        'No valid subjects found to apply the feature flag. Check the scope of the feature flag.'
+      ),
+      {
+        userId: viewerId
+      }
+    )
   }
 
   await pg
@@ -81,11 +89,10 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     .execute()
 
   return {
-    __typename: 'ApplyFeatureFlagSuccess',
     featureFlagId,
-    userIds,
-    teamIds,
-    orgIds
+    userIds: scope === 'User' ? userIds : [],
+    teamIds: scope === 'Team' ? teamIds : [],
+    orgIds: scope === 'Organization' ? orgIds : []
   }
 }
 
