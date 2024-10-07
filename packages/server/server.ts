@@ -47,7 +47,7 @@ process.on('SIGTERM', async (signal) => {
     Object.values(activeClients.store).map(async (connectionContext) => {
       const disconnectIn = Math.floor(Math.random() * RECONNECT_WINDOW)
       await sleep(disconnectIn)
-      handleDisconnect(connectionContext)
+      await handleDisconnect(connectionContext)
     })
   )
   console.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
