@@ -2,7 +2,6 @@ import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
 // Uncomment for easier testing
 // import { ThresholdTest as Threshold } from "~/types/constEnums";
-import {sql} from 'kysely'
 import {r} from 'rethinkdb-ts'
 import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
@@ -28,11 +27,19 @@ const enableUsageStats = async (userIds: string[], orgId: string) => {
     .where('userId', 'in', userIds)
     .where('removedAt', 'is', null)
     .execute()
-  await pg
-    .updateTable('User')
-    .set({featureFlags: sql`arr_append_uniq("featureFlags", 'insights')`})
-    .where('id', 'in', userIds)
-    .execute()
+  const featureFlag = await pg
+    .selectFrom('FeatureFlag')
+    .select(['id'])
+    .where('featureName', '=', 'insights')
+    .executeTakeFirst()
+  if (featureFlag) {
+    const values = [...userIds.map((userId) => ({userId, featureFlagId: featureFlag.id}))]
+    await pg
+      .insertInto('FeatureFlagOwner')
+      .values(values)
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+  }
 }
 
 const sendWebsiteNotifications = async (
@@ -104,9 +111,12 @@ export const maybeRemoveRestrictions = async (orgId: string, dataLoader: DataLoa
 // Warning: the function might be expensive
 export const checkTeamsLimit = async (orgId: string, dataLoader: DataLoaderWorker) => {
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
-  const {tierLimitExceededAt, tier, trialStartDate, featureFlags, name: orgName} = organization
+  const {tierLimitExceededAt, tier, trialStartDate, name: orgName} = organization
 
-  if (!featureFlags?.includes('teamsLimit')) return
+  const hasTeamsLimitFlag = await dataLoader
+    .get('featureFlagByOwnerId')
+    .load({ownerId: orgId, featureName: 'teamsLimit'})
+  if (!hasTeamsLimitFlag) return
 
   if (tierLimitExceededAt || getFeatureTier({tier, trialStartDate}) !== 'starter') return
 

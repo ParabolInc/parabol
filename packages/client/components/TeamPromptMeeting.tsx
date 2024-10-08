@@ -89,17 +89,14 @@ const TeamPromptMeeting = (props: Props) => {
           }
         }
         organization {
-          featureFlags {
-            singleColumnStandups
-          }
+          hasSingleColumnStandupsFlag: featureFlag(featureName: "singleColumnStandups")
         }
       }
     `,
     meetingRef
   )
   const {phases, organization} = meeting
-  const {featureFlags} = organization
-  const {singleColumnStandups} = featureFlags
+  const {hasSingleColumnStandupsFlag} = organization
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -183,7 +180,7 @@ const TeamPromptMeeting = (props: Props) => {
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
-                  <ResponsesGrid isSingleColumn={singleColumnStandups}>
+                  <ResponsesGrid isSingleColumn={hasSingleColumnStandupsFlag}>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
                       const {key, displayIdx} = stage
@@ -195,7 +192,7 @@ const TeamPromptMeeting = (props: Props) => {
                           onTransitionEnd={onTransitionEnd}
                           displayIdx={displayIdx}
                           stageRef={stage}
-                          isSingleColumn={singleColumnStandups}
+                          isSingleColumn={hasSingleColumnStandupsFlag}
                         />
                       )
                     })}

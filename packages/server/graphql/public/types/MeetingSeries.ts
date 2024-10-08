@@ -8,7 +8,8 @@ const MeetingSeries: MeetingSeriesResolvers = {
     return MeetingSeriesId.join(id)
   },
   activeMeetings: async (meetingSeries, _args, {dataLoader}) => {
-    return dataLoader.get('activeMeetingsByMeetingSeriesId').load(meetingSeries.id)
+    const res = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(meetingSeries.id)
+    return res || []
   },
   mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
     const meeting = await selectNewMeetings()
