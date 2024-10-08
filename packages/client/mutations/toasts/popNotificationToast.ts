@@ -12,7 +12,6 @@ import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
 import mapResponseRepliedToToast from './mapResponseRepliedToToast'
-import mapTeamsLimitExceededToToast from './mapTeamsLimitExceededToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 
 const typePicker: Partial<
@@ -22,7 +21,6 @@ const typePicker: Partial<
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
   MENTIONED: mapMentionedToToast,
   RESPONSE_REPLIED: mapResponseRepliedToToast,
-  TEAMS_LIMIT_EXCEEDED: mapTeamsLimitExceededToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
   PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
   REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
@@ -37,7 +35,6 @@ graphql`
       ...mapResponseMentionedToToast_notification @relay(mask: false)
       ...mapMentionedToToast_notification @relay(mask: false)
       ...mapResponseRepliedToToast_notification @relay(mask: false)
-      ...mapTeamsLimitExceededToToast_notification @relay(mask: false)
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
       ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
       ...mapRequestToJoinOrgToToast_notification @relay(mask: false)

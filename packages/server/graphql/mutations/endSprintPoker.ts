@@ -21,7 +21,6 @@ import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-import updateTeamInsights from './helpers/updateTeamInsights'
 
 export default {
   type: new GraphQLNonNull(EndSprintPokerPayload),
@@ -123,8 +122,7 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId, teamId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
-      dataLoader.get('meetingTemplates').loadNonNull(templateId),
-      updateTeamInsights(teamId, dataLoader)
+      dataLoader.get('meetingTemplates').loadNonNull(templateId)
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)

@@ -26,9 +26,6 @@ graphql`
       activeMeetings {
         id
       }
-      insights {
-        ...TeamDashInsights_insights
-      }
     }
     removedTaskIds
   }
