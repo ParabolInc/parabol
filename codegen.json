@@ -25,6 +25,7 @@
           "GenerateMeetingSummarySuccess": "./types/GenerateMeetingSummarySuccess#GenerateMeetingSummarySuccessSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
+          "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",
           "NewMeeting": "../../postgres/types/Meeting#AnyMeeting",
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "PingableServices": "./types/PingableServices#PingableServicesSource",
@@ -50,6 +51,7 @@
         "contextType": "../graphql#GQLContext",
         "mappers": {
           "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
+          "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",
           "ReflectTemplatePromptUpdateGroupColorPayload": "./types/ReflectTemplatePromptUpdateGroupColorPayload#ReflectTemplatePromptUpdateGroupColorPayloadSource",
           "RemoveReflectTemplatePromptPayload": "./types/RemoveReflectTemplatePromptPayload#RemoveReflectTemplatePromptPayloadSource",
           "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",

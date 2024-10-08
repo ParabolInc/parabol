@@ -32,7 +32,7 @@ export default class User {
   lastSeenAt: Date
   lastSeenAtURLs: string[] | null
   updatedAt: Date
-  newFeatureId?: string | null
+  newFeatureId?: number | null
   overLimitCopy?: string | null
   picture: string
   inactive: boolean

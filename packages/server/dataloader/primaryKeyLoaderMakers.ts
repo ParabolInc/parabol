@@ -11,6 +11,7 @@ import {
   selectMassInvitations,
   selectMeetingMembers,
   selectMeetingSettings,
+  selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
@@ -133,4 +134,8 @@ export const meetingMembers = primaryKeyLoaderMaker((ids: readonly string[]) => 
 
 export const massInvitations = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectMassInvitations().where('id', 'in', ids).execute()
+})
+
+export const newFeatures = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectNewFeatures().where('id', 'in', ids).execute()
 })
