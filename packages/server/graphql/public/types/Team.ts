@@ -61,6 +61,10 @@ const Team: TeamResolvers = {
   insight: async ({id: teamId}, _args, {dataLoader}) => {
     const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
     return insight || null
+  },
+  meetingsCount: async ({id: teamId}, _args, {dataLoader}) => {
+    const meetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
+    return meetings.length
   }
 }
 

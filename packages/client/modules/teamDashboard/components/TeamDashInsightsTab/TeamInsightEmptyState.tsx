@@ -12,7 +12,7 @@ const TeamInsightEmptyState = (props: Props) => {
   return (
     <div className='flex flex-col items-center text-center'>
       <img src={insightsEmptyStateImg} alt='Empty state' width={300} height={300} />
-      <div className='space-y-0'>
+      <div className='space-y-1'>
         <p className='mt-4 text-lg leading-tight'>
           Your team has completed <strong>{meetingsCount}</strong>{' '}
           {plural(meetingsCount, 'meeting')}.
@@ -33,7 +33,7 @@ const TeamInsightEmptyState = (props: Props) => {
       </div>
       {meetingsCount > 0 && (
         <button className='mt-6 flex items-center rounded-full bg-grape-500 py-2 px-6 font-bold text-white transition-all duration-200 ease-in-out hover:scale-105 hover:bg-grape-600 hover:shadow-lg'>
-          <AddIcon className='mr-2 h-6 w-6' />
+          <AddIcon className='mr-2 h-5 w-5' />
           Generate Insights
         </button>
       )}
