@@ -198,7 +198,7 @@ type Team {
   teamLead: TeamMember!
 
   """
-  The number of meetings the team has had
+  The number of retro meetings the team has had
   """
-  meetingCount: Int!
+  retroMeetingsCount: Int!
 }

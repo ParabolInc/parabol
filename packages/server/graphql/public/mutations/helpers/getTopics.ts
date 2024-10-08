@@ -112,7 +112,8 @@ export const getTopics = async (
 ) => {
   const r = await getRethink()
   const MIN_REFLECTION_COUNT = 3
-  const MIN_MILLISECONDS = 60 * 1000 // 1 minute
+  // const MIN_MILLISECONDS = 60 * 1000 // 1 minute
+  const MIN_MILLISECONDS = 0 // 1 minute
   const rawMeetings = await r
     .table('NewMeeting')
     .getAll(teamId, {index: 'teamId'})
@@ -122,7 +123,7 @@ export const getTopics = async (
         .and(row('createdAt').ge(startDate))
         .and(row('createdAt').le(endDate))
         .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+        // .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
     .run()
@@ -186,7 +187,8 @@ export const getTopics = async (
 
   const hotTopics = meetings
     .flat()
-    .filter((t) => t.voteCount > 2)
+    // .filter((t) => t.voteCount > 2)
+    .filter((t) => t.voteCount > 0)
     .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
 
   const idGenerator = {

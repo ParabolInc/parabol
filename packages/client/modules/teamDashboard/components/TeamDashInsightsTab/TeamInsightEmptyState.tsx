@@ -1,14 +1,41 @@
 import AddIcon from '@mui/icons-material/Add'
 import React from 'react'
 import insightsEmptyStateImg from '../../../../../../static/images/illustrations/insights-empty-state.png'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import GenerateInsightMutation from '../../../../mutations/GenerateInsightMutation'
 import plural from '../../../../utils/plural'
 
 interface Props {
-  meetingsCount: number
+  meetingsCount?: number
+  teamId?: string
 }
 
 const TeamInsightEmptyState = (props: Props) => {
-  const {meetingsCount} = props
+  const {meetingsCount, teamId} = props
+  const atmosphere = useAtmosphere()
+  const {onError, error, onCompleted, submitMutation, submitting} = useMutationProps()
+
+  if (meetingsCount === undefined || !teamId) return null
+
+  const canGenerateInsight = meetingsCount > 0
+
+  const handleGenerateInsight = () => {
+    if (submitting) return
+    submitMutation()
+    const now = new Date()
+    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())
+    GenerateInsightMutation(
+      atmosphere,
+      {
+        teamId,
+        startDate: threeMonthsAgo.toISOString(),
+        endDate: now.toISOString()
+      },
+      {onError, onCompleted}
+    )
+  }
+
   return (
     <div className='flex flex-col items-center text-center'>
       <img src={insightsEmptyStateImg} alt='Empty state' width={300} height={300} />
@@ -17,7 +44,7 @@ const TeamInsightEmptyState = (props: Props) => {
           Your team has completed <strong>{meetingsCount}</strong>{' '}
           {plural(meetingsCount, 'meeting')}.
         </p>
-        {meetingsCount > 0 ? (
+        {canGenerateInsight ? (
           <p className='text-lg leading-tight'>
             This should be{' '}
             <strong>
@@ -31,11 +58,18 @@ const TeamInsightEmptyState = (props: Props) => {
           </p>
         )}
       </div>
-      {meetingsCount > 0 && (
-        <button className='mt-6 flex items-center rounded-full bg-grape-500 py-2 px-6 font-bold text-white transition-all duration-200 ease-in-out hover:scale-105 hover:bg-grape-600 hover:shadow-lg'>
+      {canGenerateInsight && (
+        <button
+          className='mt-6 flex items-center rounded-full bg-grape-500 py-2 px-6 font-bold text-white transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-grape-600 hover:shadow-md disabled:opacity-50'
+          onClick={handleGenerateInsight}
+          disabled={submitting}
+        >
           <AddIcon className='mr-2 h-5 w-5' />
-          Generate Insights
+          {submitting ? 'Generating...' : 'Generate Insights'}
         </button>
+      )}
+      {error && (
+        <div className='mt-2 pr-4 text-xs font-semibold text-tomato-500'>{error.message}</div>
       )}
     </div>
   )

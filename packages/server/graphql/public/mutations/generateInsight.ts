@@ -1,4 +1,6 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import {getSummaries} from './helpers/getSummaries'
@@ -7,7 +9,7 @@ import {getTopics} from './helpers/getTopics'
 const generateInsight: MutationResolvers['generateInsight'] = async (
   _source,
   {teamId, startDate, endDate, useSummaries = true, prompt},
-  {dataLoader}
+  {dataLoader, authToken}
 ) => {
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
     return standardError(
@@ -22,6 +24,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const response = useSummaries
     ? await getSummaries(teamId, startDate, endDate, prompt)
     : await getTopics(teamId, startDate, endDate, dataLoader, prompt)
+  console.log('🚀 ~ response:', response)
 
   if ('error' in response) {
     return response
@@ -29,7 +32,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const {wins, challenges, meetingIds} = response
   const pg = getKysely()
 
-  await pg
+  const [insertedInsight] = await pg
     .insertInto('Insight')
     .values({
       teamId,
@@ -39,7 +42,20 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
       startDateTime: startDate,
       endDateTime: endDate
     })
+    .returning(['id'])
     .execute()
+
+  if (!insertedInsight) {
+    return standardError(new Error('Failed to insert insight'))
+  }
+
+  publish(
+    SubscriptionChannel.TEAM,
+    teamId,
+    'GenerateInsightPayload',
+    {insight: {id: insertedInsight.id, ...response}},
+    {mutatorId: authToken.sub}
+  )
 
   return response
 }

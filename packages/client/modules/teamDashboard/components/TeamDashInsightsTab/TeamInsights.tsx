@@ -13,8 +13,7 @@ const query = graphql`
   query TeamInsightsQuery($teamId: ID!) {
     viewer {
       team(teamId: $teamId) {
-        id
-        retroMeetingsCount
+        ...TeamInsights_team @relay(mask: false)
         insight {
           ...TeamInsightContent_team
         }
@@ -23,12 +22,19 @@ const query = graphql`
   }
 `
 
-const Insights = (props: Props) => {
+graphql`
+  fragment TeamInsights_team on Team {
+    id
+    retroMeetingsCount
+  }
+`
+
+const TeamInsights = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<TeamInsightsQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {insight, retroMeetingsCount} = team ?? {}
+  const {id: teamId, insight, retroMeetingsCount} = team ?? {}
 
   return (
     <div className='mb-8 space-y-6'>
@@ -47,10 +53,10 @@ const Insights = (props: Props) => {
       {insight ? (
         <TeamInsightContent insightRef={insight} />
       ) : (
-        <TeamInsightEmptyState meetingsCount={retroMeetingsCount} />
+        <TeamInsightEmptyState teamId={teamId} meetingsCount={retroMeetingsCount} />
       )}
     </div>
   )
 }
 
-export default Insights
+export default TeamInsights
