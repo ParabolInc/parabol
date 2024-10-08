@@ -1,10 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import PokerMeetingMember from '../../database/types/PokerMeetingMember'
-import updateStage from '../../database/updateStage'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -92,12 +90,6 @@ const pokerRevealVotes = {
     })
 
     stage.isVoting = false
-    const updater = (estimateStage: RValue) =>
-      estimateStage.merge({
-        isVoting: false,
-        // note that a race condition exists here. it's possible that i cast my vote after the meeting is fetched but before this update & that'll be overwritten
-        scores
-      })
     await pg
       .updateTable('NewMeeting')
       .set({
@@ -108,7 +100,6 @@ const pokerRevealVotes = {
       })
       .where('id', '=', meetingId)
       .execute()
-    await updateStage(meetingId, stageId, 'ESTIMATE', updater)
     dataLoader.clearAll('newMeetings')
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesSuccess', data, subOptions)

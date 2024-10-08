@@ -158,7 +158,7 @@ export const resolveUnlockedStages = async (
   {dataLoader}: GQLContext
 ) => {
   if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   return unlockedStageIds.map((stageId) => resolveGQLStageFromId(stageId, meeting))
 }
 

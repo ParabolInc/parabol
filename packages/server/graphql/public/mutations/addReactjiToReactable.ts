@@ -105,7 +105,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   }
 
   const [meeting] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
     updatePG(tableName)
   ])
   dataLoader.clearAll(['comments', 'teamPromptResponses', 'retroReflections'])

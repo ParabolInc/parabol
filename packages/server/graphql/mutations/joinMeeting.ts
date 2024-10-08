@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import rMapIf from '../../database/rMapIf'
 import getRethink from '../../database/rethinkDriver'
 import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
@@ -89,8 +88,6 @@ const joinMeeting = {
       return {error: {message: 'Already joined meeting'}}
     }
 
-    const mapIf = rMapIf(r)
-
     const addStageToPhase = async (
       stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,
       phaseType: NewMeetingPhase['phaseType']
@@ -122,30 +119,6 @@ const joinMeeting = {
             .where('id', '=', meetingId)
             .execute()
         })
-      return r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update((meeting: any) => ({
-          phases: mapIf(
-            meeting('phases'),
-            (phase: any) => phase('phaseType').eq(phaseType),
-            (phase: any) =>
-              phase.merge({
-                stages: phase('stages').append({
-                  ...stage,
-                  // this is a departure from before. Let folks move ahead while the check-in is going on!
-                  isNavigable: true,
-                  isNavigableByFacilitator: true,
-                  // the stage is complete if all other stages are complete & there's at least 1
-                  isComplete: r.and(
-                    phase('stages')('isComplete').contains(false).not(),
-                    phase('stages').count().ge(1)
-                  )
-                })
-              })
-          )
-        }))
-        .run()
     }
 
     const appendToCheckin = async () => {

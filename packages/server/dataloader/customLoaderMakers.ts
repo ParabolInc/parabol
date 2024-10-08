@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader'
-import tracer from 'dd-trace'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import getRethink from '../database/rethinkDriver'
@@ -34,7 +33,6 @@ import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
-import normalizeResults from './normalizeResults'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -478,39 +476,8 @@ type MeetingStat = {
   meetingType: MeetingTypeEnum
   createdAt: Date
 }
-export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('newMeetings')
-  return new DataLoader<string, MeetingStat[], string>(
-    async (orgIds) => {
-      const r = await getRethink()
-      const meetingStatsByOrgId = await Promise.all(
-        orgIds.map(async (orgId) => {
-          // note: does not include archived teams!
-          const teams = await parent.get('teamsByOrgIds').load(orgId)
-          const teamIds = teams.map(({id}) => id)
-          const stats = (await r
-            .table('NewMeeting')
-            .getAll(r.args(teamIds), {index: 'teamId'})
-            .pluck('createdAt', 'meetingType')
-            // DO NOT CALL orderBy, it makes the query 10x more expensive!
-            // .orderBy('createdAt')
-            .run()) as {createdAt: Date; meetingType: MeetingTypeEnum}[]
-          return stats.map((stat) => ({
-            createdAt: stat.createdAt,
-            meetingType: stat.meetingType,
-            id: `ms${stat.createdAt.getTime()}`
-          }))
-        })
-      )
-      return meetingStatsByOrgId
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
 
-export const _pgmeetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('newMeetings')
   return new DataLoader<string, MeetingStat[], string>(
     async (orgIds) => {
@@ -610,28 +577,6 @@ export const activeMeetingsByMeetingSeriesId = (
   dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting[], string>(
     async (keys) => {
-      const r = await getRethink()
-      const res = await r
-        .table('NewMeeting')
-        .getAll(r.args(keys), {index: 'meetingSeriesId'})
-        .filter({endedAt: null}, {default: true})
-        .orderBy(r.asc('createdAt'))
-        .run()
-      return normalizeArrayResults(keys, res, 'meetingSeriesId')
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const _pgactiveMeetingsByMeetingSeriesId = (
-  parent: RootDataLoader,
-  dependsOn: RegisterDependsOn
-) => {
-  dependsOn('newMeetings')
-  return new DataLoader<number, AnyMeeting[], string>(
-    async (keys) => {
       const res = await selectNewMeetings()
         .where('meetingSeriesId', 'in', keys)
         .where('endedAt', 'is', null)
@@ -647,34 +592,6 @@ export const _pgactiveMeetingsByMeetingSeriesId = (
 }
 
 export const lastMeetingByMeetingSeriesId = (
-  parent: RootDataLoader,
-  dependsOn: RegisterDependsOn
-) => {
-  dependsOn('newMeetings')
-  return new DataLoader<number, AnyMeeting | null, string>(
-    async (keys) =>
-      tracer.trace('lastMeetingByMeetingSeriesId', async () => {
-        const r = await getRethink()
-        const res = await (
-          r
-            .table('NewMeeting')
-            .getAll(r.args(keys), {index: 'meetingSeriesId'})
-            .group('meetingSeriesId') as RDatum
-        )
-          .orderBy(r.desc('createdAt'))
-          .nth(0)
-          .default(null)
-          .ungroup()('reduction')
-          .run()
-        return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
-      }),
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const _pglastMeetingByMeetingSeriesId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
 ) => {
@@ -898,19 +815,17 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
   dependsOn('newMeetings')
   return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
     async (keys) => {
-      const r = await getRethink()
-      const res = await Promise.all(
+      return await Promise.all(
         keys.map(async ({teamId, meetingType}) => {
-          return r
-            .table('NewMeeting')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({meetingType: meetingType as any})
-            .count()
-            .default(0)
-            .run()
+          const row = await getKysely()
+            .selectFrom('NewMeeting')
+            .select(({fn}) => fn.count('id').as('count'))
+            .where('teamId', '=', teamId)
+            .where('meetingType', '=', meetingType)
+            .executeTakeFirstOrThrow()
+          return Number(row.count)
         })
       )
-      return res
     },
     {
       ...parent.dataLoaderOptions,
@@ -977,29 +892,6 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.ownerId}:${key.featureName}`
-    }
-  )
-}
-
-export const _pgmeetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('newMeetings')
-  return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
-    async (keys) => {
-      return await Promise.all(
-        keys.map(async ({teamId, meetingType}) => {
-          const row = await getKysely()
-            .selectFrom('NewMeeting')
-            .select(({fn}) => fn.count('id').as('count'))
-            .where('teamId', '=', teamId)
-            .where('meetingType', '=', meetingType)
-            .executeTakeFirstOrThrow()
-          return Number(row.count)
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
     }
   )
 }

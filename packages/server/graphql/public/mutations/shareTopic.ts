@@ -11,7 +11,7 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId} = meeting
 
   if (!isTeamMember(authToken, teamId)) {

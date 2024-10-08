@@ -1,9 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
-import updateStage from '../../database/updateStage'
 import getKysely from '../../postgres/getKysely'
 import {NewMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -36,15 +33,6 @@ export const removeVoteForUserId = async (userId: string, stageId: string, meeti
         .where('id', '=', meetingId)
         .execute()
     })
-  const updater = (estimateStage: RValue) =>
-    estimateStage.merge({
-      scores: estimateStage('scores').deleteAt(
-        estimateStage('scores')
-          .offsetsOf((score: RValue) => score('userId').eq(userId))
-          .nth(0)
-      )
-    })
-  return updateStage(meetingId, stageId, 'ESTIMATE', updater)
 }
 
 const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: string) => {
@@ -71,26 +59,6 @@ const upsertVote = async (vote: EstimateUserScore, stageId: string, meetingId: s
         .where('id', '=', meetingId)
         .execute()
     })
-
-  const r = await getRethink()
-  const updater = (estimateStage: RValue) =>
-    estimateStage.merge({
-      scores: r.branch(
-        estimateStage('scores')
-          .offsetsOf((score: RValue) => score('userId').eq(vote.userId))
-          .nth(0)
-          .default(-1)
-          .eq(-1),
-        estimateStage('scores').append(vote),
-        estimateStage('scores').changeAt(
-          estimateStage('scores')
-            .offsetsOf((score: RValue) => score('userId').eq(vote.userId))
-            .nth(0),
-          vote
-        )
-      )
-    })
-  return updateStage(meetingId, stageId, 'ESTIMATE', updater)
 }
 
 const voteForPokerStory = {

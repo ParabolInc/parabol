@@ -1,14 +1,15 @@
 import dayjs from 'dayjs'
 import tracer from 'dd-trace'
+import {sql} from 'kysely'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
-import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import {selectNewMeetings} from '../../../postgres/select'
+import {AnyMeeting, RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
@@ -32,7 +33,6 @@ const startRecurringMeeting = async (
   subOptions: SubOptions
 ) => {
   const pg = getKysely()
-  const r = await getRethink()
   const {id: meetingSeriesId, teamId, facilitatorId, meetingType} = meetingSeries
 
   // AUTH
@@ -63,7 +63,6 @@ const startRecurringMeeting = async (
         .insertInto('NewMeeting')
         .values({...meeting, phases: JSON.stringify(meeting.phases)})
         .execute()
-      await r.table('NewMeeting').insert(meeting).run()
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
       return meeting
@@ -88,7 +87,6 @@ const startRecurringMeeting = async (
         },
         dataLoader
       )
-      await r.table('NewMeeting').insert(meeting).run()
       await pg
         .insertInto('NewMeeting')
         .values({...meeting, phases: JSON.stringify(meeting.phases)})
@@ -117,23 +115,23 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
   context
 ) => {
   const {dataLoader, socketId: mutatorId} = context
-  const r = await getRethink()
   const now = new Date()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
   // RESOLUTION
   // Find any meetings with a scheduledEndTime before now, and close them
-  const meetingsToEnd = await r
-    .table('NewMeeting')
-    .between([false, r.minval], [false, now], {index: 'hasEndedScheduledEndTime'})
-    .run()
+  const meetingsToEnd = await selectNewMeetings()
+    .where('scheduledEndTime', '<', sql<Date>`CURRENT_TIMESTAMP`)
+    .where('endedAt', 'is', null)
+    .$narrowType<AnyMeeting>()
+    .execute()
 
   const res = await tracer.trace('processRecurrence.endMeetings', async () =>
     Promise.all(
       meetingsToEnd.map((meeting) => {
         if (meeting.meetingType === 'teamPrompt') {
-          return safeEndTeamPrompt({meeting, now, context, r, subOptions})
+          return safeEndTeamPrompt({meeting, context, subOptions})
         } else if (meeting.meetingType === 'retrospective') {
           return safeEndRetrospective({meeting, now, context})
         } else {

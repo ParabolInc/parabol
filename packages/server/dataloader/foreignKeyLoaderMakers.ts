@@ -15,6 +15,7 @@ import {
   selectTemplateScale,
   selectTimelineEvent
 } from '../postgres/select'
+import {AnyMeeting} from '../postgres/types/Meeting'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
@@ -229,25 +230,27 @@ export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgactiveMeetingsByTeamId = foreignKeyLoaderMaker(
-  '_pgnewMeetings',
+export const activeMeetingsByTeamId = foreignKeyLoaderMaker(
+  'newMeetings',
   'teamId',
   async (teamIds) => {
     return selectNewMeetings()
       .where('teamId', 'in', teamIds)
       .where('endedAt', 'is', null)
       .orderBy('createdAt desc')
+      .$narrowType<AnyMeeting>()
       .execute()
   }
 )
-export const _pgcompletedMeetingsByTeamId = foreignKeyLoaderMaker(
-  '_pgnewMeetings',
+export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
+  'newMeetings',
   'teamId',
   async (teamIds) => {
     return selectNewMeetings()
       .where('teamId', 'in', teamIds)
       .where('endedAt', 'is not', null)
       .orderBy('endedAt desc')
+      .$narrowType<AnyMeeting>()
       .execute()
   }
 )

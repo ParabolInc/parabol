@@ -16,12 +16,13 @@ const setFacilitatedUserIdOrDelete = async (
   dataLoader: DataLoaderInstance
 ) => {
   const pg = getKysely()
-  const r = await getRethink()
-  const facilitatedMeetings = await r
-    .table('NewMeeting')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-    .run()
+  const facilitatedMeetings = await pg
+    .selectFrom('NewMeeting')
+    .select('id')
+    .where('teamId', 'in', teamIds)
+    .where('createdBy', '=', userIdToDelete)
+    .execute()
+
   facilitatedMeetings.map(async (meeting) => {
     const {id: meetingId} = meeting
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
@@ -32,17 +33,9 @@ const setFacilitatedUserIdOrDelete = async (
         .set({facilitatorUserId: otherMember.userId})
         .where('id', '=', meetingId)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          facilitatorUserId: otherMember.userId
-        })
-        .run()
     } else {
-      await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
       // single-person meeting must be deleted because facilitatorUserId must be non-null
-      await r.table('NewMeeting').get(meetingId).delete().run()
+      await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
     }
   })
 }
@@ -76,11 +69,9 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const teamIds = teamMembers.map(({teamId}) => teamId)
   const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
 
-  const discussions = await pg
-    .selectFrom('Discussion')
-    .select('id')
-    .where('id', 'in', teamIds)
-    .execute()
+  const discussions = teamIds.length
+    ? await pg.selectFrom('Discussion').select('id').where('id', 'in', teamIds).execute()
+    : []
   const teamDiscussionIds = discussions.map(({id}) => id)
 
   // soft delete first for side effects
@@ -95,12 +86,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .where('createdBy', '=', userIdToDelete)
     .execute()
   await r({
-    nullifyCreatedBy: r
-      .table('NewMeeting')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .update({createdBy: null})
-      .run(),
     meetingMember: r.table('MeetingMember').getAll(userIdToDelete, {index: 'userId'}).delete(),
     notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete(),
     createdTasks: r

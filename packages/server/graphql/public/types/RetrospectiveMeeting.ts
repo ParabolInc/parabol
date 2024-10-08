@@ -30,7 +30,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       reflectionGroups.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
       return reflectionGroups
     } else if (sortBy === 'stageOrder') {
-      const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       const {phases} = meeting
       const discussPhase = getPhase(phases, 'discuss')
       if (!discussPhase) return reflectionGroups
@@ -52,7 +52,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   taskCount: ({taskCount}) => taskCount || 0,
   tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {teamId} = meeting
     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)

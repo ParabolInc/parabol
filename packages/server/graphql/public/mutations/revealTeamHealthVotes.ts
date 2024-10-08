@@ -1,6 +1,5 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateStage from '../../../database/updateStage'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
@@ -62,7 +61,6 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
     })
     .where('id', '=', meetingId)
     .execute()
-  updateStage(meetingId, stageId, 'TEAM_HEALTH', (stage) => stage.merge({isRevealed: true}))
   stage.isRevealed = true
 
   const data = {

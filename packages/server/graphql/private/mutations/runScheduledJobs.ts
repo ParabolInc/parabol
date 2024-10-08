@@ -25,7 +25,7 @@ const processMeetingStageTimeLimits = async (
   // if mattermost, send mattermost
   // if no integrated notification services, send an in-app notification
   const {meetingId} = job
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId, facilitatorUserId} = meeting
   IntegrationNotifier.endTimeLimit(dataLoader, meetingId, teamId)
 

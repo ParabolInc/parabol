@@ -1,5 +1,6 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
-import getRethink from '../../../database/rethinkDriver'
+import {selectNewMeetings} from '../../../postgres/select'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
@@ -11,15 +12,13 @@ const MeetingSeries: MeetingSeriesResolvers = {
     return res || []
   },
   mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
-    const r = await getRethink()
-    const meetings = await r
-      .table('NewMeeting')
-      .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
-      // Sort order: active meetings first, then sorted by when created.
-      .orderBy((doc) => (doc('endedAt') ? 0 : 1), r.desc('createdAt'))
+    const meeting = await selectNewMeetings()
+      .where('meetingSeriesId', '=', meetingSeriesId)
+      .orderBy(['endedAt desc', 'createdAt desc'])
       .limit(1)
-      .run()
-    return meetings[0]!
+      .$narrowType<AnyMeeting>()
+      .executeTakeFirstOrThrow()
+    return meeting
   }
 }
 

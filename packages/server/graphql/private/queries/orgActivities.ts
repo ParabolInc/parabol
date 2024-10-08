@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum, RValue} from '../../../database/stricterR'
+import {RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
 import {OrgActivityRow, QueryResolvers} from '../resolverTypes'
 
@@ -25,9 +25,9 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
     .innerJoin('OrganizationUser', 'User.id', 'OrganizationUser.userId')
     .innerJoin('Organization', 'OrganizationUser.orgId', 'Organization.id')
     .select([
-      sql`date_trunc('month', "User"."createdAt")`.as('month'),
+      sql<Date>`date_trunc('month', "User"."createdAt")`.as('month'),
       'Organization.name as orgName',
-      sql`COUNT(DISTINCT "User"."id")`.as('signup_count')
+      sql<bigint>`COUNT(DISTINCT "User"."id")`.as('signup_count')
     ])
     .where('User.createdAt', '>=', queryStartDate)
     .where('User.createdAt', '<', queryEndDate)
@@ -40,81 +40,72 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
       join.onRef(sql`m."monthStart"`, '=', sql`us.month::timestamp`)
     )
     .select([
-      sql`m."monthStart"`.as('monthStart'),
-      sql`COALESCE(us."orgName", 'All Organizations')`.as('orgName'),
-      sql`COALESCE(us.signup_count, 0)`.as('signupCount')
+      sql<Date>`m."monthStart"`.as('monthStart'),
+      sql<string>`COALESCE(us."orgName", 'All Organizations')`.as('orgName'),
+      sql<bigint>`COALESCE(us.signup_count, 0)`.as('signupCount')
     ])
     .orderBy('monthStart')
 
   const r = await getRethink()
   try {
-    const [pgResults, rethinkResults] = await Promise.all([
+    const [signupsResult, rawMeetingResult] = await Promise.all([
       query.execute(),
-      r
-        .table('NewMeeting')
-        .between(
-          r.epochTime(queryStartDate.getTime() / 1000),
-          r.epochTime(queryEndDate.getTime() / 1000),
-          {index: 'createdAt'}
-        )
-        .merge((row: RValue) => ({
-          yearMonth: {
-            year: row('createdAt').year(),
-            month: row('createdAt').month()
-          }
-        }))
-        .group((row) => row('yearMonth'))
-        .ungroup()
-        .map((group: RDatum) => ({
-          yearMonth: group('group'),
-          meetingCount: group('reduction').count(),
-          participantIds: group('reduction')
-            .concatMap((row: RDatum) =>
-              r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'})('userId')
-            )
-            .distinct()
-        }))
-        .map((row: RDatum) =>
-          row.merge({
-            participantCount: row('participantIds').count()
-          })
-        )
-        .without('participantIds')
-        .run()
+      pg
+        .selectFrom('NewMeeting')
+        .select(({fn, ref, val}) => [
+          fn<Date>('date_trunc', [val('month'), ref('createdAt')]).as('monthStart'),
+          fn<string[]>('array_agg', ['id']).as('meetingIds')
+        ])
+        .where('createdAt', '>=', queryStartDate)
+        .where('createdAt', '<', queryEndDate)
+        .groupBy('monthStart')
+        .execute()
     ])
-
+    const meetingIds = rawMeetingResult.flatMap((row) => row.meetingIds)
+    const participantCounts = (await (
+      r
+        .table('MeetingMember')
+        .getAll(r.args(meetingIds), {index: 'meetingId'})
+        .group('meetingId') as any
+    )
+      .count()
+      .ungroup()
+      .map((group: RValue) => ({
+        meetingId: group('group'),
+        participantCount: group('reduction')
+      }))
+      .run()) as {meetingId: string; participantCount: number}[]
     // Combine PostgreSQL and RethinkDB results
-    const combinedResults: OrgActivityRow[] = pgResults.reduce((acc: any, pgRow: any) => {
-      const monthStart = new Date(pgRow.monthStart)
-      const monthKey = monthStart.toISOString()
+    const combinedResults = signupsResult.reduce(
+      (acc, signupRow) => {
+        const epochMonthStart = signupRow.monthStart.getTime()
+        const monthKey = signupRow.monthStart.toISOString()
 
-      if (!acc[monthKey]) {
-        acc[monthKey] = {
-          monthStart: pgRow.monthStart,
-          signups: [],
-          participantCount: 0,
-          meetingCount: 0
+        if (!acc[monthKey]) {
+          acc[monthKey] = {
+            monthStart: signupRow.monthStart,
+            signups: [],
+            participantCount: 0,
+            meetingCount: 0
+          }
         }
-      }
 
-      acc[monthKey].signups.push({
-        orgName: pgRow.orgName,
-        count: pgRow.signupCount
-      })
+        acc[monthKey].signups.push({
+          orgName: signupRow.orgName,
+          count: Number(signupRow.signupCount)
+        })
 
-      const rethinkData = rethinkResults.find(
-        (r: any) =>
-          r.yearMonth.month === monthStart.getUTCMonth() + 1 &&
-          r.yearMonth.year === monthStart.getUTCFullYear()
-      )
-
-      if (rethinkData) {
-        acc[monthKey].participantCount = rethinkData.participantCount
-        acc[monthKey].meetingCount = rethinkData.meetingCount
-      }
-
-      return acc
-    }, {})
+        const meetingData = rawMeetingResult.find((r) => r.monthStart.getTime() === epochMonthStart)
+        const participantCount = participantCounts
+          .filter((pc) => meetingData?.meetingIds.includes(pc.meetingId))
+          .map((pc) => pc.participantCount)
+          .reduce((a, b) => a + b, 0)
+        acc[monthKey].participantCount = participantCount
+        acc[monthKey].meetingCount = meetingData?.meetingIds.length ?? 0
+        return acc
+      },
+      {} as Record<string, OrgActivityRow>
+    )
 
     const rows = Object.values(combinedResults)
     return {rows}

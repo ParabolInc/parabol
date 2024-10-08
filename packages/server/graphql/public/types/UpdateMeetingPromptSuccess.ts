@@ -7,7 +7,7 @@ export type UpdateMeetingPromptSuccessSource = {
 const UpdateMeetingPromptSuccess: UpdateMeetingPromptSuccessResolvers = {
   meeting: async (source, _args, {dataLoader}) => {
     const {meetingId} = source
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamPrompt') throw new Error('Not a team prompt meeting')
     return meeting
   }

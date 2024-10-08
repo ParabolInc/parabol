@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -25,10 +24,8 @@ export default {
     {facilitatorUserId, meetingId}: {facilitatorUserId: string; meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-    const now = new Date()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -52,14 +49,6 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        facilitatorUserId,
-        updatedAt: now
-      })
-      .run()
     await getKysely()
       .updateTable('NewMeeting')
       .set({facilitatorUserId})

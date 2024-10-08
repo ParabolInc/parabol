@@ -11,7 +11,7 @@ const resolveStage =
     _args: unknown,
     {dataLoader}: GQLContext
   ) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {phases, teamId} = meeting
     const phase = phases.find((phase: GenericMeetingPhase) => phase.phaseType === phaseType)!
     const {stages} = phase

@@ -42,7 +42,7 @@ export default {
       })
     }
     const {meetingId} = reflectionGroup
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'retrospective') {
       return {error: {message: 'Meeting type is not retrospective'}}
     }

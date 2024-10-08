@@ -138,31 +138,18 @@ const updateRetroMaxVotes = {
     }
 
     // RESOLUTION
-    await Promise.all([
-      getKysely()
-        .with('MeetingUpdates', (qb) =>
-          qb
-            .updateTable('NewMeeting')
-            .set({totalVotes, maxVotesPerGroup})
-            .where('id', '=', meetingId)
-        )
-        .updateTable('MeetingSettings')
-        .set({
-          totalVotes,
-          maxVotesPerGroup
-        })
-        .where('teamId', '=', teamId)
-        .where('meetingType', '=', 'retrospective')
-        .execute(),
-      r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          totalVotes,
-          maxVotesPerGroup
-        })
-        .run()
-    ])
+    await getKysely()
+      .with('MeetingUpdates', (qb) =>
+        qb.updateTable('NewMeeting').set({totalVotes, maxVotesPerGroup}).where('id', '=', meetingId)
+      )
+      .updateTable('MeetingSettings')
+      .set({
+        totalVotes,
+        maxVotesPerGroup
+      })
+      .where('teamId', '=', teamId)
+      .where('meetingType', '=', 'retrospective')
+      .execute()
     dataLoader.get('newMeetings').clear(meetingId)
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesSuccess', data, subOptions)

@@ -1,6 +1,4 @@
 import {ExpressionOrFactory, SqlBool, sql} from 'kysely'
-import getRethink from 'parabol-server/database/rethinkDriver'
-import {RDatum} from 'parabol-server/database/stricterR'
 import {DB} from 'parabol-server/postgres/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import getKysely from '../server/postgres/getKysely'
@@ -14,16 +12,17 @@ export interface DiscussionMeta {
 }
 
 const validateDiscussions = async (discussions: (DiscussionMeta & {meetingId: string})[]) => {
-  const r = await getRethink()
+  const pg = getKysely()
   if (discussions.length === 0) return discussions
   // Exclude discussions that belong to an unfinished meeting
   const meetingIds = [...new Set(discussions.map(({meetingId}) => meetingId))]
-  const endedMeetingIds = await r
-    .table('NewMeeting')
-    .getAll(r.args(meetingIds), {index: 'id'})
-    .filter((row: RDatum) => row('endedAt').default(null).ne(null))('id')
-    .distinct()
-    .run()
+  const endedMeetings = await pg
+    .selectFrom('NewMeeting')
+    .select('id')
+    .where('id', 'in', meetingIds)
+    .where('endedAt', 'is', null)
+    .execute()
+  const endedMeetingIds = endedMeetings.map(({id}) => id)
   const endedMeetingIdsSet = new Set(endedMeetingIds)
   return discussions.filter(({meetingId}) => endedMeetingIdsSet.has(meetingId))
 }

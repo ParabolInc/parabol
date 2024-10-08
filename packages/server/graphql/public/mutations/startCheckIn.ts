@@ -61,20 +61,12 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     phases,
     facilitatorUserId: viewerId
   }) as CheckInMeeting
-  await r.table('NewMeeting').insert(meeting).run()
-  await pg
-    .insertInto('NewMeeting')
-    .values({...meeting, phases: JSON.stringify(phases)})
-    .execute()
-  // Disallow 2 active check-in meetings
-  const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-    const {id} = activeMeeting
-    if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-    return true
-  })
-  if (otherActiveMeeting) {
-    await r.table('NewMeeting').get(meetingId).delete().run()
+  try {
+    await pg
+      .insertInto('NewMeeting')
+      .values({...meeting, phases: JSON.stringify(phases)})
+      .execute()
+  } catch (e) {
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')

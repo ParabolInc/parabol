@@ -6,7 +6,7 @@ export type UpdateMeetingTemplateSuccessSource = {
 
 const UpdateMeetingTemplateSuccess: UpdateMeetingTemplateSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return meeting
   }
 }

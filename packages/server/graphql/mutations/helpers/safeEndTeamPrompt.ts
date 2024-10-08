@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
-import getRethink, {ParabolR} from '../../../database/rethinkDriver'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
@@ -21,19 +20,11 @@ import updateTeamInsights from './updateTeamInsights'
 const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
   const pg = getKysely()
-  const r = await getRethink()
 
   const summary = await generateStandupMeetingSummary(meeting, dataLoader)
   if (summary) {
     await pg.updateTable('NewMeeting').set({summary}).where('id', '=', meeting.id).execute()
   }
-  await r
-    .table('NewMeeting')
-    .get(meeting.id)
-    .update({
-      summary
-    })
-    .run()
 
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
@@ -49,16 +40,12 @@ const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: Internal
 
 const safeEndTeamPrompt = async ({
   meeting,
-  now,
   viewerId,
-  r,
   context,
   subOptions
 }: {
   meeting: TeamPromptMeeting
-  now: Date
   viewerId?: string
-  r: ParabolR
   context: InternalContext
   subOptions: SubOptions
 }) => {
@@ -80,30 +67,10 @@ const safeEndTeamPrompt = async ({
     })
     .where('id', '=', meetingId)
     .execute()
-  const completedTeamPrompt = await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        endedAt: now,
-        ...insights
-      },
-      {returnChanges: true}
-    )('changes')(0)('new_val')
-    .default(null)
-    .run()
+  dataLoader.clearAll('newMeetings')
 
-  if (!completedTeamPrompt) {
-    return standardError(new Error('Completed team prompt meeting does not exist'), {
-      userId: viewerId
-    })
-  }
-
-  if (completedTeamPrompt.meetingType !== 'teamPrompt') {
-    return standardError(new Error('Meeting is not a team prompt'), {userId: viewerId})
-  }
-
-  const [meetingMembers, team, teamMembers, responses] = await Promise.all([
+  const [completedTeamPrompt, meetingMembers, team, teamMembers, responses] = await Promise.all([
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),

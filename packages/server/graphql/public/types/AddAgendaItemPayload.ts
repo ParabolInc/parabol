@@ -16,7 +16,7 @@ const AddAgendaItemPayload: AddAgendaItemPayloadResolvers = {
 
   meeting: (source, _args, {dataLoader}) => {
     return 'meetingId' in source && source.meetingId
-      ? dataLoader.get('newMeetings').load(source.meetingId)
+      ? dataLoader.get('newMeetings').loadNonNull(source.meetingId)
       : null
   }
 }

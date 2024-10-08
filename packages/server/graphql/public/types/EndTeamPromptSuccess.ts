@@ -8,7 +8,7 @@ export type EndTeamPromptSuccessSource = {
 
 const EndTeamPromptSuccess: EndTeamPromptSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamPrompt') throw new Error('Meeting is not a team prompt')
     return meeting
   },

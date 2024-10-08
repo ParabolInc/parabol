@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 
@@ -9,9 +8,7 @@ const getBotId = async (videoMeetingURL: string) => {
 }
 
 const addRecallBot = async (meetingId: string, videoMeetingURL: string) => {
-  const r = await getRethink()
   const recallBotId = (await getBotId(videoMeetingURL)) ?? undefined
-  await r.table('NewMeeting').get(meetingId).update({recallBotId, videoMeetingURL}).run()
   await getKysely()
     .updateTable('NewMeeting')
     .set({recallBotId, videoMeetingURL})

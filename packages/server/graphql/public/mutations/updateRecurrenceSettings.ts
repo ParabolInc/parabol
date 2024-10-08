@@ -3,7 +3,7 @@ import {sql} from 'kysely'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
-import getRethink from '../../../database/rethinkDriver'
+import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
@@ -36,7 +36,6 @@ export const startNewMeetingSeries = async (
     facilitatorUserId: facilitatorId
   } = meeting
   const pg = getKysely()
-  const r = await getRethink()
   if (!facilitatorId) {
     throw new Error('No facilitatorId')
   }
@@ -52,14 +51,6 @@ export const startNewMeetingSeries = async (
   const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
   const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
 
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update({
-      meetingSeriesId: newMeetingSeriesId,
-      scheduledEndTime: nextMeetingStartDate
-    })
-    .run()
   await pg
     .updateTable('NewMeeting')
     .set({meetingSeriesId: newMeetingSeriesId, scheduledEndTime: nextMeetingStartDate})
@@ -71,20 +62,21 @@ export const startNewMeetingSeries = async (
   }
 }
 
-const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRule: RRuleSet) => {
+const updateMeetingSeries = async (
+  meetingSeries: MeetingSeries,
+  newRecurrenceRule: RRuleSet,
+  dataLoader: DataLoaderInstance
+) => {
   const pg = getKysely()
-  const r = await getRethink()
   const {id: meetingSeriesId} = meetingSeries
 
   await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
 
   // lets close all active meetings at the time when
   // a new meeting will be created (tomorrow at 9 AM, same as date start of new recurrence rule)
-  const activeMeetings = await r
-    .table('NewMeeting')
-    .getAll(meetingSeriesId, {index: 'meetingSeriesId'})
-    .filter({endedAt: null}, {default: true})
-    .run()
+  const activeMeetings = await dataLoader
+    .get('activeMeetingsByMeetingSeriesId')
+    .load(meetingSeriesId)
   if (activeMeetings.length > 0) {
     const meetingIds = activeMeetings.map(({id}) => id)
     const scheduledEndTime = getNextRRuleDate(newRecurrenceRule)
@@ -93,22 +85,11 @@ const updateMeetingSeries = async (meetingSeries: MeetingSeries, newRecurrenceRu
       .set({scheduledEndTime})
       .where('id', 'in', meetingIds)
       .execute()
-    const updates = activeMeetings.map((meeting) =>
-      r
-        .table('NewMeeting')
-        .get(meeting.id)
-        .update({
-          scheduledEndTime
-        })
-        .run()
-    )
-    await Promise.all(updates)
   }
 }
 
 export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
   const pg = getKysely()
-  const r = await getRethink()
   await pg
     .with('NewMeetingUpdateEnd', (qb) =>
       qb
@@ -121,14 +102,6 @@ export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .set({cancelledAt: sql`CURRENT_TIMESTAMP`})
     .where('id', '=', meetingSeries.id)
     .execute()
-  await r
-    .table('NewMeeting')
-    .getAll(meetingSeries.id, {index: 'meetingSeriesId'})
-    .filter({endedAt: null}, {default: true})
-    .update({
-      scheduledEndTime: null
-    })
-    .run()
 }
 
 const updateGCalRecurrenceRule = (oldRule: RRuleSet, newRule: RRuleSet | null | undefined) => {
@@ -175,7 +148,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       await stopMeetingSeries(meetingSeries)
       analytics.recurrenceStopped(viewer, meetingSeries)
     } else {
-      await updateMeetingSeries(meetingSeries, rrule)
+      await updateMeetingSeries(meetingSeries, rrule, dataLoader)
       analytics.recurrenceStarted(viewer, meetingSeries)
     }
     if (gcalSeriesId) {

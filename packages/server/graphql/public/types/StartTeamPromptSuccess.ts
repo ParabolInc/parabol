@@ -7,7 +7,7 @@ export type StartTeamPromptSuccessSource = {
 
 const StartTeamPromptSuccess: StartTeamPromptSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamPrompt') throw new Error('Not a team prompt meeting')
     return meeting
   },
