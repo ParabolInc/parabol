@@ -14,7 +14,7 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         id
-        meetingsCount
+        retroMeetingsCount
         insight {
           ...TeamInsightContent_team
         }
@@ -28,7 +28,7 @@ const Insights = (props: Props) => {
   const data = usePreloadedQuery<TeamInsightsQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {insight, meetingsCount} = team ?? {}
+  const {insight, retroMeetingsCount} = team ?? {}
 
   return (
     <div className='mb-8 space-y-6'>
@@ -47,7 +47,7 @@ const Insights = (props: Props) => {
       {insight ? (
         <TeamInsightContent insightRef={insight} />
       ) : (
-        <TeamInsightEmptyState meetingsCount={meetingsCount} />
+        <TeamInsightEmptyState meetingsCount={retroMeetingsCount} />
       )}
     </div>
   )

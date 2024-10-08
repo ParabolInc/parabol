@@ -62,9 +62,10 @@ const Team: TeamResolvers = {
     const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
     return insight || null
   },
-  meetingsCount: async ({id: teamId}, _args, {dataLoader}) => {
+  retroMeetingsCount: async ({id: teamId}, _args, {dataLoader}) => {
     const meetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
-    return meetings.length
+    const retroMeetings = meetings.filter((meeting) => meeting.meetingType === 'retrospective')
+    return retroMeetings.length
   }
 }
 

@@ -5,9 +5,10 @@ import {marked} from 'marked'
 import React from 'react'
 import {useFragment} from 'react-relay'
 import sanitizeHtml from 'sanitize-html'
+import {TeamInsightContent_team$key} from '../../../../__generated__/TeamInsightContent_team.graphql'
 
 interface Props {
-  insightRef: any
+  insightRef: TeamInsightContent_team$key
 }
 
 const TeamInsightContent = (props: Props) => {
@@ -24,7 +25,7 @@ const TeamInsightContent = (props: Props) => {
     `,
     insightRef
   )
-  const {meetingsCount, wins, challenges} = insight!
+  const {meetingsCount, wins, challenges} = insight
 
   const renderMarkdown = (text: string) => {
     const renderedText = marked(text, {
@@ -80,7 +81,7 @@ const TeamInsightContent = (props: Props) => {
         What wins has "{name}" seen during this timeframe?
       </p>
       <ul className='mb-6 list-disc space-y-0 pl-6'>
-        {insight?.wins.map((win, index) => (
+        {wins.map((win, index) => (
           <li key={index} className='text-sm text-slate-700'>
             <span className='link-style' dangerouslySetInnerHTML={{__html: renderMarkdown(win)}} />
           </li>
@@ -92,7 +93,7 @@ const TeamInsightContent = (props: Props) => {
         What challenges has "{name}" faced during this timeframe?
       </p>
       <ul className='list-disc space-y-0 pl-6'>
-        {insight?.challenges.map((challenge, index) => (
+        {challenges.map((challenge, index) => (
           <li key={index} className='text-sm text-slate-700'>
             <span
               className='link-style'
