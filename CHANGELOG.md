@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.4](https://github.com/ParabolInc/parabol/compare/v7.50.3...v7.50.4) (2024-10-08)
+
+
+### Changed
+
+* **rethinkdb:** MeetingMember: Phase 2 ([#10294](https://github.com/ParabolInc/parabol/issues/10294)) ([af50d0a](https://github.com/ParabolInc/parabol/commit/af50d0a1420ae21b4e48ddc040c0d79f9d81e2cf))
+* **rethinkdb:** MeetingMember: Phase 3 ([#10298](https://github.com/ParabolInc/parabol/issues/10298)) ([dee4e0f](https://github.com/ParabolInc/parabol/commit/dee4e0f0119bd46167175043405bc24abd49d88b))
+
 ## [7.50.3](https://github.com/ParabolInc/parabol/compare/v7.50.2...v7.50.3) (2024-10-08)
 
 
