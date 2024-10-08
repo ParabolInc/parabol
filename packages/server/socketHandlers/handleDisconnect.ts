@@ -18,7 +18,7 @@ mutation DisconnectSocket($userId: ID!) {
   }
 }`
 
-const handleDisconnect = (connectionContext: ConnectionContext, options: Options = {}) => {
+const handleDisconnect = async (connectionContext: ConnectionContext, options: Options = {}) => {
   const {exitCode = 1000, reason} = options
   const {authToken, ip, cancelKeepAlive, id: socketId, socket, isDisconnecting} = connectionContext
   if (isDisconnecting) return
@@ -28,7 +28,7 @@ const handleDisconnect = (connectionContext: ConnectionContext, options: Options
   relayUnsubscribeAll(connectionContext)
   if (authToken.rol !== 'impersonate') {
     const userId = getUserId(authToken)
-    publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
+    await publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
   }
   activeClients.delete(connectionContext.id)
   closeTransport(socket, exitCode, reason)
