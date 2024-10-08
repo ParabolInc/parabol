@@ -114,13 +114,20 @@ const resetRetroMeetingToGroupStage = {
             .set({voterIds: [], discussionPromptQuestion: null})
             .where('id', 'in', reflectionGroupIds)
         )
+        .with('ResetMeetingMember', (qb) =>
+          qb
+            .updateTable('MeetingMember')
+            .set({votesRemaining: meeting.totalVotes})
+            .where('meetingId', '=', meetingId)
+        )
         .updateTable('NewMeeting')
         .set({phases: JSON.stringify(newPhases)})
         .where('id', '=', meetingId)
         .execute(),
       r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
-      r.table('NewMeeting').get(meetingId).update({phases: newPhases}).run(),
-      (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
+      r
+        .table('MeetingMember')
+        .getAll(meetingId, {index: 'meetingId'})
         .update({votesRemaining: meeting.totalVotes})
         .run()
     ])

@@ -1,4 +1,5 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {ActionMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import {ActionMeetingResolvers} from '../resolverTypes'
@@ -20,8 +21,10 @@ const ActionMeeting: ActionMeetingResolvers = {
     // only populated after the meeting has been completed (not killed)
     return commentCount || 0
   },
-  meetingMembers: ({id: meetingId}, _args, {dataLoader}) => {
-    return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+  meetingMembers: async ({id: meetingId}, _args, {dataLoader}) => {
+    return (await dataLoader
+      .get('meetingMembersByMeetingId')
+      .load(meetingId)) as ActionMeetingMember[]
   },
   taskCount: async ({taskCount}) => {
     // only populated after the meeting has been completed (not killed)
@@ -29,7 +32,7 @@ const ActionMeeting: ActionMeetingResolvers = {
   },
   tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {teamId} = meeting
     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
@@ -38,7 +41,7 @@ const ActionMeeting: ActionMeetingResolvers = {
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-    return meetingMember || null
+    return (meetingMember as ActionMeetingMember) || null
   }
 }
 

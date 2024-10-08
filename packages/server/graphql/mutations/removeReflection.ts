@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -24,7 +23,6 @@ export default {
     {reflectionId}: {reflectionId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -40,7 +38,7 @@ export default {
     if (creatorId !== viewerId) {
       return standardError(new Error('Reflection'), {userId: viewerId})
     }
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -61,14 +59,7 @@ export default {
     let unlockedStageIds
     if (reflections.length === 0) {
       unlockedStageIds = unlockAllStagesForPhase(phases, 'group', true, false)
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          phases
-        })
-        .run()
-      await getKysely()
+      await pg
         .updateTable('NewMeeting')
         .set({phases: JSON.stringify(phases)})
         .where('id', '=', meetingId)

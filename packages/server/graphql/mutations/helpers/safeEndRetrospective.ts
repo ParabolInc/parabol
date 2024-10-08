@@ -76,23 +76,6 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     })
     .where('id', '=', meetingId)
     .execute()
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        commentCount,
-        taskCount,
-        topicCount: reflectionGroupIds.length,
-        reflectionCount: reflections.length,
-        sentimentScore,
-        summary,
-        transcription
-      },
-      {nonAtomic: true}
-    )
-    .run()
-
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
@@ -116,7 +99,6 @@ const safeEndRetrospective = async ({
 }) => {
   const {authToken, socketId: mutatorId, dataLoader} = context
   const {id: meetingId, phases, facilitatorStageId, teamId} = meeting
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -132,19 +114,6 @@ const safeEndRetrospective = async ({
   const phase = getMeetingPhase(phases)
 
   const insights = await gatherInsights(meeting, dataLoader)
-  const completedRetrospective = await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        endedAt: now,
-        phases,
-        ...insights
-      },
-      {returnChanges: true}
-    )('changes')(0)('new_val')
-    .default(null)
-    .run()
   await getKysely()
     .updateTable('NewMeeting')
     .set({
@@ -156,11 +125,7 @@ const safeEndRetrospective = async ({
     .where('id', '=', meetingId)
     .executeTakeFirst()
   dataLoader.clearAll('newMeetings')
-  if (!completedRetrospective) {
-    return standardError(new Error('Completed retrospective meeting does not exist'), {
-      userId: viewerId
-    })
-  }
+  const completedRetrospective = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   if (completedRetrospective.meetingType !== 'retrospective') {
     return standardError(new Error('Meeting type is not retrospective'), {
       userId: viewerId

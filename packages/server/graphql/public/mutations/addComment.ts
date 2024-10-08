@@ -90,7 +90,7 @@ const addComment: MutationResolvers['addComment'] = async (
   }
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
   const [meeting, viewerMeetingMember, viewer] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
     dataLoader.get('meetingMembers').load(meetingMemberId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])

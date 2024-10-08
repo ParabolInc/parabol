@@ -1,6 +1,5 @@
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum, RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
+import getKysely from '../../../postgres/getKysely'
 import {TeamMember} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
@@ -120,89 +119,77 @@ const Company: CompanyResolvers = {
     return orgsIdsWithSufficientTeamMembers.length
   },
   lastMetAt: async ({id: domain}, _args, {authToken, dataLoader}) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const teams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
     const teamIds = teams.map(({id}) => id)
-    if (teamIds.length === 0) return 0
-    const lastMetAt = await r
-      .table('NewMeeting')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .max('createdAt' as any)('createdAt')
-      .default(null)
-      .run()
-    return lastMetAt
+    if (teamIds.length === 0) return null
+    const lastMetAt = await pg
+      .selectFrom('NewMeeting')
+      .select('createdAt')
+      .where('teamId', 'in', teamIds)
+      .orderBy('createdAt desc')
+      .limit(1)
+      .executeTakeFirst()
+    return lastMetAt?.createdAt ?? null
   },
 
   meetingCount: async ({id: domain}, {after}, {authToken, dataLoader}) => {
     // number of meetings created by teams on organizations assigned to the domain
-    const r = await getRethink()
+    const pg = getKysely()
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const teams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
-    const filterFn = after ? (meeting: any) => meeting('createdAt').ge(after) : () => true
-    return r
-      .table('NewMeeting')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter(filterFn)
-      .count()
-      .default(0)
-      .run()
+    const res = await pg
+      .selectFrom('NewMeeting')
+      .select(({fn}) => fn.count('id').as('count'))
+      .where('teamId', 'in', teamIds)
+      .$if(!!after, (qb) => qb.where('createdAt', '>=', after!))
+      .executeTakeFirstOrThrow()
+    return res.count ? Number(res.count) : 0
   },
 
   monthlyTeamStreakMax: async ({id: domain}, _args, {authToken, dataLoader}) => {
-    const r = await getRethink()
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const orgIds = organizations.map(({id}) => id)
     const teams = (await dataLoader.get('teamsByOrgIds').loadMany(orgIds)).filter(isValid).flat()
     const teamIds = teams.map(({id}) => id)
     if (teamIds.length === 0) return 0
-    return (
-      r
-        .table('NewMeeting')
-        .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((row: RDatum) => row('endedAt').default(null).ne(null))
-        // number of months since unix epoch
-        .merge((row: RValue) => ({
-          epochMonth: row('endedAt').month().add(row('endedAt').year().mul(12))
-        }))
-        .group((row) => [row('teamId'), row('epochMonth')])
-        .count()
-        .ungroup()
-        .map((row) => ({
-          teamId: row('group')(0),
-          epochMonth: row('group')(1)
-        }))
-        .group('teamId')('epochMonth')
-        .ungroup()
-        .map((row) => ({
-          teamId: row('group'),
-          epochMonth: row('reduction'),
-          // epochMonth shifted 1 index position
-          shift: row('reduction')
-            .deleteAt(0)
-            .map((z) => z.add(-1))
-        }))
-        .merge((row: RValue) => ({
-          // 1 if there are 2 consecutive epochMonths next to each other, else 0
-          teamStreak: r
-            .map(row('shift'), row('epochMonth'), (shift, epochMonth) =>
-              r.branch(shift.eq(epochMonth), '1', '0')
-            )
-            .reduce((left, right) => left.add(right).default(''))
-            .default('')
-            // get an array of all the groupings of 1
-            .split('0')
-            .map((val) => val.count())
-            .max()
-            .add(1)
-        }))
-        .max('teamStreak')('teamStreak')
-        .run()
-    )
+    const completedMeetingsRes = await dataLoader.get('completedMeetingsByTeamId').loadMany(teamIds)
+    const endTimes = completedMeetingsRes
+      .filter(isValid)
+      .flat()
+      .map(({endedAt}) => endedAt!)
+      .sort((a, b) => (a.getTime() < b.getTime() ? -1 : 1))
+
+    let longestStreak = 1
+    let currentStreak = 1
+
+    // Step 2: Traverse the sorted array and count streaks of consecutive months
+    for (let i = 1; i < endTimes.length; i++) {
+      const prevDate = endTimes[i - 1]!
+      const currDate = endTimes[i]!
+
+      // Calculate year and month differences
+      const yearDiff = currDate.getFullYear() - prevDate.getFullYear()
+      const monthDiff = currDate.getMonth() - prevDate.getMonth()
+
+      // Step 3: Check if dates are consecutive months
+      if ((yearDiff === 0 && monthDiff === 1) || (yearDiff === 1 && monthDiff === -11)) {
+        currentStreak++
+      } else {
+        // Reset streak if not consecutive
+        longestStreak = Math.max(longestStreak, currentStreak)
+        currentStreak = 1
+      }
+    }
+
+    // Step 4: Ensure the last streak is accounted for
+    longestStreak = Math.max(longestStreak, currentStreak)
+    return longestStreak
   },
 
   organizations: async ({id: domain}, _args, {authToken, dataLoader}) => {

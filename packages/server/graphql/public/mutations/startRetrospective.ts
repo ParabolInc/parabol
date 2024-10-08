@@ -1,9 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -14,6 +12,7 @@ import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSer
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
+import {createMeetingMember} from '../../mutations/joinMeeting'
 import {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
@@ -26,7 +25,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-  const DUPLICATE_THRESHOLD = 3000
   // AUTH
   const viewerId = getUserId(authToken)
   if (!isTeamMember(authToken, teamId)) {
@@ -74,40 +72,32 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingId = meeting.id
 
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-  await Promise.allSettled([
-    r.table('NewMeeting').insert(meeting).run(),
+  const [newMeetingRes] = await Promise.allSettled([
     pg
       .insertInto('NewMeeting')
       .values({...meeting, phases: JSON.stringify(meeting.phases)})
       .execute(),
     updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
   ])
-
-  // Disallow accidental starts (2 meetings within 2 seconds)
-  const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-    const {createdAt, id} = activeMeeting
-    if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-    return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
-  })
-  if (otherActiveMeeting) {
-    // trigger exists in PG to prevent this
-    await r.table('NewMeeting').get(meetingId).delete().run()
+  if (newMeetingRes.status === 'rejected') {
     return {error: {message: 'Meeting already started'}}
   }
 
-  const updates = {
-    lastMeetingType: meetingType
-  }
+  const meetingMember = createMeetingMember(meeting, {
+    userId: viewerId,
+    teamId,
+    isSpectatingPoker: false
+  })
   const [meetingSeries] = await Promise.all([
     rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
-    r
-      .table('MeetingMember')
-      .insert(
-        new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
+    pg
+      .with('TeamUpdates', (qb) =>
+        qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)
       )
-      .run(),
-    updateTeamByTeamId(updates, teamId),
+      .insertInto('MeetingMember')
+      .values(meetingMember)
+      .execute(),
+    r.table('MeetingMember').insert(meetingMember).run(),
     videoMeetingURL &&
       pg
         .updateTable('MeetingSettings')

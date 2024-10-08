@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -27,7 +26,6 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
-  const r = await getRethink()
   const [meeting, viewer] = await Promise.all([
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('users').loadNonNull(viewerId)
@@ -72,11 +70,6 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
       .flat()
   )
 
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .replace(r.row.without('resetReflectionGroups') as any)
-    .run()
   await pg
     .updateTable('NewMeeting')
     .set({resetReflectionGroups: null})

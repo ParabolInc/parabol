@@ -1,11 +1,10 @@
 import {CHECKIN} from '../../../client/utils/constants'
-import MeetingMember from '../../database/types/MeetingMember'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {AnyMeeting} from '../../postgres/types/Meeting'
+import {AnyMeeting, AnyMeetingMember} from '../../postgres/types/Meeting'
 
 export const createMeetingProperties = (
   meeting: AnyMeeting,
-  meetingMembers?: MeetingMember[],
+  meetingMembers?: AnyMeetingMember[],
   template?: MeetingTemplate
 ) => {
   const {id: meetingId, teamId, facilitatorUserId, meetingType, phases} = meeting

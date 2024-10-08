@@ -7,7 +7,7 @@ export type StartCheckInSuccessSource = {
 
 const StartCheckInSuccess: StartCheckInSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'action') throw new Error('Not a check-in meeting')
     return meeting
   },

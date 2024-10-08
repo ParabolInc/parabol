@@ -1,6 +1,7 @@
 import yaml from 'js-yaml'
-import getRethink from '../../../database/rethinkDriver'
+import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
+import {selectNewMeetings} from '../../../postgres/select'
 import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import getPhase from '../../../utils/getPhase'
@@ -11,28 +12,32 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
   {teamIds, prompt},
   {dataLoader}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
-  const MIN_MILLISECONDS = 60 * 1000 // 1 minute
+  const MIN_SECONDS = 60
   const MIN_REFLECTION_COUNT = 3
 
   const endDate = new Date()
   const twoYearsAgo = new Date()
   twoYearsAgo.setFullYear(endDate.getFullYear() - 2)
 
-  const rawMeetings = await r
-    .table('NewMeeting')
-    .getAll(r.args(teamIds), {index: 'teamId'})
-    .filter((row: any) =>
-      row('meetingType')
-        .eq('retrospective')
-        .and(row('createdAt').ge(twoYearsAgo))
-        .and(row('createdAt').le(endDate))
-        .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
-        .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
-    )
-    .run()
+  const rawMeetingsWithAnyMembers = await selectNewMeetings()
+    .where('teamId', 'in', teamIds)
+    .where('meetingType', '=', 'retrospective')
+    .where('createdAt', '>=', twoYearsAgo)
+    .where('createdAt', '<=', endDate)
+    .where('reflectionCount', '>', MIN_REFLECTION_COUNT)
+    .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_SECONDS}`)
+    .$narrowType<RetrospectiveMeeting>()
+    .execute()
+
+  const allMeetingMembers = await dataLoader
+    .get('meetingMembersByMeetingId')
+    .loadMany(rawMeetingsWithAnyMembers.map(({id}) => id))
+
+  const rawMeetings = rawMeetingsWithAnyMembers.filter((_, idx) => {
+    const meetingMembers = allMeetingMembers[idx]
+    return Array.isArray(meetingMembers) && meetingMembers.length > 1
+  })
 
   const getComments = async (reflectionGroupId: string) => {
     const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
@@ -168,17 +173,11 @@ const generateMeetingSummary: MutationResolvers['generateMeetingSummary'] = asyn
       const newSummary = await manager.generateSummary(yamlData, prompt)
       if (!newSummary) return null
 
-      const now = new Date()
       await getKysely()
         .updateTable('NewMeeting')
         .set({summary: newSummary})
         .where('id', '=', meeting.id)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(meeting.id)
-        .update({summary: newSummary, updatedAt: now})
-        .run()
       meeting.summary = newSummary
       return meeting.id
     })

@@ -2,8 +2,8 @@ import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import {AutogroupReflectionGroupType, ReactjiDB, TranscriptBlock, UsedReactjis} from './types'
-import type {NewMeetingPhase} from './types/NewMeetingPhase'
+import {ReactjiDB} from './types'
+import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -269,13 +269,13 @@ export const selectNewMeetings = () =>
       'videoMeetingURL',
       'templateRefId',
       'meetingPrompt',
-      fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'),
-      fn<UsedReactjis | null>('to_json', ['usedReactjis']).as('usedReactjis'),
-      fn<TranscriptBlock[] | null>('to_json', ['transcription']).as('transcription'),
-      fn<AutogroupReflectionGroupType[] | null>('to_json', ['autogroupReflectionGroups']).as(
-        'autogroupReflectionGroups'
-      ),
-      fn<AutogroupReflectionGroupType[] | null>('to_json', ['resetReflectionGroups']).as(
-        'resetReflectionGroups'
-      )
+      fn('to_json', ['phases']).as('phases'),
+      fn('to_json', ['usedReactjis']).as('usedReactjis'),
+      fn('to_json', ['transcription']).as('transcription'),
+      fn('to_json', ['autogroupReflectionGroups']).as('autogroupReflectionGroups'),
+      fn('to_json', ['resetReflectionGroups']).as('resetReflectionGroups')
     ])
+    .$narrowType<AnyMeeting>()
+
+export const selectMeetingMembers = () =>
+  getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()

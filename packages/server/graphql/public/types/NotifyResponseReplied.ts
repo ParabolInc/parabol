@@ -4,7 +4,7 @@ import {NotifyResponseRepliedResolvers} from '../resolverTypes'
 const NotifyResponseReplied: NotifyResponseRepliedResolvers = {
   __isTypeOf: ({type}) => type === 'RESPONSE_REPLIED',
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamPrompt') throw new Error('Meeting is not a team prompt')
     return meeting
   },

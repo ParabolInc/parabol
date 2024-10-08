@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
@@ -7,7 +6,6 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {showConversionModal} = organization
   if (showConversionModal) {
-    const r = await getRethink()
     const pg = getKysely()
     await pg
       .updateTable('Organization')
@@ -26,18 +24,13 @@ const hideConversionModal = async (orgId: string, dataLoader: DataLoaderWorker) 
         meeting.showConversionModal = false
       })
       const meetingIds = activeMeetings.map(({id}) => id)
-      await pg
-        .updateTable('NewMeeting')
-        .set({showConversionModal: false})
-        .where('id', 'in', meetingIds)
-        .execute()
-      await r
-        .table('NewMeeting')
-        .getAll(r.args(meetingIds))
-        .update({
-          showConversionModal: false
-        })
-        .run()
+      if (meetingIds.length > 0) {
+        await pg
+          .updateTable('NewMeeting')
+          .set({showConversionModal: false})
+          .where('id', 'in', meetingIds)
+          .execute()
+      }
       return activeMeetings
     }
   }

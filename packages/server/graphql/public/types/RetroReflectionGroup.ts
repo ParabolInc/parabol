@@ -7,7 +7,7 @@ export interface RetroReflectionGroupSource extends Selectable<TRetroReflectionG
 
 const RetroReflectionGroup: RetroReflectionGroupResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const retroMeeting = await dataLoader.get('newMeetings').load(meetingId)
+    const retroMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (retroMeeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
     return retroMeeting
   },
@@ -24,7 +24,7 @@ const RetroReflectionGroup: RetroReflectionGroupResolvers = {
     return filteredReflections
   },
   team: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return dataLoader.get('teams').loadNonNull(meeting.teamId)
   },
   titleIsUserDefined: ({title, smartTitle}) => {

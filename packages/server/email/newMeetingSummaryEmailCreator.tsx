@@ -18,7 +18,7 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   const {dataLoader} = context
   const dataLoaderId = dataLoader.share()
 
-  const newMeeting = await dataLoader.get('newMeetings').load(meetingId)
+  const newMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const facilitator = await dataLoader.get('users').loadNonNull(newMeeting.facilitatorUserId!)
   const {tms} = facilitator
   const authToken = new AuthToken({sub: newMeeting.facilitatorUserId!, tms, rol: 'impersonate'})

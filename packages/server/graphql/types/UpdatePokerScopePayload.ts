@@ -13,14 +13,14 @@ export const UpdatePokerScopeSuccess = new GraphQLObjectType<any, GQLContext>({
       type: new GraphQLNonNull(PokerMeeting),
       description: 'The meeting with the updated estimate phases',
       resolve: ({meetingId}, _args: unknown, {dataLoader}) => {
-        return dataLoader.get('newMeetings').load(meetingId)
+        return dataLoader.get('newMeetings').loadNonNull(meetingId)
       }
     },
     newStages: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EstimateStage))),
       description: 'The estimate stages added to the meeting',
       resolve: async ({meetingId, newStageIds}, _args: unknown, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
         const {phases, teamId} = meeting
         const phase = getPhase(phases, 'ESTIMATE')
         const {stages} = phase

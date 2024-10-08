@@ -8,6 +8,7 @@ import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
   selectComments,
+  selectMeetingMembers,
   selectMeetingSettings,
   selectNewMeetings,
   selectOrganizations,
@@ -121,6 +122,10 @@ export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => 
   return selectReflectPrompts().where('id', 'in', ids).execute()
 })
 
-export const _pgnewMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const newMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectNewMeetings().where('id', 'in', ids).execute()
+})
+
+export const _pgmeetingMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectMeetingMembers().where('id', 'in', ids).execute()
 })

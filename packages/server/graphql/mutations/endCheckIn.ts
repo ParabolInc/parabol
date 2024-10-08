@@ -152,19 +152,7 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
         taskCount: tasks.length
       })
       .where('id', '=', meetingId)
-      .execute(),
-    r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          agendaItemCount: activeAgendaItems.length,
-          commentCount,
-          taskCount: tasks.length
-        },
-        {nonAtomic: true}
-      )
-      .run()
+      .execute()
   ])
   dataLoader.clearAll('newMeetings')
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
@@ -182,7 +170,6 @@ export default {
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -212,19 +199,6 @@ export default {
     const phase = getMeetingPhase(phases)
     const insights = await gatherInsights(meeting, dataLoader)
 
-    const completedCheckIn = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          endedAt: now,
-          phases,
-          ...insights
-        },
-        {returnChanges: true}
-      )('changes')(0)('new_val')
-      .default(null)
-      .run()
     await pg
       .updateTable('NewMeeting')
       .set({
@@ -236,12 +210,7 @@ export default {
       .where('id', '=', meetingId)
       .execute()
     dataLoader.clearAll('newMeetings')
-    if (!completedCheckIn) {
-      return standardError(new Error('Completed check-in meeting does not exist'), {
-        userId: viewerId
-      })
-    }
-
+    const completedCheckIn = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (completedCheckIn.meetingType !== 'action') {
       return standardError(new Error('Completed check-in meeting is not an action'), {
         userId: viewerId

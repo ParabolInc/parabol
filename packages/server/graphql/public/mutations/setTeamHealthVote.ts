@@ -1,8 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import TeamHealthVote from '../../../database/types/TeamHealthVote'
-import updateStage from '../../../database/updateStage'
 import getKysely from '../../../postgres/getKysely'
 import {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase.d'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -10,7 +7,7 @@ import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 
-const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealthVote) => {
+const upsertVote = async (meetingId: string, newVote: TeamHealthVote) => {
   const pg = getKysely()
   await pg.transaction().execute(async (trx) => {
     const meeting = await trx
@@ -38,25 +35,6 @@ const upsertVote = async (meetingId: string, stageId: string, newVote: TeamHealt
       .where('id', '=', meetingId)
       .execute()
   })
-  const r = await getRethink()
-  const updater = (stage: RValue) =>
-    stage.merge({
-      votes: r.branch(
-        stage('votes')
-          .offsetsOf((oldVote: RValue) => oldVote('userId').eq(newVote.userId))
-          .nth(0)
-          .default(-1)
-          .eq(-1),
-        stage('votes').append(newVote),
-        stage('votes').changeAt(
-          stage('votes')
-            .offsetsOf((oldVote: RValue) => oldVote('userId').eq(newVote.userId))
-            .nth(0),
-          newVote
-        )
-      )
-    })
-  return updateStage(meetingId, stageId, 'TEAM_HEALTH', updater)
 }
 
 const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
@@ -96,7 +74,7 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
   if (vote === -1) {
     return {error: {message: 'Invalid label provided'}}
   }
-  await upsertVote(meetingId, stageId, {userId: viewerId, vote})
+  await upsertVote(meetingId, {userId: viewerId, vote})
   // update dataloader
   const existingVote = stage.votes.find((vote) => vote.userId === viewerId)
   if (existingVote) {

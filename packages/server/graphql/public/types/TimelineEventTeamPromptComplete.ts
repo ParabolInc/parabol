@@ -11,7 +11,7 @@ const TimelineEventTeamPromptComplete: TimelineEventTeamPromptCompleteResolvers 
   ...timelineEventInterfaceResolvers(),
   __isTypeOf: ({type}) => type === 'TEAM_PROMPT_COMPLETE',
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamPrompt') throw new Error('Invalid meetingId')
     return meeting
   },

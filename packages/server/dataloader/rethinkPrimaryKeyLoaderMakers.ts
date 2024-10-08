@@ -5,7 +5,6 @@ import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
  */
 export const massInvitations = new RethinkPrimaryKeyLoaderMaker('MassInvitation')
 export const meetingMembers = new RethinkPrimaryKeyLoaderMaker('MeetingMember')
-export const newMeetings = new RethinkPrimaryKeyLoaderMaker('NewMeeting')
 export const newFeatures = new RethinkPrimaryKeyLoaderMaker('NewFeature')
 export const notifications = new RethinkPrimaryKeyLoaderMaker('Notification')
 export const tasks = new RethinkPrimaryKeyLoaderMaker('Task')

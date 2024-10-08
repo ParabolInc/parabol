@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {GROUP} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -28,7 +27,6 @@ const setPhaseFocus = {
     {meetingId, focusedPromptId}: {meetingId: string; focusedPromptId?: string | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -52,7 +50,6 @@ const setPhaseFocus = {
     // RESOLUTION
     // mutative
     reflectPhase.focusedPromptId = focusedPromptId ?? undefined
-    await r.table('NewMeeting').get(meetingId).update(meeting).run()
     await getKysely()
       .updateTable('NewMeeting')
       .set({phases: JSON.stringify(phases)})

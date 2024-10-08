@@ -6,7 +6,7 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
 import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
-import getRethink, {RethinkSchema} from '../../../../database/rethinkDriver'
+import {RethinkSchema} from '../../../../database/rethinkDriver'
 import SlackAuth from '../../../../database/types/SlackAuth'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import getKysely from '../../../../postgres/getKysely'
@@ -359,17 +359,11 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       return handleError(res, team.id, notificationChannel)
     }
     if ('ts' in res) {
-      const r = await getRethink()
       await getKysely()
         .updateTable('NewMeeting')
         .set({slackTs: Number(res.ts)})
         .where('id', '=', meeting.id)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(meeting.id)
-        .update({slackTs: Number(res.ts)})
-        .run()
     }
     return 'success'
   },
@@ -406,17 +400,11 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
       return handleError(res, team.id, notificationChannel)
     }
     if ('ts' in res) {
-      const r = await getRethink()
       await getKysely()
         .updateTable('NewMeeting')
         .set({slackTs: Number(res.ts)})
         .where('id', '=', meeting.id)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(meeting.id)
-        .update({slackTs: Number(res.ts)})
-        .run()
     }
     return 'success'
   },
@@ -609,7 +597,7 @@ export const SlackNotifier = {
     const [team, user, meeting, reflectionGroup, reflections, userSlackAuths] = await Promise.all([
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('users').loadNonNull(userId),
-      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('newMeetings').loadNonNull(meetingId),
       dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
       dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId),
       dataLoader.get('slackAuthByUserId').load(userId)
@@ -702,7 +690,7 @@ export const SlackNotifier = {
       return
     }
 
-    const meeting = await dataLoader.get('newMeetings').load(notification.meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(notification.meetingId)
 
     const userSlackAuth = await getDmSlackForMeeting(dataLoader, meeting, userId)
     if (!userSlackAuth) {

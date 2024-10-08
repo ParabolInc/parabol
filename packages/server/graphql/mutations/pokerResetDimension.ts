@@ -2,8 +2,6 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {RValue} from '../../database/stricterR'
-import updateStage from '../../database/updateStage'
 import getKysely from '../../postgres/getKysely'
 import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -42,15 +40,12 @@ const pokerResetDimension = {
     if (meeting.meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
-    const {endedAt, phases, meetingType, teamId, createdBy, facilitatorUserId} = meeting
+    const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return {error: {message: 'Not on the team'}}
     }
     if (endedAt) {
       return {error: {message: 'Meeting has ended'}}
-    }
-    if (meetingType !== 'poker') {
-      return {error: {message: 'Not a poker meeting'}}
     }
     if (isPhaseComplete('ESTIMATE', phases)) {
       return {error: {message: 'Estimate phase is already complete'}}
@@ -84,11 +79,9 @@ const pokerResetDimension = {
     // mutate the cached meeting
 
     Object.assign(stage, updates)
-    const updater = (estimateStage: RValue) => estimateStage.merge(updates)
     const [meetingMembers, teamMembers] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      updateStage(meetingId, stageId, 'ESTIMATE', updater),
       pg
         .updateTable('NewMeeting')
         .set({

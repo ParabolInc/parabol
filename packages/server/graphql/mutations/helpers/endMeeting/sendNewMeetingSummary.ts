@@ -1,5 +1,4 @@
 import {sql} from 'kysely'
-import getRethink from '../../../../database/rethinkDriver'
 import getMailManager from '../../../../email/getMailManager'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
 import getKysely from '../../../../postgres/getKysely'
@@ -14,13 +13,10 @@ export default async function sendNewMeetingSummary(
   const {id: meetingId, teamId, summarySentAt} = newMeeting
   if (summarySentAt) return
   const pg = getKysely()
-  const now = new Date()
-  const r = await getRethink()
   const {dataLoader} = context
   const [teamMembers, team] = await Promise.all([
     dataLoader.get('teamMembersByTeamId').load(teamId),
     dataLoader.get('teams').loadNonNull(teamId),
-    r.table('NewMeeting').get(meetingId).update({summarySentAt: now}).run(),
     pg
       .updateTable('NewMeeting')
       .set({summarySentAt: sql`CURRENT_TIMESTAMP`})
