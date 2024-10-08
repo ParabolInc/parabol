@@ -99,7 +99,9 @@ const TeamDashHeader = (props: Props) => {
           id
           name
         }
-        isViewerTeamLead
+        viewerTeamMember {
+          isLead
+        }
         teamMembers(sortBy: "preferredName") {
           ...InviteTeamMemberAvatar_teamMembers
           ...DashboardAvatar_teamMember
@@ -110,7 +112,8 @@ const TeamDashHeader = (props: Props) => {
     `,
     teamRef
   )
-  const {organization, id: teamId, name: teamName, teamMembers, isViewerTeamLead} = team
+  const {organization, id: teamId, name: teamName, teamMembers, viewerTeamMember} = team
+  const isViewerTeamLead = viewerTeamMember?.isLead
   const {name: orgName, id: orgId} = organization
   const {history} = useRouter()
 
