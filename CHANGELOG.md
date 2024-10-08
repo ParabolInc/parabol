@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.5](https://github.com/ParabolInc/parabol/compare/v7.50.4...v7.50.5) (2024-10-08)
+
+
+### Fixed
+
+* timeRemaining ([#10316](https://github.com/ParabolInc/parabol/issues/10316)) ([de9df6c](https://github.com/ParabolInc/parabol/commit/de9df6ca85e9187a87fb3585279a295d29665220))
+
 ## [7.50.4](https://github.com/ParabolInc/parabol/compare/v7.50.3...v7.50.4) (2024-10-08)
 
 
