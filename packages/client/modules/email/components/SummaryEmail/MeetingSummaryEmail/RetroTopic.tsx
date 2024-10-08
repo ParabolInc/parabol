@@ -105,9 +105,7 @@ const RetroTopic = (props: Props) => {
       fragment RetroTopic_meeting on RetrospectiveMeeting {
         id
         organization {
-          featureFlags {
-            shareSummary
-          }
+          hasShareSummaryFlag: featureFlag(featureName: "shareSummary")
         }
       }
     `,
@@ -115,9 +113,7 @@ const RetroTopic = (props: Props) => {
   )
 
   const {id: meetingId} = meeting
-
-  const hasShareSummaryFeatureFlag = meeting.organization.featureFlags.shareSummary
-
+  const hasShareSummaryFlag = meeting.organization.hasShareSummaryFlag
   const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
   const {reflections, title, voteCount} = reflectionGroup
@@ -174,7 +170,7 @@ const RetroTopic = (props: Props) => {
                     {commentLinkLabel}
                   </AnchorIfEmail>
                 </td>
-                {hasShareSummaryFeatureFlag && (
+                {hasShareSummaryFlag && (
                   <td style={{padding: '10px'}}>
                     <ShareTopic
                       isEmail={isEmail}

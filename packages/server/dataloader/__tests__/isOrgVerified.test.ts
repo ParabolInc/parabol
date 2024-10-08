@@ -18,17 +18,12 @@ type TestOrganizationUser = Partial<
   Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
 >
 
-const addOrg = async (
-  activeDomain: string | null,
-  members: TestOrganizationUser[],
-  featureFlags?: string[]
-) => {
+const addOrg = async (activeDomain: string | null, members: TestOrganizationUser[]) => {
   const orgId = activeDomain!
   const org = {
     id: orgId,
     activeDomain,
-    name: 'baddadan',
-    featureFlags: featureFlags ?? []
+    name: 'baddadan'
   }
 
   const orgUsers = members.map((member) => ({
