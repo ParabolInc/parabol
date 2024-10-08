@@ -7,9 +7,6 @@ export default class DemoUser {
   viewerId: string
   createdAt = new Date().toJSON()
   email: string
-  featureFlags = {
-    azureDevOps: false
-  }
   facilitatorUserId: string
   facilitatorName: string
   inactive = false

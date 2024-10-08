@@ -831,3 +831,65 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
     }
   )
 }
+
+export const featureFlagByOwnerId = (parent: RootDataLoader) => {
+  return new DataLoader<{ownerId: string; featureName: string}, boolean, string>(
+    async (keys) => {
+      const pg = getKysely()
+
+      const featureNames = [...new Set(keys.map(({featureName}) => featureName))]
+      const ownerIds = [...new Set(keys.map(({ownerId}) => ownerId))]
+
+      if (!__PRODUCTION__) {
+        const existingFeatureNames = await pg
+          .selectFrom('FeatureFlag')
+          .select('featureName')
+          .where('featureName', 'in', featureNames)
+          .execute()
+
+        const existingFeatureNameSet = new Set(existingFeatureNames.map((row) => row.featureName))
+
+        const missingFeatureNames = featureNames.filter((name) => !existingFeatureNameSet.has(name))
+        if (missingFeatureNames.length > 0) {
+          console.error(
+            `Feature flag name(s) not found: ${missingFeatureNames.join(', ')}. Add the feature flag name with the addFeatureFlag mutation.`
+          )
+        }
+      }
+
+      const results = await pg
+        .selectFrom('FeatureFlag')
+        .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
+        .where((eb) =>
+          eb.and([
+            eb.or([
+              eb('FeatureFlagOwner.userId', 'in', ownerIds),
+              eb('FeatureFlagOwner.teamId', 'in', ownerIds),
+              eb('FeatureFlagOwner.orgId', 'in', ownerIds)
+            ]),
+            eb('FeatureFlag.featureName', 'in', featureNames),
+            eb('FeatureFlag.expiresAt', '>', new Date())
+          ])
+        )
+        .select([
+          'FeatureFlagOwner.userId',
+          'FeatureFlagOwner.teamId',
+          'FeatureFlagOwner.orgId',
+          'FeatureFlag.featureName'
+        ])
+        .execute()
+
+      const featureFlagMap = new Map<string, boolean>()
+      results.forEach(({userId, teamId, orgId, featureName}) => {
+        const ownerId = userId || teamId || orgId
+        featureFlagMap.set(`${ownerId}:${featureName}`, true)
+      })
+
+      return keys.map(({ownerId, featureName}) => featureFlagMap.has(`${ownerId}:${featureName}`))
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.ownerId}:${key.featureName}`
+    }
+  )
+}
