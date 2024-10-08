@@ -45,7 +45,7 @@ export default {
     if (meeting.meetingType !== 'retrospective') {
       return {error: {message: 'Meeting type is not retrospective'}}
     }
-    const {endedAt, phases, maxVotesPerGroup, teamId} = meeting
+    const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -64,21 +64,10 @@ export default {
     // RESOLUTION
     dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
     if (isUnvote) {
-      const votingError = await safelyWithdrawVote(
-        authToken,
-        meetingId,
-        viewerId,
-        reflectionGroupId
-      )
+      const votingError = await safelyWithdrawVote(meetingId, viewerId, reflectionGroupId)
       if (votingError) return votingError
     } else {
-      const votingError = await safelyCastVote(
-        authToken,
-        meetingId,
-        viewerId,
-        reflectionGroupId,
-        maxVotesPerGroup
-      )
+      const votingError = await safelyCastVote(meetingId, viewerId, reflectionGroupId)
       if (votingError) return votingError
     }
     dataLoader.clearAll('meetingMembers')

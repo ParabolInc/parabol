@@ -1,6 +1,5 @@
 import {MasterPool, r} from 'rethinkdb-ts'
 import TeamInvitation from '../database/types/TeamInvitation'
-import {AnyMeetingMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import MassInvitation from './types/MassInvitation'
@@ -20,10 +19,6 @@ export type RethinkSchema = {
   MassInvitation: {
     type: MassInvitation
     index: 'teamMemberId'
-  }
-  MeetingMember: {
-    type: AnyMeetingMember
-    index: 'meetingId' | 'teamId' | 'userId'
   }
   NewFeature: {
     type: any

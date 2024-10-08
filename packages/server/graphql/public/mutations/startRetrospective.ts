@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
@@ -21,7 +20,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   {teamId, name, rrule, gcalInput},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -97,7 +95,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       .insertInto('MeetingMember')
       .values(meetingMember)
       .execute(),
-    r.table('MeetingMember').insert(meetingMember).run(),
     videoMeetingURL &&
       pg
         .updateTable('MeetingSettings')

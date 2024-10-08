@@ -1,6 +1,4 @@
 import {sql} from 'kysely'
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import getKysely from '../../../postgres/getKysely'
 import {OrgActivityRow, QueryResolvers} from '../resolverTypes'
 
@@ -46,7 +44,6 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
     ])
     .orderBy('monthStart')
 
-  const r = await getRethink()
   try {
     const [signupsResult, rawMeetingResult] = await Promise.all([
       query.execute(),
@@ -62,20 +59,13 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
         .execute()
     ])
     const meetingIds = rawMeetingResult.flatMap((row) => row.meetingIds)
-    const participantCounts = (await (
-      r
-        .table('MeetingMember')
-        .getAll(r.args(meetingIds), {index: 'meetingId'})
-        .group('meetingId') as any
-    )
-      .count()
-      .ungroup()
-      .map((group: RValue) => ({
-        meetingId: group('group'),
-        participantCount: group('reduction')
-      }))
-      .run()) as {meetingId: string; participantCount: number}[]
-    // Combine PostgreSQL and RethinkDB results
+    const participantCounts = await pg
+      .selectFrom('MeetingMember')
+      .select(({fn}) => ['meetingId', fn.count('id').as('participantCount')])
+      .where('meetingId', 'in', meetingIds)
+      .groupBy('meetingId')
+      .execute()
+    // Combine results
     const combinedResults = signupsResult.reduce(
       (acc, signupRow) => {
         const epochMonthStart = signupRow.monthStart.getTime()
@@ -98,7 +88,7 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
         const meetingData = rawMeetingResult.find((r) => r.monthStart.getTime() === epochMonthStart)
         const participantCount = participantCounts
           .filter((pc) => meetingData?.meetingIds.includes(pc.meetingId))
-          .map((pc) => pc.participantCount)
+          .map((pc) => Number(pc.participantCount))
           .reduce((a, b) => a + b, 0)
         acc[monthKey].participantCount = participantCount
         acc[monthKey].meetingCount = meetingData?.meetingIds.length ?? 0

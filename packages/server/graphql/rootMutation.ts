@@ -42,7 +42,6 @@ import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
-import newMeetingCheckIn from './mutations/newMeetingCheckIn'
 import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
 import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
 import payLater from './mutations/payLater'
@@ -143,7 +142,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       movePokerTemplateDimension,
       moveTeamToOrg,
       navigateMeeting,
-      newMeetingCheckIn,
       payLater,
       persistJiraSearchQuery,
       pushInvitation,

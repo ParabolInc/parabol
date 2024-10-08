@@ -1,7 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
@@ -28,7 +27,6 @@ const setPokerSpectate = {
     {meetingId, isSpectating}: {meetingId: string; isSpectating: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const pg = getKysely()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -37,7 +35,7 @@ const setPokerSpectate = {
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const [meetingMember, meeting] = await Promise.all([
-      dataLoader.get('meetingMembers').load(meetingMemberId),
+      dataLoader.get('meetingMembers').loadNonNull(meetingMemberId),
       dataLoader.get('newMeetings').load(meetingId)
     ])
     if (!meeting) {
@@ -71,9 +69,6 @@ const setPokerSpectate = {
       .set({isSpectatingPoker: isSpectating})
       .where('id', '=', teamMemberId)
       .execute()
-    await r({
-      meetingMember: r.table('MeetingMember').get(meetingMemberId).update({isSpectating})
-    }).run()
     dataLoader.clearAll('teamMembers')
     // mutate the dataLoader cache
     meetingMember.isSpectating = isSpectating

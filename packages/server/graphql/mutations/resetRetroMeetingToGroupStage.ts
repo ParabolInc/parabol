@@ -124,12 +124,7 @@ const resetRetroMeetingToGroupStage = {
         .set({phases: JSON.stringify(newPhases)})
         .where('id', '=', meetingId)
         .execute(),
-      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
-      r
-        .table('MeetingMember')
-        .getAll(meetingId, {index: 'meetingId'})
-        .update({votesRemaining: meeting.totalVotes})
-        .run()
+      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run()
     ])
     dataLoader.clearAll([
       'newMeetings',
