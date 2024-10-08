@@ -279,3 +279,5 @@ export const selectNewMeetings = () =>
 
 export const selectMeetingMembers = () =>
   getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()
+
+export const selectMassInvitations = () => getKysely().selectFrom('MassInvitation').selectAll()

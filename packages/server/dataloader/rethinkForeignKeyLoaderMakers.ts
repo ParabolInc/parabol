@@ -2,19 +2,6 @@ import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 
-export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
-  'massInvitations',
-  'teamMemberId',
-  async (teamMemberIds) => {
-    const r = await getRethink()
-    return r
-      .table('MassInvitation')
-      .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
-      .orderBy(r.desc('expiration'))
-      .run()
-  }
-)
-
 export const tasksByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'tasks',
   'discussionId',
