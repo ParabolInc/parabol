@@ -53,7 +53,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     SubscriptionChannel.TEAM,
     teamId,
     'GenerateInsightPayload',
-    {insight: {id: insertedInsight.id, ...response}},
+    {insight: {id: insertedInsight.id}},
     {mutatorId: authToken.sub}
   )
 
