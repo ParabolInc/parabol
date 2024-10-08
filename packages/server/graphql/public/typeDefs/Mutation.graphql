@@ -1734,32 +1734,6 @@ type Mutation {
   ): UpdateCreditCardPayload!
 
   """
-  Give someone advanced features in a flag
-  """
-  updateFeatureFlag(
-    """
-    a list of the complete or partial email of the person to whom you are giving advanced features.
-          Matches via a regex to support entire domains
-    """
-    emails: [String!]
-
-    """
-    grant access to an entire domain. the part of the email after the @
-    """
-    domain: String
-
-    """
-    the flag that you want to give to the user
-    """
-    flag: UserFlagEnum!
-
-    """
-    whether to add or remove the flag
-    """
-    addFlag: Boolean!
-  ): UpdateFeatureFlagPayload!
-
-  """
   Update how a parabol dimension maps to a GitLab label
   """
   updateGitLabDimensionField(

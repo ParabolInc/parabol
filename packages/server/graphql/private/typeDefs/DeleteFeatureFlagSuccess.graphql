@@ -1,0 +1,6 @@
+type DeleteFeatureFlagSuccess {
+  """
+  The deleted feature flag
+  """
+  featureFlag: FeatureFlag!
+}
