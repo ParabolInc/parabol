@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -38,7 +37,7 @@ const setPokerSpectate = {
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const [meetingMember, meeting] = await Promise.all([
-      dataLoader.get('meetingMembers').load(meetingMemberId) as Promise<PokerMeetingMember>,
+      dataLoader.get('meetingMembers').load(meetingMemberId),
       dataLoader.get('newMeetings').load(meetingId)
     ])
     if (!meeting) {
@@ -49,6 +48,9 @@ const setPokerSpectate = {
       return {error: {message: 'Meeting has ended'}}
     }
     if (meetingType !== 'poker') {
+      return {error: {message: 'Not a poker meeting'}}
+    }
+    if (meetingMember.meetingType !== 'poker') {
       return {error: {message: 'Not a poker meeting'}}
     }
     if (!meetingMember) {
@@ -62,6 +64,9 @@ const setPokerSpectate = {
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     await pg
+      .with('MeetingMemberUpdate', (qb) =>
+        qb.updateTable('MeetingMember').set({isSpectating}).where('id', '=', meetingMemberId)
+      )
       .updateTable('TeamMember')
       .set({isSpectatingPoker: isSpectating})
       .where('id', '=', teamMemberId)

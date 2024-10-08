@@ -114,6 +114,12 @@ const resetRetroMeetingToGroupStage = {
             .set({voterIds: [], discussionPromptQuestion: null})
             .where('id', 'in', reflectionGroupIds)
         )
+        .with('ResetMeetingMember', (qb) =>
+          qb
+            .updateTable('MeetingMember')
+            .set({votesRemaining: meeting.totalVotes})
+            .where('meetingId', '=', meetingId)
+        )
         .updateTable('NewMeeting')
         .set({phases: JSON.stringify(newPhases)})
         .where('id', '=', meetingId)

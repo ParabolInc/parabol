@@ -1,9 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -14,6 +12,7 @@ import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSer
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
+import {createMeetingMember} from '../../mutations/joinMeeting'
 import {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
@@ -84,18 +83,21 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     return {error: {message: 'Meeting already started'}}
   }
 
-  const updates = {
-    lastMeetingType: meetingType
-  }
+  const meetingMember = createMeetingMember(meeting, {
+    userId: viewerId,
+    teamId,
+    isSpectatingPoker: false
+  })
   const [meetingSeries] = await Promise.all([
     rrule && startNewMeetingSeries(meeting, rrule, meetingSeriesName),
-    r
-      .table('MeetingMember')
-      .insert(
-        new RetroMeetingMember({meetingId, userId: viewerId, teamId, votesRemaining: totalVotes})
+    pg
+      .with('TeamUpdates', (qb) =>
+        qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)
       )
-      .run(),
-    updateTeamByTeamId(updates, teamId),
+      .insertInto('MeetingMember')
+      .values(meetingMember)
+      .execute(),
+    r.table('MeetingMember').insert(meetingMember).run(),
     videoMeetingURL &&
       pg
         .updateTable('MeetingSettings')

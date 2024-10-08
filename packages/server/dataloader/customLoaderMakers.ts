@@ -581,7 +581,6 @@ export const activeMeetingsByMeetingSeriesId = (
         .where('meetingSeriesId', 'in', keys)
         .where('endedAt', 'is', null)
         .orderBy('createdAt')
-        .$narrowType<AnyMeeting>()
         .execute()
       return normalizeArrayResults(keys, res, 'meetingSeriesId')
     },
@@ -604,7 +603,6 @@ export const lastMeetingByMeetingSeriesId = (
             .where('meetingSeriesId', '=', key)
             .orderBy('createdAt desc')
             .limit(1)
-            .$narrowType<AnyMeeting>()
             .executeTakeFirst()
           return latestMeeting || null
         })

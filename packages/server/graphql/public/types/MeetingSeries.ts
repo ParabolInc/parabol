@@ -1,6 +1,5 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {selectNewMeetings} from '../../../postgres/select'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
 import {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
@@ -16,7 +15,6 @@ const MeetingSeries: MeetingSeriesResolvers = {
       .where('meetingSeriesId', '=', meetingSeriesId)
       .orderBy(['endedAt desc', 'createdAt desc'])
       .limit(1)
-      .$narrowType<AnyMeeting>()
       .executeTakeFirstOrThrow()
     return meeting
   }

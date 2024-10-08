@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getRethink from '../../database/rethinkDriver'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -28,7 +28,6 @@ export default {
     {isUnvote = false, reflectionGroupId}: {isUnvote: boolean; reflectionGroupId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -56,13 +55,8 @@ export default {
     }
 
     // VALIDATION
-    const meetingMember = await r
-      .table('MeetingMember')
-      .getAll(meetingId, {index: 'meetingId'})
-      .filter({userId: viewerId})
-      .nth(0)
-      .default(null)
-      .run()
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+    const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!meetingMember) {
       return standardError(new Error('Meeting member not found'), {userId: viewerId})
     }
@@ -87,6 +81,7 @@ export default {
       )
       if (votingError) return votingError
     }
+    dataLoader.clearAll('meetingMembers')
 
     const data = {
       meetingId,

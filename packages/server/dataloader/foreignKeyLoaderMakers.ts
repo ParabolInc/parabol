@@ -3,6 +3,7 @@ import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPro
 import {
   selectAgendaItems,
   selectComments,
+  selectMeetingMembers,
   selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
@@ -15,7 +16,6 @@ import {
   selectTemplateScale,
   selectTimelineEvent
 } from '../postgres/select'
-import {AnyMeeting} from '../postgres/types/Meeting'
 import {foreignKeyLoaderMaker} from './foreignKeyLoaderMaker'
 
 export const teamsByOrgIds = foreignKeyLoaderMaker('teams', 'orgId', (orgIds) =>
@@ -238,7 +238,6 @@ export const activeMeetingsByTeamId = foreignKeyLoaderMaker(
       .where('teamId', 'in', teamIds)
       .where('endedAt', 'is', null)
       .orderBy('createdAt desc')
-      .$narrowType<AnyMeeting>()
       .execute()
   }
 )
@@ -250,7 +249,22 @@ export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
       .where('teamId', 'in', teamIds)
       .where('endedAt', 'is not', null)
       .orderBy('endedAt desc')
-      .$narrowType<AnyMeeting>()
       .execute()
+  }
+)
+
+export const _pgmeetingMembersByMeetingId = foreignKeyLoaderMaker(
+  '_pgmeetingMembers',
+  'meetingId',
+  async (meetingIds) => {
+    return selectMeetingMembers().where('meetingId', 'in', meetingIds).execute()
+  }
+)
+
+export const _pgmeetingMembersByUserId = foreignKeyLoaderMaker(
+  '_pgmeetingMembers',
+  'userId',
+  async (userIds) => {
+    return selectMeetingMembers().where('userId', 'in', userIds).execute()
   }
 )

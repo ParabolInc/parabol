@@ -3,11 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
 import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
 import {MeetingTypeEnum, PokerMeeting} from '../../postgres/types/Meeting'
 import {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../utils/analytics/analytics'
@@ -23,6 +21,7 @@ import createGcalEvent from './helpers/createGcalEvent'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
+import {createMeetingMember} from './joinMeeting'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()
@@ -161,23 +160,15 @@ export default {
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-    const {isSpectatingPoker} = teamMember
-    const updates = {
-      lastMeetingType: meetingType
-    }
+    const meetingMember = createMeetingMember(meeting, teamMember)
     await Promise.all([
-      r
-        .table('MeetingMember')
-        .insert(
-          new PokerMeetingMember({
-            meetingId,
-            userId: viewerId,
-            teamId,
-            isSpectating: isSpectatingPoker
-          })
-        )
-        .run(),
-      updateTeamByTeamId(updates, teamId)
+      pg
+        .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
+        .updateTable('Team')
+        .set({lastMeetingType: meetingType})
+        .where('id', '=', teamId)
+        .execute(),
+      r.table('MeetingMember').insert(meetingMember).run()
     ])
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewer, meeting, template)

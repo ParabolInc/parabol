@@ -1,9 +1,8 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import RetroMeetingMember from '../../../database/types/RetroMeetingMember'
+import {RetroMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
-import {GQLContext} from '../../graphql'
 import {resolveForSU} from '../../resolvers'
 import {RetrospectiveMeetingResolvers} from '../resolverTypes'
 
@@ -11,10 +10,9 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   autoGroupThreshold: resolveForSU('autoGroupThreshold'),
   commentCount: ({commentCount}) => commentCount || 0,
   disableAnonymity: ({disableAnonymity}) => disableAnonymity ?? false,
-  meetingMembers: ({id: meetingId}, _args: unknown, {dataLoader}) => {
-    return dataLoader.get('meetingMembersByMeetingId').load(meetingId) as Promise<
-      RetroMeetingMember[]
-    >
+  meetingMembers: async ({id: meetingId}, _args, {dataLoader}) => {
+    const res = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+    return res as RetroMeetingMember[]
   },
   reflectionCount: ({reflectionCount}) => reflectionCount || 0,
   reflectionGroup: async ({id: meetingId}, {reflectionGroupId}, {dataLoader}) => {
@@ -50,7 +48,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     return reflectionGroups
   },
   taskCount: ({taskCount}) => taskCount || 0,
-  tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
+  tasks: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {teamId} = meeting
@@ -58,17 +56,13 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   },
   topicCount: ({topicCount}) => topicCount || 0,
-  votesRemaining: async ({id: meetingId}, _args: unknown, {dataLoader}) => {
+  votesRemaining: async ({id: meetingId}, _args, {dataLoader}) => {
     const meetingMembers = (await dataLoader
       .get('meetingMembersByMeetingId')
       .load(meetingId)) as RetroMeetingMember[]
     return meetingMembers.reduce((sum, member) => sum + member.votesRemaining, 0)
   },
-  viewerMeetingMember: async (
-    {id: meetingId},
-    _args: unknown,
-    {authToken, dataLoader}: GQLContext
-  ) => {
+  viewerMeetingMember: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const meetingMember = (await dataLoader
