@@ -33,8 +33,15 @@ const NewMeetingStage: NewMeetingStageResolvers = {
     return readyToAdvance.filter((userId: string) => userId !== facilitatorUserId).length
   },
 
-  timeRemaining: ({scheduledEndTime}) => {
-    return scheduledEndTime ? scheduledEndTime.valueOf() - Date.now() : null
+  timeRemaining: ({scheduledEndTime, id, meetingId}) => {
+    if (scheduledEndTime) {
+      if (!(scheduledEndTime instanceof Date)) {
+        console.log('ENDTIME NOT DATE', scheduledEndTime, id, meetingId)
+        return null
+      }
+      return scheduledEndTime.getTime() - Date.now()
+    }
+    return null
   }
 }
 
