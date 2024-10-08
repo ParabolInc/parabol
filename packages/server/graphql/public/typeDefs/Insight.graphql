@@ -1,0 +1,39 @@
+type Insight {
+  id: ID!
+  teamId: ID!
+
+  """
+  Start date and time of the insight period
+  """
+  startDateTime: DateTime!
+
+  """
+  End date and time of the insight period
+  """
+  endDateTime: DateTime!
+
+  """
+  List of AI generated wins
+  """
+  wins: [String!]!
+
+  """
+  List of AI generated challenges
+  """
+  challenges: [String!]!
+
+  """
+  The count of the meetings used to generate the insight
+  """
+  meetingsCount: Int!
+
+  """
+  Timestamp when the insight was created
+  """
+  createdAt: DateTime!
+
+  """
+  Timestamp when the insight was last updated
+  """
+  updatedAt: DateTime!
+}

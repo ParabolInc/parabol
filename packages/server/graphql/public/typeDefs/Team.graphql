@@ -124,6 +124,11 @@ type Team {
   organization: Organization!
 
   """
+  The AI insight for the team. Null if not enough data or feature flag isn't set
+  """
+  insight: Insight
+
+  """
   The agenda items for the upcoming or current meeting
   """
   agendaItems: [AgendaItem!]!

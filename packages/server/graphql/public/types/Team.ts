@@ -1,4 +1,5 @@
 import TeamInsightsId from 'parabol-client/shared/gqlIds/TeamInsightsId'
+import {InsightId} from '../../../../client/shared/gqlIds/InsightId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
@@ -51,6 +52,14 @@ const Team: TeamResolvers = {
   teamLead: async ({id: teamId}, _args, {dataLoader}) => {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
+  },
+  insight: async ({id: teamId}, _args, {dataLoader}) => {
+    const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
+    if (!insight) return null
+    return {
+      ...insight,
+      id: InsightId.join(teamId, insight.id)
+    }
   }
 }
 
