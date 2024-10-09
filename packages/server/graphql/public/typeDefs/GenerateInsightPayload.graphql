@@ -1,0 +1,4 @@
+"""
+Return value for generateInsight, which could be an error
+"""
+union GenerateInsightPayload = ErrorPayload | GenerateInsightSuccess

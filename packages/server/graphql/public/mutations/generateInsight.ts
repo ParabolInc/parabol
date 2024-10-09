@@ -11,7 +11,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   {teamId, startDate, endDate, useSummaries = true, prompt},
   context
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+  const {dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
@@ -27,7 +27,6 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const response = useSummaries
     ? await getSummaries(teamId, startDate, endDate, prompt)
     : await getTopics(teamId, startDate, endDate, dataLoader, prompt)
-  console.log('🚀 ~ response:', response)
 
   if ('error' in response) {
     return response
@@ -52,15 +51,12 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     return standardError(new Error('Failed to insert insight'))
   }
   const data = {
-    id: insertedInsight.id,
-    wins,
-    challenges,
-    meetingIds
+    teamId
   }
 
   publish(SubscriptionChannel.TEAM, teamId, 'GenerateInsightSuccess', data, subOptions)
 
-  return response
+  return data
 }
 
 export default generateInsight

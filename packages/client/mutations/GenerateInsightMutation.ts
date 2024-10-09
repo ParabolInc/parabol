@@ -5,8 +5,13 @@ import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment GenerateInsightMutation_team on GenerateInsightSuccess {
-    wins
-    challenges
+    team {
+      id
+      insight {
+        wins
+        challenges
+      }
+    }
   }
 `
 
