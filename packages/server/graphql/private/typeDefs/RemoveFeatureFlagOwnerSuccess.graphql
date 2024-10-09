@@ -1,0 +1,21 @@
+"""
+Successful result of removing a feature flag owner
+"""
+type RemoveFeatureFlagOwnerSuccess {
+  """
+  The feature flag that was removed
+  """
+  featureFlag: FeatureFlag!
+  """
+  The feature flag was removed from the following users
+  """
+  users: [User!]
+  """
+  The feature flag was removed from the following teams
+  """
+  teams: [Team!]
+  """
+  The feature flag was removed from the following organizations
+  """
+  organizations: [Organization!]
+}
