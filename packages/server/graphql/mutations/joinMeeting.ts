@@ -71,7 +71,12 @@ const joinMeeting = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
-    await pg.insertInto('MeetingMember').values(meetingMember).execute()
+    try {
+      await pg.insertInto('MeetingMember').values(meetingMember).execute()
+    } catch {
+      return {error: {message: 'Could not join meeting'}}
+    }
+
     const addStageToPhase = async (
       stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,
       phaseType: NewMeetingPhase['phaseType']
