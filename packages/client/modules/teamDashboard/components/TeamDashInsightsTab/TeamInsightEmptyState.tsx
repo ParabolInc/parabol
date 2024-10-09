@@ -18,7 +18,7 @@ const TeamInsightEmptyState = (props: Props) => {
 
   if (meetingsCount === undefined || !teamId) return null
 
-  const canGenerateInsight = meetingsCount > 0
+  const canGenerateInsight = meetingsCount > 1
 
   const handleGenerateInsight = () => {
     if (submitting) return
@@ -29,7 +29,7 @@ const TeamInsightEmptyState = (props: Props) => {
       atmosphere,
       {
         teamId,
-        startDate: threeMonthsAgo.toISOString(),
+        startDate: threeMonthsAgo.toISOString(), // TODO: let users choose date range
         endDate: now.toISOString()
       },
       {onError, onCompleted}

@@ -24,13 +24,8 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-<<<<<<< HEAD
-import {selectMeetingSettings, selectTeams} from '../postgres/select'
-import {Insight, MeetingSettings, OrganizationUser, Team} from '../postgres/types'
-=======
 import {selectMeetingSettings, selectNewMeetings, selectTeams} from '../postgres/select'
-import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
->>>>>>> master
+import {Insight, MeetingSettings, OrganizationUser, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -855,7 +850,6 @@ export const latestInsightByTeamId = (parent: RootDataLoader) => {
     }
   )
 }
-
 
 export const featureFlagByOwnerId = (parent: RootDataLoader) => {
   return new DataLoader<{ownerId: string; featureName: string}, boolean, string>(

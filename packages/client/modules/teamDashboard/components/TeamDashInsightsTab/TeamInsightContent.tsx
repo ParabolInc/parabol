@@ -77,32 +77,43 @@ const TeamInsightContent = (props: Props) => {
       </h2>
       <p className='mb-6 text-sm text-slate-600'>Summarized {meetingsCount} meetings</p>
 
-      <h3 className='mb-0 text-lg font-semibold text-slate-700'>Wins</h3>
-      <p className='mb-2 mt-0 text-sm italic text-slate-600'>
-        What wins has "{teamName}" seen during this timeframe?
-      </p>
-      <ul className='mb-6 list-disc space-y-0 pl-6'>
-        {wins.map((win, index) => (
-          <li key={index} className='text-sm text-slate-700'>
-            <span className='link-style' dangerouslySetInnerHTML={{__html: renderMarkdown(win)}} />
-          </li>
-        ))}
-      </ul>
+      {wins && wins.length > 0 && (
+        <>
+          <h3 className='mb-0 text-lg font-semibold text-slate-700'>Wins</h3>
+          <p className='mb-2 mt-0 text-sm italic text-slate-600'>
+            What wins has "{teamName}" seen during this timeframe?
+          </p>
+          <ul className='mb-6 list-disc space-y-0 pl-6'>
+            {wins.map((win, index) => (
+              <li key={index} className='text-sm text-slate-700'>
+                <span
+                  className='link-style'
+                  dangerouslySetInnerHTML={{__html: renderMarkdown(win)}}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
-      <h3 className='mb-0 text-lg font-semibold text-slate-700'>Challenges</h3>
-      <p className='mb-2 mt-0 text-sm italic text-slate-600'>
-        What challenges has "{teamName}" faced during this timeframe?
-      </p>
-      <ul className='list-disc space-y-0 pl-6'>
-        {challenges.map((challenge, index) => (
-          <li key={index} className='text-sm text-slate-700'>
-            <span
-              className='link-style'
-              dangerouslySetInnerHTML={{__html: renderMarkdown(challenge)}}
-            />
-          </li>
-        ))}
-      </ul>
+      {challenges && challenges.length > 0 && (
+        <>
+          <h3 className='mb-0 text-lg font-semibold text-slate-700'>Challenges</h3>
+          <p className='mb-2 mt-0 text-sm italic text-slate-600'>
+            What challenges has "{teamName}" faced during this timeframe?
+          </p>
+          <ul className='list-disc space-y-0 pl-6'>
+            {challenges.map((challenge, index) => (
+              <li key={index} className='text-sm text-slate-700'>
+                <span
+                  className='link-style'
+                  dangerouslySetInnerHTML={{__html: renderMarkdown(challenge)}}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   )
 }

@@ -10,6 +10,7 @@ graphql`
       insight {
         wins
         challenges
+        meetingsCount
       }
     }
   }
