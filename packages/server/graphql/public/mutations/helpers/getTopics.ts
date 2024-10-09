@@ -1,4 +1,5 @@
 import yaml from 'js-yaml'
+import {sql} from 'kysely'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -119,8 +120,8 @@ export const getTopics = async (
     .where('meetingType', '=', 'retrospective')
     .where('createdAt', '>=', startDate)
     .where('createdAt', '<=', endDate)
-    // .where('reflectionCount', '>=', MIN_REFLECTION_COUNT)
-    // .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_SECONDS}`)
+    .where('reflectionCount', '>=', MIN_REFLECTION_COUNT)
+    .where(sql<boolean>`EXTRACT(EPOCH FROM ("endedAt" - "createdAt")) > ${MIN_SECONDS}`)
     .$narrowType<RetrospectiveMeeting>()
     .execute()
   const allMeetingMembers = await dataLoader
@@ -129,8 +130,7 @@ export const getTopics = async (
 
   const rawMeetings = rawMeetingsWithAnyMembers.filter((_, idx) => {
     const meetingMembers = allMeetingMembers[idx]
-    // return Array.isArray(meetingMembers) && meetingMembers.length > 1
-    return true
+    return Array.isArray(meetingMembers) && meetingMembers.length > 1
   })
 
   const meetings = await Promise.all(
@@ -141,7 +141,7 @@ export const getTopics = async (
         .load(meetingId)
       const reflectionGroups = Promise.all(
         rawReflectionGroups
-          // .filter((g) => g.voterIds.length > 0)
+          .filter((g) => g.voterIds.length > 0)
           .map(async (group) => {
             const {id: reflectionGroupId, voterIds, title} = group
             const [comments, rawReflections] = await Promise.all([
@@ -185,12 +185,10 @@ export const getTopics = async (
     })
   )
 
-  console.log('🚀 ~ meetings:', {meetings, rawMeetings})
   const hotTopics = meetings
     .flat()
-    // .filter((t) => t.voteCount > 2)
+    .filter((t) => t.voteCount > 2)
     .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
-  console.log('🚀 ~ hotTopics:', hotTopics)
 
   const idGenerator = {
     meeting: 1
