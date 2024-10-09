@@ -8,11 +8,12 @@ import sanitizeHtml from 'sanitize-html'
 import {TeamInsightContent_team$key} from '../../../../__generated__/TeamInsightContent_team.graphql'
 
 interface Props {
+  teamName: string
   insightRef: TeamInsightContent_team$key
 }
 
 const TeamInsightContent = (props: Props) => {
-  const {insightRef} = props
+  const {insightRef, teamName} = props
   const insight = useFragment(
     graphql`
       fragment TeamInsightContent_team on Insight {
@@ -78,7 +79,7 @@ const TeamInsightContent = (props: Props) => {
 
       <h3 className='mb-0 text-lg font-semibold text-slate-700'>Wins</h3>
       <p className='mb-2 mt-0 text-sm italic text-slate-600'>
-        What wins has "{name}" seen during this timeframe?
+        What wins has "{teamName}" seen during this timeframe?
       </p>
       <ul className='mb-6 list-disc space-y-0 pl-6'>
         {wins.map((win, index) => (
@@ -90,7 +91,7 @@ const TeamInsightContent = (props: Props) => {
 
       <h3 className='mb-0 text-lg font-semibold text-slate-700'>Challenges</h3>
       <p className='mb-2 mt-0 text-sm italic text-slate-600'>
-        What challenges has "{name}" faced during this timeframe?
+        What challenges has "{teamName}" faced during this timeframe?
       </p>
       <ul className='list-disc space-y-0 pl-6'>
         {challenges.map((challenge, index) => (
