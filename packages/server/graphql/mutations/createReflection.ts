@@ -5,7 +5,6 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import getRethink from '../../database/rethinkDriver'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
@@ -34,7 +33,6 @@ export default {
     {input}: {input: CreateReflectionInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -43,7 +41,7 @@ export default {
     const viewerId = getUserId(authToken)
     const [reflectPrompt, meeting, viewer] = await Promise.all([
       dataLoader.get('reflectPrompts').load(promptId),
-      r.table('NewMeeting').get(meetingId).default(null).run(),
+      dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!reflectPrompt) {
@@ -112,13 +110,12 @@ export default {
     let unlockedStageIds
     if (!groupStage?.isNavigableByFacilitator) {
       unlockedStageIds = unlockAllStagesForPhase(phases, 'group', true)
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          phases
-        })
-        .run()
+      await pg
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(phases)})
+        .where('id', '=', meetingId)
+        .execute()
+      dataLoader.clearAll('newMeetings')
     }
     analytics.reflectionAdded(viewer, teamId, meetingId)
     const data = {

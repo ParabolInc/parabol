@@ -1,10 +1,10 @@
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
-import getRethink, {ParabolR} from '../../../database/rethinkDriver'
-import MeetingTeamPrompt from '../../../database/types/MeetingTeamPrompt'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish, {SubOptions} from '../../../utils/publish'
@@ -17,21 +17,16 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 import updateTeamInsights from './updateTeamInsights'
 
-const summarizeTeamPrompt = async (meeting: MeetingTeamPrompt, context: InternalContext) => {
+const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
-  const r = await getRethink()
+  const pg = getKysely()
 
   const summary = await generateStandupMeetingSummary(meeting, dataLoader)
+  if (summary) {
+    await pg.updateTable('NewMeeting').set({summary}).where('id', '=', meeting.id).execute()
+  }
 
-  await r
-    .table('NewMeeting')
-    .get(meeting.id)
-    .update({
-      summary
-    })
-    .run()
-
-  dataLoader.get('newMeetings').clear(meeting.id)
+  dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
@@ -45,19 +40,16 @@ const summarizeTeamPrompt = async (meeting: MeetingTeamPrompt, context: Internal
 
 const safeEndTeamPrompt = async ({
   meeting,
-  now,
   viewerId,
-  r,
   context,
   subOptions
 }: {
-  meeting: MeetingTeamPrompt
-  now: Date
+  meeting: TeamPromptMeeting
   viewerId?: string
-  r: ParabolR
   context: InternalContext
   subOptions: SubOptions
 }) => {
+  const pg = getKysely()
   const {dataLoader} = context
 
   const {endedAt, id: meetingId, teamId} = meeting
@@ -66,26 +58,19 @@ const safeEndTeamPrompt = async ({
 
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)
-  const completedTeamPrompt = (await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update(
-      {
-        endedAt: now,
-        ...insights
-      },
-      {returnChanges: true}
-    )('changes')(0)('new_val')
-    .default(null)
-    .run()) as unknown as MeetingTeamPrompt
-
-  if (!completedTeamPrompt) {
-    return standardError(new Error('Completed team prompt meeting does not exist'), {
-      userId: viewerId
+  await pg
+    .updateTable('NewMeeting')
+    .set({
+      endedAt: sql`CURRENT_TIMESTAMP`,
+      usedReactjis: JSON.stringify(insights.usedReactjis),
+      engagement: insights.engagement
     })
-  }
+    .where('id', '=', meetingId)
+    .execute()
+  dataLoader.clearAll('newMeetings')
 
-  const [meetingMembers, team, teamMembers, responses] = await Promise.all([
+  const [completedTeamPrompt, meetingMembers, team, teamMembers, responses] = await Promise.all([
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
@@ -103,7 +88,6 @@ const safeEndTeamPrompt = async ({
       })
   )
   const timelineEventId = events[0]!.id
-  const pg = getKysely()
   await pg.insertInto('TimelineEvent').values(events).execute()
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)

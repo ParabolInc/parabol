@@ -4,8 +4,8 @@ import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from '../../../client/utils/cons
 import getRethink from '../../database/rethinkDriver'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
 import getKysely from '../../postgres/getKysely'
+import {RetroMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -34,7 +34,7 @@ const resetRetroMeetingToGroupStage = {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {createdBy, facilitatorUserId, phases, meetingType} = meeting
     if (meetingType !== 'retrospective') {
@@ -91,7 +91,7 @@ const resetRetroMeetingToGroupStage = {
         default:
           throw new Error(`Unhandled phaseType: ${phase.phaseType}`)
       }
-    })
+    }) as RetroMeetingPhase[]
 
     primePhases(newPhases, resetToPhaseIndex)
     meeting.phases = newPhases
@@ -104,17 +104,34 @@ const resetRetroMeetingToGroupStage = {
     reflectionGroups.forEach((rg) => (rg.voterIds = []))
 
     await Promise.all([
-      pg.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete).execute(),
-      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run(),
       pg
-        .updateTable('RetroReflectionGroup')
-        .set({voterIds: [], discussionPromptQuestion: null})
-        .where('id', 'in', reflectionGroupIds)
+        .with('DeleteComments', (qb) =>
+          qb.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete)
+        )
+        .with('ResetGroups', (qb) =>
+          qb
+            .updateTable('RetroReflectionGroup')
+            .set({voterIds: [], discussionPromptQuestion: null})
+            .where('id', 'in', reflectionGroupIds)
+        )
+        .with('ResetMeetingMember', (qb) =>
+          qb
+            .updateTable('MeetingMember')
+            .set({votesRemaining: meeting.totalVotes})
+            .where('meetingId', '=', meetingId)
+        )
+        .updateTable('NewMeeting')
+        .set({phases: JSON.stringify(newPhases)})
+        .where('id', '=', meetingId)
         .execute(),
-      r.table('NewMeeting').get(meetingId).update({phases: newPhases}).run(),
-      (r.table('MeetingMember').getAll(meetingId, {index: 'meetingId'}) as any)
-        .update({votesRemaining: meeting.totalVotes})
-        .run()
+      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run()
+    ])
+    dataLoader.clearAll([
+      'newMeetings',
+      'comments',
+      'retroReflectionGroups',
+      'tasks',
+      'meetingMembers'
     ])
     const data = {
       meetingId

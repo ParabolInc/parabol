@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -10,7 +10,7 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
   {meetingId, newPrompt},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -36,13 +36,11 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
   }
 
   // RESOLUTION
-  await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update({
-      meetingPrompt: newPrompt
-    })
-    .run()
+  await pg
+    .updateTable('NewMeeting')
+    .set({meetingPrompt: newPrompt})
+    .where('id', '=', meetingId)
+    .execute()
   dataLoader.get('newMeetings').clear(meetingId)
 
   // RESOLUTION

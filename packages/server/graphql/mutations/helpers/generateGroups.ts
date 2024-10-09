@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import {AutogroupReflectionGroupType} from '../../../database/types/MeetingRetrospective'
-import {RetroReflection} from '../../../postgres/types'
+import getKysely from '../../../postgres/getKysely'
+import {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -16,9 +15,9 @@ const generateGroups = async (
   if (reflections.length === 0) return
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
-  const {featureFlags} = organization
-  const hasSuggestGroupsFlag = featureFlags?.includes('suggestGroups')
+  const hasSuggestGroupsFlag = await dataLoader
+    .get('featureFlagByOwnerId')
+    .load({ownerId: team.orgId, featureName: 'suggestGroups'})
   if (!hasSuggestGroupsFlag) return
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()
@@ -53,17 +52,18 @@ const generateGroups = async (
     })
   }
 
-  const r = await getRethink()
-  const meetingRes = await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update({autogroupReflectionGroups}, {returnChanges: true})('changes')(0)('new_val')
-    .run()
-  const {facilitatorUserId} = meetingRes
+  await getKysely()
+    .updateTable('NewMeeting')
+    .set({autogroupReflectionGroups: JSON.stringify(autogroupReflectionGroups)})
+    .where('id', '=', meetingId)
+    .execute()
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+  const {facilitatorUserId} = meeting
   const data = {meetingId}
   const operationId = dataLoader.share()
   const subOptions = {operationId}
-  analytics.suggestedGroupsGenerated(facilitatorUserId, meetingId, teamId)
+  const user = await dataLoader.get('users').loadNonNull(facilitatorUserId!)
+  analytics.suggestedGroupsGenerated(user, meetingId, teamId)
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
   return autogroupReflectionGroups
 }

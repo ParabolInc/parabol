@@ -1,7 +1,7 @@
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import RetrospectiveMeeting from '../../../server/database/types/MeetingRetrospective'
 import ITask from '../../../server/database/types/Task'
+import {RetrospectiveMeeting} from '../../../server/postgres/types/Meeting'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
@@ -296,13 +296,6 @@ const initDemoOrg = () => {
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
-    },
-    featureFlags: {
-      zoomTranscription: false,
-      suggestGroups: false,
-      teamsLimit: false,
-      noPromptToJoinOrg: false,
-      publicTeams: false
     },
     showConversionModal: false
   } as const

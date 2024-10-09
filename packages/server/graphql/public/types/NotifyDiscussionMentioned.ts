@@ -3,7 +3,7 @@ import {NotifyDiscussionMentionedResolvers} from '../resolverTypes'
 const NotifyDiscussionMentioned: NotifyDiscussionMentionedResolvers = {
   __isTypeOf: ({type}) => type === 'DISCUSSION_MENTIONED',
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return meeting
   },
   author: async ({authorId, commentId}, _args: unknown, {dataLoader}) => {

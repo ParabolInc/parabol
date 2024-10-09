@@ -2,7 +2,7 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
@@ -29,16 +29,15 @@ const flagReadyToAdvance = {
     {meetingId, stageId, isReady}: {meetingId: string; stageId: string; isReady: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     //AUTH
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const [meeting, viewerMeetingMember] = await Promise.all([
-      r.table('NewMeeting').get(meetingId).run(),
+      dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('meetingMembers').load(meetingMemberId)
     ])
     if (!meeting) {
@@ -80,7 +79,12 @@ const flagReadyToAdvance = {
 
     // RESOLUTION
     // TODO there's enough evidence showing that we should probably worry about atomicity
-    await r.table('NewMeeting').get(meetingId).update({phases, updatedAt: now}).run()
+    await pg
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(phases)})
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     const data = {meetingId, stageId}
     publish(SubscriptionChannel.MEETING, meetingId, 'FlagReadyToAdvanceSuccess', data, subOptions)
     return data

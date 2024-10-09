@@ -1,11 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
-import getRethink from '../../database/rethinkDriver'
-import Meeting from '../../database/types/Meeting'
-import MeetingPoker from '../../database/types/MeetingPoker'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
@@ -35,19 +33,17 @@ export default {
   },
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()) as Meeting | null
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (meeting.meetingType !== 'poker') {
+      return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
+    }
     const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
     // VALIDATION
@@ -82,32 +78,29 @@ export default {
       await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
     ).filter(isValid)
     const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-    const completedMeeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          endedAt: now,
-          phases,
-          commentCount,
-          storyCount,
-          ...insights
-        },
-        {returnChanges: true, nonAtomic: true}
-      )('changes')(0)('new_val')
-      .default(null)
-      .run()) as unknown as MeetingPoker
-    if (!completedMeeting) {
-      return standardError(new Error('Completed poker meeting does not exist'), {
-        userId: viewerId
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({
+        endedAt: sql`CURRENT_TIMESTAMP`,
+        phases: JSON.stringify(phases),
+        commentCount,
+        storyCount,
+        usedReactjis: JSON.stringify(insights.usedReactjis),
+        engagement: insights.engagement
       })
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
+    const completedMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (completedMeeting.meetingType !== 'poker') {
+      return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
     }
     const {templateId} = completedMeeting
     const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
+      removeEmptyTasks(meetingId, teamId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').loadNonNull(templateId),
       updateTeamInsights(teamId, dataLoader)

@@ -1,7 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
@@ -32,7 +30,7 @@ const updateTemplateScope = {
     {templateId, scope: newScope}: {templateId: string; scope: SharingScopeEnumType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -59,16 +57,16 @@ const updateTemplateScope = {
     template.scope = newScope // mutate the cached record
     const SCOPES: ESharingScope[] = ['TEAM', 'ORGANIZATION', 'PUBLIC']
     const isDownscope = SCOPES.indexOf(newScope) < SCOPES.indexOf(scope)
-    const shouldClone = isDownscope
-      ? await r
-          .table('NewMeeting')
-          .getAll(templateId, {index: 'templateId'})
-          .filter((meeting: RDatum) => meeting('teamId').ne(teamId))
-          .nth(0)
-          .default(null)
-          .ne(null)
-          .run()
-      : false
+    const usedMeeting = isDownscope
+      ? await pg
+          .selectFrom('NewMeeting')
+          .select('id')
+          .where('templateId', '=', templateId)
+          .where('teamId', '!=', teamId)
+          .limit(1)
+          .executeTakeFirst()
+      : null
+    const shouldClone = !!usedMeeting
     let clonedTemplateId: string | undefined
 
     const cloneReflectTemplate = async () => {

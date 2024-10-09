@@ -1,4 +1,3 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {ReflectPhaseResolvers} from '../resolverTypes'
 
 const ReflectPhase: ReflectPhaseResolvers = {
@@ -9,7 +8,8 @@ const ReflectPhase: ReflectPhaseResolvers = {
   },
 
   reflectPrompts: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (meeting.meetingType !== 'retrospective') return []
     const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
     // only show prompts that were created before the meeting and
     // either have not been removed or they were removed after the meeting was created
