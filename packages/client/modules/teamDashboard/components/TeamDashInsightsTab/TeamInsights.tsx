@@ -15,6 +15,7 @@ const query = graphql`
       team(teamId: $teamId) {
         ...TeamInsights_team @relay(mask: false)
         insight {
+          wins
           ...TeamInsightContent_team
         }
       }

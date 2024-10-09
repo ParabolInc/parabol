@@ -9,8 +9,11 @@ import {getTopics} from './helpers/getTopics'
 const generateInsight: MutationResolvers['generateInsight'] = async (
   _source,
   {teamId, startDate, endDate, useSummaries = true, prompt},
-  {dataLoader, authToken}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId}
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
     return standardError(
       new Error('Invalid date format. Please use ISO 8601 format (e.g., 2024-01-01T00:00:00Z).')
@@ -48,14 +51,14 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   if (!insertedInsight) {
     return standardError(new Error('Failed to insert insight'))
   }
+  const data = {
+    id: insertedInsight.id,
+    wins,
+    challenges,
+    meetingIds
+  }
 
-  publish(
-    SubscriptionChannel.TEAM,
-    teamId,
-    'GenerateInsightPayload',
-    {insight: {id: insertedInsight.id}},
-    {mutatorId: authToken.sub}
-  )
+  publish(SubscriptionChannel.TEAM, teamId, 'GenerateInsightSuccess', data, subOptions)
 
   return response
 }
