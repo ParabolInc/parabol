@@ -109,5 +109,3 @@ export type AnyMeetingMember =
   | RetroMeetingMember
   | ActionMeetingMember
   | TeamPromptMeetingMember
-
-type Z = RetroMeetingMember & AnyMeetingMember
