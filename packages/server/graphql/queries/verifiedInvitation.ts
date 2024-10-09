@@ -3,7 +3,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import util from 'util'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import IUser from '../../postgres/types/IUser'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
@@ -41,14 +41,15 @@ export default {
   },
   resolve: rateLimit({perMinute: 60, perHour: 1800})(
     async (_source: unknown, {token}, {dataLoader}: GQLContext) => {
-      const r = await getRethink()
+      const pg = getKysely()
       const now = new Date()
-      const teamInvitation = await r
-        .table('TeamInvitation')
-        .getAll(token, {index: 'token'})
-        .nth(0)
-        .default(null)
-        .run()
+      const teamInvitation = await pg
+        .selectFrom('TeamInvitation')
+        .selectAll()
+        .where('token', '=', token)
+        .limit(1)
+        .executeTakeFirst()
+
       if (!teamInvitation) return {errorType: InvitationTokenError.NOT_FOUND}
       const {
         email,

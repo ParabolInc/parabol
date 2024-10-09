@@ -39,15 +39,21 @@ const inviteToTeamHelper = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const [total, pending] = await Promise.all([
-    r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
-    r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({acceptedAt: null})
-      .count()
-      .run()
+  const [totalRes, pendingRes] = await Promise.all([
+    pg
+      .selectFrom('TeamInvitation')
+      .select(({fn}) => fn.count<bigint>('id').as('count'))
+      .where('teamId', '=', teamId)
+      .executeTakeFirstOrThrow(),
+    pg
+      .selectFrom('TeamInvitation')
+      .select(({fn}) => fn.count<bigint>('id').as('count'))
+      .where('teamId', '=', teamId)
+      .where('acceptedAt', 'is', null)
+      .executeTakeFirstOrThrow()
   ])
+  const total = Number(totalRes.count)
+  const pending = Number(pendingRes.count)
   const accepted = total - pending
   // if no one has accepted one of their 100+ invites, don't trust them
   if (accepted === 0 && total + invitees.length >= 100) {
@@ -126,7 +132,6 @@ const inviteToTeamHelper = async (
     createdAt: new Date(),
     acceptedAt: null
   }))
-  await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
   await pg.insertInto('TeamInvitation').values(teamInvitationsToInsert).execute()
   // remove suggested action, if any
   let removedSuggestedActionId
