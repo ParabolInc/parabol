@@ -7,9 +7,10 @@ import {isNotNull} from '../../../../client/utils/predicates'
 import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
-import TeamInvitation from '../../../database/types/TeamInvitation'
 import getMailManager from '../../../email/getMailManager'
 import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -34,6 +35,7 @@ const inviteToTeamHelper = async (
   const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -112,18 +114,20 @@ const inviteToTeamHelper = async (
   )
   const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
   // insert invitation records
-  const teamInvitationsToInsert = newAllowedInvitees.map((email, idx) => {
-    return new TeamInvitation({
-      expiresAt,
-      email,
-      invitedBy: viewerId,
-      meetingId: meetingId ?? undefined,
-      teamId,
-      token: tokens[idx]!
-    })
-  })
+  const teamInvitationsToInsert = newAllowedInvitees.map((email, idx) => ({
+    id: generateUID(),
+    expiresAt,
+    email,
+    invitedBy: viewerId,
+    meetingId: meetingId ?? undefined,
+    teamId,
+    token: tokens[idx]!,
+    isMassInvite: false,
+    createdAt: new Date(),
+    acceptedAt: null
+  }))
   await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
-
+  await pg.insertInto('TeamInvitation').values(teamInvitationsToInsert).execute()
   // remove suggested action, if any
   let removedSuggestedActionId
   if (isOnboardTeam) {

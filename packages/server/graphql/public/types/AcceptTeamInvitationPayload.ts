@@ -6,7 +6,7 @@ import isValid from '../../isValid'
 import {AcceptTeamInvitationPayloadResolvers} from '../resolverTypes'
 
 export type AcceptTeamInvitationPayloadSource = {
-  meetingId?: string
+  meetingId?: string | null
   teamId?: string
   teamMemberId?: string
   invitationNotificationIds?: string[]

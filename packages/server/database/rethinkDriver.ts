@@ -1,5 +1,5 @@
 import {MasterPool, r} from 'rethinkdb-ts'
-import TeamInvitation from '../database/types/TeamInvitation'
+import {TeamInvitation} from '../postgres/types/index'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import NotificationKickedOut from './types/NotificationKickedOut'

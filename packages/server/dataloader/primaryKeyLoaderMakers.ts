@@ -19,6 +19,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
@@ -138,4 +139,8 @@ export const massInvitations = primaryKeyLoaderMaker((ids: readonly string[]) =>
 
 export const newFeatures = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectNewFeatures().where('id', 'in', ids).execute()
+})
+
+export const _pgteamInvitations = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamInvitations().where('id', 'in', ids).execute()
 })
