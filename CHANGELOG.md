@@ -5,6 +5,34 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.5](https://github.com/ParabolInc/parabol/compare/v7.50.4...v7.50.5) (2024-10-08)
+
+
+### Fixed
+
+* timeRemaining ([#10316](https://github.com/ParabolInc/parabol/issues/10316)) ([de9df6c](https://github.com/ParabolInc/parabol/commit/de9df6ca85e9187a87fb3585279a295d29665220))
+
+## [7.50.4](https://github.com/ParabolInc/parabol/compare/v7.50.3...v7.50.4) (2024-10-08)
+
+
+### Changed
+
+* **rethinkdb:** MeetingMember: Phase 2 ([#10294](https://github.com/ParabolInc/parabol/issues/10294)) ([af50d0a](https://github.com/ParabolInc/parabol/commit/af50d0a1420ae21b4e48ddc040c0d79f9d81e2cf))
+* **rethinkdb:** MeetingMember: Phase 3 ([#10298](https://github.com/ParabolInc/parabol/issues/10298)) ([dee4e0f](https://github.com/ParabolInc/parabol/commit/dee4e0f0119bd46167175043405bc24abd49d88b))
+
+## [7.50.3](https://github.com/ParabolInc/parabol/compare/v7.50.2...v7.50.3) (2024-10-08)
+
+
+### Fixed
+
+* **webserver:** exits with code 0 when SIGTERM is handled ([#10301](https://github.com/ParabolInc/parabol/issues/10301)) ([de317d2](https://github.com/ParabolInc/parabol/commit/de317d2dabcf6834b0564f7aab1af5ad02443d66))
+
+
+### Changed
+
+* **rethinkdb:** MeetingMember: Phase 1 ([#10289](https://github.com/ParabolInc/parabol/issues/10289)) ([abd8281](https://github.com/ParabolInc/parabol/commit/abd8281cc7e637311ea0920f21b8822b42396acd))
+* **rethinkdb:** NewMeeting: Phase 3 ([#10273](https://github.com/ParabolInc/parabol/issues/10273)) ([1667810](https://github.com/ParabolInc/parabol/commit/1667810a192e82bd8d2cd49b2ed0ba138559458f))
+
 ## [7.50.2](https://github.com/ParabolInc/parabol/compare/v7.50.1...v7.50.2) (2024-10-07)
 
 
