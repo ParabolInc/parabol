@@ -72,21 +72,21 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
       .where('featureFlagId', '=', featureFlagId)
       .where('userId', 'in', userIds)
       .executeTakeFirst()
-    deletedCount = result?.numDeletedRows ?? 0
+    deletedCount = Number(result?.numDeletedRows ?? 0)
   } else if (scope === 'Team' && teamIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
       .where('featureFlagId', '=', featureFlagId)
       .where('teamId', 'in', teamIds)
       .executeTakeFirst()
-    deletedCount = result?.numDeletedRows ?? 0
+    deletedCount = Number(result?.numDeletedRows ?? 0)
   } else if (scope === 'Organization' && orgIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
       .where('featureFlagId', '=', featureFlagId)
       .where('orgId', 'in', orgIds)
       .executeTakeFirst()
-    deletedCount = result?.numDeletedRows ?? 0
+    deletedCount = Number(result?.numDeletedRows ?? 0)
   }
 
   if (deletedCount === 0) {

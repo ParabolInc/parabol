@@ -18,4 +18,8 @@ type RemoveFeatureFlagOwnerSuccess {
   The feature flag was removed from the following organizations
   """
   organizations: [Organization!]
+  """
+  The number of subjects the feature flag was removed from
+  """
+  removedCount: Int!
 }

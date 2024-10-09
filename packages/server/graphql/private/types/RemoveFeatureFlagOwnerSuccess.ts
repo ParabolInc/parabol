@@ -6,6 +6,7 @@ export type RemoveFeatureFlagOwnerSuccessSource = {
   userIds: string[] | null
   teamIds: string[] | null
   orgIds: string[] | null
+  removedCount: number
 }
 
 const RemoveFeatureFlagOwnerSuccess: RemoveFeatureFlagOwnerSuccessResolvers = {
@@ -23,7 +24,8 @@ const RemoveFeatureFlagOwnerSuccess: RemoveFeatureFlagOwnerSuccessResolvers = {
   organizations: async ({orgIds}, _args, {dataLoader}) => {
     if (!orgIds) return null
     return (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
-  }
+  },
+  removedCount: ({removedCount}) => removedCount
 }
 
 export default RemoveFeatureFlagOwnerSuccess
