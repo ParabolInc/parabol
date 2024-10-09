@@ -48,7 +48,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     return reflectionGroups
   },
   taskCount: ({taskCount}) => taskCount || 0,
-  tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
+  tasks: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {teamId} = meeting
@@ -56,7 +56,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   },
   topicCount: ({topicCount}) => topicCount || 0,
-  votesRemaining: async ({id: meetingId}, _args: unknown, {dataLoader}) => {
+  votesRemaining: async ({id: meetingId}, _args, {dataLoader}) => {
     const meetingMembers = (await dataLoader
       .get('meetingMembersByMeetingId')
       .load(meetingId)) as RetroMeetingMember[]
