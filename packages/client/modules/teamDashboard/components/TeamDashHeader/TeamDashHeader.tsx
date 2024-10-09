@@ -95,7 +95,7 @@ const TeamDashHeader = (props: Props) => {
         ...DashboardAvatars_team
         id
         name
-        hasInsightsFlag: featureFlag: flagName(name: "insights")
+        hasInsightsFlag: featureFlag(featureName: "insights")
         organization {
           id
           name
