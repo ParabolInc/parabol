@@ -135,12 +135,6 @@ const removeTeamMember = async (
 
   // Reassign facilitator for meetings this user is facilitating.
   if (meetingIds.length > 0) {
-    await r
-      .table('MeetingMember')
-      .getAll(r.args(meetingIds), {index: 'meetingId'})
-      .filter({userId})
-      .delete()
-      .run()
     const facilitatingMeetings = await pg
       .with('DeleteMeetingMembers', (qb) =>
         qb

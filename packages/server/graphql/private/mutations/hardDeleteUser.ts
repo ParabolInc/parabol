@@ -86,7 +86,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .where('createdBy', '=', userIdToDelete)
     .execute()
   await r({
-    meetingMember: r.table('MeetingMember').getAll(userIdToDelete, {index: 'userId'}).delete(),
     notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete(),
     createdTasks: r
       .table('Task')

@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionResolvers} from '../resolverTypes'
@@ -8,10 +8,13 @@ import {SubscriptionResolvers} from '../resolverTypes'
 const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
   subscribe: async (_source, {meetingId}, {authToken}) => {
     // AUTH
-    const r = await getRethink()
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await r.table('MeetingMember').get(meetingMemberId).run()
+    const meetingMember = await getKysely()
+      .selectFrom('MeetingMember')
+      .select('id')
+      .where('id', '=', meetingMemberId)
+      .executeTakeFirst()
     if (!meetingMember) {
       throw new Error('Not invited to the meeting. Cannot subscribe')
     }
