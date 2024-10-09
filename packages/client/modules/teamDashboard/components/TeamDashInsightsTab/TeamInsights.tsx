@@ -53,7 +53,7 @@ const TeamInsights = (props: Props) => {
         </a>
       </p>
       {insight ? (
-        <TeamInsightContent insightRef={insight} teamName={name} />
+        <TeamInsightContent insightRef={insight} teamName={name!} />
       ) : (
         <TeamInsightEmptyState teamId={teamId} meetingsCount={retroMeetingsCount} />
       )}

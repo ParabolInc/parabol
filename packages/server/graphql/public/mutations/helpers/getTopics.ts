@@ -123,7 +123,7 @@ export const getTopics = async (
         .and(row('createdAt').ge(startDate))
         .and(row('createdAt').le(endDate))
         .and(row('reflectionCount').gt(MIN_REFLECTION_COUNT))
-        // .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
+        .and(r.table('MeetingMember').getAll(row('id'), {index: 'meetingId'}).count().gt(1))
         .and(row('endedAt').sub(row('createdAt')).gt(MIN_MILLISECONDS))
     )
     .run()
@@ -187,8 +187,7 @@ export const getTopics = async (
 
   const hotTopics = meetings
     .flat()
-    // .filter((t) => t.voteCount > 2)
-    .filter((t) => t.voteCount > 0)
+    .filter((t) => t.voteCount > 2)
     .sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
 
   const idGenerator = {
