@@ -7,10 +7,10 @@ import getGraphQLExecutor from '../../utils/getGraphQLExecutor'
 import sendToSentry from '../../utils/sendToSentry'
 import AuthToken from '../../database/types/AuthToken'
 import getKysely from '../../postgres/getKysely'
+import startTeamPrompt from '../../graphql/public/mutations/startTeamPrompt'
 
 const eventLookup = {
   meetingTemplates: {
-    getVars: (email: string) => ({email}),
     query: `
       query MeetingTemplates {
         viewer {
@@ -49,16 +49,24 @@ const eventLookup = {
           }
         }
       }
-    `
+    `,
+    formatResult: (data: any) => {
+      // restructure the data to make it easier to digest
+      const restructured = {
+        availableTemplates: data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
+        teams: data.viewer.teams,
+      }
+      console.log('GEORG result', JSON.stringify(restructured, null, 2))
+      return restructured
+    }
   },
   startRetrospective: {
-    getVars: (selectedTemplateId: string, teamId: string) => ({selectedTemplateId, teamId}),
     query: `
-      mutation StartActivity(
-        $selectedTemplateId: ID!
+      mutation StartRetrospective(
         $teamId: ID!
+        $templateId: ID!
       ) {
-        selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
+        selectTemplate(selectedTemplateId: $templateId, teamId: $teamId) {
           meetingSettings {
             id
           }
@@ -71,31 +79,136 @@ const eventLookup = {
           }
         }
       }
-    `
+    `,
+    formatResult: undefined
+  },
+  startCheckIn: {
+    query: `
+      mutation StartCheckIn($teamId: ID!) {
+        startCheckIn(teamId: $teamId) {
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+          ... on StartCheckInSuccess {
+            meeting {
+              id
+            }
+          }
+        }
+      }
+    `,
+    formatResult: undefined
+  },
+  startSprintPoker: {
+    query: `
+      mutation StartSprintPokerMutation(
+        $teamId: ID!
+        $templateId: ID!
+      ) {
+        selectTemplate(selectedTemplateId: $templateId, teamId: $teamId) {
+          meetingSettings {
+            id
+          }
+        }
+        startSprintPoker(teamId: $teamId) {
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+          ... on StartSprintPokerSuccess {
+            meeting {
+              id
+            }
+          }
+        }
+      }
+    `,
+    formatResult: undefined
+  },
+  startTeamPrompt: {
+    query: `
+      mutation StartTeamPromptMutation(
+        $teamId: ID!
+      ) {
+        startTeamPrompt(teamId: $teamId) {
+          ... on ErrorPayload {
+            error {
+              message
+            }
+          }
+          ...on StartTeamPromptSuccess {
+            meeting {
+              id
+            }
+          }
+        }
+      }
+    `,
+    formatResult: undefined
+  },
+  getMeetingSettings: {
+    query: `
+      query GetMeetingSettings($teamId: ID!, $meetingType: MeetingTypeEnum!) {
+        viewer {
+          team(teamId: $teamId) {
+            meetingSettings(meetingType: $meetingType) {
+              id
+              phaseTypes
+              ...on RetrospectiveMeetingSettings {
+                disableAnonymity
+              }
+            }
+          }
+        }
+      }
+    `,
+    formatResult: (data: any) => {
+      const {meetingSettings} = data.viewer.team
+      return {
+        id: meetingSettings.id,
+        checkinEnabled: meetingSettings.phaseTypes.includes('checkin'),
+        teamHealthEnabled: meetingSettings.phaseTypes.includes('TEAM_HEALTH'),
+        disableAnonymity: meetingSettings.disableAnonymity,
+      }
+    }
   },
   setMeetingSettings: {
-    getVars: (settingsId: string, checkinEnabled: boolean, teamHealthEnabled: boolean, disableAnonymity: boolean) => ({settingsId, checkinEnabled, teamHealthEnabled, disableAnonymity}),
     query: `
       mutation SetMeetingSettings(
-        $settingsId: ID!
+        $id: ID!
         $checkinEnabled: Boolean
         $teamHealthEnabled: Boolean
         $disableAnonymity: Boolean
       ) {
         setMeetingSettings(
-          settingsId: $settingsId
+          settingsId: $id
           checkinEnabled: $checkinEnabled
           teamHealthEnabled: $teamHealthEnabled
           disableAnonymity: $disableAnonymity
         ) {
-          phaseTypes
-          ... on RetrospectiveMeetingSettings {
-            disableAnonymity
-            videoMeetingURL
+          settings {
+            id
+            phaseTypes
+            ... on RetrospectiveMeetingSettings {
+              disableAnonymity
+            }
           }
         }
       }
-   `
+   `,
+    formatResult: (data: any) => {
+      console.log('GEORG setMeetingSettings', data)
+      const {settings: meetingSettings} = data.setMeetingSettings
+      return {
+        id: meetingSettings.id,
+        checkinEnabled: meetingSettings.phaseTypes.includes('checkin'),
+        teamHealthEnabled: meetingSettings.phaseTypes.includes('TEAM_HEALTH'),
+        disableAnonymity: meetingSettings.disableAnonymity,
+      }
+    }
   }
 } as const
 
@@ -121,7 +234,6 @@ const publishWebhookGQL = async <NarrowResponse>(
   }
 }
 
-
 const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const headers = {
     'content-type': req.getHeader('content-type'),
@@ -141,7 +253,7 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   const verified = await httpbis.verifyMessage({
       // logic for finding a key based on the signature parameters
       async keyLookup(params: any) {
-        console.log('GEORG keyLookup', params)
+          //console.log('GEORG keyLookup', params)
           const keyId = params.keyid;
           // lookup and return key - note, we could also lookup using the alg too (`params.alg`)
           // if there is no key, `verifyMessage()` will throw an error
@@ -160,6 +272,8 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   const body = (await parseBody({res})) as any
 
   const {query, variables, email} = body ?? {}
+
+  console.log('GEORG query', query, variables, email)
   
   const event = eventLookup[query as keyof typeof eventLookup]
   if (!event) {
@@ -169,12 +283,7 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   }
   const result = await publishWebhookGQL<{data: any}>(event.query, variables, email)
   if (result?.data) {
-    // restructure the data to make it easier to digest
-    const restructured = {
-      availableTemplates: result.data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
-      teams: result.data.viewer.teams,
-    }
-    console.log('GEORG result', JSON.stringify(restructured, null, 2))
+    const restructured = event.formatResult?.(result.data) ?? result.data
     res.writeStatus('200').writeHeader('Content-Type', 'application/json').end(JSON.stringify(restructured))
   } else {
     res.writeStatus('500').end()
