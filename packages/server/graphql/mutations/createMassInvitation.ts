@@ -1,7 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
-import MassInvitation from '../../database/types/MassInvitation'
+import {Security, Threshold} from '../../../client/types/constEnums'
+import generateRandomString from '../../generateRandomString'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import CreateMassInvitationPayload from '../types/CreateMassInvitationPayload'
@@ -32,7 +33,7 @@ const createMassInvitation = {
     }: {meetingId?: string | null; teamId: string; voidOld?: boolean | null},
     {authToken}: GQLContext
   ) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
 
     //AUTH
@@ -43,11 +44,17 @@ const createMassInvitation = {
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     if (voidOld) {
-      await r.table('MassInvitation').getAll(teamMemberId, {index: 'teamMemberId'}).delete().run()
+      await pg.deleteFrom('MassInvitation').where('teamMemberId', '=', teamMemberId).execute()
     }
-    const massInvitation = new MassInvitation({meetingId: meetingId ?? undefined, teamMemberId})
-
-    await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
+    await pg
+      .insertInto('MassInvitation')
+      .values({
+        id: generateRandomString(Security.MASS_INVITATION_TOKEN_LENGTH),
+        meetingId,
+        teamMemberId,
+        expiration: new Date(Date.now() + Threshold.MASS_INVITATION_TOKEN_LIFESPAN)
+      })
+      .execute()
     return {teamId}
   }
 }

@@ -9,10 +9,11 @@ import {
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
-import MassInvitationDB from '../../database/types/MassInvitation'
+import {Security, Threshold} from '../../../client/types/constEnums'
 import Task from '../../database/types/Task'
 import ITeam from '../../database/types/Team'
+import generateRandomString from '../../generateRandomString'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import isValid from '../isValid'
@@ -75,7 +76,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         {authToken, dataLoader}: GQLContext
       ) => {
         if (!isTeamMember(authToken, teamId)) return null
-        const r = await getRethink()
+        const pg = getKysely()
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const invitationTokens = await dataLoader
@@ -87,14 +88,15 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           return newestInvitationToken
         // if the token is not valid, delete it to keep the table clean of expired things
         if (newestInvitationToken) {
-          await r
-            .table('MassInvitation')
-            .getAll(teamMemberId, {index: 'teamMemberId'})
-            .delete()
-            .run()
+          await pg.deleteFrom('MassInvitation').where('teamMemberId', '=', teamMemberId).execute()
         }
-        const massInvitation = new MassInvitationDB({meetingId, teamMemberId})
-        await r.table('MassInvitation').insert(massInvitation, {conflict: 'replace'}).run()
+        const massInvitation = {
+          id: generateRandomString(Security.MASS_INVITATION_TOKEN_LENGTH),
+          meetingId,
+          teamMemberId,
+          expiration: new Date(Date.now() + Threshold.MASS_INVITATION_TOKEN_LIFESPAN)
+        }
+        await pg.insertInto('MassInvitation').values(massInvitation).execute()
         invitationTokens.length = 1
         invitationTokens[0] = massInvitation
         return massInvitation
