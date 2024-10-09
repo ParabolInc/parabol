@@ -3,6 +3,7 @@ import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPro
 import {
   selectAgendaItems,
   selectComments,
+  selectMassInvitations,
   selectMeetingMembers,
   selectNewMeetings,
   selectOrganizations,
@@ -266,5 +267,16 @@ export const meetingMembersByUserId = foreignKeyLoaderMaker(
   'userId',
   async (userIds) => {
     return selectMeetingMembers().where('userId', 'in', userIds).execute()
+  }
+)
+
+export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
+  'massInvitations',
+  'teamMemberId',
+  async (teamMemberIds) => {
+    return selectMassInvitations()
+      .where('teamMemberId', 'in', teamMemberIds)
+      .orderBy('expiration desc')
+      .execute()
   }
 )
