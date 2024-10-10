@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.8](https://github.com/ParabolInc/parabol/compare/v7.50.7...v7.50.8) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 2 ([#10326](https://github.com/ParabolInc/parabol/issues/10326)) ([f8486ba](https://github.com/ParabolInc/parabol/commit/f8486bae6feeeb7a69088a864e8277c53d052061))
+
+## [7.50.7](https://github.com/ParabolInc/parabol/compare/v7.50.6...v7.50.7) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** NewFeature: OneShot ([#10312](https://github.com/ParabolInc/parabol/issues/10312)) ([92deddf](https://github.com/ParabolInc/parabol/commit/92deddf30645ad4d479f29eb7ab66737a3218946))
+* **rethinkdb:** TeamInvitation: Phase 1 ([#10325](https://github.com/ParabolInc/parabol/issues/10325)) ([72ea4e1](https://github.com/ParabolInc/parabol/commit/72ea4e1bde79cdec9d9d4eda80932e32e880d19c))
+
 ## [7.50.6](https://github.com/ParabolInc/parabol/compare/v7.50.5...v7.50.6) (2024-10-09)
 
 
