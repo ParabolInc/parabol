@@ -30,7 +30,7 @@ export async function up() {
     END IF;
     CREATE TABLE IF NOT EXISTS "Task" (
       "id" VARCHAR(100) NOT NULL PRIMARY KEY,
-      "content" VARCHAR(2000) NOT NULL,
+      "content" JSONB NOT NULL,
       "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
       "createdBy" VARCHAR(100) NOT NULL,
       "doneMeetingId" VARCHAR(100),
