@@ -13,6 +13,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
   selectTeamInvitations,
   selectTeams,
   selectTemplateDimension,
@@ -294,3 +295,20 @@ export const teamInvitationsByTeamId = foreignKeyLoaderMaker(
       .execute()
   }
 )
+
+export const _pgtasksByDiscussionId = foreignKeyLoaderMaker(
+  '_pgtasks',
+  'discussionId',
+  async (discusisonIds) => {
+    // include archived cards in the conversation, since it's persistent
+    return selectTasks().where('discussionId', 'in', discusisonIds).execute()
+  }
+)
+
+export const _pgtasksByTeamId = foreignKeyLoaderMaker('_pgtasks', 'teamId', async (teamIds) => {
+  // waraning! contains private tasks
+  return selectTasks()
+    .where('teamId', 'in', teamIds)
+    .where(sql<boolean>`'archived' = ANY(tags)`)
+    .execute()
+})
