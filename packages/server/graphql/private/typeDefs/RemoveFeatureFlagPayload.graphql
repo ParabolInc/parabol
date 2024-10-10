@@ -1,0 +1,4 @@
+"""
+Return value for removeFeatureFlagOwner, which could be an error or success
+"""
+union RemoveFeatureFlagOwnerPayload = ErrorPayload | RemoveFeatureFlagOwnerSuccess
