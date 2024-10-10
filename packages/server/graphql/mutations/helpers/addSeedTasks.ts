@@ -5,6 +5,7 @@ import appOrigin from '../../../appOrigin'
 import getRethink from '../../../database/rethinkDriver'
 import {TaskStatusEnum} from '../../../database/types/Task'
 import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 
 const NORMAL_TASK_STRING = `This is a task card. They can be created here, in a meeting, or via an integration`
@@ -37,6 +38,7 @@ function getSeedTasks(teamId: string) {
 }
 
 export default async (userId: string, teamId: string) => {
+  const pg = getKysely()
   const r = await getRethink()
   const now = new Date()
 
@@ -50,6 +52,6 @@ export default async (userId: string, teamId: string) => {
     userId,
     updatedAt: now
   }))
-
+  await pg.insertInto('Task').values(seedTasks).execute()
   return r.table('Task').insert(seedTasks).run()
 }

@@ -108,6 +108,9 @@ const resetRetroMeetingToGroupStage = {
         .with('DeleteComments', (qb) =>
           qb.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete)
         )
+        .with('DeleteTasks', (qb) =>
+          qb.deleteFrom('Task').where('discussionId', 'in', discussionIdsToDelete)
+        )
         .with('ResetGroups', (qb) =>
           qb
             .updateTable('RetroReflectionGroup')

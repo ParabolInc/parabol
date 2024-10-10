@@ -2,6 +2,7 @@ import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getRethink from '../../../database/rethinkDriver'
 import ImportedTask from '../../../database/types/ImportedTask'
+import getKysely from '../../../postgres/getKysely'
 import {TUpdatePokerScopeItemInput} from '../updatePokerScope'
 
 const importTasksForPoker = async (
@@ -10,6 +11,7 @@ const importTasksForPoker = async (
   userId: string,
   meetingId: string
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const integratedUpdates = additiveUpdates.filter((update) => update.service !== 'PARABOL')
   const integrationHashes = integratedUpdates.map((update) => update.serviceTaskId)
@@ -45,6 +47,10 @@ const importTasksForPoker = async (
     .filter(isNotNull)
 
   if (newIntegrationUpdates.length > 0) {
+    await pg
+      .insertInto('Task')
+      .values(tasksToAdd.map((t) => ({...t, integration: JSON.stringify(t.integration)})))
+      .execute()
     await r.table('Task').insert(tasksToAdd).run()
   }
   const integratedTasks = [...existingTasks, ...tasksToAdd]

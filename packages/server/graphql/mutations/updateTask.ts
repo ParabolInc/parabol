@@ -4,6 +4,7 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import getRethink from '../../database/rethinkDriver'
 import Task, {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -46,6 +47,7 @@ export default {
     {updatedTask}: UpdateTaskMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -56,7 +58,7 @@ export default {
     const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
     const validContent = normalizeRawDraftJS(content)
     const [task, viewer] = await Promise.all([
-      r.table('Task').get(taskId).run(),
+      dataLoader.get('tasks').load(taskId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!task) {
@@ -94,6 +96,20 @@ export default {
         .update(nextTask, {returnChanges: true})('changes')(0)('new_val')
         .default(null) as unknown as Task
     }).run()
+    await pg
+      .updateTable('Task')
+      .set({
+        content: content ? validContent : undefined,
+        plaintextContent: content
+          ? extractTextFromDraftString(validContent)
+          : task.plaintextContent,
+        sortOrder: sortOrder || undefined,
+        status: status || undefined,
+        userId: inputUserId || undefined
+      })
+      .where('id', '=', taskId)
+      .execute()
+    dataLoader.clearAll('tasks')
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId)
     if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
