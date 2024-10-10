@@ -113,6 +113,7 @@
     "lodash.pick": "^4.4.0",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^9.3.0",
+    "markdown-draft-js": "^2.4.0",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
     "nest-graphql-endpoint": "0.8.1",
