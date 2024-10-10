@@ -1,6 +1,6 @@
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import TeamInvitation from '../../../database/types/TeamInvitation'
+import {TeamInvitation} from '../../../postgres/types'
 
 const handleTeamInviteToken = async (
   invitationToken: string,

@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
@@ -12,6 +13,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTeamInvitations,
   selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
@@ -277,6 +279,18 @@ export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
     return selectMassInvitations()
       .where('teamMemberId', 'in', teamMemberIds)
       .orderBy('expiration desc')
+      .execute()
+  }
+)
+
+export const _pgteamInvitationsByTeamId = foreignKeyLoaderMaker(
+  '_pgteamInvitations',
+  'teamId',
+  async (teamIds) => {
+    return selectTeamInvitations()
+      .where('teamId', 'in', teamIds)
+      .where('acceptedAt', 'is', null)
+      .where('expiresAt', '>=', sql<Date>`CURRENT_TIMESTAMP`)
       .execute()
   }
 )

@@ -8,6 +8,7 @@ import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
+  selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
@@ -15,6 +16,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateScale,
@@ -72,3 +74,5 @@ export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
 export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
 
 export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
+export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
+export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>

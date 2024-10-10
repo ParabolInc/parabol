@@ -93,6 +93,14 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
           .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
           .where('id', '=', userId)
       )
+      .with('TeamInvitationUpdate', (qb) =>
+        // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
+        qb
+          .updateTable('TeamInvitation')
+          .set({acceptedAt: sql`CURRENT_TIMESTAMP`, acceptedBy: userId})
+          .where('email', '=', email)
+          .where('teamId', '=', teamId)
+      )
       .insertInto('TeamMember')
       .values({
         id: TeamMemberId.join(teamId, userId),
@@ -108,7 +116,6 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     r
       .table('TeamInvitation')
       .getAll(teamId, {index: 'teamId'})
-      // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
       .filter({email})
       .update({
         acceptedAt: now,

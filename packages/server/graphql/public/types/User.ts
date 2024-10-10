@@ -411,7 +411,7 @@ const User: ReqResolvers<'User'> = {
   },
 
   newFeature: ({newFeatureId}, _args, {dataLoader}) => {
-    return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
+    return newFeatureId ? dataLoader.get('newFeatures').loadNonNull(newFeatureId) : null
   },
 
   lastSeenAtURLs: async ({id: userId}) => {
