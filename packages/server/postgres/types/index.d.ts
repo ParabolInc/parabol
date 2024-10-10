@@ -8,6 +8,7 @@ import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
+  selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
@@ -72,3 +73,4 @@ export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
 export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
 
 export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
+export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
