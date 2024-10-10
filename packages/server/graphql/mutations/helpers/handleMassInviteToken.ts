@@ -1,5 +1,4 @@
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {verifyMassInviteToken} from '../../../utils/massInviteToken'
@@ -13,7 +12,6 @@ const handleMassInviteToken = async (
 ) => {
   const validToken = await verifyMassInviteToken(invitationToken, dataLoader)
   if ('error' in validToken) return {error: validToken.error}
-  const r = await getRethink()
   const {teamId, userId: invitedBy, exp: expiresAt, meetingId} = validToken
   if (tms?.includes(teamId)) {
     return {error: InvitationTokenError.ALREADY_ACCEPTED, teamId, meetingId}
@@ -26,14 +24,9 @@ const handleMassInviteToken = async (
     teamId,
     expiresAt,
     email,
-    isMassInvite: true,
-    acceptedAt: null
+    isMassInvite: true
   }
   await getKysely().insertInto('TeamInvitation').values(invitation).execute()
-  await r
-    .table('TeamInvitation')
-    .insert({...invitation, createdAt: new Date()})
-    .run()
   return {invitation}
 }
 

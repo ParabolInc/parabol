@@ -283,8 +283,8 @@ export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgteamInvitationsByTeamId = foreignKeyLoaderMaker(
-  '_pgteamInvitations',
+export const teamInvitationsByTeamId = foreignKeyLoaderMaker(
+  'teamInvitations',
   'teamId',
   async (teamIds) => {
     return selectTeamInvitations()

@@ -63,7 +63,6 @@ const handleFirstAcceptedInvitation = async (
 const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),
@@ -112,16 +111,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
         openDrawer: 'manageTeam'
       })
       .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
-      .execute(),
-    r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({email})
-      .update({
-        acceptedAt: now,
-        acceptedBy: userId
-      })
-      .run()
+      .execute()
   ])
   dataLoader.clearAll(['teamMembers', 'users'])
   if (!organizationUser) {

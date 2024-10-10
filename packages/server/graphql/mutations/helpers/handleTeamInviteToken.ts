@@ -1,6 +1,6 @@
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import getRethink from '../../../database/rethinkDriver'
-import {TeamInvitation} from '../../../postgres/types'
+import getKysely from '../../../postgres/getKysely'
 
 const handleTeamInviteToken = async (
   invitationToken: string,
@@ -9,12 +9,13 @@ const handleTeamInviteToken = async (
   notificationId?: string
 ) => {
   const r = await getRethink()
-  const invitation = (await r
-    .table('TeamInvitation')
-    .getAll(invitationToken, {index: 'token'})
-    .nth(0)
-    .default(null)
-    .run()) as TeamInvitation
+  const pg = getKysely()
+  const invitation = await pg
+    .selectFrom('TeamInvitation')
+    .selectAll()
+    .where('token', '=', invitationToken)
+    .limit(1)
+    .executeTakeFirst()
   if (!invitation) return {error: InvitationTokenError.NOT_FOUND}
   const {expiresAt} = invitation
   if (expiresAt.getTime() < Date.now()) {

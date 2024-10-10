@@ -5,4 +5,3 @@ import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
  */
 export const notifications = new RethinkPrimaryKeyLoaderMaker('Notification')
 export const tasks = new RethinkPrimaryKeyLoaderMaker('Task')
-export const teamInvitations = new RethinkPrimaryKeyLoaderMaker('TeamInvitation')
