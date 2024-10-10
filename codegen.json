@@ -180,7 +180,7 @@
           "Team": "../../postgres/types/index#Team as TeamDB",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",
-          "TeamInvitation": "../../database/types/TeamInvitation#default",
+          "TeamInvitation": "../../postgres/types/index/#TeamInvitation",
           "TeamMember": "../../postgres/types/index#TeamMember as TeamMember",
           "TeamMemberIntegrationAuthOAuth1": "../../postgres/queries/getTeamMemberIntegrationAuth#TeamMemberIntegrationAuth",
           "TeamMemberIntegrationAuthOAuth2": "../../postgres/queries/getTeamMemberIntegrationAuth#TeamMemberIntegrationAuth",

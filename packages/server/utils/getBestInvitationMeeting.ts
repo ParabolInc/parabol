@@ -2,7 +2,7 @@ import {DataLoaderWorker} from '../graphql/graphql'
 
 const getBestInvitationMeeting = async (
   teamId: string,
-  maybeMeetingId: string | undefined,
+  maybeMeetingId: string | undefined | null,
   dataLoader: DataLoaderWorker
 ) => {
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
