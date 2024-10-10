@@ -7,7 +7,25 @@ import getGraphQLExecutor from '../../utils/getGraphQLExecutor'
 import sendToSentry from '../../utils/sendToSentry'
 import AuthToken from '../../database/types/AuthToken'
 import getKysely from '../../postgres/getKysely'
-import startTeamPrompt from '../../graphql/public/mutations/startTeamPrompt'
+//import {stateFromMarkdown} from 'draft-js-import-markdown'
+//import {convertToRaw} from 'draft-js'
+import { markdownToDraft } from 'markdown-draft-js';
+
+/*
+ *{"blocks":[{"key":"57e9j","text":"Formatted message","type":"blockquote","depth":0,"inlineStyleRanges":[{"offset":0,"length":9,"style":"BOLD"},{"offset":10,"length":7,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"f6l0o","text":"See comment in Mattermost","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":25,"key":0}],"data":{}}],"entityMap":{"0":{"type":"LINK","mutability":"MUTABLE","data":{"url":"http://localhost:8065/parabol/pl/99syc5bjjp8wuk1qjbcnbrppme"}}}}
+ */
+/*
+ *{"blocks":[{"key":"57e9j","text":"RRRrmatted message","type":"blockquote","depth":0,"inlineStyleRanges":[{"offset":0,"length":10,"style":"BOLD"},{"offset":11,"length":7,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"f6l0o","text":"See comment in Mattermost","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":25,"key":0}],"data":{}}],"entityMap":{"0":{"type":"LINK","mutability":"MUTABLE","data":{"href":"http://example.com"}}}}
+ */
+
+
+const markdownToDraftJS = (markdown: string) => {
+  //const contentState = stateFromMarkdown(markdown)
+  //const rawObject = convertToRaw(contentState)
+  const rawObject = markdownToDraft(markdown);
+  console.log('GEORG rawObject', JSON.stringify(rawObject, null, 2))
+  return JSON.stringify(rawObject)
+}
 
 const eventLookup = {
   meetingTemplates: {
@@ -50,8 +68,7 @@ const eventLookup = {
         }
       }
     `,
-    formatResult: (data: any) => {
-      // restructure the data to make it easier to digest
+    convertResult: (data: any) => {
       const restructured = {
         availableTemplates: data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
         teams: data.viewer.teams,
@@ -80,7 +97,6 @@ const eventLookup = {
         }
       }
     `,
-    formatResult: undefined
   },
   startCheckIn: {
     query: `
@@ -99,7 +115,6 @@ const eventLookup = {
         }
       }
     `,
-    formatResult: undefined
   },
   startSprintPoker: {
     query: `
@@ -126,7 +141,6 @@ const eventLookup = {
         }
       }
     `,
-    formatResult: undefined
   },
   startTeamPrompt: {
     query: `
@@ -147,7 +161,6 @@ const eventLookup = {
         }
       }
     `,
-    formatResult: undefined
   },
   getMeetingSettings: {
     query: `
@@ -165,7 +178,7 @@ const eventLookup = {
         }
       }
     `,
-    formatResult: (data: any) => {
+    convertResult: (data: any) => {
       const {meetingSettings} = data.viewer.team
       return {
         id: meetingSettings.id,
@@ -199,8 +212,7 @@ const eventLookup = {
         }
       }
    `,
-    formatResult: (data: any) => {
-      console.log('GEORG setMeetingSettings', data)
+    convertResult: (data: any) => {
       const {settings: meetingSettings} = data.setMeetingSettings
       return {
         id: meetingSettings.id,
@@ -209,8 +221,77 @@ const eventLookup = {
         disableAnonymity: meetingSettings.disableAnonymity,
       }
     }
+  },
+  getActiveMeetings: {
+    query: `
+      query Meetings {
+        viewer {
+          teams {
+            activeMeetings {
+              id
+              teamId
+              name
+              meetingType
+              ...on RetrospectiveMeeting {
+                phases {
+                  ...on ReflectPhase {
+                    reflectPrompts {
+                      id
+                      question
+                      description
+                    }
+                    stages {
+                      isComplete
+                    }
+                  }
+                }
+                templateId
+              }
+            }
+          }
+        }
+      }
+    `,
+    convertResult: (data: any) => {
+      const activeMeetings = data.viewer.teams.flatMap((team: any) => team.activeMeetings)
+      return activeMeetings.map((meeting: any) => {
+        const {phases, ...rest} = meeting
+        const reflectPhase = phases.find((phase: any) => 'reflectPrompts' in phase)
+        if (!reflectPhase) return rest
+        const isComplete = !reflectPhase.stages.some((stage: any) => !stage.isComplete)
+        return {
+          ...rest,
+          reflectPrompts: reflectPhase.reflectPrompts,
+          isComplete,
+        }
+      })
+    }
+  },
+  createReflection: {
+    convertInput: (variables: any) => {
+      const {content, ...rest} = variables
+      const draftJSContent = markdownToDraftJS(content)
+      console.log('GEORG draftJSContent', draftJSContent)
+      return {
+        input: {
+          content: markdownToDraftJS(content),
+          ...rest,
+        }
+      }
+    },
+    query: `
+      mutation CreateReflectionMutation($input: CreateReflectionInput!) {
+        createReflection(input: $input) {
+          reflectionId
+        }
+      }
+    `,
   }
-} as const
+} satisfies Record<string, {
+  query: string,
+  convertResult?: (data: any) => any,
+  convertInput?: (input: any) => any
+}>
 
 const publishWebhookGQL = async <NarrowResponse>(
   query: string,
@@ -275,16 +356,17 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
 
   console.log('GEORG query', query, variables, email)
   
-  const event = eventLookup[query as keyof typeof eventLookup]
+  const event = eventLookup[query]
   if (!event) {
     console.log('GEORG event not found', query)
     res.writeStatus('400').end()
     return
   }
-  const result = await publishWebhookGQL<{data: any}>(event.query, variables, email)
+  const convertedInput = event.convertInput?.(variables) ?? variables
+  const result = await publishWebhookGQL<{data: any}>(event.query, convertedInput, email)
   if (result?.data) {
-    const restructured = event.formatResult?.(result.data) ?? result.data
-    res.writeStatus('200').writeHeader('Content-Type', 'application/json').end(JSON.stringify(restructured))
+    const convertedResult = event.convertResult?.(result.data) ?? result.data
+    res.writeStatus('200').writeHeader('Content-Type', 'application/json').end(JSON.stringify(convertedResult))
   } else {
     res.writeStatus('500').end()
   }
