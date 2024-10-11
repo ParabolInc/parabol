@@ -2,6 +2,7 @@ import {SelectQueryBuilder, Selectable} from 'kysely'
 import {
   Discussion as DiscussionPG,
   OrganizationUser as OrganizationUserPG,
+  TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from '../pg.d'
 import {
@@ -78,3 +79,4 @@ export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeeti
 export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
 export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
+export type TaskEstimate = Selectable<TaskEstimatePG>

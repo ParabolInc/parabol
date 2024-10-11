@@ -2,7 +2,6 @@ import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskCont
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import {TaskStatusEnum} from '../../../database/types/Task'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
@@ -22,13 +21,13 @@ function getSeedTasks(teamId: string) {
 
   return [
     {
-      status: 'active' as TaskStatusEnum,
+      status: 'active' as const,
       sortOrder: 1,
       content: convertToTaskContent(NORMAL_TASK_STRING),
       plaintextContent: NORMAL_TASK_STRING
     },
     {
-      status: 'active' as TaskStatusEnum,
+      status: 'active' as const,
       sortOrder: 0,
       content: convertHtmlToTaskContent(integrationTaskHTML),
       plaintextContent: INTEGRATIONS_TASK_STRING

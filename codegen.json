@@ -50,6 +50,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "TaskEstimate": "../../postgres/types/index#TaskEstimate",
           "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
           "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",
           "ReflectTemplatePromptUpdateGroupColorPayload": "./types/ReflectTemplatePromptUpdateGroupColorPayload#ReflectTemplatePromptUpdateGroupColorPayloadSource",

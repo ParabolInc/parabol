@@ -1,7 +1,5 @@
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
-import TaskIntegrationAzureDevOps from '../../../database/types/TaskIntegrationAzureDevOps'
-import TaskIntegrationJiraServer from '../../../database/types/TaskIntegrationJiraServer'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
@@ -63,12 +61,7 @@ const EstimateStage: EstimateStageResolvers = {
       return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
     }
     if (service === 'jiraServer') {
-      const {
-        providerId,
-        repositoryId: projectId,
-        issueId,
-        accessUserId
-      } = integration as TaskIntegrationJiraServer
+      const {providerId, repositoryId: projectId, issueId, accessUserId} = integration
       const dimensionName = await getDimensionName(meetingId)
 
       const jiraServerIssue = await dataLoader
@@ -89,8 +82,7 @@ const EstimateStage: EstimateStageResolvers = {
       return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
     }
     if (service === 'azureDevOps') {
-      const {instanceId, projectKey, issueKey, accessUserId} =
-        integration as TaskIntegrationAzureDevOps
+      const {instanceId, projectKey, issueKey, accessUserId} = integration
 
       const azureDevOpsWorkItem = await dataLoader.get('azureDevOpsWorkItem').load({
         teamId,

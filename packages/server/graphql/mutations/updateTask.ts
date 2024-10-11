@@ -2,8 +2,8 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
 import getKysely from '../../postgres/getKysely'
+import {Task} from '../../postgres/types/index'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -18,12 +18,12 @@ type UpdateTaskInput = {
   id: string
   content?: string | null
   sortOrder?: number | null
-  status?: TaskStatusEnum | null
+  status?: Task['status'] | null
   userId?: string | null
 }
 type UpdateTaskMutationVariables = {
   updatedTask: UpdateTaskInput
-  area?: TAreaEnum | null
+  area?: 'meeting' | 'teamDash' | 'userDash' | null
 }
 export default {
   type: new GraphQLObjectType({
