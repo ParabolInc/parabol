@@ -38,7 +38,7 @@ const PokerMeeting = new GraphQLObjectType<any, GQLContext>({
         }
       },
       resolve: async ({id: meetingId}, {storyId: taskId}, {dataLoader}) => {
-        const task = await dataLoader.get('tasks').load(taskId)
+        const task = await dataLoader.get('tasks').loadNonNull(taskId)
         if (task.meetingId !== meetingId) {
           Logger.log('naughty storyId supplied to PokerMeeting')
           return null

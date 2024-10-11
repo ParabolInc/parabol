@@ -2,7 +2,6 @@ import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskCont
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import getRethink from '../../../database/rethinkDriver'
 import {TaskStatusEnum} from '../../../database/types/Task'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -39,7 +38,6 @@ function getSeedTasks(teamId: string) {
 
 export default async (userId: string, teamId: string) => {
   const pg = getKysely()
-  const r = await getRethink()
   const now = new Date()
 
   const seedTasks = getSeedTasks(teamId).map((proj) => ({
@@ -53,5 +51,4 @@ export default async (userId: string, teamId: string) => {
     updatedAt: now
   }))
   await pg.insertInto('Task').values(seedTasks).execute()
-  return r.table('Task').insert(seedTasks).run()
 }

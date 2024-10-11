@@ -176,7 +176,7 @@
           "StartRetrospectiveSuccess": "./types/StartRetrospectiveSuccess#StartRetrospectiveSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
-          "Task": "../../database/types/Task#default",
+          "Task": "../../postgres/types/index#Task as TaskDB",
           "Team": "../../postgres/types/index#Team as TeamDB",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",

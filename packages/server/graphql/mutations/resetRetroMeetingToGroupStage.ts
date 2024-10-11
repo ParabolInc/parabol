@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from '../../../client/utils/constants'
-import getRethink from '../../database/rethinkDriver'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import getKysely from '../../postgres/getKysely'
@@ -27,7 +26,6 @@ const resetRetroMeetingToGroupStage = {
     {meetingId}: {meetingId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) => {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -126,8 +124,7 @@ const resetRetroMeetingToGroupStage = {
         .updateTable('NewMeeting')
         .set({phases: JSON.stringify(newPhases)})
         .where('id', '=', meetingId)
-        .execute(),
-      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run()
+        .execute()
     ])
     dataLoader.clearAll([
       'newMeetings',

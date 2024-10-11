@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -23,7 +22,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -41,9 +39,6 @@ export default {
     // RESOLUTION
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const subscribedUserIds = teamMembers.map(({userId}) => userId)
-    await r({
-      task: r.table('Task').get(taskId).delete()
-    }).run()
     await pg.deleteFrom('Task').where('id', '=', taskId).execute()
     const {tags, userId: taskUserId} = task
 

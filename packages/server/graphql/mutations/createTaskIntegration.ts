@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
-import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
@@ -46,8 +45,6 @@ export default {
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const pg = getKysely()
-    const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -153,16 +150,6 @@ export default {
     }
 
     updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
-
-    await r
-      .table('Task')
-      .get(taskId)
-      .update({
-        ...updateTaskInput,
-        updatedAt: now
-      })
-      .run()
-
     await pg
       .updateTable('Task')
       .set({

@@ -16,6 +16,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
   selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
@@ -76,3 +77,4 @@ export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectRefle
 export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
 export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
+export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>

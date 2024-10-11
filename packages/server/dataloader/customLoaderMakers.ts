@@ -2,7 +2,6 @@ import DataLoader from 'dataloader'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
@@ -28,7 +27,7 @@ import {
   selectTasks,
   selectTeams
 } from '../postgres/select'
-import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
+import {MeetingSettings, OrganizationUser, Task, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -36,7 +35,6 @@ import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
-
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -58,7 +56,7 @@ export interface UserTasksKey {
   userIds: string[]
   teamIds: string[]
   archived?: boolean
-  statusFilters?: TaskStatusEnum[] | null
+  statusFilters?: Task['status'][] | null
   filterQuery?: string | null
   includeUnassigned?: boolean
 }

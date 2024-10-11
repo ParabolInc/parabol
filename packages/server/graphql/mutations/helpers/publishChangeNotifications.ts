@@ -2,7 +2,7 @@ import {ASSIGNEE, MENTIONEE} from 'parabol-client/utils/constants'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
-import Task from '../../../database/types/Task'
+import {Task} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 
 const publishChangeNotifications = async (

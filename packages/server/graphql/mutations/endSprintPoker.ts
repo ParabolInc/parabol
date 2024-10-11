@@ -100,7 +100,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId, teamId),
+      removeEmptyTasks(meetingId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').loadNonNull(templateId),
       updateTeamInsights(teamId, dataLoader)

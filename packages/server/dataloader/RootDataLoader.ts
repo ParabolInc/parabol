@@ -11,7 +11,6 @@ import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
-import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
@@ -21,7 +20,6 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
-  ...rethinkForeignKeyLoaderMakers,
   ...rethinkPrimaryKeyLoaderMakers,
   ...primaryKeyLoaderMakers,
   ...foreignKeyLoaderMakers,

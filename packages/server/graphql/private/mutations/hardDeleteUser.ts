@@ -1,5 +1,4 @@
 import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -86,12 +85,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .where('createdBy', '=', userIdToDelete)
     .execute()
   await r({
-    notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete(),
-    createdTasks: r
-      .table('Task')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .delete()
+    notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete()
   }).run()
 
   // now postgres, after FKs are added then triggers should take care of children
