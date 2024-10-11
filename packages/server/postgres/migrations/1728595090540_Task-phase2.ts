@@ -51,7 +51,7 @@ export async function up() {
   }
   const BATCH_SIZE = Math.trunc(MAX_PG_PARAMS / PG_COLS.length)
 
-  let curUpdatedAt = new Date()
+  let curUpdatedAt = r.minval
   let curId = r.minval
 
   const insertRow = async (row) => {
@@ -84,6 +84,10 @@ export async function up() {
       }
       if (e.constraint === 'fk_userId') {
         console.log('Task has no userId user, skipping insert', row.id)
+        return
+      }
+      if (e.message.includes('invalid input value for enum "TaskTagEnum"')) {
+        console.log('Task has invalid enum, skipping insert', row.id)
         return
       }
       throw e
@@ -135,14 +139,14 @@ export async function up() {
         integration: JSON.stringify(integration),
         integrationHash,
         meetingId,
-        plaintextContent,
+        plaintextContent: plaintextContent.slice(0, 2000),
         sortOrder,
         status,
         tags,
         teamId,
         discussionId,
         threadParentId,
-        threadSortOrder,
+        threadSortOrder: threadSortOrder ? Math.round(threadSortOrder) : null,
         updatedAt,
         userId
       }
