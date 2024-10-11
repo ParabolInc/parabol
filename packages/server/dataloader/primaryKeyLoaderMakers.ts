@@ -146,6 +146,6 @@ export const teamInvitations = primaryKeyLoaderMaker((ids: readonly string[]) =>
   return selectTeamInvitations().where('id', 'in', ids).execute()
 })
 
-export const _pgtasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const tasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTasks().where('id', 'in', ids).execute()
 })

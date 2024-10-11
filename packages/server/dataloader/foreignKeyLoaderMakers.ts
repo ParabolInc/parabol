@@ -296,8 +296,8 @@ export const teamInvitationsByTeamId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgtasksByDiscussionId = foreignKeyLoaderMaker(
-  '_pgtasks',
+export const tasksByDiscussionId = foreignKeyLoaderMaker(
+  'tasks',
   'discussionId',
   async (discusisonIds) => {
     // include archived cards in the conversation, since it's persistent
@@ -305,7 +305,7 @@ export const _pgtasksByDiscussionId = foreignKeyLoaderMaker(
   }
 )
 
-export const _pgtasksByTeamId = foreignKeyLoaderMaker('_pgtasks', 'teamId', async (teamIds) => {
+export const tasksByTeamId = foreignKeyLoaderMaker('tasks', 'teamId', async (teamIds) => {
   // waraning! contains private tasks
   return selectTasks()
     .where('teamId', 'in', teamIds)
