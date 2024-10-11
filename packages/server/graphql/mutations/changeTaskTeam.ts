@@ -157,15 +157,16 @@ export default {
           .default(null),
       newTask: r.table('Task').get(taskId).update(updates)
     }).run()
+    if (task.integrationHash) {
+      await pg
+        .deleteFrom('Task')
+        .where('integrationHash', '=', task.integrationHash)
+        .where('teamId', '=', teamId)
+        .limit(1)
+        .returning('id')
+        .execute()
+    }
     await pg
-      .with('TaskDelete', (qb) =>
-        qb
-          .deleteFrom('Task')
-          .where('integrationHash', '=', task.integrationHash)
-          .where('teamId', '=', teamId)
-          .limit(1)
-          .returning('id')
-      )
       .updateTable('Task')
       .set({
         content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
@@ -173,7 +174,6 @@ export default {
         integration: JSON.stringify(integration)
       })
       .where('id', '=', taskId)
-      .returning(({selectFrom}) => selectFrom('TaskDelete').select('id').as('deletedId'))
       .executeTakeFirst()
     if (deletedConflictingIntegrationTask) {
       const task = deletedConflictingIntegrationTask as unknown as Task
