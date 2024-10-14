@@ -47,7 +47,7 @@ export default {
       return {error: {message: 'Group already renamed'}}
     }
     const [meeting, viewer] = await Promise.all([
-      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('newMeetings').loadNonNull(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     const {endedAt, phases, teamId} = meeting

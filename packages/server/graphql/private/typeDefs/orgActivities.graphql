@@ -1,0 +1,62 @@
+extend type Query {
+  """
+  Get org activities by month
+  """
+  orgActivities(
+    """
+    the start date for the query
+    """
+    startDate: DateTime
+
+    """
+    the end date for the query
+    """
+    endDate: DateTime
+  ): OrgActivitiesPayload!
+}
+
+"""
+Return value for orgActivities, which could be an error
+"""
+union OrgActivitiesPayload = ErrorPayload | OrgActivitiesSuccess
+
+type OrgActivitiesSuccess {
+  """
+  The rows of the report
+  """
+  rows: [OrgActivityRow!]!
+}
+
+type OrgActivityRow {
+  """
+  The start date of the month
+  """
+  monthStart: DateTime!
+
+  """
+  The signups grouped by organization name
+  """
+  signups: [OrgSignup!]!
+
+  """
+  The number of unique meeting participants in the month
+  """
+  participantCount: Int!
+
+  """
+  The number of meetings run in the month
+  """
+  meetingCount: Int!
+}
+
+type OrgSignup {
+  """
+  The name of the organization
+  """
+  orgName: String!
+
+  """
+  The number of signups for this organization
+  """
+  count: Int!
+}

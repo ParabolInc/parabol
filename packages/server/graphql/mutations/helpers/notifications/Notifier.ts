@@ -61,14 +61,14 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
   async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
-    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId, 'meetingStart')
+    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingStart')
     notifiers.forEach((notifier) => notifier.startMeeting(meeting, team, user))
   },
 
   async updateMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
-    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId, 'meetingStart')
+    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingStart')
     notifiers.forEach((notifier) => notifier.updateMeeting?.(meeting, team, user))
   },
 
@@ -85,7 +85,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
         }
       })
     )
-    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId, 'meetingEnd')
+    const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingEnd')
     notifiers.forEach((notifier) => notifier.endMeeting(meeting, team, user, standupResponses))
   },
 
@@ -100,7 +100,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     const notifiers = await loader(
       dataLoader,
       team.id,
-      meeting.facilitatorUserId,
+      meeting.facilitatorUserId!,
       'MEETING_STAGE_TIME_LIMIT_START'
     )
     notifiers.forEach((notifier) => notifier.startTimeLimit(scheduledEndTime, meeting, team, user))
@@ -112,7 +112,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     const notifiers = await loader(
       dataLoader,
       team.id,
-      meeting.facilitatorUserId,
+      meeting.facilitatorUserId!,
       'MEETING_STAGE_TIME_LIMIT_END'
     )
     notifiers.forEach((notifier) => notifier.endTimeLimit(meeting, team, user))
@@ -141,7 +141,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
     const notifiers = await loader(
       dataLoader,
       team.id,
-      meeting.facilitatorUserId,
+      meeting.facilitatorUserId!,
       'STANDUP_RESPONSE_SUBMITTED'
     )
     notifiers.forEach((notifier) =>

@@ -1,0 +1,21 @@
+type FeatureFlagOwner {
+  """
+  The feature flag id
+  """
+  featureFlagId: ID!
+
+  """
+  The user ID if the owner is a user
+  """
+  userId: ID
+
+  """
+  The team ID if the owner is a team
+  """
+  teamId: ID
+
+  """
+  The organization ID if the owner is an organization
+  """
+  orgId: ID
+}

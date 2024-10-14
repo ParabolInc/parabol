@@ -27,7 +27,6 @@ const removeTeamMember = async (
   const {evictorUserId} = options
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
   const activeTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -133,50 +132,47 @@ const removeTeamMember = async (
   // TODO should probably just inactivate the meeting member
   const activeMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
   const meetingIds = activeMeetings.map(({id}) => id)
-  await r
-    .table('MeetingMember')
-    .getAll(r.args(meetingIds), {index: 'meetingId'})
-    .filter({userId})
-    .delete()
-    .run()
 
   // Reassign facilitator for meetings this user is facilitating.
-  const facilitatingMeetings = await r
-    .table('NewMeeting')
-    .getAll(r.args(meetingIds), {index: 'id'})
-    .filter({
-      facilitatorUserId: userId
-    })
-    .run()
+  if (meetingIds.length > 0) {
+    const facilitatingMeetings = await pg
+      .with('DeleteMeetingMembers', (qb) =>
+        qb
+          .deleteFrom('MeetingMember')
+          .where('userId', '=', userId)
+          .where('meetingId', 'in', meetingIds)
+      )
+      .selectFrom('NewMeeting')
+      .select('id')
+      .where('id', 'in', meetingIds)
+      .where('facilitatorUserId', '=', userId)
+      .execute()
 
-  const newMeetingFacilitators = (
-    await dataLoader
-      .get('meetingMembersByMeetingId')
-      .loadMany(facilitatingMeetings.map((meeting) => meeting.id))
-  )
-    .filter(errorFilter)
-    .map((members) => members[0])
-    .filter((member) => !!member)
+    const newMeetingFacilitators = (
+      await dataLoader
+        .get('meetingMembersByMeetingId')
+        .loadMany(facilitatingMeetings.map((meeting) => meeting.id))
+    )
+      .filter(errorFilter)
+      .map((members) => members[0])
+      .filter((member) => !!member)
 
-  Promise.allSettled(
-    newMeetingFacilitators.map(async (newFacilitator) => {
-      if (!newFacilitator) {
-        // This user is the only meeting member, so do nothing.
-        // :TODO: (jmtaber129): Consider closing meetings where this user is the only meeting
-        // member.
-        return
-      }
-      await r
-        .table('NewMeeting')
-        .get(newFacilitator.meetingId)
-        .update({
-          facilitatorUserId: newFacilitator.userId,
-          updatedAt: now
-        })
-        .run()
-    })
-  )
-
+    await Promise.allSettled(
+      newMeetingFacilitators.map(async (newFacilitator) => {
+        if (!newFacilitator) {
+          // This user is the only meeting member, so do nothing.
+          // :TODO: (jmtaber129): Consider closing meetings where this user is the only meeting
+          // member.
+          return
+        }
+        await pg
+          .updateTable('NewMeeting')
+          .set({facilitatorUserId: newFacilitator.userId})
+          .where('id', '=', newFacilitator.meetingId)
+          .execute()
+      })
+    )
+  }
   return {
     user,
     notificationId,

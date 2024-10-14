@@ -152,14 +152,6 @@ const subscription = graphql`
         }
       }
 
-      # Feature flags
-      UpdateFeatureFlagPayload {
-        user {
-          id
-          # add flag here
-        }
-      }
-
       # New Feature Broadcasts
       AddNewFeaturePayload {
         newFeature {

@@ -1,0 +1,22 @@
+input SubjectsInput {
+  """
+  List of email addresses to apply the feature flag to
+  """
+  emails: [String!]
+  """
+  List of domains to apply the feature flag to all users of
+  """
+  domains: [String!]
+  """
+  List of User IDs to apply the feature flag to
+  """
+  userIds: [ID!]
+  """
+  List of Team IDs to apply the feature flag to
+  """
+  teamIds: [ID!]
+  """
+  List of Organization IDs to apply the feature flag to
+  """
+  orgIds: [ID!]
+}

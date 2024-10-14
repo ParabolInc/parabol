@@ -1,4 +1,4 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
+import isValid from '../../isValid'
 import {GenerateMeetingSummarySuccessResolvers} from '../resolverTypes'
 
 export type GenerateMeetingSummarySuccessSource = {
@@ -7,10 +7,9 @@ export type GenerateMeetingSummarySuccessSource = {
 
 const GenerateMeetingSummarySuccess: GenerateMeetingSummarySuccessResolvers = {
   meetings: async ({meetingIds}, _args, {dataLoader}) => {
-    const meetings = (await dataLoader
-      .get('newMeetings')
-      .loadMany(meetingIds)) as MeetingRetrospective[]
-    return meetings
+    return (await dataLoader.get('newMeetings').loadMany(meetingIds))
+      .filter(isValid)
+      .filter((m) => m.meetingType === 'retrospective')
   }
 }
 

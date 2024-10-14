@@ -3,7 +3,6 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../../utils/publish'
 
-import getRethink from '../../../database/rethinkDriver'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import standardError from '../../../utils/standardError'
@@ -14,14 +13,13 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   {meetingId, checkInQuestion, modifyType},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
   // AUTH
   const [meeting, viewer] = await Promise.all([
-    r.table('NewMeeting').get(meetingId).run(),
+    dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})

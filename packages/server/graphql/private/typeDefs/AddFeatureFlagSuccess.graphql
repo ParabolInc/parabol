@@ -1,0 +1,6 @@
+type AddFeatureFlagSuccess {
+  """
+  The newly created feature flag
+  """
+  featureFlag: FeatureFlag!
+}

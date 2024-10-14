@@ -51,7 +51,7 @@ export default {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
     const {question} = reflectPrompt
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

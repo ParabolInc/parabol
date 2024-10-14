@@ -2,33 +2,6 @@ import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 
-export const activeMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'newMeetings',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('NewMeeting')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({endedAt: null}, {default: true})
-      .orderBy(r.desc('createdAt'))
-      .run()
-  }
-)
-export const completedMeetingsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'newMeetings',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    return r
-      .table('NewMeeting')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RDatum) => row('endedAt').default(null).ne(null))
-      .orderBy(r.desc('endedAt'))
-      .run()
-  }
-)
-
 export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
   'massInvitations',
   'teamMemberId',
@@ -39,23 +12,6 @@ export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
       .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
       .orderBy(r.desc('expiration'))
       .run()
-  }
-)
-export const meetingMembersByMeetingId = new RethinkForeignKeyLoaderMaker(
-  'meetingMembers',
-  'meetingId',
-  async (meetingIds) => {
-    const r = await getRethink()
-    return r.table('MeetingMember').getAll(r.args(meetingIds), {index: 'meetingId'}).run()
-  }
-)
-
-export const meetingMembersByUserId = new RethinkForeignKeyLoaderMaker(
-  'meetingMembers',
-  'userId',
-  async (userIds) => {
-    const r = await getRethink()
-    return r.table('MeetingMember').getAll(r.args(userIds), {index: 'userId'}).run()
   }
 )
 

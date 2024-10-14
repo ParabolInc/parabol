@@ -4,11 +4,10 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
-import Meeting from '../../../../database/types/Meeting'
 import {IntegrationProviderMattermost as IIntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
-import {MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
@@ -47,7 +46,7 @@ const notifyMattermost = async (
   return 'success'
 }
 
-const makeEndMeetingButtons = (meeting: Meeting) => {
+const makeEndMeetingButtons = (meeting: AnyMeeting) => {
   const {id: meetingId} = meeting
   const searchParams = {
     utm_source: 'mattermost summary',
@@ -94,7 +93,7 @@ type MattermostNotificationAuth = IntegrationProviderMattermost & {userId: strin
 
 const makeTeamPromptStartMeetingNotification = (
   team: Team,
-  meeting: Meeting,
+  meeting: AnyMeeting,
   meetingUrl: string
 ) => {
   return [
@@ -119,7 +118,11 @@ const makeTeamPromptStartMeetingNotification = (
   ]
 }
 
-const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meetingUrl: string) => {
+const makeGenericStartMeetingNotification = (
+  team: Team,
+  meeting: AnyMeeting,
+  meetingUrl: string
+) => {
   return [
     makeFieldsAttachment(
       [
@@ -149,7 +152,7 @@ const makeGenericStartMeetingNotification = (team: Team, meeting: Meeting, meeti
 
 const makeStartMeetingNotificationLookup: Record<
   MeetingTypeEnum,
-  (team: Team, meeting: Meeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
+  (team: Team, meeting: AnyMeeting, meetingUrl: string) => ReturnType<typeof makeFieldsAttachment>[]
 > = {
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,

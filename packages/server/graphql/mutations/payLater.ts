@@ -1,9 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
-import getPg from '../../postgres/getPg'
-import {incrementUserPayLaterClickCountQuery} from '../../postgres/queries/generated/incrementUserPayLaterClickCountQuery'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -25,14 +22,13 @@ export default {
     {meetingId}: {meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     const viewerId = getUserId(authToken)
     const [meeting, viewer] = await Promise.all([
-      r.table('NewMeeting').get(meetingId).run(),
+      dataLoader.get('newMeetings').load(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!meeting) {
@@ -50,21 +46,27 @@ export default {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
     await getKysely()
-      .updateTable('Organization')
-      .set((eb) => ({
-        payLaterClickCount: eb('payLaterClickCount', '+', 1)
-      }))
-      .where('id', '=', orgId)
+      .with('UpdateOrg', (qc) =>
+        qc
+          .updateTable('Organization')
+          .set((eb) => ({
+            payLaterClickCount: eb('payLaterClickCount', '+', 1)
+          }))
+          .where('id', '=', orgId)
+      )
+      .with('UpdateUser', (qc) =>
+        qc
+          .updateTable('User')
+          .set((eb) => ({
+            payLaterClickCount: eb('payLaterClickCount', '+', 1)
+          }))
+          .where('id', '=', viewerId)
+      )
+      .updateTable('NewMeeting')
+      .set({showConversionModal: false})
+      .where('id', '=', meetingId)
       .execute()
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        showConversionModal: false
-      })
-      .run()
-
-    await incrementUserPayLaterClickCountQuery.run({id: viewerId}, getPg())
+    dataLoader.clearAll(['newMeetings', 'organizations', 'users'])
 
     analytics.conversionModalPayLaterClicked(viewer)
     const data = {orgId, meetingId}

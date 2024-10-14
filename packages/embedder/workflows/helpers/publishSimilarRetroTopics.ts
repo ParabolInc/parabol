@@ -2,7 +2,6 @@ import {SubscriptionChannel} from '../../../client/types/constEnums'
 import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../../server/appOrigin'
 import {DataLoaderInstance} from '../../../server/dataloader/RootDataLoader'
-import {isRetroMeeting} from '../../../server/graphql/meetingTypePredicates'
 import {
   buildCommentContentBlock,
   createAIComment
@@ -25,7 +24,7 @@ const makeSimilarDiscussionLink = async (
     dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId)
   ])
 
-  if (!meeting || !isRetroMeeting(meeting)) throw new Error('invalid meeting type')
+  if (!meeting || meeting.meetingType !== 'retrospective') throw new Error('invalid meeting type')
   const {phases, name: meetingName} = meeting
   const {title: topic} = reflectionGroup
   const discussPhase = getPhase(phases, 'discuss')

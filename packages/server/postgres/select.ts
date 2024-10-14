@@ -3,7 +3,7 @@ import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {ReactjiDB} from './types'
-
+import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -147,8 +147,7 @@ export const selectOrganizations = () =>
       'trialStartDate',
       'scheduledLockAt',
       'lockedAt',
-      'updatedAt',
-      'featureFlags'
+      'updatedAt'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 
@@ -230,3 +229,53 @@ export const selectComments = () =>
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
 
 export const selectReflectPrompts = () => getKysely().selectFrom('ReflectPrompt').selectAll()
+
+export const selectNewMeetings = () =>
+  getKysely()
+    .selectFrom('NewMeeting')
+    .select(({fn}) => [
+      'id',
+      'isLegacy',
+      'createdAt',
+      'updatedAt',
+      'createdBy',
+      'endedAt',
+      'facilitatorStageId',
+      'facilitatorUserId',
+      'meetingCount',
+      'meetingNumber',
+      'name',
+      'summarySentAt',
+      'teamId',
+      'meetingType',
+      'showConversionModal',
+      'meetingSeriesId',
+      'scheduledEndTime',
+      'summary',
+      'sentimentScore',
+      'slackTs',
+      'engagement',
+      'totalVotes',
+      'maxVotesPerGroup',
+      'disableAnonymity',
+      'commentCount',
+      'taskCount',
+      'agendaItemCount',
+      'storyCount',
+      'templateId',
+      'topicCount',
+      'reflectionCount',
+      'recallBotId',
+      'videoMeetingURL',
+      'templateRefId',
+      'meetingPrompt',
+      fn('to_json', ['phases']).as('phases'),
+      fn('to_json', ['usedReactjis']).as('usedReactjis'),
+      fn('to_json', ['transcription']).as('transcription'),
+      fn('to_json', ['autogroupReflectionGroups']).as('autogroupReflectionGroups'),
+      fn('to_json', ['resetReflectionGroups']).as('resetReflectionGroups')
+    ])
+    .$narrowType<AnyMeeting>()
+
+export const selectMeetingMembers = () =>
+  getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()

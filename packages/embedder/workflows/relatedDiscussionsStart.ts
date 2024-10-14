@@ -15,7 +15,7 @@ export const relatedDiscussionsStart: JobQueueStepRun<
   const {meetingId} = data
   const [discussions, meeting] = await Promise.all([
     dataLoader.get('discussionsByMeetingId').load(meetingId),
-    dataLoader.get('newMeetings').load(meetingId)
+    dataLoader.get('newMeetings').loadNonNull(meetingId)
   ])
   const {phases} = meeting
   const discussPhase = getPhase(phases, 'discuss')

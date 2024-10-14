@@ -1,13 +1,12 @@
-import Meeting from '../../../database/types/Meeting'
-import MeetingMember from '../../../database/types/MeetingMember'
 import {TeamMember} from '../../../postgres/types'
+import {AnyMeeting, AnyMeetingMember} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {DataLoaderWorker} from '../../graphql'
 
 const sendPokerMeetingRevoteEvent = async (
-  meeting: Meeting,
+  meeting: AnyMeeting,
   teamMembers: TeamMember[],
-  meetingMembers: MeetingMember[],
+  meetingMembers: AnyMeetingMember[],
   dataLoader: DataLoaderWorker
 ) => {
   const {facilitatorUserId, meetingNumber, phases, teamId} = meeting

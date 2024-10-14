@@ -1,9 +1,9 @@
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import Meeting from '../../../database/types/Meeting'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
 
-const removeEmptyReflections = async (meeting: Meeting, dataLoader: DataLoaderInstance) => {
+const removeEmptyReflections = async (meeting: AnyMeeting, dataLoader: DataLoaderInstance) => {
   const pg = getKysely()
   const {id: meetingId} = meeting
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
