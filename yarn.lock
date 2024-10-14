@@ -8931,6 +8931,14 @@
   dependencies:
     "@types/node" "*"
 
+"@types/draft-js@*":
+  version "0.11.18"
+  resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.11.18.tgz#f2cad2178987fdd444827a2f7809a653f82a70ad"
+  integrity sha512-lP6yJ+EKv5tcG1dflWgDKeezdwBa8wJ7KkiNrrHqXuXhl/VGes1SKjEfKHDZqOz19KQbrAhFvNhDPWwnQXYZGQ==
+  dependencies:
+    "@types/react" "*"
+    immutable "~3.7.4"
+
 "@types/draft-js@^0.10.24":
   version "0.10.45"
   resolved "https://registry.yarnpkg.com/@types/draft-js/-/draft-js-0.10.45.tgz#4ab5b0785fcacdea7d5a836d0024158fa8108e70"
@@ -9187,6 +9195,13 @@
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.3.0.tgz#a61043a62c0a72696c73a0a305c544c96501e006"
   integrity sha512-uKRI5QORDnrGFYgcdAVnHvEIvEZ8noTpP/Bg+HeUzZghwinDlIS87DEenV5r1YoOF9G4x600YsUXLWZ19rmTmg==
+
+"@types/markdown-draft-js@^2.2.7":
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/@types/markdown-draft-js/-/markdown-draft-js-2.2.7.tgz#5ac700f307cc80e8b5e58f5f33366f317b8858a0"
+  integrity sha512-EXnEi36xa9m7HH4O1yH6Sp8zd29u4nDzKvtNPt0QSRDjGSC33UcyFVQ86D4GGEVnUlbB0ySm6eXZTAjekVKpNA==
+  dependencies:
+    "@types/draft-js" "*"
 
 "@types/mime-types@^2.1.0":
   version "2.1.1"

@@ -9,6 +9,7 @@ import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
 import './initSentry'
+import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import './monkeyPatchFetch'
@@ -22,7 +23,6 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
-import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 
 tracer.init({
   service: `web`,

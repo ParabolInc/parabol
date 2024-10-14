@@ -1,33 +1,31 @@
+import {createVerifier, httpbis} from 'http-message-signatures'
+import {markdownToDraft} from 'markdown-draft-js'
+import {Variables} from 'relay-runtime'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import AuthToken from '../../database/types/AuthToken'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
-import {createVerifier, httpbis} from 'http-message-signatures'
-import {Variables} from 'relay-runtime'
+import getKysely from '../../postgres/getKysely'
 import getGraphQLExecutor from '../../utils/getGraphQLExecutor'
 import sendToSentry from '../../utils/sendToSentry'
-import AuthToken from '../../database/types/AuthToken'
-import getKysely from '../../postgres/getKysely'
-//import {stateFromMarkdown} from 'draft-js-import-markdown'
-//import {convertToRaw} from 'draft-js'
-import { markdownToDraft } from 'markdown-draft-js';
 
-/*
- *{"blocks":[{"key":"57e9j","text":"Formatted message","type":"blockquote","depth":0,"inlineStyleRanges":[{"offset":0,"length":9,"style":"BOLD"},{"offset":10,"length":7,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"f6l0o","text":"See comment in Mattermost","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":25,"key":0}],"data":{}}],"entityMap":{"0":{"type":"LINK","mutability":"MUTABLE","data":{"url":"http://localhost:8065/parabol/pl/99syc5bjjp8wuk1qjbcnbrppme"}}}}
- */
-/*
- *{"blocks":[{"key":"57e9j","text":"RRRrmatted message","type":"blockquote","depth":0,"inlineStyleRanges":[{"offset":0,"length":10,"style":"BOLD"},{"offset":11,"length":7,"style":"ITALIC"}],"entityRanges":[],"data":{}},{"key":"f6l0o","text":"See comment in Mattermost","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":25,"key":0}],"data":{}}],"entityMap":{"0":{"type":"LINK","mutability":"MUTABLE","data":{"href":"http://example.com"}}}}
- */
-
+const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
+const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
+const ORIGIN = `${process.env.PROTO}://${process.env.HOST}:${PORT}`
 
 const markdownToDraftJS = (markdown: string) => {
-  //const contentState = stateFromMarkdown(markdown)
-  //const rawObject = convertToRaw(contentState)
-  const rawObject = markdownToDraft(markdown);
-  console.log('GEORG rawObject', JSON.stringify(rawObject, null, 2))
+  const rawObject = markdownToDraft(markdown)
   return JSON.stringify(rawObject)
 }
 
-const eventLookup = {
+const eventLookup: Record<
+  string,
+  {
+    query: string
+    convertResult?: (data: any) => any
+    convertInput?: (input: any) => any
+  }
+> = {
   meetingTemplates: {
     query: `
       query MeetingTemplates {
@@ -71,9 +69,8 @@ const eventLookup = {
     convertResult: (data: any) => {
       const restructured = {
         availableTemplates: data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
-        teams: data.viewer.teams,
+        teams: data.viewer.teams
       }
-      console.log('GEORG result', JSON.stringify(restructured, null, 2))
       return restructured
     }
   },
@@ -96,7 +93,7 @@ const eventLookup = {
           }
         }
       }
-    `,
+    `
   },
   startCheckIn: {
     query: `
@@ -114,7 +111,7 @@ const eventLookup = {
           }
         }
       }
-    `,
+    `
   },
   startSprintPoker: {
     query: `
@@ -140,7 +137,7 @@ const eventLookup = {
           }
         }
       }
-    `,
+    `
   },
   startTeamPrompt: {
     query: `
@@ -160,7 +157,7 @@ const eventLookup = {
           }
         }
       }
-    `,
+    `
   },
   getMeetingSettings: {
     query: `
@@ -184,7 +181,7 @@ const eventLookup = {
         id: meetingSettings.id,
         checkinEnabled: meetingSettings.phaseTypes.includes('checkin'),
         teamHealthEnabled: meetingSettings.phaseTypes.includes('TEAM_HEALTH'),
-        disableAnonymity: meetingSettings.disableAnonymity,
+        disableAnonymity: meetingSettings.disableAnonymity
       }
     }
   },
@@ -218,7 +215,7 @@ const eventLookup = {
         id: meetingSettings.id,
         checkinEnabled: meetingSettings.phaseTypes.includes('checkin'),
         teamHealthEnabled: meetingSettings.phaseTypes.includes('TEAM_HEALTH'),
-        disableAnonymity: meetingSettings.disableAnonymity,
+        disableAnonymity: meetingSettings.disableAnonymity
       }
     }
   },
@@ -262,7 +259,7 @@ const eventLookup = {
         return {
           ...rest,
           reflectPrompts: reflectPhase.reflectPrompts,
-          isComplete,
+          isComplete
         }
       })
     }
@@ -270,12 +267,10 @@ const eventLookup = {
   createReflection: {
     convertInput: (variables: any) => {
       const {content, ...rest} = variables
-      const draftJSContent = markdownToDraftJS(content)
-      console.log('GEORG draftJSContent', draftJSContent)
       return {
         input: {
           content: markdownToDraftJS(content),
-          ...rest,
+          ...rest
         }
       }
     },
@@ -285,28 +280,28 @@ const eventLookup = {
           reflectionId
         }
       }
-    `,
+    `
   }
-} satisfies Record<string, {
-  query: string,
-  convertResult?: (data: any) => any,
-  convertInput?: (input: any) => any
-}>
+}
 
 const publishWebhookGQL = async <NarrowResponse>(
   query: string,
   variables: Variables,
-  email: string,
+  email: string
 ) => {
   const pg = getKysely()
-  const user = await pg.selectFrom('User').selectAll().where('email', '=', email).executeTakeFirstOrThrow()
+  const user = await pg
+    .selectFrom('User')
+    .selectAll()
+    .where('email', '=', email)
+    .executeTakeFirstOrThrow()
   try {
     const authToken = new AuthToken({sub: user.id, tms: user.tms})
     return await getGraphQLExecutor().publish<NarrowResponse>({
       authToken,
       query,
       variables,
-      isPrivate: false,
+      isPrivate: false
     })
   } catch (e) {
     const error = e instanceof Error ? e : new Error('GQL executor failed to publish')
@@ -316,49 +311,58 @@ const publishWebhookGQL = async <NarrowResponse>(
 }
 
 const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  if (!MATTERMOST_SECRET) {
+    res.writeStatus('500').end()
+    return
+  }
   const headers = {
     'content-type': req.getHeader('content-type'),
     'content-digest': req.getHeader('content-digest'),
     'content-length': req.getHeader('content-length'),
-    'signature': req.getHeader('signature'),
-    'signature-input': req.getHeader('signature-input'),
+    signature: req.getHeader('signature'),
+    'signature-input': req.getHeader('signature-input')
   }
 
-  const keys = new Map();
-  keys.set('', {
-      id: '',
-      algs: ['hmac-sha256'],
-      verify: createVerifier(process.env.SERVER_SECRET!, 'hmac-sha256'),
-  });
-  // minimal verification
-  const verified = await httpbis.verifyMessage({
-      // logic for finding a key based on the signature parameters
-      async keyLookup(params: any) {
-          //console.log('GEORG keyLookup', params)
-          const keyId = params.keyid;
-          // lookup and return key - note, we could also lookup using the alg too (`params.alg`)
-          // if there is no key, `verifyMessage()` will throw an error
-          return keys.get('');
-      },
-  }, {
+  const verified = await httpbis.verifyMessage(
+    {
+      async keyLookup(_: any) {
+        // TODO When we support multiple Parabol - Mattermost connections, we should look up the key from IntegrationProvider
+        // const keyId = params.keyid;
+        return {
+          id: '',
+          algs: ['hmac-sha256'],
+          verify: createVerifier(MATTERMOST_SECRET, 'hmac-sha256')
+        }
+      }
+    },
+    {
       method: req.getMethod(),
-      url: 'http://localhost:3001' + req.getUrl(),
+      url: ORIGIN + req.getUrl(),
       headers
-  });
+    }
+  )
   if (!verified) {
     res.writeStatus('401').end()
     return
   }
 
-  const body = (await parseBody({res})) as any
+  const body = await parseBody<{query: string; variables: Record<string, any>; email: string}>({
+    res
+  })
 
   const {query, variables, email} = body ?? {}
+  if (!email) {
+    res.writeStatus('401').end()
+    return
+  }
+  if (!query) {
+    res.writeStatus('400').end()
+    return
+  }
 
-  console.log('GEORG query', query, variables, email)
-  
-  const event = eventLookup[query]
+  const event = eventLookup[query as keyof typeof eventLookup]
   if (!event) {
-    console.log('GEORG event not found', query)
+    sendToSentry(new Error('Received unknown mattermost webhook event'), {tags: {query: query!}})
     res.writeStatus('400').end()
     return
   }
@@ -366,7 +370,10 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   const result = await publishWebhookGQL<{data: any}>(event.query, convertedInput, email)
   if (result?.data) {
     const convertedResult = event.convertResult?.(result.data) ?? result.data
-    res.writeStatus('200').writeHeader('Content-Type', 'application/json').end(JSON.stringify(convertedResult))
+    res
+      .writeStatus('200')
+      .writeHeader('Content-Type', 'application/json')
+      .end(JSON.stringify(convertedResult))
   } else {
     res.writeStatus('500').end()
   }
