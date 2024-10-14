@@ -171,6 +171,11 @@ type Team {
   autoJoin: Boolean!
 
   """
+  Whether the viewer belongs to the team
+  """
+  isViewerOnTeam: Boolean!
+
+  """
   true if the viewer is an admin for the team's org, else false
   """
   isOrgAdmin: Boolean!
