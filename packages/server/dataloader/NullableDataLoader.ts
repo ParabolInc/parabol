@@ -17,6 +17,10 @@ class NullableDataLoader<Key, Value, CacheKey = Key> extends UpdatableCacheDataL
     super(batchLoadFn, options)
   }
 
+  load<NarrowType extends Value>(key: Key) {
+    return super.load(key) as Promise<(Value & NarrowType) | undefined>
+  }
+
   async loadNonNull(key: Key): Promise<Value> {
     const value = await this.load(key)
     if (value === undefined) {

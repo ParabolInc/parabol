@@ -1,6 +1,7 @@
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import generateUID from '../../../generateUID'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {MeetingTypeEnum, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
+import {RetroMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import {DataLoaderWorker} from '../../graphql'
 import createNewMeetingPhases from './createNewMeetingPhases'
 
@@ -30,7 +31,7 @@ const safeCreateRetrospective = async (
   const {showConversionModal} = organization
 
   const meetingId = generateUID()
-  const phases = await createNewMeetingPhases(
+  const phases = await createNewMeetingPhases<RetroMeetingPhase>(
     facilitatorUserId,
     teamId,
     meetingId,
@@ -46,7 +47,7 @@ const safeCreateRetrospective = async (
     showConversionModal,
     ...meetingSettings,
     name
-  })
+  }) as RetrospectiveMeeting
 }
 
 export default safeCreateRetrospective

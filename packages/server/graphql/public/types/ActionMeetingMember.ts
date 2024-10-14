@@ -16,7 +16,7 @@ const ActionMeetingMember: ActionMeetingMemberResolvers = {
   },
 
   tasks: async ({meetingId, userId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {teamId} = meeting
     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
     return teamTasks.filter((task) => {

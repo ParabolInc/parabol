@@ -17,7 +17,7 @@ const Discussion: DiscussionResolvers = {
   },
 
   stage: async ({discussionTopicId, discussionTopicType, meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {phases, teamId} = meeting
     switch (discussionTopicType) {
       case 'agendaItem': {
@@ -46,7 +46,9 @@ const Discussion: DiscussionResolvers = {
           return null
         }
         const {stages} = phase
-        const dbStage = stages.find((stage) => stage.reflectionGroupId === discussionTopicId)
+        const dbStage = stages.find(
+          (stage) => 'reflectionGroupId' in stage && stage.reflectionGroupId === discussionTopicId
+        )
 
         return dbStage ? augmentDBStage(dbStage, meetingId, DISCUSS, teamId) : null
       }
@@ -56,7 +58,9 @@ const Discussion: DiscussionResolvers = {
           return null
         }
         const {stages} = phase
-        const dbStage = stages.find((stage) => stage.taskId === discussionTopicId)
+        const dbStage = stages.find(
+          (stage) => 'taskId' in stage && stage.taskId === discussionTopicId
+        )
 
         return dbStage ? augmentDBStage(dbStage, meetingId, 'ESTIMATE', teamId) : null
       }

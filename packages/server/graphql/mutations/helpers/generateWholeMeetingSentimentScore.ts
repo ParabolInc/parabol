@@ -9,7 +9,10 @@ const generateWholeMeetingSentimentScore = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  if (facilitator.featureFlags.includes('noAISummary') || reflections.length === 0) return undefined
+  const hasNoAISummary = await dataLoader
+    .get('featureFlagByOwnerId')
+    .load({ownerId: facilitator.id, featureName: 'noAISummary'})
+  if (hasNoAISummary || reflections.length === 0) return undefined
   const reflectionsWithSentimentScores = reflections.filter(
     ({sentimentScore}) => sentimentScore !== undefined
   )

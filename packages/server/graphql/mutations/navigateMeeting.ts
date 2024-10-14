@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import startStage_ from 'parabol-client/utils/startStage_'
 import unlockNextStages from 'parabol-client/utils/unlockNextStages'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -39,14 +39,13 @@ export default {
     }: {completedStageId: string | null; facilitatorStageId: string | null; meetingId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
-    const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {createdBy, endedAt, facilitatorUserId, phases, teamId, meetingType} = meeting
     if (endedAt) {
@@ -99,7 +98,9 @@ export default {
       if (!facilitatorStage.isNavigableByFacilitator) {
         return standardError(new Error('Stage has not started'), {userId: viewerId})
       }
-
+      if (meeting.facilitatorStageId === facilitatorStageId) {
+        return standardError(new Error('Already at this stage'), {userId: viewerId})
+      }
       // mutative
       // NOTE: it is possible to start a stage then move backwards & complete another phase, which would make it seem like this phase took a long time
       // the cleanest way to fix this is to store start/stop on each stage visit, since i could visit B, then visit A, then move B before A, then visit B
@@ -110,27 +111,19 @@ export default {
     }
 
     // RESOLUTION
-    const oldFacilitatorStageId = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          facilitatorStageId: facilitatorStageId ?? undefined,
-          phases,
-          updatedAt: now
-        },
-        {returnChanges: true}
-      )('changes')(0)('old_val')('facilitatorStageId')
-      .default(null)
-      .run()
-
-    if (!oldFacilitatorStageId) {
-      return {error: {message: 'Stage already advanced'}}
-    }
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({
+        facilitatorStageId: facilitatorStageId ?? undefined,
+        phases: JSON.stringify(phases)
+      })
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
 
     const data = {
       meetingId,
-      oldFacilitatorStageId,
+      oldFacilitatorStageId: meeting.facilitatorStageId,
       facilitatorStageId,
       unlockedStageIds,
       ...phaseCompleteData

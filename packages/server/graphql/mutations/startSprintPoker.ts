@@ -1,14 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import MeetingPoker from '../../database/types/MeetingPoker'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import {MeetingTypeEnum, PokerMeeting} from '../../postgres/types/Meeting'
+import {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
@@ -22,6 +20,7 @@ import createGcalEvent from './helpers/createGcalEvent'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
+import {createMeetingMember} from './joinMeeting'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()
@@ -96,11 +95,10 @@ export default {
     }: {teamId: string; name: string | null | undefined; gcalInput?: CreateGcalEventInputType},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
-    const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
-    const DUPLICATE_THRESHOLD = 3000
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
@@ -115,15 +113,9 @@ export default {
 
     // RESOLUTION
     const meetingId = generateUID()
-    const meetingCount = await r
-      .table('NewMeeting')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({meetingType})
-      .count()
-      .default(0)
-      .run()
+    const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
 
-    const phases = await createNewMeetingPhases(
+    const phases = await createNewMeetingPhases<PokerMeetingPhase>(
       viewerId,
       teamId,
       meetingId,
@@ -149,46 +141,30 @@ export default {
       facilitatorUserId: viewerId,
       templateId: selectedTemplateId,
       templateRefId
-    })
+    }) as PokerMeeting
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-    await Promise.all([
-      r.table('NewMeeting').insert(meeting).run(),
+    const [newMeetingRes] = await Promise.allSettled([
+      pg
+        .insertInto('NewMeeting')
+        .values({...meeting, phases: JSON.stringify(phases)})
+        .execute(),
       updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
-
-    // Disallow accidental starts (2 meetings within 2 seconds)
-    const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-    const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-      const {createdAt, id} = activeMeeting
-      if (id === meetingId || activeMeeting.meetingType !== 'poker') return false
-      return createdAt.getTime() > Date.now() - DUPLICATE_THRESHOLD
-    })
-    if (otherActiveMeeting) {
-      await r.table('NewMeeting').get(meetingId).delete().run()
+    if (newMeetingRes.status === 'rejected') {
       return {error: {message: 'Meeting already started'}}
     }
+    dataLoader.clearAll('newMeetings')
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-    const {isSpectatingPoker} = teamMember
-    const updates = {
-      lastMeetingType: meetingType
-    }
-    await Promise.all([
-      r
-        .table('MeetingMember')
-        .insert(
-          new PokerMeetingMember({
-            meetingId,
-            userId: viewerId,
-            teamId,
-            isSpectating: isSpectatingPoker
-          })
-        )
-        .run(),
-      updateTeamByTeamId(updates, teamId)
-    ])
+    const meetingMember = createMeetingMember(meeting, teamMember)
+    await pg
+      .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
+      .updateTable('Team')
+      .set({lastMeetingType: meetingType})
+      .where('id', '=', teamId)
+      .execute()
     IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
     analytics.meetingStarted(viewer, meeting, template)
     const {error} = await createGcalEvent({

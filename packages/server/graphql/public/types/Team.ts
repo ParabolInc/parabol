@@ -11,8 +11,11 @@ const Team: TeamResolvers = {
     _args,
     {dataLoader}
   ) => {
-    const org = await dataLoader.get('organizations').load(orgId)
-    if (org?.featureFlags?.includes('noTeamInsights')) return null
+    const noTeamInsights = await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: orgId, featureName: 'noTeamInsights'})
+
+    if (noTeamInsights) return null
     if (!mostUsedEmojis && !meetingEngagement && !topRetroTemplates) return null
 
     const mappedTopRetroTemplates = Array.isArray(topRetroTemplates)
@@ -60,6 +63,9 @@ const Team: TeamResolvers = {
       ...insight,
       id: InsightId.join(teamId, insight.id)
     }
+  },
+  featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
   }
 }
 

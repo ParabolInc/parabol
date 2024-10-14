@@ -19,6 +19,7 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
 import {PokerMeetingPhaseProps} from './PokerMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import StageTimerDisplay from './StageTimerDisplay'
 
 const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
   ({isOpen}) => ({
@@ -53,6 +54,8 @@ const PokerEstimatePhase = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment PokerEstimatePhase_meeting on PokerMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
         ...EstimatePhaseArea_meeting
         id
         endedAt
@@ -103,6 +106,7 @@ const PokerEstimatePhase = (props: Props) => {
           <ErrorBoundary>
             <PokerEstimateHeaderCard stage={localStage} />
           </ErrorBoundary>
+          <StageTimerDisplay meeting={meeting} />
           <EstimateAreaWrapper>
             <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
           </EstimateAreaWrapper>

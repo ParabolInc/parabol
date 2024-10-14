@@ -32,7 +32,7 @@ class AzureDevOpsClientManager {
   static async openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
-    provider: {id: string; tenantId: string | null; clientId: string},
+    provider: {id: string; tenantId: string | null | undefined; clientId: string},
     mutationProps: MenuMutationProps
   ) {
     const {id: providerId, tenantId, clientId} = provider

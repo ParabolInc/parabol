@@ -19,6 +19,7 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
+import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingAgendaItems_meeting$key
@@ -57,6 +58,8 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
+        ...StageTimerDisplay_meeting
+        ...StageTimerControl_meeting
         showSidebar
         endedAt
         facilitatorUserId
@@ -97,6 +100,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <StyledHeading>{content}</StyledHeading>
           </AgendaVerbatim>
           <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
+          <StageTimerDisplay meeting={meeting} />
           <ThreadColumn isDesktop={isDesktop}>
             <DiscussionThreadRoot
               meetingContentRef={meetingContentRef}

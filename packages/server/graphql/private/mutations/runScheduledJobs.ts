@@ -25,17 +25,17 @@ const processMeetingStageTimeLimits = async (
   // if mattermost, send mattermost
   // if no integrated notification services, send an in-app notification
   const {meetingId} = job
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId, facilitatorUserId} = meeting
   IntegrationNotifier.endTimeLimit(dataLoader, meetingId, teamId)
 
   const notification = new NotificationMeetingStageTimeLimitEnd({
     meetingId,
-    userId: facilitatorUserId
+    userId: facilitatorUserId!
   })
   const r = await getRethink()
   await r.table('Notification').insert(notification).run()
-  publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId, 'MeetingStageTimeLimitPayload', {
+  publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId!, 'MeetingStageTimeLimitPayload', {
     notification
   })
 }

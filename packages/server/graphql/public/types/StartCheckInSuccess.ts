@@ -1,4 +1,3 @@
-import MeetingAction from '../../../database/types/MeetingAction'
 import {StartCheckInSuccessResolvers} from '../resolverTypes'
 
 export type StartCheckInSuccessSource = {
@@ -7,8 +6,10 @@ export type StartCheckInSuccessSource = {
 }
 
 const StartCheckInSuccess: StartCheckInSuccessResolvers = {
-  meeting: ({meetingId}, _args, {dataLoader}) => {
-    return dataLoader.get('newMeetings').load(meetingId) as Promise<MeetingAction>
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (meeting.meetingType !== 'action') throw new Error('Not a check-in meeting')
+    return meeting
   },
   team: ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)

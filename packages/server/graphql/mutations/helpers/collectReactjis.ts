@@ -1,15 +1,16 @@
-import Meeting from '../../../database/types/Meeting'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
+import {AnyMeeting} from '../../../postgres/types/Meeting'
+import {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 
-const collectReactjis = async (meeting: Meeting, dataLoader: DataLoaderWorker) => {
+const collectReactjis = async (meeting: AnyMeeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, phases} = meeting
 
   const usedReactjis: Record<string, number> = {}
 
   // Discussions can happen in many different stage types: discuss, ESTIMATE, reflect, RESPONSES
-  const stages = phases.flatMap(({stages}) => stages)
+  const stages = phases.flatMap(({stages}) => stages as NewMeetingStages[])
   const discussionIds = stages
     .map((stage) => 'discussionId' in stage && stage.discussionId)
     .filter(isValid) as string[]

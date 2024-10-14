@@ -41,6 +41,11 @@ type Query {
   ): Company
 
   """
+  Get all feature flags to see all of the unique feature flag names
+  """
+  getAllFeatureFlags: [FeatureFlag!]
+
+  """
   Post signup and login metrics to slack
   """
   dailyPulse(

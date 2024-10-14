@@ -1,5 +1,4 @@
 import {Selectable} from 'kysely'
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/pg'
 import {getUserId} from '../../../utils/authorization'
 import {RetroReflectionGroupResolvers} from '../resolverTypes'
@@ -8,8 +7,9 @@ export interface RetroReflectionGroupSource extends Selectable<TRetroReflectionG
 
 const RetroReflectionGroup: RetroReflectionGroupResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const retroMeeting = await dataLoader.get('newMeetings').load(meetingId)
-    return retroMeeting as MeetingRetrospective
+    const retroMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (retroMeeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
+    return retroMeeting
   },
   prompt: ({promptId}, _args, {dataLoader}) => {
     return dataLoader.get('reflectPrompts').loadNonNull(promptId)
@@ -24,7 +24,7 @@ const RetroReflectionGroup: RetroReflectionGroupResolvers = {
     return filteredReflections
   },
   team: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return dataLoader.get('teams').loadNonNull(meeting.teamId)
   },
   titleIsUserDefined: ({title, smartTitle}) => {

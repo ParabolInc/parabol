@@ -1,4 +1,3 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
 import {RetroDiscussStageResolvers} from '../resolverTypes'
 
@@ -27,8 +26,9 @@ const RetroDiscussStage: RetroDiscussStageResolvers = {
 
   reflectionGroup: async ({reflectionGroupId, meetingId}, _args, {dataLoader}) => {
     if (!reflectionGroupId) {
-      const meeting = (await dataLoader.get('newMeetings').load(meetingId)) as MeetingRetrospective
-      const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
+      const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+      if (!('templateId' in meeting)) throw new Error('Meeting has no template')
+      const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId!)
       return new ReflectionGroup({
         id: `${meetingId}:dummyGroup`,
         meetingId,

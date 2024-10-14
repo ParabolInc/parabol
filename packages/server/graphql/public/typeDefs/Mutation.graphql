@@ -471,27 +471,6 @@ type Mutation {
   ): NavigateMeetingPayload!
 
   """
-  Check a member in as present or absent
-  """
-  newMeetingCheckIn(
-    """
-    The id of the user being marked present or absent
-    """
-    userId: ID!
-
-    """
-    the meeting currently in progress
-    """
-    meetingId: ID!
-
-    """
-    true if the member is present, false if absent, null if undecided
-    """
-    isCheckedIn: Boolean
-  ): NewMeetingCheckInPayload
-    @deprecated(reason: "Members now join lazily and joining means they are present")
-
-  """
   Increment the count of times the org has clicked pay later
   """
   payLater(
@@ -1753,32 +1732,6 @@ type Mutation {
     """
     paymentMethodId: ID!
   ): UpdateCreditCardPayload!
-
-  """
-  Give someone advanced features in a flag
-  """
-  updateFeatureFlag(
-    """
-    a list of the complete or partial email of the person to whom you are giving advanced features.
-          Matches via a regex to support entire domains
-    """
-    emails: [String!]
-
-    """
-    grant access to an entire domain. the part of the email after the @
-    """
-    domain: String
-
-    """
-    the flag that you want to give to the user
-    """
-    flag: UserFlagEnum!
-
-    """
-    whether to add or remove the flag
-    """
-    addFlag: Boolean!
-  ): UpdateFeatureFlagPayload!
 
   """
   Update how a parabol dimension maps to a GitLab label

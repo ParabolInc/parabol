@@ -1,6 +1,5 @@
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
-import MeetingPoker from '../../../database/types/MeetingPoker'
 import TaskIntegrationAzureDevOps from '../../../database/types/TaskIntegrationAzureDevOps'
 import TaskIntegrationJiraServer from '../../../database/types/TaskIntegrationJiraServer'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
@@ -22,8 +21,9 @@ const EstimateStage: EstimateStageResolvers = {
     if (!integration) return NULL_FIELD
     const {service} = integration
     const getDimensionName = async (meetingId: string) => {
-      const meeting = await dataLoader.get('newMeetings').load(meetingId)
-      const {templateRefId} = meeting as MeetingPoker
+      const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+      if (meeting.meetingType !== 'poker') throw new Error('Meeting is not a poker meeting')
+      const {templateRefId} = meeting
       const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
       const {dimensions} = templateRef
       const dimensionRef = dimensions[dimensionRefIdx]!
@@ -175,8 +175,9 @@ const EstimateStage: EstimateStageResolvers = {
   },
 
   dimensionRef: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    const {templateRefId} = meeting as MeetingPoker
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (meeting.meetingType !== 'poker') return null
+    const {templateRefId} = meeting
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const {name, scaleRefId} = dimensions[dimensionRefIdx]!
@@ -190,10 +191,11 @@ const EstimateStage: EstimateStageResolvers = {
 
   finalScore: async ({taskId, meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
     const [meeting, estimates] = await Promise.all([
-      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('newMeetings').loadNonNull(meetingId),
       dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
     ])
-    const {templateRefId} = meeting as MeetingPoker
+    if (meeting.meetingType !== 'poker') return null
+    const {templateRefId} = meeting
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef
     const dimensionRef = dimensions[dimensionRefIdx]!

@@ -7,9 +7,7 @@ graphql`
       id
     }
     organization {
-      featureFlags {
-        publicTeams
-      }
+      hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
       allTeams {
         id
       }

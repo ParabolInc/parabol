@@ -1,3 +1,4 @@
+// Can remove this after getting rid of the old RethinkDB migrations
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {MeetingTypeEnum} from '../../graphql/public/resolverTypes'
 

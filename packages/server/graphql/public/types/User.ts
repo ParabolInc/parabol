@@ -13,7 +13,6 @@ import {
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum, RValue} from '../../../database/stricterR'
-import MeetingMemberType from '../../../database/types/MeetingMember'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import Task from '../../../database/types/Task'
 import getKysely from '../../../postgres/getKysely'
@@ -302,10 +301,7 @@ const User: ReqResolvers<'User'> = {
 
   lastMetAt: async ({id: userId}, _args, {dataLoader}) => {
     const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
-    const lastMetAt = Math.max(
-      0,
-      ...meetingMembers.map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
-    )
+    const lastMetAt = Math.max(0, ...meetingMembers.map(({updatedAt}) => updatedAt.getTime()))
     return lastMetAt ? new Date(lastMetAt) : null
   },
 
@@ -317,7 +313,7 @@ const User: ReqResolvers<'User'> = {
   monthlyStreakMax: async ({id: userId}, _args, {dataLoader}) => {
     const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
     const meetingDates = meetingMembers
-      .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+      .map(({updatedAt}) => updatedAt.getTime())
       .sort((a, b) => (a < b ? 1 : -1))
 
     return getMonthlyStreak(meetingDates)
@@ -326,7 +322,7 @@ const User: ReqResolvers<'User'> = {
   monthlyStreakCurrent: async ({id: userId}, _args, {dataLoader}) => {
     const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
     const meetingDates = meetingMembers
-      .map(({updatedAt}: MeetingMemberType) => updatedAt.getTime())
+      .map(({updatedAt}) => updatedAt.getTime())
       .sort((a, b) => (a < b ? 1 : -1))
     return getMonthlyStreak(meetingDates, true)
   },
@@ -427,7 +423,7 @@ const User: ReqResolvers<'User'> = {
 
   meetingMember: async ({id: userId}, {meetingId}, {dataLoader}) => {
     const meetingMemberId = toTeamMemberId(meetingId, userId)
-    return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
+    return meetingId ? dataLoader.get('meetingMembers').loadNonNull(meetingMemberId) : null
   },
 
   organizationUser: async ({id: userId}, {orgId}, {authToken, dataLoader}) => {
@@ -680,8 +676,8 @@ const User: ReqResolvers<'User'> = {
   favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
   },
-  featureFlags: ({featureFlags}) => {
-    return Object.fromEntries(featureFlags.map((flag) => [flag as any, true]))
+  featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
+    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, featureName})
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
