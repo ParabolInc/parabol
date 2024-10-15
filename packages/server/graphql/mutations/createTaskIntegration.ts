@@ -169,6 +169,7 @@ export default {
         integration: JSON.stringify(updateTaskInput.integration),
         integrationHash: updateTaskInput.integrationHash
       })
+      .where('id', '=', taskId)
       .execute()
 
     dataLoader.clearAll('tasks')
