@@ -2,6 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {TeamInsightsQuery} from '../../../../__generated__/TeamInsightsQuery.graphql'
+import {useDialogState} from '../../../../ui/Dialog/useDialogState'
+import InsightsFeedbackModal from './FeedbackModal'
 import TeamInsightContent from './TeamInsightContent'
 import TeamInsightEmptyState from './TeamInsightEmptyState'
 
@@ -38,6 +40,8 @@ const TeamInsights = (props: Props) => {
   const {team} = viewer
   const {id: teamId, insight, name, retroMeetingsCount} = team ?? {}
 
+  const {isOpen, open, close} = useDialogState()
+
   return (
     <div className='mb-8 space-y-6'>
       <p className='mb-6 mt-[20px] text-sm text-slate-900'>
@@ -46,8 +50,10 @@ const TeamInsights = (props: Props) => {
         <a
           href='#'
           className='font-semibold text-sky-500 hover:underline'
-          target='_blank'
-          rel='noopener noreferrer'
+          onClick={(e) => {
+            e.preventDefault()
+            open()
+          }}
         >
           Give us feedback
         </a>
@@ -57,6 +63,7 @@ const TeamInsights = (props: Props) => {
       ) : (
         <TeamInsightEmptyState teamId={teamId} meetingsCount={retroMeetingsCount} />
       )}
+      <InsightsFeedbackModal isOpen={isOpen} onClose={close} />
     </div>
   )
 }
