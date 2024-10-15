@@ -12,7 +12,7 @@ import NotificationTaskInvolves from '../../database/types/NotificationTaskInvol
 import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
-import {Task} from '../../postgres/types/index.d'
+import {Task, TaskTag} from '../../postgres/types/index.d'
 import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -224,7 +224,7 @@ export default {
       threadSortOrder,
       threadParentId,
       userId: userId || null,
-      tags: getTagsFromEntityMap(JSON.parse(content).entityMap)
+      tags: getTagsFromEntityMap<TaskTag>(JSON.parse(content).entityMap)
     }
     const {id: taskId} = task
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)

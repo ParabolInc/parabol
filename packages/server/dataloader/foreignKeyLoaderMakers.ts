@@ -309,7 +309,7 @@ export const tasksByTeamId = foreignKeyLoaderMaker('tasks', 'teamId', async (tea
   // waraning! contains private tasks
   return selectTasks()
     .where('teamId', 'in', teamIds)
-    .where(sql<boolean>`'archived' != ANY(tags)`)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
 })
 
@@ -317,6 +317,6 @@ export const tasksByMeetingId = foreignKeyLoaderMaker('tasks', 'meetingId', asyn
   // waraning! contains private tasks
   return selectTasks()
     .where('meetingId', 'in', meetingIds)
-    .where(sql<boolean>`'archived' != ANY(tags)`)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
 })

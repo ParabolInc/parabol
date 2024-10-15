@@ -79,7 +79,7 @@ const removeTeamMember = async (
     .where('userId', '=', userId)
     .where('teamId', '=', teamId)
     .where('integration', 'is not', null)
-    .where(sql<boolean>`'archived' != ANY(tags)`)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
   const reassignedTasks = await pg
     .with('UserUpdate', (qb) =>
@@ -93,7 +93,7 @@ const removeTeamMember = async (
     .where('userId', '=', userId)
     .where('teamId', '=', teamId)
     .where('integration', 'is', null)
-    .where(sql<boolean>`'archived' != ANY(tags)`)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
     .returning('id')
     .execute()
   dataLoader.clearAll(['users', 'teamMembers', 'tasks'])

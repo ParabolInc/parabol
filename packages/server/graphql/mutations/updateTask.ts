@@ -2,6 +2,7 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
 import getKysely from '../../postgres/getKysely'
 import {Task} from '../../postgres/types/index'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -81,7 +82,8 @@ export default {
         plaintextContent: content ? extractTextFromDraftString(validContent) : undefined,
         sortOrder: sortOrder || undefined,
         status: status || undefined,
-        userId: inputUserId || undefined
+        userId: inputUserId || undefined,
+        tags: content ? getTagsFromEntityMap(JSON.parse(validContent).entityMap) : undefined
       })
       .where('id', '=', taskId)
       .executeTakeFirst()

@@ -160,15 +160,14 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             .where('teamId', 'in', teamIds)
             .$if(hasUserIds, (qb) => qb.where('userId', 'in', userIds))
             .$if(hasStatusFilters, (qb) => qb.where('status', 'in', statusFilters!))
-            .$if(!!filterQuery, (qb) => qb.where('plaintextContent', 'match', filterQuery!))
+            .$if(!!filterQuery, (qb) => qb.where('plaintextContent', 'ilike', `%${filterQuery}%`))
             .$if(!!after, (qb) => qb.where('updatedAt', '<', after!))
             .$if(!!archived, (qb) => qb.where(sql<boolean>`'archived' = ANY(tags)`))
-            .$if(!archived, (qb) => qb.where(sql<boolean>`'archived' != ANY(tags)`))
+            .$if(!archived, (qb) => qb.where(sql<boolean>`'archived' != ALL(tags)`))
             .$if(!includeUnassigned, (qb) => qb.where('userId', 'is not', null))
             .orderBy('updatedAt desc')
             .limit(first + 1)
             .execute()
-
           return {
             key: serializeUserTasksKey(key),
             data: teamTasks

@@ -37,7 +37,7 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
     .selectFrom('Task')
     .select(({fn}) => fn.max<bigint>('sortOrder').as('maxSortOrder'))
     .where('userId', 'in', userIds)
-    .where(sql<boolean>`'archived' != ANY(tags)`)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
     .executeTakeFirst()
   const maxSortOrder = Number(taskMaxRes?.maxSortOrder ?? 0)
 
@@ -104,7 +104,7 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
     selectTasks()
       .where('teamId', '=', teamId)
       .where('status', '=', 'done')
-      .where(sql<boolean>`'archived' != ANY(tags)`)
+      .where(sql<boolean>`'archived' != ALL(tags)`)
       .execute(),
     dataLoader.get('agendaItemsByTeamId').load(teamId)
   ])

@@ -42,6 +42,8 @@ export type AutogroupReflectionGroupType = {
   reflectionIds: string[]
 }
 
+export type TaskTag = 'private' | 'archived'
+
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
 export type OrganizationUser = Selectable<OrganizationUserPG>
