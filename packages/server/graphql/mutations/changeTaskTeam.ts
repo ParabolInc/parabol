@@ -3,6 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
 import getRethink from '../../database/rethinkDriver'
 import Task from '../../database/types/Task'
+import getKysely from '../../postgres/getKysely'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
@@ -33,6 +34,7 @@ export default {
     {taskId, teamId}: {taskId: string; teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -43,7 +45,7 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    const task = await r.table('Task').get(taskId).run()
+    const task = await dataLoader.get('tasks').load(taskId)
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -155,7 +157,24 @@ export default {
           .default(null),
       newTask: r.table('Task').get(taskId).update(updates)
     }).run()
-
+    if (task.integrationHash) {
+      await pg
+        .deleteFrom('Task')
+        .where('integrationHash', '=', task.integrationHash)
+        .where('teamId', '=', teamId)
+        .limit(1)
+        .returning('id')
+        .execute()
+    }
+    await pg
+      .updateTable('Task')
+      .set({
+        content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
+        teamId,
+        integration: JSON.stringify(integration)
+      })
+      .where('id', '=', taskId)
+      .executeTakeFirst()
     if (deletedConflictingIntegrationTask) {
       const task = deletedConflictingIntegrationTask as unknown as Task
       const isPrivate = task.tags.includes('private')
@@ -166,7 +185,7 @@ export default {
         }
       })
     }
-
+    dataLoader.clearAll('tasks')
     const isPrivate = tags.includes('private')
     const data = {taskId}
     const teamMembers = oldTeamMembers.concat(newTeamMembers)

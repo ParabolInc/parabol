@@ -33,6 +33,7 @@ import updateTeamInsights from './helpers/updateTeamInsights'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
+  const pg = getKysely()
   const r = await getRethink()
   const taskMax = await (
     r
@@ -61,6 +62,11 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
         })
     })
     .run()
+  await Promise.all(
+    updatedTasks.map((task) =>
+      pg.updateTable('Task').set({sortOrder: task.sortOrder}).where('id', '=', task.id).execute()
+    )
+  )
   return tasks
 }
 
