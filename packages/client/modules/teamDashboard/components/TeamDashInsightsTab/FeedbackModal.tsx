@@ -1,5 +1,5 @@
 import {RadioButtonChecked, RadioButtonUnchecked, ThumbDown, ThumbUp} from '@mui/icons-material'
-import React, {useState} from 'react'
+import React, {useCallback, useState} from 'react'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useManualClientSideTrack from '../../../../hooks/useManualClientSideTrack'
@@ -13,51 +13,61 @@ type Props = {
   onClose: () => void
 }
 
+const defaultFeedbackState = {
+  isUseful: true,
+  feedback: '',
+  canEmail: true
+}
+
 const InsightsFeedbackModal = (props: Props) => {
   const {isOpen, onClose} = props
-  const [isUseful, setIsUseful] = useState(true)
-  const [feedback, setFeedback] = useState('')
-  const [canEmail, setCanEmail] = useState(true)
+  const [feedbackState, setFeedbackState] = useState(defaultFeedbackState)
   const trackEvent = useManualClientSideTrack()
 
-  const handleSubmit = () => {
-    trackEvent('Insights Feedback Submitted', {
-      isUseful,
-      feedback,
-      canEmail
-    })
+  const handleSubmit = useCallback(() => {
+    trackEvent('Insights Feedback Submitted', feedbackState)
     onClose()
-  }
+    setFeedbackState(defaultFeedbackState)
+  }, [trackEvent, feedbackState, onClose])
+
+  const handleClose = useCallback(() => {
+    onClose()
+    setFeedbackState(defaultFeedbackState)
+  }, [onClose])
+
+  const updateField = useCallback((field: keyof FeedbackState, value: any) => {
+    setFeedbackState((prev) => ({...prev, [field]: value}))
+  }, [])
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose}>
+    <Dialog isOpen={isOpen} onClose={handleClose}>
       <DialogContent>
         <DialogTitle>Insights Feedback</DialogTitle>
         <div className='mt-4 flex items-center justify-between'>
           <p className='font-semibold'>Were these insights useful?</p>
           <div className='flex space-x-4'>
             <button
-              onClick={() => setIsUseful(true)}
+              onClick={() => updateField('isUseful', true)}
               className='group flex items-center space-x-2 bg-transparent hover:cursor-pointer'
             >
               <ThumbUp
-                className={`transition-colors duration-200 ${isUseful === true ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
+                className={`transition-colors duration-200 ${feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
               />
               <span
-                className={`transition-colors duration-200 ${isUseful === true ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
+                className={`transition-colors duration-200 ${feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
               >
                 Yes
               </span>
             </button>
             <button
-              onClick={() => setIsUseful(false)}
+              onClick={() => updateField('isUseful', false)}
               className='group flex items-center space-x-2 bg-transparent hover:cursor-pointer'
             >
               <ThumbDown
-                className={`transition-colors duration-200 ${isUseful === false ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
+                className={`transition-colors duration-200 ${!feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
               />
               <span
-                className={`transition-colors duration-200 ${isUseful === false ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
+                className={`transition-colors duration-200 ${!feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
               >
                 No
               </span>
@@ -68,8 +78,8 @@ const InsightsFeedbackModal = (props: Props) => {
           <p className='mb-2 font-semibold'>Additional feedback (optional):</p>
           <BasicTextArea
             name='feedback'
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
+            value={feedbackState.feedback}
+            onChange={(e) => updateField('feedback', e.target.value)}
             placeholder='Your feedback here...'
           />
         </div>
@@ -77,10 +87,10 @@ const InsightsFeedbackModal = (props: Props) => {
           <p className='mb-2 font-bold'>May we email you to talk more regarding your feedback?</p>
           <div className='flex space-x-4'>
             <button
-              onClick={() => setCanEmail(true)}
+              onClick={() => updateField('canEmail', true)}
               className='flex items-center space-x-2 bg-transparent hover:cursor-pointer'
             >
-              {canEmail ? (
+              {feedbackState.canEmail ? (
                 <RadioButtonChecked className='text-sky-500' />
               ) : (
                 <RadioButtonUnchecked className='text-slate-500' />
@@ -88,10 +98,10 @@ const InsightsFeedbackModal = (props: Props) => {
               <span>Yes, you may email me</span>
             </button>
             <button
-              onClick={() => setCanEmail(false)}
+              onClick={() => updateField('canEmail', false)}
               className='flex items-center space-x-2 bg-transparent hover:cursor-pointer'
             >
-              {!canEmail ? (
+              {!feedbackState.canEmail ? (
                 <RadioButtonChecked className='text-sky-500' />
               ) : (
                 <RadioButtonUnchecked className='text-slate-500' />
