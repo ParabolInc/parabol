@@ -16,7 +16,7 @@ const InsightsFeedbackModal = (props: Props) => {
   const {isOpen, onClose} = props
   const [isUseful, setIsUseful] = React.useState<boolean | null>(null)
   const [feedback, setFeedback] = React.useState('')
-  const [canEmail, setCanEmail] = React.useState<boolean | null>(null)
+  const [canEmail, setCanEmail] = React.useState<boolean>(true) // Default to true
 
   const handleSubmit = () => {
     console.log({isUseful, feedback, canEmail})
@@ -70,21 +70,27 @@ const InsightsFeedbackModal = (props: Props) => {
         <div className='mt-4'>
           <p className='mb-2 font-bold'>May we email you to talk more regarding your feedback?</p>
           <div className='flex space-x-4'>
-            <button onClick={() => setCanEmail(true)} className='flex items-center space-x-2'>
-              {canEmail === true ? (
+            <button
+              onClick={() => setCanEmail(true)}
+              className='flex items-center space-x-2 bg-transparent hover:cursor-pointer'
+            >
+              {canEmail ? (
                 <RadioButtonChecked className='text-sky-500' />
               ) : (
                 <RadioButtonUnchecked className='text-slate-500' />
               )}
               <span>Yes, you may email me</span>
             </button>
-            <button onClick={() => setCanEmail(false)} className='flex items-center space-x-2'>
-              {canEmail === false ? (
+            <button
+              onClick={() => setCanEmail(false)}
+              className='flex items-center space-x-2 bg-transparent hover:cursor-pointer'
+            >
+              {!canEmail ? (
                 <RadioButtonChecked className='text-sky-500' />
               ) : (
                 <RadioButtonUnchecked className='text-slate-500' />
               )}
-              <span>No</span>
+              <span>No, please don't email me</span>
             </button>
           </div>
         </div>
