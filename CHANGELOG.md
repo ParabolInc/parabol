@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.10](https://github.com/ParabolInc/parabol/compare/v7.50.9...v7.50.10) (2024-10-15)
+
+
+### Changed
+
+* remove old invite notifications ([#10345](https://github.com/ParabolInc/parabol/issues/10345)) ([6c8d420](https://github.com/ParabolInc/parabol/commit/6c8d420fa3d29243a141862fee095a3e05fed7df))
+
 ## [7.50.9](https://github.com/ParabolInc/parabol/compare/v7.50.8...v7.50.9) (2024-10-15)
 
 
