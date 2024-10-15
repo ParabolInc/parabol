@@ -5,6 +5,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.9](https://github.com/ParabolInc/parabol/compare/v7.50.8...v7.50.9) (2024-10-15)
+
+
+### Fixed
+
+* **dd-trace:** upgrade to v5.0.0 ([#10343](https://github.com/ParabolInc/parabol/issues/10343)) ([a3aba86](https://github.com/ParabolInc/parabol/commit/a3aba863580fb866c4affad42f03454afd0d77e8))
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 3 ([#10327](https://github.com/ParabolInc/parabol/issues/10327)) ([9b52d49](https://github.com/ParabolInc/parabol/commit/9b52d4958d8aace5c3adc2322ede58f638a947cd))
+
+## [7.50.8](https://github.com/ParabolInc/parabol/compare/v7.50.7...v7.50.8) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 2 ([#10326](https://github.com/ParabolInc/parabol/issues/10326)) ([f8486ba](https://github.com/ParabolInc/parabol/commit/f8486bae6feeeb7a69088a864e8277c53d052061))
+
+## [7.50.7](https://github.com/ParabolInc/parabol/compare/v7.50.6...v7.50.7) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** NewFeature: OneShot ([#10312](https://github.com/ParabolInc/parabol/issues/10312)) ([92deddf](https://github.com/ParabolInc/parabol/commit/92deddf30645ad4d479f29eb7ab66737a3218946))
+* **rethinkdb:** TeamInvitation: Phase 1 ([#10325](https://github.com/ParabolInc/parabol/issues/10325)) ([72ea4e1](https://github.com/ParabolInc/parabol/commit/72ea4e1bde79cdec9d9d4eda80932e32e880d19c))
+
+## [7.50.6](https://github.com/ParabolInc/parabol/compare/v7.50.5...v7.50.6) (2024-10-09)
+
+
+### Fixed
+
+* catch error if user tries to join meeting twice ([#10320](https://github.com/ParabolInc/parabol/issues/10320)) ([887abd4](https://github.com/ParabolInc/parabol/commit/887abd49d6467207c60ade8f62b4e496fa9378b6))
+
+
+### Changed
+
+* **rethinkdb:** MassInvitation: OneShot ([#10311](https://github.com/ParabolInc/parabol/issues/10311)) ([fc1ef4d](https://github.com/ParabolInc/parabol/commit/fc1ef4d44568193f018a31c378181b5df92da355))
+* update snyk workflow to use node20 ([#10324](https://github.com/ParabolInc/parabol/issues/10324)) ([8e1222f](https://github.com/ParabolInc/parabol/commit/8e1222fa88368d1296d125e8236d2992c05294b4))
+
 ## [7.50.5](https://github.com/ParabolInc/parabol/compare/v7.50.4...v7.50.5) (2024-10-08)
 
 
