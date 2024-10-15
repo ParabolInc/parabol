@@ -1,5 +1,4 @@
 import {MasterPool, r} from 'rethinkdb-ts'
-import {TeamInvitation} from '../postgres/types/index'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
 import NotificationKickedOut from './types/NotificationKickedOut'
@@ -15,10 +14,6 @@ import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import Task from './types/Task'
 
 export type RethinkSchema = {
-  NewFeature: {
-    type: any
-    index: ''
-  }
   Notification: {
     type:
       | NotificationTaskInvolves
@@ -44,14 +39,10 @@ export type RethinkSchema = {
       | 'userId'
       | 'integrationHash'
   }
-  TeamInvitation: {
-    type: TeamInvitation
-    index: 'email' | 'teamId' | 'token'
-  }
 }
 
 export type DBType = {
-  [P in keyof RethinkSchema]: RethinkSchema[P]['type']
+  [P in keyof RethinkSchema]: any
 }
 
 export type ParabolR = R<RethinkSchema>

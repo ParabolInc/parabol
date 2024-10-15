@@ -30,18 +30,3 @@ export const tasksByTeamId = new RethinkForeignKeyLoaderMaker(
       .run()
   }
 )
-
-export const teamInvitationsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'teamInvitations',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    const now = new Date()
-    return r
-      .table('TeamInvitation')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({acceptedAt: null})
-      .filter((row: RDatum) => row('expiresAt').ge(now))
-      .run()
-  }
-)
