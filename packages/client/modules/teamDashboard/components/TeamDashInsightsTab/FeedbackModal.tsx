@@ -13,7 +13,13 @@ type Props = {
   onClose: () => void
 }
 
-const defaultFeedbackState = {
+type FeedbackState = {
+  isUseful: boolean
+  feedback: string
+  canEmail: boolean
+}
+
+const defaultFeedbackState: FeedbackState = {
   isUseful: true,
   feedback: '',
   canEmail: true
