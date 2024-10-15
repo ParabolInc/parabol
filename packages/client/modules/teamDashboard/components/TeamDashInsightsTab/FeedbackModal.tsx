@@ -2,6 +2,7 @@ import {RadioButtonChecked, RadioButtonUnchecked, ThumbDown, ThumbUp} from '@mui
 import React, {useState} from 'react'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import useManualClientSideTrack from '../../../../hooks/useManualClientSideTrack'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
@@ -14,12 +15,17 @@ type Props = {
 
 const InsightsFeedbackModal = (props: Props) => {
   const {isOpen, onClose} = props
-  const [isUseful, setIsUseful] = useState<boolean | null>(null)
+  const [isUseful, setIsUseful] = useState(true)
   const [feedback, setFeedback] = useState('')
-  const [canEmail, setCanEmail] = useState<boolean>(true)
+  const [canEmail, setCanEmail] = useState(true)
+  const trackEvent = useManualClientSideTrack()
 
   const handleSubmit = () => {
-    console.log({isUseful, feedback, canEmail})
+    trackEvent('Insights Feedback Submitted', {
+      isUseful,
+      feedback,
+      canEmail
+    })
     onClose()
   }
 
