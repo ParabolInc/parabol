@@ -1,5 +1,5 @@
 import {RadioButtonChecked, RadioButtonUnchecked, ThumbDown, ThumbUp} from '@mui/icons-material'
-import * as React from 'react'
+import React, {useState} from 'react'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
@@ -14,9 +14,9 @@ type Props = {
 
 const InsightsFeedbackModal = (props: Props) => {
   const {isOpen, onClose} = props
-  const [isUseful, setIsUseful] = React.useState<boolean | null>(null)
-  const [feedback, setFeedback] = React.useState('')
-  const [canEmail, setCanEmail] = React.useState<boolean>(true) // Default to true
+  const [isUseful, setIsUseful] = useState<boolean | null>(null)
+  const [feedback, setFeedback] = useState('')
+  const [canEmail, setCanEmail] = useState<boolean>(true)
 
   const handleSubmit = () => {
     console.log({isUseful, feedback, canEmail})
