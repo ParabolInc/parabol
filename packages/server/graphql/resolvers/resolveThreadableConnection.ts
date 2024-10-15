@@ -1,5 +1,4 @@
-import TaskDB from '../../database/types/Task'
-import {Comment} from '../../postgres/types'
+import {Comment, Task} from '../../postgres/types'
 import {ThreadableSource} from '../public/types/Threadable'
 import {DataLoaderWorker} from './../graphql'
 
@@ -22,7 +21,7 @@ const resolveThreadableConnection = async (
     const {threadParentId} = threadable
     if (!threadParentId) {
       rootThreadables.push(threadable)
-    } else if ((threadable as TaskDB).status || (threadable as Comment).isActive) {
+    } else if ((threadable as Task).status || (threadable as Comment).isActive) {
       // if it's a task or it's a non-deleted comment, add it
       threadablesByParentId[threadParentId] = threadablesByParentId[threadParentId] || []
       threadablesByParentId[threadParentId]!.push(threadable)
@@ -33,7 +32,7 @@ const resolveThreadableConnection = async (
   rootThreadables.forEach((threadable) => {
     const {id: threadableId} = threadable
     const replies = threadablesByParentId[threadableId]
-    const isActive = (threadable as TaskDB).status || (threadable as Comment).isActive
+    const isActive = (threadable as Task).status || (threadable as Comment).isActive
     // (threadable as Poll).deletedAt === null
     if (!isActive && !replies) return
     filteredThreadables.push(threadable)

@@ -2,8 +2,9 @@ import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import {ReactjiDB} from './types'
+import {ReactjiDB, TaskTag} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
+import {AnyTaskIntegration} from './types/TaskIntegration'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -285,3 +286,29 @@ export const selectMassInvitations = () => getKysely().selectFrom('MassInvitatio
 export const selectNewFeatures = () => getKysely().selectFrom('NewFeature').selectAll()
 
 export const selectTeamInvitations = () => getKysely().selectFrom('TeamInvitation').selectAll()
+
+export const selectTasks = () =>
+  getKysely()
+    .selectFrom('Task')
+    .select(({fn}) => [
+      'id',
+      'createdAt',
+      'createdBy',
+      'doneMeetingId',
+      'dueDate',
+      'integrationHash',
+      'meetingId',
+      'plaintextContent',
+      'sortOrder',
+      'status',
+      'teamId',
+      'discussionId',
+      'threadParentId',
+      'threadSortOrder',
+      'updatedAt',
+      'userId',
+      // this is to match the previous behavior, no reason we couldn't export as json in the future
+      sql<string>`content::text`.as('content'),
+      fn<TaskTag[]>('to_json', ['tags']).as('tags'),
+      fn<AnyTaskIntegration | null>('to_json', ['integration']).as('integration')
+    ])

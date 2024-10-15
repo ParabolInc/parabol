@@ -4,7 +4,6 @@ import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptRespon
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {TaskServiceEnum} from '../../database/types/Task'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
@@ -16,6 +15,7 @@ import {
   RetrospectiveMeeting
 } from '../../postgres/types/Meeting'
 import {MeetingSeries} from '../../postgres/types/MeetingSeries'
+import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 export type AnalyticsUser = {

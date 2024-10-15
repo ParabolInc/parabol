@@ -1,8 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId} from '../../utils/authorization'
-import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import {resolveNewMeeting} from '../resolvers'
 import ActionMeeting from './ActionMeeting'
 import Task from './Task'
@@ -51,7 +51,7 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
         if (!updatedTaskIds) return []
         const viewerId = getUserId(authToken)
         const allUpdatedTasks = (await dataLoader.get('tasks').loadMany(updatedTaskIds)).filter(
-          errorFilter
+          isValid
         )
         return allUpdatedTasks.filter((task) => {
           return isTaskPrivate(task.tags) ? task.userId === viewerId : true

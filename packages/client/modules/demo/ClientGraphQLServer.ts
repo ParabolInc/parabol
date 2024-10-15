@@ -10,13 +10,13 @@ import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingRefle
 import {PALETTE} from '~/styles/paletteV3'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
-import ITask from '../../../server/database/types/Task'
 import {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
 import {
   DiscussPhase,
   DiscussStage,
   NewMeetingPhase
 } from '../../../server/postgres/types/NewMeetingPhase'
+import {Task as ITask} from '../../../server/postgres/types/index.d'
 import {
   ExternalLinks,
   MeetingSettingsThreshold,

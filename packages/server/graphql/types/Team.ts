@@ -10,7 +10,6 @@ import {
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {Security, Threshold} from '../../../client/types/constEnums'
-import Task from '../../database/types/Task'
 import ITeam from '../../database/types/Team'
 import generateRandomString from '../../generateRandomString'
 import getKysely from '../../postgres/getKysely'
@@ -296,7 +295,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         }
         const viewerId = getUserId(authToken)
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        const tasks = allTasks.filter((task: Task) => {
+        const tasks = allTasks.filter((task) => {
           if (!task.userId || (isTaskPrivate(task.tags) && task.userId !== viewerId)) return false
           return true
         })

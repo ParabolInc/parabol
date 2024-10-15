@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import ITask from '../../server/database/types/Task'
+import {Task as ITask} from '../../server/postgres/types/index.d'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {

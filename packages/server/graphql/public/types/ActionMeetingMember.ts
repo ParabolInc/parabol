@@ -1,18 +1,17 @@
+import {sql} from 'kysely'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
+import {selectTasks} from '../../../postgres/select'
 import {ActionMeetingMemberResolvers} from '../resolverTypes'
 
 const ActionMeetingMember: ActionMeetingMemberResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'action',
   doneTasks: async ({meetingId, userId}) => {
-    const r = await getRethink()
-    return r
-      .table('Task')
-      .getAll(userId, {index: 'userId'})
-      .filter({doneMeetingId: meetingId})
-      .filter((task: RDatum) => task('tags').contains('private').not())
-      .run()
+    const res = await selectTasks()
+      .where('userId', '=', userId)
+      .where('doneMeetingId', '=', meetingId)
+      .where(sql<boolean>`'private' != ALL(tags)`)
+      .execute()
+    return res
   },
 
   tasks: async ({meetingId, userId}, _args, {dataLoader}) => {

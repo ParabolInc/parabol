@@ -17,7 +17,7 @@ const pushEstimateToGitLab = async (
   const {dimensionName, taskId, value, meetingId} = taskEstimate
   const {dataLoader} = context
   const [task, meeting] = await Promise.all([
-    dataLoader.get('tasks').load(taskId),
+    dataLoader.get('tasks').loadNonNull(taskId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!meeting) return new Error('Meeting does not exist')

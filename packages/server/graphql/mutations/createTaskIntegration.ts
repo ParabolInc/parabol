@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
-import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
@@ -44,15 +44,13 @@ export default {
     info: GraphQLResolveInfo
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
-
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId).run()
+    const task = await dataLoader.get('tasks').load(taskId)
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -152,16 +150,16 @@ export default {
     }
 
     updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
-
-    await r
-      .table('Task')
-      .get(taskId)
-      .update({
-        ...updateTaskInput,
-        updatedAt: now
+    await pg
+      .updateTable('Task')
+      .set({
+        integration: JSON.stringify(updateTaskInput.integration),
+        integrationHash: updateTaskInput.integrationHash
       })
-      .run()
+      .where('id', '=', taskId)
+      .execute()
 
+    dataLoader.clearAll('tasks')
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
       publish(SubscriptionChannel.TASK, userId, 'CreateTaskIntegrationPayload', data, subOptions)

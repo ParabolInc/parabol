@@ -4,10 +4,16 @@ import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntity
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
+import dndNoise from '../../../client/utils/dndNoise'
+import extractTextFromDraftString from '../../../client/utils/draftjs/extractTextFromDraftString'
+import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
-import Task, {TaskServiceEnum} from '../../database/types/Task'
+import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
+import getKysely from '../../postgres/getKysely'
+import {Task, TaskTag} from '../../postgres/types/index.d'
+import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
@@ -57,7 +63,7 @@ const validateTaskDiscussionId = async (
 
 const handleAddTaskNotifications = async (
   teamMembers: any[],
-  task: Task,
+  task: Pick<Task, 'id' | 'content' | 'tags' | 'userId'>,
   viewerId: string,
   teamId: string,
   subOptions: SubOptions
@@ -152,7 +158,7 @@ export default {
     info: GraphQLResolveInfo
   ) {
     const {authToken, dataLoader, socketId: mutatorId} = context
-    const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const viewerId = getUserId(authToken)
 
@@ -203,26 +209,26 @@ export default {
     if (integrationRepoId) {
       updatePrevUsedRepoIntegrationsCache(teamId, integrationRepoId, viewerId)
     }
-    const task = new Task({
+    const task = {
+      id: generateUID(),
       content,
+      plaintextContent: extractTextFromDraftString(content),
       createdBy: viewerId,
       meetingId,
-      sortOrder,
+      sortOrder: sortOrder || dndNoise(),
       status,
       teamId,
       discussionId,
       integrationHash,
-      integration,
+      integration: JSON.stringify(integration),
       threadSortOrder,
       threadParentId,
-      userId
-    })
+      userId: userId || null,
+      tags: getTagsFromEntityMap<TaskTag>(JSON.parse(content).entityMap)
+    }
     const {id: taskId} = task
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    await r({
-      task: r.table('Task').insert(task)
-    }).run()
-
+    await pg.insertInto('Task').values(task).execute()
     handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
       operationId,
       mutatorId

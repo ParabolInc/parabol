@@ -3,7 +3,7 @@ import {getUserId} from '../../../utils/authorization'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import publish from '../../../utils/publish'
 
-import Task from '../../../database/types/Task'
+import {Task} from '../../../postgres/types'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
