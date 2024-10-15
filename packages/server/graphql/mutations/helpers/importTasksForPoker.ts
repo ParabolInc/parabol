@@ -58,7 +58,7 @@ const importTasksForPoker = async (
       }
     })
     .filter(isNotNull)
-  if (newIntegrationUpdates.length > 0) {
+  if (tasksToAdd.length > 0) {
     await pg.insertInto('Task').values(tasksToAdd).execute()
   }
   const integratedTasks = [...existingTasks, ...tasksToAdd]

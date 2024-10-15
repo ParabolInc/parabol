@@ -9,7 +9,7 @@ const ActionMeetingMember: ActionMeetingMemberResolvers = {
     const res = await selectTasks()
       .where('userId', '=', userId)
       .where('doneMeetingId', '=', meetingId)
-      .where(sql<boolean>`'private' != ANY(tags)`)
+      .where(sql<boolean>`'private' != ALL(tags)`)
       .execute()
     return res
   },

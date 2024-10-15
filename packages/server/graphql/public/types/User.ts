@@ -95,7 +95,7 @@ const User: ReqResolvers<'User'> = {
       .where('teamId', '=', teamId)
       .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
       .where(sql<boolean>`'archived' = ANY(tags)`)
-      .where(({eb, or}) => or([sql<boolean>`'private' != ANY(tags)`, eb('userId', '=', userId)]))
+      .where(({eb, or}) => or([sql<boolean>`'private' != ALL(tags)`, eb('userId', '=', userId)]))
       .orderBy('updatedAt desc')
       .limit(first + 1)
       .execute()
@@ -133,7 +133,7 @@ const User: ReqResolvers<'User'> = {
       .select(({fn}) => fn.count('id').as('count'))
       .where('teamId', '=', teamId)
       .where(sql<boolean>`'archived' = ANY(tags)`)
-      .where(({eb, or}) => or([sql<boolean>`'private' != ANY(tags)`, eb('userId', '=', userId)]))
+      .where(({eb, or}) => or([sql<boolean>`'private' != ALL(tags)`, eb('userId', '=', userId)]))
       .executeTakeFirstOrThrow()
     return Number(taskCount.count)
   },

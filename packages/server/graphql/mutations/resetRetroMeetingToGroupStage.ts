@@ -101,31 +101,32 @@ const resetRetroMeetingToGroupStage = {
     // bc we return the reflection groups cached by data loader in the fragment
     reflectionGroups.forEach((rg) => (rg.voterIds = []))
 
-    await Promise.all([
-      pg
+    if (discussionIdsToDelete.length > 0) {
+      await pg
         .with('DeleteComments', (qb) =>
           qb.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete)
         )
-        .with('DeleteTasks', (qb) =>
-          qb.deleteFrom('Task').where('discussionId', 'in', discussionIdsToDelete)
-        )
-        .with('ResetGroups', (qb) =>
-          qb
-            .updateTable('RetroReflectionGroup')
-            .set({voterIds: [], discussionPromptQuestion: null})
-            .where('id', 'in', reflectionGroupIds)
-        )
-        .with('ResetMeetingMember', (qb) =>
-          qb
-            .updateTable('MeetingMember')
-            .set({votesRemaining: meeting.totalVotes})
-            .where('meetingId', '=', meetingId)
-        )
-        .updateTable('NewMeeting')
-        .set({phases: JSON.stringify(newPhases)})
-        .where('id', '=', meetingId)
+        .deleteFrom('Task')
+        .where('discussionId', 'in', discussionIdsToDelete)
         .execute()
-    ])
+    }
+    await pg
+      .with('ResetGroups', (qb) =>
+        qb
+          .updateTable('RetroReflectionGroup')
+          .set({voterIds: [], discussionPromptQuestion: null})
+          .where('id', 'in', reflectionGroupIds)
+      )
+      .with('ResetMeetingMember', (qb) =>
+        qb
+          .updateTable('MeetingMember')
+          .set({votesRemaining: meeting.totalVotes})
+          .where('meetingId', '=', meetingId)
+      )
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(newPhases)})
+      .where('id', '=', meetingId)
+      .execute()
     dataLoader.clearAll([
       'newMeetings',
       'comments',
