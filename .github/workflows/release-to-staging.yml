@@ -110,7 +110,7 @@ jobs:
             --assignee ${{ github.actor }} \
             --base production \
             --head release/v${{ env.ACTION_VERSION }} \
-            --title "chore(release): Test v${{ env.ACTION_VERSION }}" \
+            --title "chore(release): deploy to Production v${{ env.ACTION_VERSION }}" \
             --body "$BODY"
       - name: Poll Staging Release
         uses: artiz/poll-endpoint@1.0.2
