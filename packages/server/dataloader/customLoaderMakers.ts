@@ -1,10 +1,7 @@
 import DataLoader from 'dataloader'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
-import getRethink from '../database/rethinkDriver'
-import {RDatum} from '../database/stricterR'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
@@ -24,8 +21,13 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {selectMeetingSettings, selectNewMeetings, selectTeams} from '../postgres/select'
-import {Insight, MeetingSettings, OrganizationUser, Team} from '../postgres/types'
+import {
+  selectMeetingSettings,
+  selectNewMeetings,
+  selectTasks,
+  selectTeams
+} from '../postgres/select'
+import {Insight, MeetingSettings, OrganizationUser, Task, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -33,7 +35,6 @@ import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
-
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -55,7 +56,7 @@ export interface UserTasksKey {
   userIds: string[]
   teamIds: string[]
   archived?: boolean
-  statusFilters?: TaskStatusEnum[] | null
+  statusFilters?: Task['status'][] | null
   filterQuery?: string | null
   includeUnassigned?: boolean
 }
@@ -130,7 +131,6 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
   dependsOn('tasks')
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
-      const r = await getRethink()
       const uniqKeys = [] as UserTasksKey[]
       const keySet = new Set()
       keys.forEach((key) => {
@@ -154,42 +154,23 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             filterQuery,
             includeUnassigned
           } = key
-          const dbAfter = after ? new Date(after) : r.maxval
-
-          let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (userIds?.length) {
-            teamTaskPartial = teamTaskPartial.filter((row: RDatum) =>
-              r(userIds).contains(row('userId'))
-            )
-          }
-          if (statusFilters?.length) {
-            teamTaskPartial = teamTaskPartial.filter((row: RDatum) =>
-              r(statusFilters).contains(row('status'))
-            )
-          }
-          if (filterQuery) {
-            // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
-            teamTaskPartial = teamTaskPartial.filter(
-              (row: RDatum) => row('plaintextContent').match(filterQuery) as any
-            )
-          }
-
+          const hasUserIds = userIds?.length > 0
+          const hasStatusFilters = statusFilters ? statusFilters.length > 0 : false
+          const teamTasks = await selectTasks()
+            .where('teamId', 'in', teamIds)
+            .$if(hasUserIds, (qb) => qb.where('userId', 'in', userIds))
+            .$if(hasStatusFilters, (qb) => qb.where('status', 'in', statusFilters!))
+            .$if(!!filterQuery, (qb) => qb.where('plaintextContent', 'ilike', `%${filterQuery}%`))
+            .$if(!!after, (qb) => qb.where('updatedAt', '<', after!))
+            .$if(!!archived, (qb) => qb.where(sql<boolean>`'archived' = ANY(tags)`))
+            .$if(!archived, (qb) => qb.where(sql<boolean>`'archived' != ALL(tags)`))
+            .$if(!includeUnassigned, (qb) => qb.where('userId', 'is not', null))
+            .orderBy('updatedAt desc')
+            .limit(first + 1)
+            .execute()
           return {
             key: serializeUserTasksKey(key),
-            data: await teamTaskPartial
-              .filter((task: RDatum) => task('updatedAt').lt(dbAfter))
-              .filter((task: RDatum) =>
-                archived
-                  ? task('tags').contains('archived')
-                  : task('tags').contains('archived').not()
-              )
-              .filter((task: RDatum) => {
-                if (includeUnassigned) return true
-                return task('userId').ne(null)
-              })
-              .orderBy(r.desc('updatedAt'))
-              .limit(first + 1)
-              .run()
+            data: teamTasks
           }
         })
       )
@@ -535,16 +516,17 @@ export const taskIdsByTeamAndGitHubRepo = (
   dependsOn('tasks')
   return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
     async (keys) => {
-      const r = await getRethink()
       const res = await Promise.all(
-        keys.map((key) => {
+        keys.map(async (key) => {
           const {teamId, nameWithOwner} = key
-          // This is very expensive! We should move tasks to PG ASAP
-          return r
-            .table('Task')
-            .getAll(teamId, {index: 'teamId'})
-            .filter((row: RDatum) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
-            .run()
+          const res = await getKysely()
+            .selectFrom('Task')
+            .select('id')
+            .where('teamId', '=', teamId)
+            .where('integration', 'is not', null)
+            .where(sql<boolean>`"integration"->>'nameWithOwner' = ${nameWithOwner}`)
+            .execute()
+          return res.map(({id}) => id)
         })
       )
       return res

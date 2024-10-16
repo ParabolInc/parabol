@@ -7,11 +7,8 @@ import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import IntegrationRepoId from '../../../../client/shared/gqlIds/IntegrationRepoId'
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
+import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import removeRangesForEntity from '../../../../client/utils/draftjs/removeRangesForEntity'
-import TaskIntegrationAzureDevOps from '../../../database/types/TaskIntegrationAzureDevOps'
-import TaskIntegrationGitHub from '../../../database/types/TaskIntegrationGitHub'
-import TaskIntegrationGitLab from '../../../database/types/TaskIntegrationGitLab'
-import TaskIntegrationJira from '../../../database/types/TaskIntegrationJira'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
 import createAzureTask from './createAzureTask'
@@ -45,11 +42,13 @@ const createTaskInService = async (
     const {issueKey} = jiraTaskRes
     const integrationRepoId = IntegrationRepoId.join({cloudId, projectKey, service})
     return {
-      integration: new TaskIntegrationJira({
+      integration: {
+        service: 'jira' as const,
+        projectKey: JiraProjectKeyId.join(issueKey),
         accessUserId,
         cloudId,
         issueKey
-      }),
+      },
       integrationHash: JiraIssueId.join(cloudId, issueKey),
       integrationRepoId
     }
@@ -73,11 +72,12 @@ const createTaskInService = async (
     const {issueNumber} = githubTaskRes
     const integrationRepoId = IntegrationRepoId.join({nameWithOwner: serviceProjectHash, service})
     return {
-      integration: new TaskIntegrationGitHub({
+      integration: {
+        service: 'github' as const,
         accessUserId,
         nameWithOwner: serviceProjectHash,
         issueNumber
-      }),
+      },
       integrationHash: GitHubIssueId.join(serviceProjectHash, issueNumber),
       integrationRepoId
     }
@@ -101,11 +101,12 @@ const createTaskInService = async (
     const integrationRepoId = IntegrationRepoId.join({fullPath, service})
     const integrationProviderId = IntegrationProviderId.join(providerId)
     return {
-      integration: new TaskIntegrationGitLab({
+      integration: {
+        service: 'gitlab' as const,
         accessUserId,
         providerId: integrationProviderId,
         gid
-      }),
+      },
       integrationHash: GitLabIssueId.join(integrationProviderId, gid),
       integrationRepoId
     }
@@ -128,12 +129,13 @@ const createTaskInService = async (
     // TODO: fix inconsistencies with projectKey & projectId: https://github.com/ParabolInc/parabol/issues/7073
     const integrationRepoId = IntegrationRepoId.join({instanceId, projectId: projectKey, service})
     return {
-      integration: new TaskIntegrationAzureDevOps({
+      integration: {
+        service: 'azureDevOps' as const,
         instanceId,
         accessUserId,
         projectKey,
         issueKey
-      }),
+      },
       integrationHash,
       integrationRepoId
     }

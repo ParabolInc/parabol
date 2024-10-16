@@ -1,14 +1,12 @@
 import {convertFromRaw, convertToRaw} from 'draft-js'
 import addTagToTask from 'parabol-client/utils/draftjs/addTagToTask'
 import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
-import getRethink from '../database/rethinkDriver'
-import Task from '../database/types/Task'
 import getKysely from '../postgres/getKysely'
+import {Task} from '../postgres/types/index.d'
 
 const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
   if (!tasks || tasks.length === 0) return []
   const pg = getKysely()
-  const r = await getRethink()
   const tasksToArchive = tasks.map((task) => {
     const contentState = convertFromRaw(JSON.parse(task.content))
     const nextContentState = addTagToTask(contentState, '#archived')
@@ -36,22 +34,7 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
         .execute()
     )
   )
-  return r(tasksToArchive)
-    .forEach((task) => {
-      return r
-        .table('Task')
-        .get(task('id'))
-        .update(
-          {
-            content: task('content') as unknown,
-            tags: task('tags'),
-            doneMeetingId: task('doneMeetingId').default(null)
-          } as any,
-          {returnChanges: true}
-        )
-    })
-    .default([])('changes')('new_val')
-    .run() as Promise<Task[]>
+  return tasksToArchive.map(({id}) => id)
 }
 
 export default archiveTasksForDB

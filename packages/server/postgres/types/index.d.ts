@@ -3,6 +3,7 @@ import {
   Discussion as DiscussionPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
+  TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from '../pg.d'
 import {
@@ -17,6 +18,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
   selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
@@ -40,6 +42,8 @@ export type AutogroupReflectionGroupType = {
   groupTitle: string
   reflectionIds: string[]
 }
+
+export type TaskTag = 'private' | 'archived'
 
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
@@ -78,3 +82,5 @@ export type Insight = Selectable<InsightPG>
 export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
 export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
+export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
+export type TaskEstimate = Selectable<TaskEstimatePG>

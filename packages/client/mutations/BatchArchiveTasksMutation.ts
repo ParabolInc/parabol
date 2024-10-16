@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {BatchArchiveTasksMutation_tasks$data} from '~/__generated__/BatchArchiveTasksMutation_tasks.graphql'
-import ITask from '../../server/database/types/Task'
+import {Task as ITask} from '../../server/postgres/types/index.d'
 import {BatchArchiveTasksMutation as TBatchArchiveTasksMutation} from '../__generated__/BatchArchiveTasksMutation.graphql'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'

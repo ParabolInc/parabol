@@ -42,3 +42,5 @@ export type AnyTaskIntegration =
   | TaskIntegrationGitHub
   | TaskIntegrationGitLab
   | TaskIntegrationAzureDevOps
+
+export type TaskServiceEnum = AnyTaskIntegration['service'] | 'PARABOL'

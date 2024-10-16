@@ -1,4 +1,5 @@
 import base64url from 'base64url'
+import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
@@ -12,10 +13,10 @@ import {
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import getRethink from '../../../database/rethinkDriver'
-import {RDatum, RValue} from '../../../database/stricterR'
+import {RDatum} from '../../../database/stricterR'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
-import Task from '../../../database/types/Task'
 import getKysely from '../../../postgres/getKysely'
+import {selectTasks} from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
@@ -82,8 +83,6 @@ const User: ReqResolvers<'User'> = {
   },
   invoices,
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
-    const r = await getRethink()
-
     // AUTH
     const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
@@ -92,25 +91,14 @@ const User: ReqResolvers<'User'> = {
     }
 
     // RESOLUTION
-    const teamMemberId = `${userId}::${teamId}`
-    const dbAfter = after ? new Date(after) : r.maxval
-    const tasks = await r
-      .table('Task')
-      // use a compound index so we can easily paginate later
-      .between([teamId, r.minval], [teamId, dbAfter], {
-        index: 'teamIdUpdatedAt'
-      })
-      .filter((task: RValue) =>
-        task('tags')
-          .contains('archived')
-          .and(
-            r.branch(task('tags').contains('private'), task('teamMemberId').eq(teamMemberId), true)
-          )
-      )
-      .orderBy(r.desc('updatedAt'))
+    const tasks = await selectTasks()
+      .where('teamId', '=', teamId)
+      .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
+      .where(sql<boolean>`'archived' = ANY(tags)`)
+      .where(({eb, or}) => or([sql<boolean>`'private' != ALL(tags)`, eb('userId', '=', userId)]))
+      .orderBy('updatedAt desc')
       .limit(first + 1)
-      .coerceTo('array')
-      .run()
+      .execute()
 
     const nodes = tasks.slice(0, first)
     const edges = nodes.map((node) => ({
@@ -129,7 +117,7 @@ const User: ReqResolvers<'User'> = {
     }
   },
   archivedTasksCount: async (_source, {teamId}, {authToken}) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
 
     // AUTH
@@ -140,21 +128,14 @@ const User: ReqResolvers<'User'> = {
     }
 
     // RESOLUTION
-    const teamMemberId = `${userId}::${teamId}`
-    return r
-      .table('Task')
-      .between([teamId, r.minval], [teamId, r.maxval], {
-        index: 'teamIdUpdatedAt'
-      })
-      .filter((task: RValue) =>
-        task('tags')
-          .contains('archived')
-          .and(
-            r.branch(task('tags').contains('private'), task('teamMemberId').eq(teamMemberId), true)
-          )
-      )
-      .count()
-      .run()
+    const taskCount = await pg
+      .selectFrom('Task')
+      .select(({fn}) => fn.count('id').as('count'))
+      .where('teamId', '=', teamId)
+      .where(sql<boolean>`'archived' = ANY(tags)`)
+      .where(({eb, or}) => or([sql<boolean>`'private' != ALL(tags)`, eb('userId', '=', userId)]))
+      .executeTakeFirstOrThrow()
+    return Number(taskCount.count)
   },
   meeting: async (_source, {meetingId}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
@@ -253,7 +234,7 @@ const User: ReqResolvers<'User'> = {
       filterQuery,
       includeUnassigned
     })
-    const filteredTasks = tasks.filter((task: Task) => {
+    const filteredTasks = tasks.filter((task) => {
       if (isTaskPrivate(task.tags) && task.userId !== viewerId) return false
       return true
     })

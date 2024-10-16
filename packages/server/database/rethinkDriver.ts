@@ -11,7 +11,6 @@ import NotificationResponseReplied from './types/NotificationResponseReplied'
 import NotificationTaskInvolves from './types/NotificationTaskInvolves'
 import NotificationTeamArchived from './types/NotificationTeamArchived'
 import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import Task from './types/Task'
 
 export type RethinkSchema = {
   Notification: {
@@ -27,17 +26,6 @@ export type RethinkSchema = {
       | NotificationResponseReplied
       | NotificationMentioned
     index: 'userId'
-  }
-  Task: {
-    type: Task
-    index:
-      | 'integrationId'
-      | 'tags'
-      | 'teamId'
-      | 'teamIdUpdatedAt'
-      | 'discussionId'
-      | 'userId'
-      | 'integrationHash'
   }
 }
 

@@ -3,7 +3,6 @@ import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-clien
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
-import TaskIntegrationJiraServer from '../../database/types/TaskIntegrationJiraServer'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
@@ -231,7 +230,7 @@ const setTaskEstimate = {
 
         const manager = new JiraServerRestManager(auth, provider as IntegrationProviderJiraServer)
 
-        const {providerId, repositoryId: projectId} = integration as TaskIntegrationJiraServer
+        const {providerId, repositoryId: projectId} = integration!
         const jiraServerIssue = await dataLoader
           .get('jiraServerIssue')
           .load({providerId, teamId, userId: accessUserId, issueId})
