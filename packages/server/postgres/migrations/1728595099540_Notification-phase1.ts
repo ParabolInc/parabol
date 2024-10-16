@@ -142,6 +142,26 @@ export async function up() {
       CONSTRAINT "fk_teamId"
         FOREIGN KEY("teamId")
           REFERENCES "Team"("id")
+          ON DELETE CASCADE,
+      CONSTRAINT "fk_discussionId"
+        FOREIGN KEY("discussionId")
+          REFERENCES "Discussion"("id")
+          ON DELETE CASCADE,
+      CONSTRAINT "fk_senderUserId"
+        FOREIGN KEY("senderUserId")
+          REFERENCES "User"("id")
+          ON DELETE CASCADE,
+      CONSTRAINT "fk_retroReflectionId"
+        FOREIGN KEY("retroReflectionId")
+          REFERENCES "RetroReflection"("id")
+          ON DELETE CASCADE,
+      CONSTRAINT "fk_domainJoinRequestId"
+        FOREIGN KEY("domainJoinRequestId")
+          REFERENCES "DomainJoinRequest"("id")
+          ON DELETE CASCADE,
+      CONSTRAINT "fk_requestCreatedBy"
+        FOREIGN KEY("requestCreatedBy")
+          REFERENCES "User"("id")
           ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS "idx_Notification_userId" ON "Notification"("userId");
