@@ -93,7 +93,7 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
             <td
               align='center'
               style={textStyle}
-              className='summary-link-style'
+              className='link-style'
               dangerouslySetInnerHTML={{__html: sanitizedSummary}}
             />
           </tr>

@@ -13,6 +13,7 @@
         "mappers": {
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
+          "RemoveFeatureFlagOwnerSuccess": "./types/RemoveFeatureFlagOwnerSuccess#RemoveFeatureFlagOwnerSuccessSource",
           "DeleteFeatureFlagSuccess": "./types/DeleteFeatureFlagSuccess#DeleteFeatureFlagSuccessSource",
           "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
