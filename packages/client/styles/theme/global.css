@@ -188,7 +188,7 @@
   @apply m-0 rounded-[1px] border-l-2 border-solid border-l-slate-500 bg-slate-200 py-0 px-[8px] font-mono font-[13px] leading-normal;
 }
 
-.summary-link-style a {
+.link-style a {
   @apply text-sky-500;
   text-decoration: underline;
 }

@@ -71,4 +71,5 @@ type TeamSubscriptionPayload {
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
+  GenerateInsightSuccess: GenerateInsightSuccess
 }
