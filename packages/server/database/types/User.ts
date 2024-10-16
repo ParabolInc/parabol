@@ -10,7 +10,6 @@ interface Input {
   preferredName: string
   email: string
   favoriteTemplateIds?: string[]
-  featureFlags?: string[]
   lastSeenAt?: Date
   lastSeenAtURLs?: string[]
   updatedAt?: Date
@@ -30,11 +29,10 @@ export default class User {
   preferredName: string
   email: string
   favoriteTemplateIds: string[]
-  featureFlags: string[]
   lastSeenAt: Date
   lastSeenAtURLs: string[] | null
   updatedAt: Date
-  newFeatureId?: string | null
+  newFeatureId?: number | null
   overLimitCopy?: string | null
   picture: string
   inactive: boolean
@@ -58,7 +56,6 @@ export default class User {
       picture,
       updatedAt,
       favoriteTemplateIds,
-      featureFlags,
       lastSeenAt,
       lastSeenAtURLs,
       identities,
@@ -77,7 +74,6 @@ export default class User {
     this.picture = picture
     this.updatedAt = updatedAt || now
     this.favoriteTemplateIds = favoriteTemplateIds || []
-    this.featureFlags = featureFlags || []
     this.identities = identities || []
     this.inactive = inactive || false
     this.isWatched = isWatched || false

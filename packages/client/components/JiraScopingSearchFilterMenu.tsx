@@ -51,7 +51,7 @@ type JiraSearchQuery = {
 type Project = {
   id: string
   name: string
-  avatar: string | null
+  avatar: string | null | undefined
 }
 
 interface Props {
@@ -157,7 +157,7 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
                   active={projectKeyFilters.includes(globalProjectKey)}
                   disabled={isJQL}
                 />
-                <ProjectAvatar src={avatar ?? undefined} />
+                <ProjectAvatar src={avatar || undefined} />
                 <TypeAheadLabel query={query} label={name} />
               </StyledMenuItemLabel>
             }

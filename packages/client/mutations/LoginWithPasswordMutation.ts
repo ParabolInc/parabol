@@ -40,7 +40,7 @@ const LoginWithPasswordMutation: StandardMutation<
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithPassword)
-        const authToken = acceptTeamInvitation?.authToken ?? loginWithPassword.authToken
+        const authToken = acceptTeamInvitation?.authToken || loginWithPassword.authToken!
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})
       }

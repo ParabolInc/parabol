@@ -1,6 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -27,13 +27,13 @@ export default {
     {meetingId, stageId, sortOrder}: {meetingId: string; stageId: string; sortOrder: number},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).run()
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
@@ -56,14 +56,12 @@ export default {
     stages.sort((a, b) => {
       return a.sortOrder > b.sortOrder ? 1 : -1
     })
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        phases
-      })
-      .run()
-
+    await pg
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(phases)})
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
     const data = {
       meetingId,
       stageId

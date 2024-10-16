@@ -8,7 +8,7 @@ interface MinimalChannel {
 }
 
 const useSlackChannels = (
-  slackAuth: {botAccessToken: string | null; slackUserId: string} | null
+  slackAuth: {botAccessToken: string | null | undefined; slackUserId: string} | null | undefined
 ) => {
   const [channels, setChannels] = useState<SlackChannelDropdownChannels>([])
   useEffect(() => {

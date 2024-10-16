@@ -1,6 +1,7 @@
 import {SelectQueryBuilder, Selectable} from 'kysely'
 import {
   Discussion as DiscussionPG,
+  Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
   TeamMember as TeamMemberPG
 } from '../pg.d'
@@ -8,12 +9,15 @@ import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
+  selectNewFeatures,
+  selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateScale,
@@ -25,6 +29,17 @@ type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
 
 export type Discussion = Selectable<DiscussionPG>
 export type ReactjiDB = {id: string; userId: string}
+
+export type UsedReactjis = Record<string, number>
+export type TranscriptBlock = {
+  speaker: string
+  words: string
+}
+
+export type AutogroupReflectionGroupType = {
+  groupTitle: string
+  reflectionIds: string[]
+}
 
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}
@@ -58,3 +73,8 @@ export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectS
 
 export type Comment = ExtractTypeFromQueryBuilderSelect<typeof selectComments>
 export type ReflectPrompt = ExtractTypeFromQueryBuilderSelect<typeof selectReflectPrompts>
+export type Insight = Selectable<InsightPG>
+
+export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeetings>
+export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
+export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>

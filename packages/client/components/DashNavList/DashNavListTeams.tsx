@@ -29,9 +29,7 @@ const DashNavListTeams = (props: Props) => {
         id
         name
         tier
-        featureFlags {
-          publicTeams
-        }
+        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         viewerTeams {
           ...DashNavListTeam @relay(mask: false)
         }
@@ -43,9 +41,8 @@ const DashNavListTeams = (props: Props) => {
     organizationRef
   )
   const [showModal, setShowModal] = useState(false)
-  const {publicTeams, viewerTeams, featureFlags} = organization
-  const publicTeamsEnabled = featureFlags?.publicTeams
-  const publicTeamsCount = publicTeamsEnabled ? publicTeams.length : 0
+  const {publicTeams, viewerTeams, hasPublicTeamsFlag} = organization
+  const publicTeamsCount = hasPublicTeamsFlag ? publicTeams.length : 0
 
   const handleClose = () => {
     setShowModal(false)
@@ -56,7 +53,7 @@ const DashNavListTeams = (props: Props) => {
     onClick && onClick()
   }
 
-  const getIcon = (lockedAt: string | null, isPaid: boolean | null) =>
+  const getIcon = (lockedAt: string | null | undefined, isPaid: boolean | null | undefined) =>
     lockedAt || !isPaid ? 'warning' : 'group'
 
   if (!viewerTeams.length) return null

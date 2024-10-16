@@ -1,20 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import rMapIf from '../../database/rMapIf'
-import getRethink from '../../database/rethinkDriver'
-import ActionMeetingMember from '../../database/types/ActionMeetingMember'
 import CheckInStage from '../../database/types/CheckInStage'
-import {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
-import Meeting from '../../database/types/Meeting'
-import MeetingRetrospective from '../../database/types/MeetingRetrospective'
-import PokerMeetingMember from '../../database/types/PokerMeetingMember'
-import RetroMeetingMember from '../../database/types/RetroMeetingMember'
-import TeamPromptMeetingMember from '../../database/types/TeamPromptMeetingMember'
 import TeamPromptResponseStage from '../../database/types/TeamPromptResponseStage'
 import UpdatesStage from '../../database/types/UpdatesStage'
 import getKysely from '../../postgres/getKysely'
+import {MeetingMember} from '../../postgres/pg'
 import {TeamMember} from '../../postgres/types'
+import {AnyMeeting} from '../../postgres/types/Meeting'
+import {NewMeetingPhase, NewMeetingStages} from '../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -22,30 +18,21 @@ import publish from '../../utils/publish'
 import {GQLContext} from '../graphql'
 import JoinMeetingPayload from '../types/JoinMeetingPayload'
 
-const createMeetingMember = (meeting: Meeting, teamMember: TeamMember) => {
+export const createMeetingMember = (
+  meeting: AnyMeeting,
+  teamMember: Pick<TeamMember, 'userId' | 'teamId' | 'isSpectatingPoker'>
+): Insertable<MeetingMember> => {
   const {userId, teamId, isSpectatingPoker} = teamMember
-  switch (meeting.meetingType) {
-    case 'action':
-      return new ActionMeetingMember({teamId, userId, meetingId: meeting.id})
-    case 'retrospective':
-      const {id: meetingId, totalVotes} = meeting as MeetingRetrospective
-      return new RetroMeetingMember({
-        teamId,
-        userId,
-        meetingId,
-        votesRemaining: totalVotes
-      })
-    case 'poker':
-      return new PokerMeetingMember({
-        teamId,
-        userId,
-        meetingId: meeting.id,
-        isSpectating: isSpectatingPoker
-      })
-    case 'teamPrompt':
-      return new TeamPromptMeetingMember({teamId, userId, meetingId: meeting.id})
-    default:
-      throw new Error('Invalid meeting type')
+  const {id: meetingId, meetingType} = meeting
+  return {
+    id: MeetingMemberId.join(meetingId, userId),
+    updatedAt: new Date(), // can remove this in phase 3
+    teamId,
+    userId,
+    meetingId,
+    meetingType,
+    isSpectating: meetingType === 'poker' ? isSpectatingPoker : null,
+    votesRemaining: meetingType === 'retrospective' ? meeting.totalVotes : null
   }
 }
 
@@ -62,7 +49,7 @@ const joinMeeting = {
     {meetingId}: {meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -84,42 +71,41 @@ const joinMeeting = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
-    const {errors} = await r.table('MeetingMember').insert(meetingMember).run()
-    // if this is called concurrently, only 1 will be error free
-    if (errors > 0) {
-      return {error: {message: 'Already joined meeting'}}
+    try {
+      await pg.insertInto('MeetingMember').values(meetingMember).execute()
+    } catch {
+      return {error: {message: 'Could not join meeting'}}
     }
 
-    const mapIf = rMapIf(r)
-
-    const addStageToPhase = (
+    const addStageToPhase = async (
       stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,
-      phaseType: NewMeetingPhaseTypeEnum
+      phaseType: NewMeetingPhase['phaseType']
     ) => {
-      return r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update((meeting: any) => ({
-          phases: mapIf(
-            meeting('phases'),
-            (phase: any) => phase('phaseType').eq(phaseType),
-            (phase: any) =>
-              phase.merge({
-                stages: phase('stages').append({
-                  ...stage,
-                  // this is a departure from before. Let folks move ahead while the check-in is going on!
-                  isNavigable: true,
-                  isNavigableByFacilitator: true,
-                  // the stage is complete if all other stages are complete & there's at least 1
-                  isComplete: r.and(
-                    phase('stages')('isComplete').contains(false).not(),
-                    phase('stages').count().ge(1)
-                  )
-                })
-              })
-          )
-        }))
-        .run()
+      await pg.transaction().execute(async (trx) => {
+        const meeting = await trx
+          .selectFrom('NewMeeting')
+          .select(({fn}) => fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'))
+          .where('id', '=', meetingId)
+          .forUpdate()
+          // NewMeeting: add OrThrow in phase 3
+          .executeTakeFirst()
+        if (!meeting) return
+        const {phases} = meeting
+        const phase = getPhase(phases, phaseType)
+        const stages = phase.stages as NewMeetingStages[]
+        stages.push({
+          ...stage,
+          isNavigable: true,
+          isNavigableByFacilitator: true,
+          // the stage is complete if all other stages are complete & there's at least 1
+          isComplete: stages.length >= 1 && stages.every((stage) => stage.isComplete)
+        })
+        await trx
+          .updateTable('NewMeeting')
+          .set({phases: JSON.stringify(phases)})
+          .where('id', '=', meetingId)
+          .execute()
+      })
     }
 
     const appendToCheckin = async () => {
@@ -161,7 +147,7 @@ const joinMeeting = {
     // effort is taken here to run both at the same time
     // so e.g.the 5th person in check-in is the 5th person in updates
     await Promise.all([appendToCheckin(), appendToUpdate(), appendToTeamPromptResponses()])
-    dataLoader.get('newMeetings').clear(meetingId)
+    dataLoader.clearAll('newMeetings')
 
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'JoinMeetingSuccess', data, subOptions)

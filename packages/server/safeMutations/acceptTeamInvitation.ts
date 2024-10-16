@@ -63,7 +63,6 @@ const handleFirstAcceptedInvitation = async (
 const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
   const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),
@@ -93,6 +92,14 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
           .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
           .where('id', '=', userId)
       )
+      .with('TeamInvitationUpdate', (qb) =>
+        // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
+        qb
+          .updateTable('TeamInvitation')
+          .set({acceptedAt: sql`CURRENT_TIMESTAMP`, acceptedBy: userId})
+          .where('email', '=', email)
+          .where('teamId', '=', teamId)
+      )
       .insertInto('TeamMember')
       .values({
         id: TeamMemberId.join(teamId, userId),
@@ -104,17 +111,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
         openDrawer: 'manageTeam'
       })
       .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
-      .execute(),
-    r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
-      // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
-      .filter({email})
-      .update({
-        acceptedAt: now,
-        acceptedBy: userId
-      })
-      .run()
+      .execute()
   ])
   dataLoader.clearAll(['teamMembers', 'users'])
   if (!organizationUser) {

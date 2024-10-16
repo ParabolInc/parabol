@@ -20,16 +20,7 @@ const bootstrapNewUser = async (
   isOrganic: boolean,
   dataLoader: DataLoaderWorker
 ) => {
-  const {
-    id: userId,
-    createdAt,
-    preferredName,
-    email,
-    featureFlags,
-    tier,
-    pseudoId,
-    identities
-  } = newUser
+  const {id: userId, createdAt, preferredName, email, tier, pseudoId, identities} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
   const [isCompanyDomain, organizations] = await Promise.all([
@@ -40,13 +31,6 @@ const bootstrapNewUser = async (
   const isPatient0 = !!domain && isCompanyDomain && usersWithDomain.length === 0
 
   const joinEvent = new TimelineEventJoinedParabol({userId})
-
-  const experimentalFlags = [...featureFlags]
-
-  // Add signUpDestinationTeam feature flag to 50% of new accounts
-  if (Math.random() < 0.5) {
-    experimentalFlags.push('signUpDestinationTeam')
-  }
 
   const isVerified = identities.some((identity) => identity.isEmailVerified)
   const hasSAMLURL = !!(await getSAMLURLFromEmail(email, dataLoader, false))
@@ -60,7 +44,6 @@ const bootstrapNewUser = async (
         qc.insertInto('User').values({
           ...newUser,
           isPatient0,
-          featureFlags: experimentalFlags,
           identities: newUser.identities.map((identity) => JSON.stringify(identity))
         })
       )
@@ -76,7 +59,6 @@ const bootstrapNewUser = async (
     email,
     name: preferredName,
     isActive: true,
-    featureFlags: experimentalFlags,
     highestTier: tier,
     isPatient0,
     anonymousId: pseudoId
@@ -142,11 +124,8 @@ const bootstrapNewUser = async (
     }
     const orgName = `${newUser.preferredName}’s Org`
     await createNewOrg(orgId, orgName, userId, email, dataLoader)
-    await Promise.all([
-      createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader),
-      addSeedTasks(userId, teamId),
-      sendPromptToJoinOrg(newUser, dataLoader)
-    ])
+    await createTeamAndLeader(newUser as IUser, validNewTeam, dataLoader)
+    await Promise.all([addSeedTasks(userId, teamId), sendPromptToJoinOrg(newUser, dataLoader)])
     analytics.newOrg(newUser, orgId, teamId, true)
   }
 

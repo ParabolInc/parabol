@@ -5,6 +5,182 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.12](https://github.com/ParabolInc/parabol/compare/v7.50.11...v7.50.12) (2024-10-16)
+
+
+### Changed
+
+* **rethinkdb:** Task: Phase 2 ([#10338](https://github.com/ParabolInc/parabol/issues/10338)) ([62977ae](https://github.com/ParabolInc/parabol/commit/62977aed62f8b749476541adb924f8542934fb38))
+
+## [7.50.11](https://github.com/ParabolInc/parabol/compare/v7.50.10...v7.50.11) (2024-10-15)
+
+
+### Changed
+
+* **deployment:** PR title for the PR that deploys to production states its purpose ([#10348](https://github.com/ParabolInc/parabol/issues/10348)) ([0932822](https://github.com/ParabolInc/parabol/commit/09328223cf0170ef7f1df94e6e326b5fdcdc0a93))
+* **rethinkdb:** Task: Phase 1 ([#10336](https://github.com/ParabolInc/parabol/issues/10336)) ([5202a3b](https://github.com/ParabolInc/parabol/commit/5202a3b59c1183e8ca7eb6c0906dc2a6baf5b82e))
+
+## [7.50.10](https://github.com/ParabolInc/parabol/compare/v7.50.9...v7.50.10) (2024-10-15)
+
+
+### Changed
+
+* remove old invite notifications ([#10345](https://github.com/ParabolInc/parabol/issues/10345)) ([6c8d420](https://github.com/ParabolInc/parabol/commit/6c8d420fa3d29243a141862fee095a3e05fed7df))
+
+## [7.50.9](https://github.com/ParabolInc/parabol/compare/v7.50.8...v7.50.9) (2024-10-15)
+
+
+### Fixed
+
+* **dd-trace:** upgrade to v5.0.0 ([#10343](https://github.com/ParabolInc/parabol/issues/10343)) ([a3aba86](https://github.com/ParabolInc/parabol/commit/a3aba863580fb866c4affad42f03454afd0d77e8))
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 3 ([#10327](https://github.com/ParabolInc/parabol/issues/10327)) ([9b52d49](https://github.com/ParabolInc/parabol/commit/9b52d4958d8aace5c3adc2322ede58f638a947cd))
+
+## [7.50.8](https://github.com/ParabolInc/parabol/compare/v7.50.7...v7.50.8) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 2 ([#10326](https://github.com/ParabolInc/parabol/issues/10326)) ([f8486ba](https://github.com/ParabolInc/parabol/commit/f8486bae6feeeb7a69088a864e8277c53d052061))
+
+## [7.50.7](https://github.com/ParabolInc/parabol/compare/v7.50.6...v7.50.7) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** NewFeature: OneShot ([#10312](https://github.com/ParabolInc/parabol/issues/10312)) ([92deddf](https://github.com/ParabolInc/parabol/commit/92deddf30645ad4d479f29eb7ab66737a3218946))
+* **rethinkdb:** TeamInvitation: Phase 1 ([#10325](https://github.com/ParabolInc/parabol/issues/10325)) ([72ea4e1](https://github.com/ParabolInc/parabol/commit/72ea4e1bde79cdec9d9d4eda80932e32e880d19c))
+
+## [7.50.6](https://github.com/ParabolInc/parabol/compare/v7.50.5...v7.50.6) (2024-10-09)
+
+
+### Fixed
+
+* catch error if user tries to join meeting twice ([#10320](https://github.com/ParabolInc/parabol/issues/10320)) ([887abd4](https://github.com/ParabolInc/parabol/commit/887abd49d6467207c60ade8f62b4e496fa9378b6))
+
+
+### Changed
+
+* **rethinkdb:** MassInvitation: OneShot ([#10311](https://github.com/ParabolInc/parabol/issues/10311)) ([fc1ef4d](https://github.com/ParabolInc/parabol/commit/fc1ef4d44568193f018a31c378181b5df92da355))
+* update snyk workflow to use node20 ([#10324](https://github.com/ParabolInc/parabol/issues/10324)) ([8e1222f](https://github.com/ParabolInc/parabol/commit/8e1222fa88368d1296d125e8236d2992c05294b4))
+
+## [7.50.5](https://github.com/ParabolInc/parabol/compare/v7.50.4...v7.50.5) (2024-10-08)
+
+
+### Fixed
+
+* timeRemaining ([#10316](https://github.com/ParabolInc/parabol/issues/10316)) ([de9df6c](https://github.com/ParabolInc/parabol/commit/de9df6ca85e9187a87fb3585279a295d29665220))
+
+## [7.50.4](https://github.com/ParabolInc/parabol/compare/v7.50.3...v7.50.4) (2024-10-08)
+
+
+### Changed
+
+* **rethinkdb:** MeetingMember: Phase 2 ([#10294](https://github.com/ParabolInc/parabol/issues/10294)) ([af50d0a](https://github.com/ParabolInc/parabol/commit/af50d0a1420ae21b4e48ddc040c0d79f9d81e2cf))
+* **rethinkdb:** MeetingMember: Phase 3 ([#10298](https://github.com/ParabolInc/parabol/issues/10298)) ([dee4e0f](https://github.com/ParabolInc/parabol/commit/dee4e0f0119bd46167175043405bc24abd49d88b))
+
+## [7.50.3](https://github.com/ParabolInc/parabol/compare/v7.50.2...v7.50.3) (2024-10-08)
+
+
+### Fixed
+
+* **webserver:** exits with code 0 when SIGTERM is handled ([#10301](https://github.com/ParabolInc/parabol/issues/10301)) ([de317d2](https://github.com/ParabolInc/parabol/commit/de317d2dabcf6834b0564f7aab1af5ad02443d66))
+
+
+### Changed
+
+* **rethinkdb:** MeetingMember: Phase 1 ([#10289](https://github.com/ParabolInc/parabol/issues/10289)) ([abd8281](https://github.com/ParabolInc/parabol/commit/abd8281cc7e637311ea0920f21b8822b42396acd))
+* **rethinkdb:** NewMeeting: Phase 3 ([#10273](https://github.com/ParabolInc/parabol/issues/10273)) ([1667810](https://github.com/ParabolInc/parabol/commit/1667810a192e82bd8d2cd49b2ed0ba138559458f))
+
+## [7.50.2](https://github.com/ParabolInc/parabol/compare/v7.50.1...v7.50.2) (2024-10-07)
+
+
+### Changed
+
+* **metrics:** update org activities GraphQL query ([#10278](https://github.com/ParabolInc/parabol/issues/10278)) ([ef99718](https://github.com/ParabolInc/parabol/commit/ef997187ffa92fce0e8866f93943abfbf59ea660))
+
+## [7.50.1](https://github.com/ParabolInc/parabol/compare/v7.50.0...v7.50.1) (2024-10-07)
+
+
+### Changed
+
+* improve feature flag error feedback ([#10304](https://github.com/ParabolInc/parabol/issues/10304)) ([6c058ac](https://github.com/ParabolInc/parabol/commit/6c058acf51b1031edb53feee0102602788d3bfca))
+
+## [7.50.0](https://github.com/ParabolInc/parabol/compare/v7.49.1...v7.50.0) (2024-10-07)
+
+
+### Added
+
+* add feature flag tables ([#10184](https://github.com/ParabolInc/parabol/issues/10184)) ([ff6c25e](https://github.com/ParabolInc/parabol/commit/ff6c25e38dbab78075bc7398f32939fec5b44f45))
+
+## [7.49.1](https://github.com/ParabolInc/parabol/compare/v7.49.0...v7.49.1) (2024-10-04)
+
+
+### Fixed
+
+* endTeamPrompt bugs ([#10295](https://github.com/ParabolInc/parabol/issues/10295)) ([d18a7a4](https://github.com/ParabolInc/parabol/commit/d18a7a4bf2703ded03a807f6778c9e85e8d92b82))
+
+## [7.49.0](https://github.com/ParabolInc/parabol/compare/v7.48.3...v7.49.0) (2024-10-03)
+
+
+### Added
+
+* **misc:** add timer control to more meeting phases ([#10279](https://github.com/ParabolInc/parabol/issues/10279)) ([1c87753](https://github.com/ParabolInc/parabol/commit/1c87753102fcb2268ae3863d33cf99b72e663990))
+
+
+### Fixed
+
+* deadlock on teamprompt ([#10290](https://github.com/ParabolInc/parabol/issues/10290)) ([ae72c0d](https://github.com/ParabolInc/parabol/commit/ae72c0d88e7329e05597eae40ba730f927a21537))
+
+## [7.48.3](https://github.com/ParabolInc/parabol/compare/v7.48.2...v7.48.3) (2024-10-01)
+
+
+### Changed
+
+* **rethinkdb:** NewMeeting: Phase 2 ([#10266](https://github.com/ParabolInc/parabol/issues/10266)) ([1a86d3c](https://github.com/ParabolInc/parabol/commit/1a86d3cddcb299880308211e8c8ffd7bd270f7be))
+
+## [7.48.2](https://github.com/ParabolInc/parabol/compare/v7.48.1...v7.48.2) (2024-10-01)
+
+
+### Fixed
+
+* Fix crash in end checkin without pinned agenda items ([#10282](https://github.com/ParabolInc/parabol/issues/10282)) ([66097b8](https://github.com/ParabolInc/parabol/commit/66097b8e6fc0d5f41c79f1b1b2a3ea3e5676526b))
+
+
+### Changed
+
+* **deps:** bump express from 4.19.2 to 4.20.0 ([#10212](https://github.com/ParabolInc/parabol/issues/10212)) ([b8e9925](https://github.com/ParabolInc/parabol/commit/b8e99253757735212b0e6979d5a7a47ab8417a99))
+
+## [7.48.1](https://github.com/ParabolInc/parabol/compare/v7.48.0...v7.48.1) (2024-09-27)
+
+
+### Fixed
+
+* stop series when team is no more ([#10268](https://github.com/ParabolInc/parabol/issues/10268)) ([203835e](https://github.com/ParabolInc/parabol/commit/203835e4296f17f51c8d6f968b41f7fb64e820ab))
+
+
+### Changed
+
+* **rethinkdb:** NewMeeting: Phase 1a ([#10216](https://github.com/ParabolInc/parabol/issues/10216)) ([6273411](https://github.com/ParabolInc/parabol/commit/6273411f5c5e7e03dc569b3359a49902b88dc11c))
+* **rethinkdb:** NewMeeting: Phase 1b ([#10250](https://github.com/ParabolInc/parabol/issues/10250)) ([8070a7e](https://github.com/ParabolInc/parabol/commit/8070a7e82d156d7b587742f1bde8279419ea85db))
+
+## [7.48.0](https://github.com/ParabolInc/parabol/compare/v7.47.5...v7.48.0) (2024-09-24)
+
+
+### Added
+
+* **metrics:** add mutation to generate usage report ([#10236](https://github.com/ParabolInc/parabol/issues/10236)) ([b72decd](https://github.com/ParabolInc/parabol/commit/b72decd56c08239ca990fa23552faf5d33182012))
+
+
+### Fixed
+
+* bump relay so it shares react's scheduler ([#10262](https://github.com/ParabolInc/parabol/issues/10262)) ([5893e38](https://github.com/ParabolInc/parabol/commit/5893e38a008597ec2e659b488ec0e3444338a2ff))
+* isPaid flag when moving teams to 0-team org ([#10263](https://github.com/ParabolInc/parabol/issues/10263)) ([b625d7e](https://github.com/ParabolInc/parabol/commit/b625d7e51b5ef4fe196251110699d99249d44fc9))
+* **misc:** show full length of agenda item text when hovering ([#10251](https://github.com/ParabolInc/parabol/issues/10251)) ([89661a7](https://github.com/ParabolInc/parabol/commit/89661a7425898418461aefb65428179622c70b78))
+
 ## [7.47.5](https://github.com/ParabolInc/parabol/compare/v7.47.4...v7.47.5) (2024-09-16)
 
 

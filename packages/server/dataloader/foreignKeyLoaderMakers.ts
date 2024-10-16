@@ -1,14 +1,20 @@
+import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
   selectAgendaItems,
   selectComments,
+  selectMassInvitations,
+  selectMeetingMembers,
+  selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
+  selectTeamInvitations,
   selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
@@ -227,3 +233,82 @@ export const reflectPromptsByTemplateId = foreignKeyLoaderMaker(
       .execute()
   }
 )
+
+export const activeMeetingsByTeamId = foreignKeyLoaderMaker(
+  'newMeetings',
+  'teamId',
+  async (teamIds) => {
+    return selectNewMeetings()
+      .where('teamId', 'in', teamIds)
+      .where('endedAt', 'is', null)
+      .orderBy('createdAt desc')
+      .execute()
+  }
+)
+export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
+  'newMeetings',
+  'teamId',
+  async (teamIds) => {
+    return selectNewMeetings()
+      .where('teamId', 'in', teamIds)
+      .where('endedAt', 'is not', null)
+      .orderBy('endedAt desc')
+      .execute()
+  }
+)
+
+export const meetingMembersByMeetingId = foreignKeyLoaderMaker(
+  'meetingMembers',
+  'meetingId',
+  async (meetingIds) => {
+    return selectMeetingMembers().where('meetingId', 'in', meetingIds).execute()
+  }
+)
+
+export const meetingMembersByUserId = foreignKeyLoaderMaker(
+  'meetingMembers',
+  'userId',
+  async (userIds) => {
+    return selectMeetingMembers().where('userId', 'in', userIds).execute()
+  }
+)
+
+export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
+  'massInvitations',
+  'teamMemberId',
+  async (teamMemberIds) => {
+    return selectMassInvitations()
+      .where('teamMemberId', 'in', teamMemberIds)
+      .orderBy('expiration desc')
+      .execute()
+  }
+)
+
+export const teamInvitationsByTeamId = foreignKeyLoaderMaker(
+  'teamInvitations',
+  'teamId',
+  async (teamIds) => {
+    return selectTeamInvitations()
+      .where('teamId', 'in', teamIds)
+      .where('acceptedAt', 'is', null)
+      .where('expiresAt', '>=', sql<Date>`CURRENT_TIMESTAMP`)
+      .execute()
+  }
+)
+
+export const _pgtasksByDiscussionId = foreignKeyLoaderMaker(
+  '_pgtasks',
+  'discussionId',
+  async (discusisonIds) => {
+    // include archived cards in the conversation, since it's persistent
+    return selectTasks().where('discussionId', 'in', discusisonIds).execute()
+  }
+)
+
+export const _pgtasksByTeamId = foreignKeyLoaderMaker('_pgtasks', 'teamId', async (teamIds) => {
+  // waraning! contains private tasks
+  return selectTasks()
+    .where('teamId', 'in', teamIds)
+    .where(sql<boolean>`'archived' = ANY(tags)`)
+    .execute()
+})

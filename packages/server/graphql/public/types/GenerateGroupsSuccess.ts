@@ -1,4 +1,3 @@
-import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import {GenerateGroupsSuccessResolvers} from '../resolverTypes'
 
 export type GenerateGroupsSuccessSource = {
@@ -7,8 +6,10 @@ export type GenerateGroupsSuccessSource = {
 
 const GenerateGroupsSuccess: GenerateGroupsSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    return meeting as MeetingRetrospective
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (meeting.meetingType !== 'retrospective')
+      throw new Error('Meeting type is not retrospective')
+    return meeting
   }
 }
 

@@ -8,13 +8,19 @@ import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
   selectComments,
+  selectMassInvitations,
+  selectMeetingMembers,
   selectMeetingSettings,
+  selectNewFeatures,
+  selectNewMeetings,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
+  selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
@@ -108,10 +114,38 @@ export const slackNotifications = primaryKeyLoaderMaker((ids: readonly string[])
   return selectSlackNotifications().where('id', 'in', ids).execute()
 })
 
+export const featureFlags = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return getKysely().selectFrom('FeatureFlag').selectAll().where('id', 'in', ids).execute()
+})
+
 export const comments = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectComments().where('id', 'in', ids).execute()
 })
 
 export const reflectPrompts = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectReflectPrompts().where('id', 'in', ids).execute()
+})
+
+export const newMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectNewMeetings().where('id', 'in', ids).execute()
+})
+
+export const meetingMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectMeetingMembers().where('id', 'in', ids).execute()
+})
+
+export const massInvitations = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectMassInvitations().where('id', 'in', ids).execute()
+})
+
+export const newFeatures = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectNewFeatures().where('id', 'in', ids).execute()
+})
+
+export const teamInvitations = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamInvitations().where('id', 'in', ids).execute()
+})
+
+export const _pgtasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTasks().where('id', 'in', ids).execute()
 })

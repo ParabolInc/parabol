@@ -1,11 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import ActionMeetingMember from '../../../database/types/ActionMeetingMember'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -14,6 +12,7 @@ import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
+import {createMeetingMember} from '../../mutations/joinMeeting'
 import {MutationResolvers} from '../resolverTypes'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
@@ -21,7 +20,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   {teamId, name, gcalInput},
   context
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const {authToken, socketId: mutatorId, dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -39,16 +38,10 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meetingType: MeetingTypeEnum = 'action'
 
   // RESOLUTION
-  const meetingCount = await r
-    .table('NewMeeting')
-    .getAll(teamId, {index: 'teamId'})
-    .filter({meetingType})
-    .count()
-    .default(0)
-    .run()
+  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
 
-  const phases = await createNewMeetingPhases(
+  const phases = await createNewMeetingPhases<CheckInPhase>(
     viewerId,
     teamId,
     meetingId,
@@ -64,38 +57,33 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     meetingCount,
     phases,
     facilitatorUserId: viewerId
-  })
-  await r.table('NewMeeting').insert(meeting).run()
-
-  // Disallow 2 active check-in meetings
-  const newActiveMeetings = await dataLoader.get('activeMeetingsByTeamId').load(teamId)
-  const otherActiveMeeting = newActiveMeetings.find((activeMeeting) => {
-    const {id} = activeMeeting
-    if (id === meetingId || activeMeeting.meetingType !== meetingType) return false
-    return true
-  })
-  if (otherActiveMeeting) {
-    await r.table('NewMeeting').get(meetingId).delete().run()
+  }) as CheckInMeeting
+  try {
+    await pg
+      .insertInto('NewMeeting')
+      .values({...meeting, phases: JSON.stringify(phases)})
+      .execute()
+  } catch (e) {
     return {error: {message: 'Meeting already started'}}
   }
+  dataLoader.clearAll('newMeetings')
   const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = agendaItems.map(({id}) => id)
-
-  const updates = {
-    lastMeetingType: meetingType
-  }
+  const meetingMember = createMeetingMember(meeting, {
+    userId: viewerId,
+    teamId,
+    isSpectatingPoker: false
+  })
   await Promise.all([
-    r
-      .table('MeetingMember')
-      .insert(new ActionMeetingMember({meetingId, userId: viewerId, teamId}))
-      .run(),
-    updateTeamByTeamId(updates, teamId),
+    pg
+      .with('TeamUpdates', (qb) =>
+        qb.updateTable('Team').set({lastMeetingType: meetingType}).where('id', '=', teamId)
+      )
+      .insertInto('MeetingMember')
+      .values(meetingMember)
+      .execute(),
     agendaItemIds.length &&
-      getKysely()
-        .updateTable('AgendaItem')
-        .set({meetingId})
-        .where('id', 'in', agendaItemIds)
-        .execute()
+      pg.updateTable('AgendaItem').set({meetingId}).where('id', 'in', agendaItemIds).execute()
   ])
   IntegrationNotifier.startMeeting(dataLoader, meetingId, teamId)
   analytics.meetingStarted(viewer, meeting)

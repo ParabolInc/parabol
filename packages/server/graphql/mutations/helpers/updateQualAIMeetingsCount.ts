@@ -10,7 +10,7 @@ const updateQualAIMeetingsCount = async (
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').load(teamId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    dataLoader.get('newMeetings').load(meetingId)
+    dataLoader.get('newMeetings').loadNonNull(meetingId)
   ])
   if (meetingMembers.length < 3 || !team || !meeting.summary || reflections.length < 5) return
   const {qualAIMeetingsCount} = team

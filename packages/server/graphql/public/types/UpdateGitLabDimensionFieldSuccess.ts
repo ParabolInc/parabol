@@ -10,7 +10,7 @@ const UpdateGitLabDimensionFieldSuccess: UpdateGitLabDimensionFieldSuccessResolv
     return await dataLoader.get('teams').loadNonNull(teamId)
   },
   meeting: async ({meetingId}, _args, {dataLoader}) => {
-    return dataLoader.get('newMeetings').load(meetingId)
+    return dataLoader.get('newMeetings').loadNonNull(meetingId)
   }
 }
 

@@ -394,9 +394,9 @@ type User {
   favoriteTemplates: [MeetingTemplate!]!
 
   """
-  Any super power given to the user via a super user
+  Whether the user has a feature flag enabled or not
   """
-  featureFlags: UserFeatureFlags!
+  featureFlag(featureName: String!): Boolean!
 
   """
   url of user’s profile picture

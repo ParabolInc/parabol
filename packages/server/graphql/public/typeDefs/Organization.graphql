@@ -176,9 +176,9 @@ type Organization {
   teamStats: [TeamStat!]!
 
   """
-  Any super power given to the organization via a super user
+  Whether the org has a feature flag enabled or not
   """
-  featureFlags: OrganizationFeatureFlags!
+  featureFlag(featureName: String!): Boolean!
 
   """
   The SAML record attached to the Organization, if any

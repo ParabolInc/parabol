@@ -108,6 +108,11 @@ type Team {
   activeMeetings: [NewMeeting!]!
 
   """
+  Whether the team has a feature flag enabled or not
+  """
+  featureFlag(featureName: String!): Boolean!
+
+  """
   The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections
   """
   qualAIMeetingsCount: Int!
@@ -122,6 +127,11 @@ type Team {
     meetingId: ID!
   ): NewMeeting
   organization: Organization!
+
+  """
+  The AI insight for the team. Null if not enough data or feature flag isn't set
+  """
+  insight: Insight
 
   """
   The agenda items for the upcoming or current meeting
@@ -186,4 +196,9 @@ type Team {
   The team member that is the team lead
   """
   teamLead: TeamMember!
+
+  """
+  The number of retro meetings the team has had
+  """
+  retroMeetingsCount: Int!
 }

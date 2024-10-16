@@ -8,6 +8,7 @@ import getRethink from '../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import Task, {TaskServiceEnum} from '../../database/types/Task'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish, {SubOptions} from '../../utils/publish'
@@ -152,6 +153,7 @@ export default {
     info: GraphQLResolveInfo
   ) {
     const {authToken, dataLoader, socketId: mutatorId} = context
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const viewerId = getUserId(authToken)
@@ -222,7 +224,10 @@ export default {
     await r({
       task: r.table('Task').insert(task)
     }).run()
-
+    await pg
+      .insertInto('Task')
+      .values({...task, integration: JSON.stringify(integration)})
+      .execute()
     handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
       operationId,
       mutatorId

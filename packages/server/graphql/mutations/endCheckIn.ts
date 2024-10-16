@@ -7,13 +7,13 @@ import {positionAfter} from '../../../client/shared/sortOrder'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import {RDatum} from '../../database/stricterR'
-import MeetingAction from '../../database/types/MeetingAction'
 import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {AgendaItem} from '../../postgres/types'
+import {CheckInMeeting} from '../../postgres/types/Meeting'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../utils/Logger'
@@ -33,6 +33,7 @@ import updateTeamInsights from './helpers/updateTeamInsights'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
+  const pg = getKysely()
   const r = await getRethink()
   const taskMax = await (
     r
@@ -61,6 +62,11 @@ const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) =
         })
     })
     .run()
+  await Promise.all(
+    updatedTasks.map((task) =>
+      pg.updateTable('Task').set({sortOrder: task.sortOrder}).where('id', '=', task.id).execute()
+    )
+  )
   return tasks
 }
 
@@ -82,6 +88,7 @@ const clonePinnedAgendaItems = async (
   pinnedAgendaItems: AgendaItem[],
   dataLoader: DataLoaderInstance
 ) => {
+  if (!pinnedAgendaItems.length) return
   let curSortOrder = ''
   const clonedPins = pinnedAgendaItems.map((agendaItem) => {
     const agendaItemId = `${agendaItem.teamId}::${generateUID()}`
@@ -101,12 +108,13 @@ const clonePinnedAgendaItems = async (
   dataLoader.clearAll('agendaItems')
 }
 
-const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataLoaderWorker) => {
+const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: DataLoaderWorker) => {
   /* If isKill, no agenda items were processed so clear none of them.
    * Similarly, don't clone pins. the original ones will show up again.
    */
 
   const {id: meetingId, teamId, phases} = meeting
+  const pg = getKysely()
   const r = await getRethink()
   const [meetingMembers, tasks, doneTasks, activeAgendaItems] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
@@ -142,20 +150,17 @@ const summarizeCheckInMeeting = async (meeting: MeetingAction, dataLoader: DataL
     isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
     isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems, dataLoader),
     updateTaskSortOrders(userIds, tasks),
-    r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          agendaItemCount: activeAgendaItems.length,
-          commentCount,
-          taskCount: tasks.length
-        },
-        {nonAtomic: true}
-      )
-      .run()
+    pg
+      .updateTable('NewMeeting')
+      .set({
+        agendaItemCount: activeAgendaItems.length,
+        commentCount,
+        taskCount: tasks.length
+      })
+      .where('id', '=', meetingId)
+      .execute()
   ])
-
+  dataLoader.clearAll('newMeetings')
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
 }
 
@@ -170,19 +175,18 @@ export default {
   },
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
-    const r = await getRethink()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const meeting = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .default(null)
-      .run()) as MeetingAction | null
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (meeting.meetingType !== 'action') {
+      return standardError(new Error('Not a check-in meeting'), {userId: viewerId})
+    }
     const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
     // VALIDATION
@@ -201,32 +205,29 @@ export default {
     const phase = getMeetingPhase(phases)
     const insights = await gatherInsights(meeting, dataLoader)
 
-    const completedCheckIn = (await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          endedAt: now,
-          phases,
-          ...insights
-        },
-        {returnChanges: true}
-      )('changes')(0)('new_val')
-      .default(null)
-      .run()) as unknown as MeetingAction
-
-    if (!completedCheckIn) {
-      return standardError(new Error('Completed check-in meeting does not exist'), {
+    await pg
+      .updateTable('NewMeeting')
+      .set({
+        endedAt: now,
+        phases: JSON.stringify(phases),
+        usedReactjis: JSON.stringify(insights.usedReactjis),
+        engagement: insights.engagement
+      })
+      .where('id', '=', meetingId)
+      .execute()
+    dataLoader.clearAll('newMeetings')
+    const completedCheckIn = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    if (completedCheckIn.meetingType !== 'action') {
+      return standardError(new Error('Completed check-in meeting is not an action'), {
         userId: viewerId
       })
     }
-
     // remove any empty tasks
     const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
+      removeEmptyTasks(meetingId, teamId),
       updateTeamInsights(teamId, dataLoader)
     ])
     // need to wait for removeEmptyTasks before finishing the meeting
@@ -248,7 +249,6 @@ export default {
         })
     )
     const timelineEventId = events[0]!.id
-    const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     if (team.isOnboardTeam) {
       const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)

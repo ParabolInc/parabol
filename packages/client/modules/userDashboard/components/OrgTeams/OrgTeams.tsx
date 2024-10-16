@@ -20,6 +20,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         tier
+        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         allTeams {
           id
           ...OrgTeamsRow_team
@@ -39,8 +40,8 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, tier, viewerTeams, allTeamsCount} = organization
-  const showAllTeams = allTeams.length === allTeamsCount
+  const {allTeams, tier, viewerTeams, allTeamsCount, hasPublicTeamsFlag} = organization
+  const showAllTeams = allTeams.length === allTeamsCount || hasPublicTeamsFlag
   const viewerTeamCount = viewerTeams.length
 
   return (
