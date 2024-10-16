@@ -165,6 +165,7 @@ export async function up() {
           ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS "idx_Notification_userId" ON "Notification"("userId");
+    CREATE INDEX IF NOT EXISTS "idx_Notification_createdAt" ON "Notification"("createdAt");
     CREATE INDEX IF NOT EXISTS "idx_Notification_teamId" ON "Notification"("teamId") WHERE "teamId" IS NOT NULL;
     CREATE INDEX IF NOT EXISTS "idx_Notification_orgId" ON "Notification"("orgId") WHERE "orgId" IS NOT NULL;
   END $$;
