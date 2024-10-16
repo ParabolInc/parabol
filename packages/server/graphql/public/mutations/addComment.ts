@@ -4,13 +4,10 @@ import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
 import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
-import getRethink from '../../../database/rethinkDriver'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
-import NotificationDiscussionMentioned from '../../../database/types/NotificationDiscussionMentioned'
-import NotificationResponseReplied from '../../../database/types/NotificationResponseReplied'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {IGetDiscussionsByIdsQueryResult} from '../../../postgres/queries/generated/getDiscussionsByIdsQuery'
@@ -56,16 +53,15 @@ const getMentionNotifications = (
       // relevant page.
       return true
     })
-    .map(
-      (mentioneeUserId) =>
-        new NotificationDiscussionMentioned({
-          userId: mentioneeUserId,
-          meetingId: meetingId,
-          authorId: viewerId,
-          commentId,
-          discussionId: discussion.id
-        })
-    )
+    .map((mentioneeUserId) => ({
+      id: generateUID(),
+      type: 'DISCUSSION_MENTIONED' as const,
+      userId: mentioneeUserId,
+      meetingId: meetingId,
+      authorId: viewerId,
+      commentId,
+      discussionId: discussion.id
+    }))
 }
 
 const addComment: MutationResolvers['addComment'] = async (
@@ -74,7 +70,6 @@ const addComment: MutationResolvers['addComment'] = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
-  const r = await getRethink()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -123,14 +118,15 @@ const addComment: MutationResolvers['addComment'] = async (
     const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
 
     if (responseUserId !== viewerId) {
-      const notification = new NotificationResponseReplied({
+      const notification = {
+        id: generateUID(),
+        type: 'RESPONSE_REPLIED' as const,
         userId: responseUserId,
         meetingId: meetingId,
         authorId: viewerId,
         commentId
-      })
+      }
 
-      await r.table('Notification').insert(notification).run()
       await pg.insertInto('Notification').values(notification).execute()
 
       IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
@@ -147,7 +143,6 @@ const addComment: MutationResolvers['addComment'] = async (
   )
 
   if (notificationsToAdd.length) {
-    await r.table('Notification').insert(notificationsToAdd).run()
     await pg.insertInto('Notification').values(notificationsToAdd).execute()
     notificationsToAdd.forEach((notification) => {
       publishNotification(notification, subOptions)

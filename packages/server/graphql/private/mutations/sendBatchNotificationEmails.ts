@@ -1,11 +1,10 @@
 import ms from 'ms'
 import appOrigin from '../../../appOrigin'
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import AuthToken from '../../../database/types/AuthToken'
 import ServerEnvironment from '../../../email/ServerEnvironment'
 import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
+import getKysely from '../../../postgres/getKysely'
 import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -14,36 +13,27 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
   _args,
   {dataLoader}
 ) => {
+  const pg = getKysely()
   // RESOLUTION
   // Note - this may be a lot of data one day. userNotifications is an array
   // of all the users who have not logged in within the last 24 hours and their
   // associated notifications.
-  const r = await getRethink()
   const now = Date.now()
   const yesterday = new Date(now - ms('1d'))
-  const userNotificationCount = (await (
-    r
-      .table('Notification')
-      // Only include notifications which occurred within the last day
-      .filter((row: RValue) => row('createdAt').gt(yesterday))
-      .filter({status: 'UNREAD'})
-      // de-dup users
-      .group('userId') as any
-  )
-    .count()
-    .ungroup()
-    .map((group: RValue) => ({
-      userId: group('group'),
-      notificationCount: group('reduction')
-    }))
-    .run()) as {userId: string; notificationCount: number}[]
+  const userNotificationCount = await pg
+    .selectFrom('Notification')
+    .select(({fn}) => ['userId', fn.count('id').as('notificationCount')])
+    .where('createdAt', '>', yesterday)
+    .where('status', '=', 'UNREAD')
+    .groupBy('userId')
+    .execute()
 
   // :TODO: (jmtaber129): Filter out team invitations for users who are already on the team.
   // :TODO: (jmtaber129): Filter out "stage timer" notifications if the meeting has already
   // progressed to the next stage.
 
   const userNotificationMap = new Map(
-    userNotificationCount.map((value) => [value.userId, value.notificationCount])
+    userNotificationCount.map((value) => [value.userId, Number(value.notificationCount)])
   )
   const users = (await dataLoader.get('users').loadMany([...userNotificationMap.keys()])).filter(
     isValid

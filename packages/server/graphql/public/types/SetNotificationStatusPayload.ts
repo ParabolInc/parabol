@@ -6,7 +6,7 @@ export type SetNotificationStatusPayloadSource = {
 
 const SetNotificationStatusPayload: SetNotificationStatusPayloadResolvers = {
   notification: ({notificationId}, _args, {dataLoader}) => {
-    return dataLoader.get('notifications').load(notificationId)
+    return dataLoader.get('notifications').loadNonNull(notificationId)
   }
 }
 

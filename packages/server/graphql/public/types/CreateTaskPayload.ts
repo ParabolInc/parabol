@@ -1,6 +1,5 @@
-import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
 import {getUserId} from '../../../utils/authorization'
-import errorFilter from '../../errorFilter'
+import isValid from '../../isValid'
 import {CreateTaskPayloadResolvers} from '../resolverTypes'
 
 export type CreateTaskPayloadSource = {
@@ -28,9 +27,9 @@ const CreateTaskPayload: CreateTaskPayloadResolvers = {
 
   involvementNotification: async ({notificationIds}, _args, {authToken, dataLoader}) => {
     if (!notificationIds) return null
-    const notifications = (await dataLoader.get('notifications').loadMany(notificationIds)).filter(
-      errorFilter
-    ) as NotificationTaskInvolves[]
+    const notifications = (await dataLoader.get('notifications').loadMany(notificationIds))
+      .filter(isValid)
+      .filter((n) => n.type === 'TASK_INVOLVES')
     const viewerId = getUserId(authToken)
     return notifications.find((notification) => notification.userId === viewerId) || null
   }

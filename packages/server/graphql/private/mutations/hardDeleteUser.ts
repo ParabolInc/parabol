@@ -1,4 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -51,7 +50,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   if (!userId && !email) {
     return {error: {message: 'Provide a userId or email'}}
   }
-  const r = await getRethink()
   const pg = getKysely()
 
   const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
@@ -84,9 +82,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .where('teamId', 'in', teamIds)
     .where('createdBy', '=', userIdToDelete)
     .execute()
-  await r({
-    notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete()
-  }).run()
 
   // now postgres, after FKs are added then triggers should take care of children
   // TODO when we're done migrating to PG, these should have constraints that ON DELETE CASCADE

@@ -1,6 +1,6 @@
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
+import {selectNotifications} from '../../../postgres/select'
 
 const handleTeamInviteToken = async (
   invitationToken: string,
@@ -8,7 +8,6 @@ const handleTeamInviteToken = async (
   tms: string[],
   notificationId?: string
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
   const invitation = await pg
     .selectFrom('TeamInvitation')
@@ -21,9 +20,12 @@ const handleTeamInviteToken = async (
   if (expiresAt.getTime() < Date.now()) {
     // using the notification has no expiry
     const notification = notificationId
-      ? await r.table('Notification').get(notificationId).run()
+      ? await selectNotifications()
+          .where('id', '=', notificationId)
+          .where('userId', '=', viewerId)
+          .executeTakeFirst()
       : undefined
-    if (!notification || notification.userId !== viewerId) {
+    if (!notification) {
       return {error: InvitationTokenError.EXPIRED}
     }
   }

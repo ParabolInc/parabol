@@ -5,8 +5,6 @@ import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import {isNotNull} from '../../../../client/utils/predicates'
 import appOrigin from '../../../appOrigin'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
 import getMailManager from '../../../email/getMailManager'
 import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
 import generateUID from '../../../generateUID'
@@ -34,7 +32,6 @@ const inviteToTeamHelper = async (
 ) => {
   const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
-  const r = await getRethink()
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -139,21 +136,21 @@ const inviteToTeamHelper = async (
     removedSuggestedActionId = await removeSuggestedAction(viewerId, 'inviteYourTeam')
   }
   // insert notification records
-  const notificationsToInsert = [] as NotificationTeamInvitation[]
-  teamInvitationsToInsert.forEach((invitation) => {
-    const user = users.find((user) => user.email === invitation.email)
-    if (user) {
-      notificationsToInsert.push(
-        new NotificationTeamInvitation({
-          userId: user.id,
-          invitationId: invitation.id,
-          teamId
-        })
-      )
-    }
-  })
+  const notificationsToInsert = teamInvitationsToInsert
+    .map((invitation) => {
+      const user = users.find((user) => user.email === invitation.email)
+      if (!user) return null
+      return {
+        id: generateUID(),
+        type: 'TEAM_INVITATION' as const,
+        userId: user.id,
+        invitationId: invitation.id,
+        teamId
+      }
+    })
+    .filter(isValid)
+
   if (notificationsToInsert.length > 0) {
-    await r.table('Notification').insert(notificationsToInsert).run()
     await pg.insertInto('Notification').values(notificationsToInsert).execute()
   }
 

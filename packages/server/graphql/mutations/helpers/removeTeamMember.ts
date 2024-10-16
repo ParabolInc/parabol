@@ -1,11 +1,10 @@
 import {sql} from 'kysely'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
-import getRethink from '../../../database/rethinkDriver'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import CheckInStage from '../../../database/types/CheckInStage'
 import EstimateStage from '../../../database/types/EstimateStage'
-import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
@@ -25,7 +24,6 @@ const removeTeamMember = async (
   dataLoader: DataLoaderWorker
 ) => {
   const {evictorUserId} = options
-  const r = await getRethink()
   const pg = getKysely()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
@@ -101,9 +99,14 @@ const removeTeamMember = async (
 
   let notificationId: string | undefined
   if (evictorUserId) {
-    const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
+    const notification = {
+      id: generateUID(),
+      type: 'KICKED_OUT' as const,
+      teamId,
+      userId,
+      evictorUserId
+    }
     notificationId = notification.id
-    await r.table('Notification').insert(notification).run()
     await pg.insertInto('Notification').values(notification).execute()
   }
 
