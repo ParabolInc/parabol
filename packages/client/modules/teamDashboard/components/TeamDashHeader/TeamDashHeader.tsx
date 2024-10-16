@@ -95,9 +95,13 @@ const TeamDashHeader = (props: Props) => {
         ...DashboardAvatars_team
         id
         name
+        hasInsightsFlag: featureFlag(featureName: "insights")
         organization {
           id
           name
+        }
+        viewerTeamMember {
+          isLead
         }
         teamMembers(sortBy: "preferredName") {
           ...InviteTeamMemberAvatar_teamMembers
@@ -109,15 +113,23 @@ const TeamDashHeader = (props: Props) => {
     `,
     teamRef
   )
-  const {organization, id: teamId, name: teamName, teamMembers} = team
+  const {
+    organization,
+    id: teamId,
+    name: teamName,
+    teamMembers,
+    viewerTeamMember,
+    hasInsightsFlag
+  } = team
   const {name: orgName, id: orgId} = organization
+  const canViewInsights = viewerTeamMember?.isLead && hasInsightsFlag
   const {history} = useRouter()
 
   const tabs = [
     {label: 'Activity', path: 'activity'},
     {label: 'Tasks', path: 'tasks'},
     {label: 'Integrations', path: 'integrations'},
-    {label: 'Insights', path: 'insights'}
+    ...(canViewInsights ? [{label: 'Insights', path: 'insights'}] : [])
   ]
 
   const activePath = location.pathname.split('/').pop()

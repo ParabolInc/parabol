@@ -25,7 +25,7 @@ import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {selectMeetingSettings, selectNewMeetings, selectTeams} from '../postgres/select'
-import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
+import {Insight, MeetingSettings, OrganizationUser, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -828,6 +828,25 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const latestInsightByTeamId = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, Insight | null, string>(
+    async (teamIds) => {
+      const pg = getKysely()
+      const insights = await pg
+        .selectFrom('Insight')
+        .where('teamId', 'in', teamIds)
+        .selectAll()
+        .orderBy('createdAt', 'desc')
+        .execute()
+
+      return teamIds.map((teamId) => insights.find((insight) => insight.teamId === teamId) || null)
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
