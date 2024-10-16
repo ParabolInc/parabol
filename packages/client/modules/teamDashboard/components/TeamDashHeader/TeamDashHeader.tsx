@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useRouteMatch} from 'react-router'
 import {NavLink} from 'react-router-dom'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
@@ -111,18 +112,9 @@ const TeamDashHeader = (props: Props) => {
   )
   const {organization, id: teamId, name: teamName, teamMembers} = team
   const {name: orgName, id: orgId} = organization
+  const isTasks = useRouteMatch('/team/:teamId/tasks')
+  const isIntegrations = useRouteMatch('/team/:teamId/integrations')
   const {history} = useRouter()
-
-  const tabs = [
-    {label: 'Activity', path: 'activity'},
-    {label: 'Tasks', path: 'tasks'},
-    {label: 'Integrations', path: 'integrations'},
-    {label: 'Insights', path: 'insights'}
-  ]
-
-  const activePath = location.pathname.split('/').pop()
-  const activeTab = tabs.find((tab) => tab.path === activePath) ? activePath : 'activity'
-  const activeIdx = tabs.findIndex((tab) => tab.path === activeTab)
 
   return (
     <DashSectionHeader>
@@ -166,16 +158,12 @@ const TeamDashHeader = (props: Props) => {
         </Avatars>
       </TeamHeaderAndAvatars>
       <Tabs
-        activeIdx={activeIdx}
+        activeIdx={isTasks ? 1 : isIntegrations ? 2 : 0}
         className='full-w max-w-none border-b border-solid border-slate-300'
       >
-        {tabs.map((tab) => (
-          <Tab
-            key={tab.path}
-            label={tab.label}
-            onClick={() => history.push(`/team/${teamId}/${tab.path}`)}
-          />
-        ))}
+        <Tab label='Activity' onClick={() => history.push(`/team/${teamId}/activity`)} />
+        <Tab label='Tasks' onClick={() => history.push(`/team/${teamId}/tasks`)} />
+        <Tab label='Integrations' onClick={() => history.push(`/team/${teamId}/integrations`)} />
       </Tabs>
     </DashSectionHeader>
   )
