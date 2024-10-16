@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.50.12](https://github.com/ParabolInc/parabol/compare/v7.50.11...v7.50.12) (2024-10-16)
+
+
+### Changed
+
+* **rethinkdb:** Task: Phase 2 ([#10338](https://github.com/ParabolInc/parabol/issues/10338)) ([62977ae](https://github.com/ParabolInc/parabol/commit/62977aed62f8b749476541adb924f8542934fb38))
+
+## [7.50.11](https://github.com/ParabolInc/parabol/compare/v7.50.10...v7.50.11) (2024-10-15)
+
+
+### Changed
+
+* **deployment:** PR title for the PR that deploys to production states its purpose ([#10348](https://github.com/ParabolInc/parabol/issues/10348)) ([0932822](https://github.com/ParabolInc/parabol/commit/09328223cf0170ef7f1df94e6e326b5fdcdc0a93))
+* **rethinkdb:** Task: Phase 1 ([#10336](https://github.com/ParabolInc/parabol/issues/10336)) ([5202a3b](https://github.com/ParabolInc/parabol/commit/5202a3b59c1183e8ca7eb6c0906dc2a6baf5b82e))
+
 ## [7.50.10](https://github.com/ParabolInc/parabol/compare/v7.50.9...v7.50.10) (2024-10-15)
 
 
