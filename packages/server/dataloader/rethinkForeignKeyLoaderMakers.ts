@@ -2,19 +2,6 @@ import getRethink from '../database/rethinkDriver'
 import {RDatum} from '../database/stricterR'
 import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 
-export const massInvitationsByTeamMemberId = new RethinkForeignKeyLoaderMaker(
-  'massInvitations',
-  'teamMemberId',
-  async (teamMemberIds) => {
-    const r = await getRethink()
-    return r
-      .table('MassInvitation')
-      .getAll(r.args(teamMemberIds), {index: 'teamMemberId'})
-      .orderBy(r.desc('expiration'))
-      .run()
-  }
-)
-
 export const tasksByDiscussionId = new RethinkForeignKeyLoaderMaker(
   'tasks',
   'discussionId',
@@ -40,21 +27,6 @@ export const tasksByTeamId = new RethinkForeignKeyLoaderMaker(
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((task: RDatum) => task('tags').contains('archived').not())
-      .run()
-  }
-)
-
-export const teamInvitationsByTeamId = new RethinkForeignKeyLoaderMaker(
-  'teamInvitations',
-  'teamId',
-  async (teamIds) => {
-    const r = await getRethink()
-    const now = new Date()
-    return r
-      .table('TeamInvitation')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({acceptedAt: null})
-      .filter((row: RDatum) => row('expiresAt').ge(now))
       .run()
   }
 )

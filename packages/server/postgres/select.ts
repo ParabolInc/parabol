@@ -4,6 +4,7 @@ import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {ReactjiDB} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
+import {AnyTaskIntegration} from './types/TaskIntegration'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -279,3 +280,34 @@ export const selectNewMeetings = () =>
 
 export const selectMeetingMembers = () =>
   getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()
+
+export const selectMassInvitations = () => getKysely().selectFrom('MassInvitation').selectAll()
+
+export const selectNewFeatures = () => getKysely().selectFrom('NewFeature').selectAll()
+
+export const selectTeamInvitations = () => getKysely().selectFrom('TeamInvitation').selectAll()
+
+export const selectTasks = () =>
+  getKysely()
+    .selectFrom('Task')
+    .select(({fn}) => [
+      'id',
+      'content',
+      'createdAt',
+      'createdBy',
+      'doneMeetingId',
+      'dueDate',
+      'integrationHash',
+      'meetingId',
+      'plaintextContent',
+      'sortOrder',
+      'status',
+      'tags',
+      'teamId',
+      'discussionId',
+      'threadParentId',
+      'threadSortOrder',
+      'updatedAt',
+      'userId',
+      fn<AnyTaskIntegration | null>('to_json', ['integration']).as('integration')
+    ])

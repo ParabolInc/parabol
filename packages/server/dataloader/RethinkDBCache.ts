@@ -51,7 +51,7 @@ export default class RethinkDBCache {
           .table(table)
           .get(id)
           // "always" will return the document whether it has changed or not
-          .update(updater, {returnChanges: 'always'})('changes')(0)('new_val')
+          .update(updater as any, {returnChanges: 'always'})('changes')(0)('new_val')
           .default(null)
       )
     })

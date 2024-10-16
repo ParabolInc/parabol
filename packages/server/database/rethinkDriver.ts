@@ -1,8 +1,6 @@
 import {MasterPool, r} from 'rethinkdb-ts'
-import TeamInvitation from '../database/types/TeamInvitation'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import MassInvitation from './types/MassInvitation'
 import NotificationKickedOut from './types/NotificationKickedOut'
 import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
 import NotificationMentioned from './types/NotificationMentioned'
@@ -16,14 +14,6 @@ import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 import Task from './types/Task'
 
 export type RethinkSchema = {
-  MassInvitation: {
-    type: MassInvitation
-    index: 'teamMemberId'
-  }
-  NewFeature: {
-    type: any
-    index: ''
-  }
   Notification: {
     type:
       | NotificationTaskInvolves
@@ -49,14 +39,10 @@ export type RethinkSchema = {
       | 'userId'
       | 'integrationHash'
   }
-  TeamInvitation: {
-    type: TeamInvitation
-    index: 'email' | 'teamId' | 'token'
-  }
 }
 
 export type DBType = {
-  [P in keyof RethinkSchema]: RethinkSchema[P]['type']
+  [P in keyof RethinkSchema]: any
 }
 
 export type ParabolR = R<RethinkSchema>

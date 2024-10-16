@@ -91,17 +91,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
       .table('Task')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .delete(),
-    invitedByTeamInvitation: r
-      .table('TeamInvitation')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('invitedBy').eq(userIdToDelete))
-      .delete(),
-    createdByTeamInvitations: r
-      .table('TeamInvitation')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('acceptedBy').eq(userIdToDelete))
-      .update({acceptedBy: ''})
+      .delete()
   }).run()
 
   // now postgres, after FKs are added then triggers should take care of children

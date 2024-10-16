@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import getRethink from '../../database/rethinkDriver'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -28,6 +29,7 @@ export default {
     {taskId, dueDate}: {taskId: string; dueDate: string | null},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -39,7 +41,7 @@ export default {
     const formattedDueDate = dueDate && new Date(dueDate)
     const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
     const [task, viewer] = await Promise.all([
-      r.table('Task').get(taskId).run(),
+      dataLoader.get('tasks').load(taskId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!task || !isTeamMember(authToken, task.teamId)) {
@@ -55,6 +57,9 @@ export default {
       })
       .run()
 
+    await pg.updateTable('Task').set({dueDate: nextDueDate}).where('id', '=', taskId).execute()
+
+    dataLoader.clearAll('tasks')
     const data = {taskId}
 
     // send task updated messages

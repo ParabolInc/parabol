@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import getRethink from '../../../database/rethinkDriver'
 import {RDatum} from '../../../database/stricterR'
@@ -54,7 +55,12 @@ const removeTeamMember = async (
   if (willArchive) {
     await Promise.all([
       // archive single-person teams
-      pg.updateTable('Team').set({isArchived: true}).where('id', '=', teamId).execute(),
+      pg
+        .with('TaskDelete', (qb) => qb.deleteFrom('Task').where('teamId', '=', teamId))
+        .updateTable('Team')
+        .set({isArchived: true})
+        .where('id', '=', teamId)
+        .execute(),
       // delete all tasks belonging to a 1-person team
       r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
     ])
@@ -101,11 +107,20 @@ const removeTeamMember = async (
       .default([]) as unknown as Task[]
   }).run()
   await pg
+    .with('TaskReassignment', (qb) =>
+      qb
+        .updateTable('Task')
+        .set({userId: nextTeamLead.userId})
+        .where('userId', '=', userId)
+        .where('teamId', '=', teamId)
+        .where('integration', 'is', null)
+        .where(sql<boolean>`'archived' != ANY(tags)`)
+    )
     .updateTable('User')
     .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
     .where('id', '=', userId)
     .execute()
-  dataLoader.clearAll(['users', 'teamMembers'])
+  dataLoader.clearAll(['users', 'teamMembers', 'tasks'])
   const user = await dataLoader.get('users').load(userId)
 
   let notificationId: string | undefined
