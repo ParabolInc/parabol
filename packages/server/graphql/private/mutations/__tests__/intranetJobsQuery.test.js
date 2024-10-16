@@ -4,6 +4,7 @@ import MockDB from '../../../../__tests__/setup/MockDB'
 import {__anHourAgo, __now, __overADayAgo} from '../../../../__tests__/setup/mockTimes'
 import getRethink from '../../../../database/rethinkDriver'
 import {sendBatchEmail} from '../../../../email/sendEmail'
+import getKysely from '../../../../postgres/getKysely'
 import sendBatchNotificationEmails from '../sendBatchNotificationEmails'
 
 // Manage side-effects
@@ -20,6 +21,7 @@ describe('sendBatchNotificationEmails', () => {
     // global DB state, there's no getting around this.
     const r = await getRethink()
     await r.table('Notification').delete()
+    await sql`TRUNCATE TABLE "Notification"`.execute(getKysely())
   })
 
   it('requires the superuser role', async () => {

@@ -47,6 +47,7 @@ const sendWebsiteNotifications = async (
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
+  const pg = getKysely()
   const {id: orgId, name: orgName, picture: orgPicture} = organization
   const operationId = dataLoader.share()
   const subOptions = {operationId}
@@ -60,7 +61,7 @@ const sendWebsiteNotifications = async (
   })
 
   await r.table('Notification').insert(notificationsToInsert).run()
-
+  await pg.insertInto('Notification').values(notificationsToInsert).execute()
   notificationsToInsert.forEach((notification) => {
     publishNotification(notification, subOptions)
   })

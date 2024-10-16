@@ -33,8 +33,10 @@ const processMeetingStageTimeLimits = async (
     meetingId,
     userId: facilitatorUserId!
   })
+  const pg = getKysely()
   const r = await getRethink()
   await r.table('Notification').insert(notification).run()
+  await pg.insertInto('Notification').values(notification).execute()
   publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId!, 'MeetingStageTimeLimitPayload', {
     notification
   })

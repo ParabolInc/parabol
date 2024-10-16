@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
+import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
@@ -25,6 +26,7 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     throw new Error('Don’t be rude.')
   }
 
+  const pg = getKysely()
   const r = await getRethink()
   const manager = getStripeManager()
 
@@ -103,6 +105,7 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   await r({
     insert: r.table('Notification').insert(notifications)
   }).run()
+  await pg.insertInto('Notification').values(notifications).execute()
 
   notifications.forEach((notification) => {
     const data = {orgId, notificationId: notification.id}

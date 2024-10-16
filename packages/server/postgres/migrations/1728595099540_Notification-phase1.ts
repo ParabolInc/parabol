@@ -53,20 +53,48 @@ export async function up() {
       "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
       "type" "NotificationTypeEnum" NOT NULL,
       "userId" VARCHAR(100) NOT NULL,
-      "changeAuthorId" VARCHAR(100),
-      "involvement" "TaskInvolvementEnum",
-      "taskId" VARCHAR(100),
-      "teamId" VARCHAR(100),
-      "archivorUserId" VARCHAR(100),
+      -- DISCUSSION_MENTIONED
       "meetingId" VARCHAR(100),
+      "authorId" VARCHAR(100),
+      "commentId" VARCHAR(100),
+      "discussionId" VARCHAR(100),
+      -- KICKED_OUT
+      "teamId" VARCHAR(100),
+      "evictorUserId" VARCHAR(100),
+      -- MENTIONED
+      "senderName" VARCHAR(100),
+      "senderPicture" VARCHAR(2056),
+      "senderUserId" VARCHAR(100),
+      "meetingName" VARCHAR(100),
+      "retroReflectionId" VARCHAR(100),
+      "retroDiscussStageIdx" SMALLINT,
+      -- PAYMENT_REJECTED
       "orgId" VARCHAR(100),
       "last4" SMALLINT,
       "brand" VARCHAR(50),
-      "evictorUserId" VARCHAR(100),
+      -- PROMPT_TO_JOIN_ORG
+      "activeDomain" VARCHAR(100),
+      -- REQUEST_TO_JOIN_ORG
+      "domainJoinRequestId" INTEGER,
+      "email" "citext",
+      "name" VARCHAR(100),
+      "picture" VARCHAR(2056),
+      "requestCreatedBy" VARCHAR(100),
+      -- RESPONSE_MENTIONED
+      "responseId" INTEGER,
+      -- TASK_INVOLVES
+      "changeAuthorId" VARCHAR(100),
+      "involvement" "TaskInvolvementEnum",
+      "taskId" VARCHAR(100),
+      -- TEAM_ARCHIVED
+      "archivorUserId" VARCHAR(100),
+      -- TEAM_INVITATION
       "invitationId" VARCHAR(100),
-      "responseId" VARCHAR(100),
-      "authorId" VARCHAR(100),
-      "commentId" VARCHAR(100),
+      -- TEAMS_LIMIT_EXCEEDED
+      "orgName" VARCHAR(100),
+      "orgPicture" VARCHAR(2056),
+      -- TEAMS_LIMIT_REMINDER
+      "scheduledLockAt" TIMESTAMP WITH TIME ZONE,
       CONSTRAINT "fk_meetingId"
         FOREIGN KEY("meetingId")
           REFERENCES "NewMeeting"("id")

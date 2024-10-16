@@ -12,6 +12,13 @@ const removeTeamsLimitObjects = async (orgId: string, dataLoader: DataLoaderWork
   // Remove team limits jobs and existing notifications
   const [, updateNotificationsChanges] = await Promise.all([
     pg
+      .with('NotificationUpdate', (qb) =>
+        qb
+          .updateTable('Notification')
+          .set({status: 'CLICKED'})
+          .where('orgId', '=', orgId)
+          .where('type', 'in', removeNotificationTypes)
+      )
       .deleteFrom('ScheduledJob')
       .where('orgId', '=', orgId)
       .where('type', 'in', removeJobTypes)

@@ -6,7 +6,6 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
 import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
-import {RethinkSchema} from '../../../../database/rethinkDriver'
 import SlackAuth from '../../../../database/types/SlackAuth'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import getKysely from '../../../../postgres/getKysely'
@@ -14,6 +13,7 @@ import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/ge
 import {SlackNotification, Team, TeamPromptResponse} from '../../../../postgres/types'
 import User from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {AnyNotification} from '../../../../postgres/types/Notification'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
@@ -245,7 +245,7 @@ const addStandupResponsesToThread = async (
 
 const getSlackMessageForNotification = async (
   dataLoader: DataLoaderWorker,
-  notification: RethinkSchema['Notification']['type'],
+  notification: AnyNotification,
   meeting: AnyMeeting,
   userId: string
 ) => {
@@ -277,6 +277,7 @@ const getSlackMessageForNotification = async (
       buttonText: 'See the discussion'
     }
   } else if (notification.type === 'RESPONSE_MENTIONED') {
+    // Notification Phase 3 do not split the responseId
     const responseId = TeamPromptResponseId.split(notification.responseId)
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)

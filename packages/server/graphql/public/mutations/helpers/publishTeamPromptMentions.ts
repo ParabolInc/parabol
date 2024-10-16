@@ -2,6 +2,7 @@ import {JSONContent} from '@tiptap/core'
 import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
 import getRethink from '../../../../database/rethinkDriver'
 import NotificationResponseMentioned from '../../../../database/types/NotificationResponseMentioned'
+import getKysely from '../../../../postgres/getKysely'
 import {TeamPromptResponse} from '../../../../postgres/types'
 
 const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
@@ -47,8 +48,14 @@ const createTeamPromptMentionNotifications = async (
   })
 
   const r = await getRethink()
+  const pg = getKysely()
   await r.table('Notification').insert(notificationsToAdd).run()
-
+  await pg
+    .insertInto('Notification')
+    .values(
+      notificationsToAdd.map((n) => ({...n, responseId: TeamPromptResponseId.split(n.responseId)}))
+    )
+    .execute()
   return notificationsToAdd
 }
 

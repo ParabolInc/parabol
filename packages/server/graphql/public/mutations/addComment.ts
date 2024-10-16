@@ -73,6 +73,7 @@ const addComment: MutationResolvers['addComment'] = async (
   {comment},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
@@ -130,6 +131,7 @@ const addComment: MutationResolvers['addComment'] = async (
       })
 
       await r.table('Notification').insert(notification).run()
+      await pg.insertInto('Notification').values(notification).execute()
 
       IntegrationNotifier.sendNotificationToUser?.(dataLoader, notification.id, notification.userId)
       publishNotification(notification, subOptions)
@@ -146,6 +148,7 @@ const addComment: MutationResolvers['addComment'] = async (
 
   if (notificationsToAdd.length) {
     await r.table('Notification').insert(notificationsToAdd).run()
+    await pg.insertInto('Notification').values(notificationsToAdd).execute()
     notificationsToAdd.forEach((notification) => {
       publishNotification(notification, subOptions)
     })

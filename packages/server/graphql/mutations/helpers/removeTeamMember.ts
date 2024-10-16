@@ -104,6 +104,7 @@ const removeTeamMember = async (
     const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
     notificationId = notification.id
     await r.table('Notification').insert(notification).run()
+    await pg.insertInto('Notification').values(notification).execute()
   }
 
   const archivedTaskIds = await archiveTasksForDB(integratedTasksToArchive)
