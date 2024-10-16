@@ -196,4 +196,9 @@ type Team {
   The team member that is the team lead
   """
   teamLead: TeamMember!
+
+  """
+  The number of retro meetings the team has had
+  """
+  retroMeetingsCount: Int!
 }

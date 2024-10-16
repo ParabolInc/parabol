@@ -423,6 +423,17 @@ type Mutation {
   ): InviteToTeamPayload!
 
   """
+  Generate an insight for a team
+  """
+  generateInsight(
+    teamId: ID!
+    startDate: DateTime!
+    endDate: DateTime!
+    useSummaries: Boolean
+    prompt: String
+  ): GenerateInsightPayload!
+
+  """
   Move a template dimension
   """
   movePokerTemplateDimension(
