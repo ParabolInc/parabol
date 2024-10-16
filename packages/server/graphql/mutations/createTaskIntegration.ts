@@ -5,6 +5,7 @@ import appOrigin from '../../appOrigin'
 import getRethink from '../../database/rethinkDriver'
 import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationManagerFactory'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import sendToSentry from '../../utils/sendToSentry'
@@ -44,7 +45,7 @@ export default {
     info: GraphQLResolveInfo
   ) => {
     const {authToken, dataLoader, socketId: mutatorId} = context
-
+    const pg = getKysely()
     const r = await getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -52,7 +53,7 @@ export default {
     const viewerId = getUserId(authToken)
 
     // AUTH
-    const task = await r.table('Task').get(taskId).run()
+    const task = await dataLoader.get('tasks').load(taskId)
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
@@ -162,6 +163,16 @@ export default {
       })
       .run()
 
+    await pg
+      .updateTable('Task')
+      .set({
+        integration: JSON.stringify(updateTaskInput.integration),
+        integrationHash: updateTaskInput.integrationHash
+      })
+      .where('id', '=', taskId)
+      .execute()
+
+    dataLoader.clearAll('tasks')
     const data = {taskId}
     teamMembers.forEach(({userId}) => {
       publish(SubscriptionChannel.TASK, userId, 'CreateTaskIntegrationPayload', data, subOptions)
