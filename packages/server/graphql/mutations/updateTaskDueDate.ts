@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -30,7 +29,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -49,16 +47,7 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('Task')
-      .get(taskId)
-      .update({
-        dueDate: nextDueDate
-      })
-      .run()
-
     await pg.updateTable('Task').set({dueDate: nextDueDate}).where('id', '=', taskId).execute()
-
     dataLoader.clearAll('tasks')
     const data = {taskId}
 

@@ -1,4 +1,4 @@
-import getRethink from '../../../database/rethinkDriver'
+import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {selectNewMeetings} from '../../../postgres/select'
 import {TeamPromptMeeting as TeamPromptMeetingSource} from '../../../postgres/types/Meeting'
@@ -68,6 +68,7 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   },
 
   taskCount: async ({id: meetingId}, _args, {dataLoader}) => {
+    const pg = getKysely()
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (meeting.meetingType !== 'teamPrompt') {
       return 0
@@ -76,13 +77,12 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     const discussPhase = getPhase(phases, 'RESPONSES')
     const {stages} = discussPhase
     const discussionIds = stages.map((stage) => stage.discussionId)
-    const r = await getRethink()
-    return r
-      .table('Task')
-      .getAll(r.args(discussionIds), {index: 'discussionId'})
-      .count()
-      .default(0)
-      .run()
+    const taskCountRes = await pg
+      .selectFrom('Task')
+      .select(({fn}) => fn.count<bigint>('id').as('count'))
+      .where('discussionId', 'in', discussionIds)
+      .executeTakeFirst()
+    return Number(taskCountRes?.count ?? 0)
   },
 
   commentCount: async ({id: meetingId}, _args, {dataLoader}) => {

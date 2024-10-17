@@ -13,6 +13,7 @@
         "mappers": {
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
+          "RemoveFeatureFlagOwnerSuccess": "./types/RemoveFeatureFlagOwnerSuccess#RemoveFeatureFlagOwnerSuccessSource",
           "DeleteFeatureFlagSuccess": "./types/DeleteFeatureFlagSuccess#DeleteFeatureFlagSuccessSource",
           "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
@@ -50,6 +51,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "TaskEstimate": "../../postgres/types/index#TaskEstimate",
           "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
           "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",
           "ReflectTemplatePromptUpdateGroupColorPayload": "./types/ReflectTemplatePromptUpdateGroupColorPayload#ReflectTemplatePromptUpdateGroupColorPayloadSource",
@@ -176,7 +178,7 @@
           "StartRetrospectiveSuccess": "./types/StartRetrospectiveSuccess#StartRetrospectiveSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
-          "Task": "../../database/types/Task#default",
+          "Task": "../../postgres/types/index#Task as TaskDB",
           "Team": "../../postgres/types/index#Team as TeamDB",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",

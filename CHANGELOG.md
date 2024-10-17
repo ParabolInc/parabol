@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.1](https://github.com/ParabolInc/parabol/compare/v7.51.0...v7.51.1) (2024-10-17)
+
+
+### Fixed
+
+* correct serialization of Task.content ([#10362](https://github.com/ParabolInc/parabol/issues/10362)) ([a4ea952](https://github.com/ParabolInc/parabol/commit/a4ea9521a452cc13747f3b97a6330d85714590ef))
+
+## [7.51.0](https://github.com/ParabolInc/parabol/compare/v7.50.12...v7.51.0) (2024-10-16)
+
+
+### Added
+
+* add Insights UI skeleton ([#10254](https://github.com/ParabolInc/parabol/issues/10254)) ([aa8e931](https://github.com/ParabolInc/parabol/commit/aa8e9313603d081e445d5b6193059d27dfdcb268))
+* **orgAdmin:** Add org admin teaser in org team page for non-enterprise orgs ([#10253](https://github.com/ParabolInc/parabol/issues/10253)) ([ca069db](https://github.com/ParabolInc/parabol/commit/ca069dbd97e3f33e81983298676aea748eda0664))
+* show default insight ([#10283](https://github.com/ParabolInc/parabol/issues/10283)) ([f99e63a](https://github.com/ParabolInc/parabol/commit/f99e63a3f05a4f2b863e4b3052950de7d02cce5e))
+
+
+### Changed
+
+* remove feature flag owner ([#10319](https://github.com/ParabolInc/parabol/issues/10319)) ([dfdb68c](https://github.com/ParabolInc/parabol/commit/dfdb68cd25c4b9fb49ea1bf6a5e7cfa775151d21))
+* **rethinkdb:** Task: Phase 3 ([#10339](https://github.com/ParabolInc/parabol/issues/10339)) ([7965ab6](https://github.com/ParabolInc/parabol/commit/7965ab691f3d4dc9599d9b958ecebc2c46649fad))
+
 ## [7.50.12](https://github.com/ParabolInc/parabol/compare/v7.50.11...v7.50.12) (2024-10-16)
 
 

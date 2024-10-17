@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader'
-import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
 import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
@@ -12,8 +11,6 @@ import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
-import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
-import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
 import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
 import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
@@ -23,7 +20,6 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
-  ...rethinkForeignKeyLoaderMakers,
   ...rethinkPrimaryKeyLoaderMakers,
   ...primaryKeyLoaderMakers,
   ...foreignKeyLoaderMakers,
@@ -56,17 +52,7 @@ interface GenericDataLoader<TLoaders, TPrimaryLoaderNames> {
     : // can delete below this line after RethinkDB is gone
       Loader extends RethinkPrimaryKeyLoaderMaker<infer U>
       ? ReturnType<typeof rethinkPrimaryKeyLoader<U>>
-      : Loader extends RethinkForeignKeyLoaderMaker<infer U>
-        ? ReturnType<
-            typeof rethinkForeignKeyLoader<
-              (typeof rethinkPrimaryKeyLoaderMakers)[U] extends RethinkPrimaryKeyLoaderMaker<
-                infer V
-              >
-                ? V
-                : never
-            >
-          >
-        : never
+      : never
 }
 
 export type DataLoaderInstance = GenericDataLoader<typeof loaderMakers, AllPrimaryLoaders>
@@ -105,9 +91,6 @@ export default class RootDataLoader<
     if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
       const {table} = loaderMaker
       loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
-    } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
-      const {fetch, field, pk} = loaderMaker
-      loader = rethinkForeignKeyLoader(this, dependsOn, pk, field, fetch)
     } else {
       loader = (loaderMaker as any)(this, dependsOn)
     }

@@ -1,8 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
-import getRethink from '../../database/rethinkDriver'
-import Task from '../../database/types/Task'
 import getKysely from '../../postgres/getKysely'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -35,8 +33,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -136,35 +132,26 @@ export default {
       Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId))
     const {rawContent: nextRawContent} = removeEntityKeepText(rawContent, eqFn)
 
-    const updates = {
-      content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
-      updatedAt: now,
-      teamId,
-      integration
-    }
-
     // If there is a task with the same integration hash in the new team, then delete it first.
     // This is done so there are no duplicates and also solves the issue of the conflicting task being
     // private or archived.
-    const {deletedConflictingIntegrationTask} = await r({
-      deletedConflictingIntegrationTask:
-        task.integrationHash &&
-        r
-          .table('Task')
-          .getAll(task.integrationHash, {index: 'integrationHash'})
-          .filter({teamId})
-          .delete({returnChanges: true})('changes')(0)('old_val')
-          .default(null),
-      newTask: r.table('Task').get(taskId).update(updates)
-    }).run()
     if (task.integrationHash) {
-      await pg
+      const deletedTask = await pg
         .deleteFrom('Task')
         .where('integrationHash', '=', task.integrationHash)
         .where('teamId', '=', teamId)
         .limit(1)
         .returning('id')
-        .execute()
+        .executeTakeFirst()
+      if (deletedTask) {
+        const isPrivate = task.tags.includes('private')
+        const data = {task}
+        newTeamMembers.forEach(({userId}) => {
+          if (!isPrivate || userId === task.userId) {
+            publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
+          }
+        })
+      }
     }
     await pg
       .updateTable('Task')
@@ -175,16 +162,6 @@ export default {
       })
       .where('id', '=', taskId)
       .executeTakeFirst()
-    if (deletedConflictingIntegrationTask) {
-      const task = deletedConflictingIntegrationTask as unknown as Task
-      const isPrivate = task.tags.includes('private')
-      const data = {task}
-      newTeamMembers.forEach(({userId}) => {
-        if (!isPrivate || userId === task.userId) {
-          publish(SubscriptionChannel.TASK, userId, 'DeleteTaskPayload', data, subOptions)
-        }
-      })
-    }
     dataLoader.clearAll('tasks')
     const isPrivate = tags.includes('private')
     const data = {taskId}
