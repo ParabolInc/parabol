@@ -4,6 +4,7 @@ import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {maybeRemoveRestrictions} from '../../billing/helpers/teamLimitsCheck'
 import getRethink from '../../database/rethinkDriver'
 import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
+import getKysely from '../../postgres/getKysely'
 import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../utils/analytics/analytics'
@@ -30,6 +31,7 @@ export default {
     {teamId}: {teamId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
+    const pg = getKysely()
     const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -70,6 +72,7 @@ export default {
 
     if (notifications.length) {
       await r.table('Notification').insert(notifications).run()
+      await pg.insertInto('Notification').values(notifications).execute()
     }
 
     const data = {

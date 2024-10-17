@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.2](https://github.com/ParabolInc/parabol/compare/v7.51.1...v7.51.2) (2024-10-17)
+
+
+### Changed
+
+* **rethinkdb:** Notification: Phase 1 ([#10350](https://github.com/ParabolInc/parabol/issues/10350)) ([3964c7c](https://github.com/ParabolInc/parabol/commit/3964c7c9d639bf28f3ae90c780c66f3c999ae0cd))
+
 ## [7.51.1](https://github.com/ParabolInc/parabol/compare/v7.51.0...v7.51.1) (2024-10-17)
 
 

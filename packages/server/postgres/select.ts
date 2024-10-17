@@ -4,6 +4,7 @@ import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {ReactjiDB, TaskTag} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
+import {AnyNotification} from './types/Notification'
 import {AnyTaskIntegration} from './types/TaskIntegration'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
@@ -312,3 +313,6 @@ export const selectTasks = () =>
       fn<TaskTag[]>('to_json', ['tags']).as('tags'),
       fn<AnyTaskIntegration | null>('to_json', ['integration']).as('integration')
     ])
+
+export const selectNotifications = () =>
+  getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()

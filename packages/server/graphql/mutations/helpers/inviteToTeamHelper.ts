@@ -154,6 +154,7 @@ const inviteToTeamHelper = async (
   })
   if (notificationsToInsert.length > 0) {
     await r.table('Notification').insert(notificationsToInsert).run()
+    await pg.insertInto('Notification').values(notificationsToInsert).execute()
   }
 
   const bestMeeting = await getBestInvitationMeeting(teamId, meetingId ?? undefined, dataLoader)

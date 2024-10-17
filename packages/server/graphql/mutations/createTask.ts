@@ -68,6 +68,7 @@ const handleAddTaskNotifications = async (
   teamId: string,
   subOptions: SubOptions
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const {id: taskId, content, tags, userId} = task
   const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId)
@@ -107,8 +108,8 @@ const handleAddTaskNotifications = async (
   const data = {taskId, notifications: notificationsToAdd}
 
   if (notificationsToAdd.length) {
-    // don't await to speed up task creation
-    r.table('Notification').insert(notificationsToAdd).run()
+    await r.table('Notification').insert(notificationsToAdd).run()
+    await pg.insertInto('Notification').values(notificationsToAdd).execute()
     notificationsToAdd.forEach((notification) => {
       publish(
         SubscriptionChannel.NOTIFICATION,
