@@ -1,33 +1,8 @@
 import {MasterPool, r} from 'rethinkdb-ts'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import NotificationKickedOut from './types/NotificationKickedOut'
-import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
-import NotificationMentioned from './types/NotificationMentioned'
-import NotificationPaymentRejected from './types/NotificationPaymentRejected'
-import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
-import NotificationResponseMentioned from './types/NotificationResponseMentioned'
-import NotificationResponseReplied from './types/NotificationResponseReplied'
-import NotificationTaskInvolves from './types/NotificationTaskInvolves'
-import NotificationTeamArchived from './types/NotificationTeamArchived'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
 
-export type RethinkSchema = {
-  Notification: {
-    type:
-      | NotificationTaskInvolves
-      | NotificationTeamArchived
-      | NotificationMeetingStageTimeLimitEnd
-      | NotificationPaymentRejected
-      | NotificationKickedOut
-      | NotificationPromoteToBillingLeader
-      | NotificationTeamInvitation
-      | NotificationResponseMentioned
-      | NotificationResponseReplied
-      | NotificationMentioned
-    index: 'userId'
-  }
-}
+export type RethinkSchema = {}
 
 export type DBType = {
   [P in keyof RethinkSchema]: any

@@ -1,8 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString} from 'graphql'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
 import getKysely from '../../postgres/getKysely'
 import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
 import {Logger} from '../../utils/Logger'
@@ -19,7 +17,6 @@ const moveToOrg = async (
   authToken: any,
   dataLoader: DataLoaderWorker
 ) => {
-  const r = await getRethink()
   const pg = getKysely()
 
   // AUTH
@@ -87,29 +84,21 @@ const moveToOrg = async (
   const newToOrgUserIds = teamMemberUserIds.filter(
     (userId) => !existingOrgUsers.find((orgUser) => orgUser.userId === userId)
   )
-  await Promise.all([
-    r
-      .table('Notification')
-      .filter({teamId})
-      .filter((notification: RDatum) => notification('orgId').default(null).ne(null))
-      .update({orgId})
-      .run(),
-    pg
-      .with('NotificationUpdate', (qb) =>
-        qb
-          .updateTable('Notification')
-          .set({orgId})
-          .where('teamId', '=', teamId)
-          .where('orgId', 'is not', null)
-      )
-      .with('MeetingTemplateUpdate', (qb) =>
-        qb.updateTable('MeetingTemplate').set({orgId}).where('orgId', '=', currentOrgId)
-      )
-      .updateTable('Team')
-      .set(updates)
-      .where('id', '=', teamId)
-      .execute()
-  ])
+  await pg
+    .with('NotificationUpdate', (qb) =>
+      qb
+        .updateTable('Notification')
+        .set({orgId})
+        .where('teamId', '=', teamId)
+        .where('orgId', 'is not', null)
+    )
+    .with('MeetingTemplateUpdate', (qb) =>
+      qb.updateTable('MeetingTemplate').set({orgId}).where('orgId', '=', currentOrgId)
+    )
+    .updateTable('Team')
+    .set(updates)
+    .where('id', '=', teamId)
+    .execute()
   dataLoader.clearAll('teams')
   // if no teams remain on the org, remove it
   await safeArchiveEmptyStarterOrganization(currentOrgId, dataLoader)

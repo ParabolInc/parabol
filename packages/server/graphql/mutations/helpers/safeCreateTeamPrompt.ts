@@ -15,6 +15,7 @@ const safeCreateTeamPrompt = async (
   dataLoader: DataLoaderWorker,
   meetingOverrideProps = {}
 ) => {
+  const pg = getKysely()
   const meetingType: MeetingTypeEnum = 'teamPrompt'
   const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
@@ -22,20 +23,15 @@ const safeCreateTeamPrompt = async (
   const teamMemberIds = teamMembers.map(({id}) => id)
   const teamPromptResponsesPhase = new TeamPromptResponsesPhase(teamMemberIds)
   const {stages: teamPromptStages} = teamPromptResponsesPhase
-  await getKysely()
-    .insertInto('Discussion')
-    .values(
-      teamPromptStages.map((stage) => ({
-        id: stage.discussionId,
-        teamId,
-        meetingId,
-        discussionTopicId: stage.teamMemberId,
-        discussionTopicType: 'teamPromptResponse'
-      }))
-    )
-    .execute()
+  const discussions = teamPromptStages.map((stage) => ({
+    id: stage.discussionId,
+    teamId,
+    meetingId,
+    discussionTopicId: stage.teamMemberId,
+    discussionTopicType: 'teamPromptResponse' as const
+  }))
   primePhases([teamPromptResponsesPhase])
-  return new MeetingTeamPrompt({
+  const meeting = new MeetingTeamPrompt({
     id: meetingId,
     name,
     teamId,
@@ -45,6 +41,22 @@ const safeCreateTeamPrompt = async (
     meetingPrompt: DEFAULT_PROMPT, // :TODO: (jmtaber129): Get this from meeting settings.
     ...meetingOverrideProps
   }) as TeamPromptMeeting
+  try {
+    await pg
+      .insertInto('NewMeeting')
+      .values({...meeting, phases: JSON.stringify(meeting.phases)})
+      .execute()
+  } catch {
+    // can't insert, meeting already exists?
+    return null
+  }
+  await pg
+    .with('DiscussionInsert', (qb) => qb.insertInto('Discussion').values(discussions))
+    .updateTable('Team')
+    .set({lastMeetingType: 'teamPrompt'})
+    .where('id', '=', teamId)
+    .execute()
+  return meeting
 }
 
 export default safeCreateTeamPrompt

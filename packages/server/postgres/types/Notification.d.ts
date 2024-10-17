@@ -2,12 +2,12 @@ import type {Notification} from '../pg.d'
 
 interface BaseNotification {
   id: string
-  status: Notification['status']
+  status: 'CLICKED' | 'READ' | 'UNREAD'
   type: Notification['type']
   userId: string
 }
 
-interface DiscussionMentionedNotification extends BaseNotification {
+export interface DiscussionMentionedNotification extends BaseNotification {
   type: 'DISCUSSION_MENTIONED'
   meetingId: string
   authorId: string
@@ -15,46 +15,46 @@ interface DiscussionMentionedNotification extends BaseNotification {
   discussionId: string
 }
 
-interface KickedOutNotification extends BaseNotification {
+export interface KickedOutNotification extends BaseNotification {
   type: 'KICKED_OUT'
   teamId: string
   evictorUserId: string
 }
 
-interface MeetingStageTimeLimitEndNotification extends BaseNotification {
+export interface MeetingStageTimeLimitEndNotification extends BaseNotification {
   type: 'MEETING_STAGE_TIME_LIMIT_END'
   meetingId: string
 }
 
-interface MentionedNotification extends BaseNotification {
+export interface MentionedNotification extends BaseNotification {
   type: 'MENTIONED'
   senderName: string | null
   senderPicture: string | null
   senderUserId: string
   meetingName: string
   meetingId: string
-  retroReflectionId?: string | null
-  retroDiscussStageIdx?: number | null
+  retroReflectionId: string | null
+  retroDiscussStageIdx: number | null
 }
 
-interface PaymentRejectedNotification extends BaseNotification {
+export interface PaymentRejectedNotification extends BaseNotification {
   type: 'PAYMENT_REJECTED'
   orgId: string
-  last4: string
+  last4: number
   brand: string
 }
 
-interface PromoteToBillingLeaderNotification extends BaseNotification {
+export interface PromoteToBillingLeaderNotification extends BaseNotification {
   type: 'PROMOTE_TO_BILLING_LEADER'
   orgId: string
 }
 
-interface PromptToJoinOrgNotification extends BaseNotification {
+export interface PromptToJoinOrgNotification extends BaseNotification {
   type: 'PROMPT_TO_JOIN_ORG'
   activeDomain: string
 }
 
-interface RequestToJoinOrgNotification extends BaseNotification {
+export interface RequestToJoinOrgNotification extends BaseNotification {
   type: 'REQUEST_TO_JOIN_ORG'
   domainJoinRequestId: number
   email: string
@@ -63,20 +63,20 @@ interface RequestToJoinOrgNotification extends BaseNotification {
   requestCreatedBy: string
 }
 
-interface ResponseMentionedNotification extends BaseNotification {
+export interface ResponseMentionedNotification extends BaseNotification {
   type: 'RESPONSE_MENTIONED'
-  responseId: string
+  responseId: number
   meetingId: string
 }
 
-interface ResponseRepliedNotification extends BaseNotification {
+export interface ResponseRepliedNotification extends BaseNotification {
   type: 'RESPONSE_REPLIED'
   meetingId: string
   authorId: string
   commentId: string
 }
 
-interface TaskInvolvesNotification extends BaseNotification {
+export interface TaskInvolvesNotification extends BaseNotification {
   type: 'TASK_INVOLVES'
   changeAuthorId: string
   involvement: TaskInvolvement
@@ -84,26 +84,26 @@ interface TaskInvolvesNotification extends BaseNotification {
   teamId: string
 }
 
-interface TeamArchivedNotification extends BaseNotification {
+export interface TeamArchivedNotification extends BaseNotification {
   type: 'TEAM_ARCHIVED'
   archivorUserId: string
   teamId: string
 }
 
-interface TeamInvitationNotification extends BaseNotification {
+export interface TeamInvitationNotification extends BaseNotification {
   type: 'TEAM_INVITATION'
   invitationId: string
   teamId: string
 }
 
-interface TeamsLimitExceededNotification extends BaseNotification {
+export interface TeamsLimitExceededNotification extends BaseNotification {
   type: 'TEAMS_LIMIT_EXCEEDED'
   orgId: string
   orgName: string
   orgPicture: string | null
 }
 
-interface TeamsLimitReminderNotification extends BaseNotification {
+export interface TeamsLimitReminderNotification extends BaseNotification {
   type: 'TEAMS_LIMIT_REMINDER'
   orgId: string
   orgName: string

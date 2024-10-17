@@ -2,8 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {maybeRemoveRestrictions} from '../../billing/helpers/teamLimitsCheck'
-import getRethink from '../../database/rethinkDriver'
-import NotificationTeamArchived from '../../database/types/NotificationTeamArchived'
+import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
@@ -32,7 +31,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -65,13 +63,15 @@ export default {
     const notifications = users
       .map((user) => user?.id)
       .filter((userId) => userId !== undefined && userId !== viewerId)
-      .map(
-        (notifiedUserId) =>
-          new NotificationTeamArchived({userId: notifiedUserId!, teamId, archivorUserId: viewerId})
-      )
+      .map((notifiedUserId) => ({
+        id: generateUID(),
+        type: 'TEAM_ARCHIVED' as const,
+        userId: notifiedUserId!,
+        teamId,
+        archivorUserId: viewerId
+      }))
 
     if (notifications.length) {
-      await r.table('Notification').insert(notifications).run()
       await pg.insertInto('Notification').values(notifications).execute()
     }
 

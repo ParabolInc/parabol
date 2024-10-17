@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationPromoteToBillingLeader from '../../../database/types/NotificationPromoteToBillingLeader'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
@@ -10,11 +9,16 @@ import {MutationResolvers} from '../resolverTypes'
 
 const addNotifications = async (orgId: string, userId: string) => {
   const pg = getKysely()
-  const r = await getRethink()
-  const promotionNotification = new NotificationPromoteToBillingLeader({orgId, userId})
-  const {id: promotionNotificationId} = promotionNotification
-  await r.table('Notification').insert(promotionNotification).run()
-  await pg.insertInto('Notification').values(promotionNotification).execute()
+  const promotionNotificationId = generateUID()
+  await pg
+    .insertInto('Notification')
+    .values({
+      id: promotionNotificationId,
+      type: 'PROMOTE_TO_BILLING_LEADER',
+      orgId,
+      userId
+    })
+    .execute()
   return [promotionNotificationId]
 }
 

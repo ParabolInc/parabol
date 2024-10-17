@@ -1,6 +1,5 @@
 import ms from 'ms'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationRequestToJoinOrg from '../../../database/types/NotificationRequestToJoinOrg'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -17,7 +16,6 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   _args,
   {authToken, dataLoader}
 ) => {
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const pg = getKysely()
@@ -56,18 +54,17 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   const leadTeamMembers = teamMembers.filter(({isLead}) => isLead)
   const leadUserIds = [...new Set(leadTeamMembers.map(({userId}) => userId))]
 
-  const notificationsToInsert = leadUserIds.map((userId) => {
-    return new NotificationRequestToJoinOrg({
-      userId,
-      email: viewer.email,
-      name: viewer.preferredName,
-      picture: viewer.picture,
-      requestCreatedBy: viewerId,
-      domainJoinRequestId: insertResult.id
-    })
-  })
+  const notificationsToInsert = leadUserIds.map((userId) => ({
+    id: generateUID(),
+    type: 'REQUEST_TO_JOIN_ORG' as const,
+    userId,
+    email: viewer.email,
+    name: viewer.preferredName,
+    picture: viewer.picture,
+    requestCreatedBy: viewerId,
+    domainJoinRequestId: insertResult.id
+  }))
 
-  await r.table('Notification').insert(notificationsToInsert).run()
   await pg.insertInto('Notification').values(notificationsToInsert).execute()
 
   notificationsToInsert.forEach((notification) => {

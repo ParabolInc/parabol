@@ -1,8 +1,10 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import Notification from '../../../../database/types/Notification'
 import publish, {SubOptions} from '../../../../utils/publish'
 
-const publishNotification = (notification: Notification, subOptions: SubOptions) => {
+const publishNotification = (
+  notification: {id: string; userId: string},
+  subOptions: SubOptions
+) => {
   publish(
     SubscriptionChannel.NOTIFICATION,
     notification.userId,

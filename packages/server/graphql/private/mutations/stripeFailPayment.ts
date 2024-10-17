@@ -1,8 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationPaymentRejected from '../../../database/types/NotificationPaymentRejected'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -27,7 +26,6 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   }
 
   const pg = getKysely()
-  const r = await getRethink()
   const manager = getStripeManager()
 
   // VALIDATION
@@ -98,13 +96,15 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
   }
   const {last4, brand} = creditCard
 
-  const notifications = billingLeaderUserIds.map(
-    (userId) => new NotificationPaymentRejected({orgId, last4, brand, userId})
-  )
+  const notifications = billingLeaderUserIds.map((userId) => ({
+    id: generateUID(),
+    type: 'PAYMENT_REJECTED' as const,
+    orgId,
+    last4: Number(last4),
+    brand,
+    userId
+  }))
 
-  await r({
-    insert: r.table('Notification').insert(notifications)
-  }).run()
   await pg.insertInto('Notification').values(notifications).execute()
 
   notifications.forEach((notification) => {

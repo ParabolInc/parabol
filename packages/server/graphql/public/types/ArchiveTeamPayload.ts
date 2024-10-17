@@ -1,6 +1,5 @@
-import NotificationTeamArchived from '../../../database/types/NotificationTeamArchived'
 import {getUserId} from '../../../utils/authorization'
-import errorFilter from '../../errorFilter'
+import isValid from '../../isValid'
 import {ArchiveTeamPayloadResolvers} from '../resolverTypes'
 
 export type ArchiveTeamPayloadSource = {
@@ -16,15 +15,13 @@ const ArchiveTeamPayload: ArchiveTeamPayloadResolvers = {
   },
   notification: async ({notificationIds}, _args, {authToken, dataLoader}) => {
     if (!notificationIds) return null
-    const notifications = (await dataLoader.get('notifications').loadMany(notificationIds)).filter(
-      errorFilter
-    )
     const viewerId = getUserId(authToken)
-    const archivedNotification = notifications.find(
-      (notification) => notification.userId === viewerId
-    )
+    const archivedNotification = (await dataLoader.get('notifications').loadMany(notificationIds))
+      .filter(isValid)
+      .filter((notification) => notification.type === 'TEAM_ARCHIVED')
+      .find((notification) => notification.userId === viewerId)
     if (!archivedNotification) return null
-    return archivedNotification as NotificationTeamArchived
+    return archivedNotification
   }
 }
 
