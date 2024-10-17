@@ -73,6 +73,11 @@ const Organization: OrganizationResolvers = {
     }
   },
 
+  allTeamsCount: async ({id: orgId}, _args, {dataLoader}) => {
+    const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
+    return allTeamsOnOrg?.length ?? 0
+  },
+
   viewerTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
     return allTeamsOnOrg
