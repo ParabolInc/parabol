@@ -7,7 +7,8 @@ const IntegrationProviderAuthStrategyEnum = new GraphQLEnumType({
     oauth1: {},
     oauth2: {},
     pat: {},
-    webhook: {}
+    webhook: {},
+    sharedSecret: {}
   }
 })
 
