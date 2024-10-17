@@ -67,19 +67,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     },
     dataLoader
   )
-  const meetingId = meeting.id
-
-  const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
-  const [newMeetingRes] = await Promise.allSettled([
-    pg
-      .insertInto('NewMeeting')
-      .values({...meeting, phases: JSON.stringify(meeting.phases)})
-      .execute(),
-    updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
-  ])
-  if (newMeetingRes.status === 'rejected') {
+  if (!meeting) {
     return {error: {message: 'Meeting already started'}}
   }
+  const meetingId = meeting.id
+  const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
+  await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
 
   const meetingMember = createMeetingMember(meeting, {
     userId: viewerId,
