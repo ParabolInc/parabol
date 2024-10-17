@@ -53,6 +53,11 @@ type Organization {
   allTeams: [Team!]!
 
   """
+  The count of all teams in the organization
+  """
+  allTeamsCount: Int!
+
+  """
   all the teams the viewer is on in the organization
   """
   viewerTeams: [Team!]!

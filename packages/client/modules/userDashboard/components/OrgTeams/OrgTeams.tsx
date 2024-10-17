@@ -7,6 +7,7 @@ import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import plural from '../../../../utils/plural'
 import OrgTeamsRow from './OrgTeamsRow'
+import TeaserOrgTeamsRow from './TeaserOrgTeamsRow'
 
 type Props = {
   organizationRef: OrgTeams_organization$key
@@ -18,12 +19,16 @@ const OrgTeams = (props: Props) => {
     graphql`
       fragment OrgTeams_organization on Organization {
         id
-        isOrgAdmin
+        tier
         hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         allTeams {
           id
           ...OrgTeamsRow_team
         }
+        viewerTeams {
+          id
+        }
+        allTeamsCount
       }
     `,
     organizationRef
@@ -35,18 +40,15 @@ const OrgTeams = (props: Props) => {
     isOpen: isAddTeamDialogOpened
   } = useDialogState()
 
-  const {allTeams, isOrgAdmin, hasPublicTeamsFlag} = organization
-  const showAllTeams = isOrgAdmin || hasPublicTeamsFlag
+  const {allTeams, tier, viewerTeams, allTeamsCount, hasPublicTeamsFlag} = organization
+  const showAllTeams = allTeams.length === allTeamsCount || hasPublicTeamsFlag
+  const viewerTeamCount = viewerTeams.length
+
   return (
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
         <div>
           <h1 className='text-2xl font-semibold leading-7'>Teams</h1>
-          <p className='text-gray-600 mb-2'>
-            {!showAllTeams
-              ? "Only showing teams you're a member of"
-              : 'Showing all teams in the organization'}
-          </p>
         </div>
         <div className='ml-auto'>
           <Button
@@ -60,17 +62,27 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+      <div className='overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
-              {allTeams.length} {plural(allTeams.length, 'Team')}
+              {allTeamsCount} {plural(allTeamsCount, 'Team')}{' '}
+              {!showAllTeams ? `(${allTeamsCount - viewerTeamCount} hidden)` : null}
             </div>
           </div>
         </div>
-        {allTeams.map((team) => (
-          <OrgTeamsRow key={team.id} teamRef={team} />
-        ))}
+        <div className='divide-y divide-slate-300 border-y border-slate-300'>
+          {allTeams.map((team) => (
+            <OrgTeamsRow key={team.id} teamRef={team} />
+          ))}
+        </div>
+
+        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showAllTeams && (
+          <TeaserOrgTeamsRow
+            hiddenTeamCount={allTeamsCount - viewerTeamCount}
+            orgId={organization.id}
+          />
+        )}
       </div>
 
       {isAddTeamDialogOpened ? (
