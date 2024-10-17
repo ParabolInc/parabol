@@ -86,6 +86,14 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
       .default([])
       .run(),
     pg
+      .with('NotificationUpdate', (qc) =>
+        qc
+          .updateTable('Notification')
+          .set({status: 'CLICKED'})
+          .where('userId', '=', userId)
+          .where('teamId', '=', teamId)
+          .where('type', '=', 'TEAM_INVITATION')
+      )
       .with('UserUpdate', (qc) =>
         qc
           .updateTable('User')
@@ -113,7 +121,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
       .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
       .execute()
   ])
-  dataLoader.clearAll(['teamMembers', 'users'])
+  dataLoader.clearAll(['teamMembers', 'users', 'notifications'])
   if (!organizationUser) {
     // clear the cache, adjustUserCount will mutate these
     dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})

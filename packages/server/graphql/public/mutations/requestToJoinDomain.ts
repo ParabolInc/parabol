@@ -68,6 +68,7 @@ const requestToJoinDomain: MutationResolvers['requestToJoinDomain'] = async (
   })
 
   await r.table('Notification').insert(notificationsToInsert).run()
+  await pg.insertInto('Notification').values(notificationsToInsert).execute()
 
   notificationsToInsert.forEach((notification) => {
     publishNotification(notification, subOptions)

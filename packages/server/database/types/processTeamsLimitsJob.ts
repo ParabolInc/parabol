@@ -46,7 +46,7 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
     })
 
     await r.table('Notification').insert(notificationsToInsert).run()
-
+    await getKysely().insertInto('Notification').values(notificationsToInsert).execute()
     const operationId = dataLoader.share()
     const subOptions = {operationId}
     notificationsToInsert.forEach((notification) => {

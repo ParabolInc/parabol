@@ -9,10 +9,12 @@ import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const addNotifications = async (orgId: string, userId: string) => {
+  const pg = getKysely()
   const r = await getRethink()
   const promotionNotification = new NotificationPromoteToBillingLeader({orgId, userId})
   const {id: promotionNotificationId} = promotionNotification
   await r.table('Notification').insert(promotionNotification).run()
+  await pg.insertInto('Notification').values(promotionNotification).execute()
   return [promotionNotificationId]
 }
 

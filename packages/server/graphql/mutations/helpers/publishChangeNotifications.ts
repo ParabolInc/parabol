@@ -2,6 +2,7 @@ import {ASSIGNEE, MENTIONEE} from 'parabol-client/utils/constants'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import getRethink from '../../../database/rethinkDriver'
 import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
+import getKysely from '../../../postgres/getKysely'
 import {Task} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 
@@ -11,6 +12,7 @@ const publishChangeNotifications = async (
   changeUser: {id: string; email: string},
   usersToIgnore: string[]
 ) => {
+  const pg = getKysely()
   const r = await getRethink()
   const changeAuthorId = `${changeUser.id}::${task.teamId}`
   const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldTask.content)
@@ -84,6 +86,7 @@ const publishChangeNotifications = async (
   // update changes in the db
   if (notificationsToAdd.length) {
     await r.table('Notification').insert(notificationsToAdd).run()
+    await pg.insertInto('Notification').values(notificationsToAdd).execute()
   }
   return {notificationsToAdd}
 }
