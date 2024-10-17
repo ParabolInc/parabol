@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.1](https://github.com/ParabolInc/parabol/compare/v7.51.0...v7.51.1) (2024-10-17)
+
+
+### Fixed
+
+* correct serialization of Task.content ([#10362](https://github.com/ParabolInc/parabol/issues/10362)) ([a4ea952](https://github.com/ParabolInc/parabol/commit/a4ea9521a452cc13747f3b97a6330d85714590ef))
+
 ## [7.51.0](https://github.com/ParabolInc/parabol/compare/v7.50.12...v7.51.0) (2024-10-16)
 
 
