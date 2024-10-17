@@ -20,7 +20,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   {teamId, name, rrule, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -48,18 +47,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const meetingName = createMeetingSeriesTitle(name || 'Standup', new Date(), 'UTC')
   const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
-
-  const [newMeetingRes] = await Promise.allSettled([
-    pg
-      .with('NewMeetingInsert', (qb) =>
-        qb.insertInto('NewMeeting').values({...meeting, phases: JSON.stringify(meeting.phases)})
-      )
-      .updateTable('Team')
-      .set({lastMeetingType: 'teamPrompt'})
-      .where('id', '=', teamId)
-      .execute()
-  ])
-  if (newMeetingRes.status === 'rejected') {
+  if (!meeting) {
     return {error: {message: 'Meeting already started'}}
   }
   const {id: meetingId} = meeting
