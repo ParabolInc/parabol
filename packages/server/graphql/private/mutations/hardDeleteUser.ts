@@ -59,17 +59,8 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const userIdToDelete = user.id
 
   // get team ids and meetingIds
-  const [teamMembers, meetingMembers] = await Promise.all([
-    dataLoader.get('teamMembersByUserId').load(userIdToDelete),
-    dataLoader.get('meetingMembersByUserId').load(userIdToDelete)
-  ])
+  const teamMembers = await dataLoader.get('teamMembersByUserId').load(userIdToDelete)
   const teamIds = teamMembers.map(({teamId}) => teamId)
-  const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
-
-  const discussions = teamIds.length
-    ? await pg.selectFrom('Discussion').select('id').where('id', 'in', teamIds).execute()
-    : []
-  const teamDiscussionIds = discussions.map(({id}) => id)
 
   // soft delete first for side effects
   await softDeleteUser(userIdToDelete, dataLoader)
