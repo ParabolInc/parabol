@@ -15,6 +15,7 @@ import {selectSlackNotifications} from '../postgres/select'
 import {SlackAuth, SlackNotification} from '../postgres/types'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
+import {TeamMemberIntegrationAuth} from '../postgres/pg'
 
 interface TeamMemberIntegrationAuthPrimaryKey {
   service: IntegrationProviderServiceEnum
@@ -210,4 +211,25 @@ export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
         })
     })
   })
+}
+
+export const teamMemberIntegrationAuthsByTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string, service: IntegrationProviderServiceEnum}, TeamMemberIntegrationAuth[], string>(async (keys) => {
+    const pg = getKysely()
+    const teamIds = keys.map(({teamId}) => teamId)
+    const services = keys.map(({service}) => service)
+    const res = (await pg
+      .selectFrom('TeamMemberIntegrationAuth')
+      .selectAll()
+      .where(({eb}) => eb('teamId', 'in', teamIds))
+      .where(({eb}) => eb('service', 'in', services))
+      .execute()
+    ) as unknown as TeamMemberIntegrationAuth[]
+
+    return keys.map((key) => res.filter(({teamId, service}) => teamId === key.teamId && service === key.service))
+  }, {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({teamId, service}) => `${teamId}-${service}`
+    }
+  )
 }
