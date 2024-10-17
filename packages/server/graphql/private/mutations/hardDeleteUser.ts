@@ -83,26 +83,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .where('createdBy', '=', userIdToDelete)
     .execute()
 
-  // now postgres, after FKs are added then triggers should take care of children
-  // TODO when we're done migrating to PG, these should have constraints that ON DELETE CASCADE
-  await pg
-    .with('AtlassianAuthDelete', (qb) =>
-      qb.deleteFrom('AtlassianAuth').where('userId', '=', userIdToDelete)
-    )
-    .with('GitHubAuthDelete', (qb) =>
-      qb.deleteFrom('GitHubAuth').where('userId', '=', userIdToDelete)
-    )
-    .with('TaskEstimateDelete', (qb) =>
-      qb
-        .deleteFrom('TaskEstimate')
-        .where('userId', '=', userIdToDelete)
-        .where('meetingId', 'in', meetingIds)
-    )
-    .deleteFrom('Poll')
-    .where('discussionId', 'in', teamDiscussionIds)
-    .where('createdById', '=', userIdToDelete)
-    .execute()
-
   // Send metrics to HubSpot before the user is really deleted in DB
   await sendAccountRemovedEvent(userIdToDelete, user.email, reasonText ?? '')
 
