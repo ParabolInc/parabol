@@ -1,4 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLResolveInfo} from 'graphql'
+import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -7,11 +8,10 @@ import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import dndNoise from '../../../client/utils/dndNoise'
 import extractTextFromDraftString from '../../../client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
-import getRethink from '../../database/rethinkDriver'
-import NotificationTaskInvolves from '../../database/types/NotificationTaskInvolves'
 import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
+import {Notification} from '../../postgres/pg'
 import {Task, TaskTag} from '../../postgres/types/index.d'
 import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {analytics} from '../../utils/analytics/analytics'
@@ -69,24 +69,23 @@ const handleAddTaskNotifications = async (
   subOptions: SubOptions
 ) => {
   const pg = getKysely()
-  const r = await getRethink()
   const {id: taskId, content, tags, userId} = task
   const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId)
 
   // Handle notifications
   // Almost always you start out with a blank card assigned to you (except for filtered team dash)
   const changeAuthorId = toTeamMemberId(teamId, viewerId)
-  const notificationsToAdd = [] as NotificationTaskInvolves[]
+  const notificationsToAdd = [] as Insertable<Notification>[]
   if (userId && viewerId !== userId && !usersIdsToIgnore.includes(userId)) {
-    notificationsToAdd.push(
-      new NotificationTaskInvolves({
-        involvement: 'ASSIGNEE',
-        taskId,
-        changeAuthorId,
-        teamId,
-        userId
-      })
-    )
+    notificationsToAdd.push({
+      id: generateUID(),
+      type: 'TASK_INVOLVES' as const,
+      involvement: 'ASSIGNEE' as const,
+      taskId,
+      changeAuthorId,
+      teamId,
+      userId
+    })
   }
 
   const {entityMap} = JSON.parse(content)
@@ -95,20 +94,19 @@ const handleAddTaskNotifications = async (
       (mention) => mention !== viewerId && mention !== userId && !usersIdsToIgnore.includes(mention)
     )
     .forEach((mentioneeUserId) => {
-      notificationsToAdd.push(
-        new NotificationTaskInvolves({
-          userId: mentioneeUserId,
-          involvement: 'MENTIONEE',
-          taskId,
-          changeAuthorId,
-          teamId
-        })
-      )
+      notificationsToAdd.push({
+        id: generateUID(),
+        type: 'TASK_INVOLVES' as const,
+        userId: mentioneeUserId,
+        involvement: 'MENTIONEE',
+        taskId,
+        changeAuthorId,
+        teamId
+      })
     })
   const data = {taskId, notifications: notificationsToAdd}
 
   if (notificationsToAdd.length) {
-    await r.table('Notification').insert(notificationsToAdd).run()
     await pg.insertInto('Notification').values(notificationsToAdd).execute()
     notificationsToAdd.forEach((notification) => {
       publish(

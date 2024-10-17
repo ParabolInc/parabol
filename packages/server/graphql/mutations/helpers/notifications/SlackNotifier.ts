@@ -277,8 +277,7 @@ const getSlackMessageForNotification = async (
       buttonText: 'See the discussion'
     }
   } else if (notification.type === 'RESPONSE_MENTIONED') {
-    // Notification Phase 3 do not split the responseId
-    const responseId = TeamPromptResponseId.split(notification.responseId)
+    const responseId = notification.responseId
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)
     const title = `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
@@ -288,7 +287,7 @@ const getSlackMessageForNotification = async (
         utm_source: 'slack standup notification',
         utm_medium: 'product',
         utm_campaign: 'notifications',
-        responseId: notification.responseId
+        responseId: TeamPromptResponseId.join(notification.responseId)
       }
     }
 
@@ -300,6 +299,8 @@ const getSlackMessageForNotification = async (
       buttonText: 'See their response'
     }
   } else if (notification.type === 'MENTIONED') {
+    // This type is no longer created anywhere in the app but is still in the DB.
+    // We should remove this logic & the remaining DB notifications
     const authorName = notification.senderName ?? 'Someone'
     const {meetingId} = notification
 
@@ -682,7 +683,7 @@ export const SlackNotifier = {
     notificationId: string,
     userId: string
   ) {
-    const notification = await dataLoader.get('notifications').load(notificationId)
+    const notification = await dataLoader.get('notifications').loadNonNull(notificationId)
     if (
       notification.type !== 'RESPONSE_MENTIONED' &&
       notification.type !== 'RESPONSE_REPLIED' &&

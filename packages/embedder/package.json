@@ -1,6 +1,6 @@
 {
   "name": "parabol-embedder",
-  "version": "7.51.2",
+  "version": "7.51.3",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Jordan Husney <jordan.husney@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/embedder#readme",

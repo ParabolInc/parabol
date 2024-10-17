@@ -13,6 +13,7 @@ import {
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
+  selectNotifications,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
@@ -148,4 +149,8 @@ export const teamInvitations = primaryKeyLoaderMaker((ids: readonly string[]) =>
 
 export const tasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTasks().where('id', 'in', ids).execute()
+})
+
+export const notifications = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectNotifications().where('id', 'in', ids).execute()
 })

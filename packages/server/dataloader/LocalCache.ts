@@ -1,6 +1,6 @@
 import {DBType} from '../database/rethinkDriver'
 import RedisCache, {CacheType} from './RedisCache'
-import {RWrite, Updater} from './RethinkDBCache'
+import {Updater} from './RethinkDBCache'
 
 const resolvedPromise = Promise.resolve()
 
@@ -95,7 +95,7 @@ export default class LocalCache<T extends keyof CacheType> {
     writes.forEach(({resolve, table, id}, idx) => {
       const key = `${table}:${id}`
       const result = results[idx]
-      this.primeLocal(key, result)
+      this.primeLocal(key, result!)
       resolve(result)
     })
   }
@@ -107,7 +107,7 @@ export default class LocalCache<T extends keyof CacheType> {
   }
 
   async prime(table: T, docs: CacheType[T][]) {
-    docs.forEach((doc) => {
+    docs.forEach((doc: any) => {
       const key = `${table}:${doc.id}`
       this.primeLocal(key, doc)
     })
@@ -149,10 +149,10 @@ export default class LocalCache<T extends keyof CacheType> {
     })
     return Promise.all(loadPromises)
   }
-  async write<P extends T>(table: P, id: string, updater: Updater<CacheType[P]>) {
+  async write<P extends T>(table: P, id: string, updater: any) {
     if (this.hasWriteDispatched) {
       this.hasWriteDispatched = false
-      this.writes = [] as (RWrite<CacheType[P]> & {resolve: (payload: any) => void})[]
+      this.writes = [] as any[]
       resolvedPromise.then(() => {
         process.nextTick(this.dispatchWriteBatch)
       })

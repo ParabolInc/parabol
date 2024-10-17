@@ -12,11 +12,9 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
-import {selectTasks} from '../../../postgres/select'
+import {selectNotifications, selectTasks} from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
@@ -156,26 +154,16 @@ const User: ReqResolvers<'User'> = {
     return meeting
   },
   notifications: async (_source, {first, after, types}, {authToken}) => {
-    const r = await getRethink()
-    // AUTH
     const userId = getUserId(authToken)
-    const dbAfter = after || r.maxval
-    // RESOLUTION
+    const hasTypes = types ? types.length > 0 : false
     // TODO consider moving the requestedFields to all queries
-    const nodesPlus1 = await r
-      .table('Notification')
-      .getAll(userId, {index: 'userId'})
-      .orderBy(r.desc('createdAt'))
-      .filter((row: RDatum) => {
-        if (types) {
-          return row('createdAt')
-            .lt(dbAfter)
-            .and(r.expr(types).contains(row('type')))
-        }
-        return row('createdAt').lt(dbAfter)
-      })
+    const nodesPlus1 = await selectNotifications()
+      .where('userId', '=', userId)
+      .$if(hasTypes, (qb) => qb.where('type', 'in', types!))
+      .$if(!!after, (qb) => qb.where('createdAt', '<', after!))
+      .orderBy('createdAt desc')
       .limit(first + 1)
-      .run()
+      .execute()
 
     const nodes = nodesPlus1.slice(0, first)
     const edges = nodes.map((node) => ({

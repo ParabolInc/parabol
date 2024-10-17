@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
@@ -7,7 +8,7 @@ type LoaderMakers = typeof primaryKeyLoaderMakers
 type LoaderKeys = keyof LoaderMakers
 type Loader<LoaderName extends LoaderKeys> = ReturnType<LoaderMakers[LoaderName]>
 type LoaderType<LoaderName extends LoaderKeys> =
-  Loader<LoaderName> extends DataLoader<any, infer T, any> ? NonNullable<T> : any
+  Loader<LoaderName> extends NullableDataLoader<any, infer T, any> ? NonNullable<T> : any
 
 /**
  * Used to register loaders for types by foreign key.
@@ -16,6 +17,7 @@ type LoaderType<LoaderName extends LoaderKeys> =
  * When an item is loaded via this loader, the primary loader will be primed with the result as well.
  * It reflects a one to many relationship, i.e. for each key passed, an array will be returned.
  */
+
 export function foreignKeyLoaderMaker<
   LoaderName extends LoaderKeys,
   T extends LoaderType<LoaderName>,

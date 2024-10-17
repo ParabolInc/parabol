@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -29,7 +28,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -42,7 +40,6 @@ export default {
     }
 
     // RESOLUTION
-    await r.table('Notification').get(notificationId).update({status}).run()
     await pg.updateTable('Notification').set({status}).where('id', '=', notificationId).execute()
     // mutate dataloader cache
     notification.status = status

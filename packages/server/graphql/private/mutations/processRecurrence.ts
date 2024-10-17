@@ -6,7 +6,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
-import getKysely from '../../../postgres/getKysely'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {selectNewMeetings} from '../../../postgres/select'
 import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
@@ -32,7 +31,6 @@ const startRecurringMeeting = async (
   dataLoader: DataLoaderWorker,
   subOptions: SubOptions
 ) => {
-  const pg = getKysely()
   const {id: meetingSeriesId, teamId, facilitatorId, meetingType} = meetingSeries
 
   // AUTH
@@ -59,10 +57,9 @@ const startRecurringMeeting = async (
         meetingSeriesId: meetingSeries.id,
         meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
       })
-      await pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(meeting.phases)})
-        .execute()
+      if (!meeting) {
+        return {error: {message: 'Unable to create meeting. Perhaps one was just created?'}}
+      }
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
       return meeting
@@ -87,10 +84,9 @@ const startRecurringMeeting = async (
         },
         dataLoader
       )
-      await pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(meeting.phases)})
-        .execute()
+      if (!meeting) {
+        return {error: {message: 'Unable to create meeting. Perhaps one was just created?'}}
+      }
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
       return meeting
