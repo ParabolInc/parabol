@@ -10,6 +10,7 @@ import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
 import './initSentry'
+import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import './monkeyPatchFetch'
@@ -68,6 +69,7 @@ uws
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
+  .post('/mattermost', mattermostWebhookHandler)
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)
