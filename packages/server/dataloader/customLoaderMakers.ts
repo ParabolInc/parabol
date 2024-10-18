@@ -894,3 +894,45 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const publicTemplatesByType = (parent: RootDataLoader) => {
+  const redis = getRedis()
+  return new NullableDataLoader<MeetingTypeEnum, MeetingTemplate[], string>(
+    async (meetingTypes) => {
+      return Promise.all(
+        meetingTypes.map(async (type) => {
+          const templateType = type === 'poker' ? 'poker' : 'retrospective'
+          const redisKey = `publicTemplates:${templateType}`
+          const cachedTemplatesStr = await redis.get(redisKey)
+          if (cachedTemplatesStr) {
+            const cachedTemplates = JSON.parse(cachedTemplatesStr) as MeetingTemplate[]
+            cachedTemplates.forEach(
+              (meetingTemplate) => meetingTemplate.createdAt === new Date(meetingTemplate.createdAt)
+            )
+            return cachedTemplates
+          }
+          const freshTemplates = await getKysely()
+            .selectFrom('MeetingTemplate')
+            .selectAll()
+            .where('teamId', '=', 'aGhostTeam')
+            .where('isActive', '=', true)
+            .where('type', '=', templateType)
+            .where(({or, eb}) =>
+              or([
+                eb('hideStartingAt', 'is', null),
+                sql<SqlBool>`make_date(2020 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`,
+                sql<SqlBool>`make_date(2019 , extract(month from current_date)::integer, extract(day from current_date)::integer) between "hideEndingAt" and "hideStartingAt"`
+              ])
+            )
+            .orderBy('isFree')
+            .execute()
+          await redis.setex(redisKey, 60 * 60 * 24, JSON.stringify(freshTemplates))
+          return freshTemplates
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
