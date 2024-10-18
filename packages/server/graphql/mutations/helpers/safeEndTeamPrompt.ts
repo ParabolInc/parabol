@@ -15,7 +15,6 @@ import gatherInsights from './gatherInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
-import updateTeamInsights from './updateTeamInsights'
 
 const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
@@ -74,8 +73,7 @@ const safeEndTeamPrompt = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    getTeamPromptResponsesByMeetingId(meetingId),
-    updateTeamInsights(teamId, dataLoader)
+    getTeamPromptResponsesByMeetingId(meetingId)
   ])
 
   const events = teamMembers.map(

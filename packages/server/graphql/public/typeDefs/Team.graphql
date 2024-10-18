@@ -183,11 +183,6 @@ type Team {
   billingTier: TierEnum!
 
   """
-  Insights for the team, null if not enough data or feature flag isn't set
-  """
-  insights: TeamInsights
-
-  """
   The team member that is the viewer
   """
   viewerTeamMember: TeamMember

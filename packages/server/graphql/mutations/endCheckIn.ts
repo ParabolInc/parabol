@@ -28,7 +28,6 @@ import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
-import updateTeamInsights from './helpers/updateTeamInsights'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -202,8 +201,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
-      updateTeamInsights(teamId, dataLoader)
+      removeEmptyTasks(meetingId)
     ])
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)

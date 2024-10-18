@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {AccountBalance, AccountBox, BarChart, ExitToApp, Star} from '@mui/icons-material'
+import {AccountBalance, AccountBox, ExitToApp, Star} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -43,7 +43,6 @@ const StandardHubUserMenu = (props: Props) => {
     graphql`
       fragment StandardHubUserMenu_viewer on User {
         email
-        hasInsightsFlag: featureFlag(featureName: "insights")
         organizations {
           id
           billingTier
@@ -52,7 +51,7 @@ const StandardHubUserMenu = (props: Props) => {
     `,
     viewerRef
   )
-  const {email, hasInsightsFlag, organizations} = viewer
+  const {email, organizations} = viewer
   const ownedFreeOrgs = organizations.filter((org) => org.billingTier === 'starter')
   const showUpgradeCTA = ownedFreeOrgs.length > 0
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
@@ -80,18 +79,6 @@ const StandardHubUserMenu = (props: Props) => {
           </MenuItemLink>
         }
       />
-      {hasInsightsFlag && (
-        <MenuItem
-          label={
-            <MenuItemLink to={'/usage'}>
-              <MenuItemIcon>
-                <BarChart />
-              </MenuItemIcon>
-              {'Usage'}
-            </MenuItemLink>
-          }
-        />
-      )}
       {showUpgradeCTA && <MenuItemHR key='HR0' />}
       {showUpgradeCTA && (
         <MenuItem

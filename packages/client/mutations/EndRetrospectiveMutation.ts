@@ -48,13 +48,10 @@ graphql`
       }
     }
     team {
+      ...TeamInsights_team
       id
       activeMeetings {
         id
-      }
-      ...TeamInsights_team
-      insights {
-        ...TeamDashInsights_insights
       }
     }
     timelineEvent {
