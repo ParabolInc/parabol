@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.5](https://github.com/ParabolInc/parabol/compare/v7.51.4...v7.51.5) (2024-10-18)
+
+
+### Fixed
+
+* complete partial value for updateTaskPayload ([#10373](https://github.com/ParabolInc/parabol/issues/10373)) ([74b2e01](https://github.com/ParabolInc/parabol/commit/74b2e01b7d51a559e06133a4a09641bb0cb5ed78))
+
 ## [7.51.4](https://github.com/ParabolInc/parabol/compare/v7.51.3...v7.51.4) (2024-10-18)
 
 
