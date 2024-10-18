@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.6](https://github.com/ParabolInc/parabol/compare/v7.51.5...v7.51.6) (2024-10-18)
+
+
+### Fixed
+
+* no duplicate notification inserts ([#10380](https://github.com/ParabolInc/parabol/issues/10380)) ([2450d5e](https://github.com/ParabolInc/parabol/commit/2450d5ef820bee5aabf2fc296367ea1f83296d75))
+
+
+### Changed
+
+* Add migration for shared secret integration provider ([#10382](https://github.com/ParabolInc/parabol/issues/10382)) ([21551df](https://github.com/ParabolInc/parabol/commit/21551dfdb7e4366ae2769e9e61aac37d336b251d))
+
 ## [7.51.5](https://github.com/ParabolInc/parabol/compare/v7.51.4...v7.51.5) (2024-10-18)
 
 
