@@ -4,8 +4,7 @@ import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
-import insertOrgUserAudit from '../../postgres/helpers/insertOrgUserAudit'
-import {OrganizationUserAuditEventTypeEnum} from '../../postgres/queries/generated/insertOrgUserAuditQuery'
+import {OrganizationUserAudit} from '../../postgres/pg'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import IUser from '../../postgres/types/IUser'
 import {Logger} from '../../utils/Logger'
@@ -119,7 +118,7 @@ const auditEventTypeLookup = {
   [InvoiceItemType.PAUSE_USER]: 'inactivated',
   [InvoiceItemType.REMOVE_USER]: 'removed',
   [InvoiceItemType.UNPAUSE_USER]: 'activated'
-} as {[key in InvoiceItemType]: OrganizationUserAuditEventTypeEnum}
+} as {[key in InvoiceItemType]: OrganizationUserAudit['eventType']}
 
 /**
  * Also adds the organization user if not present
@@ -130,6 +129,7 @@ export default async function adjustUserCount(
   type: InvoiceItemType,
   dataLoader: DataLoaderWorker
 ) {
+  const pg = getKysely()
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
 
   const user = (await getUserById(userId))!
@@ -137,7 +137,14 @@ export default async function adjustUserCount(
   const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, user, dataLoader)
   const auditEventType = auditEventTypeLookup[type]
-  await insertOrgUserAudit(orgIds, userId, auditEventType)
+  await Promise.all(
+    orgIds.map((orgId) => {
+      return pg
+        .insertInto('OrganizationUserAudit')
+        .values({orgId, userId, eventDate: new Date(), eventType: auditEventType})
+        .execute()
+    })
+  )
 
   const organizations = await dataLoader.get('organizations').loadMany(orgIds)
   const paidOrgs = organizations.filter(isValid).filter((org) => org.stripeSubscriptionId)
