@@ -712,7 +712,7 @@ class Analytics {
 
   insightsFeedbackSubmitted = (
     user: AnalyticsUser,
-    isUseful: boolean | null,
+    isUseful: boolean,
     feedback: string,
     canEmail: boolean
   ) => {
