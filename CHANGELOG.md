@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.4](https://github.com/ParabolInc/parabol/compare/v7.51.3...v7.51.4) (2024-10-18)
+
+
+### Fixed
+
+* shortcircuit looking up tasks my integrationHash ([#10371](https://github.com/ParabolInc/parabol/issues/10371)) ([27a9752](https://github.com/ParabolInc/parabol/commit/27a9752453584405f5d1fa3c179856dd40159191))
+
+
+### Changed
+
+* **rethinkdb:** Add missing foreign key constraints ([#10359](https://github.com/ParabolInc/parabol/issues/10359)) ([c5b0d08](https://github.com/ParabolInc/parabol/commit/c5b0d089d22ba4e6a655e83caac5c1287cf0106c))
+
 ## [7.51.3](https://github.com/ParabolInc/parabol/compare/v7.51.2...v7.51.3) (2024-10-17)
 
 
