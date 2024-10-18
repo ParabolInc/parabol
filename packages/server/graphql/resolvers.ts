@@ -4,10 +4,9 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../database/types/GenericMeetingStage'
 import Organization from '../database/types/Organization'
-import Task from '../database/types/Task'
 import User from '../database/types/User'
 import {Loaders} from '../dataloader/RootDataLoader'
-import {Team, TeamMember} from '../postgres/types'
+import {Task, Team, TeamMember} from '../postgres/types'
 import {AnyMeeting} from '../postgres/types/Meeting'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
 import {GQLContext} from './graphql'
@@ -158,7 +157,7 @@ export const resolveUnlockedStages = async (
   {dataLoader}: GQLContext
 ) => {
   if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
-  const meeting = await dataLoader.get('newMeetings').load(meetingId)
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   return unlockedStageIds.map((stageId) => resolveGQLStageFromId(stageId, meeting))
 }
 

@@ -2,11 +2,10 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {Insertable} from 'kysely'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
-import getRethink from '../../database/rethinkDriver'
 import EstimateStage from '../../database/types/EstimateStage'
-import {TaskServiceEnum} from '../../database/types/Task'
 import getKysely from '../../postgres/getKysely'
 import {Discussion} from '../../postgres/pg'
+import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import RedisLockQueue from '../../utils/RedisLockQueue'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -43,7 +42,6 @@ const updatePokerScope = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const pg = getKysely()
-    const r = await getRethink()
     const redis = getRedis()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
@@ -166,15 +164,6 @@ const updatePokerScope = {
         })
         .where('id', '=', meetingId)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          facilitatorStageId: meeting.facilitatorStageId,
-          phases,
-          updatedAt: now
-        })
-        .run()
       if (newDiscussions.length > 0) {
         await getKysely().insertInto('Discussion').values(newDiscussions).execute()
       }

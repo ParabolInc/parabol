@@ -53,6 +53,7 @@ graphql`
         id
       }
     }
+    ...TeamInsights_team
     timelineEvent {
       id
       team {

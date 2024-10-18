@@ -2,7 +2,6 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../database/rethinkDriver'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -31,9 +30,7 @@ const flagReadyToAdvance = {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const pg = getKysely()
-    const r = await getRethink()
     const viewerId = getUserId(authToken)
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 
@@ -82,7 +79,6 @@ const flagReadyToAdvance = {
 
     // RESOLUTION
     // TODO there's enough evidence showing that we should probably worry about atomicity
-    await r.table('NewMeeting').get(meetingId).update({phases, updatedAt: now}).run()
     await pg
       .updateTable('NewMeeting')
       .set({phases: JSON.stringify(phases)})

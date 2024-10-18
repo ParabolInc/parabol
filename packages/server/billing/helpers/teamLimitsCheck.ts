@@ -2,9 +2,8 @@ import ms from 'ms'
 import {Threshold} from 'parabol-client/types/constEnums'
 // Uncomment for easier testing
 // import { ThresholdTest as Threshold } from "~/types/constEnums";
-import {r} from 'rethinkdb-ts'
-import NotificationTeamsLimitExceeded from '../../database/types/NotificationTeamsLimitExceeded'
 import scheduleTeamLimitsJobs from '../../database/types/scheduleTeamLimitsJobs'
+import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getActiveTeamCountByTeamIds from '../../graphql/public/types/helpers/getActiveTeamCountByTeamIds'
@@ -47,20 +46,20 @@ const sendWebsiteNotifications = async (
   userIds: string[],
   dataLoader: DataLoaderWorker
 ) => {
+  const pg = getKysely()
   const {id: orgId, name: orgName, picture: orgPicture} = organization
   const operationId = dataLoader.share()
   const subOptions = {operationId}
-  const notificationsToInsert = userIds.map((userId) => {
-    return new NotificationTeamsLimitExceeded({
-      userId,
-      orgId,
-      orgName,
-      orgPicture
-    })
-  })
+  const notificationsToInsert = userIds.map((userId) => ({
+    id: generateUID(),
+    type: 'TEAMS_LIMIT_EXCEEDED' as const,
+    userId,
+    orgId,
+    orgName,
+    orgPicture
+  }))
 
-  await r.table('Notification').insert(notificationsToInsert).run()
-
+  await pg.insertInto('Notification').values(notificationsToInsert).execute()
   notificationsToInsert.forEach((notification) => {
     publishNotification(notification, subOptions)
   })

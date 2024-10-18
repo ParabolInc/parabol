@@ -12,7 +12,7 @@ const UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccessResolvers 
   },
   meeting: async (source, _args, {dataLoader}) => {
     const {meetingId} = source
-    return dataLoader.get('newMeetings').load(meetingId)
+    return dataLoader.get('newMeetings').loadNonNull(meetingId)
   }
 }
 

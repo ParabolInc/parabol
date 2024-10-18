@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
 import {Logger} from '../../../utils/Logger'
@@ -53,22 +52,18 @@ const generateGroups = async (
     })
   }
 
-  const r = await getRethink()
   await getKysely()
     .updateTable('NewMeeting')
     .set({autogroupReflectionGroups: JSON.stringify(autogroupReflectionGroups)})
     .where('id', '=', meetingId)
     .execute()
-  const meetingRes = await r
-    .table('NewMeeting')
-    .get(meetingId)
-    .update({autogroupReflectionGroups}, {returnChanges: true})('changes')(0)('new_val')
-    .run()
-  const {facilitatorUserId} = meetingRes
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+  const {facilitatorUserId} = meeting
   const data = {meetingId}
   const operationId = dataLoader.share()
   const subOptions = {operationId}
-  analytics.suggestedGroupsGenerated(facilitatorUserId, meetingId, teamId)
+  const user = await dataLoader.get('users').loadNonNull(facilitatorUserId!)
+  analytics.suggestedGroupsGenerated(user, meetingId, teamId)
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
   return autogroupReflectionGroups
 }

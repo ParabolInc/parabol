@@ -1,5 +1,5 @@
 import {Threshold} from 'parabol-client/types/constEnums'
-import Task from '../../../database/types/Task'
+import {Task} from '../../../postgres/types'
 
 const connectionFromTasks = <T extends {updatedAt: Date} = Task>(
   tasks: T[],

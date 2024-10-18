@@ -129,6 +129,11 @@ type Team {
   organization: Organization!
 
   """
+  The AI insight for the team. Null if not enough data or feature flag isn't set
+  """
+  insight: Insight
+
+  """
   The agenda items for the upcoming or current meeting
   """
   agendaItems: [AgendaItem!]!
@@ -186,4 +191,9 @@ type Team {
   The team member that is the team lead
   """
   teamLead: TeamMember!
+
+  """
+  The number of retro meetings the team has had
+  """
+  retroMeetingsCount: Int!
 }

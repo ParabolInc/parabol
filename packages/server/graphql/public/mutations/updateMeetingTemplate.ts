@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
@@ -14,7 +13,6 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
 ) => {
   const pg = getKysely()
   const viewerId = getUserId(authToken)
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
@@ -40,7 +38,6 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
     )
   }
   await pg.updateTable('NewMeeting').set({templateId}).where('id', '=', meetingId).execute()
-  await r.table('NewMeeting').get(meetingId).update({templateId}).run()
   meeting.templateId = templateId
 
   const data = {meetingId, templateId}

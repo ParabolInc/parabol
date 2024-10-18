@@ -1,66 +1,52 @@
 import {sql} from 'kysely'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
-import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 
-const safelyCastVote = async (
-  authToken: AuthToken,
-  meetingId: string,
-  userId: string,
-  reflectionGroupId: string,
-  maxVotesPerGroup: number
-) => {
+const safelyCastVote = async (meetingId: string, userId: string, reflectionGroupId: string) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
-  const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
-  const viewerId = getUserId(authToken)
-  const isVoteRemovedFromUser = await r
-    .table('MeetingMember')
-    .get(meetingMemberId)
-    .update((member: RValue) => {
-      // go atomic. no cheating allowed
-      return r.branch(
-        member('votesRemaining').ge(1),
-        {
-          updatedAt: now,
-          votesRemaining: member('votesRemaining').sub(1)
-        },
-        {}
-      )
-    })('replaced')
-    .eq(1)
-    .run()
-  if (!isVoteRemovedFromUser) {
-    return standardError(new Error('No votes remaining'), {userId: viewerId})
-  }
-
-  const voteAddedResult = await pg
-    .updateTable('RetroReflectionGroup')
-    .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
-    .where('id', '=', reflectionGroupId)
-    .where(
-      sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
-      '<',
-      maxVotesPerGroup
-    )
-    .executeTakeFirst()
-
-  const isVoteAddedToGroup = voteAddedResult.numUpdatedRows === BigInt(1)
-
-  if (!isVoteAddedToGroup) {
-    await r
-      .table('MeetingMember')
-      .get(meetingMemberId)
-      .update((member: RValue) => ({
-        votesRemaining: member('votesRemaining').add(1)
-      }))
-      .run()
-    return standardError(new Error('Max votes per group exceeded'), {userId: viewerId})
+  try {
+    await pg.transaction().execute(async (trx) => {
+      // Lock the rows here in case updateRetroMaxVotes gets called, which could use stale values
+      const [meetingMember, reflectionGroup] = await Promise.all([
+        trx
+          .selectFrom('MeetingMember')
+          .select('id')
+          .where('id', '=', meetingMemberId)
+          .where('votesRemaining', '>', 0)
+          .forUpdate()
+          .executeTakeFirst(),
+        trx
+          .selectFrom('RetroReflectionGroup')
+          .select('id')
+          .where('id', '=', reflectionGroupId)
+          .where('isActive', '=', true)
+          .where(({eb, selectFrom}) =>
+            eb(
+              sql`COALESCE(array_length(array_positions("voterIds", ${userId}),1),0)`,
+              '<',
+              selectFrom('NewMeeting').select('maxVotesPerGroup').where('id', '=', meetingId)
+            )
+          )
+          .forUpdate()
+          .executeTakeFirst()
+      ])
+      if (!meetingMember) throw new Error('No votes remaining')
+      if (!reflectionGroup) throw new Error('Max votes per group reached')
+      await trx
+        .with('MeetingMemberUpdate', (qb) =>
+          qb
+            .updateTable('MeetingMember')
+            .set((eb) => ({votesRemaining: eb('votesRemaining', '-', 1)}))
+            .where('id', '=', meetingMemberId)
+        )
+        .updateTable('RetroReflectionGroup')
+        .set({voterIds: sql`ARRAY_APPEND("voterIds",${userId})`})
+        .where('id', '=', reflectionGroupId)
+        .executeTakeFirst()
+    })
+  } catch (e) {
+    return {error: {message: (e as Error).message}}
   }
   return undefined
 }

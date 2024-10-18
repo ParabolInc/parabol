@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
 import getKysely from '../../../postgres/getKysely'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -21,8 +20,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   {teamId, name, rrule, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  const pg = getKysely()
-  const r = await getRethink()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -50,19 +47,9 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const meetingName = createMeetingSeriesTitle(name || 'Standup', new Date(), 'UTC')
   const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
-
-  await Promise.all([
-    r.table('NewMeeting').insert(meeting).run(),
-    pg
-      .with('NewMeetingInsert', (qb) =>
-        qb.insertInto('NewMeeting').values({...meeting, phases: JSON.stringify(meeting.phases)})
-      )
-      .updateTable('Team')
-      .set({lastMeetingType: 'teamPrompt'})
-      .where('id', '=', teamId)
-      .execute()
-  ])
-
+  if (!meeting) {
+    return {error: {message: 'Meeting already started'}}
+  }
   const {id: meetingId} = meeting
   const meetingSeries = rrule && (await startNewMeetingSeries(meeting, rrule, name))
   if (meetingSeries) {

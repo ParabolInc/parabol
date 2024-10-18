@@ -1,6 +1,5 @@
 import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
-import {r} from 'rethinkdb-ts'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
@@ -67,13 +66,6 @@ const handleCompletedRetrospectiveStage = async (
         .set({phases: JSON.stringify(phases)})
         .where('id', '=', meeting.id)
         .execute()
-      await r
-        .table('NewMeeting')
-        .get(meeting.id)
-        .update({
-          phases
-        })
-        .run()
       data.meeting = meeting
       // dont await for the OpenAI API response
       generateDiscussionPrompt(meeting.id, teamId, dataLoader, facilitatorUserId!)

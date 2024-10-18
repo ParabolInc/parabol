@@ -1,8 +1,9 @@
-import {ASSIGNEE, MENTIONEE} from 'parabol-client/utils/constants'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
-import Task from '../../../database/types/Task'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
+import {selectNotifications} from '../../../postgres/select'
+import {Task} from '../../../postgres/types'
+import {TaskInvolvesNotification} from '../../../postgres/types/Notification'
 import {analytics} from '../../../utils/analytics/analytics'
 
 const publishChangeNotifications = async (
@@ -11,7 +12,7 @@ const publishChangeNotifications = async (
   changeUser: {id: string; email: string},
   usersToIgnore: string[]
 ) => {
-  const r = await getRethink()
+  const pg = getKysely()
   const changeAuthorId = `${changeUser.id}::${task.teamId}`
   const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldTask.content)
   const {entityMap, blocks} = JSON.parse(task.content)
@@ -33,16 +34,15 @@ const publishChangeNotifications = async (
         // it isn't someone in a meeting
         !usersToIgnore.includes(userId)
     )
-    .map(
-      (userId) =>
-        new NotificationTaskInvolves({
-          userId,
-          involvement: MENTIONEE,
-          taskId: task.id,
-          changeAuthorId,
-          teamId: task.teamId
-        })
-    )
+    .map((userId) => ({
+      id: generateUID(),
+      type: 'TASK_INVOLVES' as const,
+      userId,
+      involvement: 'MENTIONEE' as TaskInvolvesNotification['involvement'],
+      taskId: task.id,
+      changeAuthorId,
+      teamId: task.teamId
+    }))
 
   mentions.forEach((mentionedUserId) => {
     analytics.mentionedOnTask(changeUser, mentionedUserId, task.teamId)
@@ -50,15 +50,15 @@ const publishChangeNotifications = async (
   // add in the assignee changes
   if (oldTask.userId && oldTask.userId !== task.userId) {
     if (task.userId && task.userId !== changeUser.id && !usersToIgnore.includes(task.userId)) {
-      notificationsToAdd.push(
-        new NotificationTaskInvolves({
-          userId: task.userId,
-          involvement: ASSIGNEE,
-          taskId: task.id,
-          changeAuthorId,
-          teamId: task.teamId
-        })
-      )
+      notificationsToAdd.push({
+        id: generateUID(),
+        type: 'TASK_INVOLVES' as const,
+        userId: task.userId,
+        involvement: 'ASSIGNEE' as const,
+        taskId: task.id,
+        changeAuthorId,
+        teamId: task.teamId
+      })
     }
     userIdsToRemove.push(oldTask.userId)
   }
@@ -69,21 +69,19 @@ const publishChangeNotifications = async (
     const contentLen = blocks[0] ? blocks[0].text.length : 0
     if (contentLen > oldContentLen && task.userId) {
       const maybeInvolvedUserIds = mentions.concat(task.userId)
-      const existingTaskNotifications = (await r
-        .table('Notification')
-        .getAll(r.args(maybeInvolvedUserIds), {index: 'userId'})
-        .filter({
-          taskId: task.id,
-          type: 'TASK_INVOLVES'
-        })
-        .run()) as NotificationTaskInvolves[]
+      const existingTaskNotifications = await selectNotifications()
+        .where('userId', 'in', maybeInvolvedUserIds)
+        .where('type', '=', 'TASK_INVOLVES')
+        .where('taskId', '=', task.id)
+        .$narrowType<TaskInvolvesNotification>()
+        .execute()
       notificationsToAdd.push(...existingTaskNotifications)
     }
   }
 
   // update changes in the db
   if (notificationsToAdd.length) {
-    await r.table('Notification').insert(notificationsToAdd).run()
+    await pg.insertInto('Notification').values(notificationsToAdd).execute()
   }
   return {notificationsToAdd}
 }

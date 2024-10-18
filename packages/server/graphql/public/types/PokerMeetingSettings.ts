@@ -1,4 +1,3 @@
-import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import db from '../../../db'
 import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
@@ -23,7 +22,7 @@ const PokerMeetingSettings: PokerMeetingSettingsResolvers = {
     const {orgId} = team
     const templates = await dataLoader.get('meetingTemplatesByOrgId').load(orgId)
     const organizationTemplates = templates.filter(
-      (template: MeetingTemplate) =>
+      (template) =>
         template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'poker'
     )
     const scoredTemplates = await getScoredTemplates(organizationTemplates, ORG_HOTNESS_FACTOR)

@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import {TaskServiceEnum} from '~/../server/database/types/Task'
+import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'

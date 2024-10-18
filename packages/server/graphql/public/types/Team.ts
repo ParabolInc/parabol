@@ -1,3 +1,4 @@
+import {InsightId} from '../../../../client/shared/gqlIds/InsightId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
@@ -26,6 +27,19 @@ const Team: TeamResolvers = {
   teamLead: async ({id: teamId}, _args, {dataLoader}) => {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     return teamMembers.find((teamMember) => teamMember.isLead)!
+  },
+  retroMeetingsCount: async ({id: teamId}, _args, {dataLoader}) => {
+    const meetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
+    const retroMeetings = meetings.filter((meeting) => meeting.meetingType === 'retrospective')
+    return retroMeetings.length
+  },
+  insight: async ({id: teamId}, _args, {dataLoader}) => {
+    const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
+    if (!insight) return null
+    return {
+      ...insight,
+      id: InsightId.join(teamId, insight.id)
+    }
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})

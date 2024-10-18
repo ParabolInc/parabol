@@ -1,11 +1,7 @@
 import DataLoader from 'dataloader'
-import tracer from 'dd-trace'
 import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
-import getRethink from '../database/rethinkDriver'
-import {RDatum} from '../database/stricterR'
 import MeetingTemplate from '../database/types/MeetingTemplate'
-import Task, {TaskStatusEnum} from '../database/types/Task'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
@@ -25,8 +21,13 @@ import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
-import {selectMeetingSettings, selectNewMeetings, selectTeams} from '../postgres/select'
-import {MeetingSettings, OrganizationUser, Team} from '../postgres/types'
+import {
+  selectMeetingSettings,
+  selectNewMeetings,
+  selectTasks,
+  selectTeams
+} from '../postgres/select'
+import {Insight, MeetingSettings, OrganizationUser, Task, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
@@ -34,8 +35,6 @@ import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
-import normalizeResults from './normalizeResults'
-
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -57,7 +56,7 @@ export interface UserTasksKey {
   userIds: string[]
   teamIds: string[]
   archived?: boolean
-  statusFilters?: TaskStatusEnum[] | null
+  statusFilters?: Task['status'][] | null
   filterQuery?: string | null
   includeUnassigned?: boolean
 }
@@ -132,7 +131,6 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
   dependsOn('tasks')
   return new DataLoader<UserTasksKey, Task[], string>(
     async (keys) => {
-      const r = await getRethink()
       const uniqKeys = [] as UserTasksKey[]
       const keySet = new Set()
       keys.forEach((key) => {
@@ -156,42 +154,23 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             filterQuery,
             includeUnassigned
           } = key
-          const dbAfter = after ? new Date(after) : r.maxval
-
-          let teamTaskPartial = r.table('Task').getAll(r.args(teamIds), {index: 'teamId'})
-          if (userIds?.length) {
-            teamTaskPartial = teamTaskPartial.filter((row: RDatum) =>
-              r(userIds).contains(row('userId'))
-            )
-          }
-          if (statusFilters?.length) {
-            teamTaskPartial = teamTaskPartial.filter((row: RDatum) =>
-              r(statusFilters).contains(row('status'))
-            )
-          }
-          if (filterQuery) {
-            // TODO: deal with tags like #archived and #private. should strip out of plaintextContent??
-            teamTaskPartial = teamTaskPartial.filter(
-              (row: RDatum) => row('plaintextContent').match(filterQuery) as any
-            )
-          }
-
+          const hasUserIds = userIds?.length > 0
+          const hasStatusFilters = statusFilters ? statusFilters.length > 0 : false
+          const teamTasks = await selectTasks()
+            .where('teamId', 'in', teamIds)
+            .$if(hasUserIds, (qb) => qb.where('userId', 'in', userIds))
+            .$if(hasStatusFilters, (qb) => qb.where('status', 'in', statusFilters!))
+            .$if(!!filterQuery, (qb) => qb.where('plaintextContent', 'ilike', `%${filterQuery}%`))
+            .$if(!!after, (qb) => qb.where('updatedAt', '<', after!))
+            .$if(!!archived, (qb) => qb.where(sql<boolean>`'archived' = ANY(tags)`))
+            .$if(!archived, (qb) => qb.where(sql<boolean>`'archived' != ALL(tags)`))
+            .$if(!includeUnassigned, (qb) => qb.where('userId', 'is not', null))
+            .orderBy('updatedAt desc')
+            .limit(first + 1)
+            .execute()
           return {
             key: serializeUserTasksKey(key),
-            data: await teamTaskPartial
-              .filter((task: RDatum) => task('updatedAt').lt(dbAfter))
-              .filter((task: RDatum) =>
-                archived
-                  ? task('tags').contains('archived')
-                  : task('tags').contains('archived').not()
-              )
-              .filter((task: RDatum) => {
-                if (includeUnassigned) return true
-                return task('userId').ne(null)
-              })
-              .orderBy(r.desc('updatedAt'))
-              .limit(first + 1)
-              .run()
+            data: teamTasks
           }
         })
       )
@@ -478,39 +457,8 @@ type MeetingStat = {
   meetingType: MeetingTypeEnum
   createdAt: Date
 }
-export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('newMeetings')
-  return new DataLoader<string, MeetingStat[], string>(
-    async (orgIds) => {
-      const r = await getRethink()
-      const meetingStatsByOrgId = await Promise.all(
-        orgIds.map(async (orgId) => {
-          // note: does not include archived teams!
-          const teams = await parent.get('teamsByOrgIds').load(orgId)
-          const teamIds = teams.map(({id}) => id)
-          const stats = (await r
-            .table('NewMeeting')
-            .getAll(r.args(teamIds), {index: 'teamId'})
-            .pluck('createdAt', 'meetingType')
-            // DO NOT CALL orderBy, it makes the query 10x more expensive!
-            // .orderBy('createdAt')
-            .run()) as {createdAt: Date; meetingType: MeetingTypeEnum}[]
-          return stats.map((stat) => ({
-            createdAt: stat.createdAt,
-            meetingType: stat.meetingType,
-            id: `ms${stat.createdAt.getTime()}`
-          }))
-        })
-      )
-      return meetingStatsByOrgId
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
 
-export const _pgmeetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('newMeetings')
   return new DataLoader<string, MeetingStat[], string>(
     async (orgIds) => {
@@ -568,16 +516,17 @@ export const taskIdsByTeamAndGitHubRepo = (
   dependsOn('tasks')
   return new DataLoader<{teamId: string; nameWithOwner: string}, string[], string>(
     async (keys) => {
-      const r = await getRethink()
       const res = await Promise.all(
-        keys.map((key) => {
+        keys.map(async (key) => {
           const {teamId, nameWithOwner} = key
-          // This is very expensive! We should move tasks to PG ASAP
-          return r
-            .table('Task')
-            .getAll(teamId, {index: 'teamId'})
-            .filter((row: RDatum) => row('integration')('nameWithOwner').eq(nameWithOwner))('id')
-            .run()
+          const res = await getKysely()
+            .selectFrom('Task')
+            .select('id')
+            .where('teamId', '=', teamId)
+            .where('integration', 'is not', null)
+            .where(sql<boolean>`"integration"->>'nameWithOwner' = ${nameWithOwner}`)
+            .execute()
+          return res.map(({id}) => id)
         })
       )
       return res
@@ -610,33 +559,10 @@ export const activeMeetingsByMeetingSeriesId = (
   dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting[], string>(
     async (keys) => {
-      const r = await getRethink()
-      const res = await r
-        .table('NewMeeting')
-        .getAll(r.args(keys), {index: 'meetingSeriesId'})
-        .filter({endedAt: null}, {default: true})
-        .orderBy(r.asc('createdAt'))
-        .run()
-      return normalizeArrayResults(keys, res, 'meetingSeriesId')
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const _pgactiveMeetingsByMeetingSeriesId = (
-  parent: RootDataLoader,
-  dependsOn: RegisterDependsOn
-) => {
-  dependsOn('newMeetings')
-  return new DataLoader<number, AnyMeeting[], string>(
-    async (keys) => {
       const res = await selectNewMeetings()
         .where('meetingSeriesId', 'in', keys)
         .where('endedAt', 'is', null)
         .orderBy('createdAt')
-        .$narrowType<AnyMeeting>()
         .execute()
       return normalizeArrayResults(keys, res, 'meetingSeriesId')
     },
@@ -652,34 +578,6 @@ export const lastMeetingByMeetingSeriesId = (
 ) => {
   dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting | null, string>(
-    async (keys) =>
-      tracer.trace('lastMeetingByMeetingSeriesId', async () => {
-        const r = await getRethink()
-        const res = await (
-          r
-            .table('NewMeeting')
-            .getAll(r.args(keys), {index: 'meetingSeriesId'})
-            .group('meetingSeriesId') as RDatum
-        )
-          .orderBy(r.desc('createdAt'))
-          .nth(0)
-          .default(null)
-          .ungroup()('reduction')
-          .run()
-        return normalizeResults(keys, res as AnyMeeting[], 'meetingSeriesId')
-      }),
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const _pglastMeetingByMeetingSeriesId = (
-  parent: RootDataLoader,
-  dependsOn: RegisterDependsOn
-) => {
-  dependsOn('newMeetings')
-  return new DataLoader<number, AnyMeeting | null, string>(
     async (keys) => {
       return await Promise.all(
         keys.map(async (key) => {
@@ -687,7 +585,6 @@ export const _pglastMeetingByMeetingSeriesId = (
             .where('meetingSeriesId', '=', key)
             .orderBy('createdAt desc')
             .limit(1)
-            .$narrowType<AnyMeeting>()
             .executeTakeFirst()
           return latestMeeting || null
         })
@@ -898,23 +795,40 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
   dependsOn('newMeetings')
   return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
     async (keys) => {
-      const r = await getRethink()
-      const res = await Promise.all(
+      return await Promise.all(
         keys.map(async ({teamId, meetingType}) => {
-          return r
-            .table('NewMeeting')
-            .getAll(teamId, {index: 'teamId'})
-            .filter({meetingType: meetingType as any})
-            .count()
-            .default(0)
-            .run()
+          const row = await getKysely()
+            .selectFrom('NewMeeting')
+            .select(({fn}) => fn.count('id').as('count'))
+            .where('teamId', '=', teamId)
+            .where('meetingType', '=', meetingType)
+            .executeTakeFirstOrThrow()
+          return Number(row.count)
         })
       )
-      return res
     },
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
+    }
+  )
+}
+
+export const latestInsightByTeamId = (parent: RootDataLoader) => {
+  return new NullableDataLoader<string, Insight | null, string>(
+    async (teamIds) => {
+      const pg = getKysely()
+      const insights = await pg
+        .selectFrom('Insight')
+        .where('teamId', 'in', teamIds)
+        .selectAll()
+        .orderBy('createdAt', 'desc')
+        .execute()
+
+      return teamIds.map((teamId) => insights.find((insight) => insight.teamId === teamId) || null)
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
@@ -977,29 +891,6 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.ownerId}:${key.featureName}`
-    }
-  )
-}
-
-export const _pgmeetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('newMeetings')
-  return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(
-    async (keys) => {
-      return await Promise.all(
-        keys.map(async ({teamId, meetingType}) => {
-          const row = await getKysely()
-            .selectFrom('NewMeeting')
-            .select(({fn}) => fn.count('id').as('count'))
-            .where('teamId', '=', teamId)
-            .where('meetingType', '=', meetingType)
-            .executeTakeFirstOrThrow()
-          return Number(row.count)
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
     }
   )
 }

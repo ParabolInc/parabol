@@ -10,7 +10,7 @@ export type RedisType = {
   [P in keyof typeof customRedisQueries]: Unpromise<ReturnType<(typeof customRedisQueries)[P]>>[0]
 }
 
-export type CacheType = RedisType & DBType
+export type CacheType = RedisType
 
 const TTL = ms('3h')
 
@@ -134,7 +134,7 @@ export default class RedisCache<T extends keyof CacheType> {
     return this.getRedis().del(key)
   }
   prime = async (table: T, docs: CacheType[T][]) => {
-    const writes = docs.map((doc) => {
+    const writes = docs.map((doc: any) => {
       return msetpx(`${table}:${doc.id}`, doc)
     })
     await this.getRedis().multi(writes).exec()

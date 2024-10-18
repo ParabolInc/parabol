@@ -1,18 +1,17 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {AGENDA_ITEMS, DONE, LAST_CALL} from 'parabol-client/utils/constants'
+import {AGENDA_ITEMS, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {positionAfter} from '../../../client/shared/sortOrder'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
-import getRethink from '../../database/rethinkDriver'
-import {RDatum} from '../../database/stricterR'
-import Task from '../../database/types/Task'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
-import {AgendaItem} from '../../postgres/types'
+import {selectTasks} from '../../postgres/select'
+import {AgendaItem, Task} from '../../postgres/types'
 import {CheckInMeeting} from '../../postgres/types/Meeting'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
@@ -32,34 +31,24 @@ import removeEmptyTasks from './helpers/removeEmptyTasks'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
-  const r = await getRethink()
-  const taskMax = await (
-    r
-      .table('Task')
-      .getAll(r.args(userIds), {index: 'userId'})
-      .filter((task: RDatum) => task('tags').contains('archived').not()) as any
-  )
-    .max('sortOrder')('sortOrder')
-    .default(0)
-    .run()
+  const pg = getKysely()
+  const taskMaxRes = await pg
+    .selectFrom('Task')
+    .select(({fn}) => fn.max<bigint>('sortOrder').as('maxSortOrder'))
+    .where('userId', 'in', userIds)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
+    .executeTakeFirst()
+  const maxSortOrder = Number(taskMaxRes?.maxSortOrder ?? 0)
+
   // mutate what's in the dataloader
   tasks.forEach((task, idx) => {
-    task.sortOrder = taskMax + idx + 1
+    task.sortOrder = maxSortOrder + idx + 1
   })
-  const updatedTasks = tasks.map((task) => ({
-    id: task.id,
-    sortOrder: task.sortOrder
-  }))
-  await r(updatedTasks)
-    .forEach((task) => {
-      return r
-        .table('Task')
-        .get(task('id'))
-        .update({
-          sortOrder: task('sortOrder') as unknown as number
-        })
-    })
-    .run()
+  await Promise.all(
+    tasks.map((task) =>
+      pg.updateTable('Task').set({sortOrder: task.sortOrder}).where('id', '=', task.id).execute()
+    )
+  )
   return tasks
 }
 
@@ -108,22 +97,14 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
 
   const {id: meetingId, teamId, phases} = meeting
   const pg = getKysely()
-  const r = await getRethink()
   const [meetingMembers, tasks, doneTasks, activeAgendaItems] = await Promise.all([
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    r
-      .table('Task')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({
-        meetingId
-      })
-      .run(),
-    r
-      .table('Task')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({status: DONE})
-      .filter((task: RDatum) => task('tags').contains('archived').not())
-      .run(),
+    dataLoader.get('tasksByMeetingId').load(meetingId),
+    selectTasks()
+      .where('teamId', '=', teamId)
+      .where('status', '=', 'done')
+      .where(sql<boolean>`'archived' != ALL(tags)`)
+      .execute(),
     dataLoader.get('agendaItemsByTeamId').load(teamId)
   ])
 
@@ -151,19 +132,7 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
         taskCount: tasks.length
       })
       .where('id', '=', meetingId)
-      .execute(),
-    r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          agendaItemCount: activeAgendaItems.length,
-          commentCount,
-          taskCount: tasks.length
-        },
-        {nonAtomic: true}
-      )
-      .run()
+      .execute()
   ])
   dataLoader.clearAll('newMeetings')
   return {updatedTaskIds: [...tasks, ...doneTasks].map(({id}) => id)}
@@ -181,7 +150,6 @@ export default {
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -211,19 +179,6 @@ export default {
     const phase = getMeetingPhase(phases)
     const insights = await gatherInsights(meeting, dataLoader)
 
-    const completedCheckIn = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          endedAt: now,
-          phases,
-          ...insights
-        },
-        {returnChanges: true}
-      )('changes')(0)('new_val')
-      .default(null)
-      .run()
     await pg
       .updateTable('NewMeeting')
       .set({
@@ -235,12 +190,7 @@ export default {
       .where('id', '=', meetingId)
       .execute()
     dataLoader.clearAll('newMeetings')
-    if (!completedCheckIn) {
-      return standardError(new Error('Completed check-in meeting does not exist'), {
-        userId: viewerId
-      })
-    }
-
+    const completedCheckIn = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (completedCheckIn.meetingType !== 'action') {
       return standardError(new Error('Completed check-in meeting is not an action'), {
         userId: viewerId
@@ -251,7 +201,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId, teamId)
+      removeEmptyTasks(meetingId)
     ])
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)

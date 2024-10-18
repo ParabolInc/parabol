@@ -1,76 +1,11 @@
 import {MasterPool, r} from 'rethinkdb-ts'
-import TeamInvitation from '../database/types/TeamInvitation'
-import {AnyMeeting, AnyMeetingTeamMember} from '../postgres/types/Meeting'
 import getRethinkConfig from './getRethinkConfig'
 import {R} from './stricterR'
-import MassInvitation from './types/MassInvitation'
-import NotificationKickedOut from './types/NotificationKickedOut'
-import NotificationMeetingStageTimeLimitEnd from './types/NotificationMeetingStageTimeLimitEnd'
-import NotificationMentioned from './types/NotificationMentioned'
-import NotificationPaymentRejected from './types/NotificationPaymentRejected'
-import NotificationPromoteToBillingLeader from './types/NotificationPromoteToBillingLeader'
-import NotificationResponseMentioned from './types/NotificationResponseMentioned'
-import NotificationResponseReplied from './types/NotificationResponseReplied'
-import NotificationTaskInvolves from './types/NotificationTaskInvolves'
-import NotificationTeamArchived from './types/NotificationTeamArchived'
-import NotificationTeamInvitation from './types/NotificationTeamInvitation'
-import Task from './types/Task'
 
-export type RethinkSchema = {
-  MassInvitation: {
-    type: MassInvitation
-    index: 'teamMemberId'
-  }
-  MeetingMember: {
-    type: AnyMeetingTeamMember
-    index: 'meetingId' | 'teamId' | 'userId'
-  }
-  NewMeeting: {
-    type: AnyMeeting
-    index:
-      | 'facilitatorUserId'
-      | 'teamId'
-      | 'templateId'
-      | 'meetingSeriesId'
-      | 'hasEndedScheduledEndTime'
-  }
-  NewFeature: {
-    type: any
-    index: ''
-  }
-  Notification: {
-    type:
-      | NotificationTaskInvolves
-      | NotificationTeamArchived
-      | NotificationMeetingStageTimeLimitEnd
-      | NotificationPaymentRejected
-      | NotificationKickedOut
-      | NotificationPromoteToBillingLeader
-      | NotificationTeamInvitation
-      | NotificationResponseMentioned
-      | NotificationResponseReplied
-      | NotificationMentioned
-    index: 'userId'
-  }
-  Task: {
-    type: Task
-    index:
-      | 'integrationId'
-      | 'tags'
-      | 'teamId'
-      | 'teamIdUpdatedAt'
-      | 'discussionId'
-      | 'userId'
-      | 'integrationHash'
-  }
-  TeamInvitation: {
-    type: TeamInvitation
-    index: 'email' | 'teamId' | 'token'
-  }
-}
+export type RethinkSchema = {}
 
 export type DBType = {
-  [P in keyof RethinkSchema]: RethinkSchema[P]['type']
+  [P in keyof RethinkSchema]: any
 }
 
 export type ParabolR = R<RethinkSchema>

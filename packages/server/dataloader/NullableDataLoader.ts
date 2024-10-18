@@ -17,12 +17,16 @@ class NullableDataLoader<Key, Value, CacheKey = Key> extends UpdatableCacheDataL
     super(batchLoadFn, options)
   }
 
-  async loadNonNull(key: Key): Promise<Value> {
+  load<NarrowType = Value>(key: Key) {
+    return super.load(key) as Promise<NarrowType | undefined>
+  }
+
+  async loadNonNull<NarrowType = Value>(key: Key) {
     const value = await this.load(key)
     if (value === undefined) {
       throw new Error('Non-nullable value is undefined')
     }
-    return value
+    return value as NarrowType
   }
 }
 

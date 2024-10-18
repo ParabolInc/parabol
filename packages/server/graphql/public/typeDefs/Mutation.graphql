@@ -423,6 +423,17 @@ type Mutation {
   ): InviteToTeamPayload!
 
   """
+  Generate an insight for a team
+  """
+  generateInsight(
+    teamId: ID!
+    startDate: DateTime!
+    endDate: DateTime!
+    useSummaries: Boolean
+    prompt: String
+  ): GenerateInsightPayload!
+
+  """
   Move a template dimension
   """
   movePokerTemplateDimension(
@@ -469,27 +480,6 @@ type Mutation {
     """
     meetingId: ID!
   ): NavigateMeetingPayload!
-
-  """
-  Check a member in as present or absent
-  """
-  newMeetingCheckIn(
-    """
-    The id of the user being marked present or absent
-    """
-    userId: ID!
-
-    """
-    the meeting currently in progress
-    """
-    meetingId: ID!
-
-    """
-    true if the member is present, false if absent, null if undecided
-    """
-    isCheckedIn: Boolean
-  ): NewMeetingCheckInPayload
-    @deprecated(reason: "Members now join lazily and joining means they are present")
 
   """
   Increment the count of times the org has clicked pay later

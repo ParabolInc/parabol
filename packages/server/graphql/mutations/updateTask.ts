@@ -2,8 +2,9 @@ import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import getRethink from '../../database/rethinkDriver'
-import Task, {AreaEnum as TAreaEnum, TaskStatusEnum} from '../../database/types/Task'
+import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
+import getKysely from '../../postgres/getKysely'
+import {Task} from '../../postgres/types/index'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -18,12 +19,12 @@ type UpdateTaskInput = {
   id: string
   content?: string | null
   sortOrder?: number | null
-  status?: TaskStatusEnum | null
+  status?: Task['status'] | null
   userId?: string | null
 }
 type UpdateTaskMutationVariables = {
   updatedTask: UpdateTaskInput
-  area?: TAreaEnum | null
+  area?: 'meeting' | 'teamDash' | 'userDash' | null
 }
 export default {
   type: new GraphQLObjectType({
@@ -46,8 +47,7 @@ export default {
     {updatedTask}: UpdateTaskMutationVariables,
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const r = await getRethink()
-    const now = new Date()
+    const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -56,7 +56,7 @@ export default {
     const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
     const validContent = normalizeRawDraftJS(content)
     const [task, viewer] = await Promise.all([
-      r.table('Task').get(taskId).run(),
+      dataLoader.get('tasks').load(taskId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!task) {
@@ -74,29 +74,26 @@ export default {
       }
     }
     // RESOLUTION
-    const isSortOrderUpdate =
-      updatedTask.sortOrder !== undefined && Object.keys(updatedTask).length === 2
-    const nextTask = new Task({
-      ...task,
-      userId: nextUserId,
-      status: status || task.status,
-      sortOrder: sortOrder || task.sortOrder,
-      content: content ? validContent : task.content,
-      plaintextContent: content ? extractTextFromDraftString(validContent) : task.plaintextContent,
-      updatedAt: isSortOrderUpdate ? task.updatedAt : now
-    })
-
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-    const {newTask} = await r({
-      newTask: r
-        .table('Task')
-        .get(taskId)
-        .update(nextTask, {returnChanges: true})('changes')(0)('new_val')
-        .default(null) as unknown as Task
-    }).run()
+    const updateRes = await pg
+      .updateTable('Task')
+      .set({
+        content: content ? validContent : undefined,
+        plaintextContent: content ? extractTextFromDraftString(validContent) : undefined,
+        sortOrder: sortOrder || undefined,
+        status: status || undefined,
+        userId: inputUserId || undefined,
+        tags: content ? getTagsFromEntityMap(JSON.parse(validContent).entityMap) : undefined
+      })
+      .where('id', '=', taskId)
+      .executeTakeFirst()
+    if (Number(updateRes.numChangedRows) === 0) {
+      return standardError(new Error('Already updated task'), {userId: viewerId})
+    }
+    dataLoader.clearAll('tasks')
+    const newTask = await dataLoader.get('tasks').loadNonNull(taskId)
     // TODO: get users in the same location
     const usersToIgnore = await getUsersToIgnore(viewerId, teamId)
-    if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages
     const isPrivate = newTask.tags.includes('private')

@@ -25,7 +25,7 @@ export const DragEstimatingTaskSuccess = new GraphQLObjectType<any, GQLContext>(
     stages: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(EstimateStage))),
       resolve: async ({meetingId, stageIds}, _args: unknown, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
         const {phases, teamId} = meeting
         const phase = getPhase(phases, 'ESTIMATE')
         const {stages} = phase

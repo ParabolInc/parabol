@@ -1,7 +1,7 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {getUserId} from '../../utils/authorization'
-import errorFilter from '../errorFilter'
 import {GQLContext} from '../graphql'
+import isValid from '../isValid'
 import {
   resolveFilterByTeam,
   resolveOrganization,
@@ -64,7 +64,7 @@ const RemoveOrgUserPayload = new GraphQLObjectType<any, GQLContext>({
         const viewerId = getUserId(authToken)
         const notifications = (
           await dataLoader.get('notifications').loadMany(kickOutNotificationIds)
-        ).filter(errorFilter)
+        ).filter(isValid)
         return notifications.filter((notification) => notification.userId === viewerId)
       }
     },

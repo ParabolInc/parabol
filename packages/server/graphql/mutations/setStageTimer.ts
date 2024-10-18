@@ -1,7 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import getRethink from '../../database/rethinkDriver'
 import ScheduledJobMeetingStageTimeLimit from '../../database/types/ScheduledJobMetingStageTimeLimit'
 import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
@@ -46,7 +45,6 @@ export default {
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -54,7 +52,7 @@ export default {
 
     // AUTH
     const [meeting, viewer] = await Promise.all([
-      dataLoader.get('newMeetings').load(meetingId),
+      dataLoader.get('newMeetings').loadNonNull(meetingId),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     const {endedAt, facilitatorStageId, facilitatorUserId, phases, teamId} = meeting
@@ -108,14 +106,6 @@ export default {
     }
 
     // RESOLUTION
-    await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update({
-        phases,
-        updatedAt: now
-      })
-      .run()
     await pg
       .updateTable('NewMeeting')
       .set({phases: JSON.stringify(phases)})

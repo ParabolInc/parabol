@@ -17,7 +17,7 @@ const Discussion: DiscussionResolvers = {
   },
 
   stage: async ({discussionTopicId, discussionTopicType, meetingId}, _args, {dataLoader}) => {
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {phases, teamId} = meeting
     switch (discussionTopicType) {
       case 'agendaItem': {

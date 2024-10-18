@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import mode from 'parabol-client/utils/mode'
-import getRethink from '../../database/rethinkDriver'
-import {RValue} from '../../database/stricterR'
+import mode from '../../../client/utils/mode'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -37,7 +35,7 @@ const updateRetroMaxVotes = {
     }: {totalVotes: number; maxVotesPerGroup: number; meetingId: string},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
-    const r = await getRethink()
+    const pg = getKysely()
     const viewerId = getUserId(authToken)
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -49,9 +47,6 @@ const updateRetroMaxVotes = {
       return {error: {message: 'Meeting not found'}}
     }
 
-    if (meeting.meetingType !== 'retrospective') {
-      return {error: {message: `Meeting not retrospective`}}
-    }
     const {
       endedAt,
       meetingType,
@@ -91,78 +86,59 @@ const updateRetroMaxVotes = {
     }
 
     const delta = totalVotes - oldTotalVotes
-    // this isn't 100% atomic, but it's done in a single call, so it's pretty close
-    // eventual consistancy is OK, it's just possible for a client to get a bad data in between the 2 updates
-    // if votesRemaining goes negative for any user, we know we can't decrease any more
-    const hasError = await r
-      .table('MeetingMember')
-      .getAll(meetingId, {index: 'meetingId'})
-      .update(
-        (member: RValue) => ({
-          votesRemaining: member('votesRemaining').add(delta)
-        }),
-        {returnChanges: true}
-      )('changes')('new_val')('votesRemaining')
-      .min()
-      .lt(0)
-      .default(false)
-      .do((undo: RValue) => {
-        return r.branch(
-          undo,
-          r
-            .table('MeetingMember')
-            .getAll(meetingId, {index: 'meetingId'})
-            .update((member: RValue) => ({
-              votesRemaining: member('votesRemaining').add(-delta)
-            })),
-          null
-        )
-      })
-      .run()
-
-    if (hasError) {
-      return {error: {message: 'Your team has already spent their votes'}}
-    }
-
-    if (maxVotesPerGroup < oldMaxVotesPerGroup) {
-      const reflectionGroups = await dataLoader
-        .get('retroReflectionGroupsByMeetingId')
-        .load(meetingId)
-
-      const maxVotesByASingleUser = Math.max(
-        ...reflectionGroups.map(({voterIds}) => mode(voterIds)[0])
-      )
-      if (maxVotesByASingleUser > maxVotesPerGroup) {
-        return {error: {message: 'Your team has already spent their votes'}}
-      }
-    }
 
     // RESOLUTION
-    await Promise.all([
-      getKysely()
-        .with('MeetingUpdates', (qb) =>
-          qb
-            .updateTable('NewMeeting')
-            .set({totalVotes, maxVotesPerGroup})
-            .where('id', '=', meetingId)
-        )
-        .updateTable('MeetingSettings')
-        .set({
-          totalVotes,
-          maxVotesPerGroup
-        })
-        .where('teamId', '=', teamId)
-        .where('meetingType', '=', 'retrospective')
-        .execute(),
-      r
-        .table('NewMeeting')
-        .get(meetingId)
-        .update({
-          totalVotes,
-          maxVotesPerGroup
-        })
-        .run()
-    ])
+    try {
+      await pg.transaction().execute(async (trx) => {
+        if (maxVotesPerGroup < oldMaxVotesPerGroup) {
+          const reflectionGroups = await trx
+            .selectFrom('RetroReflectionGroup')
+            .select('voterIds')
+            .where('meetingId', '=', meetingId)
+            .where('isActive', '=', true)
+            .forUpdate()
+            .execute()
+          const maxVotesPerGroupSpent = Math.max(
+            ...reflectionGroups.map(({voterIds}) => mode(voterIds)[0])
+          )
+          if (maxVotesPerGroupSpent > maxVotesPerGroup)
+            throw new Error('A topic already has too many votes')
+        }
+        if (delta < 0) {
+          const res = await trx
+            .selectFrom('MeetingMember')
+            .select('votesRemaining')
+            .where('meetingId', '=', meetingId)
+            .forUpdate()
+            .execute()
+          const min = Math.min(...res.map((m) => Number(m.votesRemaining!)))
+          if (min < -delta) throw new Error('Your team has already spent their votes')
+        }
+        await trx
+          .with('MeetingMemberUpdates', (qb) =>
+            qb
+              .updateTable('MeetingMember')
+              .set((eb) => ({votesRemaining: eb('votesRemaining', '+', delta)}))
+              .where('meetingId', '=', meetingId)
+          )
+          .with('NewMeetingUpdates', (qb) =>
+            qb
+              .updateTable('NewMeeting')
+              .set({totalVotes, maxVotesPerGroup})
+              .where('id', '=', meetingId)
+          )
+          .updateTable('MeetingSettings')
+          .set({
+            totalVotes,
+            maxVotesPerGroup
+          })
+          .where('teamId', '=', teamId)
+          .where('meetingType', '=', 'retrospective')
+          .executeTakeFirstOrThrow()
+      })
+    } catch (e) {
+      return {error: {message: (e as Error).message}}
+    }
     dataLoader.get('newMeetings').clear(meetingId)
     const data = {meetingId}
     publish(SubscriptionChannel.MEETING, meetingId, 'UpdateRetroMaxVotesSuccess', data, subOptions)

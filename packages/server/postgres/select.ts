@@ -2,8 +2,10 @@ import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import {AutogroupReflectionGroupType, ReactjiDB, TranscriptBlock, UsedReactjis} from './types'
-import type {NewMeetingPhase} from './types/NewMeetingPhase'
+import {ReactjiDB, TaskTag} from './types'
+import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
+import {AnyNotification} from './types/Notification'
+import {AnyTaskIntegration} from './types/TaskIntegration'
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -265,13 +267,48 @@ export const selectNewMeetings = () =>
       'videoMeetingURL',
       'templateRefId',
       'meetingPrompt',
-      fn<NewMeetingPhase[]>('to_json', ['phases']).as('phases'),
-      fn<UsedReactjis | null>('to_json', ['usedReactjis']).as('usedReactjis'),
-      fn<TranscriptBlock[] | null>('to_json', ['transcription']).as('transcription'),
-      fn<AutogroupReflectionGroupType[] | null>('to_json', ['autogroupReflectionGroups']).as(
-        'autogroupReflectionGroups'
-      ),
-      fn<AutogroupReflectionGroupType[] | null>('to_json', ['resetReflectionGroups']).as(
-        'resetReflectionGroups'
-      )
+      fn('to_json', ['phases']).as('phases'),
+      fn('to_json', ['usedReactjis']).as('usedReactjis'),
+      fn('to_json', ['transcription']).as('transcription'),
+      fn('to_json', ['autogroupReflectionGroups']).as('autogroupReflectionGroups'),
+      fn('to_json', ['resetReflectionGroups']).as('resetReflectionGroups')
     ])
+    .$narrowType<AnyMeeting>()
+
+export const selectMeetingMembers = () =>
+  getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()
+
+export const selectMassInvitations = () => getKysely().selectFrom('MassInvitation').selectAll()
+
+export const selectNewFeatures = () => getKysely().selectFrom('NewFeature').selectAll()
+
+export const selectTeamInvitations = () => getKysely().selectFrom('TeamInvitation').selectAll()
+
+export const selectTasks = () =>
+  getKysely()
+    .selectFrom('Task')
+    .select(({fn}) => [
+      'id',
+      'createdAt',
+      'createdBy',
+      'doneMeetingId',
+      'dueDate',
+      'integrationHash',
+      'meetingId',
+      'plaintextContent',
+      'sortOrder',
+      'status',
+      'teamId',
+      'discussionId',
+      'threadParentId',
+      'threadSortOrder',
+      'updatedAt',
+      'userId',
+      // this is to match the previous behavior, no reason we couldn't export as json in the future
+      sql<string>`content::text`.as('content'),
+      fn<TaskTag[]>('to_json', ['tags']).as('tags'),
+      fn<AnyTaskIntegration | null>('to_json', ['integration']).as('integration')
+    ])
+
+export const selectNotifications = () =>
+  getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()

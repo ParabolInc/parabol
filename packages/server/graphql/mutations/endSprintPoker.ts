@@ -4,7 +4,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
-import getRethink from '../../database/rethinkDriver'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
@@ -33,7 +32,6 @@ export default {
   },
   async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
     const {authToken, socketId: mutatorId, dataLoader} = context
-    const r = await getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
@@ -79,21 +77,6 @@ export default {
       await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
     ).filter(isValid)
     const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-    const completedMeeting = await r
-      .table('NewMeeting')
-      .get(meetingId)
-      .update(
-        {
-          endedAt: now,
-          phases,
-          commentCount,
-          storyCount,
-          ...insights
-        },
-        {returnChanges: true, nonAtomic: true}
-      )('changes')(0)('new_val')
-      .default(null)
-      .run()
     await getKysely()
       .updateTable('NewMeeting')
       .set({
@@ -105,13 +88,9 @@ export default {
         engagement: insights.engagement
       })
       .where('id', '=', meetingId)
-      .executeTakeFirst()
+      .execute()
     dataLoader.clearAll('newMeetings')
-    if (!completedMeeting) {
-      return standardError(new Error('Completed poker meeting does not exist'), {
-        userId: viewerId
-      })
-    }
+    const completedMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (completedMeeting.meetingType !== 'poker') {
       return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
     }
@@ -120,7 +99,7 @@ export default {
       dataLoader.get('meetingMembersByMeetingId').load(meetingId),
       dataLoader.get('teams').loadNonNull(teamId),
       dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId, teamId),
+      removeEmptyTasks(meetingId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
       dataLoader.get('meetingTemplates').loadNonNull(templateId)
     ])

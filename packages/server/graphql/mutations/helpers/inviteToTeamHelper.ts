@@ -5,11 +5,10 @@ import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import {isNotNull} from '../../../../client/utils/predicates'
 import appOrigin from '../../../appOrigin'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
-import TeamInvitation from '../../../database/types/TeamInvitation'
 import getMailManager from '../../../email/getMailManager'
 import teamInviteEmailCreator from '../../../email/teamInviteEmailCreator'
+import generateUID from '../../../generateUID'
+import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -33,19 +32,25 @@ const inviteToTeamHelper = async (
 ) => {
   const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
-  const r = await getRethink()
+  const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const [total, pending] = await Promise.all([
-    r.table('TeamInvitation').getAll(teamId, {index: 'teamId'}).count().run(),
-    r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({acceptedAt: null})
-      .count()
-      .run()
+  const [totalRes, pendingRes] = await Promise.all([
+    pg
+      .selectFrom('TeamInvitation')
+      .select(({fn}) => fn.count<bigint>('id').as('count'))
+      .where('teamId', '=', teamId)
+      .executeTakeFirstOrThrow(),
+    pg
+      .selectFrom('TeamInvitation')
+      .select(({fn}) => fn.count<bigint>('id').as('count'))
+      .where('teamId', '=', teamId)
+      .where('acceptedAt', 'is', null)
+      .executeTakeFirstOrThrow()
   ])
+  const total = Number(totalRes.count)
+  const pending = Number(pendingRes.count)
   const accepted = total - pending
   // if no one has accepted one of their 100+ invites, don't trust them
   if (accepted === 0 && total + invitees.length >= 100) {
@@ -112,39 +117,41 @@ const inviteToTeamHelper = async (
   )
   const expiresAt = new Date(Date.now() + Threshold.TEAM_INVITATION_LIFESPAN)
   // insert invitation records
-  const teamInvitationsToInsert = newAllowedInvitees.map((email, idx) => {
-    return new TeamInvitation({
-      expiresAt,
-      email,
-      invitedBy: viewerId,
-      meetingId: meetingId ?? undefined,
-      teamId,
-      token: tokens[idx]!
-    })
-  })
-  await r.table('TeamInvitation').insert(teamInvitationsToInsert).run()
-
+  const teamInvitationsToInsert = newAllowedInvitees.map((email, idx) => ({
+    id: generateUID(),
+    expiresAt,
+    email,
+    invitedBy: viewerId,
+    meetingId: meetingId ?? undefined,
+    teamId,
+    token: tokens[idx]!,
+    isMassInvite: false,
+    createdAt: new Date(),
+    acceptedAt: null
+  }))
+  await pg.insertInto('TeamInvitation').values(teamInvitationsToInsert).execute()
   // remove suggested action, if any
   let removedSuggestedActionId
   if (isOnboardTeam) {
     removedSuggestedActionId = await removeSuggestedAction(viewerId, 'inviteYourTeam')
   }
   // insert notification records
-  const notificationsToInsert = [] as NotificationTeamInvitation[]
-  teamInvitationsToInsert.forEach((invitation) => {
-    const user = users.find((user) => user.email === invitation.email)
-    if (user) {
-      notificationsToInsert.push(
-        new NotificationTeamInvitation({
-          userId: user.id,
-          invitationId: invitation.id,
-          teamId
-        })
-      )
-    }
-  })
+  const notificationsToInsert = teamInvitationsToInsert
+    .map((invitation) => {
+      const user = users.find((user) => user.email === invitation.email)
+      if (!user) return null
+      return {
+        id: generateUID(),
+        type: 'TEAM_INVITATION' as const,
+        userId: user.id,
+        invitationId: invitation.id,
+        teamId
+      }
+    })
+    .filter(isValid)
+
   if (notificationsToInsert.length > 0) {
-    await r.table('Notification').insert(notificationsToInsert).run()
+    await pg.insertInto('Notification').values(notificationsToInsert).execute()
   }
 
   const bestMeeting = await getBestInvitationMeeting(teamId, meetingId ?? undefined, dataLoader)
