@@ -17,10 +17,12 @@ const importTasksForPoker = async (
   const pg = getKysely()
   const integratedUpdates = additiveUpdates.filter((update) => update.service !== 'PARABOL')
   const integrationHashes = integratedUpdates.map((update) => update.serviceTaskId)
+  const hasIntegrationHashes = integrationHashes.length > 0
+
   const existingTasks = await selectTasks()
-    .where('integrationHash', 'in', integrationHashes)
     .where('teamId', '=', teamId)
     .where('userId', '=', userId)
+    .$if(hasIntegrationHashes, (qb) => qb.where('integrationHash', 'in', integrationHashes))
     .execute()
   const integrationHashToTaskId = {} as Record<string, string>
   additiveUpdates.map((update) => {
