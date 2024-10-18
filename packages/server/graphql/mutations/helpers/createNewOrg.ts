@@ -1,7 +1,6 @@
 import Organization from '../../../database/types/Organization'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import insertOrgUserAudit from '../../../postgres/helpers/insertOrgUserAudit'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import {DataLoaderWorker} from '../../graphql'
 
@@ -20,9 +19,13 @@ export default async function createNewOrg(
     name: orgName,
     activeDomain
   })
-  await insertOrgUserAudit([orgId], leaderUserId, 'added')
   await getKysely()
     .with('Org', (qc) => qc.insertInto('Organization').values({...org, creditCard: null}))
+    .with('OrgUserAuditInsert', (qc) =>
+      qc
+        .insertInto('OrganizationUserAudit')
+        .values({orgId, userId: leaderUserId, eventDate: new Date(), eventType: 'added'})
+    )
     .insertInto('OrganizationUser')
     .values({
       id: generateUID(),
