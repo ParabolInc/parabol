@@ -43,4 +43,9 @@ input AddIntegrationProviderInput {
   OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825
   """
   oAuth2ProviderMetadataInput: IntegrationProviderMetadataInputOAuth2
+
+  """
+  Shared secret provider metadata, has to be non-null if token type is shared secret
+  """
+  sharedSecretMetadataInput: IntegrationProviderMetadataInputSharedSecret
 }
