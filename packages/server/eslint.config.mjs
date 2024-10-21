@@ -28,7 +28,6 @@ export default [
       '**/*/gitlabSchema.graphql',
       'graphql/private/schema.graphql',
       'graphql/public/schema.graphql',
-      '**/*/migrationTemplate.ts',
       '**/*debug.ts',
       '**/*/pg.d.ts'
     ]
