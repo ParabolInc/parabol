@@ -32,7 +32,6 @@
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
     "db:start": "docker compose -f docker/stacks/development/docker-compose.yml up -d",
     "db:stop": "docker compose -f docker/stacks/development/docker-compose.yml down",
-    "db:migrate": "node scripts/migrate.js",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",
     "predeploy": "node dist/preDeploy.js",
     "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",

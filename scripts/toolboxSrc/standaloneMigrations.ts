@@ -2,34 +2,10 @@
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
 import path from 'path'
-import {r} from 'rethinkdb-ts'
-import {parse} from 'url'
 import cliPgmConfig from '../../packages/server/postgres/pgmConfig'
 import '../webpack/utils/dotenv'
 import pgEnsureExtensions from './pgEnsureExtensions'
 import pgMigrate from './pgMigrateRunner'
-import * as rethinkMigrate from './rethinkMigrateRunner'
-
-const migrateRethinkDB = async () => {
-  console.log('👴 RethinkDB Migration Started')
-  const {hostname, port, path: urlPath} = parse(process.env.RETHINKDB_URL!)
-  process.env.host = hostname!
-  process.env.port = port!
-  process.env.db = urlPath!.slice(1)
-  process.env.r = process.cwd()
-  const context = (require as any).context(
-    '../../packages/server/database/migrations',
-    false,
-    /.(js|ts)$/
-  )
-  const collector = {}
-  context.keys().forEach((relativePath) => {
-    const {name} = path.parse(relativePath)
-    collector[name] = context(relativePath)
-  })
-  await rethinkMigrate.up({all: true, migrations: collector})
-  console.log('👴 RethinkDB Migration Complete')
-}
 
 const migratePG = async () => {
   console.log('🐘 Postgres Migration Started')
@@ -60,11 +36,7 @@ const migratePG = async () => {
 }
 
 const migrateDBs = async () => {
-  // RethinkDB must be run first because
-  // Some PG migrations depemd on the latest state of RethinkDB
-  await migrateRethinkDB()
   await migratePG()
-  await r.getPoolMaster()?.drain()
 }
 
 // If called via CLI

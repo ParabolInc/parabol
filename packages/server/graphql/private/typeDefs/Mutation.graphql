@@ -127,26 +127,6 @@ type Mutation {
   backupOrganization(orgIds: [ID!]!): String!
 
   """
-  check equality of a table between rethinkdb and postgres
-  """
-  checkRethinkPgEquality(
-    """
-    The table name to be compared
-    """
-    tableName: String!
-
-    """
-    How many errors should be returned
-    """
-    maxErrors: Int
-
-    """
-    Whether the output should be written to file
-    """
-    writeToFile: Boolean
-  ): String!
-
-  """
   a server-side mutation called when a client connects
   """
   connectSocket(

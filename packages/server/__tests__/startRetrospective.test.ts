@@ -1,8 +1,6 @@
-import getRethink from '../database/rethinkDriver'
 import {getUserTeams, sendPublic, signUp} from './common'
 
 test('Retro is named Retro #1 by default', async () => {
-  await getRethink()
   const {userId, authToken} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
@@ -42,7 +40,6 @@ test('Retro is named Retro #1 by default', async () => {
 })
 
 test('Single Retro can be named', async () => {
-  await getRethink()
   const {userId, authToken} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
@@ -84,7 +81,6 @@ test('Single Retro can be named', async () => {
 })
 
 test('Recurring retro is named like RetroSeries Jan 1', async () => {
-  await getRethink()
   const {userId, authToken} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
