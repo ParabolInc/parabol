@@ -33,7 +33,7 @@ const safeCreateRetrospective = async (
   const {showConversionModal} = organization
 
   const meetingId = generateUID()
-  const phases = await createNewMeetingPhases<RetroMeetingPhase>(
+  const [phases, inserts] = await createNewMeetingPhases<RetroMeetingPhase>(
     facilitatorUserId,
     teamId,
     meetingId,
@@ -51,10 +51,13 @@ const safeCreateRetrospective = async (
     name
   }) as RetrospectiveMeeting
   try {
-    await pg
-      .insertInto('NewMeeting')
-      .values({...meeting, phases: JSON.stringify(meeting.phases)})
-      .execute()
+    await pg.transaction().execute(async (pg) => {
+      await pg
+        .insertInto('NewMeeting')
+        .values({...meeting, phases: JSON.stringify(meeting.phases)})
+        .execute()
+      await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
+    })
   } catch (e) {
     // meeting already started
     return null

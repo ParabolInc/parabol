@@ -115,7 +115,7 @@ export default {
     const meetingId = generateUID()
     const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
 
-    const phases = await createNewMeetingPhases<PokerMeetingPhase>(
+    const [phases, inserts] = await createNewMeetingPhases<PokerMeetingPhase>(
       viewerId,
       teamId,
       meetingId,
@@ -145,10 +145,13 @@ export default {
 
     const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
     const [newMeetingRes] = await Promise.allSettled([
-      pg
-        .insertInto('NewMeeting')
-        .values({...meeting, phases: JSON.stringify(phases)})
-        .execute(),
+      pg.transaction().execute(async (pg) => {
+        await pg
+          .insertInto('NewMeeting')
+          .values({...meeting, phases: JSON.stringify(phases)})
+          .execute()
+        await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
+      }),
       updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
     ])
     if (newMeetingRes.status === 'rejected') {
