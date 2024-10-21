@@ -60,7 +60,7 @@ const InsightsFeedbackModal = (props: Props) => {
                 className={`transition-colors duration-200 ${feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
               />
               <span
-                className={`transition-colors duration-200 ${feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
+                className={`transition-colors duration-200 ${feedbackState.isUseful ? 'text-sky-500' : 'text-slate-600 group-hover:text-sky-500'}`}
               >
                 Yes
               </span>
@@ -73,7 +73,7 @@ const InsightsFeedbackModal = (props: Props) => {
                 className={`transition-colors duration-200 ${!feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
               />
               <span
-                className={`transition-colors duration-200 ${!feedbackState.isUseful ? 'text-sky-500' : 'text-slate-500 group-hover:text-sky-500'}`}
+                className={`transition-colors duration-200 ${!feedbackState.isUseful ? 'text-sky-500' : 'text-slate-600 group-hover:text-sky-500'}`}
               >
                 No
               </span>
