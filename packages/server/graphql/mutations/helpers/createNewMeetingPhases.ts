@@ -1,3 +1,4 @@
+import {InsertQueryBuilder} from 'kysely'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -23,6 +24,7 @@ import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
+import {DB} from '../../../postgres/pg'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {NewMeetingPhase, NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
@@ -84,7 +86,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
   ])
   const {phaseTypes} = meetingSettings
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
-  const asyncSideEffects = [] as Promise<any>[]
+  const inserts = [] as InsertQueryBuilder<DB, any, any>[]
 
   const tier = getFeatureTier(team)
   const phases = (await Promise.all(
@@ -109,19 +111,16 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
           const discussPhase = new DiscussPhase(durations)
           const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
           if (discussStages.length > 0) {
-            asyncSideEffects.push(
-              pg
-                .insertInto('Discussion')
-                .values(
-                  discussStages.map((stage) => ({
-                    id: stage.discussionId,
-                    teamId,
-                    meetingId,
-                    discussionTopicId: stage.reflectionGroupId,
-                    discussionTopicType: 'reflectionGroup'
-                  }))
-                )
-                .execute()
+            inserts.push(
+              pg.insertInto('Discussion').values(
+                discussStages.map((stage) => ({
+                  id: stage.discussionId,
+                  teamId,
+                  meetingId,
+                  discussionTopicId: stage.reflectionGroupId,
+                  discussionTopicType: 'reflectionGroup'
+                }))
+              )
             )
           }
           return discussPhase
@@ -133,19 +132,16 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
           const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
           const {stages} = agendaItemPhase
           if (stages.length > 0) {
-            asyncSideEffects.push(
-              pg
-                .insertInto('Discussion')
-                .values(
-                  stages.map((stage) => ({
-                    id: stage.discussionId,
-                    teamId,
-                    meetingId,
-                    discussionTopicId: stage.agendaItemId,
-                    discussionTopicType: 'agendaItem'
-                  }))
-                )
-                .execute()
+            inserts.push(
+              pg.insertInto('Discussion').values(
+                stages.map((stage) => ({
+                  id: stage.discussionId,
+                  teamId,
+                  meetingId,
+                  discussionTopicId: stage.agendaItemId,
+                  discussionTopicType: 'agendaItem'
+                }))
+              )
             )
           }
           return agendaItemPhase
@@ -163,8 +159,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
     })
   )) as [T, ...T[]]
   primePhases(phases)
-  await Promise.all(asyncSideEffects)
-  return phases
+  return [phases, inserts] as const
 }
 
 export default createNewMeetingPhases

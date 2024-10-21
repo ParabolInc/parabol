@@ -6,7 +6,7 @@ export async function up() {
   await client.connect()
   await client.query(`
     ALTER TABLE "Insight"
-    ADD COLUMN "meetingsCount" INTEGER NOT NULL DEFAULT 0;
+    ADD COLUMN IF NOT EXISTS "meetingsCount" INTEGER NOT NULL DEFAULT 0;
   `)
   await client.end()
 }

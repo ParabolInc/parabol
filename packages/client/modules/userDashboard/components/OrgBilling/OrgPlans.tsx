@@ -6,7 +6,6 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
 import {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
-import LimitExceededWarning from '../../../../components/LimitExceededWarning'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -16,7 +15,6 @@ import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {EnterpriseBenefits, StarterBenefits, TeamBenefits} from '../../../../utils/constants'
 import DowngradeModal from './DowngradeModal'
 import OrgPlan from './OrgPlan'
-import OrgStats from './OrgStats'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH,
@@ -70,21 +68,17 @@ const OrgPlans = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment OrgPlans_organization on Organization {
-        ...OrgStats_organization
         ...DowngradeModal_organization
         ...LimitExceededWarning_organization
         id
         billingTier
-        scheduledLockAt
-        lockedAt
       }
     `,
     organizationRef
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, scheduledLockAt, lockedAt, billingTier} = organization
-  const showNudge = scheduledLockAt || lockedAt
+  const {id: orgId, billingTier} = organization
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const plans = [
@@ -137,10 +131,6 @@ const OrgPlans = (props: Props) => {
   return (
     <>
       <StyledPanel label='Plans'>
-        <StyledRow isTablet={isTablet}>
-          {showNudge && <LimitExceededWarning organizationRef={organization} />}
-          <OrgStats organizationRef={organization} />
-        </StyledRow>
         <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
             <OrgPlan key={plan.tier} plan={plan} isTablet={isTablet} handleClick={handleClick} />
