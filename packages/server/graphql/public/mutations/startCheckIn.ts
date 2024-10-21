@@ -41,7 +41,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
   const meetingId = generateUID()
 
-  const phases = await createNewMeetingPhases<CheckInPhase>(
+  const [phases, inserts] = await createNewMeetingPhases<CheckInPhase>(
     viewerId,
     teamId,
     meetingId,
@@ -59,10 +59,13 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
     facilitatorUserId: viewerId
   }) as CheckInMeeting
   try {
-    await pg
-      .insertInto('NewMeeting')
-      .values({...meeting, phases: JSON.stringify(phases)})
-      .execute()
+    await pg.transaction().execute(async (pg) => {
+      await pg
+        .insertInto('NewMeeting')
+        .values({...meeting, phases: JSON.stringify(phases)})
+        .execute()
+      await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
+    })
   } catch (e) {
     return {error: {message: 'Meeting already started'}}
   }

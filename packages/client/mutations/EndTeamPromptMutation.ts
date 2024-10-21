@@ -29,9 +29,6 @@ graphql`
       agendaItems {
         id
       }
-      insights {
-        ...TeamDashInsights_insights
-      }
     }
     timelineEvent {
       id

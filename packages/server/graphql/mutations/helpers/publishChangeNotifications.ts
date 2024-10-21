@@ -1,7 +1,6 @@
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {selectNotifications} from '../../../postgres/select'
 import {Task} from '../../../postgres/types'
 import {TaskInvolvesNotification} from '../../../postgres/types/Notification'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -14,8 +13,8 @@ const publishChangeNotifications = async (
 ) => {
   const pg = getKysely()
   const changeAuthorId = `${changeUser.id}::${task.teamId}`
-  const {entityMap: oldEntityMap, blocks: oldBlocks} = JSON.parse(oldTask.content)
-  const {entityMap, blocks} = JSON.parse(task.content)
+  const {entityMap: oldEntityMap} = JSON.parse(oldTask.content)
+  const {entityMap} = JSON.parse(task.content)
   const wasPrivate = oldTask.tags.includes('private')
   const isPrivate = task.tags.includes('private')
   const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap)
@@ -61,22 +60,6 @@ const publishChangeNotifications = async (
       })
     }
     userIdsToRemove.push(oldTask.userId)
-  }
-
-  // if we updated the task content, push a new one with an updated task
-  const oldContentLen = oldBlocks[0] ? oldBlocks[0].text.length : 0
-  if (oldContentLen < 3) {
-    const contentLen = blocks[0] ? blocks[0].text.length : 0
-    if (contentLen > oldContentLen && task.userId) {
-      const maybeInvolvedUserIds = mentions.concat(task.userId)
-      const existingTaskNotifications = await selectNotifications()
-        .where('userId', 'in', maybeInvolvedUserIds)
-        .where('type', '=', 'TASK_INVOLVES')
-        .where('taskId', '=', task.id)
-        .$narrowType<TaskInvolvesNotification>()
-        .execute()
-      notificationsToAdd.push(...existingTaskNotifications)
-    }
   }
 
   // update changes in the db

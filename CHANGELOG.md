@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.52.1](https://github.com/ParabolInc/parabol/compare/v7.52.0...v7.52.1) (2024-10-21)
+
+
+### Fixed
+
+* if not exists on meetingsCount ([#10386](https://github.com/ParabolInc/parabol/issues/10386)) ([fcf66d7](https://github.com/ParabolInc/parabol/commit/fcf66d7db3ddf8c082b22a1a9b68c58e6bc9297b))
+
+## [7.52.0](https://github.com/ParabolInc/parabol/compare/v7.51.5...v7.52.0) (2024-10-21)
+
+
+### Added
+
+* add insights feedback UI modal ([#10341](https://github.com/ParabolInc/parabol/issues/10341)) ([5446b2d](https://github.com/ParabolInc/parabol/commit/5446b2dc6bface31eb7ca677b0868a315a99228c))
+
+
+### Fixed
+
+* Crash when starting a checkin with agenda items ([#10383](https://github.com/ParabolInc/parabol/issues/10383)) ([6b817ee](https://github.com/ParabolInc/parabol/commit/6b817eee5babed03f4f530b48285b249a9a562a7))
+* no duplicate notification inserts ([#10380](https://github.com/ParabolInc/parabol/issues/10380)) ([2450d5e](https://github.com/ParabolInc/parabol/commit/2450d5ef820bee5aabf2fc296367ea1f83296d75))
+
+
+### Changed
+
+* Add migration for shared secret integration provider ([#10382](https://github.com/ParabolInc/parabol/issues/10382)) ([21551df](https://github.com/ParabolInc/parabol/commit/21551dfdb7e4366ae2769e9e61aac37d336b251d))
+* remove usage stats ([#10260](https://github.com/ParabolInc/parabol/issues/10260)) ([e6238a5](https://github.com/ParabolInc/parabol/commit/e6238a5686cd21b360d1e0bbac4e2c1be67a6311))
+
 ## [7.51.5](https://github.com/ParabolInc/parabol/compare/v7.51.4...v7.51.5) (2024-10-18)
 
 
