@@ -1,10 +1,9 @@
 import {Selectable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import NotificationMeetingStageTimeLimitEnd from '../../../database/types/NotificationMeetingStageTimeLimitEnd'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
 import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {DB} from '../../../postgres/pg'
 import {Logger} from '../../../utils/Logger'
@@ -29,12 +28,14 @@ const processMeetingStageTimeLimits = async (
   const {teamId, facilitatorUserId} = meeting
   IntegrationNotifier.endTimeLimit(dataLoader, meetingId, teamId)
 
-  const notification = new NotificationMeetingStageTimeLimitEnd({
+  const notification = {
+    id: generateUID(),
+    type: 'MEETING_STAGE_TIME_LIMIT_END' as const,
     meetingId,
     userId: facilitatorUserId!
-  })
-  const r = await getRethink()
-  await r.table('Notification').insert(notification).run()
+  }
+  const pg = getKysely()
+  await pg.insertInto('Notification').values(notification).execute()
   publish(SubscriptionChannel.NOTIFICATION, facilitatorUserId!, 'MeetingStageTimeLimitPayload', {
     notification
   })

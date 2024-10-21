@@ -1,5 +1,3 @@
-import getRethink from '../../../database/rethinkDriver'
-import {RValue} from '../../../database/stricterR'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -52,7 +50,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   if (!userId && !email) {
     return {error: {message: 'Provide a userId or email'}}
   }
-  const r = await getRethink()
   const pg = getKysely()
 
   const user = userId ? await getUserById(userId) : email ? await getUserByEmail(email) : null
@@ -62,17 +59,8 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   const userIdToDelete = user.id
 
   // get team ids and meetingIds
-  const [teamMembers, meetingMembers] = await Promise.all([
-    dataLoader.get('teamMembersByUserId').load(userIdToDelete),
-    dataLoader.get('meetingMembersByUserId').load(userIdToDelete)
-  ])
+  const teamMembers = await dataLoader.get('teamMembersByUserId').load(userIdToDelete)
   const teamIds = teamMembers.map(({teamId}) => teamId)
-  const meetingIds = meetingMembers.map(({meetingId}) => meetingId)
-
-  const discussions = teamIds.length
-    ? await pg.selectFrom('Discussion').select('id').where('id', 'in', teamIds).execute()
-    : []
-  const teamDiscussionIds = discussions.map(({id}) => id)
 
   // soft delete first for side effects
   await softDeleteUser(userIdToDelete, dataLoader)
@@ -84,44 +72,6 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .set({createdBy: null})
     .where('teamId', 'in', teamIds)
     .where('createdBy', '=', userIdToDelete)
-    .execute()
-  await r({
-    notification: r.table('Notification').getAll(userIdToDelete, {index: 'userId'}).delete(),
-    createdTasks: r
-      .table('Task')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('createdBy').eq(userIdToDelete))
-      .delete(),
-    invitedByTeamInvitation: r
-      .table('TeamInvitation')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('invitedBy').eq(userIdToDelete))
-      .delete(),
-    createdByTeamInvitations: r
-      .table('TeamInvitation')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter((row: RValue) => row('acceptedBy').eq(userIdToDelete))
-      .update({acceptedBy: ''})
-  }).run()
-
-  // now postgres, after FKs are added then triggers should take care of children
-  // TODO when we're done migrating to PG, these should have constraints that ON DELETE CASCADE
-  await pg
-    .with('AtlassianAuthDelete', (qb) =>
-      qb.deleteFrom('AtlassianAuth').where('userId', '=', userIdToDelete)
-    )
-    .with('GitHubAuthDelete', (qb) =>
-      qb.deleteFrom('GitHubAuth').where('userId', '=', userIdToDelete)
-    )
-    .with('TaskEstimateDelete', (qb) =>
-      qb
-        .deleteFrom('TaskEstimate')
-        .where('userId', '=', userIdToDelete)
-        .where('meetingId', 'in', meetingIds)
-    )
-    .deleteFrom('Poll')
-    .where('discussionId', 'in', teamDiscussionIds)
-    .where('createdById', '=', userIdToDelete)
     .execute()
 
   // Send metrics to HubSpot before the user is really deleted in DB

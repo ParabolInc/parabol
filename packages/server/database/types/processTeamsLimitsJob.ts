@@ -1,10 +1,9 @@
-import {r} from 'rethinkdb-ts'
 import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
+import generateUID from '../../generateUID'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getKysely from '../../postgres/getKysely'
-import NotificationTeamsLimitReminder from './NotificationTeamsLimitReminder'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
@@ -35,18 +34,17 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
       .execute()
     organization.lockedAt = lockedAt
   } else if (type === 'WARN_ORGANIZATION') {
-    const notificationsToInsert = billingLeadersIds.map((userId) => {
-      return new NotificationTeamsLimitReminder({
-        userId,
-        orgId,
-        orgName,
-        orgPicture,
-        scheduledLockAt
-      })
-    })
+    const notificationsToInsert = billingLeadersIds.map((userId) => ({
+      id: generateUID(),
+      type: 'TEAMS_LIMIT_REMINDER' as const,
+      userId,
+      orgId,
+      orgName,
+      orgPicture,
+      scheduledLockAt
+    }))
 
-    await r.table('Notification').insert(notificationsToInsert).run()
-
+    await getKysely().insertInto('Notification').values(notificationsToInsert).execute()
     const operationId = dataLoader.share()
     const subOptions = {operationId}
     notificationsToInsert.forEach((notification) => {

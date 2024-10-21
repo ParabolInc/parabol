@@ -1,13 +1,12 @@
+import {sql} from 'kysely'
 import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
-import getRethink from '../../../database/rethinkDriver'
-import {RDatum} from '../../../database/stricterR'
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import CheckInStage from '../../../database/types/CheckInStage'
 import EstimateStage from '../../../database/types/EstimateStage'
-import NotificationKickedOut from '../../../database/types/NotificationKickedOut'
-import Task from '../../../database/types/Task'
 import UpdatesStage from '../../../database/types/UpdatesStage'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
+import {selectTasks} from '../../../postgres/select'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
@@ -25,7 +24,6 @@ const removeTeamMember = async (
   dataLoader: DataLoaderWorker
 ) => {
   const {evictorUserId} = options
-  const r = await getRethink()
   const pg = getKysely()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
@@ -52,12 +50,14 @@ const removeTeamMember = async (
       : currentTeamLeader
 
   if (willArchive) {
-    await Promise.all([
-      // archive single-person teams
-      pg.updateTable('Team').set({isArchived: true}).where('id', '=', teamId).execute(),
+    await pg
       // delete all tasks belonging to a 1-person team
-      r.table('Task').getAll(teamId, {index: 'teamId'}).delete()
-    ])
+      .with('TaskDelete', (qb) => qb.deleteFrom('Task').where('teamId', '=', teamId))
+      // archive single-person teams
+      .updateTable('Team')
+      .set({isArchived: true})
+      .where('id', '=', teamId)
+      .execute()
   } else if (isLead) {
     // assign new leader, remove old leader flag
     await pg
@@ -73,50 +73,44 @@ const removeTeamMember = async (
     .where('id', '=', teamMemberId)
     .execute()
   // assign active tasks to the team lead
-  const {integratedTasksToArchive, reassignedTasks} = await r({
-    integratedTasksToArchive: r
-      .table('Task')
-      .getAll(userId, {index: 'userId'})
-      .filter({teamId})
-      .filter((task: RDatum) => {
-        return r.and(
-          task('tags').contains('archived').not(),
-          task('integrations').default(null).ne(null)
-        )
-      })
-      .coerceTo('array') as unknown as Task[],
-    reassignedTasks: r
-      .table('Task')
-      .getAll(userId, {index: 'userId'})
-      .filter({teamId})
-      .filter((task: RDatum) =>
-        r.and(task('tags').contains('archived').not(), task('integrations').default(null).eq(null))
-      )
-      .update(
-        {
-          userId: nextTeamLead.userId
-        },
-        {returnChanges: true}
-      )('changes')('new_val')
-      .default([]) as unknown as Task[]
-  }).run()
-  await pg
-    .updateTable('User')
-    .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
-    .where('id', '=', userId)
+  const integratedTasksToArchive = await selectTasks()
+    .where('userId', '=', userId)
+    .where('teamId', '=', teamId)
+    .where('integration', 'is not', null)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
-  dataLoader.clearAll(['users', 'teamMembers'])
+  const reassignedTasks = await pg
+    .with('UserUpdate', (qb) =>
+      qb
+        .updateTable('User')
+        .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
+        .where('id', '=', userId)
+    )
+    .updateTable('Task')
+    .set({userId: nextTeamLead.userId})
+    .where('userId', '=', userId)
+    .where('teamId', '=', teamId)
+    .where('integration', 'is', null)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
+    .returning('id')
+    .execute()
+  dataLoader.clearAll(['users', 'teamMembers', 'tasks'])
   const user = await dataLoader.get('users').load(userId)
 
   let notificationId: string | undefined
   if (evictorUserId) {
-    const notification = new NotificationKickedOut({teamId, userId, evictorUserId})
+    const notification = {
+      id: generateUID(),
+      type: 'KICKED_OUT' as const,
+      teamId,
+      userId,
+      evictorUserId
+    }
     notificationId = notification.id
-    await r.table('Notification').insert(notification).run()
+    await pg.insertInto('Notification').values(notification).execute()
   }
 
-  const archivedTasks = await archiveTasksForDB(integratedTasksToArchive)
-  const archivedTaskIds = archivedTasks.map(({id}) => id)
+  const archivedTaskIds = await archiveTasksForDB(integratedTasksToArchive)
   const teamAgendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
   const agendaItemIds = teamAgendaItems
     .filter((agendaItem) => agendaItem.teamMemberId === teamMemberId)

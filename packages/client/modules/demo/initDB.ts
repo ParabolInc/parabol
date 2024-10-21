@@ -1,6 +1,6 @@
 import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import ITask from '../../../server/database/types/Task'
+import {Task as ITask} from '../../../server/postgres/types/index.d'
 import {RetrospectiveMeeting} from '../../../server/postgres/types/Meeting'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'

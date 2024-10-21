@@ -8,15 +8,20 @@ import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
   selectComments,
+  selectMassInvitations,
   selectMeetingMembers,
   selectMeetingSettings,
+  selectNewFeatures,
   selectNewMeetings,
+  selectNotifications,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
+  selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
@@ -128,4 +133,24 @@ export const newMeetings = primaryKeyLoaderMaker((ids: readonly string[]) => {
 
 export const meetingMembers = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectMeetingMembers().where('id', 'in', ids).execute()
+})
+
+export const massInvitations = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectMassInvitations().where('id', 'in', ids).execute()
+})
+
+export const newFeatures = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectNewFeatures().where('id', 'in', ids).execute()
+})
+
+export const teamInvitations = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamInvitations().where('id', 'in', ids).execute()
+})
+
+export const tasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTasks().where('id', 'in', ids).execute()
+})
+
+export const notifications = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectNotifications().where('id', 'in', ids).execute()
 })

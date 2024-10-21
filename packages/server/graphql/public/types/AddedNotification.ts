@@ -6,7 +6,7 @@ export type AddedNotificationSource = {addedNotificationId: string}
 const AddedNotification: AddedNotificationResolvers = {
   addedNotification: async ({addedNotificationId}, _args: unknown, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
-    const notification = await dataLoader.get('notifications').load(addedNotificationId)
+    const notification = await dataLoader.get('notifications').loadNonNull(addedNotificationId)
     if (notification.userId !== viewerId) {
       throw new Error(
         `Viewer ID does not match notification user ID: notification ${addedNotificationId} for user ${notification.userId} published to user ${viewerId}`

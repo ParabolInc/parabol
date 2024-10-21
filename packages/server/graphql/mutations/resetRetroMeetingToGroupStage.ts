@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from '../../../client/utils/constants'
-import getRethink from '../../database/rethinkDriver'
 import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import getKysely from '../../postgres/getKysely'
@@ -27,7 +26,6 @@ const resetRetroMeetingToGroupStage = {
     {meetingId}: {meetingId: string},
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) => {
-    const r = await getRethink()
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -103,29 +101,32 @@ const resetRetroMeetingToGroupStage = {
     // bc we return the reflection groups cached by data loader in the fragment
     reflectionGroups.forEach((rg) => (rg.voterIds = []))
 
-    await Promise.all([
-      pg
+    if (discussionIdsToDelete.length > 0) {
+      await pg
         .with('DeleteComments', (qb) =>
           qb.deleteFrom('Comment').where('discussionId', 'in', discussionIdsToDelete)
         )
-        .with('ResetGroups', (qb) =>
-          qb
-            .updateTable('RetroReflectionGroup')
-            .set({voterIds: [], discussionPromptQuestion: null})
-            .where('id', 'in', reflectionGroupIds)
-        )
-        .with('ResetMeetingMember', (qb) =>
-          qb
-            .updateTable('MeetingMember')
-            .set({votesRemaining: meeting.totalVotes})
-            .where('meetingId', '=', meetingId)
-        )
-        .updateTable('NewMeeting')
-        .set({phases: JSON.stringify(newPhases)})
-        .where('id', '=', meetingId)
-        .execute(),
-      r.table('Task').getAll(r.args(discussionIdsToDelete), {index: 'discussionId'}).delete().run()
-    ])
+        .deleteFrom('Task')
+        .where('discussionId', 'in', discussionIdsToDelete)
+        .execute()
+    }
+    await pg
+      .with('ResetGroups', (qb) =>
+        qb
+          .updateTable('RetroReflectionGroup')
+          .set({voterIds: [], discussionPromptQuestion: null})
+          .where('id', 'in', reflectionGroupIds)
+      )
+      .with('ResetMeetingMember', (qb) =>
+        qb
+          .updateTable('MeetingMember')
+          .set({votesRemaining: meeting.totalVotes})
+          .where('meetingId', '=', meetingId)
+      )
+      .updateTable('NewMeeting')
+      .set({phases: JSON.stringify(newPhases)})
+      .where('id', '=', meetingId)
+      .execute()
     dataLoader.clearAll([
       'newMeetings',
       'comments',

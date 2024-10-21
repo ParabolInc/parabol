@@ -1,4 +1,5 @@
-import {TaskIntegration, TaskServiceEnum} from '../../../server/database/types/Task'
+import {AnyTaskIntegration} from '../../../server/postgres/types/TaskIntegration'
+import {TaskServiceEnum} from '../../__generated__/CreateTaskMutation.graphql'
 import AzureDevOpsIssueId from './AzureDevOpsIssueId'
 import GitHubIssueId from './GitHubIssueId'
 import GitLabIssueId from './GitLabIssueId'
@@ -6,7 +7,7 @@ import JiraIssueId from './JiraIssueId'
 import JiraServerIssueId from './JiraServerIssueId'
 
 const IntegrationHash = {
-  join: (integration: TaskIntegration) => {
+  join: (integration: AnyTaskIntegration) => {
     switch (integration.service) {
       case 'github':
         return GitHubIssueId.join(integration.nameWithOwner, integration.issueNumber)

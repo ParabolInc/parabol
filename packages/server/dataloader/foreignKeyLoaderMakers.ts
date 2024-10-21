@@ -1,8 +1,10 @@
+import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {
   selectAgendaItems,
   selectComments,
+  selectMassInvitations,
   selectMeetingMembers,
   selectNewMeetings,
   selectOrganizations,
@@ -11,6 +13,8 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTasks,
+  selectTeamInvitations,
   selectTeams,
   selectTemplateDimension,
   selectTemplateScale,
@@ -268,3 +272,51 @@ export const meetingMembersByUserId = foreignKeyLoaderMaker(
     return selectMeetingMembers().where('userId', 'in', userIds).execute()
   }
 )
+
+export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
+  'massInvitations',
+  'teamMemberId',
+  async (teamMemberIds) => {
+    return selectMassInvitations()
+      .where('teamMemberId', 'in', teamMemberIds)
+      .orderBy('expiration desc')
+      .execute()
+  }
+)
+
+export const teamInvitationsByTeamId = foreignKeyLoaderMaker(
+  'teamInvitations',
+  'teamId',
+  async (teamIds) => {
+    return selectTeamInvitations()
+      .where('teamId', 'in', teamIds)
+      .where('acceptedAt', 'is', null)
+      .where('expiresAt', '>=', sql<Date>`CURRENT_TIMESTAMP`)
+      .execute()
+  }
+)
+
+export const tasksByDiscussionId = foreignKeyLoaderMaker(
+  'tasks',
+  'discussionId',
+  async (discusisonIds) => {
+    // include archived cards in the conversation, since it's persistent
+    return selectTasks().where('discussionId', 'in', discusisonIds).execute()
+  }
+)
+
+export const tasksByTeamId = foreignKeyLoaderMaker('tasks', 'teamId', async (teamIds) => {
+  // waraning! contains private tasks
+  return selectTasks()
+    .where('teamId', 'in', teamIds)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
+    .execute()
+})
+
+export const tasksByMeetingId = foreignKeyLoaderMaker('tasks', 'meetingId', async (meetingIds) => {
+  // waraning! contains private tasks
+  return selectTasks()
+    .where('meetingId', 'in', meetingIds)
+    .where(sql<boolean>`'archived' != ALL(tags)`)
+    .execute()
+})

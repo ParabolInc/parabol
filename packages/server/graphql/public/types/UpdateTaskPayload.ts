@@ -1,12 +1,11 @@
-import Notification from '../../../database/types/Notification'
-import NotificationTaskInvolves from '../../../database/types/NotificationTaskInvolves'
+import {TaskInvolvesNotification} from '../../../postgres/types/Notification'
 import {getUserId} from '../../../utils/authorization'
 import {UpdateTaskPayloadResolvers} from '../resolverTypes'
 
 export type UpdateTaskPayloadSource = {
   taskId: string
   isPrivatized: boolean
-  notificationsToAdd?: NotificationTaskInvolves[]
+  notificationsToAdd?: TaskInvolvesNotification[]
 }
 
 const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
@@ -23,12 +22,15 @@ const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
     return isPrivatized ? taskId : null
   },
 
-  addedNotification: async ({notificationsToAdd}, _args, {authToken}) => {
+  addedNotification: async ({notificationsToAdd}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    return (
-      notificationsToAdd?.find((notification: Notification) => notification.userId === viewerId) ??
-      null
-    )
+    const partial =
+      notificationsToAdd?.find((notification) => notification.userId === viewerId) ?? null
+    if (!partial) return null
+    const notification = await dataLoader
+      .get('notifications')
+      .loadNonNull<TaskInvolvesNotification>(partial.id)
+    return notification
   }
 }
 

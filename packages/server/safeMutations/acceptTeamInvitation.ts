@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
-import getRethink from '../database/rethinkDriver'
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
 import {DataLoaderWorker} from '../graphql/graphql'
@@ -61,9 +60,7 @@ const handleFirstAcceptedInvitation = async (
 }
 
 const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
-  const r = await getRethink()
   const pg = getKysely()
-  const now = new Date()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),
@@ -71,52 +68,43 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
   ])
   const {email, picture, preferredName} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team, dataLoader)
-  const [invitationNotificationIds] = await Promise.all([
-    r
-      .table('Notification')
-      .getAll(userId, {index: 'userId'})
-      .filter({
-        type: 'TEAM_INVITATION',
-        teamId
-      })
-      .update(
-        // not really clicked, but no longer important
-        {status: 'CLICKED'},
-        {returnChanges: true}
-      )('changes')('new_val')('id')
-      .default([])
-      .run(),
-    pg
-      .with('UserUpdate', (qc) =>
-        qc
-          .updateTable('User')
-          .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
-          .where('id', '=', userId)
-      )
-      .insertInto('TeamMember')
-      .values({
-        id: TeamMemberId.join(teamId, userId),
-        teamId,
-        userId,
-        picture,
-        preferredName,
-        email,
-        openDrawer: 'manageTeam'
-      })
-      .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
-      .execute(),
-    r
-      .table('TeamInvitation')
-      .getAll(teamId, {index: 'teamId'})
+  const invitationNotifications = await pg
+    .with('TeamMemberInsert', (qc) =>
+      qc
+        .insertInto('TeamMember')
+        .values({
+          id: TeamMemberId.join(teamId, userId),
+          teamId,
+          userId,
+          picture,
+          preferredName,
+          email,
+          openDrawer: 'manageTeam'
+        })
+        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
+    )
+    .with('UserUpdate', (qc) =>
+      qc
+        .updateTable('User')
+        .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
+        .where('id', '=', userId)
+    )
+    .with('TeamInvitationUpdate', (qb) =>
       // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
-      .filter({email})
-      .update({
-        acceptedAt: now,
-        acceptedBy: userId
-      })
-      .run()
-  ])
-  dataLoader.clearAll(['teamMembers', 'users'])
+      qb
+        .updateTable('TeamInvitation')
+        .set({acceptedAt: sql`CURRENT_TIMESTAMP`, acceptedBy: userId})
+        .where('email', '=', email)
+        .where('teamId', '=', teamId)
+    )
+    .updateTable('Notification')
+    .set({status: 'CLICKED'})
+    .where('userId', '=', userId)
+    .where('teamId', '=', teamId)
+    .where('type', '=', 'TEAM_INVITATION')
+    .returning('id')
+    .execute()
+  dataLoader.clearAll(['teamMembers', 'users', 'notifications'])
   if (!organizationUser) {
     // clear the cache, adjustUserCount will mutate these
     dataLoader.get('organizationUsersByUserIdOrgId').clear({userId, orgId})
@@ -128,7 +116,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     }
     await setUserTierForUserIds([userId])
   }
-
+  const invitationNotificationIds = invitationNotifications.map(({id}) => id)
   // if accepted to team, don't count it towards the global denial count
   await pg
     .deleteFrom('PushInvitation')
@@ -137,7 +125,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     .execute()
   return {
     teamLeadUserIdWithNewActions,
-    invitationNotificationIds: invitationNotificationIds as string[]
+    invitationNotificationIds
   }
 }
 

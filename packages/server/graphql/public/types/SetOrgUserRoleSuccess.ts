@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import errorFilter from '../../errorFilter'
+import isValid from '../../isValid'
 import {SetOrgUserRoleSuccessResolvers} from '../resolverTypes'
 
 export type SetOrgUserRoleSuccessSource = {
@@ -20,7 +20,7 @@ const SetOrgUserRoleSuccess: SetOrgUserRoleSuccessResolvers = {
     const viewerId = getUserId(authToken)
     const notifications = (
       await dataLoader.get('notifications').loadMany(notificationIdsAdded)
-    ).filter(errorFilter)
+    ).filter(isValid)
     return notifications.filter((notification) => notification.userId === viewerId)
   }
 }

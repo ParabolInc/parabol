@@ -1,4 +1,3 @@
-import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
@@ -6,7 +5,7 @@ import isValid from '../../isValid'
 import {AcceptTeamInvitationPayloadResolvers} from '../resolverTypes'
 
 export type AcceptTeamInvitationPayloadSource = {
-  meetingId?: string
+  meetingId?: string | null
   teamId?: string
   teamMemberId?: string
   invitationNotificationIds?: string[]
@@ -45,7 +44,9 @@ const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
     }
     const teamInvitationNotifications = (
       await dataLoader.get('notifications').loadMany(invitationNotificationIds)
-    ).filter(isValid) as NotificationTeamInvitation[]
+    )
+      .filter(isValid)
+      .filter((n) => n.type === 'TEAM_INVITATION')
     return teamInvitationNotifications
   },
 

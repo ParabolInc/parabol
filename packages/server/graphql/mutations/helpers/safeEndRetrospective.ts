@@ -4,7 +4,6 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
-import getRethink from '../../../database/rethinkDriver'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
 import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
@@ -38,7 +37,6 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
   const {dataLoader} = context
   const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const pg = getKysely()
-  const r = await getRethink()
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
@@ -57,17 +55,16 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
   ).filter(isValid)
   const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-  const taskCount = await r
-    .table('Task')
-    .getAll(r.args(discussionIds), {index: 'discussionId'})
-    .count()
-    .default(0)
-    .run()
+  const taskCountRes = await pg
+    .selectFrom('Task')
+    .select(({fn}) => fn.count<bigint>('id').as('count'))
+    .where('discussionId', 'in', discussionIds)
+    .executeTakeFirst()
   await pg
     .updateTable('NewMeeting')
     .set({
       commentCount,
-      taskCount,
+      taskCount: Number(taskCountRes?.count ?? 0),
       topicCount: reflectionGroupIds.length,
       reflectionCount: reflections.length,
       sentimentScore,
@@ -137,7 +134,7 @@ const safeEndRetrospective = async ({
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId, teamId),
+    removeEmptyTasks(meetingId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId),
     updateTeamInsights(teamId, dataLoader)
   ])

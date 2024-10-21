@@ -39,6 +39,20 @@ type Mutation {
   ): ApplyFeatureFlagPayload!
 
   """
+  Remove a feature flag from specified subjects (users, teams, or organizations)
+  """
+  removeFeatureFlagOwner(
+    """
+    The name of the feature flag to remove
+    """
+    flagName: String!
+    """
+    The subjects from which the feature flag will be removed
+    """
+    subjects: SubjectsInput!
+  ): RemoveFeatureFlagOwnerPayload!
+
+  """
   Delete an existing feature flag
   """
   deleteFeatureFlag(

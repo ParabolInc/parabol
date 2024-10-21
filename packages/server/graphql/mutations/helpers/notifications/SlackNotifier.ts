@@ -6,7 +6,6 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
 import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
-import {RethinkSchema} from '../../../../database/rethinkDriver'
 import SlackAuth from '../../../../database/types/SlackAuth'
 import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import getKysely from '../../../../postgres/getKysely'
@@ -14,6 +13,7 @@ import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/ge
 import {SlackNotification, Team, TeamPromptResponse} from '../../../../postgres/types'
 import User from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {AnyNotification} from '../../../../postgres/types/Notification'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
@@ -245,7 +245,7 @@ const addStandupResponsesToThread = async (
 
 const getSlackMessageForNotification = async (
   dataLoader: DataLoaderWorker,
-  notification: RethinkSchema['Notification']['type'],
+  notification: AnyNotification,
   meeting: AnyMeeting,
   userId: string
 ) => {
@@ -277,7 +277,7 @@ const getSlackMessageForNotification = async (
       buttonText: 'See the discussion'
     }
   } else if (notification.type === 'RESPONSE_MENTIONED') {
-    const responseId = TeamPromptResponseId.split(notification.responseId)
+    const responseId = notification.responseId
     const response = await dataLoader.get('teamPromptResponses').loadNonNull(responseId)
     const author = await dataLoader.get('users').loadNonNull(response.userId)
     const title = `*${author.preferredName}* mentioned you in their response in *${meeting.name}*`
@@ -287,7 +287,7 @@ const getSlackMessageForNotification = async (
         utm_source: 'slack standup notification',
         utm_medium: 'product',
         utm_campaign: 'notifications',
-        responseId: notification.responseId
+        responseId: TeamPromptResponseId.join(notification.responseId)
       }
     }
 
@@ -299,6 +299,8 @@ const getSlackMessageForNotification = async (
       buttonText: 'See their response'
     }
   } else if (notification.type === 'MENTIONED') {
+    // This type is no longer created anywhere in the app but is still in the DB.
+    // We should remove this logic & the remaining DB notifications
     const authorName = notification.senderName ?? 'Someone'
     const {meetingId} = notification
 
@@ -681,7 +683,7 @@ export const SlackNotifier = {
     notificationId: string,
     userId: string
   ) {
-    const notification = await dataLoader.get('notifications').load(notificationId)
+    const notification = await dataLoader.get('notifications').loadNonNull(notificationId)
     if (
       notification.type !== 'RESPONSE_MENTIONED' &&
       notification.type !== 'RESPONSE_REPLIED' &&

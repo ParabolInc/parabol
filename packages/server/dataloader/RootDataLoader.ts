@@ -1,6 +1,4 @@
 import DataLoader from 'dataloader'
-import RethinkForeignKeyLoaderMaker from './RethinkForeignKeyLoaderMaker'
-import RethinkPrimaryKeyLoaderMaker from './RethinkPrimaryKeyLoaderMaker'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
@@ -12,10 +10,6 @@ import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
-import rethinkForeignKeyLoader from './rethinkForeignKeyLoader'
-import * as rethinkForeignKeyLoaderMakers from './rethinkForeignKeyLoaderMakers'
-import rethinkPrimaryKeyLoader from './rethinkPrimaryKeyLoader'
-import * as rethinkPrimaryKeyLoaderMakers from './rethinkPrimaryKeyLoaderMakers'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -23,14 +17,11 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
-  ...rethinkForeignKeyLoaderMakers,
-  ...rethinkPrimaryKeyLoaderMakers,
   ...primaryKeyLoaderMakers,
   ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
   ...atlassianLoaders,
   ...jiraServerLoaders,
-  ...customLoaderMakers,
   ...githubLoaders,
   ...gitlabLoaders,
   ...gcalLoaders,
@@ -41,9 +32,8 @@ const loaderMakers = {
 
 export type Loaders = keyof typeof loaderMakers
 
-export type AllPrimaryLoaders =
-  | keyof typeof primaryKeyLoaderMakers
-  | keyof typeof rethinkPrimaryKeyLoaderMakers
+export type AllPrimaryLoaders = keyof typeof primaryKeyLoaderMakers
+
 export type RegisterDependsOn = (primaryLoaders: AllPrimaryLoaders | AllPrimaryLoaders[]) => void
 
 // The RethinkDB logic is a leaky abstraction! It will be gone soon & this will be generic enough to put in its own package
@@ -51,22 +41,7 @@ interface GenericDataLoader<TLoaders, TPrimaryLoaderNames> {
   clearAll(pkLoaderName: TPrimaryLoaderNames | TPrimaryLoaderNames[]): void
   get<LoaderName extends keyof TLoaders, Loader extends TLoaders[LoaderName]>(
     loaderName: LoaderName
-  ): Loader extends (...args: any[]) => any
-    ? ReturnType<Loader>
-    : // can delete below this line after RethinkDB is gone
-      Loader extends RethinkPrimaryKeyLoaderMaker<infer U>
-      ? ReturnType<typeof rethinkPrimaryKeyLoader<U>>
-      : Loader extends RethinkForeignKeyLoaderMaker<infer U>
-        ? ReturnType<
-            typeof rethinkForeignKeyLoader<
-              (typeof rethinkPrimaryKeyLoaderMakers)[U] extends RethinkPrimaryKeyLoaderMaker<
-                infer V
-              >
-                ? V
-                : never
-            >
-          >
-        : never
+  ): Loader extends (...args: any[]) => any ? ReturnType<Loader> : never
 }
 
 export type DataLoaderInstance = GenericDataLoader<typeof loaderMakers, AllPrimaryLoaders>
@@ -102,15 +77,7 @@ export default class RootDataLoader<
         ;(this.dependentLoaders[primaryLoader] ??= []).push(loaderName)
       })
     }
-    if (loaderMaker instanceof RethinkPrimaryKeyLoaderMaker) {
-      const {table} = loaderMaker
-      loader = rethinkPrimaryKeyLoader(this.dataLoaderOptions, table)
-    } else if (loaderMaker instanceof RethinkForeignKeyLoaderMaker) {
-      const {fetch, field, pk} = loaderMaker
-      loader = rethinkForeignKeyLoader(this, dependsOn, pk, field, fetch)
-    } else {
-      loader = (loaderMaker as any)(this, dependsOn)
-    }
+    loader = (loaderMaker as any)(this, dependsOn)
     this.loaders[loaderName] = loader!
     return loader as any
   }

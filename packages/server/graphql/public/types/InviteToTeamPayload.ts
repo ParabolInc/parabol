@@ -1,4 +1,4 @@
-import NotificationTeamInvitation from '../../../database/types/NotificationTeamInvitation'
+import {TeamInvitationNotification} from '../../../postgres/types/Notification'
 import {InviteToTeamPayloadResolvers} from '../resolverTypes'
 
 export type InviteToTeamPayloadSource = {
@@ -14,8 +14,10 @@ const InviteToTeamPayload: InviteToTeamPayloadResolvers = {
   },
   teamInvitationNotification: async ({teamInvitationNotificationId}, _args, {dataLoader}) => {
     if (!teamInvitationNotificationId) return null
-    const teamInvitation = await dataLoader.get('notifications').load(teamInvitationNotificationId)
-    return teamInvitation as NotificationTeamInvitation
+    const teamInvitation = await dataLoader
+      .get('notifications')
+      .loadNonNull<TeamInvitationNotification>(teamInvitationNotificationId)
+    return teamInvitation
   }
 }
 

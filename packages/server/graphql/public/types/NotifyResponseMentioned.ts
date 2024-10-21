@@ -1,4 +1,3 @@
-import TeamPromptResponseId from '../../../../client/shared/gqlIds/TeamPromptResponseId'
 import {NotifyResponseMentionedResolvers} from '../resolverTypes'
 
 const NotifyResponseMentioned: NotifyResponseMentionedResolvers = {
@@ -9,9 +8,7 @@ const NotifyResponseMentioned: NotifyResponseMentionedResolvers = {
     return meeting
   },
   response: ({responseId}, _args, {dataLoader}) => {
-    // Hack, in a perfect world, this notification would have the numeric DB ID saved on it
-    const dbId = TeamPromptResponseId.split(responseId)
-    return dataLoader.get('teamPromptResponses').loadNonNull(dbId)
+    return dataLoader.get('teamPromptResponses').loadNonNull(responseId)
   }
 }
 

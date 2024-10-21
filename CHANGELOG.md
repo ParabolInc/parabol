@@ -5,6 +5,124 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.51.5](https://github.com/ParabolInc/parabol/compare/v7.51.4...v7.51.5) (2024-10-18)
+
+
+### Fixed
+
+* complete partial value for updateTaskPayload ([#10373](https://github.com/ParabolInc/parabol/issues/10373)) ([74b2e01](https://github.com/ParabolInc/parabol/commit/74b2e01b7d51a559e06133a4a09641bb0cb5ed78))
+
+## [7.51.4](https://github.com/ParabolInc/parabol/compare/v7.51.3...v7.51.4) (2024-10-18)
+
+
+### Fixed
+
+* shortcircuit looking up tasks my integrationHash ([#10371](https://github.com/ParabolInc/parabol/issues/10371)) ([27a9752](https://github.com/ParabolInc/parabol/commit/27a9752453584405f5d1fa3c179856dd40159191))
+
+
+### Changed
+
+* **rethinkdb:** Add missing foreign key constraints ([#10359](https://github.com/ParabolInc/parabol/issues/10359)) ([c5b0d08](https://github.com/ParabolInc/parabol/commit/c5b0d089d22ba4e6a655e83caac5c1287cf0106c))
+
+## [7.51.3](https://github.com/ParabolInc/parabol/compare/v7.51.2...v7.51.3) (2024-10-17)
+
+
+### Changed
+
+* **rethinkdb:** Notification: Phase 2 ([#10356](https://github.com/ParabolInc/parabol/issues/10356)) ([41ee5f5](https://github.com/ParabolInc/parabol/commit/41ee5f5049b2d5b011c6e524e60323485b69be64))
+* **rethinkdb:** Notification: Phase 3 ([#10357](https://github.com/ParabolInc/parabol/issues/10357)) ([6fb62a7](https://github.com/ParabolInc/parabol/commit/6fb62a74d3bb87afa0c11dc9bb98b4862de3dc83))
+
+## [7.51.2](https://github.com/ParabolInc/parabol/compare/v7.51.1...v7.51.2) (2024-10-17)
+
+
+### Changed
+
+* **rethinkdb:** Notification: Phase 1 ([#10350](https://github.com/ParabolInc/parabol/issues/10350)) ([3964c7c](https://github.com/ParabolInc/parabol/commit/3964c7c9d639bf28f3ae90c780c66f3c999ae0cd))
+
+## [7.51.1](https://github.com/ParabolInc/parabol/compare/v7.51.0...v7.51.1) (2024-10-17)
+
+
+### Fixed
+
+* correct serialization of Task.content ([#10362](https://github.com/ParabolInc/parabol/issues/10362)) ([a4ea952](https://github.com/ParabolInc/parabol/commit/a4ea9521a452cc13747f3b97a6330d85714590ef))
+
+## [7.51.0](https://github.com/ParabolInc/parabol/compare/v7.50.12...v7.51.0) (2024-10-16)
+
+
+### Added
+
+* add Insights UI skeleton ([#10254](https://github.com/ParabolInc/parabol/issues/10254)) ([aa8e931](https://github.com/ParabolInc/parabol/commit/aa8e9313603d081e445d5b6193059d27dfdcb268))
+* **orgAdmin:** Add org admin teaser in org team page for non-enterprise orgs ([#10253](https://github.com/ParabolInc/parabol/issues/10253)) ([ca069db](https://github.com/ParabolInc/parabol/commit/ca069dbd97e3f33e81983298676aea748eda0664))
+* show default insight ([#10283](https://github.com/ParabolInc/parabol/issues/10283)) ([f99e63a](https://github.com/ParabolInc/parabol/commit/f99e63a3f05a4f2b863e4b3052950de7d02cce5e))
+
+
+### Changed
+
+* remove feature flag owner ([#10319](https://github.com/ParabolInc/parabol/issues/10319)) ([dfdb68c](https://github.com/ParabolInc/parabol/commit/dfdb68cd25c4b9fb49ea1bf6a5e7cfa775151d21))
+* **rethinkdb:** Task: Phase 3 ([#10339](https://github.com/ParabolInc/parabol/issues/10339)) ([7965ab6](https://github.com/ParabolInc/parabol/commit/7965ab691f3d4dc9599d9b958ecebc2c46649fad))
+
+## [7.50.12](https://github.com/ParabolInc/parabol/compare/v7.50.11...v7.50.12) (2024-10-16)
+
+
+### Changed
+
+* **rethinkdb:** Task: Phase 2 ([#10338](https://github.com/ParabolInc/parabol/issues/10338)) ([62977ae](https://github.com/ParabolInc/parabol/commit/62977aed62f8b749476541adb924f8542934fb38))
+
+## [7.50.11](https://github.com/ParabolInc/parabol/compare/v7.50.10...v7.50.11) (2024-10-15)
+
+
+### Changed
+
+* **deployment:** PR title for the PR that deploys to production states its purpose ([#10348](https://github.com/ParabolInc/parabol/issues/10348)) ([0932822](https://github.com/ParabolInc/parabol/commit/09328223cf0170ef7f1df94e6e326b5fdcdc0a93))
+* **rethinkdb:** Task: Phase 1 ([#10336](https://github.com/ParabolInc/parabol/issues/10336)) ([5202a3b](https://github.com/ParabolInc/parabol/commit/5202a3b59c1183e8ca7eb6c0906dc2a6baf5b82e))
+
+## [7.50.10](https://github.com/ParabolInc/parabol/compare/v7.50.9...v7.50.10) (2024-10-15)
+
+
+### Changed
+
+* remove old invite notifications ([#10345](https://github.com/ParabolInc/parabol/issues/10345)) ([6c8d420](https://github.com/ParabolInc/parabol/commit/6c8d420fa3d29243a141862fee095a3e05fed7df))
+
+## [7.50.9](https://github.com/ParabolInc/parabol/compare/v7.50.8...v7.50.9) (2024-10-15)
+
+
+### Fixed
+
+* **dd-trace:** upgrade to v5.0.0 ([#10343](https://github.com/ParabolInc/parabol/issues/10343)) ([a3aba86](https://github.com/ParabolInc/parabol/commit/a3aba863580fb866c4affad42f03454afd0d77e8))
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 3 ([#10327](https://github.com/ParabolInc/parabol/issues/10327)) ([9b52d49](https://github.com/ParabolInc/parabol/commit/9b52d4958d8aace5c3adc2322ede58f638a947cd))
+
+## [7.50.8](https://github.com/ParabolInc/parabol/compare/v7.50.7...v7.50.8) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** TeamInvitation: Phase 2 ([#10326](https://github.com/ParabolInc/parabol/issues/10326)) ([f8486ba](https://github.com/ParabolInc/parabol/commit/f8486bae6feeeb7a69088a864e8277c53d052061))
+
+## [7.50.7](https://github.com/ParabolInc/parabol/compare/v7.50.6...v7.50.7) (2024-10-10)
+
+
+### Changed
+
+* **rethinkdb:** NewFeature: OneShot ([#10312](https://github.com/ParabolInc/parabol/issues/10312)) ([92deddf](https://github.com/ParabolInc/parabol/commit/92deddf30645ad4d479f29eb7ab66737a3218946))
+* **rethinkdb:** TeamInvitation: Phase 1 ([#10325](https://github.com/ParabolInc/parabol/issues/10325)) ([72ea4e1](https://github.com/ParabolInc/parabol/commit/72ea4e1bde79cdec9d9d4eda80932e32e880d19c))
+
+## [7.50.6](https://github.com/ParabolInc/parabol/compare/v7.50.5...v7.50.6) (2024-10-09)
+
+
+### Fixed
+
+* catch error if user tries to join meeting twice ([#10320](https://github.com/ParabolInc/parabol/issues/10320)) ([887abd4](https://github.com/ParabolInc/parabol/commit/887abd49d6467207c60ade8f62b4e496fa9378b6))
+
+
+### Changed
+
+* **rethinkdb:** MassInvitation: OneShot ([#10311](https://github.com/ParabolInc/parabol/issues/10311)) ([fc1ef4d](https://github.com/ParabolInc/parabol/commit/fc1ef4d44568193f018a31c378181b5df92da355))
+* update snyk workflow to use node20 ([#10324](https://github.com/ParabolInc/parabol/issues/10324)) ([8e1222f](https://github.com/ParabolInc/parabol/commit/8e1222fa88368d1296d125e8236d2992c05294b4))
+
 ## [7.50.5](https://github.com/ParabolInc/parabol/compare/v7.50.4...v7.50.5) (2024-10-08)
 
 

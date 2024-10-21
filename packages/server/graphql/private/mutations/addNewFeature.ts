@@ -1,6 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getRethink from '../../../database/rethinkDriver'
-import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
@@ -12,7 +10,6 @@ const addNewFeature: MutationResolvers['addNewFeature'] = async (
   {actionButtonCopy, snackbarMessage, url},
   {dataLoader}
 ) => {
-  const r = await getRethink()
   const redis = getRedis()
   const pg = getKysely()
 
@@ -21,18 +18,16 @@ const addNewFeature: MutationResolvers['addNewFeature'] = async (
   const subOptions = {operationId}
 
   // RESOLUTION
-  const newFeatureId = generateUID()
-  const newFeature = {
-    id: newFeatureId,
-    actionButtonCopy,
-    snackbarMessage,
-    url
-  }
-  await Promise.all([
-    r.table('NewFeature').insert(newFeature).run(),
-    pg.updateTable('User').set({newFeatureId}).execute()
-  ])
+  const newFeatureRes = await pg
+    .with('NewFeatureInsert', (qb) =>
+      qb.insertInto('NewFeature').values({actionButtonCopy, snackbarMessage, url}).returning('id')
+    )
+    .updateTable('User')
+    .set((eb) => ({newFeatureId: eb.selectFrom('NewFeatureInsert').select('NewFeatureInsert.id')}))
+    .returning((eb) => [eb.selectFrom('NewFeatureInsert').select('NewFeatureInsert.id').as('id')])
+    .executeTakeFirstOrThrow()
 
+  const newFeature = {actionButtonCopy, snackbarMessage, url, id: newFeatureRes.id!}
   const onlineUserIds = new Set()
   const stream = redis.scanStream({match: 'presence:*'})
   stream.on('data', (keys) => {
