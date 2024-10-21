@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [7.52.1](https://github.com/ParabolInc/parabol/compare/v7.52.0...v7.52.1) (2024-10-21)
+
+
+### Fixed
+
+* if not exists on meetingsCount ([#10386](https://github.com/ParabolInc/parabol/issues/10386)) ([fcf66d7](https://github.com/ParabolInc/parabol/commit/fcf66d7db3ddf8c082b22a1a9b68c58e6bc9297b))
+
 ## [7.52.0](https://github.com/ParabolInc/parabol/compare/v7.51.5...v7.52.0) (2024-10-21)
 
 
