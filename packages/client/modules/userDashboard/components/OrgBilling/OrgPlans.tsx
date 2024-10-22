@@ -36,38 +36,6 @@ const StyledRow = styled(Row)<{isTablet: boolean}>(({isTablet}) => ({
   }
 }))
 
-const StatsContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-around',
-  padding: '16px 0',
-  borderBottom: '1px solid #E0E0E0'
-})
-
-const StatBox = styled('div')({
-  textAlign: 'center'
-})
-
-const StatNumber = styled('div')({
-  fontSize: '24px',
-  fontWeight: 'bold',
-  marginBottom: '4px'
-})
-
-const StatLabel = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '14px',
-  color: '#666'
-})
-
-const StyledInfoIcon = styled(Info)({
-  marginLeft: '4px',
-  width: '16px',
-  height: '16px',
-  color: '#666'
-})
-
 const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
   if (tier === plan) {
     return 'disabled'
@@ -170,20 +138,22 @@ const OrgPlans = (props: Props) => {
   return (
     <>
       <StyledPanel label='Plans'>
-        <StatsContainer>
-          <StatBox>
-            <StatNumber>{allTeamsCount}</StatNumber>
-            <StatLabel>
-              Total teams <StyledInfoIcon />
-            </StatLabel>
-          </StatBox>
-          <StatBox>
-            <StatNumber>{totalUserCount}</StatNumber>
-            <StatLabel>
-              Total members <StyledInfoIcon />
-            </StatLabel>
-          </StatBox>
-        </StatsContainer>
+        <div className='flex justify-around py-4'>
+          <div className='text-center'>
+            <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
+            <div className='text-gray-600 flex items-center justify-center text-base'>
+              Total teams
+              <Info className='text-gray-600 ml-1 h-4 w-4' />
+            </div>
+          </div>
+          <div className='text-center'>
+            <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
+            <div className='text-gray-600 flex items-center justify-center text-base'>
+              Total members
+              <Info className='text-gray-600 ml-1 h-4 w-4' />
+            </div>
+          </div>
+        </div>
         <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
             <OrgPlan key={plan.tier} plan={plan} isTablet={isTablet} handleClick={handleClick} />
