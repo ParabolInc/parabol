@@ -17,7 +17,7 @@ if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
     echo
     echo "  git checkout ${1} &&"
     if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
-        echo "  yarn pg:migrate down ${NUM_POSTGRES_MIGRATIONS} &&"
+        echo "  yarn kysely migrate:down ${NUM_POSTGRES_MIGRATIONS} &&"
     fi
     echo "  git checkout ${CURRENT_BRANCH:-$2}"
     echo

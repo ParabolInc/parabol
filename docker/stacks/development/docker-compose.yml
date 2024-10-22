@@ -15,8 +15,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-    networks:
-      - parabol-network
   postgres:
     image: pgvector/pgvector:0.7.0-pg16
     restart: unless-stopped
