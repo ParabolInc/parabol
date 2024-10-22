@@ -32,10 +32,6 @@ export async function sendIntranet(req: {
   return response.json()
 }
 
-export const drainRethink = async () => {
-  r.getPoolMaster()?.drain()
-}
-
 const persistFunction = (text: string) => {
   const hasher = crypto.createHash('md5')
   hasher.update(text)
