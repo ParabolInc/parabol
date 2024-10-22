@@ -15,15 +15,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-  rethinkdb:
-    image: rethinkdb:2.4.2
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-      - "29015:29015"
-      - "28015:28015"
-    volumes:
-      - rethink-data:/data
     networks:
       - parabol-network
   postgres:
@@ -84,7 +75,6 @@ networks:
   parabol-network:
 volumes:
   redis-data: {}
-  rethink-data: {}
   postgres-data: {}
   pgadmin-data: {}
   text-embeddings-inference-data: {}

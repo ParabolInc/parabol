@@ -69,7 +69,6 @@
     "git-url-parse": "12.0.0",
     "fbjs": "^3.0.0",
     "parse-url": "^8.1.0",
-    "rethinkdb-ts": "2.6.0",
     "recursive-readdir": "^2.2.3",
     "json5": "^2.2.3"
   },
@@ -137,7 +136,6 @@
   "dependencies": {
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
-    "lodash.toarray": "^4.4.0",
-    "rethinkdb-ts-migrate": "^0.3.6"
+    "lodash.toarray": "^4.4.0"
   }
 }
