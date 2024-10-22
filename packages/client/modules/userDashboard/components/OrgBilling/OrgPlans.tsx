@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans_organization.graphql'
@@ -87,6 +87,7 @@ const OrgPlans = (props: Props) => {
   const {id: orgId, billingTier, allTeamsCount, orgUserCount} = organization
   const totalUserCount = orgUserCount.activeUserCount + orgUserCount.inactiveUserCount
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
+  const history = useHistory()
 
   const plans = [
     {
@@ -140,20 +141,26 @@ const OrgPlans = (props: Props) => {
       <StyledPanel label='Plans'>
         {billingTier === 'enterprise' && (
           <div className='flex justify-around border-t border-slate-300 py-4'>
-            <div className='text-center'>
+            <a
+              href=''
+              onClick={() => history.push(`/me/organizations/${orgId}/teams`)}
+              className='text-center text-sky-500 hover:text-sky-600'
+            >
               <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
               <div className='flex items-center justify-center text-base text-slate-600'>
                 Total teams
-                <Info className='ml-1 h-4 w-4 text-slate-600' />
               </div>
-            </div>
-            <div className='text-center'>
+            </a>
+            <a
+              href=''
+              onClick={() => history.push(`/me/organizations/${orgId}/members`)}
+              className='text-center text-sky-500 hover:text-sky-600'
+            >
               <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
               <div className='flex items-center justify-center text-base text-slate-600'>
                 Total members
-                <Info className='ml-1 h-4 w-4 text-slate-600' />
               </div>
-            </div>
+            </a>
           </div>
         )}
         <StyledRow isTablet={isTablet}>
