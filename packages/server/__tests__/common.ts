@@ -2,7 +2,6 @@ import base64url from 'base64url'
 import crypto from 'crypto'
 import faker from 'faker'
 import {sql} from 'kysely'
-import getRethink from '../database/rethinkDriver'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
@@ -34,7 +33,6 @@ export async function sendIntranet(req: {
 }
 
 export const drainRethink = async () => {
-  const r = await getRethink()
   r.getPoolMaster()?.drain()
 }
 

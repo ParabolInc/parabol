@@ -14,7 +14,6 @@
   "exclude": [
     "**/node_modules",
     "types/githubTypes.ts",
-    "database/migrations/**/*",
     "postgres/migrations/**/*",
     "graphql/intranetSchema/sdl/resolverTypes.ts",
     "billing/debug.ts"

@@ -17,8 +17,6 @@ export default [
   {
     ignores: [
       'types/webpackEnv.ts',
-      'database/migrations',
-      'database/stricterR.ts',
       'postgres/migrations',
       '**/generated/',
       '**/*/githubTypes.ts',
