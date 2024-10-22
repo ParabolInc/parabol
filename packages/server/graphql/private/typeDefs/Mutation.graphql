@@ -122,7 +122,7 @@ type Mutation {
   autopauseUsers: Int
 
   """
-  copies all the records from RethinkDB for a list of organizations
+  CURRENTLY BROKEN. copies all the records from PG for a list of organizations
   """
   backupOrganization(orgIds: [ID!]!): String!
 
