@@ -139,19 +139,19 @@ const OrgPlans = (props: Props) => {
     <>
       <StyledPanel label='Plans'>
         {billingTier === 'enterprise' && (
-          <div className='flex justify-around py-4'>
+          <div className='flex justify-around border-t border-slate-300 py-4'>
             <div className='text-center'>
               <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
-              <div className='text-gray-600 flex items-center justify-center text-base'>
+              <div className='flex items-center justify-center text-base text-slate-600'>
                 Total teams
-                <Info className='text-gray-600 ml-1 h-4 w-4' />
+                <Info className='ml-1 h-4 w-4 text-slate-600' />
               </div>
             </div>
             <div className='text-center'>
               <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
-              <div className='text-gray-600 flex items-center justify-center text-base'>
+              <div className='flex items-center justify-center text-base text-slate-600'>
                 Total members
-                <Info className='text-gray-600 ml-1 h-4 w-4' />
+                <Info className='ml-1 h-4 w-4 text-slate-600' />
               </div>
             </div>
           </div>
