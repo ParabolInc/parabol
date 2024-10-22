@@ -139,9 +139,7 @@ const OrganizationRow = (props: Props) => {
               </StyledTagBlock>
             )}
           </RowInfoHeader>
-          <StyledRowInfoCopy>
-            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
-          </StyledRowInfoCopy>
+          <StyledRowInfoCopy>{`${totalUsers} ${plural(totalUsers, 'User')}`}</StyledRowInfoCopy>
         </StyledRowInfo>
         <RowActions>
           {showUpgradeCTA && (

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Info} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
@@ -34,6 +35,38 @@ const StyledRow = styled(Row)<{isTablet: boolean}>(({isTablet}) => ({
     border: 'none'
   }
 }))
+
+const StatsContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-around',
+  padding: '16px 0',
+  borderBottom: '1px solid #E0E0E0'
+})
+
+const StatBox = styled('div')({
+  textAlign: 'center'
+})
+
+const StatNumber = styled('div')({
+  fontSize: '24px',
+  fontWeight: 'bold',
+  marginBottom: '4px'
+})
+
+const StatLabel = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '14px',
+  color: '#666'
+})
+
+const StyledInfoIcon = styled(Info)({
+  marginLeft: '4px',
+  width: '16px',
+  height: '16px',
+  color: '#666'
+})
 
 const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
   if (tier === plan) {
@@ -72,13 +105,19 @@ const OrgPlans = (props: Props) => {
         ...LimitExceededWarning_organization
         id
         billingTier
+        allTeamsCount
+        orgUserCount {
+          activeUserCount
+          inactiveUserCount
+        }
       }
     `,
     organizationRef
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, billingTier} = organization
+  const {id: orgId, billingTier, allTeamsCount, orgUserCount} = organization
+  const totalUserCount = orgUserCount.activeUserCount + orgUserCount.inactiveUserCount
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const plans = [
@@ -131,6 +170,20 @@ const OrgPlans = (props: Props) => {
   return (
     <>
       <StyledPanel label='Plans'>
+        <StatsContainer>
+          <StatBox>
+            <StatNumber>{allTeamsCount}</StatNumber>
+            <StatLabel>
+              Total teams <StyledInfoIcon />
+            </StatLabel>
+          </StatBox>
+          <StatBox>
+            <StatNumber>{totalUserCount}</StatNumber>
+            <StatLabel>
+              Total members <StyledInfoIcon />
+            </StatLabel>
+          </StatBox>
+        </StatsContainer>
         <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
             <OrgPlan key={plan.tier} plan={plan} isTablet={isTablet} handleClick={handleClick} />
