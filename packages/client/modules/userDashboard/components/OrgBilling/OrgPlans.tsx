@@ -138,22 +138,24 @@ const OrgPlans = (props: Props) => {
   return (
     <>
       <StyledPanel label='Plans'>
-        <div className='flex justify-around py-4'>
-          <div className='text-center'>
-            <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
-            <div className='text-gray-600 flex items-center justify-center text-base'>
-              Total teams
-              <Info className='text-gray-600 ml-1 h-4 w-4' />
+        {billingTier === 'enterprise' && (
+          <div className='flex justify-around py-4'>
+            <div className='text-center'>
+              <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
+              <div className='text-gray-600 flex items-center justify-center text-base'>
+                Total teams
+                <Info className='text-gray-600 ml-1 h-4 w-4' />
+              </div>
+            </div>
+            <div className='text-center'>
+              <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
+              <div className='text-gray-600 flex items-center justify-center text-base'>
+                Total members
+                <Info className='text-gray-600 ml-1 h-4 w-4' />
+              </div>
             </div>
           </div>
-          <div className='text-center'>
-            <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
-            <div className='text-gray-600 flex items-center justify-center text-base'>
-              Total members
-              <Info className='text-gray-600 ml-1 h-4 w-4' />
-            </div>
-          </div>
-        </div>
+        )}
         <StyledRow isTablet={isTablet}>
           {plans.map((plan) => (
             <OrgPlan key={plan.tier} plan={plan} isTablet={isTablet} handleClick={handleClick} />
