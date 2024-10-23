@@ -36,7 +36,7 @@ export type AllPrimaryLoaders = keyof typeof primaryKeyLoaderMakers
 
 export type RegisterDependsOn = (primaryLoaders: AllPrimaryLoaders | AllPrimaryLoaders[]) => void
 
-// The RethinkDB logic is a leaky abstraction! It will be gone soon & this will be generic enough to put in its own package
+// TODO move this to its own package
 interface GenericDataLoader<TLoaders, TPrimaryLoaderNames> {
   clearAll(pkLoaderName: TPrimaryLoaderNames | TPrimaryLoaderNames[]): void
   get<LoaderName extends keyof TLoaders, Loader extends TLoaders[LoaderName]>(

@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.0.1](https://github.com/ParabolInc/parabol/compare/v8.0.0...v8.0.1) (2024-10-23)
+
+
+### Fixed
+
+* apply imports transform ([#10401](https://github.com/ParabolInc/parabol/issues/10401)) ([87f9a7c](https://github.com/ParabolInc/parabol/commit/87f9a7c13c8cc7795ed7d6bbd817b2b45e0e0d07))
+
+## [8.0.0](https://github.com/ParabolInc/parabol/compare/v7.52.1...v8.0.0) (2024-10-23)
+
+
+### Changed
+
+* release 8.0.0 ([81f4734](https://github.com/ParabolInc/parabol/commit/81f473452dcfe2a185ec15107997520ddbd484a9))
+* remove kysely-ctl from prod bundle ([#10398](https://github.com/ParabolInc/parabol/issues/10398)) ([ad8b13d](https://github.com/ParabolInc/parabol/commit/ad8b13dac20a2fe970bb21f8ed8031199ba1adb8))
+* remove local cache ([#10379](https://github.com/ParabolInc/parabol/issues/10379)) ([47f080a](https://github.com/ParabolInc/parabol/commit/47f080a7acd7e7bc2a0119afb704b34a77fa08d2))
+* **rethinkdb:** Remove all references to RethinkDB ([#10395](https://github.com/ParabolInc/parabol/issues/10395)) ([5215466](https://github.com/ParabolInc/parabol/commit/521546637a0990cb0e4e86743c757c6bcee8802b))
+* super user can generate insight ([#10394](https://github.com/ParabolInc/parabol/issues/10394)) ([8ffa7d2](https://github.com/ParabolInc/parabol/commit/8ffa7d20a3eb46454db24bb586b2bfbb0854eaa8))
+
 ## [7.52.1](https://github.com/ParabolInc/parabol/compare/v7.52.0...v7.52.1) (2024-10-21)
 
 

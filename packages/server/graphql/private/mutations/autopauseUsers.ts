@@ -1,7 +1,6 @@
 import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
-import getUserIdsToPause from '../../../postgres/queries/getUserIdsToPause'
 import {Logger} from '../../../utils/Logger'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -13,7 +12,13 @@ const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
   const pg = getKysely()
   // RESOLUTION
   const activeThresh = new Date(Date.now() - Threshold.AUTO_PAUSE)
-  const userIdsToPause = await getUserIdsToPause(activeThresh)
+  const usersToPause = await pg
+    .selectFrom('User')
+    .select('id')
+    .where('lastSeenAt', '<=', activeThresh)
+    .where('inactive', '=', false)
+    .execute()
+  const userIdsToPause = usersToPause.map(({id}) => id)
 
   const BATCH_SIZE = 100
   for (let i = 0; i < 1e5; i++) {

@@ -1,5 +1,4 @@
 import sleep from 'parabol-client/utils/sleep'
-import getRethink from '../../../database/rethinkDriver'
 import getPg from '../../../postgres/getPg'
 import getRedis from '../../../utils/getRedis'
 import {PingableServicesResolvers} from '../resolverTypes'
@@ -29,15 +28,6 @@ const PingableServices: PingableServicesResolvers = {
     try {
       const redis = getRedis()
       const duration = await pingService(() => redis.ping('1'))
-      return duration
-    } catch {
-      return -1
-    }
-  },
-  rethinkdb: async () => {
-    try {
-      const r = await getRethink()
-      const duration = await pingService(r(1).run)
       return duration
     } catch {
       return -1

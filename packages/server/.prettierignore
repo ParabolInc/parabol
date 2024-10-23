@@ -7,6 +7,5 @@ githubSchema.graphql
 gitlabSchema.graphql
 graphql/private/schema.graphql
 graphql/public/schema.graphql
-migrationTemplate.ts
 billing/debug.ts
 pg.d.ts

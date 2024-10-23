@@ -56,9 +56,8 @@ const transformRules = (projectRoot, isProd) => {
         loader: '@sucrase/webpack-loader',
         options: {
           production: isProd,
-          // imports is needed for old JS RethinkDB migration files
-          // otherwise exports.up is ignored when an import statement is there
-          // can remove when they're gone
+          // imports is needed for applyEnvVarsToClientAssets since it uses CJS
+          // otherwise it gets ignored and treated as an unused export in the build
           transforms: ['jsx', 'typescript', 'imports']
         }
       }
