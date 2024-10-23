@@ -3,10 +3,11 @@
 // It is used by PPMIs who are only provided with the bundles
 import {Migrator} from 'kysely'
 import path from 'path'
-import migratorConfig from '../../.config/kysely.config'
+import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'
 import '../webpack/utils/dotenv'
 import pgEnsureExtensions from './pgEnsureExtensions'
+
 const migratePG = async () => {
   console.log('🐘 Postgres Migration Started')
   await pgEnsureExtensions()
@@ -25,7 +26,7 @@ const migratePG = async () => {
   })
   const pg = getKysely()
   const migrator = new Migrator({
-    ...migratorConfig['migrations'],
+    ...migrations,
     db: pg,
     provider: {
       async getMigrations() {
