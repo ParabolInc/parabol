@@ -31,12 +31,6 @@ jobs:
           POSTGRES_DB: "tempdb"
         ports:
           - 5432:5432
-      rethinkdb:
-        image: rethinkdb:2.4.2
-        ports:
-          - 8080:8080
-          - 28015:28015
-          - 29015:29015
       redis:
         image: redis:7.0-alpine
         ports:
@@ -76,8 +70,7 @@ jobs:
       - name: Build the DBs
         run: |
           cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
-          yarn db:migrate
-          yarn pg:migrate up
+          yarn kysely migrate:latest
           yarn pg:build
           yarn pg:generate
 

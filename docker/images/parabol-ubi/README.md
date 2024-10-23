@@ -10,7 +10,7 @@ To build it locally (unsupported), use [act](https://github.com/nektos/act) to r
 
 ## Run the application using a docker image
 
-_Assumes redis, rethinkdb, and postgres already running to have operational stack._
+_Assumes redis and postgres already running to have operational stack._
 
 The commands below will start a Parabol container on the target tag specified in \_DOCKER_TAG export. It will volume mount a .env in your current working directory to the container, so you can pass in any .env in your current working directory.
 

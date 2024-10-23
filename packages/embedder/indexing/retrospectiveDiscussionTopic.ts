@@ -73,7 +73,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     dataLoader.get('retroReflectionsByGroupId').load(reflectionGroupId)
   ])
   if (newMeeting.meetingType !== 'retrospective') throw new Error('Meeting is not a retro')
-  // It should never be undefined, but our data integrity in RethinkDB is bad
+  // It should never be undefined now that data is in PG. Can try removing & testing
   const templateId = newMeeting?.templateId ?? ''
 
   const promptIds = [...new Set(reflections.map((r) => r.promptId))]
@@ -92,7 +92,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
   }
 
   for (const prompt of prompts) {
-    if (!prompt) continue // RethinkDB bad data integrity
+    if (!prompt) continue // Should never happen now that data is in PG
     if (!textForReranking) {
       markdown += `Participants were prompted with, "${prompt.question}`
       if (prompt.description) markdown += `: ${prompt.description}`

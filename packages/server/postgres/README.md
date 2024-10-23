@@ -2,20 +2,15 @@
 
 ## Migrations
 
-This folder contains all the postgres migrations that have been run on the database.
-If your migration also requires a connection to RethinkDB, you can do that here, too.
-The recommended way to write a migration is to call `yarn pg:migrate create NAME`
-We no longer use pgm because we want every migration to run independently.
-In other words, migration 3 should have a guarantee that migration 2 has already run. PGM doesn't do this.
+Migrations are managed by Kysely, and on the CLI by [Kysely-CTL](https://github.com/kysely-org/kysely-ctl).
+Kysely-CTL keeps the same API as Knex, so if the docs are not great, you can use the knex migration docs, too.
+There are 3 ways migrations are triggered:
 
-## Migrating RethinkDB to PG (Massive Inserts)
+- Manually, calling `yarn kysely migrate:latest`, `yarn kysely migrate:up`, or `yarn kysely migrate:down`
+- After the app is built, calling `yarn predeploy` (this is run in prod, where the /migrations dir does not exist)
+- In dev, calling `yarn dev`, which uses PM2 to call `yarn kysely migrate:latest`
 
-To perform massive inserts, like migrating RethinkDB tables to PG, we use pg-promise, which offers a [simple pattern](https://github.com/vitaly-t/pg-promise/wiki/Data-Imports#massive-inserts).
-
-Since most tables can't be read into the memory of our NodeJS container, we have to paginate the data.
-The easiest way to do that is indexing on `updatedAt` in RethinkDB and paginating on that field.
-This is also beneficial because any updates that happen during the migration will end up on the last page.
-Note that is requires every write to the RethinkDB table to update the `updatedAt` field!
+To create a new migration run `yarn kysely migrate:make NAME`
 
 ### Queries
 
