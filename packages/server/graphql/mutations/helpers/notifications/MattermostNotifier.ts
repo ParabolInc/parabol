@@ -364,7 +364,8 @@ async function getMattermost(dataLoader: DataLoaderWorker, teamId: string, userI
     return acc
   }, [] as TeamMemberIntegrationAuth[])
   if (filteredAuths.length === 0) {
-    const webhookAuth = auths.find((auth) => auth.userId === userId) ?? auths.filter((auth) => !auth.channel)[0]
+    const webhookAuth =
+      auths.find((auth) => auth.userId === userId) ?? auths.filter((auth) => !auth.channel)[0]
     if (webhookAuth) {
       filteredAuths.push(webhookAuth)
     }

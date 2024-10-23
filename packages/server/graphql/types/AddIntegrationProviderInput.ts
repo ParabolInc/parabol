@@ -13,12 +13,12 @@ import IntegrationProviderMetadataInputOAuth1, {
 import IntegrationProviderMetadataInputOAuth2, {
   IIntegrationProviderMetadataInputOAuth2
 } from './IntegrationProviderMetadataInputOAuth2'
-import IntegrationProviderMetadataInputWebhook, {
-  IIntegrationProviderMetadataInputWebhook
-} from './IntegrationProviderMetadataInputWebhook'
 import IntegrationProviderMetadataInputSharedSecret, {
   IIntegrationProviderMetadataInputSharedSecret
 } from './IntegrationProviderMetadataInputSharedSecret'
+import IntegrationProviderMetadataInputWebhook, {
+  IIntegrationProviderMetadataInputWebhook
+} from './IntegrationProviderMetadataInputWebhook'
 import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 
 export interface IAddIntegrationProviderInput {
