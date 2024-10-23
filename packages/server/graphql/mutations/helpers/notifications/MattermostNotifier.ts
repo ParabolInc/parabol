@@ -32,15 +32,6 @@ const notifyMattermost = async (
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string
 ) => {
-  console.log(
-    'notifyMattermost',
-    event,
-    channel,
-    user,
-    teamId,
-    textOrAttachmentsArray,
-    notificationText
-  )
   const {webhookUrl} = channel
   if (!webhookUrl) {
     return 'success'
@@ -373,8 +364,7 @@ async function getMattermost(dataLoader: DataLoaderWorker, teamId: string, userI
     return acc
   }, [] as TeamMemberIntegrationAuth[])
   if (filteredAuths.length === 0) {
-    const webhookAuths = auths.filter((auth) => !auth.channel)
-    const webhookAuth = auths.find((auth) => auth.userId === userId) ?? webhookAuths[0]
+    const webhookAuth = auths.find((auth) => auth.userId === userId) ?? auths.filter((auth) => !auth.channel)[0]
     if (webhookAuth) {
       filteredAuths.push(webhookAuth)
     }
