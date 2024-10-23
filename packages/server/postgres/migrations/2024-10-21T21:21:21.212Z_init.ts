@@ -11544,6 +11544,9 @@ ALTER TABLE ONLY public."TaskEstimate"
 --
 
 `.execute(db)
+
+  // pg_dump nulls out the search_path by default (for security) we must set it back or else future queries will fail
+  await sql`SELECT pg_catalog.set_config('search_path', 'public', false);`.execute(db)
 }
 
 export async function down(db: Kysely<any>): Promise<void> {}
