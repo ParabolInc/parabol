@@ -253,7 +253,7 @@ const eventLookup: Record<
       const activeMeetings = data.viewer.teams.flatMap((team: any) => team.activeMeetings)
       return activeMeetings.map((meeting: any) => {
         const {phases, ...rest} = meeting
-        const reflectPhase = phases.find((phase: any) => 'reflectPrompts' in phase)
+        const reflectPhase = phases?.find((phase: any) => 'reflectPrompts' in phase)
         if (!reflectPhase) return rest
         const isComplete = !reflectPhase.stages.some((stage: any) => !stage.isComplete)
         return {
