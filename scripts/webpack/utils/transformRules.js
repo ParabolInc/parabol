@@ -56,7 +56,9 @@ const transformRules = (projectRoot, isProd) => {
         loader: '@sucrase/webpack-loader',
         options: {
           production: isProd,
-          transforms: ['jsx', 'typescript']
+          // imports is needed for applyEnvVarsToClientAssets since it uses CJS
+          // otherwise it gets ignored and treated as an unused export in the build
+          transforms: ['jsx', 'typescript', 'imports']
         }
       }
     },
