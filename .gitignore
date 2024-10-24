@@ -24,8 +24,6 @@ packages/server/graphql/public/resolverTypes.ts
 packages/server/types/gitlabTypes.ts
 packages/server/types/githubTypes.ts
 queryMap.json
-rethinkdb_data/
-rethinkdb_dump_*
 schema.graphql
 scratch/
 scripts/toolbox/*

@@ -1,8 +1,5 @@
-import db from '../../../db'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {ORG_HOTNESS_FACTOR, TEAM_HOTNESS_FACTOR} from '../../../utils/getTemplateScore'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
-import getScoredTemplates from '../../queries/helpers/getScoredTemplates'
 import resolveSelectedTemplate from '../../queries/helpers/resolveSelectedTemplate'
 import {RetrospectiveMeetingSettingsResolvers} from '../resolverTypes'
 
@@ -14,15 +11,14 @@ const RetrospectiveMeetingSettings: RetrospectiveMeetingSettingsResolvers = {
   reflectTemplates: ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('meetingTemplatesByType').load({teamId, meetingType: 'retrospective'})
   },
-
+  // We should remove this since it's not longer used
   teamTemplates: async ({teamId}, _args, {dataLoader}) => {
     const templates = await dataLoader
       .get('meetingTemplatesByType')
       .load({teamId, meetingType: 'retrospective' as MeetingTypeEnum})
-    const scoredTemplates = await getScoredTemplates(templates, TEAM_HOTNESS_FACTOR)
-    return scoredTemplates
+    return templates
   },
-
+  // We should remove this since it's not longer used
   organizationTemplates: async ({teamId}, {first, after}, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
@@ -31,17 +27,13 @@ const RetrospectiveMeetingSettings: RetrospectiveMeetingSettingsResolvers = {
       (template) =>
         template.scope !== 'TEAM' && template.teamId !== teamId && template.type === 'retrospective'
     )
-    const scoredTemplates = await getScoredTemplates(organizationTemplates, ORG_HOTNESS_FACTOR)
-    return connectionFromTemplateArray(scoredTemplates, first, after)
+    return connectionFromTemplateArray(organizationTemplates, first, after)
   },
-
-  publicTemplates: async (_src, {first, after}) => {
-    const publicTemplates = await db.read('publicTemplates', 'retrospective')
-    publicTemplates.sort((a, b) => {
-      if (a.isFree && !b.isFree) return -1
-      if (!a.isFree && b.isFree) return 1
-      return 0
-    })
+  // We should remove this since it's not longer used
+  publicTemplates: async (_src, {first, after}, {dataLoader}) => {
+    const publicTemplates = await dataLoader
+      .get('publicTemplatesByType')
+      .loadNonNull('retrospective')
     return connectionFromTemplateArray(publicTemplates, first, after)
   }
 }

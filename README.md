@@ -19,7 +19,6 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 | ---------------------- | --------------------------------------------------------------- |
 | Server                 | [Node](https://nodejs.org/)                                     |
 | Server Framework       | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
-| Database (Legacy)      | [RethinkDB](https://www.rethinkdb.com/)                         |
 | Database               | [PostgreSQL](https://www.postgresql.org/)                       |
 | PubSub & Cache         | [Redis](https://redis.io)                                       |
 | Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)                |
@@ -65,7 +64,6 @@ $ yarn dev
 - [GraphQL Executor](./packages/gql-executor/README.md)
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
-- [RethinkDB](./packages/server/database/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
 - [VS Code Tips](.vscode/tips.md)
 - [Tailwind CSS migration guide](./packages/client/README.md)

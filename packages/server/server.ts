@@ -1,5 +1,4 @@
 import tracer from 'dd-trace'
-import {r} from 'rethinkdb-ts'
 import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import ICSHandler from './ICSHandler'
@@ -31,12 +30,6 @@ tracer.init({
   version: process.env.npm_package_version
 })
 tracer.use('ioredis').use('http').use('pg')
-
-if (!__PRODUCTION__) {
-  process.on('SIGINT', async () => {
-    r.getPoolMaster()?.drain()
-  })
-}
 
 process.on('SIGTERM', async (signal) => {
   console.log(

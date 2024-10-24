@@ -70,6 +70,7 @@ const addIntegrationProvider = {
       oAuth1ProviderMetadataInput,
       oAuth2ProviderMetadataInput,
       webhookProviderMetadataInput,
+      sharedSecretMetadataInput,
       ...rest
     } = input
 
@@ -86,7 +87,8 @@ const addIntegrationProvider = {
       [
         oAuth1ProviderMetadataInput,
         oAuth2ProviderMetadataInput,
-        webhookProviderMetadataInput
+        webhookProviderMetadataInput,
+        sharedSecretMetadataInput
       ].filter(isNotNull).length !== 1
     ) {
       return {error: {message: 'Exactly 1 metadata provider is expected'}}
@@ -99,6 +101,7 @@ const addIntegrationProvider = {
       ...oAuth1ProviderMetadataInput,
       ...oAuth2ProviderMetadataInput,
       ...webhookProviderMetadataInput,
+      ...sharedSecretMetadataInput,
       ...(scope === 'global'
         ? {orgId: null, teamId: null}
         : scope === 'org'

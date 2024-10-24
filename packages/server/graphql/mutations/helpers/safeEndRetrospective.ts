@@ -25,7 +25,6 @@ import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
-import updateTeamInsights from './updateTeamInsights'
 
 const getTranscription = async (recallBotId?: string | null) => {
   if (!recallBotId) return
@@ -135,8 +134,7 @@ const safeEndRetrospective = async ({
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
     removeEmptyTasks(meetingId),
-    dataLoader.get('meetingTemplates').loadNonNull(templateId),
-    updateTeamInsights(teamId, dataLoader)
+    dataLoader.get('meetingTemplates').loadNonNull(templateId)
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro

@@ -5,6 +5,57 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.0.1](https://github.com/ParabolInc/parabol/compare/v8.0.0...v8.0.1) (2024-10-23)
+
+
+### Fixed
+
+* apply imports transform ([#10401](https://github.com/ParabolInc/parabol/issues/10401)) ([87f9a7c](https://github.com/ParabolInc/parabol/commit/87f9a7c13c8cc7795ed7d6bbd817b2b45e0e0d07))
+
+## [8.0.0](https://github.com/ParabolInc/parabol/compare/v7.52.1...v8.0.0) (2024-10-23)
+
+
+### Changed
+
+* release 8.0.0 ([81f4734](https://github.com/ParabolInc/parabol/commit/81f473452dcfe2a185ec15107997520ddbd484a9))
+* remove kysely-ctl from prod bundle ([#10398](https://github.com/ParabolInc/parabol/issues/10398)) ([ad8b13d](https://github.com/ParabolInc/parabol/commit/ad8b13dac20a2fe970bb21f8ed8031199ba1adb8))
+* remove local cache ([#10379](https://github.com/ParabolInc/parabol/issues/10379)) ([47f080a](https://github.com/ParabolInc/parabol/commit/47f080a7acd7e7bc2a0119afb704b34a77fa08d2))
+* **rethinkdb:** Remove all references to RethinkDB ([#10395](https://github.com/ParabolInc/parabol/issues/10395)) ([5215466](https://github.com/ParabolInc/parabol/commit/521546637a0990cb0e4e86743c757c6bcee8802b))
+* super user can generate insight ([#10394](https://github.com/ParabolInc/parabol/issues/10394)) ([8ffa7d2](https://github.com/ParabolInc/parabol/commit/8ffa7d20a3eb46454db24bb586b2bfbb0854eaa8))
+
+## [7.52.1](https://github.com/ParabolInc/parabol/compare/v7.52.0...v7.52.1) (2024-10-21)
+
+
+### Fixed
+
+* if not exists on meetingsCount ([#10386](https://github.com/ParabolInc/parabol/issues/10386)) ([fcf66d7](https://github.com/ParabolInc/parabol/commit/fcf66d7db3ddf8c082b22a1a9b68c58e6bc9297b))
+
+## [7.52.0](https://github.com/ParabolInc/parabol/compare/v7.51.5...v7.52.0) (2024-10-21)
+
+
+### Added
+
+* add insights feedback UI modal ([#10341](https://github.com/ParabolInc/parabol/issues/10341)) ([5446b2d](https://github.com/ParabolInc/parabol/commit/5446b2dc6bface31eb7ca677b0868a315a99228c))
+
+
+### Fixed
+
+* Crash when starting a checkin with agenda items ([#10383](https://github.com/ParabolInc/parabol/issues/10383)) ([6b817ee](https://github.com/ParabolInc/parabol/commit/6b817eee5babed03f4f530b48285b249a9a562a7))
+* no duplicate notification inserts ([#10380](https://github.com/ParabolInc/parabol/issues/10380)) ([2450d5e](https://github.com/ParabolInc/parabol/commit/2450d5ef820bee5aabf2fc296367ea1f83296d75))
+
+
+### Changed
+
+* Add migration for shared secret integration provider ([#10382](https://github.com/ParabolInc/parabol/issues/10382)) ([21551df](https://github.com/ParabolInc/parabol/commit/21551dfdb7e4366ae2769e9e61aac37d336b251d))
+* remove usage stats ([#10260](https://github.com/ParabolInc/parabol/issues/10260)) ([e6238a5](https://github.com/ParabolInc/parabol/commit/e6238a5686cd21b360d1e0bbac4e2c1be67a6311))
+
+## [7.51.5](https://github.com/ParabolInc/parabol/compare/v7.51.4...v7.51.5) (2024-10-18)
+
+
+### Fixed
+
+* complete partial value for updateTaskPayload ([#10373](https://github.com/ParabolInc/parabol/issues/10373)) ([74b2e01](https://github.com/ParabolInc/parabol/commit/74b2e01b7d51a559e06133a4a09641bb0cb5ed78))
+
 ## [7.51.4](https://github.com/ParabolInc/parabol/compare/v7.51.3...v7.51.4) (2024-10-18)
 
 

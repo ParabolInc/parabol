@@ -1,17 +1,4 @@
 services:
-  rethinkdb:
-    container_name: rethinkdb
-    profiles: ["databases"]
-    image: rethinkdb:2.4.2
-    restart: always
-    ports:
-      - "8080:8080"
-      - "29015:29015"
-      - "28015:28015"
-    volumes:
-      - ./data/rethink:/data
-    networks:
-      - parabol-network
   postgres:
     container_name: postgres
     profiles: ["databases"]
@@ -98,8 +85,6 @@ services:
     volumes:
       - "./.env:/parabol/.env"
     depends_on:
-      rethinkdb:
-        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -120,8 +105,6 @@ services:
     depends_on:
       pre-deploy:
         condition: service_completed_successfully
-      rethinkdb:
-        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -144,8 +127,6 @@ services:
     depends_on:
       pre-deploy:
         condition: service_completed_successfully
-      rethinkdb:
-        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -166,8 +147,6 @@ services:
     depends_on:
       pre-deploy:
         condition: service_completed_successfully
-      rethinkdb:
-        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -188,8 +167,6 @@ services:
     depends_on:
       pre-deploy:
         condition: service_completed_successfully
-      rethinkdb:
-        condition: service_started
       postgres:
         condition: service_healthy
       redis:

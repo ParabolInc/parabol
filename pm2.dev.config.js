@@ -48,9 +48,13 @@ module.exports = {
       script: 'scripts/hmrServer.js'
     },
     {
-      name: 'DB Migrations',
-      script: 'scripts/runMigrations.js',
-      // once this completes, it will exit
+      name: 'Flush Redis',
+      script: 'scripts/flushRedis.js',
+      autorestart: false
+    },
+    {
+      name: 'PG Migrations',
+      script: 'yarn kysely migrate:latest',
       autorestart: false
     },
     {

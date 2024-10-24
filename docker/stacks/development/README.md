@@ -10,7 +10,6 @@
 ## Components
 
 - **Datadog agent:** additional configuration can be added in the folder `datadog/dd-conf.d`.
-- **RethinkDB:** ports 28015 and 8080 (console) exposed to communicate with the cluster. Data mounted in a volume rethinkdb-data.
 - **Postgres:** container built from a Dockerfile in [docker/images/postgres](docker/images/postgres), that incorporates some extra extensions used by the application. Exposed through port 5432 and with the data mounted in a volume postgres-data.
 - **PGAdmin:** available on 5050 with credentials on the `.env` file. Connect using the values of `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` from the `.env`. Data mounted on a volume pgadmin-data.
 - **Redis:** available on 6379 with the data mounted on a volume redis-data.
