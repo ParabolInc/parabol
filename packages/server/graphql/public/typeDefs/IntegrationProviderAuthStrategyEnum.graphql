@@ -6,4 +6,5 @@ enum IntegrationProviderAuthStrategyEnum {
   oauth2
   pat
   webhook
+  sharedSecret
 }
