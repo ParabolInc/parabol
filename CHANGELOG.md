@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.1.1](https://github.com/ParabolInc/parabol/compare/v8.1.0...v8.1.1) (2024-10-24)
+
+
+### Fixed
+
+* increase URL col length for IntegrationProvider ([2c49dce](https://github.com/ParabolInc/parabol/commit/2c49dce82d0b9a8f7b20762bcc2cd903fcc966b0))
+
 ## [8.1.0](https://github.com/ParabolInc/parabol/compare/v8.0.1...v8.1.0) (2024-10-24)
 
 
