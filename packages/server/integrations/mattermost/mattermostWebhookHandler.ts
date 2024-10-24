@@ -10,8 +10,10 @@ import getGraphQLExecutor from '../../utils/getGraphQLExecutor'
 import sendToSentry from '../../utils/sendToSentry'
 
 const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
-const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
-const ORIGIN = `${process.env.PROTO}://${process.env.HOST}:${PORT}`
+const PORT = __PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT
+const HOST = process.env.HOST
+const PORT_SUFFIX = HOST !== 'localhost' ? '' : `:${PORT}`
+const ORIGIN = `${process.env.PROTO}://${HOST}${PORT_SUFFIX}`
 
 const markdownToDraftJS = (markdown: string) => {
   const rawObject = markdownToDraft(markdown)
@@ -312,7 +314,7 @@ const publishWebhookGQL = async <NarrowResponse>(
 
 const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   if (!MATTERMOST_SECRET) {
-    res.writeStatus('500').end()
+    res.writeStatus('404').end()
     return
   }
   const headers = {
