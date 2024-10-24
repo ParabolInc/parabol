@@ -112,6 +112,9 @@ const inviteToTeamHelper = async (
       return approvalErrors[idx] instanceof Error ? undefined : invitee
     })
     .filter(isNotNull)
+  if (newAllowedInvitees.length === 0) {
+    return {error: {message: 'Email is not approved by organization'}}
+  }
   const tokens = await Promise.all(
     newAllowedInvitees.map(async () => (await randomBytes(48)).toString('hex'))
   )
