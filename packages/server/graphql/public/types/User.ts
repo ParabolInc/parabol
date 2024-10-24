@@ -332,6 +332,8 @@ const User: ReqResolvers<'User'> = {
     const validTeamIds = teamIds
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
+    if (validTeamIds.length === 0)
+      return {error: 'No teams', pageInfo: {hasNextPage: false, hasPreviousPage: false}, edges: []}
 
     if (viewerId !== id && !isSuperUser(authToken))
       return {error: 'Not user', pageInfo: {hasNextPage: false, hasPreviousPage: false}, edges: []}
@@ -339,6 +341,7 @@ const User: ReqResolvers<'User'> = {
     const minVal = new Date(0)
 
     const pg = getKysely()
+    const hasEventTypes = eventTypes ? eventTypes.length > 0 : false
     const events = await pg
       .selectFrom('TimelineEvent')
       .selectAll()
@@ -346,7 +349,7 @@ const User: ReqResolvers<'User'> = {
       .where((eb) => eb.between('createdAt', minVal, dbAfter))
       .where('isActive', '=', true)
       .where('teamId', 'in', validTeamIds)
-      .$if(!!eventTypes, (db) => db.where('type', 'in', eventTypes!))
+      .$if(hasEventTypes, (db) => db.where('type', 'in', eventTypes!))
       .orderBy('createdAt', 'desc')
       .limit(first + 1)
       .execute()

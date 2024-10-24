@@ -154,6 +154,11 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             filterQuery,
             includeUnassigned
           } = key
+          if (teamIds.length === 0)
+            return {
+              key: serializeUserTasksKey(key),
+              data: []
+            }
           const hasUserIds = userIds?.length > 0
           const hasStatusFilters = statusFilters ? statusFilters.length > 0 : false
           const teamTasks = await selectTasks()
