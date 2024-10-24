@@ -140,7 +140,8 @@ const OrganizationRow = (props: Props) => {
             )}
           </RowInfoHeader>
           <StyledRowInfoCopy>
-            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
+            {`${totalUsers} ${plural(totalUsers, 'User')}`}
+            {billingTier !== 'enterprise' && ` (${activeUserCount} Active)`}
           </StyledRowInfoCopy>
         </StyledRowInfo>
         <RowActions>
