@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.1.0](https://github.com/ParabolInc/parabol/compare/v8.0.1...v8.1.0) (2024-10-24)
+
+
+### Added
+
+* show insights by default ([#10405](https://github.com/ParabolInc/parabol/issues/10405)) ([f67328f](https://github.com/ParabolInc/parabol/commit/f67328fe06dc936dd24ad32d8101712807f175c5))
+
+
+### Fixed
+
+* small bugs found in datadog logs ([#10414](https://github.com/ParabolInc/parabol/issues/10414)) ([a60106f](https://github.com/ParabolInc/parabol/commit/a60106ff24c7aa4e1e02b536a88beff43afd4df6))
+
+
+### Changed
+
+* Add Mattermost Plugin IntegrationProvider ([#10361](https://github.com/ParabolInc/parabol/issues/10361)) ([b5bd2b4](https://github.com/ParabolInc/parabol/commit/b5bd2b46d88df1e13d5a12a925642b9e47b1b5a1))
+
 ## [8.0.1](https://github.com/ParabolInc/parabol/compare/v8.0.0...v8.0.1) (2024-10-23)
 
 
