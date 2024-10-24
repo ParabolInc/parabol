@@ -18,12 +18,6 @@ export async function up() {
         scope: 'Team'
       },
       {
-        featureName: 'noAISummary',
-        description: 'Disables AI summary feature',
-        expiresAt: new Date('2074-09-25T15:50:07.656Z'),
-        scope: 'Organization'
-      },
-      {
         featureName: 'publicTeams',
         description: 'Whether users can see teams they are not a member of in an org',
         expiresAt: new Date('2025-01-31T00:00:00.000Z'),
@@ -63,7 +57,6 @@ export async function down() {
     .deleteFrom('FeatureFlag')
     .where('featureName', 'in', [
       'insights',
-      'noAISummary',
       'publicTeams',
       'relatedDiscussions',
       'standupAISummary',
