@@ -55,7 +55,7 @@ const rewriteIndexHTML = () => {
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     googleAnalytics: process.env.GA_TRACKING_ID,
-    mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
+    mattermostDisabled: !!process.env.MATTERMOST_SECRET || process.env.MATTERMOST_DISABLED === 'true',
     msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
