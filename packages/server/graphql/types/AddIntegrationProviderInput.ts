@@ -13,6 +13,9 @@ import IntegrationProviderMetadataInputOAuth1, {
 import IntegrationProviderMetadataInputOAuth2, {
   IIntegrationProviderMetadataInputOAuth2
 } from './IntegrationProviderMetadataInputOAuth2'
+import IntegrationProviderMetadataInputSharedSecret, {
+  IIntegrationProviderMetadataInputSharedSecret
+} from './IntegrationProviderMetadataInputSharedSecret'
 import IntegrationProviderMetadataInputWebhook, {
   IIntegrationProviderMetadataInputWebhook
 } from './IntegrationProviderMetadataInputWebhook'
@@ -27,6 +30,7 @@ export interface IAddIntegrationProviderInput {
   webhookProviderMetadataInput: IIntegrationProviderMetadataInputWebhook | null
   oAuth1ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth1 | null
   oAuth2ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth2 | null
+  sharedSecretMetadataInput: IIntegrationProviderMetadataInputSharedSecret | null
 }
 
 const AddIntegrationProviderInput = new GraphQLInputObjectType({
@@ -67,6 +71,11 @@ const AddIntegrationProviderInput = new GraphQLInputObjectType({
       type: IntegrationProviderMetadataInputOAuth2,
       description:
         'OAuth2 provider metadata, has to be non-null if token type is OAuth2, refactor once we get https://github.com/graphql/graphql-spec/pull/825'
+    },
+    sharedSecretMetadataInput: {
+      type: IntegrationProviderMetadataInputSharedSecret,
+      description:
+        'Shared secret provider metadata, has to be non-null if token type is shared secret'
     }
   })
 })
