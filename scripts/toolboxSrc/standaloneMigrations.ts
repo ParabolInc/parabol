@@ -5,6 +5,7 @@ import {Migrator} from 'kysely'
 import path from 'path'
 import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'
+import '../../packages/server/types/webpackEnv.d'
 import '../webpack/utils/dotenv'
 import pgEnsureExtensions from './pgEnsureExtensions'
 
@@ -14,13 +15,10 @@ const migratePG = async () => {
   // pgm uses a dynamic require statement, which doesn't work with webpack
   // if we ignore that dynamic require, we'd still have to include the migrations directory AND any dependencies it might have
   // by processing through webpack's require.context, we let webpack handle everything
-  const context = (require as any).context(
-    '../../packages/server/postgres/migrations',
-    false,
-    /.ts$/
-  )
+  const context = require.context('../../packages/server/postgres/migrations', false, /.ts$/)
   const collector: Record<string, any> = {}
-  context.keys().forEach((relativePath: any) => {
+  const migrationPaths = context.keys()
+  migrationPaths.forEach((relativePath) => {
     const {name} = path.parse(relativePath)
     collector[name] = context(relativePath)
   })

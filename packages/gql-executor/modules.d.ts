@@ -1,2 +1,2 @@
 import '../server/types/modules'
-import '../server/types/webpackEnv'
+import '../server/types/webpackEnv.d'
