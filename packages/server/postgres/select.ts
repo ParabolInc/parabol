@@ -18,6 +18,9 @@ export const selectTimelineEvent = () => {
   >()
 }
 
+export const selectTeamMemberIntegrationAuth = () => {
+  return getKysely().selectFrom('TeamMemberIntegrationAuth').selectAll()
+}
 export const selectTemplateScaleRef = () => {
   return getKysely()
     .selectFrom([

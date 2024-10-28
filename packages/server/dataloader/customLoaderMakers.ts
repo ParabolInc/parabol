@@ -6,7 +6,6 @@ import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
-import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -29,6 +28,7 @@ import {
 } from '../postgres/select'
 import {Insight, MeetingSettings, OrganizationUser, Task, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
+import {TeamMeetingTemplate} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'

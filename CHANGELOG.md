@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.2.0](https://github.com/ParabolInc/parabol/compare/v8.1.1...v8.2.0) (2024-10-28)
+
+
+### Added
+
+* add featureFlags migration ([#10375](https://github.com/ParabolInc/parabol/issues/10375)) ([96a827b](https://github.com/ParabolInc/parabol/commit/96a827b20e0fb7a29b6858a3dc651d5e612526e6))
+
+
+### Fixed
+
+* TeamMemberIntegrationAuth single fetch ([#10426](https://github.com/ParabolInc/parabol/issues/10426)) ([88fec61](https://github.com/ParabolInc/parabol/commit/88fec61c90412745ffee4c6d565d9d0cf9296550))
+
+## [8.1.1](https://github.com/ParabolInc/parabol/compare/v8.1.0...v8.1.1) (2024-10-28)
+
+
+### Fixed
+
+* increase URL col length for IntegrationProvider ([2c49dce](https://github.com/ParabolInc/parabol/commit/2c49dce82d0b9a8f7b20762bcc2cd903fcc966b0))
+* index on discussionTopicId ([#10423](https://github.com/ParabolInc/parabol/issues/10423)) ([c101e30](https://github.com/ParabolInc/parabol/commit/c101e30350a70056d470d293de9c88cdb18e8f88))
+* support pg tracing in dd-trace-js ([#10424](https://github.com/ParabolInc/parabol/issues/10424)) ([e963369](https://github.com/ParabolInc/parabol/commit/e96336930c4852af0bcdfd70707bd4a8a57ce75e))
+
 ## [8.1.0](https://github.com/ParabolInc/parabol/compare/v8.0.1...v8.1.0) (2024-10-24)
 
 

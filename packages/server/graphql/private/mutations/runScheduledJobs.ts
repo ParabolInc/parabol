@@ -5,7 +5,7 @@ import ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJ
 import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {DB} from '../../../postgres/pg'
+import {DB} from '../../../postgres/types/pg'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'

@@ -4,7 +4,7 @@ import extractTextFromDraftString from '../../../../client/utils/draftjs/extract
 import DiscussStage from '../../../database/types/DiscussStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {Comment} from '../../../postgres/pg'
+import {Comment} from '../../../postgres/types/pg'
 import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
 
