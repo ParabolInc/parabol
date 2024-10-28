@@ -1,14 +1,7 @@
-import {Kysely, PostgresDialect} from 'kysely'
-import getPg from '../getPg'
+import {Kysely} from 'kysely'
 
-export async function up() {
-  const pg = new Kysely<any>({
-    dialect: new PostgresDialect({
-      pool: getPg()
-    })
-  })
-
-  await pg
+export async function up(db: Kysely<any>): Promise<void> {
+  await db
     .insertInto('FeatureFlag')
     .values([
       {
@@ -46,14 +39,8 @@ export async function up() {
     .execute()
 }
 
-export async function down() {
-  const pg = new Kysely<any>({
-    dialect: new PostgresDialect({
-      pool: getPg()
-    })
-  })
-
-  await pg
+export async function down(db: Kysely<any>): Promise<void> {
+  await db
     .deleteFrom('FeatureFlag')
     .where('featureName', 'in', [
       'insights',
