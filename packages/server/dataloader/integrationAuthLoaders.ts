@@ -10,7 +10,6 @@ import getBestTeamIntegrationAuth from '../postgres/queries/getBestTeamIntegrati
 import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
-import getTeamMemberIntegrationAuth from '../postgres/queries/getTeamMemberIntegrationAuth'
 import {selectSlackNotifications} from '../postgres/select'
 import {SlackAuth, SlackNotification} from '../postgres/types'
 import {TeamMemberIntegrationAuth} from '../postgres/types/pg'
@@ -128,13 +127,25 @@ export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
     string
   >(
     async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({service, teamId, userId}) =>
-          getTeamMemberIntegrationAuth(service, teamId, userId)
+      const pg = getKysely()
+      const results = await pg
+        .selectFrom('TeamMemberIntegrationAuth')
+        .selectAll()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'userId', 'service'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.userId, key.service))
+          )
         )
+        .execute()
+      return keys.map(
+        (key) =>
+          results.find(
+            ({teamId, userId, service}) =>
+              key.teamId === teamId && key.userId === userId && key.service === service
+          ) || null
       )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
     },
     {
       ...parent.dataLoaderOptions,
