@@ -1,11 +1,11 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import {TeamMemberIntegrationAuth} from '../postgres/types'
 import AzureDevOpsServerManager, {
   ProjectRes,
   Resource,
@@ -133,16 +133,16 @@ export interface AzureProject extends ProjectRes {
 
 export const freshAzureDevOpsAuth = (
   parent: RootDataLoader
-): DataLoader<TeamUserKey, IGetTeamMemberIntegrationAuthQueryResult | null, string> => {
-  return new DataLoader<TeamUserKey, IGetTeamMemberIntegrationAuthQueryResult | null, string>(
+): DataLoader<TeamUserKey, TeamMemberIntegrationAuth | null, string> => {
+  return new DataLoader<TeamUserKey, TeamMemberIntegrationAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const azureDevOpsAuthToRefresh = (await parent.get('teamMemberIntegrationAuths').load({
+          const azureDevOpsAuthToRefresh = await parent.get('teamMemberIntegrationAuths').load({
             service: 'azureDevOps',
             teamId,
             userId
-          })) as IGetTeamMemberIntegrationAuthQueryResult | null
+          })
           if (azureDevOpsAuthToRefresh === null) {
             return null
           }

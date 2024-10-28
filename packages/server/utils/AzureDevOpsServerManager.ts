@@ -15,8 +15,8 @@ import {
   TaskIntegrationManager
 } from '../integrations/TaskIntegrationManagerFactory'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import {TeamMemberIntegrationAuth} from '../postgres/types'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 
 export interface AzureDevOpsUser {
@@ -254,7 +254,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     Accept: 'application/json' as const,
     'Content-Type': 'application/json'
   }
-  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult | null
+  private readonly auth: TeamMemberIntegrationAuth | null
 
   async init(code: string, codeVerifier: string | null) {
     if (!codeVerifier) {
@@ -273,7 +273,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   private readonly provider: IntegrationProviderAzureDevOps | undefined
 
   constructor(
-    auth: IGetTeamMemberIntegrationAuthQueryResult | null,
+    auth: TeamMemberIntegrationAuth | null,
     provider: IntegrationProviderAzureDevOps | null
   ) {
     if (!!auth && !!auth.accessToken) {
