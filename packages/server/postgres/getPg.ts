@@ -8,6 +8,7 @@ In production, the require statement will resolve to the node_modules found in /
 */
 
 // when used outside of webpack, e.g. kysely.config.js, go vanilla
+declare let __non_webpack_require__: typeof require
 const pg =
   typeof __non_webpack_require__ === 'undefined' ? require('pg') : __non_webpack_require__('pg')
 const {Pool} = pg
