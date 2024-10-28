@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {DB} from 'parabol-server/postgres/pg'
+import {DB} from 'parabol-server/postgres/types/pg'
 import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
 import {getEmbedderPriority} from '../getEmbedderPriority'
