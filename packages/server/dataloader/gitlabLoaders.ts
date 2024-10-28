@@ -1,16 +1,12 @@
 import DataLoader from 'dataloader'
 import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
+import {TeamMemberIntegrationAuth} from '../postgres/types'
 import sendToSentry from '../utils/sendToSentry'
 import RootDataLoader from './RootDataLoader'
 
 export const freshGitlabAuth = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {teamId: string; userId: string},
-    IGetTeamMemberIntegrationAuthQueryResult | null,
-    string
-  >(
+  return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {
@@ -45,7 +41,7 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
             await upsertTeamMemberIntegrationAuth(newGitlabAuth)
             return newGitlabAuth
           }
-          return gitlabAuth as IGetTeamMemberIntegrationAuthQueryResult
+          return gitlabAuth
         })
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))

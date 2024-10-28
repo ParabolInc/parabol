@@ -13,6 +13,7 @@ import {
   selectSuggestedAction,
   selectTasks,
   selectTeamInvitations,
+  selectTeamMemberIntegrationAuth,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateScale,
@@ -58,7 +59,8 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-
+export interface TeamMemberIntegrationAuth
+  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 

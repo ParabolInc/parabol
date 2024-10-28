@@ -5,14 +5,12 @@ import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import getBestTeamIntegrationAuth from '../postgres/queries/getBestTeamIntegrationAuth'
 import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
-import {selectSlackNotifications} from '../postgres/select'
-import {SlackAuth, SlackNotification} from '../postgres/types'
-import {TeamMemberIntegrationAuth} from '../postgres/types/pg'
+import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../postgres/select'
+import {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 
@@ -123,14 +121,11 @@ export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
 export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
   return new DataLoader<
     TeamMemberIntegrationAuthPrimaryKey,
-    IGetTeamMemberIntegrationAuthQueryResult | null,
+    TeamMemberIntegrationAuth | null,
     string
   >(
     async (keys) => {
-      const pg = getKysely()
-      const results = await pg
-        .selectFrom('TeamMemberIntegrationAuth')
-        .selectAll()
+      const results = await selectTeamMemberIntegrationAuth()
         .where(({eb, refTuple, tuple}) =>
           eb(
             refTuple('teamId', 'userId', 'service'),
