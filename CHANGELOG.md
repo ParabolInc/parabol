@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.2.0](https://github.com/ParabolInc/parabol/compare/v8.1.1...v8.2.0) (2024-10-28)
+
+
+### Added
+
+* add featureFlags migration ([#10375](https://github.com/ParabolInc/parabol/issues/10375)) ([96a827b](https://github.com/ParabolInc/parabol/commit/96a827b20e0fb7a29b6858a3dc651d5e612526e6))
+
+
+### Fixed
+
+* TeamMemberIntegrationAuth single fetch ([#10426](https://github.com/ParabolInc/parabol/issues/10426)) ([88fec61](https://github.com/ParabolInc/parabol/commit/88fec61c90412745ffee4c6d565d9d0cf9296550))
+
 ## [8.1.1](https://github.com/ParabolInc/parabol/compare/v8.1.0...v8.1.1) (2024-10-28)
 
 
