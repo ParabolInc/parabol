@@ -3,7 +3,6 @@ import TeamMemberIntegrationAuthId from '../../client/shared/gqlIds/TeamMemberIn
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
-import {TeamMemberIntegrationAuth} from '../postgres/pg'
 import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import {IGetTeamMemberIntegrationAuthQueryResult} from '../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
@@ -14,6 +13,7 @@ import getIntegrationProvidersByIds, {
 import getTeamMemberIntegrationAuth from '../postgres/queries/getTeamMemberIntegrationAuth'
 import {selectSlackNotifications} from '../postgres/select'
 import {SlackAuth, SlackNotification} from '../postgres/types'
+import {TeamMemberIntegrationAuth} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 

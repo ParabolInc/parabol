@@ -1,5 +1,5 @@
 import {Selectable} from 'kysely'
-import {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/pg'
+import {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {RetroReflectionGroupResolvers} from '../resolverTypes'
 

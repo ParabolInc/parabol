@@ -1,12 +1,5 @@
 import {SelectQueryBuilder, Selectable} from 'kysely'
 import {
-  Discussion as DiscussionPG,
-  Insight as InsightPG,
-  OrganizationUser as OrganizationUserPG,
-  TaskEstimate as TaskEstimatePG,
-  TeamMember as TeamMemberPG
-} from '../pg.d'
-import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
@@ -25,6 +18,13 @@ import {
   selectTemplateScale,
   selectTemplateScaleRef
 } from '../select'
+import {
+  Discussion as DiscussionPG,
+  Insight as InsightPG,
+  OrganizationUser as OrganizationUserPG,
+  TaskEstimate as TaskEstimatePG,
+  TeamMember as TeamMemberPG
+} from './pg'
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never
