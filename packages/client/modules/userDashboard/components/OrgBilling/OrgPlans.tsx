@@ -72,11 +72,6 @@ const OrgPlans = (props: Props) => {
         ...LimitExceededWarning_organization
         id
         billingTier
-        allTeamsCount
-        orgUserCount {
-          activeUserCount
-          inactiveUserCount
-        }
       }
     `,
     organizationRef
