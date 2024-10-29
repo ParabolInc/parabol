@@ -3,6 +3,7 @@ import {Selectable, SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
+import isValid from '../graphql/isValid'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
@@ -35,6 +36,7 @@ import isUserVerified from '../utils/isUserVerified'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
+import normalizeResults from './normalizeResults'
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -584,16 +586,28 @@ export const lastMeetingByMeetingSeriesId = (
   dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting | null, string>(
     async (keys) => {
-      return await Promise.all(
-        keys.map(async (key) => {
-          const latestMeeting = await selectNewMeetings()
-            .where('meetingSeriesId', '=', key)
-            .orderBy('createdAt desc')
-            .limit(1)
-            .executeTakeFirst()
-          return latestMeeting || null
-        })
-      )
+      const meetingIdRes = await getKysely()
+        .with('LastMeetings', (qc) =>
+          qc
+            .selectFrom('NewMeeting')
+            .select([
+              'id',
+              'meetingSeriesId',
+              'createdAt',
+              sql`ROW_NUMBER() OVER (PARTITION BY "meetingSeriesId" ORDER BY "createdAt" DESC)`.as(
+                'rn'
+              )
+            ])
+            .where('meetingSeriesId', 'in', keys)
+        )
+        .selectFrom('LastMeetings')
+        .select('id')
+        .where('rn', '=', 1)
+        .execute()
+
+      const meetingIds = meetingIdRes.map(({id}) => id)
+      const meetings = (await parent.get('newMeetings').loadMany(meetingIds)).filter(isValid)
+      return normalizeResults(keys, meetings, 'meetingSeriesId')
     },
     {
       ...parent.dataLoaderOptions
