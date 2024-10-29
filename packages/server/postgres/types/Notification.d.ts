@@ -1,4 +1,4 @@
-import type {Notification} from '../pg.d'
+import type {Notification} from './pg'
 
 interface BaseNotification {
   id: string

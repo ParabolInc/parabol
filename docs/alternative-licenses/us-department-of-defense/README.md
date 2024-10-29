@@ -30,7 +30,6 @@ For all matters, please contact: support@parabol.co
 | ---------------------- | -------------------------------------------------------------- |
 | Server                 | [Node](https://nodejs.org/)                                    |
 | Server Framework       | [uWebSockts.js](https://github.com/uNetworking/uWebSockets.js) |
-| Database (Legacy)      | [RethinkDB](https://www.rethinkdb.com/)                        |
 | Database               | [PostgreSQL](https://www.postgresql.org/)                      |
 | PubSub & Cache         | [Redis](https://redis.io)                                      |
 | Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)               |
@@ -69,11 +68,6 @@ Build for production and start application:
 ```bash
 $ yarn && yarn build && yarn start
 ```
-
-### RethinkDB
-
-- Migrations are stored in `packages/server/database/migrations`
-- RethinkDB Dashboard is at [http://localhost:8080](http://localhost:8080)
 
 ### PostgreSQL
 

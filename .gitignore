@@ -15,7 +15,7 @@ dist/
 dump.rdb
 node_modules/
 package-lock.json
-packages/server/postgres/pg.d.ts
+packages/server/postgres/types/pg.d.ts
 packages/server/postgres/queries/generated
 packages/server/types/githubTypes.ts
 packages/server/types/gitlabTypes.ts
@@ -24,8 +24,6 @@ packages/server/graphql/public/resolverTypes.ts
 packages/server/types/gitlabTypes.ts
 packages/server/types/githubTypes.ts
 queryMap.json
-rethinkdb_data/
-rethinkdb_dump_*
 schema.graphql
 scratch/
 scripts/toolbox/*

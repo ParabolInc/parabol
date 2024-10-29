@@ -1,12 +1,5 @@
 import {SelectQueryBuilder, Selectable} from 'kysely'
 import {
-  Discussion as DiscussionPG,
-  Insight as InsightPG,
-  OrganizationUser as OrganizationUserPG,
-  TaskEstimate as TaskEstimatePG,
-  TeamMember as TeamMemberPG
-} from '../pg.d'
-import {
   selectAgendaItems,
   selectComments,
   selectMeetingSettings,
@@ -20,11 +13,19 @@ import {
   selectSuggestedAction,
   selectTasks,
   selectTeamInvitations,
+  selectTeamMemberIntegrationAuth,
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateScale,
   selectTemplateScaleRef
 } from '../select'
+import {
+  Discussion as DiscussionPG,
+  Insight as InsightPG,
+  OrganizationUser as OrganizationUserPG,
+  TaskEstimate as TaskEstimatePG,
+  TeamMember as TeamMemberPG
+} from './pg'
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never
@@ -58,7 +59,8 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-
+export interface TeamMemberIntegrationAuth
+  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 

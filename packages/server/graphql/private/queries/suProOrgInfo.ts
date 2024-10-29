@@ -11,7 +11,6 @@ const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeIna
   const pgResults = await pg
     .selectFrom('OrganizationUser')
     .select(['orgId', ({fn}) => fn.count<number>('id').as('orgSize')])
-    // use ANY to support case where proOrgIds is empty array. Please use `in` after RethinkDB is gone
     .where('orgId', 'in', proOrgIds)
     .where('inactive', '=', false)
     .where('removedAt', 'is', null)

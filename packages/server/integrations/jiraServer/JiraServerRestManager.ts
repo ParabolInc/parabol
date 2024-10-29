@@ -5,8 +5,8 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
 import composeJQL from '~/utils/composeJQL'
 import splitDraftContent from '~/utils/draftjs/splitDraftContent'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 const MAX_PAGINATION_RESULTS = 5000
@@ -97,16 +97,13 @@ interface JiraServerIssuesResponse {
 
 export default class JiraServerRestManager implements TaskIntegrationManager {
   public title = 'Jira Server'
-  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
+  private readonly auth: TeamMemberIntegrationAuth
   private readonly provider: IntegrationProviderJiraServer
   private readonly serverBaseUrl: string
   private readonly oauth: OAuth
   private readonly token: OAuth.Token
 
-  constructor(
-    auth: IGetTeamMemberIntegrationAuthQueryResult,
-    provider: IntegrationProviderJiraServer
-  ) {
+  constructor(auth: TeamMemberIntegrationAuth, provider: IntegrationProviderJiraServer) {
     this.auth = auth
     this.provider = provider
 

@@ -6,7 +6,6 @@ import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
-import {TeamMeetingTemplate} from '../postgres/pg.d'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -29,6 +28,7 @@ import {
 } from '../postgres/select'
 import {Insight, MeetingSettings, OrganizationUser, Task, Team} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
+import {TeamMeetingTemplate} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
@@ -154,6 +154,11 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             filterQuery,
             includeUnassigned
           } = key
+          if (teamIds.length === 0)
+            return {
+              key: serializeUserTasksKey(key),
+              data: []
+            }
           const hasUserIds = userIds?.length > 0
           const hasStatusFilters = statusFilters ? statusFilters.length > 0 : false
           const teamTasks = await selectTasks()
