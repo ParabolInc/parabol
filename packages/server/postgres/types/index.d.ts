@@ -33,6 +33,16 @@ type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
 export type Discussion = Selectable<DiscussionPG>
 export type ReactjiDB = {id: string; userId: string}
 
+export type JiraDimensionField = {
+  dimensionName: string
+  cloudId: string
+  projectKey: string
+  issueKey: string
+  fieldName: string
+  fieldType: string
+  fieldId: string
+}
+
 export type UsedReactjis = Record<string, number>
 export type TranscriptBlock = {
   speaker: string

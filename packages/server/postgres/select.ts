@@ -2,7 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import {ReactjiDB, TaskTag} from './types'
+import {JiraDimensionField, ReactjiDB, TaskTag} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import {AnyNotification} from './types/Notification'
 import {AnyTaskIntegration} from './types/TaskIntegration'
@@ -90,17 +90,7 @@ export const selectTeams = () =>
       'updatedAt'
     ])
     .select(({fn}) => [
-      fn<
-        {
-          dimensionName: string
-          cloudId: string
-          projectKey: string
-          issueKey: string
-          fieldName: string
-          fieldType: string
-          fieldId: string
-        }[]
-      >('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
+      fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
     ])
 
 export const selectRetroReflections = () =>
