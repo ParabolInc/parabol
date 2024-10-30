@@ -33,12 +33,11 @@ const OrgUsage = (props: Props) => {
     <Panel className='mb-4 max-w-[976px]' label='Usage'>
       <div className='flex items-center justify-around border-t border-solid border-slate-300 p-4 '>
         <a
-          href=''
           onClick={(e) => {
             e.preventDefault()
             history.push(`/me/organizations/${orgId}/teams`)
           }}
-          className='text-center text-sky-500 hover:text-sky-600'
+          className='cursor-pointer text-center text-sky-500 hover:text-sky-600'
         >
           <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
           <div className='flex items-center justify-center text-base text-slate-600'>
@@ -46,12 +45,11 @@ const OrgUsage = (props: Props) => {
           </div>
         </a>
         <a
-          href=''
           onClick={(e) => {
             e.preventDefault()
             history.push(`/me/organizations/${orgId}/members`)
           }}
-          className='text-center text-sky-500 hover:text-sky-600'
+          className='cursor-pointer text-center text-sky-500 hover:text-sky-600'
         >
           <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
           <div className='flex items-center justify-center text-base text-slate-600'>
