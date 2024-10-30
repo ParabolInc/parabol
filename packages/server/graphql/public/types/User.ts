@@ -306,7 +306,11 @@ const User: ReqResolvers<'User'> = {
 
   payLaterClickCount: ({payLaterClickCount}) => payLaterClickCount || 0,
 
-  timeline: async ({id}, {after, first, teamIds, eventTypes}, {authToken, dataLoader}) => {
+  timeline: async (
+    {id},
+    {after, first, teamIds, eventTypes, archived},
+    {authToken, dataLoader}
+  ) => {
     const viewerId = getUserId(authToken)
 
     // VALIDATE
@@ -347,7 +351,7 @@ const User: ReqResolvers<'User'> = {
       .selectAll()
       .where('userId', '=', viewerId)
       .where((eb) => eb.between('createdAt', minVal, dbAfter))
-      .where('isActive', '=', true)
+      .where('isActive', '=', !archived)
       .where('teamId', 'in', validTeamIds)
       .$if(hasEventTypes, (db) => db.where('type', 'in', eventTypes!))
       .orderBy('createdAt', 'desc')

@@ -149,6 +149,11 @@ type User {
     """
     teamIds: [ID!]
     eventTypes: [TimelineEventEnum!]
+
+    """
+    true to only return archived timeline events; false to return active ones
+    """
+    archived: Boolean = false
   ): TimelineEventConnection!
 
   """

@@ -5,10 +5,13 @@ import {TimelineHeader_viewer$key} from '../__generated__/TimelineHeader_viewer.
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
+import useRouter from '../hooks/useRouter'
 import {FilterLabels} from '../types/constEnums'
 import {timelineEventTypeMenuLabels} from '../utils/constants'
+import constructFilterQueryParamURL from '../utils/constructFilterQueryParamURL'
 import lazyPreload from '../utils/lazyPreload'
 import {useQueryParameterParser} from '../utils/useQueryParameterParser'
+import Checkbox from './Checkbox'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
@@ -35,6 +38,7 @@ interface Props {
 
 const TimelineHeader = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {history} = useRouter()
   const {viewerId} = atmosphere
   const {viewerRef} = props
   const viewer = useFragment(
@@ -60,7 +64,7 @@ const TimelineHeader = (props: Props) => {
     isDropdown: true
   })
   const teams = viewer?.teams ?? []
-  const {teamIds} = useQueryParameterParser(viewerId)
+  const {teamIds, eventTypes, showArchived} = useQueryParameterParser(viewerId)
   const teamFilter = useMemo(
     () => (teamIds ? teams.find(({id: teamId}) => teamIds.includes(teamId)) : undefined),
     [teamIds, teams]
@@ -74,7 +78,6 @@ const TimelineHeader = (props: Props) => {
   } = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })
-  const {eventTypes} = useQueryParameterParser(viewerId)
   const eventTypeFilterName =
     eventTypes && eventTypes.length > 0
       ? timelineEventTypeMenuLabels[eventTypes[0]!]!
@@ -104,6 +107,15 @@ const TimelineHeader = (props: Props) => {
         {timelineEventTypeFilterMenuPortal(
           <TimelineEventTypeMenu menuProps={timelineEventTypeFilterMenuProps} />
         )}
+        <button
+          className='mt-4 mr-16 mb-4 ml-0 flex items-center sidebar-left:mt-0 sidebar-left:mr-6 sidebar-left:mb-0 sidebar-left:ml-0'
+          onClick={() =>
+            history.push(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
+          }
+        >
+          <div className='text-sm font-semibold text-slate-600'>{'Archived'}</div>
+          <Checkbox active={showArchived} className='ml-2' />
+        </button>
       </DashSectionControls>
     </DashSectionHeader>
   )
