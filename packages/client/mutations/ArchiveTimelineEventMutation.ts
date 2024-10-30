@@ -5,6 +5,7 @@ import {RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
 import {ArchiveTimelineEventMutation as TArchiveTimelineEventMutation} from '../__generated__/ArchiveTimelineEventMutation.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import {parseQueryParams} from '../utils/useQueryParameterParser'
 import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
 
 graphql`
@@ -40,7 +41,14 @@ export const archiveTimelineEventNotificationUpdater: SharedUpdater<
 
 const handleRemoveTimelineEvent = (timelineEventId: string, store: RecordSourceSelectorProxy) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
-  const timelineEventsConn = getUserTimelineEventsConn(viewer)
+  const {teamIds, eventTypes, showArchived} = parseQueryParams(viewer.getDataID(), window.location)
+  const timelineEventsConn = getUserTimelineEventsConn(
+    viewer,
+    null,
+    teamIds,
+    eventTypes,
+    showArchived
+  )
   safeRemoveNodeFromConn(timelineEventId, timelineEventsConn)
 }
 
