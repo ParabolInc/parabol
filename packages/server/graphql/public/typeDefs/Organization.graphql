@@ -163,6 +163,12 @@ type Organization {
   """
   picture: URL
   tier: TierEnum!
+
+  """
+  Whether the org has access to AI features
+  """
+  useAI: Boolean!
+
   billingTier: TierEnum!
 
   """
