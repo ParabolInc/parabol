@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
@@ -50,6 +51,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
   const clientSecret = paymentIntent.client_secret
 
+  analytics.organizationUpgradeAttempted(viewer, orgId)
   const data = {stripeSubscriptionClientSecret: clientSecret}
   return data
 }

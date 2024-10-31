@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.3.0](https://github.com/ParabolInc/parabol/compare/v8.2.0...v8.3.0) (2024-10-31)
+
+
+### Added
+
+* **orgAdmins:** show total user & team counts ([#10396](https://github.com/ParabolInc/parabol/issues/10396)) ([4f515ea](https://github.com/ParabolInc/parabol/commit/4f515eaa9f32d2dc038923a58f43216de583188a))
+
+
+### Fixed
+
+* latestMeeting query ([#10429](https://github.com/ParabolInc/parabol/issues/10429)) ([1b36b18](https://github.com/ParabolInc/parabol/commit/1b36b181874d56dd59b531c100d3b56e102699ae))
+* reset retro group safely ([#10431](https://github.com/ParabolInc/parabol/issues/10431)) ([f10b58e](https://github.com/ParabolInc/parabol/commit/f10b58e661a5bc04a67d36c78ade68fde472bf47))
+* throw on migration error ([#10439](https://github.com/ParabolInc/parabol/issues/10439)) ([90403c6](https://github.com/ParabolInc/parabol/commit/90403c63a962b560cfe76ba864859abb25613b21))
+
+
+### Changed
+
+* **metrics:** add metrics to identify who attempte to upgrade organization ([#10432](https://github.com/ParabolInc/parabol/issues/10432)) ([62b610a](https://github.com/ParabolInc/parabol/commit/62b610a63e05fb5004473c0cbef0ddda8d42b471))
+
 ## [8.2.0](https://github.com/ParabolInc/parabol/compare/v8.1.1...v8.2.0) (2024-10-28)
 
 
