@@ -1,24 +1,38 @@
+import styled from '@emotion/styled'
 import React, {useState} from 'react'
+import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
+import {PALETTE} from '../../../../styles/paletteV3'
+import {ElementWidth, Layout} from '../../../../types/constEnums'
+
+const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
+  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
+}))
+
+const PanelRow = styled('div')({
+  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  padding: Layout.ROW_GUTTER
+})
+
+const FeatureRow = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 8
+})
 
 const OrgFeatures = () => {
   const [showAIFeatures, setShowAIFeatures] = useState(false)
 
   return (
-    <div className='relative my-4 w-full rounded bg-white shadow-md'>
-      <div className='flex w-full items-center'>
-        <div className='px-4 py-2 text-sm font-semibold uppercase'>AI Features</div>
-        <div className='flex h-[44px] flex-1 justify-end px-4 py-2 leading-[44px]'></div>
-      </div>
-      <div className='w-full'>
-        <div className='border-t border-slate-300 p-4'>
-          <div className='mb-2 flex items-center justify-between'>
-            <span>Show AI Features</span>
-            <Toggle active={showAIFeatures} onClick={() => setShowAIFeatures(!showAIFeatures)} />
-          </div>
-        </div>
-      </div>
-    </div>
+    <StyledPanel isWide label='AI Features'>
+      <PanelRow>
+        <FeatureRow>
+          <span>Show AI Features</span>
+          <Toggle active={showAIFeatures} onClick={() => setShowAIFeatures(!showAIFeatures)} />
+        </FeatureRow>
+      </PanelRow>
+    </StyledPanel>
   )
 }
 
