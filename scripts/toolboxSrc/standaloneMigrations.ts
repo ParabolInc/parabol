@@ -2,6 +2,7 @@
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
 import {Migrator} from 'kysely'
+import {Logger} from 'parabol-server/utils/Logger'
 import path from 'path'
 import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'
@@ -9,7 +10,7 @@ import '../webpack/utils/dotenv'
 import pgEnsureExtensions from './pgEnsureExtensions'
 
 const migratePG = async () => {
-  console.log('🐘 Postgres Migration Started')
+  Logger.log('🐘 Postgres Migration Started')
   await pgEnsureExtensions()
   // pgm uses a dynamic require statement, which doesn't work with webpack
   // if we ignore that dynamic require, we'd still have to include the migrations directory AND any dependencies it might have
@@ -38,17 +39,17 @@ const migratePG = async () => {
 
   results?.forEach((it) => {
     if (it.status === 'Success') {
-      console.log(`  ✅ Migration: ${it.migrationName}`)
+      Logger.log(`  ✅ Migration: ${it.migrationName}`)
     } else if (it.status === 'Error') {
-      console.error(`  ⛔️ Migration: ${it.migrationName}`)
+      Logger.error(`  ⛔️ Migration: ${it.migrationName}`)
     }
   })
 
   if (error) {
-    console.log('🐘 Postgres Migration Failed')
-    console.error(error)
+    Logger.log('🐘 Postgres Migration Failed')
+    throw error
   } else {
-    console.log('🐘 Postgres Migration Complete')
+    Logger.log('🐘 Postgres Migration Complete')
   }
 }
 
