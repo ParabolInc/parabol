@@ -5,6 +5,9 @@ import {graphql, useFragment} from 'react-relay'
 import {OrgFeatureFlags_organization$key} from '../../../../__generated__/OrgFeatureFlags_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleFeatureFlagMutation from '../../../../mutations/ToggleFeatureFlagMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
@@ -38,6 +41,8 @@ interface Props {
 }
 
 const OrgFeatureFlags = ({organizationRef}: Props) => {
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
   const organization = useFragment(
     graphql`
       fragment OrgFeatureFlags_organization on Organization {
@@ -52,7 +57,16 @@ const OrgFeatureFlags = ({organizationRef}: Props) => {
     organizationRef
   )
 
-  const handleToggle = async (featureName: string) => {}
+  const handleToggle = async (featureName: string) => {
+    const variables = {
+      featureName,
+      orgId: organization.id
+    }
+    ToggleFeatureFlagMutation(atmosphere, variables, {
+      onError,
+      onCompleted
+    })
+  }
 
   return (
     <StyledPanel isWide label='Organization Feature Flags'>
