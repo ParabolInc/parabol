@@ -64,6 +64,7 @@
           "AddCommentSuccess": "./types/AddCommentSuccess#AddCommentSuccessSource",
           "AddIntegrationProviderSuccess": "./types/AddIntegrationProviderSuccess#AddIntegrationProviderSuccessSource",
           "DeleteCommentSuccess": "./types/DeleteCommentSuccess#DeleteCommentSuccessSource",
+          "FeatureFlag": "./types/FeatureFlag#FeatureFlagSource#",
           "UpdateCommentContentSuccess": "./types/UpdateCommentContentSuccess#UpdateCommentContentSuccessSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
           "RemoveAgendaItemPayload": "./types/RemoveAgendaItemPayload#RemoveAgendaItemPayloadSource",

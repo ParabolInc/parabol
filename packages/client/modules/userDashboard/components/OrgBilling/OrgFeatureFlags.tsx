@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
-import React, {useState} from 'react'
+import React from 'react'
+import {graphql, useFragment} from 'react-relay'
+import {OrgFeatureFlags_organization$key} from '../../../../__generated__/OrgFeatureFlags_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -31,60 +33,42 @@ const FeatureNameGroup = styled('div')({
   gap: 4
 })
 
-const features = [
-  {
-    id: 'suggestGroups',
-    name: 'Suggest Groups',
-    tooltip:
-      'Get AI-powered suggestions for creating new groups based on team activity and collaboration patterns'
-  },
-  {
-    id: 'publicTeams',
-    name: 'Public Teams',
-    tooltip: 'Allow teams to be discoverable by anyone in your organization'
-  },
-  {
-    id: 'standupAISummary',
-    name: 'Stand-Up AI Summary',
-    tooltip: 'Automatically generate summaries of your team standups using AI'
-  },
-  {
-    id: 'relatedDiscussions',
-    name: 'Related Discussions',
-    tooltip: 'See AI-suggested related discussions and threads across your organization'
-  }
-]
+interface Props {
+  organizationRef: OrgFeatureFlags_organization$key
+}
 
-const OrgFeatureFlags = () => {
-  const [featureStates, setFeatureStates] = useState<Record<string, boolean>>({
-    suggestGroups: false,
-    publicTeams: false,
-    standupAISummary: false,
-    relatedDiscussions: false
-  })
+const OrgFeatureFlags = ({organizationRef}: Props) => {
+  const organization = useFragment(
+    graphql`
+      fragment OrgFeatureFlags_organization on Organization {
+        id
+        orgFeatureFlags {
+          featureName
+          description
+          enabled
+        }
+      }
+    `,
+    organizationRef
+  )
 
-  const handleToggle = (featureId: string) => {
-    setFeatureStates((prev) => ({
-      ...prev,
-      [featureId]: !prev[featureId]
-    }))
-  }
+  const handleToggle = async (featureName: string) => {}
 
   return (
     <StyledPanel isWide label='Organization Feature Flags'>
       <PanelRow>
-        {features.map((feature) => (
-          <FeatureRow key={feature.id}>
+        {organization.orgFeatureFlags.map((feature) => (
+          <FeatureRow key={feature.featureName}>
             <FeatureNameGroup>
-              <span>{feature.name}</span>
+              <span>{feature.featureName}</span>
               <Tooltip>
                 <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
                   <InfoIcon className='h-4 w-4 text-slate-600' />
                 </TooltipTrigger>
-                <TooltipContent>{feature.tooltip}</TooltipContent>
+                <TooltipContent>{feature.description}</TooltipContent>
               </Tooltip>
             </FeatureNameGroup>
-            <Toggle active={featureStates[feature.id]!} onClick={() => handleToggle(feature.id)} />
+            <Toggle active={!!feature.enabled} onClick={() => handleToggle(feature.featureName)} />
           </FeatureRow>
         ))}
       </PanelRow>

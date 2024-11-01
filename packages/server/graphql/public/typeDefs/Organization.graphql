@@ -195,4 +195,9 @@ type Organization {
   Custom integration providers with organization scope
   """
   integrationProviders: OrgIntegrationProviders!
+
+  """
+  The feature flags the org has enabled
+  """
+  orgFeatureFlags: [FeatureFlag!]!
 }

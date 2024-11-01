@@ -18,4 +18,9 @@ type FeatureFlag {
   The scope of the feature flag
   """
   scope: FeatureFlagScope!
+
+  """
+  Whether the flag is enabled for an owner or not
+  """
+  enabled: Boolean!
 }
