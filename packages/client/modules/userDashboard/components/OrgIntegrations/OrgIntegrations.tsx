@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {Suspense} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
@@ -27,7 +28,8 @@ const OrgIntegrations = (props: Props) => {
     organizationRef
   )
 
-  const {viewerOrganizationUser} = organization
+  const {id: orgId, viewerOrganizationUser} = organization
+  const history = useHistory()
   const isOrgAdmin = viewerOrganizationUser?.role === 'ORG_ADMIN'
 
   return (
@@ -43,7 +45,20 @@ const OrgIntegrations = (props: Props) => {
               See the team integration tab for team-level connections.
             </div>
           ) : (
-            <div className='text-slate-700'>Only organization admins can manage integrations.</div>
+            <div className='text-slate-700'>
+              {`Organization-level integrations are managed by `}
+              <a
+                href='#'
+                onClick={(e) => {
+                  e.preventDefault()
+                  history.push(`/me/organizations/${orgId}/billing`)
+                }}
+                className='font-bold text-sky-500 hover:text-sky-600'
+              >
+                Org Admins
+              </a>
+              .
+            </div>
           )}
           <GitLabProviders organizationRef={organization} />
         </div>
