@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.3.1](https://github.com/ParabolInc/parabol/compare/v8.3.0...v8.3.1) (2024-11-04)
+
+
+### Fixed
+
+* teamMember is nullable in generate insight ([#10450](https://github.com/ParabolInc/parabol/issues/10450)) ([fb67345](https://github.com/ParabolInc/parabol/commit/fb673457d6223eb00ebb66fa43368b3efb437e0f))
+
+
+### Changed
+
+* Add Mattermost webhook handler ([#10237](https://github.com/ParabolInc/parabol/issues/10237)) ([f50e32f](https://github.com/ParabolInc/parabol/commit/f50e32f5f740c42b722d2581c02c7467dfa9ff2e))
+
 ## [8.3.0](https://github.com/ParabolInc/parabol/compare/v8.2.0...v8.3.0) (2024-10-31)
 
 
