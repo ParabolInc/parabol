@@ -1,13 +1,17 @@
-// import {ToggleFeatureFlagSuccessResolvers} from '../resolverTypes'
+import {ToggleFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type ToggleFeatureFlagSuccessSource = {
-  ownerId: string
-  featureName: boolean
+  featureFlagId: string
+  enabled: boolean
 }
 
-const ToggleFeatureFlagSuccess: any = {
-  featureFlag: async ({ownerId, featureName}, _, {dataloader}) => {
-    return dataloader.get('featureFlagByOwnerId').load({ownerId, featureName})
+const ToggleFeatureFlagSuccess: ToggleFeatureFlagSuccessResolvers = {
+  featureFlag: async ({featureFlagId, enabled}, _, {dataLoader}) => {
+    const flag = await dataLoader.get('featureFlag').load(featureFlagId)
+    return {
+      ...flag,
+      enabled
+    }
   }
 }
 

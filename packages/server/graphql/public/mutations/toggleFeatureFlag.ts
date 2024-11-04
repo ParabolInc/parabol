@@ -1,6 +1,8 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserBillingLeader, isUserOrgAdmin} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -16,7 +18,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
     return standardError(new Error('Must provide one an orgId, teamId, or userId'))
   }
 
-  const ownerId = orgId || teamId || userId
+  const ownerId = (orgId || teamId || userId) as string
 
   if (
     orgId &&
@@ -43,7 +45,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
 
   const featureFlag = await pg
     .selectFrom('FeatureFlag')
-    .select(['id', 'scope'])
+    .selectAll()
     .where('featureName', '=', featureName)
     .where('expiresAt', '>', new Date())
     .executeTakeFirst()
@@ -72,7 +74,11 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
     )
     .executeTakeFirst()
 
-  if (existingOwner) {
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+  const isEnabled = !!existingOwner
+
+  if (isEnabled) {
     await pg
       .deleteFrom('FeatureFlagOwner')
       .where('featureFlagId', '=', featureFlag.id)
@@ -84,7 +90,6 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
         ])
       )
       .execute()
-    return {ownerId, enabled: false}
   } else {
     await pg
       .insertInto('FeatureFlagOwner')
@@ -95,8 +100,13 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
         userId: userId || null
       })
       .execute()
-    return {ownerId, featureName}
   }
+  const data = {
+    featureFlagId: featureFlag.id,
+    enabled: !isEnabled
+  }
+  publish(SubscriptionChannel.NOTIFICATION, ownerId, 'ToggleFeatureFlagPayload', data, subOptions)
+  return data
 }
 
 export default toggleFeatureFlag

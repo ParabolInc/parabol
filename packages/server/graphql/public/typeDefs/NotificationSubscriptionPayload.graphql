@@ -26,4 +26,5 @@ type NotificationSubscriptionPayload {
   UpdatedNotification: UpdatedNotification
   RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccess
   PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccess
+  ToggleFeatureFlagSuccess: ToggleFeatureFlagSuccess
 }

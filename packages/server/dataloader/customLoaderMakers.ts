@@ -867,6 +867,7 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
       const pg = getKysely()
 
       const featureNames = [...new Set(keys.map(({featureName}) => featureName))]
+      console.log('🚀 ~ featureNames:', featureNames)
       const ownerIds = [...new Set(keys.map(({ownerId}) => ownerId))]
 
       if (!__PRODUCTION__) {
@@ -907,6 +908,7 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
           'FeatureFlag.featureName'
         ])
         .execute()
+      console.log('🚀 ~ results:', results)
 
       const featureFlagMap = new Map<string, boolean>()
       results.forEach(({userId, teamId, orgId, featureName}) => {
@@ -991,7 +993,6 @@ export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
   return new DataLoader<string, FeatureFlag[], string>(
     async (ownerIds) => {
       const allFlags = await parent.get('allFeatureFlags').load('all')
-      console.log('🚀 ~ allFlags:', allFlags)
 
       const flagsByOwnerId = await Promise.all(
         ownerIds.map(async (ownerId) => {

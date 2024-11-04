@@ -4,8 +4,9 @@ import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleFeatureFlagMutation_viewer on ToggleFeatureFlagSuccess {
+  fragment ToggleFeatureFlagMutation_notification on ToggleFeatureFlagSuccess {
     featureFlag {
+      featureName
       enabled
     }
   }
@@ -19,7 +20,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ToggleFeatureFlagMutation_viewer @relay(mask: false)
+      ...ToggleFeatureFlagMutation_notification @relay(mask: false)
     }
   }
 `
@@ -32,25 +33,25 @@ const ToggleFeatureFlagMutation: StandardMutation<any> = (
   return commitMutation<any>(atmosphere, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const {featureName, orgId, teamId, userId} = variables
-      const ownerId = orgId || teamId || userId
-      if (!ownerId) return
+    // optimisticUpdater: (store) => {
+    //   const {featureName, orgId, teamId, userId} = variables
+    //   const ownerId = orgId || teamId || userId
+    //   if (!ownerId) return
 
-      const owner = store.get(ownerId)
-      if (!owner) return
+    //   const owner = store.get(ownerId)
+    //   if (!owner) return
 
-      const featureFlags = owner.getLinkedRecords('orgFeatureFlags')
-      if (!featureFlags) return
+    //   const featureFlags = owner.getLinkedRecords('orgFeatureFlags')
+    //   if (!featureFlags) return
 
-      const featureFlag = featureFlags.find(
-        (flag) => flag && flag.getValue('featureName') === featureName
-      )
-      if (!featureFlag) return
+    //   const featureFlag = featureFlags.find(
+    //     (flag) => flag && flag.getValue('featureName') === featureName
+    //   )
+    //   if (!featureFlag) return
 
-      const currentEnabled = featureFlag.getValue('enabled')
-      featureFlag.setValue(!currentEnabled, 'enabled')
-    },
+    //   const currentEnabled = featureFlag.getValue('enabled')
+    //   featureFlag.setValue(!currentEnabled, 'enabled')
+    // },
     onCompleted,
     onError
   })
