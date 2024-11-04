@@ -15,6 +15,7 @@ import Checkbox from './Checkbox'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
+import LinkButton from './LinkButton'
 
 const TeamFilterMenu = lazyPreload(
   () =>
@@ -107,15 +108,18 @@ const TimelineHeader = (props: Props) => {
         {timelineEventTypeFilterMenuPortal(
           <TimelineEventTypeMenu menuProps={timelineEventTypeFilterMenuProps} />
         )}
-        <button
-          className='mt-4 mr-16 mb-4 ml-0 flex items-center sidebar-left:mt-0 sidebar-left:mr-6 sidebar-left:mb-0 sidebar-left:ml-0'
+        <LinkButton
+          className='my-1 flex-shrink-0 font-semibold text-slate-600 hover:text-slate-700 focus:text-slate-700 active:text-slate-700 sidebar-left:my-0'
           onClick={() =>
             history.push(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
           }
         >
-          <div className='text-sm font-semibold text-slate-600'>{'Archived'}</div>
-          <Checkbox active={showArchived} className='ml-2' />
-        </button>
+          <Checkbox
+            active={showArchived}
+            className='mr-2 w-[24px] select-none text-center text-[24px]'
+          />
+          {'Archived'}
+        </LinkButton>
       </DashSectionControls>
     </DashSectionHeader>
   )
