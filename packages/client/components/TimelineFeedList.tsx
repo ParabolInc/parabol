@@ -106,7 +106,7 @@ const TimelineFeedList = (props: Props) => {
     }
   }, [timeline.edges])
 
-  if (freeHistory === undefined || freeHistory.length === 0) {
+  if (freeHistory.length === 0 && !lockedHistory?.length) {
     return (
       <div className='text-base'>
         Looks like you have no events with these filters.
