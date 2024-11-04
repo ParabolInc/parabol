@@ -16,8 +16,8 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   const {dataLoader, socketId: mutatorId, authToken} = context
   const viewerId = getUserId(authToken)
   const teamMemberId = toTeamMemberId(teamId, viewerId)
-  const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-  const isLead = teamMember.isLead
+  const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+  const isLead = teamMember?.isLead
   if (!isLead && !isSuperUser(authToken)) {
     return standardError(new Error('Only team leads can generate insights'), {userId: viewerId})
   }
