@@ -126,7 +126,8 @@ export default {
       meetingId,
       teamId,
       isKill,
-      removedTaskIds
+      removedTaskIds,
+      timelineEventId: events[0]!.id
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
 

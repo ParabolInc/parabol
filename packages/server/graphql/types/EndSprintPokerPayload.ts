@@ -1,8 +1,9 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {GQLContext} from '../graphql'
+import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
 import Team from './Team'
-import makeMutationPayload from './makeMutationPayload'
+import TimelineEvent from './TimelineEvent'
 
 export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndSprintPokerSuccess',
@@ -31,6 +32,12 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    timelineEvent: {
+      type: new GraphQLNonNull(TimelineEvent),
+      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
+        return await dataLoader.get('timelineEvents').load(timelineEventId)
+      }
     }
   })
 })

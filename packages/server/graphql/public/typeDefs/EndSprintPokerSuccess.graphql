@@ -8,4 +8,9 @@ type EndSprintPokerSuccess {
   removedTaskIds: [ID!]!
   team: Team!
   teamId: ID!
+
+  """
+  An event that is important to the viewer, e.g. an ended meeting
+  """
+  timelineEvent: TimelineEvent!
 }
