@@ -1,5 +1,5 @@
 """
-The retro-specific meeting settings
+The poker-specific meeting settings
 """
 type PokerMeetingSettings implements TeamMeetingSettings {
   id: ID!

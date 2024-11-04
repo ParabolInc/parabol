@@ -110,13 +110,14 @@ const resetRetroMeetingToGroupStage = {
         .where('discussionId', 'in', discussionIdsToDelete)
         .execute()
     }
+    if (reflectionGroupIds.length > 0) {
+      await pg
+        .updateTable('RetroReflectionGroup')
+        .set({voterIds: [], discussionPromptQuestion: null})
+        .where('id', 'in', reflectionGroupIds)
+        .execute()
+    }
     await pg
-      .with('ResetGroups', (qb) =>
-        qb
-          .updateTable('RetroReflectionGroup')
-          .set({voterIds: [], discussionPromptQuestion: null})
-          .where('id', 'in', reflectionGroupIds)
-      )
       .with('ResetMeetingMember', (qb) =>
         qb
           .updateTable('MeetingMember')

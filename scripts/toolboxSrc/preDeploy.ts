@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import dotenvExpand from 'dotenv-expand'
 import getKysely from 'parabol-server/postgres/getKysely'
+import {Logger} from 'parabol-server/utils/Logger'
 import path from 'path'
 import queryMap from '../../queryMap.json'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
@@ -12,7 +13,7 @@ import standaloneMigrations from './standaloneMigrations'
 const PROJECT_ROOT = getProjectRoot()
 
 const storePersistedQueries = async () => {
-  console.log('🔗 QueryMap Persistence Started')
+  Logger.log('🔗 QueryMap Persistence Started')
   const hashes = Object.keys(queryMap)
   const now = new Date()
   const records = hashes.map((hash) => ({
@@ -22,8 +23,13 @@ const storePersistedQueries = async () => {
   }))
 
   const pg = getKysely()
-  const res = await pg.insertInto('QueryMap').values(records).onConflict((oc) => oc.doNothing()).returning('id').execute()
-  console.log(`🔗 QueryMap Persistence Complete: ${res.length} records added`)
+  const res = await pg
+    .insertInto('QueryMap')
+    .values(records)
+    .onConflict((oc) => oc.doNothing())
+    .returning('id')
+    .execute()
+  Logger.log(`🔗 QueryMap Persistence Complete: ${res.length} records added`)
 }
 
 const preDeploy = async () => {
@@ -31,14 +37,14 @@ const preDeploy = async () => {
   const envPath = path.join(PROJECT_ROOT, '.env')
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
-  console.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
+  Logger.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
   // first we migrate DBs & add env vars to client assets
   await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
   // The we can prime the DB & CDN
   await Promise.all([storePersistedQueries(), primeIntegrations(), pushToCDN()])
   await getKysely().destroy()
-  console.log(`🚀 Predeploy Complete`)
+  Logger.log(`🚀 Predeploy Complete`)
   process.exit()
 }
 
