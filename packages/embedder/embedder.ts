@@ -18,7 +18,8 @@ tracer.init({
   plugins: false,
   version: process.env.npm_package_version
 })
-tracer.use('pg')
+// The embedder queue is in PG & gets hits non-stop, which dirties up the logs. Ignore the polling query before enabling pg
+// tracer.use('pg')
 
 const run = async () => {
   const SERVER_ID = process.env.SERVER_ID

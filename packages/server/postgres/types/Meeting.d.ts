@@ -1,6 +1,5 @@
 import {Selectable} from 'kysely'
 import {NonNullableProps} from '../../../client/types/generics'
-import {NewMeeting as NewMeetingPG} from '../pg.d'
 import {AutogroupReflectionGroupType, UsedReactjis} from './index.d'
 import {
   CheckInMeetingPhase,
@@ -9,6 +8,7 @@ import {
   RetroMeetingPhase,
   TeamPromptPhase
 } from './NewMeetingPhase'
+import {NewMeeting as NewMeetingPG} from './pg'
 
 type NewMeeting = Selectable<NewMeetingPG>
 export type MeetingTypeEnum = NewMeeting['meetingType']

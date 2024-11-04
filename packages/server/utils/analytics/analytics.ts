@@ -132,6 +132,7 @@ export type AnalyticsEvent =
   | 'Notification Email Sent'
   // org
   | 'Upgrade CTA Clicked'
+  | 'Organization Upgrade Attempted'
   | 'Organization Upgraded'
   | 'Downgrade Clicked'
   | 'Downgrade Continue Clicked'
@@ -504,6 +505,10 @@ class Analytics {
   //org
   clickedUpgradeCTA = (user: AnalyticsUser, upgradeCTALocation: UpgradeCTALocationEnumType) => {
     this.track(user, 'Upgrade CTA Clicked', {upgradeCTALocation})
+  }
+
+  organizationUpgradeAttempted = (user: AnalyticsUser, orgId: string) => {
+    this.track(user, 'Organization Upgrade Attempted', {orgId})
   }
 
   organizationUpgraded = (

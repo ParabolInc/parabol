@@ -1,5 +1,5 @@
 import {Selectable} from 'kysely'
-import {DB} from 'parabol-server/postgres/pg'
+import {DB} from 'parabol-server/postgres/types/pg'
 
 import {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import {createTextFromMeetingTemplate} from './meetingTemplate'

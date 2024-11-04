@@ -1156,7 +1156,6 @@ type Mutation {
     """
     userId: ID
   ): ToggleFeatureFlagPayload!
-}
 
   """
   Update how a parabol dimension maps to a GitHub label

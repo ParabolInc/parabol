@@ -4,9 +4,10 @@ import {commitMutation} from 'react-relay'
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment ToggleFeatureFlagMutation_featureFlag on ToggleFeatureFlagSuccess {
-    ownerId
-    enabled
+  fragment ToggleFeatureFlagMutation_viewer on ToggleFeatureFlagSuccess {
+    featureFlag {
+      enabled
+    }
   }
 `
 
@@ -18,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ToggleFeatureFlagMutation_featureFlag @relay(mask: false)
+      ...ToggleFeatureFlagMutation_viewer @relay(mask: false)
     }
   }
 `

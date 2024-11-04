@@ -217,7 +217,8 @@ const EstimateStage: EstimateStageResolvers = {
   },
 
   task: async ({taskId}, _args, {dataLoader}) => {
-    return dataLoader.get('tasks').loadNonNull(taskId)
+    const task = await dataLoader.get('tasks').load(taskId)
+    return task ?? null
   }
 }
 

@@ -1,5 +1,5 @@
 import {DataLoaderInstance} from '../server/dataloader/RootDataLoader'
-import type {DB} from '../server/postgres/pg'
+import type {DB} from '../server/postgres/types/pg'
 import {JobQueueError} from './JobQueueError'
 
 export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
