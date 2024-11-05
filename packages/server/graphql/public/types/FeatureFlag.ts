@@ -10,7 +10,6 @@ export type FeatureFlagSource = {
 
 export const FeatureFlag: FeatureFlagResolvers = {
   enabled: async ({enabled}, _args) => {
-    console.log('🚀 ~ enabled <><><>><><>:', enabled)
     if (enabled !== undefined) return enabled
     return true
   }

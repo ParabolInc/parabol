@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-// import {ToggleFeatureFlagMutation as TToggleFeatureFlagMutation} from '../__generated__/ToggleFeatureFlagMutation.graphql'
+import {ToggleFeatureFlagMutation as TToggleFeatureFlagMutation} from '../__generated__/ToggleFeatureFlagMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
@@ -25,33 +25,14 @@ const mutation = graphql`
   }
 `
 
-const ToggleFeatureFlagMutation: StandardMutation<any> = (
+const ToggleFeatureFlagMutation: StandardMutation<TToggleFeatureFlagMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<any>(atmosphere, {
+  return commitMutation<TToggleFeatureFlagMutation>(atmosphere, {
     mutation,
     variables,
-    // optimisticUpdater: (store) => {
-    //   const {featureName, orgId, teamId, userId} = variables
-    //   const ownerId = orgId || teamId || userId
-    //   if (!ownerId) return
-
-    //   const owner = store.get(ownerId)
-    //   if (!owner) return
-
-    //   const featureFlags = owner.getLinkedRecords('orgFeatureFlags')
-    //   if (!featureFlags) return
-
-    //   const featureFlag = featureFlags.find(
-    //     (flag) => flag && flag.getValue('featureName') === featureName
-    //   )
-    //   if (!featureFlag) return
-
-    //   const currentEnabled = featureFlag.getValue('enabled')
-    //   featureFlag.setValue(!currentEnabled, 'enabled')
-    // },
     onCompleted,
     onError
   })

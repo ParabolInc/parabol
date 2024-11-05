@@ -86,7 +86,7 @@
           "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",
-          "FeatureFlag": "./types/FeatureFlag#FeatureFlagSource#",
+          "FeatureFlag": "./types/FeatureFlag#FeatureFlagSource",
           "File": "./types/File#TFile",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",

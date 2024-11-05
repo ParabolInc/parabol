@@ -457,6 +457,7 @@ export interface Organization {
   trialStartDate: Timestamp | null;
   upcomingInvoiceEmailSentAt: Timestamp | null;
   updatedAt: Generated<Timestamp>;
+  useAI: Generated<boolean>;
 }
 
 export interface OrganizationApprovedDomain {
