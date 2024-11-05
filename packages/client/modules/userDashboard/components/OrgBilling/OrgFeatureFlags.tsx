@@ -44,7 +44,7 @@ const FEATURE_NAME_LOOKUP: Record<string, string> = {
   publicTeams: 'Public Teams',
   relatedDiscussions: 'Related Discussions',
   standupAISummary: 'Standup AI Summary',
-  suggestGroups: 'AI Group Suggestions'
+  suggestGroups: 'AI Reflection Group Suggestions'
 }
 
 interface Props {
