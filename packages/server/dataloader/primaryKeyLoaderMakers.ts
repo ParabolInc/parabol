@@ -154,7 +154,3 @@ export const tasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
 export const notifications = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectNotifications().where('id', 'in', ids).execute()
 })
-
-export const featureFlag = primaryKeyLoaderMaker((ids: readonly string[]) => {
-  return getKysely().selectFrom('FeatureFlag').selectAll().where('id', 'in', ids).execute()
-})

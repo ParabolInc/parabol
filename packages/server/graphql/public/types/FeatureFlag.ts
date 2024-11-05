@@ -2,7 +2,7 @@ import {FeatureFlagResolvers} from '../resolverTypes'
 
 export type FeatureFlagSource = {
   featureName: string
-  description: string
+  description: string | null
   expiresAt: Date
   scope: 'Organization' | 'User' | 'Team'
   enabled?: boolean

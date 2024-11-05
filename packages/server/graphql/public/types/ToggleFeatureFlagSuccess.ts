@@ -7,7 +7,7 @@ export type ToggleFeatureFlagSuccessSource = {
 
 const ToggleFeatureFlagSuccess: ToggleFeatureFlagSuccessResolvers = {
   featureFlag: async ({featureFlagId, enabled}, _, {dataLoader}) => {
-    const flag = await dataLoader.get('featureFlag').load(featureFlagId)
+    const flag = await dataLoader.get('featureFlags').loadNonNull(featureFlagId)
     return {
       ...flag,
       enabled
