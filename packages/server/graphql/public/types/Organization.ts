@@ -137,8 +137,7 @@ const Organization: OrganizationResolvers = {
   },
   integrationProviders: ({id: orgId}) => ({orgId}),
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
-    console.log('🚀 ~ orgId:', orgId)
-    return dataLoader.get('allFeatureFlagsByOwner').load(orgId)
+    return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
   }
 }
 

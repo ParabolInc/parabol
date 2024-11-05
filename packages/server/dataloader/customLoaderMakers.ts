@@ -990,12 +990,15 @@ export const allFeatureFlags = (parent: RootDataLoader) => {
 }
 
 export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
-  return new DataLoader<string, FeatureFlag[], string>(
-    async (ownerIds) => {
-      const allFlags = await parent.get('allFeatureFlags').load('all')
-
+  return new DataLoader<
+    {ownerId: string; scope: 'Organization' | 'Team' | 'User'},
+    FeatureFlag[],
+    string
+  >(
+    async (keys) => {
       const flagsByOwnerId = await Promise.all(
-        ownerIds.map(async (ownerId) => {
+        keys.map(async ({ownerId, scope}) => {
+          const allFlags = await parent.get('allFeatureFlags').load(scope)
           const flags = await Promise.all(
             allFlags.map(async (flag) => {
               const isEnabled = await parent
@@ -1014,7 +1017,8 @@ export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
       return flagsByOwnerId
     },
     {
-      ...parent.dataLoaderOptions
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
     }
   )
 }

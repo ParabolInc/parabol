@@ -37,6 +37,16 @@ const FeatureNameGroup = styled('div')({
   gap: 4
 })
 
+// TODO: create a migration that updates featureName to be a readable string
+// then update the references throughout the app and remove this
+const FEATURE_NAME_LOOKUP: Record<string, string> = {
+  insights: 'Team Insights',
+  publicTeams: 'Public Teams',
+  relatedDiscussions: 'Related Discussions',
+  standupAISummary: 'Standup AI Summary',
+  suggestGroups: 'AI Group Suggestions'
+}
+
 interface Props {
   organizationRef: OrgFeatureFlags_organization$key
 }
@@ -75,7 +85,7 @@ const OrgFeatureFlags = ({organizationRef}: Props) => {
         {organization.orgFeatureFlags.map((feature) => (
           <FeatureRow key={feature.featureName}>
             <FeatureNameGroup>
-              <span>{feature.featureName}</span>
+              <span>{FEATURE_NAME_LOOKUP[feature.featureName] || feature.featureName}</span>
               <Tooltip>
                 <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
                   <InfoIcon className='h-4 w-4 text-slate-600' />
