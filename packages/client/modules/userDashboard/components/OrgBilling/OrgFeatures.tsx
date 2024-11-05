@@ -28,7 +28,10 @@ const FeatureRow = styled('div')({
 const FeatureNameGroup = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: 4
+  gap: 4,
+  '& svg': {
+    display: 'block'
+  }
 })
 
 const OrgFeatures = () => {
