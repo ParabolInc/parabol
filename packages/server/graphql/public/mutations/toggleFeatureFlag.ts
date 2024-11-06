@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isUserBillingLeader, isUserOrgAdmin} from '../../../utils/authorization'
+import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -20,11 +20,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
 
   const ownerId = (orgId || teamId || userId) as string
 
-  if (
-    orgId &&
-    !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
-    !(await isUserBillingLeader(viewerId, orgId, dataLoader))
-  ) {
+  if (orgId && !(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
     return standardError(new Error('Not organization admin or billing lead'))
   }
 

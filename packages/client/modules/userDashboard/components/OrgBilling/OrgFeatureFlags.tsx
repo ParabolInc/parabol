@@ -61,6 +61,7 @@ const OrgFeatureFlags = ({organizationRef}: Props) => {
     graphql`
       fragment OrgFeatureFlags_organization on Organization {
         id
+        isOrgAdmin
         orgFeatureFlags {
           featureName
           description
@@ -70,6 +71,7 @@ const OrgFeatureFlags = ({organizationRef}: Props) => {
     `,
     organizationRef
   )
+  const {isOrgAdmin} = organization
 
   const handleToggle = async (featureName: string) => {
     const variables = {
@@ -82,6 +84,7 @@ const OrgFeatureFlags = ({organizationRef}: Props) => {
     })
   }
 
+  if (!isOrgAdmin) return null
   return (
     <StyledPanel isWide label='Organization Feature Flags'>
       <PanelRow>
