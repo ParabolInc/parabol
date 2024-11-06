@@ -27,5 +27,5 @@ type FeatureFlag {
   """
   Whether the flag is enabled for an owner or not
   """
-  enabled: Boolean!
+  enabled: Boolean
 }
