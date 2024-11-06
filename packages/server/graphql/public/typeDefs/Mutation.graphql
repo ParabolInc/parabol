@@ -1158,6 +1158,16 @@ type Mutation {
   ): ToggleFeatureFlagPayload!
 
   """
+  Toggle whether the organization has access to ai features
+  """
+  toggleAIFeatures(
+    """
+    The id of the org being toggled
+    """
+    orgId: ID
+  ): ToggleAIFeatures!
+
+  """
   Update how a parabol dimension maps to a GitHub label
   """
   updateGitHubDimensionField(

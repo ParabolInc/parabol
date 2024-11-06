@@ -54,7 +54,8 @@ interface Props {
   organizationRef: OrgFeatureFlags_organization$key
 }
 
-const OrgFeatureFlags = ({organizationRef}: Props) => {
+const OrgFeatureFlags = (props: Props) => {
+  const {organizationRef} = props
   const atmosphere = useAtmosphere()
   const {onError, onCompleted} = useMutationProps()
   const organization = useFragment(
