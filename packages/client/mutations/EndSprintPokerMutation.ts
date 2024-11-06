@@ -48,12 +48,7 @@ graphql`
       }
     }
     timelineEvent {
-      id
-      team {
-        id
-        name
-      }
-      type
+      ...TimelineEventPokerComplete_timelineEvent @relay(mask: false)
     }
     removedTaskIds
   }
