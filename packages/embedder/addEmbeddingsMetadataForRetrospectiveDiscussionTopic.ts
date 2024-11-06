@@ -1,5 +1,5 @@
 import {ExpressionOrFactory, SqlBool, sql} from 'kysely'
-import {DB} from 'parabol-server/postgres/pg'
+import {DB} from 'parabol-server/postgres/types/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import getKysely from '../server/postgres/getKysely'
 import {AddEmbeddingsMetadataParams} from './addEmbeddingsMetadata'

@@ -1,3 +1,4 @@
+import isValidDate from '../../../../client/utils/isValidDate'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import {Logger} from '../../../utils/Logger'
 import {getUserId} from '../../../utils/authorization'
@@ -33,15 +34,11 @@ const NewMeetingStage: NewMeetingStageResolvers = {
     return readyToAdvance.filter((userId: string) => userId !== facilitatorUserId).length
   },
 
-  timeRemaining: ({scheduledEndTime, id, meetingId}) => {
-    if (scheduledEndTime) {
-      if (!(scheduledEndTime instanceof Date)) {
-        console.log('ENDTIME NOT DATE', scheduledEndTime, id, meetingId)
-        return null
-      }
-      return scheduledEndTime.getTime() - Date.now()
-    }
-    return null
+  timeRemaining: ({scheduledEndTime}) => {
+    if (!scheduledEndTime) return null
+    const coercedDate = new Date(scheduledEndTime)
+    if (!isValidDate(coercedDate)) return null
+    return coercedDate.getTime() - Date.now()
   }
 }
 

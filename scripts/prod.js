@@ -13,6 +13,8 @@ const runChild = (cmd) => {
       }
     })
     build.stderr.pipe(process.stderr)
+    // enable this for debugging webpack scripts
+    // build.stdout.pipe(process.stdout)
   })
 }
 

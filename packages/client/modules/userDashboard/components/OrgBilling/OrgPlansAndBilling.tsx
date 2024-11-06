@@ -12,6 +12,7 @@ import OrgBillingInvoices from './OrgBillingInvoices'
 import OrgPlanDrawer from './OrgPlanDrawer'
 import OrgPlans from './OrgPlans'
 import OrgPlansAndBillingHeading from './OrgPlansAndBillingHeading'
+import OrgUsage from './OrgUsage'
 import PaymentDetails from './PaymentDetails'
 
 type Props = {
@@ -50,6 +51,7 @@ const OrgPlansAndBilling = (props: Props) => {
         ...BillingLeaders_organization
         ...PaymentDetails_organization
         ...OrgPlanDrawer_organization
+        ...OrgUsage_organization
         id
         billingTier
         isBillingLeader
@@ -92,6 +94,7 @@ const OrgPlansAndBilling = (props: Props) => {
     <Suspense fallback={''}>
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
+        {billingTier === 'enterprise' && <OrgUsage organizationRef={organization} />}
         {isBillingLeader && billingTier === 'team' && (
           <>
             <OrgBillingInvoices queryRef={queryData} isWide />

@@ -9,7 +9,7 @@ import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
-import {IGetTeamMemberIntegrationAuthQueryResult} from '../../postgres/queries/generated/getTeamMemberIntegrationAuthQuery'
+import {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {RootSchema} from '../../types/custom'
 import {
   CreateIssueMutation,
@@ -25,13 +25,13 @@ import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationMana
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
-  private readonly auth: IGetTeamMemberIntegrationAuthQueryResult
+  private readonly auth: TeamMemberIntegrationAuth
   private readonly context: GQLContext
   private readonly info: GraphQLResolveInfo
   private readonly serverBaseUrl: string
 
   constructor(
-    auth: IGetTeamMemberIntegrationAuthQueryResult,
+    auth: TeamMemberIntegrationAuth,
     context: GQLContext,
     info: GraphQLResolveInfo,
     serverBaseUrl: string

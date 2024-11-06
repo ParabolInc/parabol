@@ -5,6 +5,75 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.3.1](https://github.com/ParabolInc/parabol/compare/v8.3.0...v8.3.1) (2024-11-04)
+
+
+### Fixed
+
+* teamMember is nullable in generate insight ([#10450](https://github.com/ParabolInc/parabol/issues/10450)) ([fb67345](https://github.com/ParabolInc/parabol/commit/fb673457d6223eb00ebb66fa43368b3efb437e0f))
+
+
+### Changed
+
+* Add Mattermost webhook handler ([#10237](https://github.com/ParabolInc/parabol/issues/10237)) ([f50e32f](https://github.com/ParabolInc/parabol/commit/f50e32f5f740c42b722d2581c02c7467dfa9ff2e))
+
+## [8.3.0](https://github.com/ParabolInc/parabol/compare/v8.2.0...v8.3.0) (2024-10-31)
+
+
+### Added
+
+* **orgAdmins:** show total user & team counts ([#10396](https://github.com/ParabolInc/parabol/issues/10396)) ([4f515ea](https://github.com/ParabolInc/parabol/commit/4f515eaa9f32d2dc038923a58f43216de583188a))
+
+
+### Fixed
+
+* latestMeeting query ([#10429](https://github.com/ParabolInc/parabol/issues/10429)) ([1b36b18](https://github.com/ParabolInc/parabol/commit/1b36b181874d56dd59b531c100d3b56e102699ae))
+* reset retro group safely ([#10431](https://github.com/ParabolInc/parabol/issues/10431)) ([f10b58e](https://github.com/ParabolInc/parabol/commit/f10b58e661a5bc04a67d36c78ade68fde472bf47))
+* throw on migration error ([#10439](https://github.com/ParabolInc/parabol/issues/10439)) ([90403c6](https://github.com/ParabolInc/parabol/commit/90403c63a962b560cfe76ba864859abb25613b21))
+
+
+### Changed
+
+* **metrics:** add metrics to identify who attempte to upgrade organization ([#10432](https://github.com/ParabolInc/parabol/issues/10432)) ([62b610a](https://github.com/ParabolInc/parabol/commit/62b610a63e05fb5004473c0cbef0ddda8d42b471))
+
+## [8.2.0](https://github.com/ParabolInc/parabol/compare/v8.1.1...v8.2.0) (2024-10-28)
+
+
+### Added
+
+* add featureFlags migration ([#10375](https://github.com/ParabolInc/parabol/issues/10375)) ([96a827b](https://github.com/ParabolInc/parabol/commit/96a827b20e0fb7a29b6858a3dc651d5e612526e6))
+
+
+### Fixed
+
+* TeamMemberIntegrationAuth single fetch ([#10426](https://github.com/ParabolInc/parabol/issues/10426)) ([88fec61](https://github.com/ParabolInc/parabol/commit/88fec61c90412745ffee4c6d565d9d0cf9296550))
+
+## [8.1.1](https://github.com/ParabolInc/parabol/compare/v8.1.0...v8.1.1) (2024-10-28)
+
+
+### Fixed
+
+* increase URL col length for IntegrationProvider ([2c49dce](https://github.com/ParabolInc/parabol/commit/2c49dce82d0b9a8f7b20762bcc2cd903fcc966b0))
+* index on discussionTopicId ([#10423](https://github.com/ParabolInc/parabol/issues/10423)) ([c101e30](https://github.com/ParabolInc/parabol/commit/c101e30350a70056d470d293de9c88cdb18e8f88))
+* support pg tracing in dd-trace-js ([#10424](https://github.com/ParabolInc/parabol/issues/10424)) ([e963369](https://github.com/ParabolInc/parabol/commit/e96336930c4852af0bcdfd70707bd4a8a57ce75e))
+
+## [8.1.0](https://github.com/ParabolInc/parabol/compare/v8.0.1...v8.1.0) (2024-10-24)
+
+
+### Added
+
+* show insights by default ([#10405](https://github.com/ParabolInc/parabol/issues/10405)) ([f67328f](https://github.com/ParabolInc/parabol/commit/f67328fe06dc936dd24ad32d8101712807f175c5))
+
+
+### Fixed
+
+* small bugs found in datadog logs ([#10414](https://github.com/ParabolInc/parabol/issues/10414)) ([a60106f](https://github.com/ParabolInc/parabol/commit/a60106ff24c7aa4e1e02b536a88beff43afd4df6))
+
+
+### Changed
+
+* Add Mattermost Plugin IntegrationProvider ([#10361](https://github.com/ParabolInc/parabol/issues/10361)) ([b5bd2b4](https://github.com/ParabolInc/parabol/commit/b5bd2b46d88df1e13d5a12a925642b9e47b1b5a1))
+
 ## [8.0.1](https://github.com/ParabolInc/parabol/compare/v8.0.0...v8.0.1) (2024-10-23)
 
 

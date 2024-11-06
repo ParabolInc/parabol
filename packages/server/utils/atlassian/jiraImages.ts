@@ -23,7 +23,7 @@ if (!serverSecret) {
 export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
   const imageUrlToHash = {} as Record<string, string>
   const projectBaseUrl = `https://api.atlassian.com/ex/jira/${cloudId}`
-
+  if (!descriptionHTML) return {updatedDescription: descriptionHTML, imageUrlToHash}
   const $ = cheerio.load(descriptionHTML)
   $('body')
     .find('img')
