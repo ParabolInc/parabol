@@ -22,6 +22,24 @@ graphql`
       id
       endedAt
       teamId
+      commentCount
+      storyCount
+      name
+      phases {
+        phaseType
+        ... on EstimatePhase {
+          stages {
+            id
+          }
+        }
+      }
+      locked
+      organization {
+        id
+        viewerOrganizationUser {
+          id
+        }
+      }
     }
     team {
       id
