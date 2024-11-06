@@ -1,4 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
@@ -35,8 +36,14 @@ export const EndSprintPokerSuccess = new GraphQLObjectType<any, GQLContext>({
     },
     timelineEvent: {
       type: new GraphQLNonNull(TimelineEvent),
-      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
-        return await dataLoader.get('timelineEvents').load(timelineEventId)
+      resolve: async ({meetingId}, _args: unknown, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        const timelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
+        const timelineEvent = timelineEvents.find(
+          (event) => event.type === 'POKER_COMPLETE' && event.userId === viewerId
+        )
+        if (!timelineEvent) throw new Error('Timeline event not found')
+        return timelineEvent
       }
     }
   })
