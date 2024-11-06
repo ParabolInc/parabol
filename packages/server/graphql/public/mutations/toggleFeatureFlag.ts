@@ -21,7 +21,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   const ownerId = (orgId || teamId || userId) as string
 
   if (orgId && !(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Not organization admin or billing lead'))
+    return standardError(new Error('Not organization admin'))
   }
 
   if (teamId) {
