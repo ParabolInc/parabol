@@ -31,14 +31,15 @@ const notifyMattermost = async (
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string
 ) => {
-  const {webhookUrl} = channel
-  if (!webhookUrl) {
+  const {webhookUrl, serverBaseUrl, sharedSecret} = channel
+  const notifyUrl = serverBaseUrl ? `${serverBaseUrl}/plugins/co.parabol.action/notify/${teamId}` : webhookUrl
+  if (!notifyUrl) {
     return 'success'
   }
-  const manager = new MattermostServerManager(webhookUrl)
+  const manager = new MattermostServerManager(notifyUrl, sharedSecret ?? undefined)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
-    sendToSentry(result, {userId: user.id, tags: {teamId, event, webhookUrl}})
+    sendToSentry(result, {userId: user.id, tags: {teamId, event, notifyUrl}})
     return {
       error: result
     }
@@ -91,10 +92,13 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
   }
 }
 
-type MattermostNotificationAuth = IntegrationProviderMattermost & {
+type MattermostNotificationAuth = {
   userId: string
   teamId: string
   channel: string | null
+  webhookUrl: string | null
+  serverBaseUrl: string | null
+  sharedSecret: string | null
 }
 
 const makeTeamPromptStartMeetingNotification = (
@@ -347,6 +351,19 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
 })
 
 async function getMattermost(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
+  if (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL) {
+    return [
+      MattermostNotificationHelper({
+        userId,
+        teamId,
+        serverBaseUrl: process.env.MATTERMOST_URL,
+        sharedSecret: process.env.MATTERMOST_SECRET,
+        channel: null,
+        webhookUrl: null
+      })
+    ]
+  }
+
   const auths = await dataLoader
     .get('teamMemberIntegrationAuthsByTeamId')
     .load({service: 'mattermost', teamId})

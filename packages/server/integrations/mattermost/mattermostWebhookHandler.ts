@@ -20,6 +20,8 @@ const markdownToDraftJS = (markdown: string) => {
   return JSON.stringify(rawObject)
 }
 
+const gql = (str: any) => str
+
 const eventLookup: Record<
   string,
   {
@@ -29,7 +31,7 @@ const eventLookup: Record<
   }
 > = {
   meetingTemplates: {
-    query: `
+    query: gql`
       query MeetingTemplates {
         viewer {
           availableTemplates(first: 2000) {
@@ -37,6 +39,7 @@ const eventLookup: Record<
               node {
                 id
                 name
+                bad
                 type
                 illustrationUrl
                 orgId
@@ -52,7 +55,7 @@ const eventLookup: Record<
             retroSettings: meetingSettings(meetingType: retrospective) {
               id
               phaseTypes
-              ...on RetrospectiveMeetingSettings {
+              ... on RetrospectiveMeetingSettings {
                 disableAnonymity
               }
             }
@@ -77,11 +80,8 @@ const eventLookup: Record<
     }
   },
   startRetrospective: {
-    query: `
-      mutation StartRetrospective(
-        $teamId: ID!
-        $templateId: ID!
-      ) {
+    query: gql`
+      mutation StartRetrospective($teamId: ID!, $templateId: ID!) {
         selectTemplate(selectedTemplateId: $templateId, teamId: $teamId) {
           meetingSettings {
             id
@@ -98,7 +98,7 @@ const eventLookup: Record<
     `
   },
   startCheckIn: {
-    query: `
+    query: gql`
       mutation StartCheckIn($teamId: ID!) {
         startCheckIn(teamId: $teamId) {
           ... on ErrorPayload {
@@ -116,11 +116,8 @@ const eventLookup: Record<
     `
   },
   startSprintPoker: {
-    query: `
-      mutation StartSprintPokerMutation(
-        $teamId: ID!
-        $templateId: ID!
-      ) {
+    query: gql`
+      mutation StartSprintPokerMutation($teamId: ID!, $templateId: ID!) {
         selectTemplate(selectedTemplateId: $templateId, teamId: $teamId) {
           meetingSettings {
             id
@@ -142,17 +139,15 @@ const eventLookup: Record<
     `
   },
   startTeamPrompt: {
-    query: `
-      mutation StartTeamPromptMutation(
-        $teamId: ID!
-      ) {
+    query: gql`
+      mutation StartTeamPromptMutation($teamId: ID!) {
         startTeamPrompt(teamId: $teamId) {
           ... on ErrorPayload {
             error {
               message
             }
           }
-          ...on StartTeamPromptSuccess {
+          ... on StartTeamPromptSuccess {
             meeting {
               id
             }
@@ -162,14 +157,14 @@ const eventLookup: Record<
     `
   },
   getMeetingSettings: {
-    query: `
+    query: gql`
       query GetMeetingSettings($teamId: ID!, $meetingType: MeetingTypeEnum!) {
         viewer {
           team(teamId: $teamId) {
             meetingSettings(meetingType: $meetingType) {
               id
               phaseTypes
-              ...on RetrospectiveMeetingSettings {
+              ... on RetrospectiveMeetingSettings {
                 disableAnonymity
               }
             }
@@ -188,7 +183,7 @@ const eventLookup: Record<
     }
   },
   setMeetingSettings: {
-    query: `
+    query: gql`
       mutation SetMeetingSettings(
         $id: ID!
         $checkinEnabled: Boolean
@@ -210,7 +205,7 @@ const eventLookup: Record<
           }
         }
       }
-   `,
+    `,
     convertResult: (data: any) => {
       const {settings: meetingSettings} = data.setMeetingSettings
       return {
@@ -222,7 +217,7 @@ const eventLookup: Record<
     }
   },
   getActiveMeetings: {
-    query: `
+    query: gql`
       query Meetings {
         viewer {
           teams {
@@ -231,9 +226,9 @@ const eventLookup: Record<
               teamId
               name
               meetingType
-              ...on RetrospectiveMeeting {
+              ... on RetrospectiveMeeting {
                 phases {
-                  ...on ReflectPhase {
+                  ... on ReflectPhase {
                     reflectPrompts {
                       id
                       question
@@ -276,7 +271,7 @@ const eventLookup: Record<
         }
       }
     },
-    query: `
+    query: gql`
       mutation CreateReflectionMutation($input: CreateReflectionInput!) {
         createReflection(input: $input) {
           reflectionId
@@ -325,8 +320,7 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     'signature-input': req.getHeader('signature-input')
   }
 
-  const verified = await httpbis.verifyMessage(
-    {
+  const verified = await httpbis.verifyMessage({
       async keyLookup(_: any) {
         // TODO When we support multiple Parabol - Mattermost connections, we should look up the key from IntegrationProvider
         // const keyId = params.keyid;

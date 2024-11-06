@@ -1,3 +1,4 @@
+import {createSigner, httpbis} from 'http-message-signatures'
 // Mattermost is a server-only integration for now, unlike the Slack integration
 
 // We're following a similar manager pattern here should we wish to refactor the
@@ -15,11 +16,13 @@ export interface MattermostApiResponse {
 
 abstract class MattermostManager {
   webhookUrl: string
+  secret?: string
   abstract fetch: typeof fetch
   headers: any
 
-  constructor(webhookUrl: string) {
+  constructor(webhookUrl: string, secret?: string) {
     this.webhookUrl = webhookUrl
+    this.secret = secret
   }
 
   private fetchWithTimeout = async (url: string, options: RequestInit) => {
@@ -41,13 +44,36 @@ abstract class MattermostManager {
   // See: https://developers.mattermost.com/integrate/incoming-webhooks/
 
   private async post(payload: any) {
-    const res = await this.fetchWithTimeout(this.webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(payload)
+    const url = this.webhookUrl
+    const method = 'POST'
+    const body = JSON.stringify(payload)
+    const digestArray = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body))
+    const digest = Array.from(new Uint8Array(digestArray)).map((b) => b.toString(16).padStart(2, '0')).join('')
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'Content-Digest': 'SHA-256=' + digest,
+    } as Record<string, string>
+
+    if (this.secret) {
+      const key = createSigner(this.secret, 'hmac-sha256', 'foo')
+      const signedRequest = await httpbis.signMessage({
+        key,
+        name: 'parabol',
+        fields: ['@target-uri', 'content-digest'],
+      }, {
+        method,
+        url,
+        headers,
+        body
+      })
+      headers['Signature'] = signedRequest.headers['Signature']!
+      headers['Signature-Input'] = signedRequest.headers['Signature-Input']!
+    }
+    const res = await this.fetchWithTimeout(url, {
+      method,
+      headers,
+      body
     })
     if (res instanceof Error) return res
     if (res.status !== 200) {
@@ -86,8 +112,8 @@ abstract class MattermostManager {
 
 class MattermostServerManager extends MattermostManager {
   fetch = fetch
-  constructor(webhookUrl: string) {
-    super(webhookUrl)
+  constructor(webhookUrl: string, secret?: string) {
+    super(webhookUrl, secret)
   }
 }
 
