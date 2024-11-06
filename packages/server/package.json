@@ -90,7 +90,7 @@
     "@tiptap/extension-paragraph": "^2.9.1",
     "@tiptap/extension-text": "^2.9.1",
     "@tiptap/html": "^2.9.1",
-    "adaptivecards": "^2.10.0",
+    "adaptivecards": "2.10.0",
     "analytics-node": "^6.0.0",
     "api": "^5.0.7",
     "base64url": "^3.0.1",
