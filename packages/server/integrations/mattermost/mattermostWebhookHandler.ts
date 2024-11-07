@@ -20,7 +20,7 @@ const markdownToDraftJS = (markdown: string) => {
   return JSON.stringify(rawObject)
 }
 
-const gql = (str: any) => str
+const gql = (strings: TemplateStringsArray) => strings.join('')
 
 const eventLookup: Record<
   string,

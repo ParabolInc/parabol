@@ -60,7 +60,7 @@ abstract class MattermostManager {
       const signedRequest = await httpbis.signMessage({
         key,
         name: 'parabol',
-        fields: ['@target-uri', 'content-digest'],
+        fields: ['@request-target', 'content-digest'],
       }, {
         method,
         url,
