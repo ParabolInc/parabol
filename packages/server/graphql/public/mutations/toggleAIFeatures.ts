@@ -1,7 +1,9 @@
+import {sql} from 'kysely'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
 const toggleAIFeatures: MutationResolvers['toggleAIFeatures'] = async (
@@ -13,26 +15,22 @@ const toggleAIFeatures: MutationResolvers['toggleAIFeatures'] = async (
   const pg = getKysely()
 
   // VALIDATION
-  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
-  if (!organization.isOrgAdmin) {
-    return {error: {message: 'Must be organization admin to toggle AI features'}}
+  if (!(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
+    return standardError(new Error('Not organization admin'))
   }
 
   // RESOLUTION
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  const [{useAI: currentValue}] = await pg
-    .selectFrom('Organization')
-    .select('useAI')
+  await pg
+    .updateTable('Organization')
+    .set({useAI: sql`NOT "useAI"`})
     .where('id', '=', orgId)
     .execute()
 
-  await pg.updateTable('Organization').set({useAI: !currentValue}).where('id', '=', orgId).execute()
-
   const data = {
-    orgId,
-    useAI: !currentValue
+    orgId
   }
 
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'ToggleAIFeaturesPayload', data, subOptions)

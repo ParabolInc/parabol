@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-// import {ToggleAIFeaturesMutation as TToggleAIFeaturesMutation} from '../__generated__/ToggleAIFeaturesMutation.graphql'
+import {ToggleAIFeaturesMutation as TToggleAIFeaturesMutation} from '../__generated__/ToggleAIFeaturesMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
@@ -25,12 +25,12 @@ const mutation = graphql`
   }
 `
 
-const ToggleAIFeaturesMutation: StandardMutation<any> = (
+const ToggleAIFeaturesMutation: StandardMutation<TToggleAIFeaturesMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<any>(atmosphere, {
+  return commitMutation<TToggleAIFeaturesMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

@@ -1,10 +1,10 @@
-// import {ToggleAIFeaturesSuccessResolvers} from '../resolverTypes'
+import {ToggleAiFeaturesSuccessResolvers} from '../resolverTypes'
 
 export type ToggleAIFeaturesSuccessSource = {
   orgId: string
 }
 
-const ToggleAIFeaturesSuccess: any = {
+const ToggleAIFeaturesSuccess: ToggleAiFeaturesSuccessResolvers = {
   organization: async ({orgId}, _args, {dataLoader}) => {
     return await dataLoader.get('organizations').loadNonNull(orgId)
   }
