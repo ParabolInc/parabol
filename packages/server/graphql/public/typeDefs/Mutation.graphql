@@ -1165,7 +1165,7 @@ type Mutation {
     The id of the org being toggled
     """
     orgId: ID
-  ): ToggleAIFeatures!
+  ): ToggleAIFeaturesPayload!
 
   """
   Update how a parabol dimension maps to a GitHub label
