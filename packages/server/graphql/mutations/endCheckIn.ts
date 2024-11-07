@@ -221,7 +221,6 @@ export default {
           meetingId
         })
     )
-    const timelineEventId = events[0]!.id
     await pg.insertInto('TimelineEvent').values(events).execute()
     if (team.isOnboardTeam) {
       const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
@@ -248,8 +247,7 @@ export default {
       teamId,
       isKill: !!(phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)),
       updatedTaskIds,
-      removedTaskIds,
-      timelineEventId
+      removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
 

@@ -47,6 +47,7 @@ const MyDashboardTimeline = (props: Props) => {
         $userIds: [ID!]
         $eventTypes: [TimelineEventEnum!]
         $teamIds: [ID!]
+        $archived: Boolean
       ) {
         viewer {
           ...TimelineSuggestedAction_viewer

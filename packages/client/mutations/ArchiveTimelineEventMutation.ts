@@ -1,10 +1,11 @@
 import {ArchiveTimelineEventMutation_notification$data} from '__generated__/ArchiveTimelineEventMutation_notification.graphql'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
 import {ArchiveTimelineEventMutation as TArchiveTimelineEventMutation} from '../__generated__/ArchiveTimelineEventMutation.graphql'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import {parseQueryParams} from '../utils/useQueryParameterParser'
 import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
 
 graphql`
@@ -40,8 +41,27 @@ export const archiveTimelineEventNotificationUpdater: SharedUpdater<
 
 const handleRemoveTimelineEvent = (timelineEventId: string, store: RecordSourceSelectorProxy) => {
   const viewer = store.getRoot().getLinkedRecord('viewer')!
-  const timelineEventsConn = getUserTimelineEventsConn(viewer)
-  safeRemoveNodeFromConn(timelineEventId, timelineEventsConn)
+  const {teamIds, eventTypes} = parseQueryParams(viewer.getDataID(), window.location)
+  const activeTimelineEventsConn = getUserTimelineEventsConn(
+    viewer,
+    null,
+    teamIds,
+    eventTypes,
+    false // showArchived
+  )
+  safeRemoveNodeFromConn(timelineEventId, activeTimelineEventsConn)
+
+  const archivedTimelineEvent = store.get(timelineEventId)
+  const archivedTimelineEventsConn = getUserTimelineEventsConn(
+    viewer,
+    null,
+    teamIds,
+    eventTypes,
+    true
+  )
+  if (archivedTimelineEvent && archivedTimelineEventsConn) {
+    ConnectionHandler.insertEdgeBefore(archivedTimelineEventsConn, archivedTimelineEvent)
+  }
 }
 
 const ArchiveTimelineEventMutation: SimpleMutation<TArchiveTimelineEventMutation> = (

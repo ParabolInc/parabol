@@ -150,7 +150,6 @@ const safeEndRetrospective = async ({
         meetingId
       })
   )
-  const timelineEventId = events[0]!.id
   const pg = getKysely()
   await pg.insertInto('TimelineEvent').values(events).execute()
 
@@ -175,8 +174,7 @@ const safeEndRetrospective = async ({
     meetingId,
     teamId,
     isKill: !!(phase && phase.phaseType !== DISCUSS),
-    removedTaskIds,
-    timelineEventId
+    removedTaskIds
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
 
