@@ -1,16 +1,18 @@
 import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
+import Mention from '@tiptap/extension-mention'
 import {BubbleMenu, EditorContent, JSONContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
 import EmojiMenuTipTap from './EmojiMenuTipTap'
-import MentionsTipTap from './MentionsTipTap'
 import {unfurlLoomLinks} from './loomExtension'
 import {LinkMenuProps, LinkPreviewProps, createEditorExtensions, getLinkProps} from './tiptapConfig'
 
@@ -124,7 +126,7 @@ const StyledEditor = styled('div')`
 
 interface Props {
   autoFocus?: boolean
-  teamId?: string
+  teamId: string
   content: JSONContent | null
   handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
@@ -142,6 +144,7 @@ const PromptResponseEditor = (props: Props) => {
     teamId,
     draftStorageKey
   } = props
+  const atmosphere = useAtmosphere()
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -221,12 +224,15 @@ const PromptResponseEditor = (props: Props) => {
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(
-        setLinkMenuProps,
-        setLinkPreviewProps,
-        setLinkOverlayProps,
-        placeholder
-      ),
+      extensions: [
+        ...createEditorExtensions(
+          setLinkMenuProps,
+          setLinkPreviewProps,
+          setLinkOverlayProps,
+          placeholder
+        ),
+        Mention.configure(tiptapMentionConfig(atmosphere, teamId))
+      ],
       autofocus: autoFocus,
       onUpdate,
       editable: !readOnly
@@ -301,7 +307,6 @@ const PromptResponseEditor = (props: Props) => {
               </BubbleMenu>
             </div>
             <EmojiMenuTipTap tiptapEditor={editor} />
-            {teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
             {linkOverlayProps?.linkMenuProps && (
               <EditorLinkChangerTipTap
                 text={linkOverlayProps.linkMenuProps.text}

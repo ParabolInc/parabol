@@ -1,31 +1,24 @@
-import styled from '@emotion/styled'
 import * as DOMPurify from 'dompurify'
 import React from 'react'
-import {PALETTE} from '~/styles/paletteV3'
+import {twMerge} from 'tailwind-merge'
 import getSafeRegex from '~/utils/getSafeRegex'
 
 interface Props {
   query: string
   label: string
   highlight?: boolean
+  className?: string
 }
 
-const Span = styled('span')({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap'
-})
-
 const TypeAheadLabel = (props: Props) => {
-  const {query, label, highlight} = props
-  const queryHtml = highlight
-    ? `<mark style="background: ${PALETTE.SKY_300}">$&</mark>`
-    : `<b>$&</b>`
+  const {query, label, highlight, className} = props
+  const queryHtml = highlight ? `<mark className="bg-sky-300">$&</mark>` : `<b>$&</b>`
   const cleanInnerHtml = DOMPurify.sanitize(
     query ? label.replace(getSafeRegex(query, 'gi'), queryHtml) : label
   )
   return (
-    <Span
+    <span
+      className={twMerge('overflow-hidden text-ellipsis whitespace-nowrap', className)}
       dangerouslySetInnerHTML={{
         __html: cleanInnerHtml
       }}

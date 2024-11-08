@@ -1,6 +1,5 @@
 import {Editor, isNodeSelection, posToDOMRect} from '@tiptap/core'
 import Link from '@tiptap/extension-link'
-import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import StarterKit from '@tiptap/starter-kit'
 import {BBox} from '~/types/animations'
@@ -101,17 +100,5 @@ export const createEditorExtensions = (
   Placeholder.configure({
     showOnlyWhenEditable: false,
     placeholder
-  }),
-  Mention.extend({
-    // Prevent the out-of-the-box 'mention' extension from adding its own 'suggestion' plugin. We'll
-    // be adding our own through our custom mentions React component.
-    addProseMirrorPlugins() {
-      return []
-    }
-  }).configure({
-    renderLabel({node}) {
-      return `${node.attrs.label ?? node.attrs.id}`
-    },
-    suggestion: {}
   })
 ]

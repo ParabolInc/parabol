@@ -42,7 +42,7 @@
     "@types/ms": "^0.7.30",
     "@types/node": "^20.11.17",
     "@types/nodemailer": "^6.4.14",
-    "@types/relay-runtime": "^14.1.9",
+    "@types/relay-runtime": "^18.1.1",
     "@types/sanitize-html": "^2.11.0",
     "@types/sharp": "^0.32.0",
     "@types/string-similarity": "^3.0.0",

@@ -9,6 +9,9 @@ module.exports = {
   presets: [require('./packages/client/tailwind.preset.js')],
   content: ['./packages/client/**/!(*node_modules*)/**/*.{ts,tsx,js,jsx,html}', './template.html'],
   theme: {
+    data: {
+      highlighted: 'highlighted=true'
+    },
     fontFamily: {
       sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
       mono: ['IBM Plex Mono', ...defaultTheme.fontFamily.mono]
