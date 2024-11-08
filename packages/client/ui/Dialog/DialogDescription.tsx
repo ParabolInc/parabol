@@ -8,7 +8,7 @@ export const DialogDescription = React.forwardRef<
 >(({className, children, ...props}, ref) => (
   <RadixDialog.Description
     ref={ref}
-    className={twMerge('mt-3 mb-5 text-base leading-normal', className)}
+    className={twMerge('mb-5 mt-3 text-base leading-normal', className)}
     {...props}
   >
     {children}

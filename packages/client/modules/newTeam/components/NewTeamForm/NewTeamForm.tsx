@@ -319,7 +319,7 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </WarningMsg>
           )}
-          <p className='mt-8 mb-3 text-xs leading-4'>
+          <p className='mb-3 mt-8 text-xs leading-4'>
             {'Invite others to your new team. Invites expire in 30 days.'}
           </p>
           <BasicTextArea

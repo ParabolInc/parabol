@@ -21,7 +21,7 @@ interface Props {
   tasks: TaskColumnAddTask_tasks$key
   myTeamMemberId?: string
   teamMemberFilterId: string
-  teams: TaskColumnAddTask_teams$key | null
+  teams: TaskColumnAddTask_teams$key | null | undefined
 }
 
 const TaskColumnAddTask = (props: Props) => {

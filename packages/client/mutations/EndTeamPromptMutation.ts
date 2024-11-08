@@ -31,12 +31,7 @@ graphql`
       }
     }
     timelineEvent {
-      id
-      team {
-        id
-        name
-      }
-      type
+      ...TimelineEventTeamPromptComplete_timelineEvent @relay(mask: false)
     }
   }
 `

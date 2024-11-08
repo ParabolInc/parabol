@@ -40,12 +40,7 @@ graphql`
       }
     }
     timelineEvent {
-      id
-      team {
-        id
-        name
-      }
-      type
+      ...TimelineEventCompletedActionMeeting_timelineEvent @relay(mask: false)
     }
     updatedTasks {
       id

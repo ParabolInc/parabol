@@ -39,7 +39,7 @@ interface Props {
   team: AgendaListAndInput_team$key
 }
 
-const getAgendaItems = (meeting: AgendaListAndInput_meeting$data | null) => {
+const getAgendaItems = (meeting: AgendaListAndInput_meeting$data | null | undefined) => {
   if (!meeting) return null
   const agendaItemsPhase = meeting.phases!.find((phase) => phase.phaseType === 'agendaitems')
   if (!agendaItemsPhase?.stages) return null

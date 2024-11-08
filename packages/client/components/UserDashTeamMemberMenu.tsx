@@ -20,7 +20,7 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  viewer: UserDashTeamMemberMenu_viewer$key | null
+  viewer: UserDashTeamMemberMenu_viewer$key | null | undefined
 }
 
 const UserDashTeamMemberMenu = (props: Props) => {

@@ -20,7 +20,7 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  viewer: TeamFilterMenu_viewer$key | null
+  viewer: TeamFilterMenu_viewer$key | null | undefined
 }
 
 const TeamFilterMenu = (props: Props) => {

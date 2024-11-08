@@ -23,7 +23,7 @@ const ActivityLibraryEmptyState = (props: Props) => {
             src={favoriteImg}
             alt='Favorite placeholder'
           />
-          <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
+          <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
             <div className='flex flex-col items-center'>
               <FavoriteIcon
                 className='icon-color-red icon-border-gold rounded-full p-3 text-5xl md:text-6xl lg:p-5 lg:text-8xl'

@@ -68,7 +68,7 @@ interface Props {
   tasks: TaskColumn_tasks$key
   status: TaskStatusEnum
   teamMemberFilterId?: string | null
-  teams: TaskColumn_teams$key | null
+  teams: TaskColumn_teams$key | null | undefined
 }
 
 const TaskColumn = (props: Props) => {

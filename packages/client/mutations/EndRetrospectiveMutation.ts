@@ -55,12 +55,7 @@ graphql`
       }
     }
     timelineEvent {
-      id
-      team {
-        id
-        name
-      }
-      type
+      ...TimelineEventCompletedRetroMeeting_timelineEvent @relay(mask: false)
     }
   }
 `

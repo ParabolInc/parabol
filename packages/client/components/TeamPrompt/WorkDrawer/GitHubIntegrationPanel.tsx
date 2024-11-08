@@ -99,7 +99,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               <div
                 key={tab.key}
                 className={clsx(
-                  'w-1/2 cursor-pointer rounded-full py-2 px-4 text-center text-sm leading-3 text-slate-800',
+                  'w-1/2 cursor-pointer rounded-full px-4 py-2 text-center text-sm leading-3 text-slate-800',
                   tab.key === githubType
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'
                     : 'border border-slate-300 bg-white'

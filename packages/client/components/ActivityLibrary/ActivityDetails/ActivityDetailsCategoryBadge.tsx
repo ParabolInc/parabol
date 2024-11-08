@@ -54,8 +54,8 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
               return (
                 <DropdownMenu.RadioItem
                   key={categoryId}
-                  className='flex cursor-pointer select-none py-3 px-4 outline-none data-[state=checked]:bg-slate-200
-                data-[highlighted]:bg-slate-100'
+                  className='flex cursor-pointer select-none px-4 py-3 outline-none data-[highlighted]:bg-slate-100
+                data-[state=checked]:bg-slate-200'
                   value={categoryId}
                 >
                   <span

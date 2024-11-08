@@ -24,7 +24,7 @@ const VideoConferencing = (props: Props) => {
   return (
     <div>
       {videoType ? (
-        <div className='bg-gray-100 flex items-center rounded py-3 px-2'>
+        <div className='bg-gray-100 flex items-center rounded px-2 py-3'>
           {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
           <span className='text-gray-500 h-[38px] py-2 pl-2 text-base font-normal'>
             {selectedOptionLabel}
@@ -39,7 +39,7 @@ const VideoConferencing = (props: Props) => {
           <RaisedButton
             onClick={togglePortal}
             ref={originRef}
-            className='rounded py-1.5 px-4'
+            className='rounded px-4 py-1.5'
             elevationHovered={Elevation.Z3}
           >
             {'Add Video Conferencing'} <ArrowDropDownIcon />
