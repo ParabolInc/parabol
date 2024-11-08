@@ -135,7 +135,9 @@ const MentionsTipTap = (props: Props) => {
     // Other plugins that tiptap adds will try to handle the certain keydown events without giving
     // us a chance to handle them here, so bump up the priority for us.
     tiptapEditor.registerPlugin(plugin, (newPlugin, plugins) => [newPlugin, ...plugins])
-    return () => tiptapEditor.unregisterPlugin(pluginKey)
+    return () => {
+      tiptapEditor.unregisterPlugin(pluginKey)
+    }
   }, [tiptapEditor, setOpenMentions, setMentionQuery])
 
   return openMentions && tiptapEditor.isFocused ? (

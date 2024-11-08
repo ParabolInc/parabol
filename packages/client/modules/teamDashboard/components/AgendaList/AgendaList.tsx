@@ -33,7 +33,7 @@ interface Props {
   agendaItems: AgendaList_agendaItems$key
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  meeting: AgendaList_meeting$key | null
+  meeting: AgendaList_meeting$key | null | undefined
 }
 
 const AgendaList = (props: Props) => {
