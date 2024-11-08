@@ -26,6 +26,6 @@ export const createMeetingProperties = (
     meetingTemplateCategory: template?.mainCategory,
     meetingSeriesId: meeting.meetingSeriesId,
     disableAnonymity:
-      meetingType === 'retrospective' ? meeting.disableAnonymity ?? false : undefined
+      meetingType === 'retrospective' ? (meeting.disableAnonymity ?? false) : undefined
   }
 }

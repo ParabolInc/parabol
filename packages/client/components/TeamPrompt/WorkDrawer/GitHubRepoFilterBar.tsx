@@ -42,7 +42,7 @@ const GitHubRepoFilterBar = (props: Props) => {
     <>
       <button
         className={clsx(
-          'mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded border border-solid bg-white py-0.5 px-3 text-left transition',
+          'mx-4 mb-2 mt-4 flex cursor-pointer items-center gap-2 rounded border border-solid bg-white px-3 py-0.5 text-left transition',
           isMenuOpen
             ? 'border-sky-400 hover:border-sky-500'
             : 'border-slate-300 hover:border-slate-500'

@@ -90,7 +90,7 @@ const Mentioned = (props: Props) => {
       action={<NotificationAction label={actionLabel} onClick={goThere} />}
     >
       {previewContent && (
-        <div className='my-1 mx-0 mt-4 rounded bg-white p-2 text-sm leading-5 shadow-card'>
+        <div className='mx-0 my-1 mt-4 rounded bg-white p-2 text-sm leading-5 shadow-card'>
           <Editor
             readOnly
             editorState={editorState}

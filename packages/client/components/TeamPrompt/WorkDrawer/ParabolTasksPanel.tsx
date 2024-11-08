@@ -65,7 +65,7 @@ const ParabolTasksPanel = (props: Props) => {
             <div
               key={status}
               className={clsx(
-                'flex-shrink-0 cursor-pointer rounded-full py-2 px-4 text-sm leading-3 text-slate-800',
+                'flex-shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm leading-3 text-slate-800',
                 status === selectedStatus
                   ? 'bg-grape-700 font-semibold text-white focus:text-white'
                   : 'border border-slate-300 bg-white'

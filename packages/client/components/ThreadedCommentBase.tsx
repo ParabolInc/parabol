@@ -119,7 +119,7 @@ const ThreadedCommentBase = (props: Props) => {
     threadParentId
   } = comment
   const ownerId = threadParentId || commentId
-  const picture = isActive ? createdByUserNullable?.picture ?? anonymousAvatar : deletedAvatar
+  const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)
