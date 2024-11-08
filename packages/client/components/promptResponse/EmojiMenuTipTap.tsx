@@ -47,7 +47,9 @@ const EmojiMenuTipTap = (props: Props) => {
     }) as any
 
     tiptapEditor.registerPlugin(plugin)
-    return () => tiptapEditor.unregisterPlugin(pluginKey)
+    return () => {
+      tiptapEditor.unregisterPlugin(pluginKey)
+    }
   }, [tiptapEditor, setOpenEmojiMenu, setEmojiQuery])
 
   const onSelectEmoji = (emoji: string) => {

@@ -170,7 +170,7 @@ const OrgMemberRow = (props: Props) => {
 
   return (
     <tr className='border-b border-slate-300 last:border-b-0'>
-      <td className='w-1/2 py-3 px-2 align-middle'>
+      <td className='w-1/2 px-2 py-3 align-middle'>
         <div className='flex w-full items-center overflow-hidden'>
           <UserAvatar picture={picture} />
           <div className='min-w-0 flex-grow'>
@@ -184,10 +184,10 @@ const OrgMemberRow = (props: Props) => {
           </div>
         </div>
       </td>
-      <td className='w-3/10 py-3 px-2 align-middle'>
+      <td className='w-3/10 px-2 py-3 align-middle'>
         <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
       </td>
-      <td className='w-1/5 py-3 px-2 align-middle'>
+      <td className='w-1/5 px-2 py-3 align-middle'>
         <UserActions
           organizationUser={organizationUser}
           organization={organization}

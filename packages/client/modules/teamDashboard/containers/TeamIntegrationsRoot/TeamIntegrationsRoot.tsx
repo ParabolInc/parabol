@@ -14,7 +14,7 @@ const TeamIntegrationsRoot = ({teamId}: Props) => {
     teamId
   })
   return (
-    <div className='flex flex-col items-center py-0 px-4'>
+    <div className='flex flex-col items-center px-4 py-0'>
       <Suspense fallback={''}>
         {queryRef && <ProviderList queryRef={queryRef} teamId={teamId} retry={retry} />}
       </Suspense>

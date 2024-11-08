@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
-import {BubbleMenu, EditorContent, JSONContent, PureEditorContent, useEditor} from '@tiptap/react'
+import {BubbleMenu, EditorContent, JSONContent, useEditor} from '@tiptap/react'
 import areEqual from 'fbjs/lib/areEqual'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
@@ -175,7 +175,7 @@ const PromptResponseEditor = (props: Props) => {
     [setLinkOverlayProps]
   )
 
-  const editorRef = useRef<PureEditorContent>(null)
+  const editorRef = useRef<HTMLDivElement>(null)
 
   const setEditing = useCallback(
     (newIsEditing: boolean) => {

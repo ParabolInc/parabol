@@ -59,7 +59,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   return (
     <MenuItem onClick={gotoMeeting}>
       {typeof IconOrSVG === 'string' ? (
-        <div className='size-6 m-2 text-slate-600'>
+        <div className='m-2 size-6 text-slate-600'>
           {
             {
               group_work: <GroupWork />,
@@ -79,7 +79,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
           {meetingPhaseLabel} • {teamName}
         </div>
       </div>
-      <div className='size-6 flex flex-grow items-center justify-end'>
+      <div className='flex size-6 flex-grow items-center justify-end'>
         <ArrowForwardIcon />
       </div>
     </MenuItem>

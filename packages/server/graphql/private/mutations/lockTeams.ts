@@ -2,7 +2,7 @@ import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {MutationResolvers} from '../resolverTypes'
 
 const lockTeams: MutationResolvers['lockTeams'] = async (_source, {message, teamIds, isPaid}) => {
-  const lockMessageHTML = isPaid ? null : message ?? null
+  const lockMessageHTML = isPaid ? null : (message ?? null)
 
   // RESOLUTION
   const updates = {

@@ -160,7 +160,7 @@ const UserTasksHeader = (props: Props) => {
       ? teamMemberFilter.tms.includes(teamFilter.id)
         ? teamMemberFilter.preferredName
         : FilterLabels.ALL_TEAM_MEMBERS
-      : teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS
+      : (teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS)
   }, [teamIds, userIds, teams])
 
   return (

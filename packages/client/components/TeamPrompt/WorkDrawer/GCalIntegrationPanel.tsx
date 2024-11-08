@@ -100,7 +100,7 @@ const GCalPanel = (props: Props) => {
               <div
                 key={tab.key}
                 className={clsx(
-                  'w-1/2 cursor-pointer rounded-full py-3 px-3 text-center text-sm leading-3 text-slate-800',
+                  'w-1/2 cursor-pointer rounded-full px-3 py-3 text-center text-sm leading-3 text-slate-800',
                   tab.key === eventRangeKey
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'
                     : 'border border-slate-300 bg-white'

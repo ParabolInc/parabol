@@ -50,7 +50,7 @@ const ParabolTasksResults = (props: Props) => {
     .filter((task) => task.status === selectedStatus)
 
   return (
-    <div className='flex h-full flex-col items-center gap-y-2 overflow-auto px-4 pt-1 pb-4'>
+    <div className='flex h-full flex-col items-center gap-y-2 overflow-auto px-4 pb-4 pt-1'>
       {selectedTasks.length > 0 ? (
         selectedTasks.map((task) => (
           <NullableTask
