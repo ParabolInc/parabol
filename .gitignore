@@ -3,6 +3,7 @@
 *.log
 *.heapprofile
 *.heapsnapshot
+.npmrc
 .DS_Store
 .awcache/
 .history/
