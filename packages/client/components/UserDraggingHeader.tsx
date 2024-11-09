@@ -1,7 +1,7 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
 import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '@mui/icons-material'
-import React from 'react'
+import * as React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import BaseTag from './Tag/BaseTag'

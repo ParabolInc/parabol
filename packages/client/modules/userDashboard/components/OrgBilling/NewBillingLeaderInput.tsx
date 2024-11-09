@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Person} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 import {MenuPosition} from '~/hooks/useCoords'

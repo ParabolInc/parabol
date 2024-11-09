@@ -1,4 +1,4 @@
-import React, {Suspense, useCallback} from 'react'
+import {Suspense, useCallback} from 'react'
 import {useHistory, useLocation} from 'react-router'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import shareTopicModalQuery, {

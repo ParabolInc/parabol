@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {ReactNode, Ref, RefObject, useEffect, useMemo} from 'react'
+import * as React from 'react'
+import {ReactNode, Ref, RefObject, useEffect, useMemo} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {BBox} from '../../types/animations'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'

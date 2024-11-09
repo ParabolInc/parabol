@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import useInterval from '../../hooks/useInterval'
 import DelayedCopy from './DelayedCopy'
 import HelpMenuContent from './HelpMenuContent'

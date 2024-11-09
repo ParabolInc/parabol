@@ -1,7 +1,7 @@
 import styled from '@emotion/styled-base'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

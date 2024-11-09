@@ -5,7 +5,6 @@ import graphql from 'babel-plugin-relay/macro'
  */
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'

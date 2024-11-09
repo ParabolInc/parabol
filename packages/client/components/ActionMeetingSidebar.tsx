@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Fragment} from 'react'
+import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import {
   ActionMeetingSidebar_meeting$key,

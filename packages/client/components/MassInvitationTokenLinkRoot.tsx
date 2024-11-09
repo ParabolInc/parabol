@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import massInvitationTokenLinkQuery, {
   MassInvitationTokenLinkQuery
 } from '../__generated__/MassInvitationTokenLinkQuery.graphql'

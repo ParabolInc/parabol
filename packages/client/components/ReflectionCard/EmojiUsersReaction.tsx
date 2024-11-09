@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {memo} from 'react'
 import {useFragment} from 'react-relay'
 import {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -61,4 +61,4 @@ const EmojiUsersReaction = ({reactjiRef, reactjiName}: Props) => {
   )
 }
 
-export default React.memo(EmojiUsersReaction)
+export default memo(EmojiUsersReaction)

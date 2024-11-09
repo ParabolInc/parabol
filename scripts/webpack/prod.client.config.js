@@ -161,7 +161,8 @@ module.exports = (config) => {
               loader: '@sucrase/webpack-loader',
               options: {
                 production: true,
-                transforms: ['jsx', 'typescript']
+                transforms: ['jsx', 'typescript'],
+                jsxRuntime: 'automatic'
               }
             }
           ]
@@ -192,7 +193,8 @@ module.exports = (config) => {
               loader: '@sucrase/webpack-loader',
               options: {
                 production: true,
-                transforms: ['jsx']
+                transforms: ['jsx'],
+                jsxRuntime: 'automatic'
               }
             }
           ]

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'

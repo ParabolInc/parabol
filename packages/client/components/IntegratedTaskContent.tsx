@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
 

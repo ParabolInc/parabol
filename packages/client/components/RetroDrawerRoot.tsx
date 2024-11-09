@@ -1,4 +1,4 @@
-import React, {Suspense, useState} from 'react'
+import {Suspense, useState} from 'react'
 import retroDrawerQuery, {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MeetingOptions from './MeetingOptions'

@@ -1,5 +1,5 @@
 import {RadioButtonChecked, RadioButtonUnchecked, ThumbDown, ThumbUp} from '@mui/icons-material'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useManualClientSideTrack from '../../../../hooks/useManualClientSideTrack'

@@ -1,7 +1,6 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {MEETING_NAME} from 'parabol-client/utils/constants'
-import React from 'react'
 
 const promptStyle = {
   color: PALETTE.SLATE_700,

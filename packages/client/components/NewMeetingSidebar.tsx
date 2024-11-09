@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {NewMeetingSidebar_meeting$key} from '~/__generated__/NewMeetingSidebar_meeting.graphql'

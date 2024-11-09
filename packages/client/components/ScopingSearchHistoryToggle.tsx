@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {ExpandMore, Search} from '@mui/icons-material'
-import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'

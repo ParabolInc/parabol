@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode, useRef} from 'react'
+import {ReactNode, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ThreadedTaskBase_discussion$key} from '~/__generated__/ThreadedTaskBase_discussion.graphql'
 import {ThreadedTaskBase_task$key} from '~/__generated__/ThreadedTaskBase_task.graphql'

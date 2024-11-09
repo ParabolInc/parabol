@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {Redirect} from 'react-router'
 import activityDetailsQuery, {
   ActivityDetailsQuery

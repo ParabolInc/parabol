@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import * as Popover from '@radix-ui/react-popover'
-import React from 'react'
+import {useState} from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import addReactjiSvg from '../../../../static/images/icons/add_reactji_24.svg'
 import ReactjiPicker from '../ReactjiPicker'
@@ -29,16 +29,27 @@ interface Props {
 
 const AddReactjiButton = (props: Props) => {
   const {className, onToggle} = props
+  const [open, setOpen] = useState(false)
+  const onOpenChange = (willOpen: boolean) => {
+    setOpen(willOpen)
+  }
+  const onClick = (emojiId: string) => {
+    setOpen(false)
+    onToggle(emojiId)
+  }
   return (
-    <Popover.Root>
+    <Popover.Root open={open} onOpenChange={onOpenChange}>
       <Popover.Trigger asChild>
         <Button className={className}>
           <AddIcon alt='' src={addReactjiSvg} />
         </Button>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Content className='PopoverContent' sideOffset={5}>
-          <ReactjiPicker onClick={onToggle} />
+        <Popover.Content
+          className='z-10 data-[side=bottom]:animate-slideDown data-[side=top]:animate-slideUp'
+          sideOffset={5}
+        >
+          <ReactjiPicker onClick={onClick} />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

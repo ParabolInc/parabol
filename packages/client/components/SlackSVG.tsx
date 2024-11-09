@@ -1,6 +1,6 @@
-import React from 'react'
+import {memo} from 'react'
 
-const SlackSVG = React.memo(() => {
+const SlackSVG = memo(() => {
   return (
     <svg width='24' height='24' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
       <path

@@ -1,5 +1,5 @@
 import {ContentCopy} from '@mui/icons-material'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'

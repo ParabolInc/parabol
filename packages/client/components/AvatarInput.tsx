@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {Component, lazy, Suspense} from 'react'
+import * as React from 'react'
+import {Component, lazy, Suspense} from 'react'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 

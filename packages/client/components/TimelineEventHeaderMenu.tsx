@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
-import React from 'react'
 import Menu from '~/components/Menu'
 import MenuItem from '~/components/MenuItem'
 import useAtmosphere from '~/hooks/useAtmosphere'

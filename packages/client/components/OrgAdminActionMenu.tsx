@@ -1,6 +1,5 @@
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {OrgAdminActionMenu_organization$key} from '../__generated__/OrgAdminActionMenu_organization.graphql'

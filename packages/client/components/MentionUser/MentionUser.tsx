@@ -1,4 +1,3 @@
-import React from 'react'
 import Avatar from '../Avatar/Avatar'
 import DraftMentionDescription from '../MentionTag/DraftMentionDescription'
 import DraftMentionRow from '../MentionTag/DraftMentionRow'

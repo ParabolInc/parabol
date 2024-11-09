@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import addTeamDialogQuery, {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {Loader} from '../utils/relay/renderLoader'

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {ArchiveOrganizationForm_organization$key} from '~/__generated__/ArchiveOrganizationForm_organization.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'

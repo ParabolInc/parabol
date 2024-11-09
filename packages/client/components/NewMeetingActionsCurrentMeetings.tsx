@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Forum} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingActionsCurrentMeetings_team$key} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'

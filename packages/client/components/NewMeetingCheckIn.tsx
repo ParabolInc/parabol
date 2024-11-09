@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {RecordVoiceOver} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement} from 'react'
+import {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingCheckIn_meeting$key} from '~/__generated__/NewMeetingCheckIn_meeting.graphql'
 import useGotoStageId from '~/hooks/useGotoStageId'

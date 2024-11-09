@@ -1,5 +1,4 @@
 import {MenuItem} from '@mui/material'
-import React from 'react'
 import IconLabel from '../../../../components/IconLabel'
 import LinkButton from '../../../../components/LinkButton'
 import Menu from '../../../../components/Menu'

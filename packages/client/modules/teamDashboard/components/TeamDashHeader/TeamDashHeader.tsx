@@ -1,7 +1,7 @@
 import {ClassNames} from '@emotion/core'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import {NavLink} from 'react-router-dom'

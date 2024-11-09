@@ -1,7 +1,7 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {Fragment, useEffect, useMemo} from 'react'
+import {Fragment, useEffect, useMemo, useState} from 'react'
 import {
   PreloadedQuery,
   commitLocalUpdate,
@@ -229,7 +229,7 @@ export const ActivityLibrary = (props: Props) => {
   const {availableTemplates, organizations} = viewer
   const hasAITemplateFeatureFlag = organizations.some((org) => org.hasAITemplateFlag)
 
-  const [isSearching, setIsSearching] = React.useState(true)
+  const [isSearching, setIsSearching] = useState(true)
   const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<
     ActivityLibraryTemplateSearchRefetchQuery,
     ActivityLibraryTemplateSearch_query$key

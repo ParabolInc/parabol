@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {
+
+import {
   Children,
   cloneElement,
   forwardRef,
@@ -11,6 +12,8 @@ import React, {
   useRef,
   useState
 } from 'react'
+
+import * as React from 'react'
 import {PortalStatus} from '../hooks/usePortal'
 import MenuItemAnimation from './MenuItemAnimation'
 

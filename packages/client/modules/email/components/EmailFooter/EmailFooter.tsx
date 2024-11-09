@@ -1,4 +1,3 @@
-import React from 'react'
 import {ContactInfo} from '../../../../types/constEnums'
 import {emailCopyStyle, emailTableBase, emailTextColor} from '../../styles'
 import EmptySpace from '../EmptySpace/EmptySpace'

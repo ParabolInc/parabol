@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import useCanonical from '~/hooks/useCanonical'
 import NewMeetingSummaryRoot from '../modules/summary/components/NewMeetingSummaryRoot'
 import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'

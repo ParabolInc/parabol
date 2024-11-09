@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import {PaymentRejected_notification$key} from '../__generated__/PaymentRejected_notification.graphql'

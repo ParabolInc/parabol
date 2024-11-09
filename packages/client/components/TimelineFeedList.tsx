@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'

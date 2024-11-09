@@ -6,7 +6,6 @@ import {
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailBorderBottom from './EmailBorderBottom'
 import SummaryAvatarHeader from './SummaryAvatarHeader'

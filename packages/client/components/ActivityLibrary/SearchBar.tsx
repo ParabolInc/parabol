@@ -1,5 +1,5 @@
 import {Search as SearchIcon} from '@mui/icons-material'
-import React, {ChangeEvent} from 'react'
+import {ChangeEvent} from 'react'
 
 interface Props {
   searchQuery: string

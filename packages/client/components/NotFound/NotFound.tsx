@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import Confetti from '../Confetti'
 

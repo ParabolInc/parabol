@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {AssignmentInd as AssignmentIndIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import {TaskFooterUserAssignee_task$key} from '../../../../__generated__/TaskFooterUserAssignee_task.graphql'

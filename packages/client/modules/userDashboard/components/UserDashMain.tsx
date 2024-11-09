@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 import {Route, RouteComponentProps, Switch} from 'react-router'
 import DashContent from '~/components/Dashboard/DashContent'
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent'

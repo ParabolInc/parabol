@@ -5,7 +5,7 @@ import {SummarySheet_meeting$key} from 'parabol-client/__generated__/SummaryShee
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
 import {sheetShadow} from 'parabol-client/styles/elevation'
 import {ACTION} from 'parabol-client/utils/constants'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../../../hooks/useAtmosphere'

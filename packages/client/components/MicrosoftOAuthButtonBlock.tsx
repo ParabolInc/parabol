@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import clsx from 'clsx'
-import React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'

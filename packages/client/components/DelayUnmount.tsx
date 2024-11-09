@@ -1,4 +1,4 @@
-import React, {Component, ComponentClass, ReactNode} from 'react'
+import {Component, ComponentClass, ReactNode} from 'react'
 import DelayUnmountShrinkAndScale from './DelayUnmountShrinkAndScale'
 
 enum TransitionState {

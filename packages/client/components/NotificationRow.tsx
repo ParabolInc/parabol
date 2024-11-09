@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {ReactNode, useState} from 'react'
+import {ReactNode, useState} from 'react'
 import {NotificationStatusEnum} from '../__generated__/NotificationDropdown_query.graphql'
 import {PALETTE} from '../styles/paletteV3'
 

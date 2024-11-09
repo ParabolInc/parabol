@@ -1,5 +1,4 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
-import React from 'react'
 import {CorsOptions} from '../../../types/cors'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import Button from './Button'

@@ -1,8 +1,8 @@
-import React from 'react'
+import {memo} from 'react'
 
 // Can multiply 24(n) for standard MD sizes eg. 24(2) = 48
 
-const MSTeamsSVG = React.memo(() => {
+const MSTeamsSVG = memo(() => {
   return (
     <svg width='48' height='45' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2228.833 2073.333'>
       <path

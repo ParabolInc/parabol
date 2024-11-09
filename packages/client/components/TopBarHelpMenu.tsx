@@ -1,4 +1,3 @@
-import React from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint, ExternalLinks} from '~/types/constEnums'
 import {MenuProps} from '../hooks/useMenu'

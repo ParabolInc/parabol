@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import unpaidTeamModalQuery, {
   UnpaidTeamModalQuery
 } from '../../../../__generated__/UnpaidTeamModalQuery.graphql'

@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser'
-import React, {Component, ErrorInfo, ReactNode} from 'react'
+import {Component, ErrorInfo, ReactNode} from 'react'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'

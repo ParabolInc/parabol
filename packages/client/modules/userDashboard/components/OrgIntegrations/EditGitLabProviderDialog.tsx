@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {EditGitLabProviderDialog_integrationProvider$key} from '../../../../__generated__/EditGitLabProviderDialog_integrationProvider.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'

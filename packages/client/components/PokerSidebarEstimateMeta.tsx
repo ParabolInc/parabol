@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {PALETTE} from '../styles/paletteV3'

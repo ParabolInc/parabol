@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {ReactElement, ReactNode, ReactPortal, RefObject, useEffect} from 'react'
+import {ReactElement, ReactNode, ReactPortal, RefObject, useEffect} from 'react'
 import {ZIndex} from '../types/constEnums'
 import TooltipBackground from './TooltipBackground'
 import {UseCoordsValue} from './useCoords'

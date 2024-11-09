@@ -1,4 +1,3 @@
-import React from 'react'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import BasicInput from '../../../../components/InputField/BasicInput'

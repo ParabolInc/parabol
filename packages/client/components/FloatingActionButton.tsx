@@ -1,4 +1,4 @@
-import React, {forwardRef, Ref} from 'react'
+import {forwardRef, Ref} from 'react'
 import {Elevation} from '../styles/elevation'
 import RaisedButton, {RaisedButtonProps} from './RaisedButton'
 

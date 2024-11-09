@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
 import {ExportAllTasksMenuQuery} from '../../../../../__generated__/ExportAllTasksMenuQuery.graphql'

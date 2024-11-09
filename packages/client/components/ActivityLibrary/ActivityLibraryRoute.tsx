@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import activityLibraryQuery, {
   ActivityLibraryQuery
 } from '~/__generated__/ActivityLibraryQuery.graphql'

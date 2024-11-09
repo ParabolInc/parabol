@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import * as DOMPurify from 'dompurify'
-import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import getSafeRegex from '~/utils/getSafeRegex'
 

@@ -5,7 +5,7 @@ import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.gr
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import {CorsOptions} from '../../../../types/cors'

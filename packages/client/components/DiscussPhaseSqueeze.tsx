@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {DiscussPhaseSqueeze_meeting$key} from '~/__generated__/DiscussPhaseSqueeze_meeting.graphql'
 import {DiscussPhaseSqueeze_organization$key} from '~/__generated__/DiscussPhaseSqueeze_organization.graphql'

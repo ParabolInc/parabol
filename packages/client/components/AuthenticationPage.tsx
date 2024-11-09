@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'

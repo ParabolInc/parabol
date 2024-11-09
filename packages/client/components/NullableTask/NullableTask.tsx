@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {convertFromRaw} from 'draft-js'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'

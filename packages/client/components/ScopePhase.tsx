@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ScopePhase_meeting$key} from '~/__generated__/ScopePhase_meeting.graphql'
 import useGotoStageId from '~/hooks/useGotoStageId'

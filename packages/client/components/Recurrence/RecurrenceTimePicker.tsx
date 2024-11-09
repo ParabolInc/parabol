@@ -1,6 +1,5 @@
 import dayjs, {Dayjs} from 'dayjs'
 import ms from 'ms'
-import React from 'react'
 import {MenuProps} from '../../hooks/useMenu'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'

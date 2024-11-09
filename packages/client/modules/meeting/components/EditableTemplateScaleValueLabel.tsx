@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {EditableTemplateScaleValueLabel_scale$key} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
 import {EditableTemplateScaleValueLabel_scaleValue$key} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Close, Info} from '@mui/icons-material'
-import React from 'react'
+import * as React from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useForm from '~/hooks/useForm'

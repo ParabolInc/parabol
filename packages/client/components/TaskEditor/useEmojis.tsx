@@ -1,5 +1,6 @@
 import {EditorProps, EditorState} from 'draft-js'
-import React, {ReactNode, useRef, useState} from 'react'
+import * as React from 'react'
+import {ReactNode, useRef, useState} from 'react'
 import {SetEditorState} from '../../types/draft'
 import {autoCompleteEmoji} from '../../utils/draftjs/completeEntity'
 import getDraftCoords from '../../utils/getDraftCoords'

@@ -1,4 +1,4 @@
-import React, {ReactNode, RefObject, Suspense} from 'react'
+import {ReactNode, RefObject, Suspense} from 'react'
 import discussionThreadQuery, {
   DiscussionThreadQuery
 } from '../__generated__/DiscussionThreadQuery.graphql'

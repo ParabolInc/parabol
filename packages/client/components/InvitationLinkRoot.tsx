@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {RouteComponentProps} from 'react-router'
 import invitationLinkQuery, {InvitationLinkQuery} from '~/__generated__/InvitationLinkQuery.graphql'
 import useNoIndex from '../hooks/useNoIndex'

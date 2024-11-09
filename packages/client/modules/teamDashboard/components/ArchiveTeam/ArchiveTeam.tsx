@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {ArchiveTeam_team$key} from '~/__generated__/ArchiveTeam_team.graphql'
 import IconLabel from '../../../../components/IconLabel'

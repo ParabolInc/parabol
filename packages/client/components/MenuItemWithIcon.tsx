@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Bookmark, Comment, Delete, Edit, Keyboard} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 
 const Wrapper = styled('div')({

@@ -1,6 +1,5 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React from 'react'
 import ShareTopicRoot from '../../../../../components/ShareTopicRoot'
 import {useDialogState} from '../../../../../ui/Dialog/useDialogState'
 import makeAppURL from '../../../../../utils/makeAppURL'

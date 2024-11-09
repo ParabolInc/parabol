@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ChangeEvent, FormEvent, useState} from 'react'
+import * as React from 'react'
+import {ChangeEvent, FormEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import Checkbox from '../../../../components/Checkbox'

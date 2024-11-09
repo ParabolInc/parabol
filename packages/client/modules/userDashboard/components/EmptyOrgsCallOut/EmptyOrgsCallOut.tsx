@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useRouter from '../../../../hooks/useRouter'

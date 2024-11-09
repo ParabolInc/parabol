@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import taskFooterTeamAssigneeMenuQuery, {
   TaskFooterTeamAssigneeMenuQuery
 } from '~/__generated__/TaskFooterTeamAssigneeMenuQuery.graphql'

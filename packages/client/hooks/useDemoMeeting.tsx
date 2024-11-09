@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react'
+import {useCallback, useEffect} from 'react'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import lazyPreload from '../utils/lazyPreload'
 import useAtmosphere from './useAtmosphere'

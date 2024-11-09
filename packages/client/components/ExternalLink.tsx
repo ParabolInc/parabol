@@ -1,5 +1,3 @@
-import React from 'react'
-
 export interface ExternalLinkProps {
   className?: string
   copy: string

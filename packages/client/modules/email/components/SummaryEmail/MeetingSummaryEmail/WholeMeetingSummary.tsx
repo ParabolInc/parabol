@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import WholeMeetingSummaryLoading from './WholeMeetingSummaryLoading'
 import WholeMeetingSummaryResult from './WholeMeetingSummaryResult'

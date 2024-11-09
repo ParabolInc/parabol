@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import shareTopicModalQuery, {
   ShareTopicModalQuery
