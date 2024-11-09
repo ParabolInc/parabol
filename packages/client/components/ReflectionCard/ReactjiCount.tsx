@@ -80,7 +80,7 @@ const ReactjiCount = (props: Props) => {
   const reactjiObj = ReactjiId.split(id)
   const name = reactjiObj.name
 
-  const {unicode, shortName} = getReactji(name)
+  const {native, reactjiName} = getReactji(name)
   const onClick = () => {
     onToggle(name)
   }
@@ -94,9 +94,9 @@ const ReactjiCount = (props: Props) => {
         onMouseLeave={closeTooltip}
         ref={originRef}
       >
-        <Emoji>{unicode}</Emoji>
+        <Emoji>{native}</Emoji>
         <Count>{count}</Count>
-        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} reactjiShortName={shortName} />)}
+        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} reactjiName={reactjiName} />)}
       </Inner>
     </Parent>
   )

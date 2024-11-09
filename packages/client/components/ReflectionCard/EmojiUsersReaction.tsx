@@ -30,10 +30,10 @@ const LIST_FORMATTER =
 
 interface Props {
   reactjiRef: EmojiUsersReaction_reactji$key
-  reactjiShortName?: string
+  reactjiName?: string
 }
 
-const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
+const EmojiUsersReaction = ({reactjiRef, reactjiName}: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {users} = useFragment(
@@ -56,7 +56,7 @@ const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
   return (
     <EmojiUsersReactionRoot>
       {LIST_FORMATTER.format(userNames)}
-      {reactjiShortName && <DarkerGrayPart>reacted with :{reactjiShortName}:</DarkerGrayPart>}
+      {reactjiName && <DarkerGrayPart>reacted with {reactjiName}</DarkerGrayPart>}
     </EmojiUsersReactionRoot>
   )
 }
