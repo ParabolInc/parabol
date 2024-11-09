@@ -59,7 +59,7 @@ export const tiptapMentionConfig = (atmosphere: Atmosphere, teamId: string) => {
       render: () => {
         type GetReferenceClientRect = () => DOMRect
         let component: ReactRenderer<any, any> | undefined
-        let popup: Instance<Props>[]
+        let popup: Instance<Props>
 
         return {
           onStart: (props) => {
@@ -69,7 +69,8 @@ export const tiptapMentionConfig = (atmosphere: Atmosphere, teamId: string) => {
             })
             if (!props.clientRect) return
 
-            popup = tippy('body', {
+            popup = tippy(document.body, {
+              animation: false,
               getReferenceClientRect: props.clientRect as GetReferenceClientRect,
               appendTo: () => document.body,
               content: component.element,
@@ -83,21 +84,21 @@ export const tiptapMentionConfig = (atmosphere: Atmosphere, teamId: string) => {
           onUpdate(props) {
             component?.updateProps(props)
             if (!props.clientRect) return
-            popup?.[0]?.setProps({
+            popup?.setProps({
               getReferenceClientRect: props.clientRect as GetReferenceClientRect
             })
           },
 
           onKeyDown(props) {
             if (props.event.key === 'Escape') {
-              popup?.[0]?.hide()
+              popup?.hide()
               return true
             }
             return component?.ref?.onKeyDown(props)
           },
 
           onExit() {
-            popup?.[0]?.destroy()
+            popup?.destroy()
             component?.destroy()
           }
         }

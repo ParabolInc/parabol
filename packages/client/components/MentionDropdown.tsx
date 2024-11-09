@@ -52,7 +52,7 @@ export default forwardRef(
     }))
 
     return (
-      <div className='border-rad z-10 rounded-md bg-white py-1 shadow-lg outline-none'>
+      <div className='border-rad z-10 rounded-md bg-white py-1 shadow-lg outline-none [[data-placement="bottom-start"]_&]:animate-slideDown [[data-placement="top-start"]_&]:animate-slideUp'>
         {items.length ? (
           items.map((item, idx) => (
             <div
