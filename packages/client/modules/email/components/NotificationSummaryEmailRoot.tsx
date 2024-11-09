@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {NotificationSummaryEmailRootQuery} from 'parabol-client/__generated__/NotificationSummaryEmailRootQuery.graphql'
-import React from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import {NOTIFICATION_TEMPLATE_TYPE} from './EmailNotifications/EmailNotificationPicker'
 import NotificationSummaryEmail from './NotificationSummaryEmail'

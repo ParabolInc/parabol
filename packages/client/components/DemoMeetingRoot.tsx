@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import MeetingSubscription from '~/subscriptions/MeetingSubscription'
 import {DemoMeetingRootQuery} from '../__generated__/DemoMeetingRootQuery.graphql'

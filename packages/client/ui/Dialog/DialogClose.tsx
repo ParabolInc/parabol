@@ -1,9 +1,9 @@
 import {Close} from '@mui/icons-material'
 import * as RadixDialog from '@radix-ui/react-dialog'
-import React from 'react'
+import {forwardRef} from 'react'
 import {twMerge} from 'tailwind-merge'
 
-export const DialogClose = React.forwardRef<
+export const DialogClose = forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof RadixDialog.Close>
 >(({className, ...props}, ref) => (

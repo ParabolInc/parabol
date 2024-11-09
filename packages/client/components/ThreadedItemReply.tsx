@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
-import React, {RefObject, useRef} from 'react'
+import {RefObject, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ThreadedItemReply_discussion$key} from '~/__generated__/ThreadedItemReply_discussion.graphql'
 import {ThreadedItemReply_threadable$key} from '~/__generated__/ThreadedItemReply_threadable.graphql'

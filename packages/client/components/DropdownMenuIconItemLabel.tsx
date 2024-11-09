@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Business, Group, Public} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const Label = styled('span')({

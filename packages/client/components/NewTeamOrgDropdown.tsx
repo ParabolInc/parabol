@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewTeamOrgDropdown_organizations$key} from '../__generated__/NewTeamOrgDropdown_organizations.graphql'
 import {MenuProps} from '../hooks/useMenu'

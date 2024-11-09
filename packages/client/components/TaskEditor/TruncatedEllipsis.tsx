@@ -1,5 +1,5 @@
 import {ContentState, EditorState} from 'draft-js'
-import React, {Component, ReactNode} from 'react'
+import {Component, ReactNode} from 'react'
 
 interface Props {
   contentState: ContentState

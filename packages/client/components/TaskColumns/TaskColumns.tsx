@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {TaskColumns_teams$key} from '~/__generated__/TaskColumns_teams.graphql'

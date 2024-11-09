@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
 import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'

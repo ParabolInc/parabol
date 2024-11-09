@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {lazy} from 'react'
+import * as React from 'react'
+import {lazy} from 'react'
 import {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.graphql'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'

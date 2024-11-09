@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
 import {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
@@ -58,7 +58,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     ({node}) => node.status === 'UNREAD' && Object.keys(typePicker).includes(node.type)
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     snackbarNotifications.forEach(({node}) => {
       const specificNotificationToastMapper = typePicker[node.type]
       if (!specificNotificationToastMapper) {

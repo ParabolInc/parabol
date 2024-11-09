@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, Ref} from 'react'
+import {forwardRef, Ref} from 'react'
 import PrimaryButton from './PrimaryButton'
 
 const ActionButton = styled(PrimaryButton)({

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'

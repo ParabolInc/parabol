@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {GitHubScopingSearchFilterMenuQuery} from '../__generated__/GitHubScopingSearchFilterMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

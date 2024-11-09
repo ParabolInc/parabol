@@ -1,6 +1,6 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
-import React, {Component} from 'react'
+import {Component} from 'react'
 import {DECELERATE, fadeIn} from '../../styles/animation'
 import {Elevation} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'

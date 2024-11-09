@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import {TaskFooterTeamAssignee_task$key} from '../../../../__generated__/TaskFooterTeamAssignee_task.graphql'

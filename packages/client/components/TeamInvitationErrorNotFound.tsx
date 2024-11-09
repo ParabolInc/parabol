@@ -1,4 +1,3 @@
-import React from 'react'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'

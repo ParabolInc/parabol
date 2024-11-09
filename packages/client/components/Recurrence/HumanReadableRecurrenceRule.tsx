@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {PALETTE} from '../../styles/paletteV3'
 import plural from '../../utils/plural'

@@ -1,4 +1,5 @@
-import React, {ReactNode, createContext, useCallback, useContext, useEffect, useRef} from 'react'
+import * as React from 'react'
+import {ReactNode, createContext, useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from '../utils/hideBodyScroll'

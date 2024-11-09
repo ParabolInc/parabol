@@ -29,7 +29,8 @@ const clientTransformRules = (projectRoot, USE_REFRESH) => {
         {
           loader: '@sucrase/webpack-loader',
           options: {
-            transforms: ['jsx', 'typescript']
+            transforms: ['jsx', 'typescript'],
+            jsxRuntime: 'automatic'
           }
         }
       ]

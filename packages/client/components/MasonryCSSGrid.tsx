@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {Component, ReactNode} from 'react'
+import {Component, createRef, ReactNode} from 'react'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {
@@ -30,7 +30,7 @@ interface ItemRefs {
 const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
 class MasonryCSSGrid extends Component<Props> {
   itemRefs: ItemRefs = {}
-  gridRef = React.createRef<HTMLDivElement>()
+  gridRef = createRef<HTMLDivElement>()
   resizeObserver = new ResizeObserver(() => {
     this.setSpans()
   })

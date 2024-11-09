@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {TeamPromptResponseSummary_meeting$key} from 'parabol-client/__generated__/TeamPromptResponseSummary_meeting.graphql'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import getPhaseByTypename from '~/utils/getPhaseByTypename'
 import {isNotNull} from '~/utils/predicates'

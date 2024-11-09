@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TaskColumnAddTaskSelectTeam_teams$key} from '~/__generated__/TaskColumnAddTaskSelectTeam_teams.graphql'
 import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'

@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'

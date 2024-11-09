@@ -1,7 +1,7 @@
 import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
-import React, {Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import {Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import TeamMemberId from '../../shared/gqlIds/TeamMemberId'
 import SuggestMentionableUsersRoot from '../SuggestMentionableUsersRoot'
 import {MentionSuggestion} from '../TaskEditor/useSuggestions'

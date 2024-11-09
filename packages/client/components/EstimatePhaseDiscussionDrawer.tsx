@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {EstimatePhaseDiscussionDrawer_meeting$key} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '~/styles/elevation'

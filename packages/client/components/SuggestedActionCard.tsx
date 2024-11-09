@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Cancel, ChangeHistory, GroupAdd, GroupWork, History, PersonAdd} from '@mui/icons-material'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import {DECELERATE, fadeIn} from '../styles/animation'

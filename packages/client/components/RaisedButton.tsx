@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, Ref} from 'react'
+import {forwardRef, Ref} from 'react'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'

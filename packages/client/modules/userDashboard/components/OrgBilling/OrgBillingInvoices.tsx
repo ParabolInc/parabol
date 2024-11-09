@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {usePaginationFragment} from 'react-relay'
 import {OrgBillingInvoices_query$key} from '~/__generated__/OrgBillingInvoices_query.graphql'
 import {OrgBillingInvoicesPaginationQuery} from '../../../../__generated__/OrgBillingInvoicesPaginationQuery.graphql'

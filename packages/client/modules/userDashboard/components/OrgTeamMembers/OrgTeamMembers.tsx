@@ -1,6 +1,5 @@
 import {ArrowBack, MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'

@@ -1,9 +1,9 @@
-import React, {ReactNode, useRef} from 'react'
+import {createContext, ReactNode, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import useForceUpdate from '../../hooks/useForceUpdate'
 
 export type SetPortal = (id: string, portal: ReactNode) => void
-export const PortalContext = React.createContext((() => {
+export const PortalContext = createContext((() => {
   /* noop */
 }) as SetPortal)
 

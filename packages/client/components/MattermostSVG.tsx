@@ -1,6 +1,6 @@
-import React from 'react'
+import {memo} from 'react'
 
-const MattermostSVG = React.memo(() => {
+const MattermostSVG = memo(() => {
   return (
     <svg
       width='24'

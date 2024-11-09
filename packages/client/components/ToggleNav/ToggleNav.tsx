@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {CreditCard, Extension, Group, Key} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 //    TODO:

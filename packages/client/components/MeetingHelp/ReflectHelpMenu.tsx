@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'

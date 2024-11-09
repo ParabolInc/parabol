@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {BottomControlBarTips_meeting$key} from '~/__generated__/BottomControlBarTips_meeting.graphql'
 import {MenuPosition} from '~/hooks/useCoords'

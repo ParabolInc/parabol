@@ -1,7 +1,6 @@
 import {EmailNotificationPicker_notification$key} from 'parabol-client/__generated__/EmailNotificationPicker_notification.graphql'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import plural from 'parabol-client/utils/plural'
-import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import makeAppURL from '../../../utils/makeAppURL'
 import {emailCopyStyle, emailLinkStyle} from '../styles'

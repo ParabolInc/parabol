@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'

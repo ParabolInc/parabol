@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {useLayoutEffect} from 'react'
+import * as React from 'react'
+import {useLayoutEffect} from 'react'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import {PALETTE} from '../../styles/paletteV3'

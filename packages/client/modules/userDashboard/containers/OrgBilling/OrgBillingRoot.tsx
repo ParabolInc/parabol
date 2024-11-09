@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import orgBillingQuery, {OrgBillingQuery} from '../../../../__generated__/OrgBillingQuery.graphql'
 import {OrgBillingRoot_organization$key} from '../../../../__generated__/OrgBillingRoot_organization.graphql'

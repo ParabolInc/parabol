@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import * as React from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import {EstimatePhaseArea_meeting$key} from '~/__generated__/EstimatePhaseArea_meeting.graphql'

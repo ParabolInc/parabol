@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'

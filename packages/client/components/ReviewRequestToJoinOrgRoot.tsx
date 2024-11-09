@@ -1,4 +1,4 @@
-import React, {Suspense, useCallback, useEffect} from 'react'
+import {Suspense, useCallback, useEffect} from 'react'
 import {useHistory, useLocation} from 'react-router'
 import ReviewRequestToJoinOrgModal from '~/components/ReviewRequestToJoinOrgModal'
 import reviewRequestToJoinOrgModalQuery, {

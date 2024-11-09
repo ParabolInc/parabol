@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {ChangeEvent} from 'react'
+import {ChangeEvent} from 'react'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import {Breakpoint} from '../../../../types/constEnums'

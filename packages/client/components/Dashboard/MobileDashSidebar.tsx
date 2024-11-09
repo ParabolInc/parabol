@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'

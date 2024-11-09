@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

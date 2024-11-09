@@ -6,7 +6,6 @@
  */
 import styled from '@emotion/styled'
 import {Warning} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius} from '../../types/constEnums'
 

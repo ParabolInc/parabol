@@ -1,13 +1,13 @@
-import React from 'react'
+import {Fragment} from 'react'
 import TimelineEventMock from './TimelineEventMock'
 
 const TimelineLoadingEvents = () => {
   return (
-    <React.Fragment>
+    <Fragment>
       <TimelineEventMock />
       <TimelineEventMock />
       <TimelineEventMock />
-    </React.Fragment>
+    </Fragment>
   )
 }
 

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import EmptyDiscussionIllustration from '../../../static/images/illustrations/discussions.png'

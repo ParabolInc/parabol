@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
 import {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'

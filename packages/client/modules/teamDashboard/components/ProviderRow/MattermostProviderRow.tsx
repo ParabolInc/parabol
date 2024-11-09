@@ -1,6 +1,6 @@
 import {Add as AddIcon, Close as CloseIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
 import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'

@@ -1,4 +1,3 @@
-import React from 'react'
 import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'

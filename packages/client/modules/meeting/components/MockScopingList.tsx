@@ -1,4 +1,3 @@
-import React from 'react'
 import MockScopingTask from './MockScopingTask'
 
 const MockScopingList = () => {

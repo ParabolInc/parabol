@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React from 'react'
+import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {TaskFooter_task$key} from '../../../../__generated__/TaskFooter_task.graphql'
@@ -110,7 +110,7 @@ const TaskFooter = (props: Props) => {
   const canAssignUser = !integration && !isArchived
   const canAssignTeam = !isArchived
   return (
-    <React.Fragment>
+    <Fragment>
       <Footer>
         <AvatarBlock>
           {showTeam ? (
@@ -160,7 +160,7 @@ const TaskFooter = (props: Props) => {
         </ButtonGroup>
       </Footer>
       {error && <OutcomeCardMessage onClose={handleCompleted} message={error} />}
-    </React.Fragment>
+    </Fragment>
   )
 }
 

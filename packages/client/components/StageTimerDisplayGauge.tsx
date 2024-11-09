@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import endTimerSound from '../../../static/sounds/tic-tac.mp3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useRefreshInterval from '../hooks/useRefreshInterval'

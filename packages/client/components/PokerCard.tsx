@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useRef} from 'react'
+import {RefObject, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import PassSVG from '../../../static/images/icons/no_entry.svg'

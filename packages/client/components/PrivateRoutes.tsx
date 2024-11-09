@@ -1,5 +1,5 @@
 import {Location} from 'history'
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import {Redirect, Route, Switch, useLocation} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'

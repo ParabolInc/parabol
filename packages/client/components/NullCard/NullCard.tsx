@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {Card} from '../../types/constEnums'
 import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'

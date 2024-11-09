@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RetroReflectPhase_meeting$key} from '~/__generated__/RetroReflectPhase_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'

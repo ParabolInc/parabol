@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import orgMembersQuery, {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../../types/constEnums'

@@ -2,7 +2,6 @@ import LockedEmail from 'parabol-client/modules/email/components/LimitsEmails/Lo
 import SevenDayWarningEmail from 'parabol-client/modules/email/components/LimitsEmails/SevenDayWarningEmail'
 import ThirtyDayWarningEmail from 'parabol-client/modules/email/components/LimitsEmails/ThirtyDayWarningEmail'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import {Threshold} from '../../client/types/constEnums'
 import makeAppURL from '../../client/utils/makeAppURL'

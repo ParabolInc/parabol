@@ -1,7 +1,6 @@
 /* Copy and pasted from `./JiraScopingSelectAllIssues.tsx` */
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import useUnusedRecords from '~/hooks/useUnusedRecords'

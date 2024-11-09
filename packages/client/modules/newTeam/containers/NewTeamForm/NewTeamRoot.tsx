@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import newTeamQuery, {NewTeamQuery} from '../../../../__generated__/NewTeamQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../../hooks/useRouter'

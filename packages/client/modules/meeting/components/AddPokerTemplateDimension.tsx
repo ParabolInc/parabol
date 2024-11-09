@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {Threshold} from '~/types/constEnums'
 import {AddPokerTemplateDimension_dimensions$key} from '../../../__generated__/AddPokerTemplateDimension_dimensions.graphql'

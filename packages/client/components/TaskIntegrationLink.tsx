@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {parseWebPath} from '~/utils/parseWebPath'
 import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'

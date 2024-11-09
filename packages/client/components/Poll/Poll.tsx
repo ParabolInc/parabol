@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
 import {cardShadow, Elevation} from '~/styles/elevation'

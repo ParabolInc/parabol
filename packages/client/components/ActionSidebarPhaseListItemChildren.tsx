@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActionSidebarPhaseListItemChildren_meeting$key} from '~/__generated__/ActionSidebarPhaseListItemChildren_meeting.graphql'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionSidebarAgendaItemsSection_meeting.graphql'

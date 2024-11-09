@@ -1,5 +1,5 @@
 import {Lock, MailOutline} from '@mui/icons-material'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useRouteMatch} from 'react-router'
 import {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

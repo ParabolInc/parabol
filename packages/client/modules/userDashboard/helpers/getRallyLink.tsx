@@ -1,6 +1,3 @@
-import React from 'react'
-
-// The trailing exclamation mark “!” is added in the presentation component.
 const rallyList = [
   {
     phrase: 'You’re A Maniac',

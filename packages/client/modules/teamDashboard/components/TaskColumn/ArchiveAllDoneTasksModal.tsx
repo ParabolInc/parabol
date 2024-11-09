@@ -1,5 +1,4 @@
 import {Close} from '@mui/icons-material'
-import React from 'react'
 import DialogTitle from '../../../../components/DialogTitle'
 import FlatButton from '../../../../components/FlatButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'

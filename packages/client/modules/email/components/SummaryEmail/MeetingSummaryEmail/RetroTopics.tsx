@@ -4,7 +4,7 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {RETRO_TOPIC_LABEL} from 'parabol-client/utils/constants'
 import plural from 'parabol-client/utils/plural'
-import React from 'react'
+import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import useEmailItemGrid from '../../../../../hooks/useEmailItemGrid'
 import makeAppURL from '../../../../../utils/makeAppURL'
@@ -118,7 +118,7 @@ const RetroTopics = (props: Props) => {
             // eslint-disable-next-line react-hooks/rules-of-hooks
             const grid = useEmailItemGrid(reflections, 3)
             return (
-              <React.Fragment key={reflectionGroup.id}>
+              <Fragment key={reflectionGroup.id}>
                 <tr>
                   <td align='center' style={{paddingTop: 20}}>
                     <AnchorIfEmail
@@ -138,7 +138,7 @@ const RetroTopics = (props: Props) => {
                     ))}
                   </td>
                 </tr>
-              </React.Fragment>
+              </Fragment>
             )
           })}
       <EmailBorderBottom />

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'

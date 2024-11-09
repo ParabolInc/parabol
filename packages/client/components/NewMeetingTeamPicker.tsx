@@ -1,7 +1,6 @@
 import {ExpandMore, LockOpen} from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'

@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTeamArchived_notification$key} from 'parabol-client/__generated__/EmailTeamArchived_notification.graphql'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
 

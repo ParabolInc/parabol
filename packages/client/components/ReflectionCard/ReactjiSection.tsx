@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import useInitialRender from '~/hooks/useInitialRender'

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {useCallback, useRef} from 'react'
+import * as React from 'react'
+import {useCallback, useRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 interface Props {

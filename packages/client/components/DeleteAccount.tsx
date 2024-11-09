@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import useModal from '../hooks/useModal'
 import {PALETTE} from '../styles/paletteV3'
 import lazyPreload from '../utils/lazyPreload'

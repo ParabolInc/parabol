@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {EditorState} from 'draft-js'
-import React, {ChangeEvent, ClipboardEvent, RefObject, useEffect, useState} from 'react'
+import * as React from 'react'
+import {ChangeEvent, ClipboardEvent, RefObject, useEffect, useState} from 'react'
 import TextArea from 'react-textarea-autosize'
 import {PALETTE} from '../styles/paletteV3'
 import {Card, Gutters} from '../types/constEnums'

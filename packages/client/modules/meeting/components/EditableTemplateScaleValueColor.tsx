@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {EditableTemplateScaleValueColor_scale$key} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'

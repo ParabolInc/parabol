@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useResizeFontForElement from '../../hooks/useResizeFontForElement'
 import {BezierCurve} from '../../types/constEnums'

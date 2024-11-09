@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {withRouter} from 'react-router-dom'
 import dashboardQuery, {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'

@@ -1,4 +1,4 @@
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'

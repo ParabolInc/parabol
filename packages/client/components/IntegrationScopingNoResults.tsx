@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon, Warning} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const Message = styled('div')({

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React from 'react'
+import * as React from 'react'
 import AzureDevOpsSVG from '../../../AzureDevOpsSVG'
 import GitHubSVG from '../../../GitHubSVG'
 import GitLabSVG from '../../../GitLabSVG'

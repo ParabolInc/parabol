@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {captureException} from '@sentry/minimal'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'

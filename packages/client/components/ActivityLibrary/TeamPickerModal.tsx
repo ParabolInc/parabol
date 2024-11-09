@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import clsx from 'clsx'
 import {useFragment} from 'react-relay'

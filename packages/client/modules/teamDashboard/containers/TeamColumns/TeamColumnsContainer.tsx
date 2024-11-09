@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import getSafeRegex from '~/utils/getSafeRegex'
 import {TeamColumnsContainer_viewer$key} from '../../../../__generated__/TeamColumnsContainer_viewer.graphql'

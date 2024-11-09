@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'

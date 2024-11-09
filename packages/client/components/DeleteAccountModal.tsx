@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {useState} from 'react'
+import * as React from 'react'
+import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks, LocalStorageKey} from '../types/constEnums'

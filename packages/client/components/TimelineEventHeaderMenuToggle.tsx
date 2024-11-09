@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import CardButton from '~/components/CardButton'
 import IconLabel from '~/components/IconLabel'
 import {MenuPosition} from '~/hooks/useCoords'

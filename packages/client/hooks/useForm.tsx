@@ -1,4 +1,5 @@
-import React, {Reducer, useCallback, useMemo, useReducer} from 'react'
+import * as React from 'react'
+import {Reducer, useCallback, useMemo, useReducer} from 'react'
 import Legitity from '../validation/Legitity'
 import useEventCallback from './useEventCallback'
 

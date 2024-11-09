@@ -1,6 +1,6 @@
-import React from 'react'
+import {memo} from 'react'
 
-const ParabolLogoSVG = React.memo(() => {
+const ParabolLogoSVG = memo(() => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

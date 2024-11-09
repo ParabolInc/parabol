@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode, useState} from 'react'
+import * as React from 'react'
+import {ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import {MenuPosition} from '~/hooks/useCoords'

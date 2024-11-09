@@ -1,5 +1,5 @@
 import {ContentState, EditorState, Modifier, SelectionState} from 'draft-js'
-import React, {RefObject} from 'react'
+import {RefObject} from 'react'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {BBox} from '../../types/animations'
 import completeEntity from '../../utils/draftjs/completeEntity'

@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeetingSidebar_meeting.graphql'
 import {MeetingTypeEnum} from '../../__generated__/SummarySheet_meeting.graphql'
 import CardsSVG from '../../components/CardsSVG'

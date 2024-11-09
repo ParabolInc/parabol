@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import React from 'react'
 import {ExternalLinks} from '../types/constEnums'
 import {CorsOptions} from '../types/cors'
 import PlainButton from './PlainButton/PlainButton'

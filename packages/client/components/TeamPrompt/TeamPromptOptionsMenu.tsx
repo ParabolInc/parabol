@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Flag, Link as MuiLink, OpenInNew, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'

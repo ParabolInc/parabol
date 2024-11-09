@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
-import React, {useEffect, useRef} from 'react'
+import * as React from 'react'
+import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

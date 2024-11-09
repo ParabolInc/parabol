@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
 import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'

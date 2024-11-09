@@ -1,4 +1,5 @@
-import React, {Component, Ref} from 'react'
+import * as React from 'react'
+import {Component, Ref} from 'react'
 import {Subtract} from '../../types/generics'
 import Legitity from '../../validation/Legitity'
 import getDisplayName from '../getDisplayName'

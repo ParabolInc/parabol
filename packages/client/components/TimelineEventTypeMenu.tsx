@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'

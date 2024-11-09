@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {TaskFooterTagMenu_task$key} from '../../../../__generated__/TaskFooterTagMenu_task.graphql'

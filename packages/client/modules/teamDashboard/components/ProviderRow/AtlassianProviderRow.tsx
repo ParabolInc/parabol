@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import jwtDecode from 'jwt-decode'
-import React, {useEffect, useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import {AtlassianProviderRow_viewer$key} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'

@@ -1,7 +1,7 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {ReactElement} from 'react'
+import {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
 import useGotoStageId from '~/hooks/useGotoStageId'

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import * as React from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'

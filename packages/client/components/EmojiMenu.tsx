@@ -1,4 +1,4 @@
-import React, {Component, Ref} from 'react'
+import {Component, Ref} from 'react'
 import stringScore from 'string-score'
 import {MenuProps} from '../hooks/useMenu'
 import emojiArray from '../utils/emojiArray'

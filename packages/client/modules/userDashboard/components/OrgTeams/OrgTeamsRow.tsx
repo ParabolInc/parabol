@@ -1,6 +1,5 @@
 import {ChevronRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 

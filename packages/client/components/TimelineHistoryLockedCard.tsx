@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {TimelineHistoryLockedCard_organization$key} from '../__generated__/TimelineHistoryLockedCard_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

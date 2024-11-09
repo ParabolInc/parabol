@@ -1,5 +1,4 @@
 import dayjs from 'dayjs'
-import React from 'react'
 import {MenuPosition} from '../../hooks/useCoords'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
 import useTooltip from '../../hooks/useTooltip'

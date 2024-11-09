@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import ConnectButton from './ConnectButton'
 import ContactUsButton from './ContactUsButton'
 import ProviderRowBase, {ProviderRowBaseProps} from './ProviderRowBase'
