@@ -32,7 +32,9 @@ const notifyMattermost = async (
   notificationText?: string
 ) => {
   const {webhookUrl, serverBaseUrl, sharedSecret} = channel
-  const notifyUrl = serverBaseUrl ? `${serverBaseUrl}/plugins/co.parabol.action/notify/${teamId}` : webhookUrl
+  const notifyUrl = serverBaseUrl
+    ? `${serverBaseUrl}/plugins/co.parabol.action/notify/${teamId}`
+    : webhookUrl
   if (!notifyUrl) {
     return 'success'
   }

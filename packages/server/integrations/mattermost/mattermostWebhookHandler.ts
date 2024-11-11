@@ -320,7 +320,8 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     'signature-input': req.getHeader('signature-input')
   }
 
-  const verified = await httpbis.verifyMessage({
+  const verified = await httpbis.verifyMessage(
+    {
       async keyLookup(_: any) {
         // TODO When we support multiple Parabol - Mattermost connections, we should look up the key from IntegrationProvider
         // const keyId = params.keyid;

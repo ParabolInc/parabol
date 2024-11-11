@@ -48,25 +48,30 @@ abstract class MattermostManager {
     const method = 'POST'
     const body = JSON.stringify(payload)
     const digestArray = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body))
-    const digest = Array.from(new Uint8Array(digestArray)).map((b) => b.toString(16).padStart(2, '0')).join('')
+    const digest = Array.from(new Uint8Array(digestArray))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
     const headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Content-Digest': 'SHA-256=' + digest,
+      'Content-Digest': 'SHA-256=' + digest
     } as Record<string, string>
 
     if (this.secret) {
       const key = createSigner(this.secret, 'hmac-sha256', 'foo')
-      const signedRequest = await httpbis.signMessage({
-        key,
-        name: 'parabol',
-        fields: ['@request-target', 'content-digest'],
-      }, {
-        method,
-        url,
-        headers,
-        body
-      })
+      const signedRequest = await httpbis.signMessage(
+        {
+          key,
+          name: 'parabol',
+          fields: ['@request-target', 'content-digest']
+        },
+        {
+          method,
+          url,
+          headers,
+          body
+        }
+      )
       headers['Signature'] = signedRequest.headers['Signature']!
       headers['Signature-Input'] = signedRequest.headers['Signature-Input']!
     }
