@@ -23,14 +23,24 @@ const OrgIntegrations = (props: Props) => {
           id
           role
         }
+        organizationUsers {
+          edges {
+            node {
+              role
+            }
+          }
+        }
       }
     `,
     organizationRef
   )
 
-  const {id: orgId, viewerOrganizationUser} = organization
+  const {id: orgId, viewerOrganizationUser, organizationUsers} = organization
   const history = useHistory()
   const isOrgAdmin = viewerOrganizationUser?.role === 'ORG_ADMIN'
+
+  const orgUsers = organizationUsers?.edges.map((edge) => edge.node)
+  const isAnyOrgAdmins = orgUsers?.some((user) => user.role === 'ORG_ADMIN')
 
   return (
     <Suspense fallback={<Loader />}>
@@ -48,16 +58,29 @@ const OrgIntegrations = (props: Props) => {
             <div className='text-slate-700'>
               {`Organization-level integrations are managed by `}
               <a
-                href='#'
-                onClick={(e) => {
-                  e.preventDefault()
-                  history.push(`/me/organizations/${orgId}/billing`)
-                }}
+                href='https://www.parabol.co/support/roles-on-parabol'
                 className='font-bold text-sky-500 hover:text-sky-600'
+                target='_blank'
               >
                 Org Admins
               </a>
-              .
+              {`.`}
+              {isAnyOrgAdmins ? (
+                <>
+                  {` View yours `}
+                  <a
+                    href='#'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      history.push(`/me/organizations/${orgId}/billing`)
+                    }}
+                    className='font-bold text-sky-500 hover:text-sky-600'
+                  >
+                    here
+                  </a>
+                  {`.`}
+                </>
+              ) : null}
             </div>
           )}
           <GitLabProviders organizationRef={organization} />
