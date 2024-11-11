@@ -3,7 +3,7 @@ import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import React from 'react'
 import {useFragment} from 'react-relay'
-// import {OrgFeatures_organization$key} from '../../../../__generated__/OrgFeatures_organization.graphql'
+import {OrgFeatures_organization$key} from '../../../../__generated__/OrgFeatures_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -41,7 +41,7 @@ const FeatureNameGroup = styled('div')({
 })
 
 interface Props {
-  organizationRef: any // OrgFeatures_organization$key
+  organizationRef: OrgFeatures_organization$key
 }
 
 const OrgFeatures = (props: Props) => {
@@ -82,7 +82,7 @@ const OrgFeatures = (props: Props) => {
               <TooltipContent>Enable AI-powered features across your organization</TooltipContent>
             </Tooltip>
           </FeatureNameGroup>
-          <Toggle active={!!useAI} onClick={handleToggle} />
+          <Toggle active={useAI} onClick={handleToggle} />
         </FeatureRow>
       </PanelRow>
     </StyledPanel>
