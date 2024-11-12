@@ -1,4 +1,3 @@
-import React from 'react'
 import logo from '../styles/theme/images/graphics/google-meet-icon.svg'
 
 const GoogleMeetProviderLogo = () => {

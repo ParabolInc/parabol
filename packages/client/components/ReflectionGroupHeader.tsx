@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, Ref, RefObject} from 'react'
+import {forwardRef, Ref, RefObject} from 'react'
 import {useFragment} from 'react-relay'
 import {ReflectionGroupHeader_meeting$key} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import {ReflectionGroupHeader_reflectionGroup$key} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'

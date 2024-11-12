@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Event as EventIcon, Timer as TimerIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
 import {StageTimerModal_facilitator$key} from '../__generated__/StageTimerModal_facilitator.graphql'

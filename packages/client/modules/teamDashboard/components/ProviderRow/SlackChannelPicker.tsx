@@ -1,4 +1,3 @@
-import React from 'react'
 import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
 import {
   SlackChannelDropdownChannels,

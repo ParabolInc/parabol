@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'

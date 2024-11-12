@@ -1,5 +1,4 @@
 import AddIcon from '@mui/icons-material/Add'
-import React from 'react'
 import insightsEmptyStateImg from '../../../../../../static/images/illustrations/insights-empty-state.png'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'

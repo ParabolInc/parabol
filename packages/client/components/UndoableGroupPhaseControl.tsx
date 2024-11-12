@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
-import React from 'react'
 import FlatButton from '~/components/FlatButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'

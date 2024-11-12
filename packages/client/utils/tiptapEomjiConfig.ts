@@ -6,7 +6,7 @@ import MentionDropdown from '../components/MentionDropdown'
 export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   suggestion: {
     char: ':',
-    items: async ({query}) => {
+    items: async () => {
       return []
     },
 

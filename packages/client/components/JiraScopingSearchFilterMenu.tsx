@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'

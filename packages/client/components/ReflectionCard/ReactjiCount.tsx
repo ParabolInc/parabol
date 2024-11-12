@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'
@@ -80,7 +79,7 @@ const ReactjiCount = (props: Props) => {
   const reactjiObj = ReactjiId.split(id)
   const name = reactjiObj.name
 
-  const {unicode, shortName} = getReactji(name)
+  const {native, reactjiName} = getReactji(name)
   const onClick = () => {
     onToggle(name)
   }
@@ -94,9 +93,9 @@ const ReactjiCount = (props: Props) => {
         onMouseLeave={closeTooltip}
         ref={originRef}
       >
-        <Emoji>{unicode}</Emoji>
+        <Emoji>{native}</Emoji>
         <Count>{count}</Count>
-        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} reactjiShortName={shortName} />)}
+        {tooltipPortal(<EmojiUsersReaction reactjiRef={reactji} reactjiName={reactjiName} />)}
       </Inner>
     </Parent>
   )

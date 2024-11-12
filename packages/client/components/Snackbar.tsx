@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useLayoutEffect, useRef} from 'react'
+import {memo, useEffect, useLayoutEffect, useRef} from 'react'
 import useForceUpdate from '~/hooks/useForceUpdate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -51,7 +51,7 @@ export interface Snack {
   showDismissButton?: boolean
 }
 
-const Snackbar = React.memo(() => {
+const Snackbar = memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
   const activeSnacksRef = useRef<Snack[]>([])
   const forceUpdate = useForceUpdate()

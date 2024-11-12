@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {ReactElement, ReactNode, ReactPortal, RefObject, Suspense, useEffect} from 'react'
+import {ReactElement, ReactNode, ReactPortal, RefObject, Suspense, useEffect} from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import Menu from '../components/Menu'

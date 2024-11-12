@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PublicTeamItem_team$key} from '../../__generated__/PublicTeamItem_team.graphql'
 import {PushInvitationMutation$data} from '../../__generated__/PushInvitationMutation.graphql'

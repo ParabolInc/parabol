@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useRef} from 'react'
+import {RefObject, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {SpotlightResultsQuery} from '~/__generated__/SpotlightResultsQuery.graphql'
 import useResultsHeight from '~/hooks/useResultsHeight'

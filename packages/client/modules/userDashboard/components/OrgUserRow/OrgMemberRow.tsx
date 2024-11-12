@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {
   OrgMemberRow_organization$data,

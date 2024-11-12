@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Comment} from '@mui/icons-material'
-import React, {ReactElement, ReactNode} from 'react'
+import {ReactElement, ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import hasToken from '../utils/hasToken'

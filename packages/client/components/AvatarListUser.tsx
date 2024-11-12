@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {AvatarListUser_user$key} from '../__generated__/AvatarListUser_user.graphql'

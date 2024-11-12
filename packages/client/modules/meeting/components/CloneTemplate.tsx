@@ -1,4 +1,3 @@
-import React from 'react'
 import DetailAction from '../../../components/DetailAction'
 
 interface Props {

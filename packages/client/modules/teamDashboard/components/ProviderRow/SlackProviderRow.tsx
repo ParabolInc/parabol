@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {SlackProviderRow_viewer$key} from '../../../../__generated__/SlackProviderRow_viewer.graphql'
 import SlackConfigMenu from '../../../../components/SlackConfigMenu'

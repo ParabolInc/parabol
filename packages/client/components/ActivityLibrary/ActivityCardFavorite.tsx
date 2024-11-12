@@ -1,7 +1,7 @@
 import {Favorite} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityCardFavorite_user$key} from '../../__generated__/ActivityCardFavorite_user.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'

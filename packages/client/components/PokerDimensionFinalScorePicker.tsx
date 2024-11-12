@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject} from 'react'
+import {RefObject} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'

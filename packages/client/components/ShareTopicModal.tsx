@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {ShareTopicModalQuery} from '../__generated__/ShareTopicModalQuery.graphql'
 import {ShareTopicModal_viewer$key} from '../__generated__/ShareTopicModal_viewer.graphql'
@@ -98,12 +98,10 @@ const ShareTopicModal = (props: Props) => {
   const isLoading = slackOAuthSubmitting || shareTopicSubmitting
 
   const defaultSelectedIntegration = isSlackConnected ? 'slack' : ''
-  const [selectedIntegration, setSelectedIntegration] = React.useState<Integration | ''>(
+  const [selectedIntegration, setSelectedIntegration] = useState<Integration | ''>(
     defaultSelectedIntegration
   )
-  const [selectedChannel, setSelectedChannel] = React.useState<string>(
-    slackDefaultTeamChannelId ?? ''
-  )
+  const [selectedChannel, setSelectedChannel] = useState<string>(slackDefaultTeamChannelId ?? '')
 
   if (!meeting) {
     return null

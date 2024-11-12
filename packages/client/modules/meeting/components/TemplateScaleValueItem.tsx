@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {TemplateScaleValueItem_scale$key} from '~/__generated__/TemplateScaleValueItem_scale.graphql'

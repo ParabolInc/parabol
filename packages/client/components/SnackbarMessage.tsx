@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {TransitionStatus} from '../hooks/useTransition'
 import {DECELERATE} from '../styles/animation'
 import {snackbarShadow} from '../styles/elevation'

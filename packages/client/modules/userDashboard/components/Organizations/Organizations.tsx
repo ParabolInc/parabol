@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 import LinkButton from '../../../../components/LinkButton'

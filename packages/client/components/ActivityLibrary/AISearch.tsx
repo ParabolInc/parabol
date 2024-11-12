@@ -1,4 +1,5 @@
-import React, {useState} from 'react'
+import * as React from 'react'
+import {useState} from 'react'
 import {GetTemplateSuggestionMutation$data} from '../../__generated__/GetTemplateSuggestionMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'

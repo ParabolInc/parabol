@@ -5,7 +5,7 @@ import {
   KeyBindingUtil,
   SelectionState
 } from 'draft-js'
-import React, {ReactNode, RefObject, Suspense, useRef, useState} from 'react'
+import {ReactNode, RefObject, Suspense, useRef, useState} from 'react'
 import useForceUpdate from '../../hooks/useForceUpdate'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {SetEditorState} from '../../types/draft'

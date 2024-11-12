@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import teamInsightsQuery, {
   TeamInsightsQuery
 } from '../../../../__generated__/TeamInsightsQuery.graphql'

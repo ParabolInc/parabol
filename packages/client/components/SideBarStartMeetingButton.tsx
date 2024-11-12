@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import React from 'react'
 import useRouter from '~/hooks/useRouter'
 import {BezierCurve} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'

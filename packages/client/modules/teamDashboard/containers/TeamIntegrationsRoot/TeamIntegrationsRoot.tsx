@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import providerListQuery, {
   ProviderListQuery
 } from '../../../../__generated__/ProviderListQuery.graphql'

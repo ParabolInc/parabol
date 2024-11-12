@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
 import FlatButton from '../../../../components/FlatButton'

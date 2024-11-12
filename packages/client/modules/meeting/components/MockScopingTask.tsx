@@ -1,6 +1,5 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
-import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import Checkbox from '../../../components/Checkbox'
 export const skeletonShine = keyframes`

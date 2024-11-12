@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {StageTimerControl_meeting$key} from '~/__generated__/StageTimerControl_meeting.graphql'
 import {TransitionStatus} from '~/hooks/useTransition'

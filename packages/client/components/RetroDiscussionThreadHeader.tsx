@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {commitLocalUpdate} from 'relay-runtime'
 import {RetroDiscussionThreadHeader_organization$key} from '~/__generated__/RetroDiscussionThreadHeader_organization.graphql'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Launch} from '@mui/icons-material'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'

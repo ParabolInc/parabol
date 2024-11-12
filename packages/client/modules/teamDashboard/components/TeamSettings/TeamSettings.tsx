@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'

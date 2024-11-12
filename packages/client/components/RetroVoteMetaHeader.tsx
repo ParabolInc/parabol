@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {RetroVoteMetaHeader_meeting$key} from '~/__generated__/RetroVoteMetaHeader_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'

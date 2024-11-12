@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import BaseButton, {BaseButtonProps} from './BaseButton'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingTeamPickerAvatars_team$key} from '../__generated__/NewMeetingTeamPickerAvatars_team.graphql'
 import getShuffledArr from '../utils/getShuffledArr'

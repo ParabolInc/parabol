@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw} from 'draft-js'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEditorState from '~/hooks/useEditorState'

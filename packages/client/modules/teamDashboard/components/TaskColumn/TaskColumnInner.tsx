@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {memo} from 'react'
+import {memo} from 'react'
 import {useFragment} from 'react-relay'
 import {TaskColumnInner_tasks$key} from '~/__generated__/TaskColumnInner_tasks.graphql'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'

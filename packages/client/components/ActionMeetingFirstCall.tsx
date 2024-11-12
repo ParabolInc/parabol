@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActionMeetingFirstCall_meeting$key} from '../__generated__/ActionMeetingFirstCall_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

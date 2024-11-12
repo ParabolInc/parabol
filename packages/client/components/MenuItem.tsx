@@ -1,12 +1,6 @@
 import styled from '@emotion/styled'
-import React, {
-  forwardRef,
-  ReactNode,
-  RefObject,
-  useEffect,
-  useImperativeHandle,
-  useRef
-} from 'react'
+import * as React from 'react'
+import {forwardRef, ReactNode, RefObject, useEffect, useImperativeHandle, useRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import MenuItemLabel from './MenuItemLabel'
 

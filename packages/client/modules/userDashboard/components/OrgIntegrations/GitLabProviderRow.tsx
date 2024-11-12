@@ -1,6 +1,5 @@
 import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitLabProviderRow_integrationProvider$key} from '../../../../__generated__/GitLabProviderRow_integrationProvider.graphql'
 import FlatButton from '../../../../components/FlatButton'

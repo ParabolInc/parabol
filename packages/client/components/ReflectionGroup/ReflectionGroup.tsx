@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ReflectionGroup_meeting$key} from '../../__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup$key} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'

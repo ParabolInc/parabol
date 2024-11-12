@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {GcalProviderRow_viewer$key} from '../../../../__generated__/GcalProviderRow_viewer.graphql'
 import GcalConfigMenu from '../../../../components/GcalConfigMenu'

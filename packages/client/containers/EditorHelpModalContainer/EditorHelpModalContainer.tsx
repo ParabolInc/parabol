@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 import useHotkey from '../../hooks/useHotkey'
 import useModal from '../../hooks/useModal'
 

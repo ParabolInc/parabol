@@ -1,5 +1,5 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import React from 'react'
+import * as React from 'react'
 
 const borderStyles = {
   borderBottom: `1px solid ${PALETTE.SLATE_400}`,

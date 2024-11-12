@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingAvatarGroup_meeting$key} from '../../../../__generated__/NewMeetingAvatarGroup_meeting.graphql'
 import AddTeamMemberAvatarButton from '../../../../components/AddTeamMemberAvatarButton'

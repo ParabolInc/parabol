@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
 import Menu from '../components/Menu'

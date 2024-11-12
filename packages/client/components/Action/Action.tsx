@@ -1,4 +1,4 @@
-import React, {lazy, memo, Suspense} from 'react'
+import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'

@@ -1,4 +1,3 @@
-import React from 'react'
 import useCanonical from '~/hooks/useCanonical'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import AtmosphereProvider from './AtmosphereProvider/AtmosphereProvider'

@@ -1,5 +1,4 @@
 import * as DOMPurify from 'dompurify'
-import React from 'react'
 import {twMerge} from 'tailwind-merge'
 import getSafeRegex from '~/utils/getSafeRegex'
 

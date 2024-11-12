@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {
   AutoSizer,

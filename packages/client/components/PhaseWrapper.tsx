@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, ReactNode} from 'react'
+import {forwardRef, ReactNode} from 'react'
 import ErrorBoundary from './ErrorBoundary'
 
 const PhaseWrapperStyles = styled('div')({

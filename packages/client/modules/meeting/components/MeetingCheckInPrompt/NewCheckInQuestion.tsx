@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, EditorState, SelectionState, convertToRaw} from 'draft-js'
-import React, {useRef, useState} from 'react'
+import {useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
 import {

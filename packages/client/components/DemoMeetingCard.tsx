@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Link} from 'react-router-dom'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import useAtmosphere from '../hooks/useAtmosphere'

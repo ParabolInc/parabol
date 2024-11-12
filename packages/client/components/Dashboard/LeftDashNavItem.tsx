@@ -17,7 +17,6 @@ import {
   Warning,
   WorkOutline
 } from '@mui/icons-material'
-import React from 'react'
 import {useHistory, useRouteMatch} from 'react-router'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {PALETTE} from '~/styles/paletteV3'

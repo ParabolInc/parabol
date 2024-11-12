@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {AccountBalance, AccountBox, ExitToApp, Star} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'

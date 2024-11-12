@@ -1,5 +1,5 @@
 import {Editor} from '@tiptap/react'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {BBox} from '~/types/animations'
 import EditorLinkChangerModal from './EditorLinkChangerModal'
 

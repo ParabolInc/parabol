@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 import {useHistory} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
@@ -67,7 +67,7 @@ interface Props {
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
   const {onClick, orgId, meetingId} = props
   const history = useHistory()
-  const [closed, setClosed] = React.useState(false)
+  const [closed, setClosed] = useState(false)
   const atmosphere = useAtmosphere()
 
   const handleUpgradeClick = () => {

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, ReactNode, Ref, useState} from 'react'
+import * as React from 'react'
+import {forwardRef, ReactNode, Ref, useState} from 'react'
 import {Elevation} from '../styles/elevation'
 import ui from '../styles/ui'
 import PlainButton, {PlainButtonProps} from './PlainButton/PlainButton'

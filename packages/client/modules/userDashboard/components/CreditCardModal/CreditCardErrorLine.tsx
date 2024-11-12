@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Error as ErrorIcon, Lock as LockIcon} from '@mui/icons-material'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import CreditCardIcon from '../../../../components/CreditCardIcon'
 import {UseFormField} from '../../../../hooks/useForm'
 import {PALETTE} from '../../../../styles/paletteV3'

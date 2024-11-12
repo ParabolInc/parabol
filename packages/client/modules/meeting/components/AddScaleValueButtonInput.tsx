@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {AddScaleValueButtonInput_scale$key} from '~/__generated__/AddScaleValueButtonInput_scale.graphql'
 import {Threshold} from '../../../types/constEnums'

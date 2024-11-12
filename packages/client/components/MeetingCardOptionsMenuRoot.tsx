@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import meetingCardOptionsMenuQuery, {
   MeetingCardOptionsMenuQuery
 } from '../__generated__/MeetingCardOptionsMenuQuery.graphql'

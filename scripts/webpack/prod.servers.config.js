@@ -65,7 +65,9 @@ module.exports = (config) => {
       alias: {
         '~': CLIENT_ROOT,
         'parabol-client': CLIENT_ROOT,
-        'parabol-server': SERVER_ROOT
+        'parabol-server': SERVER_ROOT,
+        // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+        'react/jsx-runtime': require.resolve('react/jsx-runtime')
       },
       extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
       // this is run outside the server dir, but we want to favor using modules from the server dir

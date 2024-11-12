@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {commitLocalUpdate, PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import getNonNullEdges from '~/utils/getNonNullEdges'

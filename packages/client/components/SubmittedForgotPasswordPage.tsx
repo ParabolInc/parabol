@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import useRouter from '../hooks/useRouter'
 import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'

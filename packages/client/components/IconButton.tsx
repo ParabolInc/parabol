@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {CancelOutlined, Close, Menu} from '@mui/icons-material'
-import React from 'react'
 import LinkButton, {LinkButtonProps} from './LinkButton'
 
 const StyledButton = styled(LinkButton)({outline: 0})

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
 import CreateImposterTokenMutation from '../../../../mutations/CreateImposterTokenMutation'

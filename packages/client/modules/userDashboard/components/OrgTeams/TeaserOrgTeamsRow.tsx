@@ -1,5 +1,4 @@
 import {Lock} from '@mui/icons-material'
-import React from 'react'
 import {useHistory} from 'react-router'
 import plural from '../../../../utils/plural'
 

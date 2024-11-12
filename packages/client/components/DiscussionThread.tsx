@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode, RefObject, useMemo, useRef} from 'react'
+import {ReactNode, RefObject, useMemo, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'

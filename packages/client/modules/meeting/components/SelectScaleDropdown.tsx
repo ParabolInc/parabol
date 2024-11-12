@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {SelectScaleDropdown_dimension$key} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
 import LinkButton from '../../../components/LinkButton'

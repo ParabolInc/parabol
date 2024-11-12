@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'

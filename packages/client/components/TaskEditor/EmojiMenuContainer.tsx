@@ -1,4 +1,4 @@
-import React, {Ref, useEffect} from 'react'
+import {Ref, useEffect} from 'react'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import lazyPreload from '../../utils/lazyPreload'

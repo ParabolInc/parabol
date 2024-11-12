@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import passwordIcon from '../../../static/images/icons/password_black_24dp.svg'
 import {PasswordResetLink_viewer$key} from '../__generated__/PasswordResetLink_viewer.graphql'

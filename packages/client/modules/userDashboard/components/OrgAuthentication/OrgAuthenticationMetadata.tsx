@@ -1,6 +1,7 @@
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef, useState} from 'react'
+import * as React from 'react'
+import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import orgAuthenticationMetadataQuery, {
   OrgAuthenticationMetadataQuery

@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ScopePhaseAreaAzureDevOpsScoping_meeting$key} from '../__generated__/ScopePhaseAreaAzureDevOpsScoping_meeting.graphql'
 import AzureDevOpsScopingSearchBar from './AzureDevOpsScopingSearchBar'

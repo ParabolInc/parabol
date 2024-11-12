@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
 import {RemoveTemplate_teamTemplates$key} from '../../../__generated__/RemoveTemplate_teamTemplates.graphql'

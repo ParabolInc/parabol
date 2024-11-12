@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import suggestMentionableUsersQuery, {
   SuggestMentionableUsersQuery
 } from '../__generated__/SuggestMentionableUsersQuery.graphql'

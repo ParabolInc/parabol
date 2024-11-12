@@ -1,4 +1,3 @@
-import React from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteCommentMutation from '~/mutations/DeleteCommentMutation'
 import {MenuProps} from '../hooks/useMenu'

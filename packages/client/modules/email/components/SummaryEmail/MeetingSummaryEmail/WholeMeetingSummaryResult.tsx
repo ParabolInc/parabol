@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {marked} from 'marked'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import sanitizeHtml from 'sanitize-html'
 import {WholeMeetingSummaryResult_meeting$key} from '../../../../../__generated__/WholeMeetingSummaryResult_meeting.graphql'

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {Link} from 'react-router-dom'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useRefreshInterval from '../../hooks/useRefreshInterval'

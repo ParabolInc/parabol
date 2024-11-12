@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import {Close} from '@mui/icons-material'
-import React from 'react'
 import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'

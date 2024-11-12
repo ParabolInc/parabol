@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorProps} from 'draft-js'
-import React, {MouseEvent, useEffect, useRef, useState} from 'react'
+import * as React from 'react'
+import {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {
   NewMeetingPhaseTypeEnum,

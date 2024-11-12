@@ -1,7 +1,7 @@
 import {Editor, Range} from '@tiptap/core'
 import {PluginKey} from '@tiptap/pm/state'
 import Suggestion from '@tiptap/suggestion'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import EmojiMenuContainer from '../TaskEditor/EmojiMenuContainer'
 import {getSelectionBoundingBox} from './tiptapConfig'
 

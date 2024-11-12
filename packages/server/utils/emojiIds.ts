@@ -1,5 +1,5 @@
-import appleEmojis from 'emoji-mart/data/apple.json'
+import data from '@emoji-mart/data'
 
-const emojiIds = Object.keys(appleEmojis.emojis)
+const emojiIds = Object.keys((data as data.EmojiMartData).emojis)
 
 export default emojiIds

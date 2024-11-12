@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'

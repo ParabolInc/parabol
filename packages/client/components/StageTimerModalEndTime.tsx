@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {StageTimerModalEndTime_facilitator$key} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
 import {StageTimerModalEndTime_stage$key} from '../__generated__/StageTimerModalEndTime_stage.graphql'

@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
 import {OrgBillingQuery} from '../../../../__generated__/OrgBillingQuery.graphql'
 import {OrgBillingRefetchQuery} from '../../../../__generated__/OrgBillingRefetchQuery.graphql'

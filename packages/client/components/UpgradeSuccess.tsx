@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import paymentSuccessSvg from '../../../static/images/illustrations/conversion_prompt-payment_success.svg'
 import {TEAM_LABEL} from '../utils/constants'
 import Confetti from './Confetti'

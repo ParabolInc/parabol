@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import {PublicTeamsModal_team$key} from '../../__generated__/PublicTeamsModal_team.graphql'
 import {Dialog} from '../../ui/Dialog/Dialog'
@@ -40,10 +40,10 @@ const PublicTeamsModal = (props: Props) => {
         </DialogDescription>
         <hr className='my-2 border-t border-slate-300' />
         {publicTeams.map((team, index) => (
-          <React.Fragment key={team.id}>
+          <Fragment key={team.id}>
             <PublicTeamItem teamRef={team} />
             {index < publicTeams.length - 1 && <hr className='my-2 border-t border-slate-300' />}
-          </React.Fragment>
+          </Fragment>
         ))}
       </DialogContent>
     </Dialog>

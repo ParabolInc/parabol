@@ -7,7 +7,8 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {MutableRefObject, Suspense, useRef} from 'react'
+import * as React from 'react'
+import {MutableRefObject, Suspense, useRef} from 'react'
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts'
 import useMarkdown from '../hooks/useMarkdown'
 import {SetEditorState} from '../types/draft'

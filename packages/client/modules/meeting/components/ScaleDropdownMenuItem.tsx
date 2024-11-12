@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Public} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import textOverflow from '~/styles/helpers/textOverflow'
 import {PALETTE} from '~/styles/paletteV3'

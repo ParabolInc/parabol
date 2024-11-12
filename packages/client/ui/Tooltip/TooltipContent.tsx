@@ -1,5 +1,4 @@
 import {Content, Portal} from '@radix-ui/react-tooltip'
-import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
 import {forwardRadix} from '../forwardRadix'
 

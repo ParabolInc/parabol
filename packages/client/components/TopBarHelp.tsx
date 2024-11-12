@@ -1,4 +1,4 @@
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useModal from '~/hooks/useModal'

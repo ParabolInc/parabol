@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import hasToken from '../utils/hasToken'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'

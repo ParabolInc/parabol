@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'

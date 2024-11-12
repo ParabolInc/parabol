@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 

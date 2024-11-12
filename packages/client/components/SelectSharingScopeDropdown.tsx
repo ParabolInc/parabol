@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {SelectSharingScopeDropdown_template$key} from '../__generated__/SelectSharingScopeDropdown_template.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

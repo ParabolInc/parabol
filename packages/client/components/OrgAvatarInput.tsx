@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
-import React from 'react'
 import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'

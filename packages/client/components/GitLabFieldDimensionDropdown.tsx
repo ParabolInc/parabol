@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {GitLabFieldDimensionDropdown_stage$key} from '../__generated__/GitLabFieldDimensionDropdown_stage.graphql'

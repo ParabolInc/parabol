@@ -20,6 +20,8 @@ const markdownToDraftJS = (markdown: string) => {
   return JSON.stringify(rawObject)
 }
 
+const gql = (strings: TemplateStringsArray) => strings.join('')
+
 const eventLookup: Record<
   string,
   {
@@ -28,8 +30,28 @@ const eventLookup: Record<
     convertInput?: (input: any) => any
   }
 > = {
+  teams: {
+    query: gql`
+      query Teams {
+        viewer {
+          teams {
+            id
+            name
+            orgId
+            teamMembers {
+              id
+              email
+            }
+          }
+        }
+      }
+    `,
+    convertResult: (data: any) => {
+      return data.viewer.teams
+    }
+  },
   meetingTemplates: {
-    query: `
+    query: gql`
       query MeetingTemplates {
         viewer {
           availableTemplates(first: 2000) {
@@ -37,6 +59,7 @@ const eventLookup: Record<
               node {
                 id
                 name
+                bad
                 type
                 illustrationUrl
                 orgId
@@ -45,43 +68,16 @@ const eventLookup: Record<
               }
             }
           }
-          teams {
-            id
-            name
-            orgId
-            retroSettings: meetingSettings(meetingType: retrospective) {
-              id
-              phaseTypes
-              ...on RetrospectiveMeetingSettings {
-                disableAnonymity
-              }
-            }
-            pokerSettings: meetingSettings(meetingType: poker) {
-              id
-              phaseTypes
-            }
-            actionSettings: meetingSettings(meetingType: action) {
-              id
-              phaseTypes
-            }
-          }
         }
       }
     `,
     convertResult: (data: any) => {
-      const restructured = {
-        availableTemplates: data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
-        teams: data.viewer.teams
-      }
-      return restructured
+      return data.viewer.availableTemplates.edges.map((edge: any) => edge.node)
     }
   },
   startRetrospective: {
-    query: `
-      mutation StartRetrospective(
-        $teamId: ID!
-        $templateId: ID!
-      ) {
+    query: gql`
+      mutation StartRetrospective($teamId: ID!, $templateId: ID!) {
         selectTemplate(selectedTemplateId: $templateId, teamId: $teamId) {
           meetingSettings {
             id
@@ -98,7 +94,7 @@ const eventLookup: Record<
     `
   },
   startCheckIn: {
-    query: `
+    query: gql`
       mutation StartCheckIn($teamId: ID!) {
         startCheckIn(teamId: $teamId) {
           ... on ErrorPayload {
@@ -116,11 +112,8 @@ const eventLookup: Record<
     `
   },
   startSprintPoker: {
-    query: `
-      mutation StartSprintPokerMutation(
-        $teamId: ID!
-        $templateId: ID!
-      ) {
+    query: gql`
+      mutation StartSprintPokerMutation($teamId: ID!, $templateId: ID!) {
         selectTemplate(selectedTemplateId: $templateId, teamId: $teamId) {
           meetingSettings {
             id
@@ -142,17 +135,15 @@ const eventLookup: Record<
     `
   },
   startTeamPrompt: {
-    query: `
-      mutation StartTeamPromptMutation(
-        $teamId: ID!
-      ) {
+    query: gql`
+      mutation StartTeamPromptMutation($teamId: ID!) {
         startTeamPrompt(teamId: $teamId) {
           ... on ErrorPayload {
             error {
               message
             }
           }
-          ...on StartTeamPromptSuccess {
+          ... on StartTeamPromptSuccess {
             meeting {
               id
             }
@@ -161,15 +152,15 @@ const eventLookup: Record<
       }
     `
   },
-  getMeetingSettings: {
-    query: `
+  meetingSettings: {
+    query: gql`
       query GetMeetingSettings($teamId: ID!, $meetingType: MeetingTypeEnum!) {
         viewer {
           team(teamId: $teamId) {
             meetingSettings(meetingType: $meetingType) {
               id
               phaseTypes
-              ...on RetrospectiveMeetingSettings {
+              ... on RetrospectiveMeetingSettings {
                 disableAnonymity
               }
             }
@@ -188,7 +179,7 @@ const eventLookup: Record<
     }
   },
   setMeetingSettings: {
-    query: `
+    query: gql`
       mutation SetMeetingSettings(
         $id: ID!
         $checkinEnabled: Boolean
@@ -210,7 +201,7 @@ const eventLookup: Record<
           }
         }
       }
-   `,
+    `,
     convertResult: (data: any) => {
       const {settings: meetingSettings} = data.setMeetingSettings
       return {
@@ -221,8 +212,8 @@ const eventLookup: Record<
       }
     }
   },
-  getActiveMeetings: {
-    query: `
+  activeMeetings: {
+    query: gql`
       query Meetings {
         viewer {
           teams {
@@ -231,9 +222,9 @@ const eventLookup: Record<
               teamId
               name
               meetingType
-              ...on RetrospectiveMeeting {
+              ... on RetrospectiveMeeting {
                 phases {
-                  ...on ReflectPhase {
+                  ... on ReflectPhase {
                     reflectPrompts {
                       id
                       question
@@ -276,7 +267,7 @@ const eventLookup: Record<
         }
       }
     },
-    query: `
+    query: gql`
       mutation CreateReflectionMutation($input: CreateReflectionInput!) {
         createReflection(input: $input) {
           reflectionId

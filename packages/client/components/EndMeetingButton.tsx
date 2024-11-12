@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Flag} from '@mui/icons-material'
-import React, {forwardRef, Ref} from 'react'
+import {forwardRef, Ref} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'

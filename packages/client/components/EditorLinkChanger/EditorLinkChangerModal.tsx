@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {useEffect} from 'react'
+import * as React from 'react'
+import {useEffect} from 'react'
 import {MenuPosition} from '../../hooks/useCoords'
 import useForm from '../../hooks/useForm'
 import useMenu from '../../hooks/useMenu'

@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {MeetingMembersWithTasks_meeting$key} from 'parabol-client/__generated__/MeetingMembersWithTasks_meeting.graphql'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailBorderBottom from './EmailBorderBottom'
 import MeetingMemberTaskSummaryList from './MeetingMemberTaskSummaryList'

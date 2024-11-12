@@ -3,7 +3,7 @@ import {SummaryHeader_meeting$key} from 'parabol-client/__generated__/SummaryHea
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import makeDateString from 'parabol-client/utils/makeDateString'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
 import {CorsOptions} from '../../../../../types/cors'

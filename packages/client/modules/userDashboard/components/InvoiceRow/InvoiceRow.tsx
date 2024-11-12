@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'

@@ -1,5 +1,6 @@
 import clsx from 'clsx'
-import React, {forwardRef} from 'react'
+import * as React from 'react'
+import {forwardRef} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {Avatar as AvatarRoot} from '../../ui/Avatar/Avatar'
 import {AvatarFallback} from '../../ui/Avatar/AvatarFallback'

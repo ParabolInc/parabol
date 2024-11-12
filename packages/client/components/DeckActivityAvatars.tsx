@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {DeckActivityAvatars_stage$key} from '../__generated__/DeckActivityAvatars_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {TimerOff} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {StageTimerModalEditTimeLimit_stage$key} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

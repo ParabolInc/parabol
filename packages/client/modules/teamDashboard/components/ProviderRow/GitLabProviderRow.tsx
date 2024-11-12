@@ -1,6 +1,5 @@
 import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
 import FlatButton from '../../../../components/FlatButton'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import {TimelineSuggestedAction_viewer$key} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
 import {ValueOf} from '../types/generics'
