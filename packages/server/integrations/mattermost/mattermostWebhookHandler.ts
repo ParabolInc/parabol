@@ -30,6 +30,26 @@ const eventLookup: Record<
     convertInput?: (input: any) => any
   }
 > = {
+  teams: {
+    query: gql`
+      query Teams {
+        viewer {
+          teams {
+            id
+            name
+            orgId
+            teamMembers {
+              id
+              email
+            }
+          }
+        }
+      }
+    `,
+    convertResult: (data: any) => {
+      return data.viewer.teams
+    }
+  },
   meetingTemplates: {
     query: gql`
       query MeetingTemplates {
@@ -48,35 +68,11 @@ const eventLookup: Record<
               }
             }
           }
-          teams {
-            id
-            name
-            orgId
-            retroSettings: meetingSettings(meetingType: retrospective) {
-              id
-              phaseTypes
-              ... on RetrospectiveMeetingSettings {
-                disableAnonymity
-              }
-            }
-            pokerSettings: meetingSettings(meetingType: poker) {
-              id
-              phaseTypes
-            }
-            actionSettings: meetingSettings(meetingType: action) {
-              id
-              phaseTypes
-            }
-          }
         }
       }
     `,
     convertResult: (data: any) => {
-      const restructured = {
-        availableTemplates: data.viewer.availableTemplates.edges.map((edge: any) => edge.node),
-        teams: data.viewer.teams
-      }
-      return restructured
+      return data.viewer.availableTemplates.edges.map((edge: any) => edge.node)
     }
   },
   startRetrospective: {
@@ -156,7 +152,7 @@ const eventLookup: Record<
       }
     `
   },
-  getMeetingSettings: {
+  meetingSettings: {
     query: gql`
       query GetMeetingSettings($teamId: ID!, $meetingType: MeetingTypeEnum!) {
         viewer {
@@ -216,7 +212,7 @@ const eventLookup: Record<
       }
     }
   },
-  getActiveMeetings: {
+  activeMeetings: {
     query: gql`
       query Meetings {
         viewer {
