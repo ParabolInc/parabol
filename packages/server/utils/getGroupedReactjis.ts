@@ -17,7 +17,6 @@ const getGroupedReactjis = (reactjis: ReactjiDB[], viewerId: string, idPrefix: s
       record.userIds = [userId, ...record.userIds]
     }
   })
-  console.log(agg)
   return Object.values(agg)
 }
 
