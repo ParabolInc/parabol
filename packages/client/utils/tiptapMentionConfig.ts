@@ -52,7 +52,7 @@ export const tiptapMentionConfig = (
           .slice(0, 6)
           // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
           .filter((obj, _idx, arr) => obj.score > 0 && arr[0]!.score - obj.score < 0.3)
-          .map((s) => ({...s.teamMember, query}))
+          .map((s) => ({...s.teamMember}))
       )
     },
 

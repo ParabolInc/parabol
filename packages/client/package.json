@@ -29,6 +29,7 @@
     "@types/cleave.js": "^1.4.7",
     "@types/dompurify": "^2.4.0",
     "@types/draft-js": "^0.10.24",
+    "@types/emoji-mart": "^3.0.14",
     "@types/fbjs": "^3.0.4",
     "@types/humanize-duration": "3.27.1",
     "@types/jest": "^29.5.12",

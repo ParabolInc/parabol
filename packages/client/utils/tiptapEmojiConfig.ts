@@ -1,13 +1,27 @@
-import {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
+import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import {ReactRenderer} from '@tiptap/react'
 import tippy, {Instance, Props} from 'tippy.js'
-import MentionDropdown from '../components/MentionDropdown'
+import EmojiDropdown from '../components/EmojiDropdown'
 
+import data, {Emoji} from '@emoji-mart/data'
+import {PluginKey} from '@tiptap/pm/state'
+import {init, SearchIndex} from 'emoji-mart'
+
+init({data})
+
+export const EmojiExtension = {...Mention, name: 'emojiSuggestion'}
 export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   suggestion: {
+    pluginKey: new PluginKey('emoji'),
     char: ':',
-    items: async () => {
-      return []
+    items: async ({query}) => {
+      if (query.length < 1) return []
+      const emojis: Emoji[] = await SearchIndex.search(query)
+      if (!emojis) return []
+      return emojis.map((emoji) => ({
+        id: emoji.id,
+        native: emoji.skins[0]!.native
+      }))
     },
 
     // Using radix-ui isn't possible here because radix-ui will steal focus from the editor when it opens the portal
@@ -19,12 +33,11 @@ export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> =
 
       return {
         onStart: (props) => {
-          component = new ReactRenderer(MentionDropdown, {
+          component = new ReactRenderer(EmojiDropdown, {
             props,
             editor: props.editor
           })
           if (!props.clientRect) return
-
           popup = tippy(document.body, {
             animation: false,
             getReferenceClientRect: props.clientRect as GetReferenceClientRect,

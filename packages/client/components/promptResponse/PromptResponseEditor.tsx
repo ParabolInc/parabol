@@ -8,11 +8,11 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
 import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
 import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
-import EmojiMenuTipTap from './EmojiMenuTipTap'
 import {unfurlLoomLinks} from './loomExtension'
 import {LinkMenuProps, LinkPreviewProps, createEditorExtensions, getLinkProps} from './tiptapConfig'
 
@@ -231,7 +231,8 @@ const PromptResponseEditor = (props: Props) => {
           setLinkOverlayProps,
           placeholder
         ),
-        Mention.configure(tiptapMentionConfig(atmosphere, teamId))
+        Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
+        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig)
       ],
       autofocus: autoFocus,
       onUpdate,
@@ -306,7 +307,6 @@ const PromptResponseEditor = (props: Props) => {
                 </BubbleMenuWrapper>
               </BubbleMenu>
             </div>
-            <EmojiMenuTipTap tiptapEditor={editor} />
             {linkOverlayProps?.linkMenuProps && (
               <EditorLinkChangerTipTap
                 text={linkOverlayProps.linkMenuProps.text}
