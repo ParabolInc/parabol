@@ -1,4 +1,3 @@
-import React from 'react'
 import {AGENDA_ITEM_LABEL} from '../../../../utils/constants'
 import MeetingCopy from '../MeetingCopy/MeetingCopy'
 

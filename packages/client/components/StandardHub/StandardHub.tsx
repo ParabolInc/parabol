@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import {StandardHub_viewer$key} from '../../__generated__/StandardHub_viewer.graphql'

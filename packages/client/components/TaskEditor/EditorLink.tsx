@@ -1,5 +1,5 @@
 import {ContentState, EditorState} from 'draft-js'
-import React, {Component, MouseEvent, ReactNode} from 'react'
+import {Component, MouseEvent, ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 const baseStyle = {

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, ReactNode, RefObject} from 'react'
+import {forwardRef, ReactNode, RefObject} from 'react'
 import {useFragment} from 'react-relay'
 import {DiscussionThreadList_discussion$key} from '~/__generated__/DiscussionThreadList_discussion.graphql'
 import {DiscussionThreadList_threadables$key} from '~/__generated__/DiscussionThreadList_threadables.graphql'

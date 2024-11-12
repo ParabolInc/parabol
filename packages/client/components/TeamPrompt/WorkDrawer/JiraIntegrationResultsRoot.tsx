@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
 import jiraIntegrationResultsQuery, {
   JiraIntegrationResultsQuery

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Editor} from 'draft-js'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'

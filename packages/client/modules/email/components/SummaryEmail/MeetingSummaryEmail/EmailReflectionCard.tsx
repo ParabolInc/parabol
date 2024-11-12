@@ -4,7 +4,8 @@ import {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/E
 import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React, {useMemo, useRef} from 'react'
+import * as React from 'react'
+import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 
 interface Props {

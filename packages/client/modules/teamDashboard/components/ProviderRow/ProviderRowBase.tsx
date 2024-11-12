@@ -1,5 +1,5 @@
 import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
-import React from 'react'
+import * as React from 'react'
 import FlatButton from '../../../../components/FlatButton'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'

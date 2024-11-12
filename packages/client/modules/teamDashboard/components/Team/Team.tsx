@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy, ReactNode, Suspense} from 'react'
+import {lazy, ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {Layout} from '~/types/constEnums'
 import {Team_team$key} from '../../../../__generated__/Team_team.graphql'

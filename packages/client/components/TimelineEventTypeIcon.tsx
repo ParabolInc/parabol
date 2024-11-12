@@ -9,7 +9,6 @@ import {
   Style,
   Timeline
 } from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 interface Props {

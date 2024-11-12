@@ -1,6 +1,5 @@
 import EmailVerificationEmail from 'parabol-client/modules/email/components/EmailVerificationEmail'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'

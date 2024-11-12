@@ -1,8 +1,8 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 import clsx from 'clsx'
-import React from 'react'
+import {forwardRef} from 'react'
 
-export const AvatarImage = React.forwardRef<
+export const AvatarImage = forwardRef<
   HTMLImageElement,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
 >(({className, ...props}, ref) => (

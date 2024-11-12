@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import * as React from 'react'
 import makeFieldColorPalette from '../../styles/helpers/makeFieldColorPalette'
 import ui from '../../styles/ui'
 import StyledError from '../StyledError'

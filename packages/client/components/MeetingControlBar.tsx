@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingControlBar_meeting$key} from '~/__generated__/MeetingControlBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'

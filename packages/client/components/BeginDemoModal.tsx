@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Chat} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import DialogContainer from './DialogContainer'
 import PrimaryButton from './PrimaryButton'

@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
 import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'

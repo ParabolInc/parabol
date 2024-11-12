@@ -1,5 +1,5 @@
 import ms from 'ms'
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
 import gcalIntegrationResultsQuery, {
   GCalIntegrationResultsQuery

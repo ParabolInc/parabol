@@ -1,4 +1,3 @@
-import React from 'react'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'

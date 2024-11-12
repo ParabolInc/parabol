@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingCheckInPrompt_meeting$key} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
 import {NewMeetingCheckInPrompt_teamMember$key} from '../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'

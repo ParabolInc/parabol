@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
+import {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'

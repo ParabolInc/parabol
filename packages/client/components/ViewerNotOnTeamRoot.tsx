@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import viewerNotOnTeamQuery, {
   ViewerNotOnTeamQuery
 } from '../__generated__/ViewerNotOnTeamQuery.graphql'

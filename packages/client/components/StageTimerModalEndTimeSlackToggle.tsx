@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
 import {StageTimerModalEndTimeSlackToggle_facilitator$key} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'

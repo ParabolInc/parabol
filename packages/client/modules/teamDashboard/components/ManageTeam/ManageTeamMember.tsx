@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'

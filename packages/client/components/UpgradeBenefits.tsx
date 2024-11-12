@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {CheckCircle} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const StyledIcon = styled(CheckCircle)({

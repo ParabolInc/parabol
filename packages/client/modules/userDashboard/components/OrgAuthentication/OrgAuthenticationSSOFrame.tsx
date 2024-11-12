@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Add, Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
 import DialogTitle from '../../../../components/DialogTitle'

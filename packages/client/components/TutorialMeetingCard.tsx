@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
 import retroTutorialThumb from '../../../static/images/illustrations/retroTutorialThumb.png'

@@ -1,5 +1,4 @@
 import {EditorState} from 'draft-js'
-import React from 'react'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'

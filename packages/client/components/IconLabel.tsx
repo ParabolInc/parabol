@@ -27,7 +27,7 @@ import {
   WebAsset,
   Widgets
 } from '@mui/icons-material'
-import React, {ReactNode, forwardRef} from 'react'
+import {ReactNode, forwardRef} from 'react'
 
 const LabelBlock = styled('div')({
   alignItems: 'center',

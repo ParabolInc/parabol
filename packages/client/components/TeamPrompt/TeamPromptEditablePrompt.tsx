@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPromptEditablePrompt_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'

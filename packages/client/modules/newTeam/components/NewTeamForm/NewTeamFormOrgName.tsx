@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from 'react'
+import {ChangeEvent} from 'react'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import Radio from '../../../../components/Radio/Radio'
 import {NewTeamFieldBlock} from './NewTeamForm'

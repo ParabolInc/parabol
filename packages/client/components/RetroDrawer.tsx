@@ -1,6 +1,5 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'

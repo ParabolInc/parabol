@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamPromptResponseEmojis_response$key} from '~/__generated__/TeamPromptResponseEmojis_response.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'

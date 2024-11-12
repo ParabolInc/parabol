@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import myDashboardTimelineQuery, {
   MyDashboardTimelineQuery
 } from '../__generated__/MyDashboardTimelineQuery.graphql'

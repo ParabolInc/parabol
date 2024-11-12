@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
 import useRouter from '~/hooks/useRouter'

@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import React from 'react'
+import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
 
 interface MenuContentProps extends DropdownMenu.MenuContentProps {

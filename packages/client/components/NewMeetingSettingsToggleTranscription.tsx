@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import DeleteIcon from '@mui/icons-material/Delete'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingSettingsToggleTranscription_settings$key} from '~/__generated__/NewMeetingSettingsToggleTranscription_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

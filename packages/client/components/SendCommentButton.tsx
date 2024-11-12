@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {ArrowUpward} from '@mui/icons-material'
-import React from 'react'
+import * as React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import isAndroid from '~/utils/draftjs/isAndroid'
 import {MenuPosition} from '../hooks/useCoords'

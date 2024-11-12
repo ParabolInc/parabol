@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import TeamArchive from '~/modules/teamDashboard/components/TeamArchive/TeamArchive'
 import UserTasksHeader from '~/modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import teamArchiveQuery, {TeamArchiveQuery} from '../__generated__/TeamArchiveQuery.graphql'

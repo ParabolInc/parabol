@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import setPreferredTeamId from '~/utils/relay/setPreferredTeamId'
 import teamDashMainQuery, {
   TeamDashMainQuery

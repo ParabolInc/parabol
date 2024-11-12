@@ -1,6 +1,5 @@
 import {Link} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
 import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'

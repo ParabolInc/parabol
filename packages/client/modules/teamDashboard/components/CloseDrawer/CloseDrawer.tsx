@@ -1,4 +1,3 @@
-import React from 'react'
 import IconButton from '../../../../components/IconButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'

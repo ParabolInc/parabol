@@ -1,6 +1,5 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
-import React from 'react'
 import {useHistory} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import {MeetingTypeEnum} from '../../../__generated__/TeamInvitationQuery.graphql'

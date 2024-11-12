@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
 import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'

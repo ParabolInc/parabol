@@ -41,7 +41,8 @@ const transformRules = (projectRoot, isProd) => {
           loader: '@sucrase/webpack-loader',
           options: {
             production: isProd,
-            transforms: ['jsx', 'typescript']
+            transforms: ['jsx', 'typescript'],
+            jsxRuntime: 'automatic'
           }
         }
       ]
@@ -58,7 +59,8 @@ const transformRules = (projectRoot, isProd) => {
           production: isProd,
           // imports is needed for applyEnvVarsToClientAssets since it uses CJS
           // otherwise it gets ignored and treated as an unused export in the build
-          transforms: ['jsx', 'typescript', 'imports']
+          transforms: ['jsx', 'typescript', 'imports'],
+          jsxRuntime: 'automatic'
         }
       }
     },
@@ -87,7 +89,8 @@ const transformRules = (projectRoot, isProd) => {
           loader: '@sucrase/webpack-loader',
           options: {
             production: isProd,
-            transforms: ['jsx', 'typescript']
+            transforms: ['jsx', 'typescript'],
+            jsxRuntime: 'automatic'
           }
         }
       ]

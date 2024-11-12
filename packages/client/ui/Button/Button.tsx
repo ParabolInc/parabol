@@ -1,6 +1,6 @@
 import {Slot} from '@radix-ui/react-slot'
 import clsx from 'clsx'
-import React from 'react'
+import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link' | 'outline' | 'flat'

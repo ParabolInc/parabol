@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'

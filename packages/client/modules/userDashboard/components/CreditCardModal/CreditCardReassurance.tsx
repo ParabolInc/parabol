@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import MenuItemHR from '../../../../components/MenuItemHR'
 import OrgBillingReassuranceQuote from '../OrgBilling/OrgBillingReassuranceQuote'
 import {CreditCardModalActionType} from './CreditCardModal'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import GitLabClientManager from '~/utils/GitLabClientManager'
 import {AddToGitLabMenuItem_GitLabIntegration$key} from '../__generated__/AddToGitLabMenuItem_GitLabIntegration.graphql'

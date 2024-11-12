@@ -1,4 +1,3 @@
-import React from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'

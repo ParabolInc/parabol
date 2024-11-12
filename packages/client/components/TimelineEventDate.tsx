@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import ms from 'ms'
-import React, {Component} from 'react'
+import {Component} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import absoluteDate from '../utils/date/absoluteDate'
 import relativeDate from '../utils/date/relativeDate'

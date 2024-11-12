@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanDrawer_organization.graphql'
 import Confetti from '../../../../components/Confetti'

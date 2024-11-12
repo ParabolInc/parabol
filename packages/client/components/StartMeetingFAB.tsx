@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Add as AddIcon} from '@mui/icons-material'
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import useBreakpoint from '../hooks/useBreakpoint'

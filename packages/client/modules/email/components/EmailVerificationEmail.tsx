@@ -1,4 +1,3 @@
-import React from 'react'
 import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import EmailBlock from './EmailBlock/EmailBlock'

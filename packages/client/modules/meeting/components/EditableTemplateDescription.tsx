@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'

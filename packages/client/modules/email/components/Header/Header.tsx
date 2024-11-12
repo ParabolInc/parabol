@@ -1,4 +1,3 @@
-import React from 'react'
 import {ExternalLinks} from '../../../../types/constEnums'
 import {CorsOptions} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'

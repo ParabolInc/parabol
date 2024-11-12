@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitLabFieldMenu_stage$key} from '../__generated__/GitLabFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

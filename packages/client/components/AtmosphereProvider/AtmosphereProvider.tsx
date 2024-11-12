@@ -1,4 +1,4 @@
-import React, {Component, ReactNode} from 'react'
+import {Component, ReactNode} from 'react'
 import {RelayEnvironmentProvider} from 'react-relay'
 import Atmosphere from '../../Atmosphere'
 import TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'

@@ -1,6 +1,6 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'

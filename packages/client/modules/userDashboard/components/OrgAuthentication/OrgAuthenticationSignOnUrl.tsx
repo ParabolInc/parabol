@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgAuthenticationSignOnUrl_saml$key} from '../../../../__generated__/OrgAuthenticationSignOnUrl_saml.graphql'
 import makeAppURL from '../../../../utils/makeAppURL'

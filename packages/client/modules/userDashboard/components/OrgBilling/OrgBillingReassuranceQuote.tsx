@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import adam from '~/styles/theme/images/adam.jpeg'
 import cliff from '~/styles/theme/images/cliff.jpeg'
 import ian from '~/styles/theme/images/ian.png'

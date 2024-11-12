@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, ReactNode, Ref} from 'react'
+import {forwardRef, ReactNode, Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import PlainButton from '../PlainButton/PlainButton'
 

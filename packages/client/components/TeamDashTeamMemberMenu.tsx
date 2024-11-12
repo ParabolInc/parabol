@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {TeamDashTeamMemberMenu_team$key} from '../__generated__/TeamDashTeamMemberMenu_team.graphql'

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import parabolLogo from 'static/images/brand/mark-color.svg'
 import {NotificationTemplate_notification$key} from '~/__generated__/NotificationTemplate_notification.graphql'

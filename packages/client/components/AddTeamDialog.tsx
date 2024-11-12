@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import AddTeamMutation from '~/mutations/AddTeamMutation'

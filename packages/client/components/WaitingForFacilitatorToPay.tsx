@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {LiveHelp} from '@mui/icons-material'
-import React from 'react'
 import DialogContainer from './DialogContainer'
 import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationDialogCopy from './InvitationDialogCopy'

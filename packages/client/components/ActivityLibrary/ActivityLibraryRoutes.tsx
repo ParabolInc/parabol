@@ -1,4 +1,4 @@
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import {Route, Switch, useRouteMatch} from 'react-router'
 import useSubscription from '../../hooks/useSubscription'
 import NotificationSubscription from '../../subscriptions/NotificationSubscription'

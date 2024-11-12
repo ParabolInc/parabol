@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'

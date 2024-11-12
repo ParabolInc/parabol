@@ -1,5 +1,4 @@
 import {EditorState} from 'draft-js'
-import React from 'react'
 import {BBox} from '../../types/animations'
 import removeLink from '../../utils/draftjs/removeLink'
 import EditorLinkViewer from './EditorLinkViewer'

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef, useMemo} from 'react'
+import {forwardRef, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {
   NewBillingLeaderMenu_organization$data,

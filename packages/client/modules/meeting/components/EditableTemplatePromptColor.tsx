@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {EditableTemplatePromptColor_prompt$key} from '~/__generated__/EditableTemplatePromptColor_prompt.graphql'
 import {EditableTemplatePromptColor_prompts$key} from '~/__generated__/EditableTemplatePromptColor_prompts.graphql'

@@ -1,6 +1,5 @@
 import {Edit as EditIcon} from '@mui/icons-material'
 import clsx from 'clsx'
-import React from 'react'
 import Avatar from '../Avatar/Avatar'
 
 interface Props {

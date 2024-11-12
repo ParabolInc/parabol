@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import UserAgent from 'fbjs/lib/UserAgent'
-import React from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius} from '../../types/constEnums'
 import IconButton from '../IconButton'

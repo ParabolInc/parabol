@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Dispatch, MutableRefObject, SetStateAction, useRef} from 'react'
+import * as React from 'react'
+import {Dispatch, MutableRefObject, SetStateAction, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {PALETTE} from '~/styles/paletteV3'

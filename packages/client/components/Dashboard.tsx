@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy, useRef} from 'react'
+import {lazy, useRef} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route, Switch} from 'react-router'
 import useBreakpoint from '~/hooks/useBreakpoint'

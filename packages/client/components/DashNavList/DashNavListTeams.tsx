@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {DashNavListTeams_organization$key} from '../../__generated__/DashNavListTeams_organization.graphql'
 import {PALETTE} from '../../styles/paletteV3'

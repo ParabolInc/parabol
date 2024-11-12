@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {KickedOut_notification$key} from '~/__generated__/KickedOut_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'

@@ -1,6 +1,5 @@
 import {Add as AddIcon} from '@mui/icons-material'
 import clsx from 'clsx'
-import React from 'react'
 import {Link} from 'react-router-dom'
 
 import {ActivityCard} from './ActivityCard'

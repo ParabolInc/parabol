@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {BezierCurve} from '~/types/constEnums'
 
 const SVG = styled('svg')<{radius: number}>(({radius}) => ({

@@ -31,7 +31,6 @@
     "jest-extended": "^3.2.4",
     "jest-junit": "^16.0.0",
     "openapi-fetch": "^0.10.0",
-    "sucrase": "^3.32.0",
     "ts-jest": "^29.1.0",
     "ts-node-dev": "^1.0.0-pre.44"
   },

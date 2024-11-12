@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, useLayoutEffect, useRef, useState} from 'react'
+import {ReactElement, useLayoutEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useResizeObserver from '~/hooks/useResizeObserver'
 import {AvatarList_users$key} from '../__generated__/AvatarList_users.graphql'

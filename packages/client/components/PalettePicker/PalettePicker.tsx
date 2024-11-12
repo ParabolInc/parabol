@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_prompt.graphql'
 import {PalettePicker_prompts$key} from '~/__generated__/PalettePicker_prompts.graphql'

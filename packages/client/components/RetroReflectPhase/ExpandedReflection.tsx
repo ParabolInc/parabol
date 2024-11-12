@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {ElementWidth} from '../../types/constEnums'

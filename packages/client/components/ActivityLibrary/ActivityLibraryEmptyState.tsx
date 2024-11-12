@@ -1,5 +1,4 @@
 import FavoriteIcon from '@mui/icons-material/Favorite'
-import React from 'react'
 import favoriteImg from '../../../../static/images/illustrations/favorite-empty-state.png'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {AllCategoryID, QUICK_START_CATEGORY_ID} from './Categories'

@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {ReactNode, useCallback, useEffect, useState} from 'react'
+import * as React from 'react'
+import {ReactNode, useCallback, useEffect, useState} from 'react'
 import useEventCallback from '~/hooks/useEventCallback'
 import usePortal from '../hooks/usePortal'
 import {DECELERATE} from '../styles/animation'

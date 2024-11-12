@@ -73,7 +73,8 @@ module.exports = {
           {
             loader: '@sucrase/webpack-loader',
             options: {
-              transforms: ['jsx']
+              transforms: ['jsx'],
+              jsxRuntime: 'automatic'
             }
           }
         ]

@@ -4,7 +4,6 @@
  */
 import styled from '@emotion/styled'
 import {Cancel} from '@mui/icons-material'
-import React from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import {PALETTE} from '../../styles/paletteV3'

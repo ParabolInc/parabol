@@ -1,6 +1,6 @@
-import React from 'react'
+import {memo} from 'react'
 
-const GitLabSVG = React.memo(() => {
+const GitLabSVG = memo(() => {
   return (
     <svg
       version='1.1'

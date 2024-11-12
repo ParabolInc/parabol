@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import FlatButton from '../../../components/FlatButton'

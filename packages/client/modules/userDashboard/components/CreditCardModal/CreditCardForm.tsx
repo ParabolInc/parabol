@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {useEffect, useState} from 'react'
+import * as React from 'react'
+import {useEffect, useState} from 'react'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import UpgradeCreditCardFormField from '../../../../components/UpgradeCreditCardFormField'

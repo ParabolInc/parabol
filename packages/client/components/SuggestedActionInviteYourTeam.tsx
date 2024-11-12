@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {lazy} from 'react'
+import {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import {SuggestedActionInviteYourTeam_suggestedAction$key} from '../__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
 import useModal from '../hooks/useModal'

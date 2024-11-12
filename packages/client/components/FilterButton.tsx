@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {FilterList} from '@mui/icons-material'
-import React, {forwardRef, Ref} from 'react'
+import {forwardRef, Ref} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import FlatButton from './FlatButton'
 

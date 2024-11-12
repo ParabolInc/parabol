@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import Avatar from './Avatar/Avatar'
 
 const AvatarCol = styled('div')<{isReply: boolean | undefined}>(({isReply}) => ({

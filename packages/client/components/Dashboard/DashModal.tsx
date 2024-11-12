@@ -1,6 +1,7 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
-import React, {ReactNode} from 'react'
+import * as React from 'react'
+import {ReactNode} from 'react'
 import {DECELERATE} from '../../styles/animation'
 import {modalShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'

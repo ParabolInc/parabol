@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import {AddToAzureMenuItem_AzureIntegration$key} from '../__generated__/AddToAzureMenuItem_AzureIntegration.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

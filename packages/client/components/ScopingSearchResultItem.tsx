@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import * as React from 'react'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'

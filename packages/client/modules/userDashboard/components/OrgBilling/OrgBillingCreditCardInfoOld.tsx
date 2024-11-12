@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {CreditCard} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {OrgBillingCreditCardInfoOld_organization$key} from '~/__generated__/OrgBillingCreditCardInfoOld_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'

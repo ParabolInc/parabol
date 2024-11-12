@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
 import DialogTitle from '../../../../components/DialogTitle'

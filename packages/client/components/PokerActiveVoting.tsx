@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'

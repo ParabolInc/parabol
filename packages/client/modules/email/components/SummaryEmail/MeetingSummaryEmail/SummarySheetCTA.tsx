@@ -1,7 +1,6 @@
 import {buttonShadow} from 'parabol-client/styles/elevation'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React from 'react'
 import AnchorIfEmail from './AnchorIfEmail'
 import {MeetingSummaryReferrer} from './MeetingSummaryEmail'
 
