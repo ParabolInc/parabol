@@ -9,6 +9,9 @@ module.exports = {
       {
         jsc: {
           transform: {
+            react: {
+              runtime: 'automatic'
+            },
             // abstract classes will lose their default values when compiled with SWC
             useDefineForClassFields: false
           }
