@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.4.0](https://github.com/ParabolInc/parabol/compare/v8.3.1...v8.4.0) (2024-11-12)
+
+
+### Added
+
+* add an archive checkbox in timeline history page ([#10435](https://github.com/ParabolInc/parabol/issues/10435)) ([12f3347](https://github.com/ParabolInc/parabol/commit/12f33470d14bbf8c53caf545d4b0c0acf49beb56))
+* Add lastSeenAt to organization members CSV export ([#10464](https://github.com/ParabolInc/parabol/issues/10464)) ([36cd2b8](https://github.com/ParabolInc/parabol/commit/36cd2b827e43b05d0abe43cea88caab0d4b45674))
+* Add notifications for mattermost plugin ([#10456](https://github.com/ParabolInc/parabol/issues/10456)) ([7fbab74](https://github.com/ParabolInc/parabol/commit/7fbab74bfd03c92929d71c561427012414c18561))
+
+
+### Fixed
+
+* pin react-router to static version ([#10461](https://github.com/ParabolInc/parabol/issues/10461)) ([1464c56](https://github.com/ParabolInc/parabol/commit/1464c562a689807ded434b94eb2273abbc92789a))
+* supprt jsx runtime in SSR ([#10467](https://github.com/ParabolInc/parabol/issues/10467)) ([849cfe7](https://github.com/ParabolInc/parabol/commit/849cfe78c1f05dbd84693866b7aedcaec057138c))
+
+
+### Changed
+
+* Cleanup Mattermost API ([#10465](https://github.com/ParabolInc/parabol/issues/10465)) ([b2adfaa](https://github.com/ParabolInc/parabol/commit/b2adfaa03022415e668aba6d198e359726fbe5e7))
+* refresh lockfile ([#10459](https://github.com/ParabolInc/parabol/issues/10459)) ([cc2ab79](https://github.com/ParabolInc/parabol/commit/cc2ab7993a468b32131dddc77469e90cc5db8e90))
+* upgrade emoji mart ([#10463](https://github.com/ParabolInc/parabol/issues/10463)) ([1fe8e94](https://github.com/ParabolInc/parabol/commit/1fe8e9488da72bffa1168c6259fb3fb80c664d31))
+* use react 17 jsx transform ([#10462](https://github.com/ParabolInc/parabol/issues/10462)) ([09b3854](https://github.com/ParabolInc/parabol/commit/09b38548e65efc5ad14c3c68a2d223fe4cbb4a1e))
+
 ## [8.3.1](https://github.com/ParabolInc/parabol/compare/v8.3.0...v8.3.1) (2024-11-04)
 
 
