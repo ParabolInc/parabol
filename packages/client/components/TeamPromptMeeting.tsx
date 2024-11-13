@@ -36,15 +36,14 @@ const ResponsesGridContainer = styled('div')({
     padding: `32px ${GRID_PADDING_LEFT_RIGHT_PERCENT * 100}%`
   }
 })
-
-const ResponsesGrid = styled('div')<{isSingleColumn: boolean}>(({isSingleColumn}) => ({
+const ResponsesGrid = styled('div')({
   flex: 1,
   display: 'flex',
   flexWrap: 'wrap',
-  flexDirection: isSingleColumn ? 'column' : 'row',
+  flexDirection: 'column',
   position: 'relative',
   gap: 32
-}))
+})
 
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
@@ -88,15 +87,11 @@ const TeamPromptMeeting = (props: Props) => {
             }
           }
         }
-        organization {
-          hasSingleColumnStandupsFlag: featureFlag(featureName: "singleColumnStandups")
-        }
       }
     `,
     meetingRef
   )
-  const {phases, organization} = meeting
-  const {hasSingleColumnStandupsFlag} = organization
+  const {phases} = meeting
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
@@ -180,7 +175,7 @@ const TeamPromptMeeting = (props: Props) => {
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
                 <ResponsesGridContainer>
-                  <ResponsesGrid isSingleColumn={hasSingleColumnStandupsFlag}>
+                  <ResponsesGrid>
                     {transitioningStages.map((transitioningStage) => {
                       const {child: stage, onTransitionEnd, status} = transitioningStage
                       const {key, displayIdx} = stage
@@ -192,7 +187,6 @@ const TeamPromptMeeting = (props: Props) => {
                           onTransitionEnd={onTransitionEnd}
                           displayIdx={displayIdx}
                           stageRef={stage}
-                          isSingleColumn={hasSingleColumnStandupsFlag}
                         />
                       )
                     })}
