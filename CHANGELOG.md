@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.4.1](https://github.com/ParabolInc/parabol/compare/v8.4.0...v8.4.1) (2024-11-13)
+
+
+### Fixed
+
+* Fix GraphQL-JIT version ([#10469](https://github.com/ParabolInc/parabol/issues/10469)) ([ae85b77](https://github.com/ParabolInc/parabol/commit/ae85b778c4954de3e756d7e9c95fd6d817ada014))
+
 ## [8.4.0](https://github.com/ParabolInc/parabol/compare/v8.3.1...v8.4.0) (2024-11-12)
 
 
