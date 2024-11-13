@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
@@ -22,13 +23,24 @@ const OrgIntegrations = (props: Props) => {
           id
           role
         }
+        organizationUsers {
+          edges {
+            node {
+              role
+            }
+          }
+        }
       }
     `,
     organizationRef
   )
 
-  const {viewerOrganizationUser} = organization
+  const {id: orgId, viewerOrganizationUser, organizationUsers} = organization
+  const history = useHistory()
   const isOrgAdmin = viewerOrganizationUser?.role === 'ORG_ADMIN'
+
+  const orgUsers = organizationUsers?.edges.map((edge) => edge.node)
+  const isAnyOrgAdmins = orgUsers?.some((user) => user.role === 'ORG_ADMIN')
 
   return (
     <Suspense fallback={<Loader />}>
@@ -43,7 +55,29 @@ const OrgIntegrations = (props: Props) => {
               See the team integration tab for team-level connections.
             </div>
           ) : (
-            <div className='text-slate-700'>Only organization admins can manage integrations.</div>
+            <div className='text-slate-700'>
+              {`Organization-level integrations are managed by `}
+              <a
+                href='https://www.parabol.co/support/roles-on-parabol'
+                className='font-bold text-sky-500 hover:text-sky-600'
+                target='_blank'
+              >
+                Org Admins
+              </a>
+              {`.`}
+              {isAnyOrgAdmins ? (
+                <>
+                  {` View yours `}
+                  <button
+                    onClick={() => history.push(`/me/organizations/${orgId}/billing`)}
+                    className='cursor-pointer bg-transparent p-0 font-bold text-sky-500 hover:text-sky-600'
+                  >
+                    here
+                  </button>
+                  {`.`}
+                </>
+              ) : null}
+            </div>
           )}
           <GitLabProviders organizationRef={organization} />
         </div>
