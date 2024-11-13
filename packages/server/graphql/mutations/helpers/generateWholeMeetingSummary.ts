@@ -2,7 +2,7 @@ import {PARABOL_AI_USER_ID} from 'parabol-client/utils/constants'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import canAccessAISummary from './canAccessAISummary'
+import canAccessAI from './canAccessAI'
 
 const generateWholeMeetingSummary = async (
   discussionIds: string[],
@@ -15,13 +15,8 @@ const generateWholeMeetingSummary = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const isAISummaryAccessible = await canAccessAISummary(
-    team,
-    facilitator.id,
-    'retrospective',
-    dataLoader
-  )
-  if (!isAISummaryAccessible) return
+  const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
+  if (!isAIAvailable) return
   const [commentsByDiscussions, tasksByDiscussions, reflections] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').loadMany(discussionIds),
     dataLoader.get('tasksByDiscussionId').loadMany(discussionIds),
