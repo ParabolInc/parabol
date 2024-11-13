@@ -1,26 +1,32 @@
 import {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
+import {PluginKey} from '@tiptap/pm/state'
 import {ReactRenderer} from '@tiptap/react'
 import tippy, {Instance, Props} from 'tippy.js'
-import EmojiDropdown from '../components/EmojiDropdown'
+import {TaskTagDropdown} from '../components/TaskTagDropdown'
 
-import data, {Emoji} from '@emoji-mart/data'
-import {PluginKey} from '@tiptap/pm/state'
-import {init, SearchIndex} from 'emoji-mart'
+const tags = [
+  {
+    id: 'private',
+    label: 'Only you will be able to see this task'
+  },
+  {
+    id: 'archived',
+    label: 'Hidden from your main board'
+  }
+]
 
-init({data})
-
-export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
+export const tiptapTagConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
+  // renderText does not fire, bug in TipTap? Fallback to using more verbose renderHTML
+  renderHTML({options, node}) {
+    return ['span', options.HTMLAttributes, `#${node.attrs.id}`]
+  },
+  deleteTriggerWithBackspace: true,
   suggestion: {
-    pluginKey: new PluginKey('emoji'),
-    char: ':',
+    pluginKey: new PluginKey('tag'),
+    char: '#',
     items: async ({query}) => {
-      if (query.length < 1) return []
-      const emojis: Emoji[] = await SearchIndex.search(query)
-      if (!emojis) return []
-      return emojis.map((emoji) => ({
-        id: emoji.id,
-        native: emoji.skins[0]!.native
-      }))
+      if (!query) return tags
+      return tags.filter((tag) => tag.id.startsWith(query.toLowerCase()))
     },
 
     // Using radix-ui isn't possible here because radix-ui will steal focus from the editor when it opens the portal
@@ -32,7 +38,7 @@ export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> =
 
       return {
         onStart: (props) => {
-          component = new ReactRenderer(EmojiDropdown, {
+          component = new ReactRenderer(TaskTagDropdown, {
             props,
             editor: props.editor
           })

@@ -1,4 +1,5 @@
 import {generateText, JSONContent} from '@tiptap/core'
+import Mention from '@tiptap/extension-mention'
 import {createEditorExtensions} from 'parabol-client/components/promptResponse/tiptapConfig'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
@@ -63,7 +64,14 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   let plaintextContent: string
   try {
-    plaintextContent = generateText(contentJSON, createEditorExtensions())
+    plaintextContent = generateText(contentJSON, [
+      ...createEditorExtensions(),
+      Mention.configure({
+        renderText({node}) {
+          return node.attrs.label
+        }
+      })
+    ])
   } catch (e) {
     return standardError(new Error('Invalid editor format'), {userId: viewerId})
   }

@@ -67,63 +67,6 @@ const CancelButton = styled(SubmitButton)({
   color: PALETTE.SLATE_700
 })
 
-const StyledEditor = styled('div')`
-  .ProseMirror {
-    min-height: 40px;
-    line-height: 1.25;
-  }
-
-  .ProseMirror :is(ul, ol) {
-    list-style-position: outside;
-    padding-inline-start: 16px;
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  .ProseMirror :is(ol) {
-    margin-inline-start: 2px;
-  }
-
-  .ProseMirror p.is-editor-empty:first-child::before {
-    color: #adb5bd;
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  }
-
-  .ProseMirror [data-type='mention'] {
-    background-color: ${PALETTE.GOLD_100};
-    border-radius: 2;
-    font-weight: 600;
-  }
-
-  .ProseMirror-focused:focus {
-    outline: none;
-  }
-
-  a {
-    text-decoration: underline;
-    color: ${PALETTE.SLATE_700};
-    :hover {
-      cursor: pointer;
-    }
-  }
-
-  .ProseMirror p {
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  hr.ProseMirror-selectednode {
-    border-top: 1px solid #68cef8;
-  }
-
-  hr {
-    border-top: 1px solid ${PALETTE.SLATE_400};
-  }
-`
-
 interface Props {
   autoFocus?: boolean
   teamId: string
@@ -277,7 +220,7 @@ const PromptResponseEditor = (props: Props) => {
 
   return (
     <>
-      <StyledEditor>
+      <div>
         {editor && !readOnly && (
           <>
             <div>
@@ -332,7 +275,7 @@ const PromptResponseEditor = (props: Props) => {
           </>
         )}
         <EditorContent ref={editorRef} editor={editor} />
-      </StyledEditor>
+      </div>
       {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
