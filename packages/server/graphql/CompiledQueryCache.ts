@@ -34,6 +34,9 @@ export default class CompiledQueryCache {
       const compiledQuery = compileQuery(schema, document)
       if (!('query' in compiledQuery)) {
         console.log('Error compiling query', JSON.stringify(compiledQuery, null, 2))
+        console.log('Query', queryString)
+        console.log('Document', JSON.stringify(document, null, 2))
+        console.log('Schema', JSON.stringify(schema, null, 2))
         return null
       }
       this.store[docId] = compiledQuery
