@@ -12,11 +12,8 @@ const generateDiscussionSummary = async (
   meeting: RetrospectiveMeeting,
   dataLoader: DataLoaderWorker
 ) => {
-  const {id: meetingId, endedAt, facilitatorUserId, teamId} = meeting
-  const [facilitator, team] = await Promise.all([
-    dataLoader.get('users').loadNonNull(facilitatorUserId!),
-    dataLoader.get('teams').loadNonNull(teamId)
-  ])
+  const {id: meetingId, endedAt, teamId} = meeting
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
   const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
   if (!isAIAvailable) return
   const [comments, tasks] = await Promise.all([
