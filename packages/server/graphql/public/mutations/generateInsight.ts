@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isSuperUser} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -15,12 +14,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
 ) => {
   const {dataLoader, socketId: mutatorId, authToken} = context
   const viewerId = getUserId(authToken)
-  const teamMemberId = toTeamMemberId(teamId, viewerId)
-  const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-  const isLead = teamMember?.isLead
-  if (!isLead && !isSuperUser(authToken)) {
-    return standardError(new Error('Only team leads can generate insights'), {userId: viewerId})
-  }
+
   const hasInsightsFlag = await dataLoader
     .get('featureFlagByOwnerId')
     .load({ownerId: teamId, featureName: 'insights'})
