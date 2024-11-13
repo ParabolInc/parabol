@@ -2,7 +2,7 @@ import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../graphql'
-import canAccessAI from './canAc./canAccessAI
+import canAccessAI from './canAccessAI'
 
 const generateDiscussionPrompt = async (
   meetingId: string,
