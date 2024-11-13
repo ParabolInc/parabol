@@ -4,7 +4,6 @@ import {CompiledQuery} from 'graphql-jit'
 import getKysely from '../postgres/getKysely'
 import {MutationResolvers, QueryResolvers, Resolver} from './public/resolverTypes'
 import {tracedCompileQuery} from './traceGraphQL'
-import sendToSentry from '../utils/sendToSentry'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
 type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
@@ -34,7 +33,7 @@ export default class CompiledQueryCache {
       const document = parse(queryString)
       const compiledQuery = compileQuery(schema, document)
       if (!('query' in compiledQuery)) {
-        sendToSentry(new Error('Error compiling query'))
+        console.log('Error compiling query', JSON.stringify(compiledQuery, null, 2))
         return null
       }
       this.store[docId] = compiledQuery

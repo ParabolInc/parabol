@@ -63,8 +63,10 @@ interface Config {
  */
 export function tracedCompileQuery(tracer: Tracer, config: Config) {
   if (process.env.DD_TRACE_ENABLED !== 'true') {
+    console.log('GEORG untraced')
     return compileQuery
   }
+  console.log('GEORG traced')
   return function compileTracedQuery(
     schema: GraphQLSchema,
     document: DocumentNode,
