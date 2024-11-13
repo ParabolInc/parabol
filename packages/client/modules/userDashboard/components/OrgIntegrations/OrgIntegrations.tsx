@@ -68,16 +68,12 @@ const OrgIntegrations = (props: Props) => {
               {isAnyOrgAdmins ? (
                 <>
                   {` View yours `}
-                  <a
-                    href='#'
-                    onClick={(e) => {
-                      e.preventDefault()
-                      history.push(`/me/organizations/${orgId}/billing`)
-                    }}
-                    className='font-bold text-sky-500 hover:text-sky-600'
+                  <button
+                    onClick={() => history.push(`/me/organizations/${orgId}/billing`)}
+                    className='cursor-pointer bg-transparent p-0 font-bold text-sky-500 hover:text-sky-600'
                   >
                     here
-                  </a>
+                  </button>
                   {`.`}
                 </>
               ) : null}
