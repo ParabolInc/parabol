@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
@@ -104,7 +104,7 @@ const ActivityDetails = (props: Props) => {
             <div className='flex flex-col justify-start pl-4 pr-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
               <div>
                 <ActivityCard
-                  className='mb-8 w-80 max-md:hidden sm:ml-14 xl:ml-0 xl:mb-0'
+                  className='mb-8 w-80 max-md:hidden sm:ml-14 xl:mb-0 xl:ml-0'
                   theme={CATEGORY_THEMES[category as CategoryID]}
                   type={type}
                 >

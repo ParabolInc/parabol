@@ -1,4 +1,3 @@
-import React from 'react'
 import {twMerge} from 'tailwind-merge'
 import logo from '../styles/theme/images/graphics/zoom-logo.svg'
 

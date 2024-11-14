@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityDetailsBadges_template$key} from '~/__generated__/ActivityDetailsBadges_template.graphql'
 import ActivityDetailsBadge from './ActivityDetailsBadge'

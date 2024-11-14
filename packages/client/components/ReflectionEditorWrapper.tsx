@@ -8,7 +8,7 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import {RefObject, Suspense, useEffect, useRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Card, ElementHeight, Gutters} from '../types/constEnums'
 import {textTags} from '../utils/constants'

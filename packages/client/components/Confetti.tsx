@@ -1,4 +1,3 @@
-import React from 'react'
 import DOMConfetti from 'react-dom-confetti'
 import {PALETTE} from '../styles/paletteV3'
 

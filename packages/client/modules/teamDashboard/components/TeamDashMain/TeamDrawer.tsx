@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamDrawer_viewer$key} from '~/__generated__/TeamDrawer_viewer.graphql'
 import {TeamDrawer as TeamDrawerType} from '~/__generated__/ToggleTeamDrawerMutation.graphql'

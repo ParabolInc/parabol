@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import * as React from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
@@ -245,7 +246,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       <Form onSubmit={onSubmit}>
         {error && <ErrorAlert message={error.message} />}
         {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
-        <div className={signInWithSSOOnly ? 'hidden' : 'mt-4 mb-4'}>
+        <div className={signInWithSSOOnly ? 'hidden' : 'mb-4 mt-4'}>
           <FieldBlock isSSO={signInWithSSOOnly}>
             <EmailInputField
               autoFocus={!hasEmail}

@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import MeetingCopy from '~/modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from '~/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import StyledLink from './StyledLink'

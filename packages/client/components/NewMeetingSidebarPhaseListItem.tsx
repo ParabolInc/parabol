@@ -10,7 +10,7 @@ import {
   ThumbsUpDown,
   Update
 } from '@mui/icons-material'
-import React from 'react'
+import {useEffect} from 'react'
 import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
@@ -167,7 +167,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     }
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isConfirming) {
       openTooltip()
     }

@@ -1,5 +1,5 @@
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
-import React, {CSSProperties} from 'react'
+import {CSSProperties, Fragment} from 'react'
 import {Link} from 'react-router-dom'
 import {emailPrimaryButtonStyle, emailRuleStyle} from '../../styles'
 
@@ -29,10 +29,10 @@ const SummaryCTA = (props: Props) => {
   const {isDemo, referrer, teamDashUrl} = props
   if (isDemo) {
     return (
-      <React.Fragment>
+      <Fragment>
         <hr style={ruleStyle} />
         <CreateAccountSection />
-      </React.Fragment>
+      </Fragment>
     )
   }
   if (referrer === 'email') {

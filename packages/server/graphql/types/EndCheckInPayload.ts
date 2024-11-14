@@ -37,8 +37,14 @@ export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
     timelineEvent: {
       type: new GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
-      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
-        return await dataLoader.get('timelineEvents').load(timelineEventId)
+      resolve: async ({meetingId}, _args: unknown, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        const timelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
+        const timelineEvent = timelineEvents.find(
+          (event) => event.type === 'actionComplete' && event.userId === viewerId
+        )
+        if (!timelineEvent) throw new Error('Timeline event not found')
+        return timelineEvent
       }
     },
     updatedTaskIds: {

@@ -3,6 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventCheckinComplete from 'parabol-server/database/types/TimelineEventCheckinComplete'
 import TimelineEventRetroComplete from 'parabol-server/database/types/TimelineEventRetroComplete'
 import {TimelineEventEnum} from '../../database/types/TimelineEvent'
+import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
+import TimelineEventTeamPromptComplete from '../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -42,13 +44,16 @@ const archiveTimelineEvent = {
     const meetingTypes: TimelineEventEnum[] = [
       'actionComplete',
       'retroComplete',
+      'POKER_COMPLETE',
       'TEAM_PROMPT_COMPLETE'
     ]
     if (meetingTypes.includes(type)) {
       // it's a meeting timeline event, archive it for everyone
       const {teamId, meetingId} = timelineEvent as
-        | TimelineEventRetroComplete
         | TimelineEventCheckinComplete
+        | TimelineEventRetroComplete
+        | TimelineEventPokerComplete
+        | TimelineEventTeamPromptComplete
       if (!isTeamMember(authToken, teamId)) {
         return standardError(new Error('Team not found'), {userId: viewerId})
       }

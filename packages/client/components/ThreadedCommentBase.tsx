@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {convertToRaw, EditorState} from 'draft-js'
-import React, {ReactNode, useEffect, useRef, useState} from 'react'
+import {ReactNode, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
 import {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
@@ -119,7 +119,7 @@ const ThreadedCommentBase = (props: Props) => {
     threadParentId
   } = comment
   const ownerId = threadParentId || commentId
-  const picture = isActive ? createdByUserNullable?.picture ?? anonymousAvatar : deletedAvatar
+  const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const [editorState, setEditorState] = useEditorState(content)
   const editorRef = useRef<HTMLTextAreaElement>(null)

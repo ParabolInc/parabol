@@ -1,7 +1,7 @@
 import {useAutocomplete} from '@mui/base/AutocompleteUnstyled'
 import CheckIcon from '@mui/icons-material/Check'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 
 import {Send as SendIcon} from '@mui/icons-material'
@@ -44,7 +44,7 @@ const autocompleteEmail = (input: string, domain: string) => {
 
 export const AdhocTeamMultiSelect = (props: Props) => {
   const {viewerRef, onChange, value, multiple = true} = props
-  const [error, setError] = React.useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const viewer = useFragment(
     graphql`

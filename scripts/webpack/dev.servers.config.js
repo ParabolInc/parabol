@@ -40,7 +40,9 @@ module.exports = {
     alias: {
       '~': path.join(CLIENT_ROOT),
       'parabol-server': SERVER_ROOT,
-      'parabol-client': CLIENT_ROOT
+      'parabol-client': CLIENT_ROOT,
+      // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+      'react/jsx-runtime': require.resolve('react/jsx-runtime')
     },
     extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
     unsafeCache: true,
@@ -73,7 +75,8 @@ module.exports = {
           {
             loader: '@sucrase/webpack-loader',
             options: {
-              transforms: ['jsx']
+              transforms: ['jsx'],
+              jsxRuntime: 'automatic'
             }
           }
         ]

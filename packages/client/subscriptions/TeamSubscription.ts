@@ -28,6 +28,7 @@ import {
   endSprintPokerTeamOnNext,
   endSprintPokerTeamUpdater
 } from '../mutations/EndSprintPokerMutation'
+import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -214,6 +215,7 @@ const updateHandlers = {
   EndCheckInSuccess: endCheckInTeamUpdater,
   EndRetrospectiveSuccess: endRetrospectiveTeamUpdater,
   EndSprintPokerSuccess: endSprintPokerTeamUpdater,
+  EndTeamPromptSuccess: endTeamPromptTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,

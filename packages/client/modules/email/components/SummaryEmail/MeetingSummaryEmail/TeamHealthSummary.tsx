@@ -3,7 +3,6 @@ import {TeamHealthSummary_meeting$key} from 'parabol-client/__generated__/TeamHe
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import getTeamHealthVoteColor from 'parabol-client/utils/getTeamHealthVoteColor'
-import React from 'react'
 import {useFragment} from 'react-relay'
 
 interface Props {

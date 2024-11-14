@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React from 'react'
+import * as React from 'react'
 import {RouteComponentProps} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'

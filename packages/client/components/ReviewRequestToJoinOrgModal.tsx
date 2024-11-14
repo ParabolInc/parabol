@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'

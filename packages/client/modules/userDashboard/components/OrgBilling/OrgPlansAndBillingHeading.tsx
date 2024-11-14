@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Article} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {OrgPlansAndBillingHeading_organization$key} from '../../../../__generated__/OrgPlansAndBillingHeading_organization.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'

@@ -7,7 +7,8 @@ import {
   EditorState,
   getDefaultKeyBinding
 } from 'draft-js'
-import React, {RefObject, Suspense, useEffect, useRef} from 'react'
+import * as React from 'react'
+import {RefObject, Suspense, useEffect, useRef} from 'react'
 import completeEntity from '~/utils/draftjs/completeEntity'
 import linkify from '~/utils/linkify'
 import {UseTaskChild} from '../../hooks/useTaskChildFocus'

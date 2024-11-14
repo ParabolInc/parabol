@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {AgendaList_agendaItems$key} from '~/__generated__/AgendaList_agendaItems.graphql'
@@ -33,7 +33,7 @@ interface Props {
   agendaItems: AgendaList_agendaItems$key
   dashSearch?: string
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
-  meeting: AgendaList_meeting$key | null
+  meeting: AgendaList_meeting$key | null | undefined
 }
 
 const AgendaList = (props: Props) => {

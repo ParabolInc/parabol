@@ -85,7 +85,6 @@ const safeEndTeamPrompt = async ({
         meetingId
       })
   )
-  const timelineEventId = events[0]!.id
   await pg.insertInto('TimelineEvent').values(events).execute()
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
@@ -94,8 +93,7 @@ const safeEndTeamPrompt = async ({
 
   const data = {
     meetingId,
-    teamId,
-    timelineEventId
+    teamId
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
   return data

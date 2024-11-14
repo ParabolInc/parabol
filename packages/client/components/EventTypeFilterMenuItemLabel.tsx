@@ -1,4 +1,3 @@
-import React from 'react'
 import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import {FilterLabels} from '../types/constEnums'
 import {

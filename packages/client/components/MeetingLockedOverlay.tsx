@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

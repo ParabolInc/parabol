@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import React from 'react'
 import ui from '../../styles/ui'
 import LabelHeading from '../LabelHeading/LabelHeading'
 

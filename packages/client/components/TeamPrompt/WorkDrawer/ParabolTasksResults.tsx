@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {
@@ -50,7 +49,7 @@ const ParabolTasksResults = (props: Props) => {
     .filter((task) => task.status === selectedStatus)
 
   return (
-    <div className='flex h-full flex-col items-center gap-y-2 overflow-auto px-4 pt-1 pb-4'>
+    <div className='flex h-full flex-col items-center gap-y-2 overflow-auto px-4 pb-4 pt-1'>
       {selectedTasks.length > 0 ? (
         selectedTasks.map((task) => (
           <NullableTask

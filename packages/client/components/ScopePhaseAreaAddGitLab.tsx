@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import GitLabClientManager from '~/utils/GitLabClientManager'
 import {ScopePhaseAreaAddGitLab_meeting$key} from '../__generated__/ScopePhaseAreaAddGitLab_meeting.graphql'

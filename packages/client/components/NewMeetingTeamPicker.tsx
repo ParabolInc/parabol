@@ -1,7 +1,6 @@
 import {ExpandMore, LockOpen} from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
@@ -57,7 +56,7 @@ const NewMeetingTeamPicker = (props: Props) => {
 
   return (
     <Menu
-      className='data-[side=top]:animate-slideUp data-[side=bottom]:animate-slideDown'
+      className='data-[side=bottom]:animate-slideDown data-[side=top]:animate-slideUp'
       trigger={
         <div className='group flex cursor-pointer items-center rounded-md bg-slate-200 p-2 hover:bg-slate-300'>
           <div className='p-2'>

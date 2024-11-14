@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
@@ -68,7 +67,7 @@ interface Props {
   tasks: TaskColumn_tasks$key
   status: TaskStatusEnum
   teamMemberFilterId?: string | null
-  teams: TaskColumn_teams$key | null
+  teams: TaskColumn_teams$key | null | undefined
 }
 
 const TaskColumn = (props: Props) => {

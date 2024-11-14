@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw} from 'draft-js'
-import React, {memo, useEffect, useRef, useState} from 'react'
+import {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'

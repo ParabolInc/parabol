@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'

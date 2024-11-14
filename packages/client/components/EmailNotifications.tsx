@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {EmailNotifications_viewer$key} from '../__generated__/EmailNotifications_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

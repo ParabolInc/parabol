@@ -1,4 +1,3 @@
-import React from 'react'
 import MockTemplateItem from './MockTemplateItem'
 
 const MockTemplateList = () => {

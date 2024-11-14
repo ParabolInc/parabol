@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -21,7 +21,7 @@ const TeamFilterMenu = lazyPreload(
 )
 
 interface Props {
-  viewerRef: MeetingsDashHeader_viewer$key | null
+  viewerRef: MeetingsDashHeader_viewer$key | null | undefined
 }
 
 const MeetingsDashHeader = (props: Props) => {
@@ -63,7 +63,7 @@ const MeetingsDashHeader = (props: Props) => {
     <DashSectionHeader>
       <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
         <DashFilterToggle
-          className='mt-4 mr-16 mb-4 ml-0 sidebar-left:mt-0 sidebar-left:mr-24 sidebar-left:mb-0 sidebar-left:ml-0'
+          className='mb-4 ml-0 mr-16 mt-4 sidebar-left:mb-0 sidebar-left:ml-0 sidebar-left:mr-24 sidebar-left:mt-0'
           label='Team'
           onClick={teamFilterTogglePortal}
           onMouseEnter={TeamFilterMenu.preload}

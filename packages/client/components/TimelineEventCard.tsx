@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {TimelineEventCard_timelineEvent$key} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
 import {cardShadow} from '../styles/elevation'
@@ -58,11 +58,12 @@ const TimelineEventCard = (props: Props) => {
         id
         createdAt
         type
+        isActive
       }
     `,
     timelineEventRef
   )
-  const {id: timelineEventId, createdAt, type} = timelineEvent
+  const {id: timelineEventId, createdAt, type, isActive} = timelineEvent
   return (
     <Surface>
       <CardHeader>
@@ -74,10 +75,11 @@ const TimelineEventCard = (props: Props) => {
             <TimelineEventDate createdAt={createdAt} />
           </HeaderText>
         </CardTitleBlock>
-        {type === 'retroComplete' ||
-        type === 'actionComplete' ||
-        type === 'POKER_COMPLETE' ||
-        type === 'TEAM_PROMPT_COMPLETE' ? (
+        {isActive &&
+        (type === 'retroComplete' ||
+          type === 'actionComplete' ||
+          type === 'POKER_COMPLETE' ||
+          type === 'TEAM_PROMPT_COMPLETE') ? (
           <TimelineEventHeaderMenuToggle timelineEventId={timelineEventId} />
         ) : null}
       </CardHeader>

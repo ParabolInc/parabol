@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Stop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {StageTimerModalEditTimeEnd_facilitator$key} from '../__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
 import {StageTimerModalEditTimeEnd_stage$key} from '../__generated__/StageTimerModalEditTimeEnd_stage.graphql'

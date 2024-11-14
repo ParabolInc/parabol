@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {ContentState, convertToRaw, EditorState} from 'draft-js'
-import React, {forwardRef, RefObject, useEffect, useState} from 'react'
+import {forwardRef, RefObject, useEffect, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
 import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'

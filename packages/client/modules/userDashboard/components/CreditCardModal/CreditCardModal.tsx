@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
-import React, {useState} from 'react'
+import * as React from 'react'
+import {useState} from 'react'
 import DialogTitle from '~/components/DialogTitle'
 import DialogContainer from '../../../../components/DialogContainer'
 import UpgradeLater from '../../../../components/UpgradeLater'

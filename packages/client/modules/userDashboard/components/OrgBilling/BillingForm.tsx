@@ -11,7 +11,8 @@ import {
   StripeCardNumberElementOptions,
   StripeElementChangeEvent
 } from '@stripe/stripe-js'
-import React, {MutableRefObject, useState} from 'react'
+import * as React from 'react'
+import {MutableRefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'

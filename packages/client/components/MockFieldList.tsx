@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import MockFieldLine from '../modules/meeting/components/MockFieldLine'
 
 const Container = styled('div')({

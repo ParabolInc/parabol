@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import organizationsQuery, {
   OrganizationsQuery
 } from '../../../../__generated__/OrganizationsQuery.graphql'

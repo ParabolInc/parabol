@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ActionMeetingAgendaItems_meeting$key} from '~/__generated__/ActionMeetingAgendaItems_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'

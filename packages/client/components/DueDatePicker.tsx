@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {DayModifiers, DayPicker} from 'react-day-picker'
 import {useFragment} from 'react-relay'
 import {DueDatePicker_task$key} from '../__generated__/DueDatePicker_task.graphql'

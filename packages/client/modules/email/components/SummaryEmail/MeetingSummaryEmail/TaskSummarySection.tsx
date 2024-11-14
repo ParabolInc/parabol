@@ -3,7 +3,6 @@ import {TaskSummarySection_tasks$key} from 'parabol-client/__generated__/TaskSum
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import EmailTaskCard from './EmailTaskCard'
 

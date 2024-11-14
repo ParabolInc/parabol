@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect} from 'react'
+import {FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {MSTeamsPanel_viewer$key} from '~/__generated__/MSTeamsPanel_viewer.graphql'
 import {MenuPosition} from '~/hooks/useCoords'

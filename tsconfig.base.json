@@ -7,7 +7,7 @@
     // "composite": true,
     "target": "es2019",
     "module": "commonjs",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "importHelpers": true,
     "strict": true,
     "noImplicitAny": true,

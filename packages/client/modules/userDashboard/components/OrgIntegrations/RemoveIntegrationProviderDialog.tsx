@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {RemoveIntegrationProviderDialog_integrationProvider$key} from '../../../../__generated__/RemoveIntegrationProviderDialog_integrationProvider.graphql'
@@ -54,7 +53,7 @@ const RemoveIntegrationProviderDialog = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle className='flex items-center'>Are you sure?</DialogTitle>
-        <div className='pt-6 pb-2'>
+        <div className='pb-2 pt-6'>
           If you remove this{' '}
           <b>
             {prettyService}

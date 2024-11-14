@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import {memo} from 'react'
 import {useFragment} from 'react-relay'
 import {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -30,10 +30,10 @@ const LIST_FORMATTER =
 
 interface Props {
   reactjiRef: EmojiUsersReaction_reactji$key
-  reactjiShortName?: string
+  reactjiName?: string
 }
 
-const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
+const EmojiUsersReaction = ({reactjiRef, reactjiName}: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {users} = useFragment(
@@ -56,9 +56,9 @@ const EmojiUsersReaction = ({reactjiRef, reactjiShortName}: Props) => {
   return (
     <EmojiUsersReactionRoot>
       {LIST_FORMATTER.format(userNames)}
-      {reactjiShortName && <DarkerGrayPart>reacted with :{reactjiShortName}:</DarkerGrayPart>}
+      {reactjiName && <DarkerGrayPart>reacted with {reactjiName}</DarkerGrayPart>}
     </EmojiUsersReactionRoot>
   )
 }
 
-export default React.memo(EmojiUsersReaction)
+export default memo(EmojiUsersReaction)

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import {MyDashboardTimelineQuery} from '../__generated__/MyDashboardTimelineQuery.graphql'
@@ -47,6 +47,7 @@ const MyDashboardTimeline = (props: Props) => {
         $userIds: [ID!]
         $eventTypes: [TimelineEventEnum!]
         $teamIds: [ID!]
+        $archived: Boolean
       ) {
         viewer {
           ...TimelineSuggestedAction_viewer

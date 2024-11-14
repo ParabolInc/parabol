@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
+import {format} from 'date-fns'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import React, {useCallback, useMemo, useState} from 'react'
+import * as React from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
@@ -121,12 +123,16 @@ const OrgMembers = (props: Props) => {
   const exportToCSV = async () => {
     const rows = organizationUsers.edges.map((orgUser, idx) => {
       const {node} = orgUser
+      const formattedLastSeenAt = node.user.lastSeenAt
+        ? format(new Date(node.user.lastSeenAt), 'yyyy-MM-dd')
+        : 'Never'
       return {
         Row: idx,
         Name: node.user.preferredName,
         Email: node.user.email,
         Inactive: node.inactive,
-        'Billing Lead': node.role === 'BILLING_LEADER'
+        'Billing Lead': node.role === 'BILLING_LEADER',
+        'Last Seen At': formattedLastSeenAt
       }
     })
     const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>

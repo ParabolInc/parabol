@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import * as React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ScaleActions_scale$key} from '../../../__generated__/ScaleActions_scale.graphql'
 import DetailAction from '../../../components/DetailAction'

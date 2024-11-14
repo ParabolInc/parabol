@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React from 'react'
+import * as React from 'react'
 
 interface DetailsBadgeProps {
   className?: string

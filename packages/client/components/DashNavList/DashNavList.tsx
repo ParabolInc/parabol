@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
 import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
@@ -55,7 +54,7 @@ const DashNavList = (props: Props) => {
   const teams = organizations.flatMap((org) => org.viewerTeams)
 
   return (
-    <div className='w-full p-3 pt-4 pb-0'>
+    <div className='w-full p-3 pb-0 pt-4'>
       {sortedOrgs.map((org) => (
         <div key={org.id} className='w-full pb-4'>
           <div className='mb-1 flex min-w-0 flex-1 flex-wrap items-center justify-between'>

@@ -1,7 +1,7 @@
 import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
-import React, {Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import {Suspense, useCallback, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import TeamMemberId from '../../shared/gqlIds/TeamMemberId'
 import SuggestMentionableUsersRoot from '../SuggestMentionableUsersRoot'
 import {MentionSuggestion} from '../TaskEditor/useSuggestions'
@@ -135,7 +135,9 @@ const MentionsTipTap = (props: Props) => {
     // Other plugins that tiptap adds will try to handle the certain keydown events without giving
     // us a chance to handle them here, so bump up the priority for us.
     tiptapEditor.registerPlugin(plugin, (newPlugin, plugins) => [newPlugin, ...plugins])
-    return () => tiptapEditor.unregisterPlugin(pluginKey)
+    return () => {
+      tiptapEditor.unregisterPlugin(pluginKey)
+    }
   }, [tiptapEditor, setOpenMentions, setMentionQuery])
 
   return openMentions && tiptapEditor.isFocused ? (

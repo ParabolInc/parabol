@@ -3,7 +3,7 @@
  *
  */
 import styled from '@emotion/styled'
-import React from 'react'
+import * as React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'

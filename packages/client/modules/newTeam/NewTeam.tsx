@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import {NewTeamQuery} from '../../__generated__/NewTeamQuery.graphql'

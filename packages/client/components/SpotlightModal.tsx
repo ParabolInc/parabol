@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, useEffect, useRef, useState} from 'react'
+import {RefObject, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PortalStatus} from '~/hooks/usePortal'
 import {MAX_SPOTLIGHT_COLUMNS, SPOTLIGHT_TOP_SECTION_HEIGHT} from '~/utils/constants'

@@ -1,4 +1,3 @@
-import React from 'react'
 import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import Menu from '../../../../components/Menu'

@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react'
+import {ReactElement} from 'react'
 import ReactDOMServer from 'react-dom/server'
 import {RelayEnvironmentProvider} from 'react-relay'
 import ServerEnvironment from './ServerEnvironment'

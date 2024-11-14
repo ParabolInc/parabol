@@ -1,12 +1,7 @@
 import areEqual from 'fbjs/lib/areEqual'
 import {useCallback, useEffect, useRef} from 'react'
-import {
-  PreloadFetchPolicy,
-  PreloadableConcreteRequest,
-  fetchQuery,
-  useQueryLoader
-} from 'react-relay'
-import {GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
+import {PreloadFetchPolicy, fetchQuery, useQueryLoader} from 'react-relay'
+import {ConcreteRequest, GraphQLTaggedNode, OperationType, VariablesOf} from 'relay-runtime'
 import useAtmosphere from './useAtmosphere'
 
 type QueryLoaderOptions = {
@@ -15,7 +10,7 @@ type QueryLoaderOptions = {
 }
 
 export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
-  preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
+  preloadableRequest: GraphQLTaggedNode | ConcreteRequest,
   variables: VariablesOf<TQuery> = {},
   options: QueryLoaderOptions = {}
 ) => {
@@ -63,7 +58,7 @@ export const useQueryLoaderNowWithRetry = <TQuery extends OperationType>(
 }
 
 const useQueryLoaderNow = <TQuery extends OperationType>(
-  preloadableRequest: GraphQLTaggedNode | PreloadableConcreteRequest<TQuery>,
+  preloadableRequest: GraphQLTaggedNode | ConcreteRequest,
   variables: VariablesOf<TQuery> = {},
   fetchPolicy?: PreloadFetchPolicy,
   preventSuspense?: boolean

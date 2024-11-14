@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {SuggestedActionCreateNewTeam_suggestedAction$key} from '../__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'

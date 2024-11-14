@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {EditableTemplateDimension_dimensions$key} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'

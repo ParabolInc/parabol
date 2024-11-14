@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {CSSProperties, ReactNode} from 'react'
+import {CSSProperties, ReactNode} from 'react'
 import {panelShadow} from '../../styles/elevation'
 import {Layout} from '../../types/constEnums'
 import LabelHeading from '../LabelHeading/LabelHeading'

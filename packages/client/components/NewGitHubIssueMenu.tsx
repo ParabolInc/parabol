@@ -1,4 +1,3 @@
-import React from 'react'
 import {Repo} from '~/hooks/useGetRepoContributions'
 import {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'

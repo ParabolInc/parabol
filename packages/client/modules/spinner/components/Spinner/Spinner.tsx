@@ -1,6 +1,5 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
-import React from 'react'
 
 // NOTE: Let’s set this up!
 //    1. PATHS    for leaves of the logo

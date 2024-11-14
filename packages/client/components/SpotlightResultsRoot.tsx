@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {RefObject, Suspense, useRef} from 'react'
+import {RefObject, Suspense, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useQueryLoaderNow from '~/hooks/useQueryLoaderNow'
 import spotlightResultsQuery, {

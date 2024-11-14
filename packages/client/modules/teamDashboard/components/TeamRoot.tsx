@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import teamContainerQuery, {
   TeamContainerQuery
 } from '../../../__generated__/TeamContainerQuery.graphql'

@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route, Switch} from 'react-router-dom'
 import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'

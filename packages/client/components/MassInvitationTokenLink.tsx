@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef, useState} from 'react'
+import * as React from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
   AgendaItem_meeting$data,
@@ -63,7 +64,7 @@ const getItemProps = (
   agendaItemId: string,
   viewerId: string,
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined,
-  meeting: AgendaItem_meeting$data | null
+  meeting: AgendaItem_meeting$data | null | undefined
 ) => {
   const fallback = {
     isDisabled: false,
@@ -106,7 +107,7 @@ interface Props {
   agendaItem: AgendaItem_agendaItem$key
   gotoStageId: ReturnType<typeof useGotoStageId> | undefined
   isDragging: boolean
-  meeting: AgendaItem_meeting$key | null
+  meeting: AgendaItem_meeting$key | null | undefined
 }
 
 const AgendaItem = (props: Props) => {

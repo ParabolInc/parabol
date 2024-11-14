@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -42,7 +41,7 @@ const OrgAuthentication = (props: Props) => {
   const disabled = !saml
   return (
     <StyledPanel>
-      <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
+      <DialogTitle className='px-6 pb-6 pt-5'>SAML Single Sign-On</DialogTitle>
       <OrgAuthenticationSSOFrame samlRef={saml} />
       <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
         <OrgAuthenticationSignOnUrl samlRef={saml} />

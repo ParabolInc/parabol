@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
@@ -103,7 +102,7 @@ const JiraIntegrationResults = (props: Props) => {
         )}
         {lastItem}
         {hasNext && (
-          <div className='mx-auto mb-4 -mt-4 h-8 text-2xl' key={'loadingNext'}>
+          <div className='mx-auto -mt-4 mb-4 h-8 text-2xl' key={'loadingNext'}>
             <Ellipsis />
           </div>
         )}

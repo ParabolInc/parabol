@@ -1,6 +1,5 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {MEETING_SUMMARY_LABEL} from 'parabol-client/utils/constants'
-import React from 'react'
 import appOrigin from '../appOrigin'
 import AuthToken from '../database/types/AuthToken'
 import {GQLContext} from '../graphql/graphql'

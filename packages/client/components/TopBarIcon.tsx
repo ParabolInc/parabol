@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {HelpOutline, Notifications, Search} from '@mui/icons-material'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 

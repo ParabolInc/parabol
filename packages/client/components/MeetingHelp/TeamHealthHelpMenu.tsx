@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamHealthHelpMenu_stage$key} from '~/__generated__/TeamHealthHelpMenu_stage.graphql'
 import useClientSideTrack from '../../hooks/useClientSideTrack'

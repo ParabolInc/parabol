@@ -1,4 +1,4 @@
-import React, {Suspense, useEffect} from 'react'
+import {Suspense, useEffect} from 'react'
 import meetingSelectorQuery, {
   MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'

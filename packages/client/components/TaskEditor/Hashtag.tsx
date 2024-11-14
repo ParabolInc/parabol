@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 // inline styles so oy-vey doesn't barf when making emails using draft-js cards

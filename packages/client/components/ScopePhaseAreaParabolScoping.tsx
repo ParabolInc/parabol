@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ScopePhaseAreaParabolScoping_meeting$key} from '../__generated__/ScopePhaseAreaParabolScoping_meeting.graphql'
 import ParabolScopingSearchBar from './ParabolScopingSearchBar'

@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import userProfileQuery, {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'

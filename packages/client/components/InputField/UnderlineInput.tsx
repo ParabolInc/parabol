@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, Ref} from 'react'
+import * as React from 'react'
+import {forwardRef, Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {FONT_FAMILY} from '../../styles/typographyV2'
 import StyledError from '../StyledError'

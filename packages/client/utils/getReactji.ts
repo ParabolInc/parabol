@@ -1,14 +1,10 @@
-import appleEmojis from 'emoji-mart/data/apple.json'
-import {uncompress} from 'emoji-mart/dist-modern/utils/data.js'
-import {unifiedToNative} from 'emoji-mart/dist-modern/utils/index.js'
-
-uncompress(appleEmojis)
+import data from '@emoji-mart/data'
 
 const getReactji = (emoji: string) => {
-  const value = appleEmojis.emojis[emoji as keyof typeof appleEmojis.emojis] as any
+  const value = (data as data.EmojiMartData).emojis[emoji]!
   return {
-    unicode: unifiedToNative(value.unified) || '',
-    shortName: value.short_names[0] ?? ''
+    native: value.skins[0]?.native ?? '',
+    reactjiName: value.name
   }
 }
 

@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {JiraServerScopingSearchFilterToggle_meeting$key} from '../__generated__/JiraServerScopingSearchFilterToggle_meeting.graphql'
 import {MenuPosition} from '../hooks/useCoords'

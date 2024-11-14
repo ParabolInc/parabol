@@ -3,7 +3,7 @@ import {QuickStats_meeting$key} from 'parabol-client/__generated__/QuickStats_me
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import makeActionStats from './makeActionStats'
 import makePokerStats from './makePokerStats'

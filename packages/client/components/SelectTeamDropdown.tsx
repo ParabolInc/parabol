@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
+import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {SelectTeamDropdown_teams$key} from '~/__generated__/SelectTeamDropdown_teams.graphql'
 import {MenuProps} from '../hooks/useMenu'

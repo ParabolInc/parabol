@@ -7,8 +7,11 @@ module.exports = {
     preflight: false
   },
   presets: [require('./packages/client/tailwind.preset.js')],
-  content: ['./packages/client/**/*.{ts,tsx,js,jsx,html}', './template.html'],
+  content: ['./packages/client/**/!(*node_modules*)/**/*.{ts,tsx,js,jsx,html}', './template.html'],
   theme: {
+    data: {
+      highlighted: 'highlighted=true'
+    },
     fontFamily: {
       sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
       mono: ['IBM Plex Mono', ...defaultTheme.fontFamily.mono]
@@ -22,7 +25,7 @@ module.exports = {
         'icon-md-48': '48px'
       },
       padding: {
-        'row-gutter': '16px',
+        'row-gutter': '16px'
       },
       boxShadow: {
         card: 'rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px',

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {
   UserTasksHeader_viewer$data,
@@ -160,7 +160,7 @@ const UserTasksHeader = (props: Props) => {
       ? teamMemberFilter.tms.includes(teamFilter.id)
         ? teamMemberFilter.preferredName
         : FilterLabels.ALL_TEAM_MEMBERS
-      : teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS
+      : (teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS)
   }, [teamIds, userIds, teams])
 
   return (

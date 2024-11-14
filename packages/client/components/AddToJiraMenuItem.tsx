@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import {ICON_SIZE} from '../styles/typographyV2'

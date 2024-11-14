@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {
   TeamFilterMenu_viewer$data,
@@ -20,7 +20,7 @@ import {SearchMenuItem} from './SearchMenuItem'
 
 interface Props {
   menuProps: MenuProps
-  viewer: TeamFilterMenu_viewer$key | null
+  viewer: TeamFilterMenu_viewer$key | null | undefined
 }
 
 const TeamFilterMenu = (props: Props) => {

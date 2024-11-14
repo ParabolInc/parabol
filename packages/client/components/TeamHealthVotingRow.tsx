@@ -1,6 +1,5 @@
 import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamHealthVotingRow_stage$key} from '../__generated__/TeamHealthVotingRow_stage.graphql'
 import {PALETTE} from '../styles/paletteV3'

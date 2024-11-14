@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {EmailNotificationTemplate_notification$key} from 'parabol-client/__generated__/EmailNotificationTemplate_notification.graphql'
-import React, {ReactNode} from 'react'
+import * as React from 'react'
+import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../../../../styles/paletteV3'
 import relativeDate from '../../../../utils/date/relativeDate'

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
@@ -29,8 +29,13 @@ const TimelineFeedList = (props: Props) => {
       fragment TimelineFeedList_query on Query
       @refetchable(queryName: "TimelineFeedListPaginationQuery") {
         viewer {
-          timeline(first: $first, after: $after, teamIds: $teamIds, eventTypes: $eventTypes)
-            @connection(key: "TimelineFeedList_timeline") {
+          timeline(
+            first: $first
+            after: $after
+            teamIds: $teamIds
+            eventTypes: $eventTypes
+            archived: $archived
+          ) @connection(key: "TimelineFeedList_timeline") {
             edges {
               cursor
               node {
@@ -101,7 +106,7 @@ const TimelineFeedList = (props: Props) => {
     }
   }, [timeline.edges])
 
-  if (freeHistory === undefined || freeHistory.length === 0) {
+  if (freeHistory.length === 0 && !lockedHistory?.length) {
     return (
       <div className='text-base'>
         Looks like you have no events with these filters.

@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
-import React from 'react'
 import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
 import {PALETTE} from '../styles/paletteV3'
 

@@ -1,6 +1,5 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import React from 'react'
 import Ellipsis from '../../../../../components/Ellipsis/Ellipsis'
 
 const explainerStyle = {

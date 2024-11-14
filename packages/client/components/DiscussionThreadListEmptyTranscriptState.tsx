@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {DiscussionThreadListEmptyTranscriptState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyTranscriptState_meeting.graphql'
 import {PALETTE} from '~/styles/paletteV3'

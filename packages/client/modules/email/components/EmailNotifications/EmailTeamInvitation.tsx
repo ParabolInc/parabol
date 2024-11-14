@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTeamInvitation_notification$key} from 'parabol-client/__generated__/EmailTeamInvitation_notification.graphql'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'

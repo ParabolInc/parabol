@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {BillingLeader_orgUser$key} from '../../../../__generated__/BillingLeader_orgUser.graphql'
 import {BillingLeader_organization$key} from '../../../../__generated__/BillingLeader_organization.graphql'

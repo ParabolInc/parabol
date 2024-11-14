@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Close as CloseIcon} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const Message = styled('div')({

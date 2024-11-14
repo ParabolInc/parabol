@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'

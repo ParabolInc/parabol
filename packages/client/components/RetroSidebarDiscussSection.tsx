@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {

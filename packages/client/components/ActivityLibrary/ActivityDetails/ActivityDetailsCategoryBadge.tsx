@@ -2,7 +2,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
 import useTemplateCategoryMutation from '../../../mutations/UpdateTemplateCategoryMutation'
@@ -54,8 +53,8 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
               return (
                 <DropdownMenu.RadioItem
                   key={categoryId}
-                  className='flex cursor-pointer select-none py-3 px-4 outline-none data-[state=checked]:bg-slate-200
-                data-[highlighted]:bg-slate-100'
+                  className='flex cursor-pointer select-none px-4 py-3 outline-none data-[highlighted]:bg-slate-100
+                data-[state=checked]:bg-slate-200'
                   value={categoryId}
                 >
                   <span

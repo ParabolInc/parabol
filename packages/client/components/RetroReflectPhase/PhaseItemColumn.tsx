@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {EditorState} from 'draft-js'
-import React, {RefObject, useEffect, useMemo, useRef} from 'react'
+import {RefObject, useEffect, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {PhaseItemColumn_prompt$key} from '~/__generated__/PhaseItemColumn_prompt.graphql'
 import {PhaseItemColumn_meeting$key} from '../../__generated__/PhaseItemColumn_meeting.graphql'

@@ -1,6 +1,5 @@
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {OrgAdminActionMenu_organization$key} from '../__generated__/OrgAdminActionMenu_organization.graphql'
@@ -97,7 +96,7 @@ export const OrgAdminActionMenu = (props: Props) => {
       }
     >
       <MenuContent
-        className='data-[side=top]:animate-slideUp data-[side=bottom]:animate-slideDown'
+        className='data-[side=bottom]:animate-slideDown data-[side=top]:animate-slideUp'
         align='end'
         sideOffset={4}
       >

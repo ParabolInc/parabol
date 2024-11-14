@@ -1,5 +1,4 @@
 import AddIcon from '@mui/icons-material/Add'
-import React from 'react'
 import insightsEmptyStateImg from '../../../../../../static/images/illustrations/insights-empty-state.png'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -60,7 +59,7 @@ const TeamInsightEmptyState = (props: Props) => {
       </div>
       {canGenerateInsight && (
         <button
-          className='mt-6 flex items-center rounded-full bg-grape-500 py-2 px-6 font-bold text-white transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-grape-600 hover:shadow-md disabled:opacity-50'
+          className='mt-6 flex items-center rounded-full bg-grape-500 px-6 py-2 font-bold text-white transition-all duration-200 ease-in-out hover:cursor-pointer hover:bg-grape-600 hover:shadow-md disabled:opacity-50'
           onClick={handleGenerateInsight}
           disabled={submitting}
         >

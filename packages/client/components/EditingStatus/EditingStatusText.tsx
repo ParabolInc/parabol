@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
 import Ellipsis from '../Ellipsis/Ellipsis'

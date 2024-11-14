@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Fragment, useState} from 'react'
+import {Fragment, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
   NewMeetingPhaseTypeEnum,

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {ReactElement, Suspense, useEffect} from 'react'
+import {ReactElement, Suspense, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {ActionMeeting_meeting$key} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'

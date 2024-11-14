@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {MailOutlined} from '@mui/icons-material'
-import React from 'react'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'

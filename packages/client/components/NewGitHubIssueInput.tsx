@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect, useRef, useState} from 'react'
+import {FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewGitHubIssueInput_meeting$key} from '~/__generated__/NewGitHubIssueInput_meeting.graphql'
 import {NewGitHubIssueInput_viewer$key} from '~/__generated__/NewGitHubIssueInput_viewer.graphql'

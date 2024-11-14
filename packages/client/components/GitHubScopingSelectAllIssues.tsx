@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
 import {GitHubScopingSelectAllIssues_issues$key} from '../__generated__/GitHubScopingSelectAllIssues_issues.graphql'

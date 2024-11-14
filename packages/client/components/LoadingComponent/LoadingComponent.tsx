@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {forwardRef, useEffect} from 'react'
+import {forwardRef, useEffect} from 'react'
 import {LoadingDelayRef} from '../../hooks/useLoadingDelay'
 import useTimeout from '../../hooks/useTimeout'
 import Spinner from '../../modules/spinner/components/Spinner/Spinner'

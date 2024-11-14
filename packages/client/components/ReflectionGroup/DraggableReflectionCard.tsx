@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 import {DraggableReflectionCard_meeting$key} from '../../__generated__/DraggableReflectionCard_meeting.graphql'

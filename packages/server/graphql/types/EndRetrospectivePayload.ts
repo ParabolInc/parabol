@@ -1,4 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {getUserId} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import {resolveNewMeeting} from '../resolvers'
 import RetrospectiveMeeting from './RetrospectiveMeeting'
@@ -33,8 +34,14 @@ export const EndRetrospectiveSuccess = new GraphQLObjectType<any, GQLContext>({
     timelineEvent: {
       type: new GraphQLNonNull(TimelineEvent),
       description: 'An event that is important to the viewer, e.g. an ended meeting',
-      resolve: async ({timelineEventId}, _args: unknown, {dataLoader}) => {
-        return await dataLoader.get('timelineEvents').load(timelineEventId)
+      resolve: async ({meetingId}, _args: unknown, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        const timelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
+        const timelineEvent = timelineEvents.find(
+          (event) => event.type === 'retroComplete' && event.userId === viewerId
+        )
+        if (!timelineEvent) throw new Error('Timeline event not found')
+        return timelineEvent
       }
     }
   })

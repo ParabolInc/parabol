@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React, {FormEvent, useEffect} from 'react'
+import {FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_viewer.graphql'
 import {MenuPosition} from '~/hooks/useCoords'

@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import LinkButton from '../../../components/LinkButton'
 

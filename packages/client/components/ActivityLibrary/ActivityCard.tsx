@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
-import React, {PropsWithChildren, useEffect, useRef, useState} from 'react'
+import * as React from 'react'
+import {PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {twMerge} from 'tailwind-merge'
 import {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
@@ -38,7 +39,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
     >
       <img className='object-contain' src={backgroundSrc} alt='' />
       <img
-        className='absolute top-0 left-0 h-full w-full object-contain p-10'
+        className='absolute left-0 top-0 h-full w-full object-contain p-10'
         src={src}
         alt='Card Illustration'
       />

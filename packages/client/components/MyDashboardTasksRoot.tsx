@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import {Suspense} from 'react'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import myDashboardTasksAndHeaderQuery, {
   MyDashboardTasksAndHeaderQuery

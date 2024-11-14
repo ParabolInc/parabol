@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamDashTasksTab_viewer$key} from '~/__generated__/TeamDashTasksTab_viewer.graphql'
 import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'

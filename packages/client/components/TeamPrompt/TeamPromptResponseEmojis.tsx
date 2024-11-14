@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {TeamPromptResponseEmojis_response$key} from '~/__generated__/TeamPromptResponseEmojis_response.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -53,5 +52,5 @@ export const TeamPromptResponseEmojis = (props: Props) => {
     )
   }
 
-  return <ReactjiSection className='pt-2 pr-2' reactjis={reactjis} onToggle={onToggleReactji} />
+  return <ReactjiSection className='pr-2 pt-2' reactjis={reactjis} onToggle={onToggleReactji} />
 }

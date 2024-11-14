@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Search} from '@mui/icons-material'
-import React, {forwardRef} from 'react'
+import * as React from 'react'
+import {forwardRef} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'

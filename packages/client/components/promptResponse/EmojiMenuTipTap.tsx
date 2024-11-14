@@ -1,7 +1,7 @@
 import {Editor, Range} from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import {PluginKey} from 'prosemirror-state'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import EmojiMenuContainer from '../TaskEditor/EmojiMenuContainer'
 import {getSelectionBoundingBox} from './tiptapConfig'
 
@@ -47,7 +47,9 @@ const EmojiMenuTipTap = (props: Props) => {
     }) as any
 
     tiptapEditor.registerPlugin(plugin)
-    return () => tiptapEditor.unregisterPlugin(pluginKey)
+    return () => {
+      tiptapEditor.unregisterPlugin(pluginKey)
+    }
   }, [tiptapEditor, setOpenEmojiMenu, setEmojiQuery])
 
   const onSelectEmoji = (emoji: string) => {

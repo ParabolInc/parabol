@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {MouseEvent} from 'react'
+import {MouseEvent} from 'react'
 import {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'

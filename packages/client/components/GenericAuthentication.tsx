@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, {useRef} from 'react'
+import {useRef} from 'react'
 import useRouter from '../hooks/useRouter'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'

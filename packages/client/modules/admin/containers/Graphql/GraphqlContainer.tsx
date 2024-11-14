@@ -1,7 +1,7 @@
 import {Fetcher} from '@graphiql/toolkit'
 import GraphiQL from 'graphiql/dist'
 import 'graphiql/graphiql.css'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'

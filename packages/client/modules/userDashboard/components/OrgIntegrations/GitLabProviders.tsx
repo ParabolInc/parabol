@@ -1,6 +1,5 @@
 import {Add as AddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import React from 'react'
 import {useFragment} from 'react-relay'
 import {GitLabProviders_organization$key} from '../../../../__generated__/GitLabProviders_organization.graphql'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
