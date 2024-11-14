@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.4.2](https://github.com/ParabolInc/parabol/compare/v8.4.1...v8.4.2) (2024-11-13)
+
+
+### Changed
+
+* **orgAdmins:** Update copy for Non Org Admins on Integration Settings page ([#10447](https://github.com/ParabolInc/parabol/issues/10447)) ([33e2589](https://github.com/ParabolInc/parabol/commit/33e25890e15d6b33beaf8fb2a13ae0a2780e469d))
+
 ## [8.4.1](https://github.com/ParabolInc/parabol/compare/v8.4.0...v8.4.1) (2024-11-13)
 
 
