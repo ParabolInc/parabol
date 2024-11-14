@@ -23,7 +23,6 @@
           "File": "../public/types/File#TFile",
           "FlagConversionModalPayload": "./types/FlagConversionModalPayload#FlagConversionModalPayloadSource",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
-          "GenerateMeetingSummarySuccess": "./types/GenerateMeetingSummarySuccess#GenerateMeetingSummarySuccessSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
           "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",
@@ -51,6 +50,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "GenerateRetroSummariesSuccess": "./types/GenerateRetroSummariesSuccess#GenerateRetroSummariesSuccessSource",
           "TaskEstimate": "../../postgres/types/index#TaskEstimate",
           "ReflectTemplatePromptUpdateDescriptionPayload": "./types/ReflectTemplatePromptUpdateDescriptionPayload#ReflectTemplatePromptUpdateDescriptionPayloadSource",
           "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",

@@ -1,0 +1,6 @@
+type GenerateRetroSummariesSuccess {
+  """
+  The meetings that were updated with new summaries
+  """
+  meetings: [RetrospectiveMeeting!]!
+}
