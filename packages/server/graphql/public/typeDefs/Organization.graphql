@@ -205,5 +205,5 @@ type Organization {
   """
   The feature flags the org has enabled
   """
-  orgFeatureFlags: [FeatureFlag!]!
+  orgFeatureFlags: [OwnedFeatureFlag!]!
 }

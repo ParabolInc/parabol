@@ -2,5 +2,5 @@ type ToggleFeatureFlagSuccess {
   """
   The feature flag that was toggled
   """
-  featureFlag: FeatureFlag!
+  featureFlag: OwnedFeatureFlag!
 }

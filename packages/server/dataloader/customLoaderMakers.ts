@@ -971,11 +971,13 @@ export const allFeatureFlags = (parent: RootDataLoader) => {
       const pg = getKysely()
       return await Promise.all(
         scopes.map(async (scope) => {
-          let query = pg.selectFrom('FeatureFlag').selectAll().where('expiresAt', '>', new Date())
-          if (scope !== 'all') {
-            query = query.where('scope', '=', scope)
-          }
-          const flags = await query.orderBy('featureName').execute()
+          const flags = await pg
+            .selectFrom('FeatureFlag')
+            .selectAll()
+            .where('expiresAt', '>', new Date())
+            .$if(scope !== 'all', (qb) => qb.where('scope', '=', scope))
+            .orderBy('featureName')
+            .execute()
           return flags.map((flag) => ({...flag, isEnabled: true}))
         })
       )
