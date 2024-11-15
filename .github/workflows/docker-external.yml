@@ -17,11 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup environment variables
-        run: |
-          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
@@ -40,7 +35,7 @@ jobs:
           password: "${{ steps.auth.outputs.access_token }}"
 
       - name: Pull Docker image from GCP
-        run: docker pull ${{ env.DOCKER_REPOSITORY_FOR_REF }}:v${{ github.event.inputs.version_number }}
+        run: docker pull ${{ secrets.GCP_AR_PARABOL}}:v${{ github.event.inputs.version_number }}
 
       - name: Push Docker image to the external repository
         run: |-
