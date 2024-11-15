@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.5.1](https://github.com/ParabolInc/parabol/compare/v8.5.0...v8.5.1) (2024-11-15)
+
+
+### Fixed
+
+* reinstall cheerio to fix jira img issue ([#10490](https://github.com/ParabolInc/parabol/issues/10490)) ([6d49dc2](https://github.com/ParabolInc/parabol/commit/6d49dc2cd9cd34fd64be54133ee8c139cf6967b5))
+
 ## [8.5.0](https://github.com/ParabolInc/parabol/compare/v8.4.2...v8.5.0) (2024-11-15)
 
 
