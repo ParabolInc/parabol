@@ -10,6 +10,7 @@ import isUserViewer from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
 import isViewerOnTeam from './rules/isViewerOnTeam'
+import {isViewerTeamLead} from './rules/isViewerTeamLead'
 import rateLimit from './rules/rateLimit'
 
 type Wildcard = {
@@ -32,7 +33,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     createImposterToken: isSuperUser,
-    generateInsight: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
@@ -62,7 +62,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
-    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId)
+    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },
   Query: {
     '*': isAuthenticated,

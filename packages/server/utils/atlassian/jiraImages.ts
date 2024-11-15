@@ -1,5 +1,5 @@
 import base64url from 'base64url'
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import crypto from 'crypto'
 import ms from 'ms'
 import AtlassianServerManager from '../AtlassianServerManager'
