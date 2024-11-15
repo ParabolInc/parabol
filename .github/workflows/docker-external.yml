@@ -1,4 +1,4 @@
-name: Ironbank Image Upload
+name: Docker publish externally
 
 on:
   workflow_dispatch:
