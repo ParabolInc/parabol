@@ -96,7 +96,7 @@
     "api": "^5.0.7",
     "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
-    "cheerio": "^1.0.0-rc.10",
+    "cheerio": "1.0.0",
     "dataloader": "^2.0.0",
     "dd-trace": "^5.0.0",
     "dotenv": "8.6.0",
