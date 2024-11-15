@@ -975,7 +975,10 @@ export const allFeatureFlags = (parent: RootDataLoader) => {
             .selectFrom('FeatureFlag')
             .selectAll()
             .where('expiresAt', '>', new Date())
-            .$if(scope !== 'all', (qb) => qb.where('scope', '=', scope))
+            .$if(scope !== 'all', (qb) => {
+              const validScope = scope as 'Organization' | 'Team' | 'User'
+              return qb.where('scope', '=', validScope)
+            })
             .orderBy('featureName')
             .execute()
           return flags.map((flag) => ({...flag, isEnabled: true}))
