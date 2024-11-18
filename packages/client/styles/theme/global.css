@@ -214,7 +214,7 @@
   outline: none;
 }
 
-a {
+.ProseMirror a {
   text-decoration: underline;
   color: theme('colors.slate.700');
   :hover {
@@ -231,6 +231,6 @@ hr.ProseMirror-selectednode {
   border-top: 1px solid #68cef8;
 }
 
-hr {
+.ProseMirror hr {
   border-top: 1px solid theme('colors.slate.400');
 }

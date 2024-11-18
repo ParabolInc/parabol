@@ -11,10 +11,11 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
-import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
-import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
+import isTextSelected from './isTextSelected'
+import LinkMenu, {LinkMenuState} from './LinkMenu'
 import {unfurlLoomLinks} from './loomExtension'
-import {LinkMenuProps, LinkPreviewProps, createEditorExtensions, getLinkProps} from './tiptapConfig'
+import {createEditorExtensions} from './tiptapConfig'
+import {TiptapLink} from './TiptapLink'
 
 const LinkIcon = styled(Link)({
   height: 18,
@@ -31,7 +32,7 @@ const BubbleMenuWrapper = styled('div')({
   padding: '4px'
 })
 
-const BubbleMenuButton = styled(BaseButton)<{isActive: boolean}>(({isActive}) => ({
+const BubbleMenuButton = styled(BaseButton)<{isActive?: boolean}>(({isActive}) => ({
   height: '20px',
   width: '22px',
   padding: '4px 0px 4px 0px',
@@ -96,31 +97,6 @@ const PromptResponseEditor = (props: Props) => {
     [rawContent, readOnly]
   )
 
-  const [linkOverlayProps, setLinkOverlayProps] = useState<
-    | {
-        linkMenuProps: LinkMenuProps
-        linkPreviewProps: undefined
-      }
-    | {
-        linkMenuProps: undefined
-        linkPreviewProps: LinkPreviewProps
-      }
-    | undefined
-  >()
-
-  const setLinkMenuProps = useCallback(
-    (props: LinkMenuProps) => {
-      setLinkOverlayProps({linkMenuProps: props, linkPreviewProps: undefined})
-    },
-    [setLinkOverlayProps]
-  )
-  const setLinkPreviewProps = useCallback(
-    (props: LinkPreviewProps) => {
-      setLinkOverlayProps({linkPreviewProps: props, linkMenuProps: undefined})
-    },
-    [setLinkOverlayProps]
-  )
-
   const editorRef = useRef<HTMLDivElement>(null)
 
   const setEditing = useCallback(
@@ -164,32 +140,31 @@ const PromptResponseEditor = (props: Props) => {
     }
   }
 
+  const [linkState, setLinkState] = useState<LinkMenuState>(null)
+
+  const openLinkEditor = () => {
+    setLinkState('edit')
+  }
+
   const editor = useEditor(
     {
       content,
       extensions: [
-        ...createEditorExtensions(
-          setLinkMenuProps,
-          setLinkPreviewProps,
-          setLinkOverlayProps,
-          placeholder
-        ),
+        ...createEditorExtensions(placeholder),
         Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
-        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig)
+        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
+        TiptapLink.configure({
+          openOnClick: false,
+          popover: {
+            setLinkState
+          }
+        })
       ],
       autofocus: autoFocus,
       onUpdate,
       editable: !readOnly
     },
-    [
-      content,
-      readOnly,
-      setLinkMenuProps,
-      setLinkPreviewProps,
-      setLinkOverlayProps,
-      onSubmit,
-      onUpdate
-    ]
+    [content, readOnly, onSubmit, onUpdate]
   )
 
   useEffect(() => {
@@ -210,12 +185,9 @@ const PromptResponseEditor = (props: Props) => {
     editor?.commands.setContent(draftContent)
   }, [editor])
 
-  const onAddHyperlink = () => {
-    if (!editor) {
-      return
-    }
-
-    setLinkMenuProps(getLinkProps(editor))
+  const shouldShowBubbleMenu = () => {
+    if (!editor || editor.isActive('link')) return false
+    return isTextSelected(editor)
   }
 
   return (
@@ -224,7 +196,11 @@ const PromptResponseEditor = (props: Props) => {
         {editor && !readOnly && (
           <>
             <div>
-              <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
+              <BubbleMenu
+                editor={editor}
+                tippyOptions={{duration: 100}}
+                shouldShow={shouldShowBubbleMenu}
+              >
                 <BubbleMenuWrapper>
                   <BubbleMenuButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -244,34 +220,20 @@ const PromptResponseEditor = (props: Props) => {
                   >
                     <s>S</s>
                   </BubbleMenuButton>
-                  <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
+                  <BubbleMenuButton onClick={openLinkEditor}>
                     <LinkIcon />
                   </BubbleMenuButton>
                 </BubbleMenuWrapper>
               </BubbleMenu>
             </div>
-            {linkOverlayProps?.linkMenuProps && (
-              <EditorLinkChangerTipTap
-                text={linkOverlayProps.linkMenuProps.text}
-                link={linkOverlayProps.linkMenuProps.href}
-                tiptapEditor={editor}
-                originCoords={linkOverlayProps.linkMenuProps.originCoords}
-                removeModal={() => {
-                  setLinkOverlayProps(undefined)
-                }}
-              />
-            )}
-            {linkOverlayProps?.linkPreviewProps && (
-              <EditorLinkViewerTipTap
-                href={linkOverlayProps.linkPreviewProps.href}
-                tiptapEditor={editor}
-                addHyperlink={onAddHyperlink}
-                originCoords={linkOverlayProps.linkPreviewProps.originCoords}
-                removeModal={() => {
-                  setLinkOverlayProps(undefined)
-                }}
-              />
-            )}
+            <LinkMenu
+              editor={editor}
+              setLinkState={(linkState: LinkMenuState) => {
+                editor.commands.focus()
+                setLinkState(linkState)
+              }}
+              linkState={linkState}
+            />
           </>
         )}
         <EditorContent ref={editorRef} editor={editor} />

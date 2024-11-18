@@ -1,5 +1,4 @@
 import {Editor, isNodeSelection, posToDOMRect} from '@tiptap/core'
-import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import StarterKit from '@tiptap/starter-kit'
 import {BBox} from '~/types/animations'
@@ -64,39 +63,9 @@ export const getLinkProps = (editor: Editor) => {
  * @param placeholder
  * @returns an array of extensions to be used by the tip tap editor
  */
-export const createEditorExtensions = (
-  setLinkMenuProps?: (props: LinkMenuProps) => void,
-  setLinkPreviewProps?: (props: LinkPreviewProps) => void,
-  setLinkOverlayProps?: (props: LinkOverlayProps) => void,
-  placeholder?: string
-) => [
+export const createEditorExtensions = (placeholder?: string) => [
   StarterKit,
   LoomExtension,
-  Link.extend({
-    inclusive: false,
-    addKeyboardShortcuts() {
-      return {
-        'Mod-k': () => {
-          if (!setLinkMenuProps) {
-            return false
-          }
-
-          setLinkMenuProps(getLinkProps(this.editor))
-          return true
-        }
-      }
-    },
-    onSelectionUpdate() {
-      const href = this.editor.getAttributes('link').href
-      if (href && setLinkPreviewProps) {
-        setLinkPreviewProps({href, originCoords: getSelectionBoundingBox(this.editor)})
-      } else if (setLinkOverlayProps) {
-        setLinkOverlayProps(undefined)
-      }
-    }
-  }).configure({
-    openOnClick: false
-  }),
   Placeholder.configure({
     showOnlyWhenEditable: false,
     placeholder
