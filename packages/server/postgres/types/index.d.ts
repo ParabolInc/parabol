@@ -81,7 +81,7 @@ export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTe
 export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
 export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
 export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}
-export type FeatureFlag = Selectable<FeatureFlagPG> & {isEnabled: boolean}
+export type FeatureFlag = Selectable<FeatureFlagPG>
 
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
 
