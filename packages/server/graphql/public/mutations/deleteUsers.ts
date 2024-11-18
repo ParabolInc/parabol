@@ -1,3 +1,4 @@
+import {USER_EMAIL_LIMIT} from '../../../postgres/constants'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {
@@ -18,6 +19,10 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
 ) => {
   if (emails.length === 0) {
     return {error: {message: 'Provide emails'}}
+  }
+
+  if (emails.length > USER_EMAIL_LIMIT) {
+    return {error: {message: 'Cannot delete more than 100 users at once'}}
   }
 
   const su = isSuperUser(authToken)
