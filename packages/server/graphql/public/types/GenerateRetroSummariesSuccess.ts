@@ -1,12 +1,11 @@
 import isValid from '../../isValid'
-// import {GenerateRetroSummariesSuccessResolvers} from '../resolverTypes'
+import {GenerateRetroSummariesSuccessResolvers} from '../resolverTypes'
 
 export type GenerateRetroSummariesSuccessSource = {
   meetingIds: string[]
 }
 
-// const GenerateRetroSummariesSuccess: GenerateRetroSummariesSuccessResolvers = {
-const GenerateRetroSummariesSuccess: any = {
+const GenerateRetroSummariesSuccess: GenerateRetroSummariesSuccessResolvers = {
   meetings: async ({meetingIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').loadMany(meetingIds))
       .filter(isValid)
