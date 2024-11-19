@@ -1,7 +1,8 @@
 import {sql} from 'kysely'
 import {selectNewMeetings} from '../../postgres/select'
 import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
-import {MutationResolvers} from '../private/resolverTypes'
+import standardError from '../../utils/standardError'
+import {MutationResolvers} from '../public/resolverTypes'
 import {generateRetroSummary} from './helpers/generateRetroSummary'
 
 const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = async (
@@ -35,6 +36,10 @@ const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = asyn
     return Array.isArray(meetingMembers) && meetingMembers.length > 1
   })
 
+  if (rawMeetings.length === 0) {
+    return standardError(new Error('No valid meetings found'))
+  }
+
   const updatedMeetingIds = await Promise.all(
     rawMeetings.map(async (meeting) => {
       const newSummary = await generateRetroSummary(meeting.id, dataLoader, prompt as string)
@@ -46,6 +51,11 @@ const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = asyn
   const filteredMeetingIds = updatedMeetingIds.filter(
     (meetingId): meetingId is string => meetingId !== null
   )
+
+  if (filteredMeetingIds.length === 0) {
+    return standardError(new Error('No summaries were generated'))
+  }
+
   return {meetingIds: filteredMeetingIds}
 }
 

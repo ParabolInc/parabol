@@ -77,12 +77,11 @@ class OpenAIServerManager {
     }
   }
 
-  // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
-  async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
+  // TODO: remove this: https://github.com/ParabolInc/parabol/issues/10500
+  async getSummary(text: string | string[]) {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text
-    const location = summaryLocation ?? 'retro meeting'
-    const prompt = `Below is a newline delimited text from a ${location}.
+    const prompt = `Below is newline delimited text from a discussion thread.
     Summarize the text for the meeting facilitator in one or two sentences.
     When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
     Aim for brevity and clarity. If your summary exceeds 50 characters, iterate until it fits while retaining the essence. Your final response should only include the shortened summary.
@@ -429,7 +428,6 @@ class OpenAIServerManager {
     }
   }
 
-  // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'

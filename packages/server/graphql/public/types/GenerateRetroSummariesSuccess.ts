@@ -9,7 +9,7 @@ const GenerateRetroSummariesSuccess: GenerateRetroSummariesSuccessResolvers = {
   meetings: async ({meetingIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').loadMany(meetingIds))
       .filter(isValid)
-      .filter((m) => m.meetingType === 'retrospective')
+      .filter((meeting) => meeting.meetingType === 'retrospective')
   }
 }
 

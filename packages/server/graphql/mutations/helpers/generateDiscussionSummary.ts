@@ -35,7 +35,7 @@ const generateDiscussionSummary = async (
   const tasksContent = tasks.map(({plaintextContent}) => plaintextContent)
   const contentToSummarize = [...commentsContent, ...tasksContent]
   if (contentToSummarize.length <= 1) return
-  const summary = await manager.getSummary(contentToSummarize, 'discussion thread')
+  const summary = await manager.getSummary(contentToSummarize)
   if (!summary) return
   await updateDiscussions({summary}, discussionId)
   // when we end the meeting, we don't wait for the OpenAI response as we want to see the meeting summary immediately, so publish the subscription
