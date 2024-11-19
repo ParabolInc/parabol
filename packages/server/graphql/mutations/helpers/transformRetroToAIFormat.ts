@@ -2,30 +2,6 @@ import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
 import {DataLoaderWorker} from '../../graphql'
 
-type MeetingContent = {
-  voteCount: number
-  title: string
-  comments?: {
-    text: string
-    author: string
-    replies?: {text: string; author: string}[]
-  }[]
-  tasks?: {
-    text: string
-    author: string
-  }[]
-  reflections: {
-    prompt: string
-    author: string
-    text: string
-    discussionId: number
-  }[]
-  meetingName: string
-  date: string
-  meetingId: string
-  discussionId: number
-}
-
 const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
   const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
   const discussion = await getKysely()
@@ -63,10 +39,7 @@ const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWork
   return comments
 }
 
-export const transformRetroToAIFormat = async (
-  meetingId: string,
-  dataLoader: DataLoaderWorker
-): Promise<MeetingContent[] | null> => {
+export const transformRetroToAIFormat = async (meetingId: string, dataLoader: DataLoaderWorker) => {
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {disableAnonymity, name: meetingName, createdAt: meetingDate} = meeting
   const rawReflectionGroups = await dataLoader
@@ -78,17 +51,15 @@ export const transformRetroToAIFormat = async (
       .filter((g) => g.voterIds.length > 1)
       .map(async (group) => {
         const {id: reflectionGroupId, voterIds, title} = group
-        const [comments, rawReflections, discussion, tasks] = await Promise.all([
+        const [comments, rawReflections, discussion] = await Promise.all([
           getComments(reflectionGroupId, dataLoader),
           dataLoader.get('retroReflectionsByGroupId').load(group.id),
-          getKysely()
-            .selectFrom('Discussion')
-            .selectAll()
-            .where('discussionTopicId', '=', reflectionGroupId)
-            .limit(1)
-            .executeTakeFirst(),
-          discussion ? dataLoader.get('tasksByDiscussionId').load(group.id) : []
+          dataLoader.get('discussions').load(reflectionGroupId)
         ])
+
+        const tasks = discussion
+          ? await dataLoader.get('tasksByDiscussionId').load(discussion.id)
+          : []
 
         const discussPhase = getPhase(meeting.phases, 'discuss')
         const {stages} = discussPhase
@@ -133,7 +104,7 @@ export const transformRetroToAIFormat = async (
             : undefined
 
         const shortMeetingDate = new Date(meetingDate).toISOString().split('T')[0]
-        const content: MeetingContent = {
+        const content = {
           voteCount: voterIds.length,
           title,
           comments,
@@ -143,6 +114,10 @@ export const transformRetroToAIFormat = async (
           date: shortMeetingDate,
           meetingId,
           discussionId: discussionIdx
+        } as {
+          comments?: typeof comments
+          tasks?: typeof formattedTasks
+          [key: string]: any
         }
 
         if (!content.comments?.length) {
