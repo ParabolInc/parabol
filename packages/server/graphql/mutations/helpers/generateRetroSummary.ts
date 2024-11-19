@@ -13,7 +13,6 @@ export const generateRetroSummary = async (
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId, facilitatorUserId} = meeting
 
-  // Check access first
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const isAISummaryAccessible = await canAccessAISummary(
     team,
@@ -23,7 +22,7 @@ export const generateRetroSummary = async (
   )
   if (!isAISummaryAccessible) return null
 
-  const transformedMeeting = await transformRetroToAIFormat(meeting, dataLoader)
+  const transformedMeeting = await transformRetroToAIFormat(meetingId, dataLoader)
   if (!transformedMeeting || transformedMeeting.length === 0) {
     return null
   }

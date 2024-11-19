@@ -87,7 +87,7 @@ export const transformRetroToAIFormat = async (
             .where('discussionTopicId', '=', reflectionGroupId)
             .limit(1)
             .executeTakeFirst(),
-          discussion ? dataLoader.get('tasksByDiscussionId').load(discussion.id) : []
+          discussion ? dataLoader.get('tasksByDiscussionId').load(group.id) : []
         ])
 
         const discussPhase = getPhase(meeting.phases, 'discuss')
