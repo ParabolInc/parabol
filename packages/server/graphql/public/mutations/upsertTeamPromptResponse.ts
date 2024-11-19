@@ -1,6 +1,4 @@
 import {generateText, JSONContent} from '@tiptap/core'
-import Mention from '@tiptap/extension-mention'
-import {createEditorExtensions} from 'parabol-client/components/promptResponse/tiptapConfig'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
@@ -8,12 +6,12 @@ import {TeamPromptResponse} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import {serverTipTapExtensions} from '../../../utils/serverTipTapExtensions'
 import standardError from '../../../utils/standardError'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
-
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
   {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content},
@@ -64,14 +62,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   let plaintextContent: string
   try {
-    plaintextContent = generateText(contentJSON, [
-      ...createEditorExtensions(),
-      Mention.configure({
-        renderText({node}) {
-          return node.attrs.label
-        }
-      })
-    ])
+    plaintextContent = generateText(contentJSON, serverTipTapExtensions)
   } catch (e) {
     return standardError(new Error('Invalid editor format'), {userId: viewerId})
   }

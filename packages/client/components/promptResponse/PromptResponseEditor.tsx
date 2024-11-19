@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
+import Placeholder from '@tiptap/extension-placeholder'
 import {BubbleMenu, EditorContent, JSONContent, useEditor} from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 import areEqual from 'fbjs/lib/areEqual'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
@@ -13,8 +15,7 @@ import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
 import isTextSelected from './isTextSelected'
 import LinkMenu, {LinkMenuState} from './LinkMenu'
-import {unfurlLoomLinks} from './loomExtension'
-import {createEditorExtensions} from './tiptapConfig'
+import {LoomExtension, unfurlLoomLinks} from './loomExtension'
 import {TiptapLink} from './TiptapLink'
 
 const LinkIcon = styled(Link)({
@@ -150,7 +151,12 @@ const PromptResponseEditor = (props: Props) => {
     {
       content,
       extensions: [
-        ...createEditorExtensions(placeholder),
+        StarterKit,
+        LoomExtension,
+        Placeholder.configure({
+          showOnlyWhenEditable: false,
+          placeholder
+        }),
         Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLink.configure({

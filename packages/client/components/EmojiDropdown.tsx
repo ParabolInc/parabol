@@ -28,7 +28,7 @@ export default forwardRef(
 
     useEffect(() => setSelectedIndex(0), [items])
     useEffect(() => {
-      activeRef.current?.scrollIntoViewIfNeeded()
+      activeRef.current?.scrollIntoView({block: 'nearest'})
     }, [activeRef.current])
     useImperativeHandle(ref, () => ({
       onKeyDown: ({event}: {event: React.KeyboardEvent}) => {

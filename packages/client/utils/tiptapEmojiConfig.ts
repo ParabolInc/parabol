@@ -14,8 +14,7 @@ export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> =
     pluginKey: new PluginKey('emoji'),
     char: ':',
     items: async ({query}) => {
-      if (query.length < 1) return []
-      const emojis: Emoji[] = await SearchIndex.search(query)
+      const emojis: Emoji[] = await SearchIndex.search(query || '')
       if (!emojis) return []
       return emojis.map((emoji) => ({
         id: emoji.id,

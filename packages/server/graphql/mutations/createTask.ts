@@ -1,13 +1,13 @@
-import {generateText} from '@tiptap/core'
 import {GraphQLNonNull, GraphQLObjectType, GraphQLResolveInfo} from 'graphql'
 import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {createEditorExtensions} from '../../../client/components/promptResponse/tiptapConfig'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import dndNoise from '../../../client/utils/dndNoise'
+import extractTextFromDraftString from '../../../client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
+import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
@@ -16,7 +16,6 @@ import {Notification} from '../../postgres/types/pg'
 import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish, {SubOptions} from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -188,8 +187,9 @@ export default {
       return standardError(new Error(firstError), {userId: viewerId})
     }
 
-    const content = convertToTipTap(newTask.content)
-    const plaintextContent = generateText(content, createEditorExtensions())
+    const content = normalizeRawDraftJS(newTask.content)
+    // const content = convertToTipTap(newTask.content)
+    // const plaintextContent = generateText(content, serverTipTapExtensions)
 
     // see if the task already exists
     const integrationRes = await createTaskInService(
@@ -214,7 +214,7 @@ export default {
     const task = {
       id: generateUID(),
       content,
-      plaintextContent,
+      plaintextContent: extractTextFromDraftString(content),
       createdBy: viewerId,
       meetingId,
       sortOrder: sortOrder || dndNoise(),
