@@ -36,6 +36,7 @@ export const TipTapLinkEditor = (props: props) => {
           <Link className='flex-none text-slate-700' />
           <input
             autoFocus
+            type='url'
             className='min-w-52 flex-1 bg-transparent text-sm text-slate-700 outline-none'
             placeholder='Enter URL'
             value={url}

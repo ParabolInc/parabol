@@ -24,7 +24,7 @@ interface Props {
   linkState: LinkMenuState
   setLinkState: (linkState: LinkMenuState) => void
 }
-export const LinkMenu = (props: Props) => {
+export const TipTapLinkMenu = (props: Props) => {
   const {editor, linkState, setLinkState} = props
 
   const getRect = () => {
@@ -137,4 +137,4 @@ export const LinkMenu = (props: Props) => {
   return null
 }
 
-export default LinkMenu
+export default TipTapLinkMenu

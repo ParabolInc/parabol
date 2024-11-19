@@ -2,14 +2,14 @@ import {mergeAttributes} from '@tiptap/core'
 import BaseLink, {LinkOptions} from '@tiptap/extension-link'
 import {Plugin} from '@tiptap/pm/state'
 import {EditorView} from '@tiptap/pm/view'
-import {LinkMenuState} from './LinkMenu'
+import {LinkMenuState} from './TipTapLinkMenu'
 
 interface ExtendedOptions extends LinkOptions {
   popover: {
     setLinkState: (linkState: LinkMenuState) => void
   }
 }
-export const TiptapLink = BaseLink.extend<ExtendedOptions>({
+export const TiptapLinkExtension = BaseLink.extend<ExtendedOptions>({
   // if the caret is at the end of the link, it is not part of the link
   inclusive: false,
   addKeyboardShortcuts(this) {

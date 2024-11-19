@@ -14,9 +14,9 @@ import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
 import isTextSelected from './isTextSelected'
-import LinkMenu, {LinkMenuState} from './LinkMenu'
 import {LoomExtension, unfurlLoomLinks} from './loomExtension'
-import {TiptapLink} from './TiptapLink'
+import {TiptapLinkExtension} from './TiptapLinkExtension'
+import TipTapLinkMenu, {LinkMenuState} from './TipTapLinkMenu'
 
 const LinkIcon = styled(Link)({
   height: 18,
@@ -159,7 +159,7 @@ const PromptResponseEditor = (props: Props) => {
         }),
         Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
-        TiptapLink.configure({
+        TiptapLinkExtension.configure({
           openOnClick: false,
           popover: {
             setLinkState
@@ -232,7 +232,7 @@ const PromptResponseEditor = (props: Props) => {
                 </BubbleMenuWrapper>
               </BubbleMenu>
             </div>
-            <LinkMenu
+            <TipTapLinkMenu
               editor={editor}
               setLinkState={(linkState: LinkMenuState) => {
                 editor.commands.focus()
