@@ -7608,6 +7608,13 @@
     "@types/react" "*"
     immutable "~3.7.4"
 
+"@types/emoji-mart@^3.0.14":
+  version "3.0.14"
+  resolved "https://registry.yarnpkg.com/@types/emoji-mart/-/emoji-mart-3.0.14.tgz#219b8badbf1899cdb9790b5c2fafebea899ff5b3"
+  integrity sha512-/vMkVnet466bK37ugf2jry9ldCZklFPXYMB2m+qNo3vkP2I7L0cvtNFPKAjfcHgPg9Z8pbYqVqZn7AgsC0qf+g==
+  dependencies:
+    "@types/react" "*"
+
 "@types/eslint-scope@^3.7.7":
   version "3.7.7"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.7.tgz#3108bd5f18b0cdb277c867b3dd449c9ed7079ac5"
