@@ -9,7 +9,7 @@ interface Props {
 }
 
 const isServer = typeof window === 'undefined'
-const hasAiApiKey = isServer
+const hasAI = isServer
   ? !!process.env.OPEN_AI_API_KEY
   : !!window.__ACTION__ && !!window.__ACTION__.hasOpenAI
 
@@ -24,7 +24,7 @@ const WholeMeetingSummary = (props: Props) => {
         summary
         organization {
           hasStandupAISummaryFlag: featureFlag(featureName: "standupAISummary")
-          useAI
+          hasNoAISummaryFlag: featureFlag(featureName: "noAISummary")
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
@@ -46,16 +46,15 @@ const WholeMeetingSummary = (props: Props) => {
     const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
     const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
-    if (!hasMoreThanOneReflection || !organization.useAI || !hasAiApiKey) return null
+    if (!hasMoreThanOneReflection || organization.hasNoAISummaryFlag || !hasAI) return null
     if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting
-    const {hasStandupAISummaryFlag, useAI} = organization
     if (
-      !hasStandupAISummaryFlag ||
-      !useAI ||
-      !hasAiApiKey ||
+      !organization.hasStandupAISummaryFlag ||
+      organization.hasNoAISummaryFlag ||
+      !hasAI ||
       !responses ||
       responses.length === 0
     ) {

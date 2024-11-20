@@ -135,10 +135,7 @@ const Organization: OrganizationResolvers = {
         organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
     )
   },
-  integrationProviders: ({id: orgId}) => ({orgId}),
-  orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
-    return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
-  }
+  integrationProviders: ({id: orgId}) => ({orgId})
 }
 
 export default Organization

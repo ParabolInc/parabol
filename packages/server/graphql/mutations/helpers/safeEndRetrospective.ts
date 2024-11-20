@@ -34,12 +34,12 @@ const getTranscription = async (recallBotId?: string | null) => {
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
-  const {id: meetingId, phases, teamId, recallBotId} = meeting
+  const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
   const pg = getKysely()
   const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    generateWholeMeetingSentimentScore(meetingId, dataLoader)
+    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId!, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
@@ -47,7 +47,7 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
   const [summary, transcription] = await Promise.all([
-    generateWholeMeetingSummary(discussionIds, meetingId, teamId, dataLoader),
+    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId!, dataLoader),
     getTranscription(recallBotId)
   ])
   const commentCounts = (

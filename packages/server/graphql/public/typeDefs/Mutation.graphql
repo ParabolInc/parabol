@@ -1136,38 +1136,6 @@ type Mutation {
   ): ToggleTeamDrawerPayload!
 
   """
-  Toggle a feature flag for a specific owner (organization, team, or user)
-  """
-  toggleFeatureFlag(
-    """
-    The name of the feature flag to toggle
-    """
-    featureName: String!
-    """
-    The organization ID if toggling for an org
-    """
-    orgId: ID
-    """
-    The team ID if toggling for a team
-    """
-    teamId: ID
-    """
-    The user ID if toggling for a user
-    """
-    userId: ID
-  ): ToggleFeatureFlagPayload!
-
-  """
-  Toggle whether the organization has access to ai features
-  """
-  toggleAIFeatures(
-    """
-    The id of the org being toggled
-    """
-    orgId: ID!
-  ): ToggleAIFeaturesPayload!
-
-  """
   Update how a parabol dimension maps to a GitHub label
   """
   updateGitHubDimensionField(

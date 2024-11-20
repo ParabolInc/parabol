@@ -9,7 +9,6 @@ type OrganizationSubscriptionPayload {
   PayLaterPayload: PayLaterPayload
   RemoveIntegrationProviderSuccess: RemoveIntegrationProviderSuccess
   RemoveOrgUserPayload: RemoveOrgUserPayload
-  ToggleAIFeaturesSuccess: ToggleAIFeaturesSuccess
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateIntegrationProviderSuccess: UpdateIntegrationProviderSuccess

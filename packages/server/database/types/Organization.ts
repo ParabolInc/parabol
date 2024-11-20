@@ -15,7 +15,6 @@ interface Input {
   updatedAt?: Date
   showConversionModal?: boolean
   payLaterClickCount?: number
-  useAI?: boolean
 }
 
 export default class Organization {
@@ -38,7 +37,6 @@ export default class Organization {
   trialStartDate?: Date | null
   scheduledLockAt?: Date | null
   lockedAt?: Date | null
-  useAI: boolean
   updatedAt: Date
   constructor(input: Input) {
     const {
@@ -52,8 +50,7 @@ export default class Organization {
       showConversionModal,
       payLaterClickCount,
       picture,
-      tier,
-      useAI
+      tier
     } = input
     this.id = id || generateUID()
     this.activeDomain = activeDomain
@@ -66,6 +63,5 @@ export default class Organization {
     this.picture = picture
     this.showConversionModal = showConversionModal === null ? undefined : showConversionModal
     this.payLaterClickCount = payLaterClickCount || 0
-    this.useAI = useAI ?? true
   }
 }

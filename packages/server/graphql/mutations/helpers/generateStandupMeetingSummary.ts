@@ -2,16 +2,24 @@ import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTe
 import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
-import canAccessAI from './canAccessAI'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateStandupMeetingSummary = async (
   meeting: TeamPromptMeeting,
   dataLoader: DataLoaderWorker
 ) => {
-  const team = await dataLoader.get('teams').loadNonNull(meeting.teamId)
-  const isAIAvailable = await canAccessAI(team, 'standup', dataLoader)
-  if (!isAIAvailable) return
+  const [facilitator, team] = await Promise.all([
+    dataLoader.get('users').loadNonNull(meeting.facilitatorUserId!),
+    dataLoader.get('teams').loadNonNull(meeting.teamId)
+  ])
+  const isAISummaryAccessible = await canAccessAISummary(
+    team,
+    facilitator.id,
+    'standup',
+    dataLoader
+  )
 
+  if (!isAISummaryAccessible) return
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
 
   const contentToSummarize = responses.map((response) => response.plaintextContent)

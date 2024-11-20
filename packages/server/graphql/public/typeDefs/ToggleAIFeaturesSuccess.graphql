@@ -1,3 +1,0 @@
-type ToggleAIFeaturesSuccess {
-  organization: Organization!
-}

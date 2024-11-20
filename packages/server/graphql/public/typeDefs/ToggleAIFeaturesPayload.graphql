@@ -1,4 +1,0 @@
-"""
-Return value for toggleAIFeatures, which could be an error
-"""
-union ToggleAIFeaturesPayload = ErrorPayload | ToggleAIFeaturesSuccess

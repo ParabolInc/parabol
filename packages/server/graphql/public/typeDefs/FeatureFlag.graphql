@@ -1,10 +1,5 @@
 type FeatureFlag {
   """
-  The ID of the feature flag
-  """
-  id: ID!
-
-  """
   The name of the feature flag
   """
   featureName: String!

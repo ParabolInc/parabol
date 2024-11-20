@@ -32,7 +32,7 @@ graphql`
         groupTitle
       }
       organization {
-        useAI
+        hasNoAISummaryFlag: featureFlag(featureName: "noAISummary")
       }
       reflectionGroups(sortBy: voteCount) {
         reflections {
@@ -120,7 +120,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       const reflections = reflectionGroups.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
       const hasMoreThanOneReflection = reflections.length > 1
       const hasOpenAISummary =
-        hasMoreThanOneReflection && organization.useAI && window.__ACTION__.hasOpenAI
+        hasMoreThanOneReflection && !organization.hasNoAISummaryFlag && window.__ACTION__.hasOpenAI
       const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
       const search = new URLSearchParams()

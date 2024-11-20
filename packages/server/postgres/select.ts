@@ -138,7 +138,6 @@ export const selectOrganizations = () =>
       'trialStartDate',
       'scheduledLockAt',
       'lockedAt',
-      'useAI',
       'updatedAt'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])

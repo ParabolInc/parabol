@@ -2,7 +2,7 @@ import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../graphql'
-import canAccessAI from './canAccessAI'
+import canAccessAISummary from './canAccessAISummary'
 
 const generateDiscussionPrompt = async (
   meetingId: string,
@@ -14,8 +14,13 @@ const generateDiscussionPrompt = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
-  if (!isAIAvailable) return
+  const isAISummaryAccessible = await canAccessAISummary(
+    team,
+    facilitator.id,
+    'retrospective',
+    dataLoader
+  )
+  if (!isAISummaryAccessible) return
   const [reflections, reflectionGroups] = await Promise.all([
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
