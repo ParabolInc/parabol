@@ -167,6 +167,13 @@ const subscription = graphql`
         summary
         descriptionHTML
       }
+
+      ToggleFeatureFlagSuccess {
+        featureFlag {
+          featureName
+          enabled
+        }
+      }
     }
   }
 `

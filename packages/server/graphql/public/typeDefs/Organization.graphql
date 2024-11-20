@@ -163,6 +163,12 @@ type Organization {
   """
   picture: URL
   tier: TierEnum!
+
+  """
+  Whether the org has access to AI features
+  """
+  useAI: Boolean!
+
   billingTier: TierEnum!
 
   """
@@ -195,4 +201,9 @@ type Organization {
   Custom integration providers with organization scope
   """
   integrationProviders: OrgIntegrationProviders!
+
+  """
+  The feature flags the org has enabled
+  """
+  orgFeatureFlags: [OwnedFeatureFlag!]!
 }

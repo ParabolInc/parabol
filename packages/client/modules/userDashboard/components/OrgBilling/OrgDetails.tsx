@@ -10,6 +10,8 @@ import useModal from '../../../../hooks/useModal'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import OrganizationDetails from '../Organization/OrganizationDetails'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
+import OrgFeatureFlags from './OrgFeatureFlags'
+import OrgFeatures from './OrgFeatures'
 
 type Props = {
   organizationRef: OrgDetails_organization$key
@@ -22,6 +24,8 @@ const OrgDetails = (props: Props) => {
       fragment OrgDetails_organization on Organization {
         ...OrgBillingDangerZone_organization
         ...EditableOrgName_organization
+        ...OrgFeatureFlags_organization
+        ...OrgFeatures_organization
         orgId: id
         isBillingLeader
         createdAt
@@ -66,6 +70,9 @@ const OrgDetails = (props: Props) => {
           <OrganizationDetails createdAt={createdAt} billingTier={billingTier} tier={tier} />
         </div>
       </div>
+
+      <OrgFeatures organizationRef={organization} />
+      <OrgFeatureFlags organizationRef={organization} />
       <OrgBillingDangerZone organization={organization} isWide />
     </Suspense>
   )
