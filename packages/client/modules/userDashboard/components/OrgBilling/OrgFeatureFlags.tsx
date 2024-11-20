@@ -1,8 +1,14 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
-import React, {useState} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgFeatureFlags_organization$key} from '../../../../__generated__/OrgFeatureFlags_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleFeatureFlagMutation from '../../../../mutations/ToggleFeatureFlagMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
@@ -28,63 +34,73 @@ const FeatureRow = styled('div')({
 const FeatureNameGroup = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  gap: 4
+  gap: 4,
+  '& svg': {
+    display: 'block'
+  }
 })
 
-const features = [
-  {
-    id: 'suggestGroups',
-    name: 'Suggest Groups',
-    tooltip:
-      'Get AI-powered suggestions for creating new groups based on team activity and collaboration patterns'
-  },
-  {
-    id: 'publicTeams',
-    name: 'Public Teams',
-    tooltip: 'Allow teams to be discoverable by anyone in your organization'
-  },
-  {
-    id: 'standupAISummary',
-    name: 'Stand-Up AI Summary',
-    tooltip: 'Automatically generate summaries of your team standups using AI'
-  },
-  {
-    id: 'relatedDiscussions',
-    name: 'Related Discussions',
-    tooltip: 'See AI-suggested related discussions and threads across your organization'
+// TODO: create a migration that updates featureName to be a readable string
+// then update the references throughout the app and remove this
+const FEATURE_NAME_LOOKUP: Record<string, string> = {
+  insights: 'Team Insights',
+  publicTeams: 'Public Teams',
+  relatedDiscussions: 'Related Discussions',
+  standupAISummary: 'Standup AI Summary',
+  suggestGroups: 'AI Reflection Group Suggestions'
+}
+
+interface Props {
+  organizationRef: OrgFeatureFlags_organization$key
+}
+
+const OrgFeatureFlags = (props: Props) => {
+  const {organizationRef} = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
+  const organization = useFragment(
+    graphql`
+      fragment OrgFeatureFlags_organization on Organization {
+        id
+        isOrgAdmin
+        orgFeatureFlags {
+          featureName
+          description
+          enabled
+        }
+      }
+    `,
+    organizationRef
+  )
+  const {isOrgAdmin} = organization
+
+  const handleToggle = async (featureName: string) => {
+    const variables = {
+      featureName,
+      orgId: organization.id
+    }
+    ToggleFeatureFlagMutation(atmosphere, variables, {
+      onError,
+      onCompleted
+    })
   }
-]
 
-const OrgFeatureFlags = () => {
-  const [featureStates, setFeatureStates] = useState<Record<string, boolean>>({
-    suggestGroups: false,
-    publicTeams: false,
-    standupAISummary: false,
-    relatedDiscussions: false
-  })
-
-  const handleToggle = (featureId: string) => {
-    setFeatureStates((prev) => ({
-      ...prev,
-      [featureId]: !prev[featureId]
-    }))
-  }
-
+  if (!isOrgAdmin) return null
   return (
     <StyledPanel isWide label='Organization Feature Flags'>
       <PanelRow>
-        {features.map((feature) => (
-          <FeatureRow key={feature.id}>
+        {organization.orgFeatureFlags.map((feature) => (
+          <FeatureRow key={feature.featureName}>
             <FeatureNameGroup>
-              <span>{feature.name}</span>
+              <span>{FEATURE_NAME_LOOKUP[feature.featureName] || feature.featureName}</span>
               <Tooltip>
                 <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
                   <InfoIcon className='h-4 w-4 text-slate-600' />
                 </TooltipTrigger>
-                <TooltipContent>{feature.tooltip}</TooltipContent>
+                <TooltipContent>{feature.description}</TooltipContent>
               </Tooltip>
             </FeatureNameGroup>
-            <Toggle active={featureStates[feature.id]!} onClick={() => handleToggle(feature.id)} />
+            <Toggle active={!!feature.enabled} onClick={() => handleToggle(feature.featureName)} />
           </FeatureRow>
         ))}
       </PanelRow>

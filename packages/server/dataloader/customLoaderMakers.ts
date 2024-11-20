@@ -27,7 +27,14 @@ import {
   selectTasks,
   selectTeams
 } from '../postgres/select'
-import {Insight, MeetingSettings, OrganizationUser, Task, Team} from '../postgres/types'
+import {
+  FeatureFlag,
+  Insight,
+  MeetingSettings,
+  OrganizationUser,
+  Task,
+  Team
+} from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {TeamMeetingTemplate} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
@@ -37,6 +44,7 @@ import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
+
 export interface MeetingSettingsKey {
   teamId: string
   meetingType: MeetingTypeEnum
@@ -852,6 +860,7 @@ export const latestInsightByTeamId = (parent: RootDataLoader) => {
   )
 }
 
+// whether a feature flag is enabled for a given owner (user, team, or org)
 export const featureFlagByOwnerId = (parent: RootDataLoader) => {
   return new DataLoader<{ownerId: string; featureName: string}, boolean, string>(
     async (keys) => {
@@ -952,6 +961,67 @@ export const publicTemplatesByType = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const allFeatureFlags = (parent: RootDataLoader) => {
+  return new DataLoader<'Organization' | 'Team' | 'User' | 'all', FeatureFlag[], string>(
+    async (scopes) => {
+      const pg = getKysely()
+      return await Promise.all(
+        scopes.map(async (scope) => {
+          const flags = await pg
+            .selectFrom('FeatureFlag')
+            .selectAll()
+            .where('expiresAt', '>', new Date())
+            .$if(scope !== 'all', (qb) => {
+              const validScope = scope as 'Organization' | 'Team' | 'User'
+              return qb.where('scope', '=', validScope)
+            })
+            .orderBy('featureName')
+            .execute()
+          return flags.map((flag) => ({...flag, isEnabled: true}))
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (scope) => scope
+    }
+  )
+}
+
+export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {ownerId: string; scope: 'Organization' | 'Team' | 'User'},
+    FeatureFlag[],
+    string
+  >(
+    async (keys) => {
+      const flagsByOwnerId = await Promise.all(
+        keys.map(async ({ownerId, scope}) => {
+          const allFlags = await parent.get('allFeatureFlags').load(scope)
+          const flags = await Promise.all(
+            allFlags.map(async (flag) => {
+              const isEnabled = await parent
+                .get('featureFlagByOwnerId')
+                .load({ownerId, featureName: flag.featureName})
+              return {
+                ...flag,
+                enabled: isEnabled
+              }
+            })
+          )
+          return flags
+        })
+      )
+
+      return flagsByOwnerId
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
     }
   )
 }

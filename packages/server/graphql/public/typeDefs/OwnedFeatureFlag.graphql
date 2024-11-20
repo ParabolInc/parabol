@@ -1,4 +1,4 @@
-type FeatureFlag {
+type OwnedFeatureFlag {
   """
   The ID of the feature flag
   """
@@ -23,4 +23,9 @@ type FeatureFlag {
   The scope of the feature flag
   """
   scope: FeatureFlagScope!
+
+  """
+  Whether the flag is enabled for an owner or not
+  """
+  enabled: Boolean
 }
