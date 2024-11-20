@@ -2,7 +2,7 @@ import yaml from 'js-yaml'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
-import canAccessAISummary from './canAccessAISummary'
+import canAccessAI from './canAccessAI'
 import {transformRetroToAIFormat} from './transformRetroToAIFormat'
 
 export const generateRetroSummary = async (
@@ -11,15 +11,10 @@ export const generateRetroSummary = async (
   prompt?: string
 ): Promise<string | null> => {
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId, facilitatorUserId} = meeting
+  const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const isAISummaryAccessible = await canAccessAISummary(
-    team,
-    facilitatorUserId as string, // is being removed in another PR
-    'retrospective',
-    dataLoader
-  )
+  const isAISummaryAccessible = await canAccessAI(team, 'retrospective', dataLoader)
   if (!isAISummaryAccessible) return null
 
   const transformedMeeting = await transformRetroToAIFormat(meetingId, dataLoader)
