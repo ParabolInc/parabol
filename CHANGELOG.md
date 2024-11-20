@@ -5,6 +5,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.5.1](https://github.com/ParabolInc/parabol/compare/v8.5.0...v8.5.1) (2024-11-15)
+
+
+### Fixed
+
+* reinstall cheerio to fix jira img issue ([#10490](https://github.com/ParabolInc/parabol/issues/10490)) ([6d49dc2](https://github.com/ParabolInc/parabol/commit/6d49dc2cd9cd34fd64be54133ee8c139cf6967b5))
+
+## [8.5.0](https://github.com/ParabolInc/parabol/compare/v8.4.2...v8.5.0) (2024-11-15)
+
+
+### Added
+
+* release single column standups ([#10471](https://github.com/ParabolInc/parabol/issues/10471)) ([95df820](https://github.com/ParabolInc/parabol/commit/95df8204c3299673d25c7197223e1383aefad698))
+
+
+### Fixed
+
+* **docker-external:** workflow name fixed ([#10486](https://github.com/ParabolInc/parabol/issues/10486)) ([defdc35](https://github.com/ParabolInc/parabol/commit/defdc353f25e76179cc87ae41878503924771778))
+* github pr template release test now with the correct Mattermost link ([#10483](https://github.com/ParabolInc/parabol/issues/10483)) ([4275325](https://github.com/ParabolInc/parabol/commit/4275325bdd343d2b9282890c14241b36f4ebc955))
+* update generate insight permissions ([#10470](https://github.com/ParabolInc/parabol/issues/10470)) ([9b95fdd](https://github.com/ParabolInc/parabol/commit/9b95fddc77d4ffcbdac23077676e65317e5e72d4))
+
+
+### Changed
+
+* add a workflow to push to a docker repository to share with external clients ([#10484](https://github.com/ParabolInc/parabol/issues/10484)) ([8d53813](https://github.com/ParabolInc/parabol/commit/8d53813e8c3bcda81db6f1a568fe04f52f2b609d))
+
+## [8.4.2](https://github.com/ParabolInc/parabol/compare/v8.4.1...v8.4.2) (2024-11-13)
+
+
+### Changed
+
+* **orgAdmins:** Update copy for Non Org Admins on Integration Settings page ([#10447](https://github.com/ParabolInc/parabol/issues/10447)) ([33e2589](https://github.com/ParabolInc/parabol/commit/33e25890e15d6b33beaf8fb2a13ae0a2780e469d))
+
+## [8.4.1](https://github.com/ParabolInc/parabol/compare/v8.4.0...v8.4.1) (2024-11-13)
+
+
+### Fixed
+
+* Fix GraphQL-JIT version ([#10469](https://github.com/ParabolInc/parabol/issues/10469)) ([ae85b77](https://github.com/ParabolInc/parabol/commit/ae85b778c4954de3e756d7e9c95fd6d817ada014))
+
 ## [8.4.0](https://github.com/ParabolInc/parabol/compare/v8.3.1...v8.4.0) (2024-11-12)
 
 

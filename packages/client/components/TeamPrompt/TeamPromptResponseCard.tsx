@@ -25,39 +25,21 @@ import {mergeRefs} from '../../utils/react/mergeRefs'
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
-import {ResponseCardDimensions, ResponsesGridBreakpoints} from './TeamPromptGridDimensions'
+import {ResponseCardDimensions} from './TeamPromptGridDimensions'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 import {TeamPromptResponseEmojis} from './TeamPromptResponseEmojis'
 
-const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
-const threeColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.THREE_RESPONSE_COLUMNS}px)`
-const fourColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.FOUR_RESPONSE_COLUMNS}px)`
-const fiveColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.FIVE_RESPONSE_COLUMNS}px)`
-
 const ResponseWrapper = styled('div')<{
   status: TransitionStatus
-  isSingleColumn: boolean
-}>(({status, isSingleColumn}) => ({
+}>(({status}) => ({
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  maxWidth: isSingleColumn ? '600px' : undefined,
-  margin: isSingleColumn ? '0 auto' : undefined,
-  [twoColumnResponseMediaQuery]: {
-    width: isSingleColumn ? undefined : `calc(100% / 2 - ${ResponseCardDimensions.GAP}px)`
-  },
-  [threeColumnResponseMediaQuery]: {
-    width: isSingleColumn ? undefined : `calc(100% / 3 - ${ResponseCardDimensions.GAP}px)`
-  },
-  [fourColumnResponseMediaQuery]: {
-    width: isSingleColumn ? undefined : `calc(100% / 4 - ${ResponseCardDimensions.GAP}px)`
-  },
-  [fiveColumnResponseMediaQuery]: {
-    width: isSingleColumn ? undefined : `calc(100% / 5 - ${ResponseCardDimensions.GAP}px)`
-  }
+  maxWidth: '600px',
+  margin: '0 auto'
 }))
 
 const ResponseHeader = styled('div')({
@@ -115,12 +97,11 @@ interface Props {
   stageRef: TeamPromptResponseCard_stage$key
   status: TransitionStatus
   displayIdx: number
-  isSingleColumn: boolean
   onTransitionEnd: () => void
 }
 
 const TeamPromptResponseCard = (props: Props) => {
-  const {stageRef, status, onTransitionEnd, displayIdx, isSingleColumn} = props
+  const {stageRef, status, onTransitionEnd, displayIdx} = props
   const responseStage = useFragment(
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
@@ -247,12 +228,7 @@ const TeamPromptResponseCard = (props: Props) => {
   }
 
   return (
-    <ResponseWrapper
-      ref={ref}
-      status={status}
-      onTransitionEnd={onTransitionEnd}
-      isSingleColumn={isSingleColumn}
-    >
+    <ResponseWrapper ref={ref} status={status} onTransitionEnd={onTransitionEnd}>
       <ResponseHeader>
         <Avatar picture={picture} className='h-12 w-12' />
         <TeamMemberName>

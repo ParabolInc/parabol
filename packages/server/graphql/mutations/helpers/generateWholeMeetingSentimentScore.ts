@@ -1,18 +1,17 @@
 import {DataLoaderWorker} from '../../graphql'
+import canAccessAI from './canAccessAI'
 
 const generateWholeMeetingSentimentScore = async (
   meetingId: string,
-  facilitatorUserId: string,
   dataLoader: DataLoaderWorker
 ) => {
-  const [facilitator, reflections] = await Promise.all([
-    dataLoader.get('users').loadNonNull(facilitatorUserId),
+  const [meeting, reflections] = await Promise.all([
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
-  const hasNoAISummary = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: facilitator.id, featureName: 'noAISummary'})
-  if (hasNoAISummary || reflections.length === 0) return undefined
+  const team = await dataLoader.get('teams').loadNonNull(meeting.teamId)
+  const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
+  if (!isAIAvailable || reflections.length === 0) return undefined
   const reflectionsWithSentimentScores = reflections.filter(
     ({sentimentScore}) => sentimentScore !== undefined
   )

@@ -3,19 +3,15 @@ import {Team} from '../../../postgres/types'
 import {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
-const canAccessAISummary = async (
+const canAccessAI = async (
   team: Team,
-  userId: string,
   meetingType: 'standup' | 'retrospective',
   dataLoader: DataLoaderWorker
 ) => {
   const {qualAIMeetingsCount, orgId} = team
-  const [noAIOrgSummary, noAIUserSummary] = await Promise.all([
-    dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'noAISummary'}),
-    dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, featureName: 'noAISummary'})
-  ])
+  const org = await dataLoader.get('organizations').loadNonNull(orgId)
 
-  if (noAIOrgSummary || noAIUserSummary) return false
+  if (!org.useAI) return false
   if (meetingType === 'standup') {
     const hasStandupFlag = await dataLoader
       .get('featureFlagByOwnerId')
@@ -27,4 +23,4 @@ const canAccessAISummary = async (
   return qualAIMeetingsCount < Threshold.MAX_QUAL_AI_MEETINGS
 }
 
-export default canAccessAISummary
+export default canAccessAI
