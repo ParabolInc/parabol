@@ -5,25 +5,17 @@ import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
-import canAccessAISummary from './canAccessAISummary'
+import canAccessAI from './canAccessAI'
 
 const generateDiscussionSummary = async (
   discussionId: string,
   meeting: RetrospectiveMeeting,
   dataLoader: DataLoaderWorker
 ) => {
-  const {id: meetingId, endedAt, facilitatorUserId, teamId} = meeting
-  const [facilitator, team] = await Promise.all([
-    dataLoader.get('users').loadNonNull(facilitatorUserId!),
-    dataLoader.get('teams').loadNonNull(teamId)
-  ])
-  const isAISummaryAccessible = await canAccessAISummary(
-    team,
-    facilitator.id,
-    'retrospective',
-    dataLoader
-  )
-  if (!isAISummaryAccessible) return
+  const {id: meetingId, endedAt, teamId} = meeting
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
+  if (!isAIAvailable) return
   const [comments, tasks] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').load(discussionId),
     dataLoader.get('tasksByDiscussionId').load(discussionId)

@@ -1,8 +1,14 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
-import React, {useState} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import React from 'react'
+import {useFragment} from 'react-relay'
+import {OrgFeatures_organization$key} from '../../../../__generated__/OrgFeatures_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleAIFeaturesMutation from '../../../../mutations/ToggleAIFeaturesMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
@@ -34,15 +40,41 @@ const FeatureNameGroup = styled('div')({
   }
 })
 
-const OrgFeatures = () => {
-  const [showAIFeatures, setShowAIFeatures] = useState(false)
+interface Props {
+  organizationRef: OrgFeatures_organization$key
+}
 
+const OrgFeatures = (props: Props) => {
+  const {organizationRef} = props
+  const atmosphere = useAtmosphere()
+  const {onError, onCompleted} = useMutationProps()
+  const organization = useFragment(
+    graphql`
+      fragment OrgFeatures_organization on Organization {
+        id
+        isOrgAdmin
+        useAI
+      }
+    `,
+    organizationRef
+  )
+  const {id: orgId, isOrgAdmin, useAI} = organization
+
+  const handleToggle = () => {
+    const variables = {orgId}
+    ToggleAIFeaturesMutation(atmosphere, variables, {
+      onError,
+      onCompleted
+    })
+  }
+
+  if (!isOrgAdmin) return null
   return (
     <StyledPanel isWide label='AI Features'>
       <PanelRow>
         <FeatureRow>
           <FeatureNameGroup>
-            <span>Show AI Features</span>
+            <span>Enable AI Features</span>
             <Tooltip>
               <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
                 <InfoIcon className='h-4 w-4 text-slate-600' />
@@ -50,7 +82,7 @@ const OrgFeatures = () => {
               <TooltipContent>Enable AI-powered features across your organization</TooltipContent>
             </Tooltip>
           </FeatureNameGroup>
-          <Toggle active={showAIFeatures} onClick={() => setShowAIFeatures(!showAIFeatures)} />
+          <Toggle active={useAI} onClick={handleToggle} />
         </FeatureRow>
       </PanelRow>
     </StyledPanel>

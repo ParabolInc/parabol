@@ -25,6 +25,7 @@ const OrgDetails = (props: Props) => {
         ...OrgBillingDangerZone_organization
         ...EditableOrgName_organization
         ...OrgFeatureFlags_organization
+        ...OrgFeatures_organization
         orgId: id
         isBillingLeader
         createdAt
@@ -70,7 +71,7 @@ const OrgDetails = (props: Props) => {
         </div>
       </div>
 
-      <OrgFeatures />
+      <OrgFeatures organizationRef={organization} />
       <OrgFeatureFlags organizationRef={organization} />
       <OrgBillingDangerZone organization={organization} isWide />
     </Suspense>
