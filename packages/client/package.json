@@ -115,7 +115,7 @@
     "flatted": "^2.0.1",
     "graphiql": "^3.0.0",
     "graphql-typed": "^0.7.2",
-    "history": "4.9.0",
+    "history": "4.10.1",
     "hoist-non-react-statics": "^3.3.0",
     "humanize-duration": "^3.32.0",
     "immutable": "3.8.2",
