@@ -25,7 +25,6 @@ const mutation = graphql`
       }
       isNewUser
       user {
-        hasSignUpDestinationTeamFlag: featureFlag(featureName: "signUpDestinationTeam")
         teams {
           id
         }
@@ -57,10 +56,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken || loginWithGoogle.authToken!
         atmosphere.setAuthToken(authToken)
-        const redirectPath =
-          isNewUser && user?.hasSignUpDestinationTeamFlag
-            ? `/team/${user?.teams?.[0]?.id}`
-            : '/meetings'
+        const redirectPath = '/meetings'
 
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,

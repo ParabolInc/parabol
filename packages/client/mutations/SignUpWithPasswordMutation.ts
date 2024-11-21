@@ -26,7 +26,6 @@ const mutation = graphql`
         message
       }
       user {
-        hasSignUpDestinationTeamFlag: featureFlag(featureName: "signUpDestinationTeam")
         teams {
           id
         }
@@ -55,10 +54,7 @@ const SignUpWithPasswordMutation: StandardMutation<
         handleSuccessfulLogin(signUpWithPassword)
         const authToken = acceptTeamInvitation?.authToken || signUpWithPassword.authToken!
         atmosphere.setAuthToken(authToken)
-
-        const redirectPath = user?.hasSignUpDestinationTeamFlag
-          ? `/team/${user?.teams?.[0]?.id}`
-          : '/meetings'
+        const redirectPath = '/meetings'
 
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,
