@@ -1,4 +1,4 @@
-import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
+import {getAllNodesAttributesByType} from '../../../../client/shared/getAllNodesAttributesByType'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {Task} from '../../../postgres/types'
@@ -13,12 +13,16 @@ const publishChangeNotifications = async (
 ) => {
   const pg = getKysely()
   const changeAuthorId = `${changeUser.id}::${task.teamId}`
-  const {entityMap: oldEntityMap} = JSON.parse(oldTask.content)
-  const {entityMap} = JSON.parse(task.content)
+  const oldContentJSON = JSON.parse(oldTask.content)
+  const contentJSON = JSON.parse(task.content)
   const wasPrivate = oldTask.tags.includes('private')
   const isPrivate = task.tags.includes('private')
-  const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap)
-  const mentions = isPrivate ? [] : getTypeFromEntityMap('MENTION', entityMap)
+  const oldMentions = wasPrivate
+    ? []
+    : getAllNodesAttributesByType<{id: string}>(oldContentJSON, 'mention').map(({id}) => id)
+  const mentions = isPrivate
+    ? []
+    : getAllNodesAttributesByType<{id: string}>(contentJSON, 'mention').map(({id}) => id)
   // intersect the mentions to get the ones to add and remove
   const userIdsToRemove = oldMentions.filter((userId) => !mentions.includes(userId))
   const notificationsToAdd = mentions

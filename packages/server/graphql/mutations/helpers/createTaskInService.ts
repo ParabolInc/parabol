@@ -1,3 +1,4 @@
+import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
@@ -8,7 +9,7 @@ import IntegrationRepoId from '../../../../client/shared/gqlIds/IntegrationRepoI
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import removeRangesForEntity from '../../../../client/utils/draftjs/removeRangesForEntity'
+import {removeNodeByType} from '../../../../client/shared/removeNodeByType'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
 import createAzureTask from './createAzureTask'
@@ -18,7 +19,7 @@ import createJiraTask from './createJiraTask'
 
 const createTaskInService = async (
   integrationInput: CreateTaskIntegrationInput | null | undefined,
-  rawContent: string,
+  rawContent: JSONContent,
   accessUserId: string,
   teamId: string,
   context: GQLContext,
@@ -27,8 +28,7 @@ const createTaskInService = async (
   if (!integrationInput) return {integrationHash: undefined, integration: undefined}
   const {dataLoader} = context
   const {service, serviceProjectHash} = integrationInput
-  const eqFn = (data: {value: string}) => ['archived', 'private'].includes(data.value)
-  const taglessContentJSON = removeRangesForEntity(rawContent, 'TAG', eqFn) || rawContent
+  const taglessContentJSON = removeNodeByType(rawContent, 'taskTag')
   if (service === 'jira') {
     const atlassianAuth = await dataLoader
       .get('freshAtlassianAuth')

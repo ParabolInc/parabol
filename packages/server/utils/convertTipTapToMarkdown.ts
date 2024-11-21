@@ -1,0 +1,9 @@
+import {JSONContent} from '@tiptap/core'
+import {generateHTML} from '@tiptap/html'
+import {NodeHtmlMarkdown} from 'node-html-markdown'
+import {serverTipTapExtensions} from '../../client/shared/serverTipTapExtensions'
+export const convertTipTapToMarkdown = (content: JSONContent) => {
+  const html = generateHTML(content, serverTipTapExtensions)
+  const markdown = NodeHtmlMarkdown.translate(html)
+  return markdown
+}

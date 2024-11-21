@@ -2,7 +2,8 @@ import {mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import Mention from '@tiptap/extension-mention'
 import StarterKit from '@tiptap/starter-kit'
-import {LoomExtension} from '../../client/components/promptResponse/loomExtension'
+import {LoomExtension} from '~/components/promptResponse/loomExtension'
+import {tiptapTagConfig} from '../utils/tiptapTagConfig'
 
 export const serverTipTapExtensions = [
   StarterKit,
@@ -12,6 +13,7 @@ export const serverTipTapExtensions = [
       return node.attrs.label
     }
   }),
+  Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
   BaseLink.extend({
     parseHTML() {
       return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]

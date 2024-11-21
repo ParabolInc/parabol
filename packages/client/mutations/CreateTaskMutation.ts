@@ -1,3 +1,4 @@
+import {JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
@@ -108,9 +109,11 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
   if (!task) return
   const taskId = task.getValue('id')
   const content = task.getValue('content')
-  const rawContent = JSON.parse(content)
-  const {blocks} = rawContent
-  const isEditing = blocks.length === 0 || (blocks.length === 1 && blocks[0].text === '')
+  const rawContent = JSON.parse(content) as JSONContent
+  const isEditing =
+    !rawContent.content ||
+    rawContent.content.length === 0 ||
+    (rawContent.content.length === 1 && rawContent.content[0]?.text === '')
   const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
   handleEditTask(editorPayload, store)
   handleUpsertTasks(task, store)

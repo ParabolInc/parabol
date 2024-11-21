@@ -1,10 +1,12 @@
+import {generateText, JSONContent} from '@tiptap/core'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
 import composeJQL from '~/utils/composeJQL'
-import splitDraftContent from '~/utils/draftjs/splitDraftContent'
+import {serverTipTapExtensions} from '../../../client/shared/serverTipTapExtensions'
+import {splitTipTapContent} from '../../../client/shared/splitTipTapContent'
 import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
@@ -285,15 +287,16 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentStr,
+    rawContentJSON,
     integrationRepoId
   }: {
-    rawContentStr: string
+    rawContentJSON: JSONContent
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
-    const {title: summary, contentState} = splitDraftContent(rawContentStr)
+    const {title: summary, bodyContent} = splitTipTapContent(rawContentJSON)
+
     // TODO: implement stateToJiraServerFormat
-    const description = contentState.getPlainText()
+    const description = generateText(bodyContent, serverTipTapExtensions)
 
     const {repositoryId} = IntegrationRepoId.split(integrationRepoId)
 

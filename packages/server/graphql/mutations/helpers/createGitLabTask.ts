@@ -1,12 +1,13 @@
-import {stateToMarkdown} from 'draft-js-export-markdown'
+import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
-import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
+import {splitTipTapContent} from '../../../../client/shared/splitTipTapContent'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {TeamMemberIntegrationAuth} from '../../../postgres/types'
+import {convertTipTapToMarkdown} from '../../../utils/convertTipTapToMarkdown'
 import {DataLoaderWorker, GQLContext} from '../../graphql'
 
 const createGitLabTask = async (
-  rawContent: string,
+  rawContent: JSONContent,
   fullPath: string,
   gitlabAuth: TeamMemberIntegrationAuth,
   context: GQLContext,
@@ -15,8 +16,8 @@ const createGitLabTask = async (
 ) => {
   const {accessToken, providerId} = gitlabAuth
   if (!accessToken) return {error: new Error('Invalid GitLab auth')}
-  const {title, contentState} = splitDraftContent(rawContent)
-  const body = stateToMarkdown(contentState)
+  const {title, bodyContent} = splitTipTapContent(rawContent)
+  const body = convertTipTapToMarkdown(bodyContent)
   const provider = await dataLoader.get('integrationProviders').load(providerId)
   const manager = new GitLabServerManager(gitlabAuth, context, info, provider!.serverBaseUrl!)
   const [createIssueData, createIssueError] = await manager.createIssue({

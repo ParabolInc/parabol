@@ -5,7 +5,7 @@ import {TeamPromptResponseSummaryCard_stage$key} from 'parabol-client/__generate
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {serverTipTapExtensions} from '../../../../../../server/utils/serverTipTapExtensions'
+import {serverTipTapExtensions} from '../../../../../shared/serverTipTapExtensions'
 
 const responseSummaryCardStyles: React.CSSProperties = {
   padding: '12px',
