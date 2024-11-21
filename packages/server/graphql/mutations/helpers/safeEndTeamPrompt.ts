@@ -1,6 +1,5 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
@@ -88,7 +87,6 @@ const safeEndTeamPrompt = async ({
   await pg.insertInto('TimelineEvent').values(events).execute()
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
-  checkTeamsLimit(team.orgId, dataLoader)
   dataLoader.get('newMeetings').clear(meetingId)
 
   const data = {

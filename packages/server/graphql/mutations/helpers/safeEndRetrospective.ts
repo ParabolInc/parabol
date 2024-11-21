@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
 import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
@@ -140,7 +139,6 @@ const safeEndRetrospective = async ({
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
   summarizeRetroMeeting(completedRetrospective, context)
   analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
-  checkTeamsLimit(team.orgId, dataLoader)
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventRetroComplete({
