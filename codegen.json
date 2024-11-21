@@ -90,7 +90,6 @@
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
-          "GetTemplateSuggestionSuccess": "./types/GetTemplateSuggestionSuccess#GetTemplateSuggestionSuccessSource",
           "GitHubIntegration": "../../postgres/queries/getGitHubAuthByUserIdTeamId#GitHubAuth",
           "GitLabIntegration": "./types/GitLabIntegration#GitLabIntegrationSource",
           "IntegrationProviderOAuth1": "../../postgres/queries/getIntegrationProvidersByIds#TIntegrationProvider",
