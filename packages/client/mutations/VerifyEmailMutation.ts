@@ -15,11 +15,6 @@ const mutation = graphql`
       error {
         message
       }
-      user {
-        teams {
-          id
-        }
-      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
@@ -38,7 +33,6 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, History
     onError,
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, verifyEmail} = res
-      const {user} = verifyEmail
       const authToken = acceptTeamInvitation?.authToken ?? verifyEmail.authToken
       onCompleted({verifyEmail}, errors)
       if (authToken) {

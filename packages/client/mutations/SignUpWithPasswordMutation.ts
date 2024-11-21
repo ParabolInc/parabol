@@ -25,11 +25,6 @@ const mutation = graphql`
       error {
         message
       }
-      user {
-        teams {
-          id
-        }
-      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     acceptTeamInvitation(invitationToken: $invitationToken) @include(if: $isInvitation) {
