@@ -4,20 +4,9 @@ import {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 
-type Prompt = {
-  question: string
-  description: string
-}
-
 type InsightResponse = {
   wins: string[]
   challenges: string[]
-}
-
-type Template = {
-  templateId: string
-  templateName: string
-  prompts: Prompt[]
 }
 
 class OpenAIServerManager {
