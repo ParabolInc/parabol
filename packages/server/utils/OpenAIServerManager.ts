@@ -444,6 +444,7 @@ class OpenAIServerManager {
     Start the summary with the most important topic.
     You do not need to mention everything. Just mention the most important points, and ensure the summary is concise.
     Your tone should be kind. Write in plain English. No jargon.
+    Do not add quote marks around the whole summary.
     `
     const prompt = userPrompt ? userPrompt : defaultPrompt
 
