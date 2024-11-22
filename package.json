@@ -127,12 +127,13 @@
     "typescript-eslint": "^8.3.0",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "^5.89.0",
-    "webpack-cli": "4.9.1",
+    "webpack-cli": "5.1.4",
     "workbox-webpack-plugin": "^6.5.4",
     "yargs": "^17.7.2",
     "yarn-deduplicate": "^3.1.0"
   },
   "dependencies": {
+    "@module-federation/enhanced": "^0.7.6",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "lodash.toarray": "^4.4.0",

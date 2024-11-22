@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "../",
+    "paths": {
+      "parabol-server/*": ["server/*"],
+      "parabol-client/*": ["client/*"],
+      "~/*": ["client/*"]
+    },
+    "lib": ["esnext"]
+  }
+}
