@@ -8,6 +8,24 @@ import {convertFromRaw, RawDraftContentState} from 'draft-js'
 import {Options, stateToHTML} from 'draft-js-export-html'
 import {isDraftJSContent} from '../../client/shared/isDraftJSContent'
 import {serverTipTapExtensions} from '../../client/shared/serverTipTapExtensions'
+import {Logger} from './Logger'
+
+const getNameFromEntity = (content: RawDraftContentState, userId: string) => {
+  const {blocks, entityMap} = content
+  const entityKey = Number(
+    Object.keys(entityMap).find((key) => entityMap[key]!.data?.userId === userId)
+  )
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i]!
+    const {entityRanges, text} = block
+    const entityRange = entityRanges.find((range) => range.key === entityKey)
+    if (!entityRange) continue
+    const {length, offset} = entityRange
+    return text.slice(offset, offset + length)
+  }
+  Logger.log('found unknown for', userId, JSON.stringify(content))
+  return 'Unknown User'
+}
 
 export const convertKnownDraftToTipTap = (content: RawDraftContentState) => {
   const contentState = convertFromRaw(content)
@@ -15,9 +33,7 @@ export const convertKnownDraftToTipTap = (content: RawDraftContentState) => {
   const options: Options = {
     entityStyleFn: (entity) => {
       const entityType = entity.getType().toLowerCase()
-      console.log('entity', entity, entityType)
       const data = entity.getData()
-      console.log('data', data)
       if (entityType === 'tag') {
         return {
           element: 'span',
@@ -29,11 +45,13 @@ export const convertKnownDraftToTipTap = (content: RawDraftContentState) => {
       }
       // TODO FIX ME WHEN WE DO THE CONVERSION
       if (entityType === 'mention') {
+        const label = getNameFromEntity(content, data.userId)
         return {
           element: 'span',
           attributes: {
-            'data-id': data.value,
-            'data-label': data.label
+            'data-id': data.userId,
+            'data-label': label,
+            'data-type': 'mention'
           }
         }
       }
@@ -42,7 +60,6 @@ export const convertKnownDraftToTipTap = (content: RawDraftContentState) => {
   }
   const html = stateToHTML(contentState, options)
   const json = generateJSON(html, serverTipTapExtensions) as JSONContent
-  console.log('coverted', html, JSON.stringify(json))
   return json
 }
 export const convertToTipTap = (contentStr: string | null | undefined) => {
