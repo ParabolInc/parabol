@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.6.1](https://github.com/ParabolInc/parabol/compare/v8.6.0...v8.6.1) (2024-11-25)
+
+
+### Fixed
+
+* Adding reactions in standup via mouse works more than once ([#10520](https://github.com/ParabolInc/parabol/issues/10520)) ([8ddcd90](https://github.com/ParabolInc/parabol/commit/8ddcd90398332af8b434a2e509d5c954f9b94d07))
+
+
+### Changed
+
+* remove signUpDestinationTeam ([#10513](https://github.com/ParabolInc/parabol/issues/10513)) ([f388f45](https://github.com/ParabolInc/parabol/commit/f388f45f5dbf40867d3bf85d8b466b46a722c3f5))
+
 ## [8.6.0](https://github.com/ParabolInc/parabol/compare/v8.5.1...v8.6.0) (2024-11-20)
 
 
