@@ -26,7 +26,7 @@ const Avatar = forwardRef<HTMLDivElement, Props>((props, ref) => {
       className={clsx(`${onClick && 'cursor-pointer'}`, className)}
     >
       <AvatarImage src={picture || defaultUserAvatar} alt={alt || 'Avatar'} />
-      <AvatarFallback>
+      <AvatarFallback delayMs={200}>
         <img src={defaultUserAvatar} alt={alt || 'Avatar not found'} />
       </AvatarFallback>
     </AvatarRoot>

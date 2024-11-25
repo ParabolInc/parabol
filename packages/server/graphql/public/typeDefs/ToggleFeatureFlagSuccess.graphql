@@ -1,0 +1,6 @@
+type ToggleFeatureFlagSuccess {
+  """
+  The feature flag that was toggled
+  """
+  featureFlag: OwnedFeatureFlag!
+}

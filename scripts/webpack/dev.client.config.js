@@ -22,6 +22,7 @@ module.exports = {
   },
   stats: 'errors-warnings',
   devServer: {
+    allowedHosts: ['localhost', 'host.docker.internal'],
     client: {
       logging: 'warn'
     },
@@ -57,6 +58,7 @@ module.exports = {
       'graphql',
       'intranet-graphql',
       'self-hosted',
+      'mattermost',
       // important terminating / so saml-redirect doesn't get targeted, too
       'saml/'
     ].map((name) => ({

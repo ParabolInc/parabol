@@ -1,0 +1,31 @@
+type OwnedFeatureFlag {
+  """
+  The ID of the feature flag
+  """
+  id: ID!
+
+  """
+  The name of the feature flag
+  """
+  featureName: String!
+
+  """
+  Description of the feature flag
+  """
+  description: String
+
+  """
+  Expiration date of the feature flag
+  """
+  expiresAt: DateTime!
+
+  """
+  The scope of the feature flag
+  """
+  scope: FeatureFlagScope!
+
+  """
+  Whether the flag is enabled for an owner or not
+  """
+  enabled: Boolean
+}

@@ -3,11 +3,11 @@ import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import dndNoise from '../../../client/utils/dndNoise'
 import extractTextFromDraftString from '../../../client/utils/draftjs/extractTextFromDraftString'
 import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
+import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
@@ -188,11 +188,14 @@ export default {
     }
 
     const content = normalizeRawDraftJS(newTask.content)
+    // const content = convertToTipTap(newTask.content)
+    // const plaintextContent = generateText(content, serverTipTapExtensions)
 
     // see if the task already exists
     const integrationRes = await createTaskInService(
       newTask.integration,
-      content,
+      // TODO: FIX ME
+      content as any,
       viewerId,
       teamId,
       context,
@@ -223,12 +226,14 @@ export default {
       threadSortOrder,
       threadParentId,
       userId: userId || null,
-      tags: getTagsFromEntityMap<TaskTag>(JSON.parse(content).entityMap)
+      // FIXME
+      tags: getTagsFromEntityMap<TaskTag>(JSON.parse(content as any).entityMap)
     }
     const {id: taskId} = task
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     await pg.insertInto('Task').values(task).execute()
-    handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
+    // FIXME
+    handleAddTaskNotifications(teamMembers, task as any, viewerId, teamId, {
       operationId,
       mutatorId
     }).catch()

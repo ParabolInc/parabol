@@ -23,13 +23,6 @@ const mutation = graphql`
       error {
         message
       }
-      isNewUser
-      user {
-        hasSignUpDestinationTeamFlag: featureFlag(featureName: "signUpDestinationTeam")
-        teams {
-          id
-        }
-      }
       ...handleSuccessfulLogin_UserLogInPayload @relay(mask: false)
     }
     # Validation occurs statically https://github.com/graphql/graphql-js/issues/1334
@@ -51,16 +44,13 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, loginWithGoogle} = res
       onCompleted({loginWithGoogle}, errors)
-      const {error: uiError, user, isNewUser} = loginWithGoogle
+      const {error: uiError} = loginWithGoogle
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken || loginWithGoogle.authToken!
         atmosphere.setAuthToken(authToken)
-        const redirectPath =
-          isNewUser && user?.hasSignUpDestinationTeamFlag
-            ? `/team/${user?.teams?.[0]?.id}`
-            : '/meetings'
+        const redirectPath = '/meetings'
 
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,

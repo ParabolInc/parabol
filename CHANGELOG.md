@@ -5,6 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.6.1](https://github.com/ParabolInc/parabol/compare/v8.6.0...v8.6.1) (2024-11-25)
+
+
+### Fixed
+
+* Adding reactions in standup via mouse works more than once ([#10520](https://github.com/ParabolInc/parabol/issues/10520)) ([8ddcd90](https://github.com/ParabolInc/parabol/commit/8ddcd90398332af8b434a2e509d5c954f9b94d07))
+
+
+### Changed
+
+* remove signUpDestinationTeam ([#10513](https://github.com/ParabolInc/parabol/issues/10513)) ([f388f45](https://github.com/ParabolInc/parabol/commit/f388f45f5dbf40867d3bf85d8b466b46a722c3f5))
+
+## [8.6.0](https://github.com/ParabolInc/parabol/compare/v8.5.1...v8.6.0) (2024-11-20)
+
+
+### Added
+
+* org feature flags UI ([#10436](https://github.com/ParabolInc/parabol/issues/10436)) ([caef734](https://github.com/ParabolInc/parabol/commit/caef73455dd1a5ad025abe54cd5d1d5dbd637610))
+* Upgrade TipTap Extensions ([#10455](https://github.com/ParabolInc/parabol/issues/10455)) ([168ef0b](https://github.com/ParabolInc/parabol/commit/168ef0bd6a7ecbd435c0e0884330371a3c9d72da))
+
+
+### Fixed
+
+* remove react imports ([#10502](https://github.com/ParabolInc/parabol/issues/10502)) ([f49c4e5](https://github.com/ParabolInc/parabol/commit/f49c4e5f5c0268758a48f700ec147085fcc376be))
+
+
+### Changed
+
+* Proxy mattermost webhook handler in dev ([#10503](https://github.com/ParabolInc/parabol/issues/10503)) ([d390ae4](https://github.com/ParabolInc/parabol/commit/d390ae45e3e55dff7534ff262dd335eb6a1d5602))
+
 ## [8.5.1](https://github.com/ParabolInc/parabol/compare/v8.5.0...v8.5.1) (2024-11-15)
 
 

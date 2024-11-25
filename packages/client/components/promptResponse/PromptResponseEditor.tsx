@@ -1,18 +1,22 @@
 import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
+import Mention from '@tiptap/extension-mention'
+import Placeholder from '@tiptap/extension-placeholder'
 import {BubbleMenu, EditorContent, JSONContent, useEditor} from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
 import areEqual from 'fbjs/lib/areEqual'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
+import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
-import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
-import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
-import EmojiMenuTipTap from './EmojiMenuTipTap'
-import MentionsTipTap from './MentionsTipTap'
-import {unfurlLoomLinks} from './loomExtension'
-import {LinkMenuProps, LinkPreviewProps, createEditorExtensions, getLinkProps} from './tiptapConfig'
+import isTextSelected from './isTextSelected'
+import {LoomExtension, unfurlLoomLinks} from './loomExtension'
+import {TiptapLinkExtension} from './TiptapLinkExtension'
+import TipTapLinkMenu, {LinkMenuState} from './TipTapLinkMenu'
 
 const LinkIcon = styled(Link)({
   height: 18,
@@ -29,7 +33,7 @@ const BubbleMenuWrapper = styled('div')({
   padding: '4px'
 })
 
-const BubbleMenuButton = styled(BaseButton)<{isActive: boolean}>(({isActive}) => ({
+const BubbleMenuButton = styled(BaseButton)<{isActive?: boolean}>(({isActive}) => ({
   height: '20px',
   width: '22px',
   padding: '4px 0px 4px 0px',
@@ -65,66 +69,9 @@ const CancelButton = styled(SubmitButton)({
   color: PALETTE.SLATE_700
 })
 
-const StyledEditor = styled('div')`
-  .ProseMirror {
-    min-height: 40px;
-    line-height: 1.25;
-  }
-
-  .ProseMirror :is(ul, ol) {
-    list-style-position: outside;
-    padding-inline-start: 16px;
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  .ProseMirror :is(ol) {
-    margin-inline-start: 2px;
-  }
-
-  .ProseMirror p.is-editor-empty:first-child::before {
-    color: #adb5bd;
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  }
-
-  .ProseMirror [data-type='mention'] {
-    background-color: ${PALETTE.GOLD_100};
-    border-radius: 2;
-    font-weight: 600;
-  }
-
-  .ProseMirror-focused:focus {
-    outline: none;
-  }
-
-  a {
-    text-decoration: underline;
-    color: ${PALETTE.SLATE_700};
-    :hover {
-      cursor: pointer;
-    }
-  }
-
-  .ProseMirror p {
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  hr.ProseMirror-selectednode {
-    border-top: 1px solid #68cef8;
-  }
-
-  hr {
-    border-top: 1px solid ${PALETTE.SLATE_400};
-  }
-`
-
 interface Props {
   autoFocus?: boolean
-  teamId?: string
+  teamId: string
   content: JSONContent | null
   handleSubmit?: (editor: EditorState) => void
   readOnly: boolean
@@ -142,37 +89,13 @@ const PromptResponseEditor = (props: Props) => {
     teamId,
     draftStorageKey
   } = props
+  const atmosphere = useAtmosphere()
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
   const content = useMemo(
     () => (rawContent && readOnly ? unfurlLoomLinks(rawContent) : rawContent),
     [rawContent, readOnly]
-  )
-
-  const [linkOverlayProps, setLinkOverlayProps] = useState<
-    | {
-        linkMenuProps: LinkMenuProps
-        linkPreviewProps: undefined
-      }
-    | {
-        linkMenuProps: undefined
-        linkPreviewProps: LinkPreviewProps
-      }
-    | undefined
-  >()
-
-  const setLinkMenuProps = useCallback(
-    (props: LinkMenuProps) => {
-      setLinkOverlayProps({linkMenuProps: props, linkPreviewProps: undefined})
-    },
-    [setLinkOverlayProps]
-  )
-  const setLinkPreviewProps = useCallback(
-    (props: LinkPreviewProps) => {
-      setLinkOverlayProps({linkPreviewProps: props, linkMenuProps: undefined})
-    },
-    [setLinkOverlayProps]
   )
 
   const editorRef = useRef<HTMLDivElement>(null)
@@ -218,28 +141,36 @@ const PromptResponseEditor = (props: Props) => {
     }
   }
 
+  const [linkState, setLinkState] = useState<LinkMenuState>(null)
+
+  const openLinkEditor = () => {
+    setLinkState('edit')
+  }
+
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(
-        setLinkMenuProps,
-        setLinkPreviewProps,
-        setLinkOverlayProps,
-        placeholder
-      ),
+      extensions: [
+        StarterKit,
+        LoomExtension,
+        Placeholder.configure({
+          showOnlyWhenEditable: false,
+          placeholder
+        }),
+        Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
+        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
+        TiptapLinkExtension.configure({
+          openOnClick: false,
+          popover: {
+            setLinkState
+          }
+        })
+      ],
       autofocus: autoFocus,
       onUpdate,
       editable: !readOnly
     },
-    [
-      content,
-      readOnly,
-      setLinkMenuProps,
-      setLinkPreviewProps,
-      setLinkOverlayProps,
-      onSubmit,
-      onUpdate
-    ]
+    [content, readOnly, onSubmit, onUpdate]
   )
 
   useEffect(() => {
@@ -260,21 +191,22 @@ const PromptResponseEditor = (props: Props) => {
     editor?.commands.setContent(draftContent)
   }, [editor])
 
-  const onAddHyperlink = () => {
-    if (!editor) {
-      return
-    }
-
-    setLinkMenuProps(getLinkProps(editor))
+  const shouldShowBubbleMenu = () => {
+    if (!editor || editor.isActive('link')) return false
+    return isTextSelected(editor)
   }
 
   return (
     <>
-      <StyledEditor>
+      <div>
         {editor && !readOnly && (
           <>
             <div>
-              <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
+              <BubbleMenu
+                editor={editor}
+                tippyOptions={{duration: 100}}
+                shouldShow={shouldShowBubbleMenu}
+              >
                 <BubbleMenuWrapper>
                   <BubbleMenuButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -294,40 +226,24 @@ const PromptResponseEditor = (props: Props) => {
                   >
                     <s>S</s>
                   </BubbleMenuButton>
-                  <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
+                  <BubbleMenuButton onClick={openLinkEditor}>
                     <LinkIcon />
                   </BubbleMenuButton>
                 </BubbleMenuWrapper>
               </BubbleMenu>
             </div>
-            <EmojiMenuTipTap tiptapEditor={editor} />
-            {teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
-            {linkOverlayProps?.linkMenuProps && (
-              <EditorLinkChangerTipTap
-                text={linkOverlayProps.linkMenuProps.text}
-                link={linkOverlayProps.linkMenuProps.href}
-                tiptapEditor={editor}
-                originCoords={linkOverlayProps.linkMenuProps.originCoords}
-                removeModal={() => {
-                  setLinkOverlayProps(undefined)
-                }}
-              />
-            )}
-            {linkOverlayProps?.linkPreviewProps && (
-              <EditorLinkViewerTipTap
-                href={linkOverlayProps.linkPreviewProps.href}
-                tiptapEditor={editor}
-                addHyperlink={onAddHyperlink}
-                originCoords={linkOverlayProps.linkPreviewProps.originCoords}
-                removeModal={() => {
-                  setLinkOverlayProps(undefined)
-                }}
-              />
-            )}
+            <TipTapLinkMenu
+              editor={editor}
+              setLinkState={(linkState: LinkMenuState) => {
+                editor.commands.focus()
+                setLinkState(linkState)
+              }}
+              linkState={linkState}
+            />
           </>
         )}
         <EditorContent ref={editorRef} editor={editor} />
-      </StyledEditor>
+      </div>
       {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.

@@ -21,6 +21,7 @@ import {
 } from '../select'
 import {
   Discussion as DiscussionPG,
+  FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
   TaskEstimate as TaskEstimatePG,
@@ -80,6 +81,7 @@ export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTe
 export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
 export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
 export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}
+export type FeatureFlag = Selectable<FeatureFlagPG>
 
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
 
