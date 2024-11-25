@@ -49,7 +49,7 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
     port: PORT,
-    proxy: [
+    proxy: [...[
       'sse',
       'sse-ping',
       'jira-attachments',
@@ -64,7 +64,12 @@ module.exports = {
     ].map((name) => ({
       context: [`/${name}`],
       target: `http://localhost:${SOCKET_PORT}`
-    }))
+    })),
+    {
+      context: '/components',
+      pathRewrite: { '^/components': '' },
+      target: `http://localhost:3002`
+    }]
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
