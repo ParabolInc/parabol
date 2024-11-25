@@ -5,7 +5,8 @@ export const splitTipTapContent = (doc: JSONContent, maxLength = 256) => {
   const [firstBlock, ...bodyBlocks] = doc.content!
   const fullTitle = generateText({...doc, content: [firstBlock!]}, serverTipTapExtensions)
   if (fullTitle.length < maxLength) {
-    return {title: fullTitle, bodyContent: {...doc, content: bodyBlocks}}
+    const content = bodyBlocks.length > 0 ? bodyBlocks : doc.content!
+    return {title: fullTitle, bodyContent: {...doc, content}}
   }
   return {
     title: fullTitle.slice(0, maxLength),

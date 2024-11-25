@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
@@ -9,7 +8,6 @@ import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCa
 import isTaskArchived from '../../utils/isTaskArchived'
 import isTempId from '../../utils/relay/isTempId'
 import NullCard from '../NullCard/NullCard'
-import {LinkMenuState} from '../promptResponse/TipTapLinkMenu'
 
 interface Props {
   area: AreaEnum
@@ -59,10 +57,13 @@ const NullableTask = (props: Props) => {
   const isIntegration = !!integration?.__typename
   const {preferredName} = createdByUser
   const atmosphere = useAtmosphere()
-  const [linkState, setLinkState] = useState<LinkMenuState>(null)
   const isArchived = isTaskArchived(tags)
   const readOnly = isTempId(taskId) || isArchived || !!isDraggingOver || isIntegration
-  const editor = useTipTapTaskEditor(content, atmosphere, teamId, setLinkState, readOnly)
+  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+    atmosphere,
+    teamId,
+    readOnly
+  })
 
   const showOutcome =
     editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)

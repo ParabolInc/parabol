@@ -23,9 +23,10 @@ interface Props {
   editor: Editor
   linkState: LinkMenuState
   setLinkState: (linkState: LinkMenuState) => void
+  useLinkEditor?: () => void
 }
 export const TipTapLinkMenu = (props: Props) => {
-  const {editor, linkState, setLinkState} = props
+  const {editor, linkState, setLinkState, useLinkEditor} = props
 
   const {link, text} = useEditorState({
     editor,
@@ -127,7 +128,12 @@ export const TipTapLinkMenu = (props: Props) => {
         >
           <div className='absolute left-0 top-0' style={{transform: getTransform()}}>
             {linkState === 'edit' && (
-              <TipTapLinkEditor initialUrl={link} initialText={text} onSetLink={onSetLink} />
+              <TipTapLinkEditor
+                initialUrl={link}
+                initialText={text}
+                onSetLink={onSetLink}
+                useLinkEditor={useLinkEditor}
+              />
             )}
             {linkState === 'preview' && (
               <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />

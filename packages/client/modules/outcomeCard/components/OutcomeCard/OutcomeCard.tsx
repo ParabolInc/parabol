@@ -178,7 +178,12 @@ const OutcomeCard = memo((props: Props) => {
             }}
             onFocus={() => addTaskChild('root')}
           >
-            <TipTapEditor editor={editor} linkState={linkState} setLinkState={setLinkState} />
+            <TipTapEditor
+              editor={editor}
+              linkState={linkState}
+              setLinkState={setLinkState}
+              useLinkEditor={() => useTaskChild('editor-link-changer')}
+            />
           </TaskEditorWrapper>
         )}
         <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />

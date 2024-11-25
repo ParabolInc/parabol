@@ -1,14 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
-import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import * as React from 'react'
-import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
+import {TipTapEditor} from '../../../../../components/promptResponse/TipTapEditor'
+import {useTipTapTaskEditor} from '../../../../../hooks/useTipTapTaskEditor'
 import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
 
 interface Props {
@@ -66,15 +65,8 @@ const EmailTaskCard = (props: Props) => {
     taskRef
   )
   const {content, status} = task || deletedTask
-  const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
-  const editorStateRef = useRef<EditorState>()
-  const getEditorState = () => {
-    return editorStateRef.current
-  }
-  editorStateRef.current = EditorState.createWithContent(
-    contentState,
-    editorDecorators(getEditorState)
-  )
+  const {editor} = useTipTapTaskEditor(content, {readOnly: true})
+  if (!editor) return null
   return (
     <tr>
       <td>
@@ -97,13 +89,7 @@ const EmailTaskCard = (props: Props) => {
                   <tbody>
                     <tr>
                       <td>
-                        <Editor
-                          readOnly
-                          editorState={editorStateRef.current}
-                          onChange={() => {
-                            /**/
-                          }}
-                        />
+                        <TipTapEditor editor={editor} />
                       </td>
                     </tr>
                   </tbody>

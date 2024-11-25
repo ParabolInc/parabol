@@ -1,18 +1,22 @@
 import {mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
-import Mention from '@tiptap/extension-mention'
+import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '~/components/promptResponse/loomExtension'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
 
+export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
+  renderText({node}) {
+    return node.attrs.label
+  },
+  renderHTML({options, node}) {
+    return ['span', options.HTMLAttributes, `${node.attrs.label ?? node.attrs.id}`]
+  }
+}
 export const serverTipTapExtensions = [
   StarterKit,
   LoomExtension,
-  Mention.configure({
-    renderText({node}) {
-      return node.attrs.label
-    }
-  }),
+  Mention.configure(mentionConfig),
   Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
   BaseLink.extend({
     parseHTML() {

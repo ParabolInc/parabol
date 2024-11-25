@@ -6,7 +6,10 @@ import TypeAheadLabel from './TypeAheadLabel'
 
 export default forwardRef(
   (
-    props: SuggestionProps<{id: string; preferredName: string; picture: string}, MentionNodeAttrs>,
+    props: SuggestionProps<
+      {userId: string; preferredName: string; picture: string},
+      MentionNodeAttrs
+    >,
     ref
   ) => {
     const {command, items, query} = props
@@ -14,7 +17,7 @@ export default forwardRef(
     const selectItem = (idx: number) => {
       const item = items[idx]
       if (!item) return
-      command({id: item.id, label: item.preferredName})
+      command({id: item.userId, label: item.preferredName})
     }
 
     const upHandler = () => {
@@ -60,7 +63,7 @@ export default forwardRef(
               className={
                 'flex w-full cursor-pointer items-center rounded-md px-4 py-1 text-sm leading-8 text-slate-700 outline-none hover:!bg-slate-200 hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
               }
-              key={item.id}
+              key={item.userId}
               onClick={() => selectItem(idx)}
             >
               <Avatar picture={item.picture} className='h-6 w-6' />

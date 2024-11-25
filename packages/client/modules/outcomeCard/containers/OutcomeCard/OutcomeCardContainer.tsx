@@ -86,10 +86,7 @@ const OutcomeCardContainer = memo((props: Props) => {
       return
     }
     const nextContent = JSON.stringify(editor.getJSON())
-    if (content === nextContent) {
-      console.log('contents equal, no update')
-      return
-    }
+    if (content === nextContent) return
     const updatedTask = {
       id: taskId,
       content: nextContent
