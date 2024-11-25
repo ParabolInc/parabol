@@ -38,7 +38,7 @@ const AddReactjiButton = (props: Props) => {
     onToggle(emojiId)
   }
   return (
-    <Popover.Root open={open} onOpenChange={onOpenChange}>
+    <Popover.Root open={open} onOpenChange={onOpenChange} modal>
       <Popover.Trigger asChild>
         <Button className={className}>
           <AddIcon alt='' src={addReactjiSvg} />
