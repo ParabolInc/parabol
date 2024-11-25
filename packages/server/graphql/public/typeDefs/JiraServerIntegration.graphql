@@ -1,5 +1,5 @@
 """
-Jira Server integration data for a given team member
+Jira Data Center integration data for a given team member
 """
 type JiraServerIntegration {
   """

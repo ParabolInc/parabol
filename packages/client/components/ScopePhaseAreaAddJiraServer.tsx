@@ -77,7 +77,7 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
     <AddJiraServerArea>
       <AddJiraServerButton onClick={openOAuth} size={'medium'}>
         <JiraServerSVG />
-        Import issues from Jira Server
+        Import issues from Jira Data Center
       </AddJiraServerButton>
       <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
     </AddJiraServerArea>

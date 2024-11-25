@@ -295,8 +295,8 @@ export const enum Pricing {
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
   ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol.',
-  JIRA_SERVER_NAME = 'Jira Server',
-  JIRA_SERVER_DESC = 'Use Jira Server Issues from within Parabol.',
+  JIRA_SERVER_NAME = 'Jira Data Center',
+  JIRA_SERVER_DESC = 'Use Jira Data Center Issues from within Parabol.',
   GITHUB_NAME = 'GitHub',
   GCAL_NAME = 'Google Calendar',
   GCAL_DESC = 'Create Google Calendar events from within Parabol.',
