@@ -102,7 +102,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
   const titleByType = {
     _xGitHubIssue: 'GitHub',
     JiraIssue: 'Jira',
-    JiraServerIssue: 'Jira Server',
+    JiraServerIssue: 'Jira Data Center',
     _xGitLabIssue: 'GitLab',
     AzureDevOpsWorkItem: 'Azure DevOps'
   } as const

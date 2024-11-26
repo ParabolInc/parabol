@@ -66,7 +66,7 @@ const getValue = (item: {name: string}) => item.name
 
 const MAX_PROJECTS = 10
 
-// Reusable for both Jira and Jira Server.
+// Reusable for both Jira and Jira Server/Data Center.
 const JiraScopingSearchFilterMenu = (props: Props) => {
   const {menuProps, projects, meetingId, jiraSearchQuery, service} = props
   const isLoading = meetingId === null
