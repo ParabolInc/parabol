@@ -1833,12 +1833,12 @@ type Mutation {
     dimensionName: String!
 
     """
-    The Jira Server field name that we should push estimates to
+    The Jira Data Center field name that we should push estimates to
     """
     fieldName: ID!
 
     """
-    The Jira Server issue type for which to set the dimension
+    The Jira Data Center issue type for which to set the dimension
     """
     issueType: ID!
 

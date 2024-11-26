@@ -74,9 +74,9 @@ const JiraServerIntegrationPanel = (props: Props) => {
           <div className='h-10 w-10'>
             <img className='h-10 w-10' src={jiraServerSVG} />
           </div>
-          <b>Connect to Jira Server</b>
+          <b>Connect to Jira Data Center</b>
           <div className='w-1/2 text-center text-sm'>
-            Connect to Jira Server to view your issues.
+            Connect to Jira Data Center to view your issues.
           </div>
           <button
             className='mt-4 cursor-pointer rounded-full bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'

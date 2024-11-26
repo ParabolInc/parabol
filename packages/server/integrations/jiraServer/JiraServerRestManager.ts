@@ -96,7 +96,7 @@ interface JiraServerIssuesResponse {
 }
 
 export default class JiraServerRestManager implements TaskIntegrationManager {
-  public title = 'Jira Server'
+  public title = 'Jira Data Center'
   private readonly auth: TeamMemberIntegrationAuth
   private readonly provider: IntegrationProviderJiraServer
   private readonly serverBaseUrl: string
@@ -136,7 +136,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
   async parseJsonResponse<T>(response: Response): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
-      return new Error('Received non-JSON Jira Server Response')
+      return new Error('Received non-JSON Jira Data Center Response')
     }
     const json = await response.json()
 

@@ -65,7 +65,7 @@ const TaskIntegrationLink = (props: Props) => {
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`Jira Server Issue #${issueKey} on ${projectKey}`}
+        title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
         className={className}
       >
         {`Issue #${issueKey}`}

@@ -170,7 +170,7 @@ const ScopePhaseArea = (props: Props) => {
     },
     {
       icon: <JiraServerSVG />,
-      label: 'Jira Server',
+      label: 'Jira Data Center',
       allow: allowJiraServer,
       Component: ScopePhaseAreaJiraServer
     },
