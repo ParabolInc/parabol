@@ -115,7 +115,7 @@ const OutcomeCard = memo((props: Props) => {
   const toggleTag = (tagId: string) => {
     const {state, view} = editor
     const {doc, schema, tr} = state
-    if (isPrivate) {
+    if (task.tags.includes(tagId)) {
       doc.descendants((node, pos) => {
         if (node.type.name === 'taskTag' && node.attrs.id === tagId) {
           tr.delete(pos, pos + node.nodeSize)

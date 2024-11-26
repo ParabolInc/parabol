@@ -1,8 +1,6 @@
-import {generateHTML} from '@tiptap/core'
 import {render} from 'react-dom'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
-import {serverTipTapExtensions} from './shared/tiptap/serverTipTapExtensions'
 import './types/modules.d'
 
 render(<Root />, document.getElementById('root'))
@@ -12,57 +10,6 @@ if (__PRODUCTION__ && 'serviceWorker' in navigator) {
   })
 }
 
-const doc = {
-  type: 'doc',
-  content: [
-    {
-      type: 'paragraph',
-      content: [
-        {
-          text: 'well great!',
-          type: 'text'
-        },
-        {
-          type: 'hardBreak'
-        },
-        {
-          type: 'mention',
-          attrs: {
-            id: 'google-oauth2|104933228229706489335',
-            label: 'matt 🙈'
-          }
-        },
-        {
-          text: ' ',
-          type: 'text'
-        }
-      ]
-    },
-    {
-      type: 'paragraph',
-      content: [
-        {
-          text: 'woot ',
-          type: 'text'
-        },
-        {
-          type: 'taskTag',
-          attrs: {
-            id: 'archived',
-            label: null
-          }
-        },
-        {
-          text: ' ',
-          type: 'text'
-        }
-      ]
-    }
-  ]
-}
-
-const html = generateHTML(doc, serverTipTapExtensions)
-console.log(html)
 // window.addEventListener('beforeinstallprompt', (e) => {
 //   // Stash the event so it can be triggered later.
 //   console.log("ready to install")

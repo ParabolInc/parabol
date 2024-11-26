@@ -295,6 +295,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
+    tiptapMentionConfigQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          team: {
+            ...this.db.team,
+            teamMembers: this.db.teamMembers
+          }
+        }
+      }
+    },
     NewMeetingSummaryQuery: () => {
       return {
         viewer: {
