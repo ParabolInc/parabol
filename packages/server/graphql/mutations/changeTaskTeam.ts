@@ -1,12 +1,13 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
+import {removeMentionKeepText} from '../../../client/shared/tiptap/removeMentionKeepText'
 import getKysely from '../../postgres/getKysely'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -126,11 +127,9 @@ export default {
     const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {
       return !newTeamUserIds.find((newTeamUserId) => newTeamUserId === oldTeamUserId)
     })
-    const rawContent = JSON.parse(content)
-    const eqFn = (entity: {type: string; data: {userId?: string}}) =>
-      entity.type === 'MENTION' &&
-      Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId))
-    const {rawContent: nextRawContent} = removeEntityKeepText(rawContent, eqFn)
+    const rawContent = convertToTipTap(content)
+    const eqFn = (userId: string) => userIdsOnlyOnOldTeam.includes(userId)
+    const {rawContent: nextRawContent} = removeMentionKeepText(rawContent, eqFn)
 
     // If there is a task with the same integration hash in the new team, then delete it first.
     // This is done so there are no duplicates and also solves the issue of the conflicting task being

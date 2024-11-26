@@ -1,6 +1,6 @@
 import {Editor, generateHTML, JSONContent} from '@tiptap/react'
 import {useMemo, useRef} from 'react'
-import {serverTipTapExtensions} from '../shared/serverTipTapExtensions'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 
 export const useTipTapEditorContent = (content: string) => {
   const editorRef = useRef<Editor | null>(null)

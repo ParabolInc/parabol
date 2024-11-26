@@ -31,5 +31,11 @@
     "**/graphql/public/schema.graphql": true,
     "**/resolverTypes.ts": true
   },
-  "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]]
+  "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]],
+  "typescript.experimental.updateImportsOnPaste": true,
+  "typescript.experimental.expandableHover": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.showOnInterfaceMethods": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.preferGoToSourceDefinition": true
 }

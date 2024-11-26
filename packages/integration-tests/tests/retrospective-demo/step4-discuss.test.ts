@@ -142,7 +142,7 @@ test.describe('retrospective-demo / discuss page', () => {
       }
 
       for await (const task of tasks || []) {
-        await expect(page.locator(`[data-cy=task-wrapper] :text('${task}')`)).toBeVisible({
+        await expect(page.locator(`:text('${task}')`)).toBeVisible({
           timeout: 30_000
         })
       }

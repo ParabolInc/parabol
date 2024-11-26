@@ -1,11 +1,11 @@
 import {JSONContent} from '@tiptap/core'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
+import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
-import {splitTipTapContent} from '../../client/shared/splitTipTapContent'
 import appOrigin from '../appOrigin'
 import {
   OAuth2PkceAuthorizationParams,

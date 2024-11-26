@@ -1,7 +1,7 @@
 import {generateText, JSONContent} from '@tiptap/core'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {serverTipTapExtensions} from '../../../../client/shared/serverTipTapExtensions'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
 import {TeamPromptResponse} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'

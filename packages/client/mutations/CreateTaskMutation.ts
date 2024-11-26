@@ -1,14 +1,14 @@
-import {JSONContent} from '@tiptap/core'
+import {generateJSON, generateText, JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
-import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import Atmosphere from '../Atmosphere'
 import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
 import {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {
   OnNextHandler,
   OnNextHistoryContext,
@@ -16,7 +16,6 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
@@ -164,7 +163,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const plaintextContent =
         newTask.plaintextContent ||
-        (newTask.content ? extractTextFromDraftString(newTask.content) : '')
+        (newTask.content ? generateText(JSON.parse(newTask.content), serverTipTapExtensions) : '')
       const optimisticTask = {
         ...rest,
         id: taskId,
@@ -174,7 +173,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         createdBy: viewerId,
         updatedAt: now,
         tags: [],
-        content: newTask.content || makeEmptyStr(),
+        content: newTask.content || JSON.stringify(generateJSON('<p></p>', serverTipTapExtensions)),
         title: plaintextContent,
         plaintextContent
       }

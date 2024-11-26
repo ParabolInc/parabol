@@ -2,8 +2,8 @@ import {mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import StarterKit from '@tiptap/starter-kit'
-import {LoomExtension} from '~/components/promptResponse/loomExtension'
-import {tiptapTagConfig} from '../utils/tiptapTagConfig'
+import {LoomExtension} from '../../components/promptResponse/loomExtension'
+import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {

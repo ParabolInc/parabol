@@ -4,8 +4,8 @@ import {commitMutation} from 'react-relay'
 import {Task as ITask} from '../../server/postgres/types/index.d'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
-import {getTagsFromTipTapTask} from '../shared/getTagsFromTipTapTask'
-import {serverTipTapExtensions} from '../shared/serverTipTapExtensions'
+import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {
   OnNextHandler,
   OnNextHistoryContext,

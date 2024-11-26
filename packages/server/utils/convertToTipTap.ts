@@ -6,8 +6,8 @@ import {Text} from '@tiptap/extension-text'
 import {generateJSON} from '@tiptap/html'
 import {convertFromRaw, RawDraftContentState} from 'draft-js'
 import {Options, stateToHTML} from 'draft-js-export-html'
-import {isDraftJSContent} from '../../client/shared/isDraftJSContent'
-import {serverTipTapExtensions} from '../../client/shared/serverTipTapExtensions'
+import {isDraftJSContent} from '../../client/shared/tiptap/isDraftJSContent'
+import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
 import {Logger} from './Logger'
 
 const getNameFromEntity = (content: RawDraftContentState, userId: string) => {

@@ -1,6 +1,6 @@
 import {JSONContent} from '@tiptap/core'
+import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
-import {splitTipTapContent} from '../../../../client/shared/splitTipTapContent'
 import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {convertTipTapToADF} from '../../../utils/convertTipTapToADF'

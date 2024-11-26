@@ -8,7 +8,7 @@ import {useFragment} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
 import {TipTapEditor} from '../../../../../components/promptResponse/TipTapEditor'
 import {useTipTapTaskEditor} from '../../../../../hooks/useTipTapTaskEditor'
-import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
+import {convertTipTapTaskContent} from '../../../../../shared/tiptap/convertTipTapTaskContent'
 
 interface Props {
   task: EmailTaskCard_task$key | null
@@ -44,7 +44,7 @@ const statusStyle = (status: TaskStatusEnum) => ({
 })
 
 const deletedTask = {
-  content: convertToTaskContent('<<TASK DELETED>>'),
+  content: convertTipTapTaskContent('<<TASK DELETED>>'),
   status: 'done',
   tags: [] as string[],
   user: {

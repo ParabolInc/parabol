@@ -9,7 +9,7 @@ import IntegrationRepoId from '../../../../client/shared/gqlIds/IntegrationRepoI
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import {removeNodeByType} from '../../../../client/shared/removeNodeByType'
+import {removeNodeByType} from '../../../../client/shared/tiptap/removeNodeByType'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
 import createAzureTask from './createAzureTask'

@@ -4,13 +4,13 @@ import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import {cardShadow} from '~/styles/elevation'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
+import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
 import NotificationTemplate from './NotificationTemplate'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
@@ -58,7 +58,7 @@ interface Props {
 }
 
 const deletedTask = {
-  content: convertToTaskContent('<<TASK DELETED>>'),
+  content: convertTipTapTaskContent('<<TASK DELETED>>'),
   status: 'done',
   tags: [] as string[],
   user: {

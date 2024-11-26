@@ -1,6 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
-import {splitTipTapContent} from '../../../../client/shared/splitTipTapContent'
+import {splitTipTapContent} from '../../../../client/shared/tiptap/splitTipTapContent'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {TeamMemberIntegrationAuth} from '../../../postgres/types'
 import {convertTipTapToMarkdown} from '../../../utils/convertTipTapToMarkdown'

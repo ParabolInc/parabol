@@ -1,4 +1,4 @@
-import {getAllNodesAttributesByType} from '../../../../client/shared/getAllNodesAttributesByType'
+import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {Task} from '../../../postgres/types'

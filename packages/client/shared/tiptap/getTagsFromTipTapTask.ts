@@ -1,5 +1,5 @@
 import {JSONContent} from '@tiptap/core'
-import {TaskTag} from '../../server/postgres/types'
+import {TaskTag} from '../../../server/postgres/types'
 import {getAllNodesAttributesByType} from './getAllNodesAttributesByType'
 
 export const getTagsFromTipTapTask = (content: JSONContent) => {

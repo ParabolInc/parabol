@@ -1,6 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
-import {splitTipTapContent} from '../../../../client/shared/splitTipTapContent'
+import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {
   CreateIssueMutation,

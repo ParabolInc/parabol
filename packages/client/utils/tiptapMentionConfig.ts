@@ -6,7 +6,7 @@ import tippy, {Instance, Props} from 'tippy.js'
 import {tiptapMentionConfigQuery} from '../__generated__/tiptapMentionConfigQuery.graphql'
 import Atmosphere from '../Atmosphere'
 import MentionDropdown from '../components/MentionDropdown'
-import {mentionConfig} from '../shared/serverTipTapExtensions'
+import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 
 const queryNode = graphql`
   query tiptapMentionConfigQuery($teamId: ID!) {
