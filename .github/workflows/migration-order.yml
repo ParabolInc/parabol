@@ -25,6 +25,7 @@ jobs:
         uses: tj-actions/changed-files@v41
         with:
           files: packages/server/postgres/migrations/*.ts
+          output_renamed_files_as_deleted_and_added: "true"
 
       - name: Check migration conflicts and renamed or deleted files
         run: |
