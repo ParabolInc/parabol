@@ -26,7 +26,7 @@ jobs:
         with:
           files: packages/server/postgres/migrations/*.ts
 
-      - name: Check migration conflicts
+      - name: Check migration conflicts and renamed or deleted files
         run: |
           for file in ${{ steps.new-migrations.outputs.added_files }}; do
             FILE_NAME=$(basename $file)
@@ -37,3 +37,11 @@ jobs:
               echo "$FILE_NAME does not conflict with existing migrations on master"
             fi
           done
+
+          if ${{ steps.new-migrations.outputs.any_deleted }}; then
+            echo "${{ steps.new-migrations.outputs.deleted_files_count }} migration files where renamed or deleted. Please put their original names back or restore the following files:"
+            for file in ${{ steps.new-migrations.outputs.deleted_files }}; do
+              echo $(basename $file)
+            done
+            exit 1
+          fi
