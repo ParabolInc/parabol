@@ -11,7 +11,7 @@ export const TaskTagDropdown = forwardRef(
     const selectItem = (idx: number) => {
       const item = items[idx]
       if (!item) return
-      command(item)
+      command({id: item.id})
     }
 
     const upHandler = () => {

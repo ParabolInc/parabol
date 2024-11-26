@@ -3,8 +3,8 @@ import {commitMutation} from 'react-relay'
 import {BatchArchiveTasksMutation_tasks$data} from '~/__generated__/BatchArchiveTasksMutation_tasks.graphql'
 import {Task as ITask} from '../../server/postgres/types/index.d'
 import {BatchArchiveTasksMutation as TBatchArchiveTasksMutation} from '../__generated__/BatchArchiveTasksMutation.graphql'
+import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 
@@ -38,8 +38,8 @@ export const batchArchiveTasksTaskUpdater: SharedUpdater<BatchArchiveTasksMutati
   const archivedTasks = payload.getLinkedRecords('archivedTasks')
   archivedTasks.forEach((archivedTask) => {
     const content = archivedTask.getValue('content')
-    const {entityMap} = JSON.parse(content)
-    const nextTags = getTagsFromEntityMap(entityMap)
+    const doc = JSON.parse(content)
+    const nextTags = getTagsFromTipTapTask(doc)
     archivedTask.setValue(nextTags, 'tags')
     handleUpsertTasks(archivedTask as any, store)
     handleRemoveTasks(archivedTask as any, store)

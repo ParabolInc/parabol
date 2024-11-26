@@ -18,8 +18,8 @@ import useTimedState from '../hooks/useTimedState'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
+import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
 import {CompletedHandler} from '../types/relayMutations'
-import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewGitHubIssueMenu from './NewGitHubIssueMenu'
@@ -187,7 +187,7 @@ const NewGitHubIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      content: convertTipTapTaskContent(newIssueTitle, ['archived']),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {

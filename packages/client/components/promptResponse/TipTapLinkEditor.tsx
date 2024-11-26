@@ -7,10 +7,11 @@ export type props = {
   initialUrl: string
   initialText: string
   onSetLink: (link: {text: string; url: string}) => void
+  useLinkEditor?: () => void
 }
 
 export const TipTapLinkEditor = (props: props) => {
-  const {onSetLink, initialUrl, initialText} = props
+  const {useLinkEditor, onSetLink, initialUrl, initialText} = props
 
   const [url, setUrl] = useState(initialUrl)
   const [text, setText] = useState(initialText)
@@ -29,6 +30,7 @@ export const TipTapLinkEditor = (props: props) => {
     },
     [url, text, isValidUrl, onSetLink]
   )
+  useLinkEditor?.()
   return (
     <div className={'flex items-center rounded-md bg-white p-2 shadow-lg'}>
       <form onSubmit={handleSubmit} className='flex flex-col items-center'>

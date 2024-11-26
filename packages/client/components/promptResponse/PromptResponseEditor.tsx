@@ -1,54 +1,21 @@
 import styled from '@emotion/styled'
-import {Link} from '@mui/icons-material'
 import {Editor as EditorState} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
-import {BubbleMenu, EditorContent, JSONContent, useEditor} from '@tiptap/react'
+import {JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import areEqual from 'fbjs/lib/areEqual'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
-import isTextSelected from './isTextSelected'
 import {LoomExtension, unfurlLoomLinks} from './loomExtension'
+import {TipTapEditor} from './TipTapEditor'
 import {TiptapLinkExtension} from './TiptapLinkExtension'
-import TipTapLinkMenu, {LinkMenuState} from './TipTapLinkMenu'
-
-const LinkIcon = styled(Link)({
-  height: 18,
-  width: 18
-})
-
-const BubbleMenuWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  background: '#FFFFFF',
-  border: '1px solid',
-  borderRadius: '4px',
-  borderColor: PALETTE.SLATE_600,
-  padding: '4px'
-})
-
-const BubbleMenuButton = styled(BaseButton)<{isActive?: boolean}>(({isActive}) => ({
-  height: '20px',
-  width: '22px',
-  padding: '4px 0px 4px 0px',
-  borderRadius: '2px',
-  background: isActive ? PALETTE.SLATE_300 : undefined,
-  ':hover': {
-    background: PALETTE.SLATE_300
-  }
-}))
-
-const SubmissionButtonWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center'
-})
+import {LinkMenuState} from './TipTapLinkMenu'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
@@ -98,8 +65,6 @@ const PromptResponseEditor = (props: Props) => {
     [rawContent, readOnly]
   )
 
-  const editorRef = useRef<HTMLDivElement>(null)
-
   const setEditing = useCallback(
     (newIsEditing: boolean) => {
       setIsEditing(newIsEditing)
@@ -142,10 +107,6 @@ const PromptResponseEditor = (props: Props) => {
   }
 
   const [linkState, setLinkState] = useState<LinkMenuState>(null)
-
-  const openLinkEditor = () => {
-    setLinkState('edit')
-  }
 
   const editor = useEditor(
     {
@@ -191,63 +152,19 @@ const PromptResponseEditor = (props: Props) => {
     editor?.commands.setContent(draftContent)
   }, [editor])
 
-  const shouldShowBubbleMenu = () => {
-    if (!editor || editor.isActive('link')) return false
-    return isTextSelected(editor)
-  }
-
+  if (!editor) return null
   return (
     <>
-      <div>
-        {editor && !readOnly && (
-          <>
-            <div>
-              <BubbleMenu
-                editor={editor}
-                tippyOptions={{duration: 100}}
-                shouldShow={shouldShowBubbleMenu}
-              >
-                <BubbleMenuWrapper>
-                  <BubbleMenuButton
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    isActive={editor.isActive('bold')}
-                  >
-                    <b>B</b>
-                  </BubbleMenuButton>
-                  <BubbleMenuButton
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    isActive={editor.isActive('italic')}
-                  >
-                    <i>I</i>
-                  </BubbleMenuButton>
-                  <BubbleMenuButton
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
-                    isActive={editor.isActive('strike')}
-                  >
-                    <s>S</s>
-                  </BubbleMenuButton>
-                  <BubbleMenuButton onClick={openLinkEditor}>
-                    <LinkIcon />
-                  </BubbleMenuButton>
-                </BubbleMenuWrapper>
-              </BubbleMenu>
-            </div>
-            <TipTapLinkMenu
-              editor={editor}
-              setLinkState={(linkState: LinkMenuState) => {
-                editor.commands.focus()
-                setLinkState(linkState)
-              }}
-              linkState={linkState}
-            />
-          </>
-        )}
-        <EditorContent ref={editorRef} editor={editor} />
-      </div>
+      <TipTapEditor
+        linkState={linkState}
+        setLinkState={setLinkState}
+        editor={editor}
+        showBubbleMenu={!readOnly}
+      />
       {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
-        <SubmissionButtonWrapper>
+        <div className='flex items-center justify-end'>
           {!!content && isEditing && (
             <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
               Cancel
@@ -262,7 +179,7 @@ const PromptResponseEditor = (props: Props) => {
               {!content ? 'Submit' : 'Update'}
             </SubmitButton>
           )}
-        </SubmissionButtonWrapper>
+        </div>
       )}
     </>
   )

@@ -1,3 +1,4 @@
+import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
 import {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 import {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
@@ -26,7 +27,7 @@ export interface TaskIntegrationManager {
   title: string
 
   createTask(params: {
-    rawContentStr: string
+    rawContentJSON: JSONContent
     integrationRepoId: string
     context?: GQLContext
     info?: GraphQLResolveInfo

@@ -1,7 +1,7 @@
-import {stateToMarkdown} from 'draft-js-export-markdown'
+import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
-import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
+import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
@@ -20,6 +20,7 @@ import {
   GetProjectIssuesQueryVariables,
   GetProjectsQuery
 } from '../../types/gitlabTypes'
+import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
 import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
@@ -84,14 +85,14 @@ class GitLabServerManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentStr,
+    rawContentJSON,
     integrationRepoId
   }: {
-    rawContentStr: string
+    rawContentJSON: JSONContent
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
-    const {title, contentState} = splitDraftContent(rawContentStr)
-    const description = stateToMarkdown(contentState) as string
+    const {title, bodyContent} = splitTipTapContent(rawContentJSON)
+    const description = convertTipTapToMarkdown(bodyContent)
     const [createIssueData, createIssueError] = await this.createIssue({
       title,
       description,

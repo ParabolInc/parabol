@@ -48,7 +48,7 @@ test.describe('retrospective-demo / reflect page', () => {
 
     const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
     await page.click(continueTextbox)
-    await page.type(continueTextbox, 'Continue doing this')
+    await page.fill(continueTextbox, 'Continue doing this')
     await page.press(continueTextbox, 'Enter')
 
     await expect(
@@ -61,7 +61,7 @@ test.describe('retrospective-demo / reflect page', () => {
 
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
-    await page.type(startTextbox, 'Start doing this')
+    await page.fill(startTextbox, 'Start doing this')
     await page.press(startTextbox, 'Enter')
 
     await expect(
@@ -233,9 +233,7 @@ test.describe('retrospective-demo / reflect page', () => {
       )
     ).toBeVisible()
 
-    await expect(
-      page.locator('button :text("1 / 2 Ready")')
-    ).toBeVisible()
+    await expect(page.locator('button :text("1 / 2 Ready")')).toBeVisible()
 
     await expect(
       page.locator(

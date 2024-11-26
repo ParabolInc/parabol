@@ -20,11 +20,11 @@ declare module '@authenio/samlify-node-xmllint'
 declare module 'node-env-flag'
 declare module '*getProjectRoot'
 declare module 'tayden-clusterfck'
-declare module 'unicode-substring'
 declare module 'jest-extended'
 declare module 'json2csv/lib/JSON2CSVParser'
 declare module 'object-hash'
 declare module 'string-score'
+declare module 'md-to-adf'
 
 declare const __APP_VERSION__: string
 declare const __PRODUCTION__: boolean

@@ -1,4 +1,4 @@
-import {stateToHTML} from 'draft-js-export-html'
+import {generateHTML, generateJSON, generateText} from '@tiptap/core'
 import EventEmitter from 'eventemitter3'
 import {parse, stringify} from 'flatted'
 import ms from 'ms'
@@ -17,6 +17,9 @@ import {
   NewMeetingPhase
 } from '../../../server/postgres/types/NewMeetingPhase'
 import {Task as ITask} from '../../../server/postgres/types/index.d'
+import {getTagsFromTipTapTask} from '../../shared/tiptap/getTagsFromTipTapTask'
+import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
+import {splitTipTapContent} from '../../shared/tiptap/splitTipTapContent'
 import {
   ExternalLinks,
   MeetingSettingsThreshold,
@@ -26,9 +29,6 @@ import {
 import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
-import getTagsFromEntityMap from '../../utils/draftjs/getTagsFromEntityMap'
-import makeEmptyStr from '../../utils/draftjs/makeEmptyStr'
-import splitDraftContent from '../../utils/draftjs/splitDraftContent'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
@@ -295,6 +295,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
+    tiptapMentionConfigQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          team: {
+            ...this.db.team,
+            teamMembers: this.db.teamMembers
+          }
+        }
+      }
+    },
     NewMeetingSummaryQuery: () => {
       return {
         viewer: {
@@ -464,8 +475,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // if the human deleted the task, exit fast
       if (!task) return null
       const {content} = task
-      const {title, contentState} = splitDraftContent(content)
-      const bodyHTML = stateToHTML(contentState)
+      const doc = JSON.parse(content)
+      const {title, bodyContent} = splitTipTapContent(doc)
+      const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
 
       if (integrationProviderService === 'github') {
         Object.assign(task, {
@@ -1269,11 +1281,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const now = new Date().toJSON()
       const taskId = newTask.id || this.getTempId('task')
       const {discussionId, threadParentId, threadSortOrder, sortOrder, status} = newTask
-      const content = newTask.content || makeEmptyStr()
-      const {entityMap} = JSON.parse(content)
-      const tags = getTagsFromEntityMap(entityMap)
+      const content =
+        (newTask.content as string) ||
+        JSON.stringify(generateJSON('<p></p>', serverTipTapExtensions))
+      const doc = JSON.parse(content)
+      const tags = getTagsFromTipTapTask(doc)
       const user = this.db.users.find((user) => user.id === userId)
-      const plaintextContent = extractTextFromDraftString(content)
+      const plaintextContent = generateText(doc, serverTipTapExtensions)
       const task = {
         __typename: 'Task',
         __isThreadable: 'Task',
@@ -1420,7 +1434,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const taskUpdates = {
         content,
         status,
-        tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
+        tags: content ? getTagsFromTipTapTask(JSON.parse(content)) : undefined,
         teamId: demoTeamId,
         sortOrder,
         userId: updatedTask.userId || task.userId

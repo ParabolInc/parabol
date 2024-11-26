@@ -49,8 +49,7 @@ module.exports = {
       'string-score',
       'tayden-clusterfck',
       'tlds',
-      'tslib',
-      'unicode-substring'
+      'tslib'
     ]
   },
   resolve: {

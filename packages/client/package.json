@@ -89,6 +89,7 @@
     "@sentry/browser": "^5.8.0",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^4.0.0",
+    "@tiptap/core": "^2.9.1",
     "@tiptap/extension-character-count": "^2.9.1",
     "@tiptap/extension-link": "^2.9.1",
     "@tiptap/extension-mention": "^2.9.1",
@@ -152,7 +153,6 @@
     "tayden-clusterfck": "^0.7.0",
     "tippy.js": "^6.3.7",
     "tlds": "^1.192.0",
-    "tslib": "^2.4.0",
-    "unicode-substring": "^1.0.0"
+    "tslib": "^2.4.0"
   }
 }

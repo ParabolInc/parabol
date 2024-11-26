@@ -1,13 +1,13 @@
-import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
-import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
+import {generateJSON} from '@tiptap/html'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
+import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import appOrigin from '../../../appOrigin'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 
 const NORMAL_TASK_STRING = `This is a task card. They can be created here, in a meeting, or via an integration`
-const INTEGRATIONS_TASK_STRING = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools on Settings > Integrations.`
+const INTEGRATIONS_TASK_STRING = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools in Settings > Integrations.`
 
 function getSeedTasks(teamId: string) {
   const searchParams = {
@@ -17,19 +17,22 @@ function getSeedTasks(teamId: string) {
   }
   const options = {searchParams}
   const integrationURL = makeAppURL(appOrigin, `team/${teamId}/integrations`, options)
-  const integrationTaskHTML = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools in <a href="${integrationURL}">Integrations</a>.`
-
   return [
     {
       status: 'active' as const,
       sortOrder: 1,
-      content: convertToTaskContent(NORMAL_TASK_STRING),
+      content: JSON.stringify(generateJSON(`<p>${NORMAL_TASK_STRING}</p>`, serverTipTapExtensions)),
       plaintextContent: NORMAL_TASK_STRING
     },
     {
       status: 'active' as const,
       sortOrder: 0,
-      content: convertHtmlToTaskContent(integrationTaskHTML),
+      content: JSON.stringify(
+        generateJSON(
+          `<p>Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools in <a href="${integrationURL}">Integrations</a>.</p>`,
+          serverTipTapExtensions
+        )
+      ),
       plaintextContent: INTEGRATIONS_TASK_STRING
     }
   ]
@@ -44,7 +47,7 @@ export default async (userId: string, teamId: string) => {
     id: `${teamId}::${generateUID()}`,
     createdAt: now,
     createdBy: userId,
-    tags: getTagsFromEntityMap(JSON.parse(proj.content).entityMap),
+    tags: getTagsFromTipTapTask(JSON.parse(proj.content)),
     teamId,
     userId,
     updatedAt: now
