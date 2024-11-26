@@ -356,6 +356,15 @@ export const ActivityLibrary = (props: Props) => {
                 Start Activity
               </div>
             </div>
+            <div className='hidden grow md:block'>
+              <SearchBar
+                searchQuery={searchQuery}
+                onChange={(e) => {
+                  onQueryChange(e)
+                  setSearch(e.target.value)
+                }}
+              />
+            </div>
 
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
