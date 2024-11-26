@@ -1,0 +1,4 @@
+"""
+Return value for generateRetroSummaries, which could be an error
+"""
+union GenerateRetroSummariesPayload = ErrorPayload | GenerateRetroSummariesSuccess
