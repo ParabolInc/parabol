@@ -1,3 +1,4 @@
+import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
@@ -6,9 +7,8 @@ import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
-import {TipTapEditor} from '../../../../../components/promptResponse/TipTapEditor'
-import {useTipTapTaskEditor} from '../../../../../hooks/useTipTapTaskEditor'
 import {convertTipTapTaskContent} from '../../../../../shared/tiptap/convertTipTapTaskContent'
+import {serverTipTapExtensions} from '../../../../../shared/tiptap/serverTipTapExtensions'
 
 interface Props {
   task: EmailTaskCard_task$key | null
@@ -65,8 +65,7 @@ const EmailTaskCard = (props: Props) => {
     taskRef
   )
   const {content, status} = task || deletedTask
-  const {editor} = useTipTapTaskEditor(content, {readOnly: true})
-  if (!editor) return null
+  const htmlContent = generateHTML(JSON.parse(content), serverTipTapExtensions)
   return (
     <tr>
       <td>
@@ -89,7 +88,7 @@ const EmailTaskCard = (props: Props) => {
                   <tbody>
                     <tr>
                       <td>
-                        <TipTapEditor editor={editor} />
+                        <div dangerouslySetInnerHTML={{__html: htmlContent}}></div>
                       </td>
                     </tr>
                   </tbody>

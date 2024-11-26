@@ -4,7 +4,7 @@ import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 
 export const useTipTapEditorContent = (content: string) => {
   const editorRef = useRef<Editor | null>(null)
-  const contentJSONRef = useRef<JSONContent | null>(null)
+  const contentJSONRef = useRef<JSONContent>()
   // When receiving new content, it's important to make sure it's different from the current value
   // Unnecessary re-renders mess up things like the coordinates of the link menu
   const contentJSON = useMemo(() => {
@@ -15,7 +15,7 @@ export const useTipTapEditorContent = (content: string) => {
     if (oldHTML !== newHTML) {
       contentJSONRef.current = newContent
     }
-    return contentJSONRef.current
+    return contentJSONRef.current as JSONContent
   }, [content])
 
   return [contentJSON, editorRef] as const

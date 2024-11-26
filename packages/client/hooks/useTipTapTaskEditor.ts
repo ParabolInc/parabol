@@ -1,13 +1,13 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
-import {useEditor} from '@tiptap/react'
+import {generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useState} from 'react'
 import Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
-import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
+import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
@@ -47,7 +47,7 @@ export const useTipTapTaskEditor = (
         })
       ],
       editable: !readOnly,
-      autofocus: false
+      autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0
     },
     [contentJSON, readOnly]
   )
