@@ -1,13 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {removeMentionKeepText} from '../../../client/shared/tiptap/removeMentionKeepText'
 import getKysely from '../../postgres/getKysely'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
 import {getUserId, isTeamMember} from '../../utils/authorization'
-import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -46,7 +44,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {content, tags, teamId: oldTeamId} = task
+    const {tags, teamId: oldTeamId} = task
     if (!isTeamMember(authToken, oldTeamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -122,15 +120,6 @@ export default {
     ).filter(isValid)
     const oldTeamMembers = teamMemberRes[0]!
     const newTeamMembers = teamMemberRes[1]!
-    const oldTeamUserIds = oldTeamMembers.map(({userId}) => userId)
-    const newTeamUserIds = newTeamMembers.map(({userId}) => userId)
-    const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {
-      return !newTeamUserIds.find((newTeamUserId) => newTeamUserId === oldTeamUserId)
-    })
-    const rawContent = convertToTipTap(content)
-    const eqFn = (userId: string) => userIdsOnlyOnOldTeam.includes(userId)
-    const {rawContent: nextRawContent} = removeMentionKeepText(rawContent, eqFn)
-
     // If there is a task with the same integration hash in the new team, then delete it first.
     // This is done so there are no duplicates and also solves the issue of the conflicting task being
     // private or archived.
@@ -155,7 +144,6 @@ export default {
     await pg
       .updateTable('Task')
       .set({
-        content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
         teamId,
         integration: JSON.stringify(integration)
       })
