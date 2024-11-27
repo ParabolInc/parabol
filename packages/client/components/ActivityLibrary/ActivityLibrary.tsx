@@ -24,7 +24,6 @@ import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
-import AISearch from './AISearch'
 import ActivityGrid from './ActivityGrid'
 import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
 import {
@@ -116,9 +115,6 @@ const query = graphql`
             ...ActivityLibrary_template @relay(mask: false)
           }
         }
-      }
-      organizations {
-        hasAITemplateFlag: featureFlag(featureName: "aiTemplate")
       }
     }
   }
@@ -226,8 +222,7 @@ export const ActivityLibrary = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ActivityLibraryQuery>(query, queryRef)
   const {viewer} = data
-  const {availableTemplates, organizations} = viewer
-  const hasAITemplateFeatureFlag = organizations.some((org) => org.hasAITemplateFlag)
+  const {availableTemplates} = viewer
 
   const [isSearching, setIsSearching] = useState(true)
   const [templateSearch, refetchTemplateSearch] = useRefetchableFragment<
@@ -361,17 +356,16 @@ export const ActivityLibrary = (props: Props) => {
                 Start Activity
               </div>
             </div>
-            {!hasAITemplateFeatureFlag && (
-              <div className='hidden grow md:block'>
-                <SearchBar
-                  searchQuery={searchQuery}
-                  onChange={(e) => {
-                    onQueryChange(e)
-                    setSearch(e.target.value)
-                  }}
-                />
-              </div>
-            )}
+            <div className='hidden grow md:block'>
+              <SearchBar
+                searchQuery={searchQuery}
+                onChange={(e) => {
+                  onQueryChange(e)
+                  setSearch(e.target.value)
+                }}
+              />
+            </div>
+
             <Link
               className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
               to={`/activity-library/new-activity/${categoryId}`}
@@ -429,11 +423,6 @@ export const ActivityLibrary = (props: Props) => {
 
       <ScrollArea.Root className='h-full w-full overflow-hidden'>
         <ScrollArea.Viewport className='flex h-full flex-col lg:mx-[15%]'>
-          {hasAITemplateFeatureFlag && (
-            <div className='mx-auto mt-4 pt-2'>
-              <AISearch />
-            </div>
-          )}
           {templatesToRender.length === 0 && !showLoading ? (
             <ActivityLibraryEmptyState
               searchQuery={searchQuery}

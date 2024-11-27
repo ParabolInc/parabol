@@ -69,8 +69,7 @@
     "git-url-parse": "12.0.0",
     "fbjs": "^3.0.0",
     "parse-url": "^8.1.0",
-    "recursive-readdir": "^2.2.3",
-    "json5": "^2.2.3"
+    "recursive-readdir": "^2.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

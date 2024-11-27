@@ -1461,16 +1461,6 @@ type Mutation {
   createStripeSubscription(orgId: ID!, paymentMethodId: ID!): CreateStripeSubscriptionPayload!
 
   """
-  Ask the AI for a template suggestion
-  """
-  getTemplateSuggestion(
-    """
-    The question the user has for the AI
-    """
-    prompt: String!
-  ): GetTemplateSuggestionPayload!
-
-  """
   Sign up or login using Google
   """
   loginWithGoogle(
