@@ -24,7 +24,7 @@ const getHeaderFields = (
   switch (__typename) {
     case 'JiraServerIssue':
     case 'JiraIssue':
-      const name = __typename === 'JiraIssue' ? 'Jira' : 'Jira Server'
+      const name = __typename === 'JiraIssue' ? 'Jira' : 'Jira Data Center'
       const {summary, descriptionHTML, jiraUrl, issueKey} = integration
       return {
         cardTitle: summary,

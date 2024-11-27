@@ -434,6 +434,21 @@ type Mutation {
   ): GenerateInsightPayload!
 
   """
+  Generate new meeting summaries for retro meetings for the given teams
+  """
+  generateRetroSummaries(
+    """
+    The ids of the teams to generate the meeting summary for
+    """
+    teamIds: [ID!]!
+
+    """
+    The optional user prompt that will be used to generate the meeting summary
+    """
+    prompt: String
+  ): GenerateRetroSummariesPayload!
+
+  """
   Move a template dimension
   """
   movePokerTemplateDimension(
@@ -1136,6 +1151,38 @@ type Mutation {
   ): ToggleTeamDrawerPayload!
 
   """
+  Toggle a feature flag for a specific owner (organization, team, or user)
+  """
+  toggleFeatureFlag(
+    """
+    The name of the feature flag to toggle
+    """
+    featureName: String!
+    """
+    The organization ID if toggling for an org
+    """
+    orgId: ID
+    """
+    The team ID if toggling for a team
+    """
+    teamId: ID
+    """
+    The user ID if toggling for a user
+    """
+    userId: ID
+  ): ToggleFeatureFlagPayload!
+
+  """
+  Toggle whether the organization has access to ai features
+  """
+  toggleAIFeatures(
+    """
+    The id of the org being toggled
+    """
+    orgId: ID!
+  ): ToggleAIFeaturesPayload!
+
+  """
   Update how a parabol dimension maps to a GitHub label
   """
   updateGitHubDimensionField(
@@ -1801,12 +1848,12 @@ type Mutation {
     dimensionName: String!
 
     """
-    The Jira Server field name that we should push estimates to
+    The Jira Data Center field name that we should push estimates to
     """
     fieldName: ID!
 
     """
-    The Jira Server issue type for which to set the dimension
+    The Jira Data Center issue type for which to set the dimension
     """
     issueType: ID!
 

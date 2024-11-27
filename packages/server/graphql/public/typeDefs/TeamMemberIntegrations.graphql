@@ -13,7 +13,7 @@ type TeamMemberIntegrations {
   atlassian: AtlassianIntegration
 
   """
-  All things associated with a Jira Server integration for a team member
+  All things associated with a Jira Data Center integration for a team member
   """
   jiraServer: JiraServerIntegration!
 

@@ -71,7 +71,7 @@ $ yarn dev
 ### Deploy
 
 ```bash
-$ yarn && yarn build && yarn predeploy && yarn start
+$ yarn && yarn pg:build && yarn build && yarn predeploy && yarn start
 ```
 
 - [How to Ship](./docs/deployment.md)

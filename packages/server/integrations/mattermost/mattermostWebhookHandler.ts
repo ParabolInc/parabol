@@ -2,6 +2,7 @@ import {createVerifier, httpbis} from 'http-message-signatures'
 import {markdownToDraft} from 'markdown-draft-js'
 import {Variables} from 'relay-runtime'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import appOrigin from '../../appOrigin'
 import AuthToken from '../../database/types/AuthToken'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
@@ -10,10 +11,6 @@ import getGraphQLExecutor from '../../utils/getGraphQLExecutor'
 import sendToSentry from '../../utils/sendToSentry'
 
 const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
-const PORT = __PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT
-const HOST = process.env.HOST
-const PORT_SUFFIX = HOST !== 'localhost' ? '' : `:${PORT}`
-const ORIGIN = `${process.env.PROTO}://${HOST}${PORT_SUFFIX}`
 
 const markdownToDraftJS = (markdown: string) => {
   const rawObject = markdownToDraft(markdown)
@@ -330,7 +327,7 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     },
     {
       method: req.getMethod(),
-      url: ORIGIN + req.getUrl(),
+      url: appOrigin + req.getUrl(),
       headers
     }
   )
