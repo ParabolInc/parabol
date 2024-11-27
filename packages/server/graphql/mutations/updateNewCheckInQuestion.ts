@@ -1,8 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import {convertTipTapTaskContent} from '../../../client/shared/tiptap/convertTipTapTaskContent'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -46,9 +45,9 @@ export default {
       return {error: {message: 'Meeting has already ended'}}
     }
     // VALIDATION
-    const normalizedCheckInQuestion = checkInQuestion
-      ? normalizeRawDraftJS(checkInQuestion)
-      : convertToTaskContent(makeCheckinQuestion(Math.floor(Math.random() * 1000), teamId))
+    const normalizedCheckInQuestion =
+      checkInQuestion ||
+      convertTipTapTaskContent(makeCheckinQuestion(Math.floor(Math.random() * 1000), teamId))
 
     // RESOLUTION
     const checkInPhase = getPhase(phases, 'checkin')
