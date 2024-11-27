@@ -1,14 +1,12 @@
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
-import {isDraftJSContent} from '../../../../client/shared/tiptap/isDraftJSContent'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getSimilarTaskEstimate from '../../../postgres/queries/getSimilarTaskEstimate'
 import insertTaskEstimate from '../../../postgres/queries/insertTaskEstimate'
 import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
 import {getUserId} from '../../../utils/authorization'
-import {convertKnownDraftToTipTap} from '../../../utils/convertToTipTap'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getIssueLabels from '../../../utils/githubQueries/getIssueLabels.graphql'
 import sendToSentry from '../../../utils/sendToSentry'
@@ -30,30 +28,6 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
     return integration?.service ?? null
   },
 
-  content: async ({content}) => {
-    // cheaply check to see if it might be draft-js content
-    if (!content.includes('entityMap')) return content
-
-    // actually check if it's draft-js content
-    const contentJSON = JSON.parse(content)
-    if (!isDraftJSContent(contentJSON)) return content
-
-    // this is Draft-JS Content. convert it, save it, send it down
-    const tipTapContent = convertKnownDraftToTipTap(contentJSON)
-    const contentStr = JSON.stringify(tipTapContent)
-
-    // HACK we shouldn't be writing to the DB in a query,
-    // but we're doing it here just until we can migrate all tasks over to TipTap
-    // const pg = getKysely()
-    // await pg
-    //   .updateTable('Task')
-    //   .set({
-    //     content: contentStr
-    //   })
-    //   .where('id', '=', taskId)
-    //   .execute()
-    return contentStr
-  },
   createdByUser: ({createdBy}, _args, {dataLoader}) => {
     return dataLoader.get('users').loadNonNull(createdBy)
   },
