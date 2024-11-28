@@ -6,6 +6,7 @@ import manageGoogleNLPErrorResponse from './manageGoogleNLPErrorResponse'
 const getReflectionEntities = async (plaintextContent: string) => {
   if (!plaintextContent) return []
   const manager = getGoogleLanguageManager()
+  if (!manager) return []
   const res = await Promise.all([
     manager.analyzeEntities(plaintextContent),
     manager.analyzeSyntax(plaintextContent)
