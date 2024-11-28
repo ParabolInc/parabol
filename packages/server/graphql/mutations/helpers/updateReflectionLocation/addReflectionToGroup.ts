@@ -1,6 +1,8 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import getKysely from '../../../../postgres/getKysely'
+import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
+import publish from '../../../../utils/publish'
 import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
@@ -51,18 +53,17 @@ const addReflectionToGroup = async (
   reflection.updatedAt = now
 
   if (oldReflectionGroupId !== reflectionGroupId) {
-    // ths is not just a reorder within the same group
     const nextReflections = [...reflectionsInNextGroup, reflection]
     const oldReflections = await dataLoader
       .get('retroReflectionsByGroupId')
       .load(oldReflectionGroupId)
 
-    const nextTitle = smartTitle ?? getGroupSmartTitle(nextReflections)
+    const nextTitle = smartTitle ?? ''
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
+
     if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
-      // Edge case of dragging a single card with a custom group name on a group with smart name
       await pg
         .updateTable('RetroReflectionGroup')
         .set({title: oldReflectionGroup.title, smartTitle: nextTitle})
@@ -72,9 +73,45 @@ const addReflectionToGroup = async (
       await updateSmartGroupTitle(reflectionGroupId, nextTitle)
     }
 
+    // Fire off AI update without awaiting
+    const manager = new OpenAIServerManager()
+    manager.generateGroupTitle(nextReflections).then(async (aiTitle) => {
+      if (aiTitle) {
+        await updateSmartGroupTitle(reflectionGroupId, aiTitle)
+        publish(
+          SubscriptionChannel.MEETING,
+          meetingId,
+          'UpdateReflectionGroupTitlePayload',
+          {
+            meetingId,
+            reflectionGroupId,
+            title: aiTitle
+          },
+          {operationId: dataLoader.share()}
+        )
+      }
+    })
+
     if (oldReflections.length > 0) {
-      const oldTitle = getGroupSmartTitle(oldReflections)
+      const oldTitle = ''
       await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
+
+      manager.generateGroupTitle(oldReflections).then(async (aiTitle) => {
+        if (aiTitle) {
+          await updateSmartGroupTitle(oldReflectionGroupId, aiTitle)
+          publish(
+            SubscriptionChannel.MEETING,
+            meetingId,
+            'UpdateReflectionGroupTitlePayload',
+            {
+              meetingId,
+              reflectionGroupId: oldReflectionGroupId,
+              title: aiTitle
+            },
+            {operationId: dataLoader.share()}
+          )
+        }
+      })
     } else {
       await pg
         .updateTable('RetroReflectionGroup')

@@ -127,6 +127,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   const {id: reflectionGroupId, title} = reflectionGroup
   const dirtyRef = useRef(false)
   const initialTitleRef = useRef(title)
+  const isLoading = title === ''
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value
@@ -184,7 +185,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
             onBlur={onSubmit}
             onChange={onChange}
             onKeyPress={onKeyPress}
-            placeholder={RETRO_TOPIC_LABEL}
+            placeholder={isLoading ? '' : RETRO_TOPIC_LABEL}
             readOnly={readOnly}
             ref={titleInputRef}
             maxLength={200}

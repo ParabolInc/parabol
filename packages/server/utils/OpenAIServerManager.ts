@@ -417,6 +417,37 @@ class OpenAIServerManager {
       return null
     }
   }
+
+  async generateGroupTitle(reflections: {plaintextContent: string}[]) {
+    if (!this.openAIApi) return null
+    const prompt = `Given these related retrospective comments, generate a short (2-4 words) theme or title that captures their essence. The title should be clear and actionable:
+
+${reflections.map((r) => r.plaintextContent).join('\n')}
+
+Return only the title, nothing else.`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 20,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+      return (response.choices[0]?.message?.content?.trim() as string) ?? null
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generate group title')
+      sendToSentry(error)
+      return null
+    }
+  }
 }
 
 export default OpenAIServerManager
