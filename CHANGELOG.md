@@ -5,6 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.7.1](https://github.com/ParabolInc/parabol/compare/v8.7.0...v8.7.1) (2024-12-02)
+
+
+### Fixed
+
+* parse draft discussions for csv ([#10540](https://github.com/ParabolInc/parabol/issues/10540)) ([3d9032e](https://github.com/ParabolInc/parabol/commit/3d9032e03860f57acd569048c1cae01351ccd301))
+
+## [8.7.0](https://github.com/ParabolInc/parabol/compare/v8.6.1...v8.7.0) (2024-12-02)
+
+
+### Added
+
+* TipTap Tasks add new line for jira tasks ([#10530](https://github.com/ParabolInc/parabol/issues/10530)) ([a8cfa03](https://github.com/ParabolInc/parabol/commit/a8cfa03ab9bbc259bcb3f5e6d01bad3ad86861a5))
+* Upgrade Task Editor to TipTap ([#10526](https://github.com/ParabolInc/parabol/issues/10526)) ([6a05e4b](https://github.com/ParabolInc/parabol/commit/6a05e4b025014df5b39e3b15a6dc5d1b8ddbb256))
+
+
+### Fixed
+
+* Add yarn pg:build to deployment steps in README ([#10508](https://github.com/ParabolInc/parabol/issues/10508)) ([1c1d17c](https://github.com/ParabolInc/parabol/commit/1c1d17cea15d38cf555590d60f0f396c24813df8))
+* show public teams ([#10537](https://github.com/ParabolInc/parabol/issues/10537)) ([c320ff5](https://github.com/ParabolInc/parabol/commit/c320ff57c35de01b3808b2d488a8efd87cb5d3b5))
+
+
+### Changed
+
+* clarify when Google Cloud credentials are required ([#10531](https://github.com/ParabolInc/parabol/issues/10531)) ([dfef8bb](https://github.com/ParabolInc/parabol/commit/dfef8bbda27d67b7cc2ba32fc7db2e95e58d23a6))
+* Make Google Language Manager optional ([#10535](https://github.com/ParabolInc/parabol/issues/10535)) ([99f0094](https://github.com/ParabolInc/parabol/commit/99f0094f14219024c32fa97b4139b813fd42e11b))
+* migrations renamed or deleted fail on migration-order GH action ([#10528](https://github.com/ParabolInc/parabol/issues/10528)) ([9dc1877](https://github.com/ParabolInc/parabol/commit/9dc1877f1d032c295e320009974e18ded40fecec))
+* release shareSummary ([#10511](https://github.com/ParabolInc/parabol/issues/10511)) ([ede3866](https://github.com/ParabolInc/parabol/commit/ede3866e8cbb570f2ae8dc068203a39355d58170))
+* remove ai template ([#10515](https://github.com/ParabolInc/parabol/issues/10515)) ([556ff3f](https://github.com/ParabolInc/parabol/commit/556ff3f0f20b2e991a9cc1e32b9a8b5bcc5997ea))
+* Rename Jira Server to Jira Data Center ([#10522](https://github.com/ParabolInc/parabol/issues/10522)) ([2e8346e](https://github.com/ParabolInc/parabol/commit/2e8346eec6897fc3fe4542d2bc5f36e63e7a3bf7))
+* use more detailed AI Summary for meetings ([#10501](https://github.com/ParabolInc/parabol/issues/10501)) ([b783f55](https://github.com/ParabolInc/parabol/commit/b783f558da5ca2bcad1b7e1412730b53243dc7af))
+
 ## [8.6.1](https://github.com/ParabolInc/parabol/compare/v8.6.0...v8.6.1) (2024-11-25)
 
 
