@@ -1,10 +1,7 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getKysely from '../../../../postgres/getKysely'
-import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
-import publish from '../../../../utils/publish'
+import updateGroupTitle from '../updateGroupTitle'
 import {GQLContext} from './../../../graphql'
-import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const addReflectionToGroup = async (
   reflectionId: string,
@@ -53,64 +50,44 @@ const addReflectionToGroup = async (
   reflection.updatedAt = now
 
   if (oldReflectionGroupId !== reflectionGroupId) {
+    // this is not just a reorder within the same group
     const nextReflections = [...reflectionsInNextGroup, reflection]
     const oldReflections = await dataLoader
       .get('retroReflectionsByGroupId')
       .load(oldReflectionGroupId)
 
-    const nextTitle = smartTitle ?? ''
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
 
     if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
+      // Edge case of dragging a single card with a custom group name on a group with smart name
       await pg
         .updateTable('RetroReflectionGroup')
-        .set({title: oldReflectionGroup.title, smartTitle: nextTitle})
+        .set({title: oldReflectionGroup.title, smartTitle: smartTitle ?? ''})
         .where('id', '=', reflectionGroupId)
         .execute()
     } else {
-      await updateSmartGroupTitle(reflectionGroupId, nextTitle)
+      // Get team for AI access check
+      const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+      await updateGroupTitle({
+        reflections: nextReflections,
+        reflectionGroupId,
+        meetingId,
+        teamId: meeting.teamId,
+        dataLoader
+      })
     }
 
-    // Fire off AI update without awaiting
-    const manager = new OpenAIServerManager()
-    manager.generateGroupTitle(nextReflections).then(async (aiTitle) => {
-      if (aiTitle) {
-        await updateSmartGroupTitle(reflectionGroupId, aiTitle)
-        publish(
-          SubscriptionChannel.MEETING,
-          meetingId,
-          'UpdateReflectionGroupTitlePayload',
-          {
-            meetingId,
-            reflectionGroupId,
-            title: aiTitle
-          },
-          {operationId: dataLoader.share()}
-        )
-      }
-    })
-
     if (oldReflections.length > 0) {
-      const oldTitle = ''
-      await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
-
-      manager.generateGroupTitle(oldReflections).then(async (aiTitle) => {
-        if (aiTitle) {
-          await updateSmartGroupTitle(oldReflectionGroupId, aiTitle)
-          publish(
-            SubscriptionChannel.MEETING,
-            meetingId,
-            'UpdateReflectionGroupTitlePayload',
-            {
-              meetingId,
-              reflectionGroupId: oldReflectionGroupId,
-              title: aiTitle
-            },
-            {operationId: dataLoader.share()}
-          )
-        }
+      // Get team for AI access check (reuse from above if possible)
+      const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+      await updateGroupTitle({
+        reflections: oldReflections,
+        reflectionGroupId: oldReflectionGroupId,
+        meetingId,
+        teamId: meeting.teamId,
+        dataLoader
       })
     } else {
       await pg

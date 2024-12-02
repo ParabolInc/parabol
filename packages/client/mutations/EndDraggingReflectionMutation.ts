@@ -155,6 +155,18 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
       const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
+
+      // // Ensure the title gets updated from the server response
+      // if (reflectionGroup) {
+      //   const title = reflectionGroup.getValue('title')
+      //   const smartTitle = reflectionGroup.getValue('smartTitle')
+      //   const groupProxy = store.get(reflectionGroup.getValue('id'))
+      //   if (groupProxy) {
+      //     groupProxy.setValue(title, 'title')
+      //     groupProxy.setValue(smartTitle, 'smartTitle')
+      //   }
+      // }
+
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {
@@ -170,6 +182,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
       let reflectionGroupProxy: RecordProxy<{meetingId: string}>
       const newReflectionGroupId = clientTempId()
+
       // move a reflection into its own group
       if (!reflectionGroupId) {
         // create the new group
@@ -179,7 +192,9 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           meetingId: reflection.getValue('meetingId') as string,
           isActive: true,
           sortOrder: 0,
-          updatedAt: nowISO
+          updatedAt: nowISO,
+          title: '', // Set empty title immediately
+          smartTitle: '' // Set empty smart title immediately
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
@@ -197,6 +212,9 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           reflectionGroupId
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
+        // Set empty title for target group
+        reflectionGroupProxy.setValue('', 'title')
+        reflectionGroupProxy.setValue('', 'smartTitle')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }
