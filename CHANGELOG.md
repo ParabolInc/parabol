@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.7.1](https://github.com/ParabolInc/parabol/compare/v8.7.0...v8.7.1) (2024-12-02)
+
+
+### Fixed
+
+* parse draft discussions for csv ([#10540](https://github.com/ParabolInc/parabol/issues/10540)) ([3d9032e](https://github.com/ParabolInc/parabol/commit/3d9032e03860f57acd569048c1cae01351ccd301))
+
 ## [8.7.0](https://github.com/ParabolInc/parabol/compare/v8.6.1...v8.7.0) (2024-12-02)
 
 
