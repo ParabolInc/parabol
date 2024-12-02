@@ -1,19 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {Editor} from 'draft-js'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import {cardShadow} from '~/styles/elevation'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
 import {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useEditorState from '../hooks/useEditorState'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
+import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
+import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
 import NotificationTemplate from './NotificationTemplate'
+import {TipTapEditor} from './promptResponse/TipTapEditor'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -58,7 +58,7 @@ interface Props {
 }
 
 const deletedTask = {
-  content: convertToTaskContent('<<TASK DELETED>>'),
+  content: convertTipTapTaskContent('<<TASK DELETED>>'),
   status: 'done',
   tags: [] as string[],
   user: {
@@ -103,9 +103,9 @@ const TaskInvolves = (props: Props) => {
   const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
-  const [editorState] = useEditorState(content)
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const {editor} = useTipTapTaskEditor(content, {readOnly: true})
   const {history} = useRouter()
 
   const gotoBoard = () => {
@@ -120,6 +120,7 @@ const TaskInvolves = (props: Props) => {
     history.push(`/team/${teamId}${archiveSuffix}`)
   }
   const preposition = involvement === MENTIONEE ? ' in' : ''
+  if (!editor) return null
   return (
     <NotificationTemplate
       avatar={changeAuthorPicture}
@@ -133,13 +134,7 @@ const TaskInvolves = (props: Props) => {
           {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
           {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
         </IndicatorsBlock>
-        <Editor
-          readOnly
-          editorState={editorState}
-          onChange={() => {
-            /*noop*/
-          }}
-        />
+        <TipTapEditor editor={editor} />
         <Owner>
           <OwnerAvatar alt='Avatar' src={user?.picture || changeAuthorPicture} />
           <OwnerName>{user?.preferredName || changeAuthorName}</OwnerName>

@@ -14,7 +14,6 @@ declare module 'string-score'
 declare module 'babel-plugin-relay/macro' {
   export {graphql as default} from 'react-relay'
 }
-declare module 'unicode-substring'
 declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
 declare module 'tayden-clusterfck'

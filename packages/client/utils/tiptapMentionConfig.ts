@@ -6,6 +6,7 @@ import tippy, {Instance, Props} from 'tippy.js'
 import {tiptapMentionConfigQuery} from '../__generated__/tiptapMentionConfigQuery.graphql'
 import Atmosphere from '../Atmosphere'
 import MentionDropdown from '../components/MentionDropdown'
+import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 
 const queryNode = graphql`
   query tiptapMentionConfigQuery($teamId: ID!) {
@@ -13,6 +14,7 @@ const queryNode = graphql`
       team(teamId: $teamId) {
         teamMembers {
           id
+          userId
           picture
           preferredName
         }
@@ -25,10 +27,7 @@ export const tiptapMentionConfig = (
   atmosphere: Atmosphere,
   teamId: string
 ): Partial<MentionOptions<any, MentionNodeAttrs>> => ({
-  // renderText does not fire, bug in TipTap? Fallback to using more verbose renderHTML
-  renderHTML({options, node}) {
-    return ['span', options.HTMLAttributes, `${node.attrs.label ?? node.attrs.id}`]
-  },
+  ...mentionConfig,
   suggestion: {
     // some users have first & last name
     allowSpaces: true,

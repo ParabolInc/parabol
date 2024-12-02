@@ -1,18 +1,17 @@
-import {convertFromRaw, convertToRaw} from 'draft-js'
-import addTagToTask from 'parabol-client/utils/draftjs/addTagToTask'
-import getTagsFromEntityMap from 'parabol-client/utils/draftjs/getTagsFromEntityMap'
+import addTagToTask from '../../client/shared/tiptap/addTagToTask'
+import {getTagsFromTipTapTask} from '../../client/shared/tiptap/getTagsFromTipTapTask'
 import getKysely from '../postgres/getKysely'
 import {Task} from '../postgres/types/index.d'
+import {convertToTipTap} from '../utils/convertToTipTap'
 
 const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
   if (!tasks || tasks.length === 0) return []
   const pg = getKysely()
   const tasksToArchive = tasks.map((task) => {
-    const contentState = convertFromRaw(JSON.parse(task.content))
-    const nextContentState = addTagToTask(contentState, '#archived')
-    const raw = convertToRaw(nextContentState)
-    const nextTags = getTagsFromEntityMap(raw.entityMap)
-    const nextContentStr = JSON.stringify(raw)
+    const content = convertToTipTap(task.content)
+    const nextContent = addTagToTask(content, 'archived')
+    const nextTags = getTagsFromTipTapTask(nextContent)
+    const nextContentStr = JSON.stringify(nextContent)
 
     // update cache
     task.content = nextContentStr

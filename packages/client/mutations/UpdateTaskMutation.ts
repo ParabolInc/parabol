@@ -1,8 +1,11 @@
+import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {Task as ITask} from '../../server/postgres/types/index.d'
 import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
+import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {
   OnNextHandler,
   OnNextHistoryContext,
@@ -10,8 +13,6 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import extractTextFromDraftString from '../utils/draftjs/extractTextFromDraftString'
-import getTagsFromEntityMap from '../utils/draftjs/getTagsFromEntityMap'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
@@ -111,7 +112,10 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
       if (!task) return
       const now = new Date()
       const optimisticTask = {
-        ...updatedTask,
+        // do not update content because that will cause the editor to rebuild itself
+        // we only want a rebuild if someone else changes the content
+        id,
+        userId,
         updatedAt: now.toJSON()
       }
       updateProxyRecord(task, optimisticTask)
@@ -120,10 +124,10 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
         task.setLinkedRecord(store.get(userId)!, 'user')
       }
       if (content) {
-        const {entityMap} = JSON.parse(content)
-        const nextTags = getTagsFromEntityMap(entityMap)
+        const contentJSON = JSON.parse(content)
+        const nextTags = getTagsFromTipTapTask(contentJSON)
         task.setValue(nextTags, 'tags')
-        const plaintextContent = extractTextFromDraftString(content)
+        const plaintextContent = generateText(contentJSON, serverTipTapExtensions)
         task.setValue(plaintextContent, 'plaintextContent')
       }
       handleUpsertTasks(task as any, store)

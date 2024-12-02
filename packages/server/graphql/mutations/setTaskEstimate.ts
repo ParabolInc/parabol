@@ -217,7 +217,7 @@ const setTaskEstimate = {
         ])
 
         if (!auth) {
-          errorMessage = 'User no longer has access to Jira Server'
+          errorMessage = 'User no longer has access to Jira Data Center'
           break
         }
 

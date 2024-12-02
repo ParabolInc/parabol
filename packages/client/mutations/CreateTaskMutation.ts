@@ -1,13 +1,14 @@
+import {generateJSON, generateText, JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
-import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import Atmosphere from '../Atmosphere'
 import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
 import {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {
   OnNextHandler,
   OnNextHistoryContext,
@@ -15,7 +16,6 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import getOptimisticTaskEditor from '../utils/relay/getOptimisticTaskEditor'
@@ -108,9 +108,11 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
   if (!task) return
   const taskId = task.getValue('id')
   const content = task.getValue('content')
-  const rawContent = JSON.parse(content)
-  const {blocks} = rawContent
-  const isEditing = blocks.length === 0 || (blocks.length === 1 && blocks[0].text === '')
+  const rawContent = JSON.parse(content) as JSONContent
+  const isEditing =
+    !rawContent.content ||
+    rawContent.content.length === 0 ||
+    (rawContent.content.length === 1 && rawContent.content[0]?.text === '')
   const editorPayload = getOptimisticTaskEditor(store, taskId, isEditing)
   handleEditTask(editorPayload, store)
   handleUpsertTasks(task, store)
@@ -161,7 +163,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       const viewer = store.getRoot().getLinkedRecord('viewer')
       const plaintextContent =
         newTask.plaintextContent ||
-        (newTask.content ? extractTextFromDraftString(newTask.content) : '')
+        (newTask.content ? generateText(JSON.parse(newTask.content), serverTipTapExtensions) : '')
       const optimisticTask = {
         ...rest,
         id: taskId,
@@ -171,7 +173,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         createdBy: viewerId,
         updatedAt: now,
         tags: [],
-        content: newTask.content || makeEmptyStr(),
+        content: newTask.content || JSON.stringify(generateJSON('<p></p>', serverTipTapExtensions)),
         title: plaintextContent,
         plaintextContent
       }

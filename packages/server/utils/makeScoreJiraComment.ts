@@ -1,5 +1,5 @@
 import {ExternalLinks} from '../../client/types/constEnums'
-import {Doc} from './convertContentStateToADF'
+import {Doc} from './makeCreateJiraTaskComment'
 
 const makeScoreJiraComment = (
   dimensionName: string,

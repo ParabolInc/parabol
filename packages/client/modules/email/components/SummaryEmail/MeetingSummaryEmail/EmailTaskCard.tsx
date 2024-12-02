@@ -1,15 +1,14 @@
+import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
-import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
-import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import * as React from 'react'
-import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
-import convertToTaskContent from '../../../../../utils/draftjs/convertToTaskContent'
+import {convertTipTapTaskContent} from '../../../../../shared/tiptap/convertTipTapTaskContent'
+import {serverTipTapExtensions} from '../../../../../shared/tiptap/serverTipTapExtensions'
 
 interface Props {
   task: EmailTaskCard_task$key | null
@@ -45,7 +44,7 @@ const statusStyle = (status: TaskStatusEnum) => ({
 })
 
 const deletedTask = {
-  content: convertToTaskContent('<<TASK DELETED>>'),
+  content: convertTipTapTaskContent('<<TASK DELETED>>'),
   status: 'done',
   tags: [] as string[],
   user: {
@@ -66,15 +65,7 @@ const EmailTaskCard = (props: Props) => {
     taskRef
   )
   const {content, status} = task || deletedTask
-  const contentState = useMemo(() => convertFromRaw(JSON.parse(content)), [content])
-  const editorStateRef = useRef<EditorState>()
-  const getEditorState = () => {
-    return editorStateRef.current
-  }
-  editorStateRef.current = EditorState.createWithContent(
-    contentState,
-    editorDecorators(getEditorState)
-  )
+  const htmlContent = generateHTML(JSON.parse(content), serverTipTapExtensions)
   return (
     <tr>
       <td>
@@ -97,13 +88,7 @@ const EmailTaskCard = (props: Props) => {
                   <tbody>
                     <tr>
                       <td>
-                        <Editor
-                          readOnly
-                          editorState={editorStateRef.current}
-                          onChange={() => {
-                            /**/
-                          }}
-                        />
+                        <div dangerouslySetInnerHTML={{__html: htmlContent}}></div>
                       </td>
                     </tr>
                   </tbody>

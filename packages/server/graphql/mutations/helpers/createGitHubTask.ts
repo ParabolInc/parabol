@@ -1,6 +1,6 @@
-import {stateToMarkdown} from 'draft-js-export-markdown'
+import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
-import splitDraftContent from '../../../../client/utils/draftjs/splitDraftContent'
+import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
 import {
   CreateIssueMutation,
@@ -8,13 +8,14 @@ import {
   GetRepoInfoQuery,
   GetRepoInfoQueryVariables
 } from '../../../types/githubTypes'
+import {convertTipTapToMarkdown} from '../../../utils/convertTipTapToMarkdown'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import createIssueMutation from '../../../utils/githubQueries/createIssue.graphql'
 import getRepoInfo from '../../../utils/githubQueries/getRepoInfo.graphql'
 import {GQLContext} from '../../graphql'
 
 const createGitHubTask = async (
-  rawContent: string,
+  rawContent: JSONContent,
   repoOwner: string,
   repoName: string,
   githubAuth: GitHubAuth,
@@ -22,8 +23,8 @@ const createGitHubTask = async (
   info: GraphQLResolveInfo
 ) => {
   const {accessToken, login} = githubAuth
-  const {title, contentState} = splitDraftContent(rawContent)
-  const body = stateToMarkdown(contentState) as string
+  const {title, bodyContent} = splitTipTapContent(rawContent)
+  const body = convertTipTapToMarkdown(bodyContent)
   const githubRequest = getGitHubRequest(info, context, {
     accessToken
   })

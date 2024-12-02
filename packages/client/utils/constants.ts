@@ -185,7 +185,7 @@ export const EnterpriseBenefits = [
   'Domain Whitelisting',
   'Uptime Service Level Agreement (SLA)',
   'On-Premises Hosting Option',
-  'Jira Server Integration'
+  'Jira Data Center Integration'
 ]
 
 export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [

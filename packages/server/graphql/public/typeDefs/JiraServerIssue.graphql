@@ -1,5 +1,5 @@
 """
-The Jira Issue that comes direct from Jira Server
+The Jira Issue that comes direct from Jira Data Center
 """
 type JiraServerIssue implements TaskIntegration {
   """

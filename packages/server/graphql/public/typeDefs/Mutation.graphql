@@ -434,6 +434,21 @@ type Mutation {
   ): GenerateInsightPayload!
 
   """
+  Generate new meeting summaries for retro meetings for the given teams
+  """
+  generateRetroSummaries(
+    """
+    The ids of the teams to generate the meeting summary for
+    """
+    teamIds: [ID!]!
+
+    """
+    The optional user prompt that will be used to generate the meeting summary
+    """
+    prompt: String
+  ): GenerateRetroSummariesPayload!
+
+  """
   Move a template dimension
   """
   movePokerTemplateDimension(
@@ -1446,16 +1461,6 @@ type Mutation {
   createStripeSubscription(orgId: ID!, paymentMethodId: ID!): CreateStripeSubscriptionPayload!
 
   """
-  Ask the AI for a template suggestion
-  """
-  getTemplateSuggestion(
-    """
-    The question the user has for the AI
-    """
-    prompt: String!
-  ): GetTemplateSuggestionPayload!
-
-  """
   Sign up or login using Google
   """
   loginWithGoogle(
@@ -1833,12 +1838,12 @@ type Mutation {
     dimensionName: String!
 
     """
-    The Jira Server field name that we should push estimates to
+    The Jira Data Center field name that we should push estimates to
     """
     fieldName: ID!
 
     """
-    The Jira Server issue type for which to set the dimension
+    The Jira Data Center issue type for which to set the dimension
     """
     issueType: ID!
 

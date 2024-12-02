@@ -1,29 +1,12 @@
-import JSON5 from 'json5'
 import OpenAI from 'openai'
 import {ModifyType} from '../graphql/public/resolverTypes'
 import {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 
-type Prompt = {
-  question: string
-  description: string
-}
-
 type InsightResponse = {
   wins: string[]
   challenges: string[]
-}
-
-type Template = {
-  templateId: string
-  templateName: string
-  prompts: Prompt[]
-}
-
-type AITemplateSuggestion = {
-  templateId: string
-  explanation: string
 }
 
 class OpenAIServerManager {
@@ -77,12 +60,11 @@ class OpenAIServerManager {
     }
   }
 
-  // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
-  async getSummary(text: string | string[], summaryLocation?: 'discussion thread') {
+  // TODO: remove this: https://github.com/ParabolInc/parabol/issues/10500
+  async getSummary(text: string | string[]) {
     if (!this.openAIApi) return null
     const textStr = Array.isArray(text) ? text.join('\n') : text
-    const location = summaryLocation ?? 'retro meeting'
-    const prompt = `Below is a newline delimited text from a ${location}.
+    const prompt = `Below is newline delimited text from a discussion thread.
     Summarize the text for the meeting facilitator in one or two sentences.
     When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
     Aim for brevity and clarity. If your summary exceeds 50 characters, iterate until it fits while retaining the essence. Your final response should only include the shortened summary.
@@ -195,44 +177,6 @@ class OpenAIServerManager {
       return themes.split(', ')
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
-      Logger.error(error.message)
-      sendToSentry(error)
-      return null
-    }
-  }
-
-  async getTemplateSuggestion(templates: Template[], userPrompt: string) {
-    if (!this.openAIApi) return null
-    const promptText = `Based on the user's input "${userPrompt}", identify the most suitable meeting template from the list below and provide a JSON response in the format: { templateId: "the chosen template ID", explanation: "reason for choosing this template" }. The explanation should be concise. Available templates are: ${templates
-      .map(
-        (template) =>
-          `ID: ${template.templateId}, Name: ${template.templateName}, Prompts: ${template.prompts
-            .map((prompt) => `${prompt.question} - ${prompt.description}`)
-            .join('; ')}`
-      )
-      .join('. ')}.`
-
-    try {
-      const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: promptText
-          }
-        ],
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      })
-
-      const templateResponse = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      const parsedResponse = JSON5.parse(templateResponse)
-      return parsedResponse as AITemplateSuggestion
-    } catch (e) {
-      const error =
-        e instanceof Error ? e : new Error('OpenAI failed to generate the suggested template')
       Logger.error(error.message)
       sendToSentry(error)
       return null
@@ -429,7 +373,6 @@ class OpenAIServerManager {
     }
   }
 
-  // replace getSummary with generateSummary: https://github.com/ParabolInc/parabol/issues/10049
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
@@ -446,6 +389,7 @@ class OpenAIServerManager {
     Start the summary with the most important topic.
     You do not need to mention everything. Just mention the most important points, and ensure the summary is concise.
     Your tone should be kind. Write in plain English. No jargon.
+    Do not add quote marks around the whole summary.
     `
     const prompt = userPrompt ? userPrompt : defaultPrompt
 

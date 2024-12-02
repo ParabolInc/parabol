@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeEntityKeepText from 'parabol-client/utils/draftjs/removeEntityKeepText'
 import getKysely from '../../postgres/getKysely'
 import {AtlassianAuth} from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import {GitHubAuth} from '../../postgres/queries/getGitHubAuthByUserIdTeamId'
@@ -45,7 +44,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {content, tags, teamId: oldTeamId} = task
+    const {tags, teamId: oldTeamId} = task
     if (!isTeamMember(authToken, oldTeamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -121,17 +120,6 @@ export default {
     ).filter(isValid)
     const oldTeamMembers = teamMemberRes[0]!
     const newTeamMembers = teamMemberRes[1]!
-    const oldTeamUserIds = oldTeamMembers.map(({userId}) => userId)
-    const newTeamUserIds = newTeamMembers.map(({userId}) => userId)
-    const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {
-      return !newTeamUserIds.find((newTeamUserId) => newTeamUserId === oldTeamUserId)
-    })
-    const rawContent = JSON.parse(content)
-    const eqFn = (entity: {type: string; data: {userId?: string}}) =>
-      entity.type === 'MENTION' &&
-      Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId))
-    const {rawContent: nextRawContent} = removeEntityKeepText(rawContent, eqFn)
-
     // If there is a task with the same integration hash in the new team, then delete it first.
     // This is done so there are no duplicates and also solves the issue of the conflicting task being
     // private or archived.
@@ -156,7 +144,6 @@ export default {
     await pg
       .updateTable('Task')
       .set({
-        content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
         teamId,
         integration: JSON.stringify(integration)
       })

@@ -1,11 +1,12 @@
+import {generateText} from '@tiptap/core'
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
-import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
+import {getTagsFromTipTapTask} from '../../../client/shared/tiptap/getTagsFromTipTapTask'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../postgres/getKysely'
 import {Task} from '../../postgres/types/index'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -54,7 +55,12 @@ export default {
 
     // VALIDATION
     const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
-    const validContent = normalizeRawDraftJS(content)
+
+    const validContent = convertToTipTap(content)
+    const plaintextContent = content
+      ? generateText(validContent, serverTipTapExtensions)
+      : undefined
+
     const [task, viewer] = await Promise.all([
       dataLoader.get('tasks').load(taskId),
       dataLoader.get('users').loadNonNull(viewerId)
@@ -79,11 +85,11 @@ export default {
       .updateTable('Task')
       .set({
         content: content ? validContent : undefined,
-        plaintextContent: content ? extractTextFromDraftString(validContent) : undefined,
+        plaintextContent,
         sortOrder: sortOrder || undefined,
         status: status || undefined,
         userId: inputUserId || undefined,
-        tags: content ? getTagsFromEntityMap(JSON.parse(validContent).entityMap) : undefined
+        tags: content ? getTagsFromTipTapTask(validContent) : undefined
       })
       .where('id', '=', taskId)
       .executeTakeFirst()

@@ -1,6 +1,6 @@
 import * as Popover from '@radix-ui/react-popover'
 import {Editor, getMarkRange, getMarkType, getTextBetween, useEditorState} from '@tiptap/react'
-import {useCallback} from 'react'
+import {useCallback, useRef} from 'react'
 import {TipTapLinkEditor} from './TipTapLinkEditor'
 import {TipTapLinkPreview} from './TipTapLinkPreview'
 
@@ -23,18 +23,10 @@ interface Props {
   editor: Editor
   linkState: LinkMenuState
   setLinkState: (linkState: LinkMenuState) => void
+  useLinkEditor?: () => void
 }
 export const TipTapLinkMenu = (props: Props) => {
-  const {editor, linkState, setLinkState} = props
-
-  const getRect = () => {
-    if (!editor) return {top: 0, left: 0}
-    const coords = editor.view.coordsAtPos(editor.state.selection.from)
-    return {
-      top: coords.top,
-      left: coords.left
-    }
-  }
+  const {editor, linkState, setLinkState, useLinkEditor} = props
 
   const {link, text} = useEditorState({
     editor,
@@ -111,20 +103,37 @@ export const TipTapLinkMenu = (props: Props) => {
       .run()
     setLinkState(null)
   }, [editor])
-
-  const rect = getRect()
-  const transform = `translate(${rect.left}px,${rect.top + 20}px)`
   const onOpenChange = (willOpen: boolean) => {
     setLinkState(willOpen ? (editor.isActive('link') ? 'preview' : 'edit') : null)
   }
+  const transformRef = useRef<undefined | string>(undefined)
+  const getTransform = () => {
+    const coords = editor.view.coordsAtPos(editor.state.selection.from)
+    const {left, top} = coords
+    if (left !== 0 && top !== 0) {
+      transformRef.current = `translate(${coords.left}px,${coords.top + 20}px)`
+    }
+    return transformRef.current
+  }
+  if (!linkState) return null
   return (
     <Popover.Root open onOpenChange={onOpenChange}>
       <Popover.Trigger asChild />
       <Popover.Portal>
-        <Popover.Content>
-          <div className='absolute left-0 top-0' style={{transform}}>
+        <Popover.Content
+          onOpenAutoFocus={(e) => {
+            // necessary for link preview to preview focusing the first button
+            e.preventDefault()
+          }}
+        >
+          <div className='absolute left-0 top-0' style={{transform: getTransform()}}>
             {linkState === 'edit' && (
-              <TipTapLinkEditor initialUrl={link} initialText={text} onSetLink={onSetLink} />
+              <TipTapLinkEditor
+                initialUrl={link}
+                initialText={text}
+                onSetLink={onSetLink}
+                useLinkEditor={useLinkEditor}
+              />
             )}
             {linkState === 'preview' && (
               <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />

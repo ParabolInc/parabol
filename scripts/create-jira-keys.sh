@@ -15,7 +15,7 @@ echo Parabol integration
 echo Public Key:
 cat jira_publickey.pem
 echo
-echo "Ask for their Jira Server URL, (ours is 'jira.parabol.co' for example)"
+echo "Ask for their Jira Data Center URL, (ours is 'jira.parabol.co' for example)"
 echo END SEND TO CLIENT
 echo -----------------------------------
 echo 

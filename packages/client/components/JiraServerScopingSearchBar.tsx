@@ -53,7 +53,7 @@ const JiraServerScopingSearchBar = (props: Props) => {
   })
   const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
 
-  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira Server'
+  const placeholder = isJQL ? `SPRINT = fun AND PROJECT = dev` : 'Search issues on Jira Data Center'
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>

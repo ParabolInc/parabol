@@ -1,21 +1,22 @@
+import {generateText} from '@tiptap/core'
 import {GraphQLNonNull, GraphQLObjectType, GraphQLResolveInfo} from 'graphql'
 import {Insertable} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getTypeFromEntityMap from 'parabol-client/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
+import {getAllNodesAttributesByType} from '../../../client/shared/tiptap/getAllNodesAttributesByType'
+import {getTagsFromTipTapTask} from '../../../client/shared/tiptap/getTagsFromTipTapTask'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import dndNoise from '../../../client/utils/dndNoise'
-import extractTextFromDraftString from '../../../client/utils/draftjs/extractTextFromDraftString'
-import getTagsFromEntityMap from '../../../client/utils/draftjs/getTagsFromEntityMap'
-import normalizeRawDraftJS from '../../../client/validation/normalizeRawDraftJS'
 import generateUID from '../../generateUID'
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
-import {Task, TaskTag} from '../../postgres/types/index.d'
+import {Task} from '../../postgres/types/index.d'
 import {Notification} from '../../postgres/types/pg'
 import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish, {SubOptions} from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {DataLoaderWorker, GQLContext} from '../graphql'
@@ -88,16 +89,17 @@ const handleAddTaskNotifications = async (
     })
   }
 
-  const {entityMap} = JSON.parse(content)
-  getTypeFromEntityMap('MENTION', entityMap)
+  const jsonContent = JSON.parse(content)
+  getAllNodesAttributesByType<{id: string; label: string}>(jsonContent, 'mention')
     .filter(
-      (mention) => mention !== viewerId && mention !== userId && !usersIdsToIgnore.includes(mention)
+      (mention) =>
+        mention.id !== viewerId && mention.id !== userId && !usersIdsToIgnore.includes(mention.id)
     )
-    .forEach((mentioneeUserId) => {
+    .forEach((mentionee) => {
       notificationsToAdd.push({
         id: generateUID(),
         type: 'TASK_INVOLVES' as const,
-        userId: mentioneeUserId,
+        userId: mentionee.id,
         involvement: 'MENTIONEE',
         taskId,
         changeAuthorId,
@@ -187,15 +189,13 @@ export default {
       return standardError(new Error(firstError), {userId: viewerId})
     }
 
-    const content = normalizeRawDraftJS(newTask.content)
-    // const content = convertToTipTap(newTask.content)
-    // const plaintextContent = generateText(content, serverTipTapExtensions)
+    const content = convertToTipTap(newTask.content)
+    const plaintextContent = generateText(content, serverTipTapExtensions)
 
     // see if the task already exists
     const integrationRes = await createTaskInService(
       newTask.integration,
-      // TODO: FIX ME
-      content as any,
+      content,
       viewerId,
       teamId,
       context,
@@ -213,8 +213,8 @@ export default {
     }
     const task = {
       id: generateUID(),
-      content,
-      plaintextContent: extractTextFromDraftString(content),
+      content: JSON.stringify(content),
+      plaintextContent,
       createdBy: viewerId,
       meetingId,
       sortOrder: sortOrder || dndNoise(),
@@ -226,14 +226,13 @@ export default {
       threadSortOrder,
       threadParentId,
       userId: userId || null,
-      // FIXME
-      tags: getTagsFromEntityMap<TaskTag>(JSON.parse(content as any).entityMap)
+      tags: getTagsFromTipTapTask(content)
     }
     const {id: taskId} = task
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     await pg.insertInto('Task').values(task).execute()
     // FIXME
-    handleAddTaskNotifications(teamMembers, task as any, viewerId, teamId, {
+    handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
       operationId,
       mutatorId
     }).catch()

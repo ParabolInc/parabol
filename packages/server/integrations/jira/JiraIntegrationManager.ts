@@ -1,3 +1,4 @@
+import {JSONContent} from '@tiptap/core'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import createJiraTask from '../../graphql/mutations/helpers/createJiraTask'
@@ -35,15 +36,15 @@ export default class JiraIntegrationManager
   }
 
   async createTask({
-    rawContentStr,
+    rawContentJSON,
     integrationRepoId
   }: {
-    rawContentStr: string
+    rawContentJSON: JSONContent
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
     const {cloudId, projectKey} = JiraProjectId.split(integrationRepoId)
 
-    const res = await createJiraTask(rawContentStr, cloudId, projectKey, this.auth)
+    const res = await createJiraTask(rawContentJSON, cloudId, projectKey, this.auth)
 
     if (res.error) return res.error
 
