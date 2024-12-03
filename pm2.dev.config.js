@@ -86,6 +86,22 @@ module.exports = {
       script: 'yarn pg:build',
       watch: ['packages/server/postgres/queries/src/*.sql'],
       autorestart: false
+    },
+    {
+      name: 'Mattermost Relay Compiler',
+      script: 'yarn workspace parabol-mattermost-plugin relay-compiler',
+      watch: [
+        'packages/mattermost-plugin/**/*.ts*',
+        'packages/mattermost-plugin/schemaExtensions/*.graphql',
+      ],
+      autorestart: false,
+      instances: 1
+    },
+    {
+      name: 'Mattermost Plugin Dev Server',
+      script: 'yarn workspace parabol-mattermost-plugin dev',
+      atuorestart: false,
+      instances: 1
     }
   ].map((app) => ({
     env_production: {

@@ -1,6 +1,47 @@
 const { ModuleFederationPlugin } = require("webpack").container;
-//const path = require("path");
+const path = require('path')
+const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
+const PROJECT_ROOT = getProjectRoot()
+
+const clientTransformRules = (projectRoot) => {
+  const clientRoot = path.join(projectRoot, 'packages', 'mattermost-plugin')
+  console.log('clientRoot', clientRoot)
+  return [
+    {
+      test: /\.tsx?$/,
+      // things that need the relay plugin
+      include: clientRoot,
+      use: [
+        {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: false,
+            babelrc: false,
+            plugins: [
+              [
+                'macros',
+                {
+                  relay: {
+                    artifactDirectory: path.join(clientRoot, '__generated__')
+                  }
+                }
+              ],
+              //'react-refresh/babel'
+            ]
+          }
+        },
+        {
+          loader: '@sucrase/webpack-loader',
+          options: {
+            transforms: ['jsx', 'typescript'],
+            jsxRuntime: 'automatic'
+          }
+        }
+      ]
+    }
+  ]
+}
 module.exports = {
   entry: "./index",
   mode: "development",
@@ -18,6 +59,7 @@ module.exports = {
   },
   module: {
     rules: [
+      ...clientTransformRules(PROJECT_ROOT),
       {
         test: /\.tsx?$/,
         loader: "babel-loader",
@@ -33,7 +75,7 @@ module.exports = {
       name: "parabol",
       filename: "remoteEntry.js",
       exposes: {
-        "./button": "./button",
+        "./plugin": "./index",
       },
       /*
       shared: {
@@ -47,4 +89,13 @@ module.exports = {
       */
     })
   ],
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    redux: 'Redux',
+    'react-redux': 'ReactRedux',
+    'prop-types': 'PropTypes',
+    'react-bootstrap': 'ReactBootstrap',
+    'react-router-dom': 'ReactRouterDom',
+  },
 };
