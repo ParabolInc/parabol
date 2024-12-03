@@ -68,7 +68,6 @@ const addReflectionToGroup = async (
         .where('id', '=', reflectionGroupId)
         .execute()
     } else {
-      // Get team for AI access check
       const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       await updateGroupTitle({
         reflections: nextReflections,

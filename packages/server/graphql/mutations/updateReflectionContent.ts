@@ -98,8 +98,6 @@ export default {
       .get('retroReflectionsByGroupId')
       .load(reflectionGroupId)
 
-    // const newTitle = getGroupSmartTitle(reflectionsInGroup)
-    // await updateSmartGroupTitle(reflectionGroupId, newTitle)
     await updateGroupTitle({
       reflections: reflectionsInGroup,
       reflectionGroupId,

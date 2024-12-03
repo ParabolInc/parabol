@@ -181,8 +181,8 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           isActive: true,
           sortOrder: 0,
           updatedAt: nowISO,
-          title: '', // Set empty title immediately
-          smartTitle: '' // Set empty smart title immediately
+          title: '',
+          smartTitle: ''
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
@@ -200,7 +200,6 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           reflectionGroupId
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
-        // Set empty title for target group
         reflectionGroupProxy.setValue('', 'title')
         reflectionGroupProxy.setValue('', 'smartTitle')
       }
