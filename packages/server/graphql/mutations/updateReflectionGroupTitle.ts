@@ -90,6 +90,8 @@ export default {
     }
 
     const data = {meetingId, reflectionGroupId}
+
+    console.log('here <><><><>><><>><>><>><><')
     publish(
       SubscriptionChannel.MEETING,
       meetingId,

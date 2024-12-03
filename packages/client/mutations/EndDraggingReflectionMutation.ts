@@ -155,18 +155,6 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       reflection.setValue(false, 'isViewerDragging')
       const reflectionGroup = payload.getLinkedRecord('reflectionGroup')!
       const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
-
-      // // Ensure the title gets updated from the server response
-      // if (reflectionGroup) {
-      //   const title = reflectionGroup.getValue('title')
-      //   const smartTitle = reflectionGroup.getValue('smartTitle')
-      //   const groupProxy = store.get(reflectionGroup.getValue('id'))
-      //   if (groupProxy) {
-      //     groupProxy.setValue(title, 'title')
-      //     groupProxy.setValue(smartTitle, 'smartTitle')
-      //   }
-      // }
-
       moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
     },
     optimisticUpdater: (store) => {

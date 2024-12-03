@@ -20,13 +20,13 @@ const generateAIGroupTitle = async (
   dataLoader: DataLoaderWorker
 ) => {
   const hasAIAccess = await canAccessAI(team, 'retrospective', dataLoader)
-  await updateSmartGroupTitle(reflectionGroupId, '')
 
   if (hasAIAccess) {
     const manager = new OpenAIServerManager()
     const aiTitle = await manager.generateGroupTitle(reflections)
     if (aiTitle) {
       await updateSmartGroupTitle(reflectionGroupId, aiTitle)
+      dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
       publish(
         SubscriptionChannel.MEETING,
         meetingId,
@@ -42,6 +42,7 @@ const generateAIGroupTitle = async (
   } else {
     const smartTitle = getGroupSmartTitle(reflections)
     await updateSmartGroupTitle(reflectionGroupId, smartTitle)
+    dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
     publish(
       SubscriptionChannel.MEETING,
       meetingId,

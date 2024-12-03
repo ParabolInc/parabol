@@ -18,6 +18,7 @@ graphql`
       content
       retroReflectionGroup {
         title
+        smartTitle
       }
     }
   }

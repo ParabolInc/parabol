@@ -18,7 +18,12 @@ const updateGroupTitle = async (input: Input) => {
   const {reflections, reflectionGroupId, meetingId, teamId, dataLoader} = input
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const hasAIAccess = await canAccessAI(team, 'retrospective', dataLoader)
-  if (!hasAIAccess) {
+
+  if (reflections.length === 1) {
+    // For single reflection, use its content as the title
+    const newTitle = reflections[0].plaintextContent
+    await updateSmartGroupTitle(reflectionGroupId, newTitle)
+  } else if (!hasAIAccess) {
     const smartTitle = getGroupSmartTitle(reflections)
     await updateSmartGroupTitle(reflectionGroupId, smartTitle)
   } else {

@@ -2,7 +2,6 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
 import getKysely from '../../postgres/getKysely'
@@ -15,7 +14,7 @@ import UpdateReflectionContentPayload from '../types/UpdateReflectionContentPayl
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
 import getReflectionEntities from './helpers/getReflectionEntities'
 import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
-import updateSmartGroupTitle from './helpers/updateReflectionLocation/updateSmartGroupTitle'
+import updateGroupTitle from './helpers/updateGroupTitle'
 
 export default {
   type: UpdateReflectionContentPayload,
@@ -99,8 +98,15 @@ export default {
       .get('retroReflectionsByGroupId')
       .load(reflectionGroupId)
 
-    const newTitle = getGroupSmartTitle(reflectionsInGroup)
-    await updateSmartGroupTitle(reflectionGroupId, newTitle)
+    // const newTitle = getGroupSmartTitle(reflectionsInGroup)
+    // await updateSmartGroupTitle(reflectionGroupId, newTitle)
+    await updateGroupTitle({
+      reflections: reflectionsInGroup,
+      reflectionGroupId,
+      meetingId,
+      teamId,
+      dataLoader
+    })
 
     const data = {meetingId, reflectionId}
     publish(
