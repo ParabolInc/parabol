@@ -21,7 +21,7 @@ type CheckInPhase implements NewMeetingPhase {
   checkInGreeting: MeetingGreeting!
 
   """
-  The checkIn question of the week (draft-js format)
+  The checkIn question of the week (Stringified TipTap JSON format)
   """
   checkInQuestion: String!
 }
