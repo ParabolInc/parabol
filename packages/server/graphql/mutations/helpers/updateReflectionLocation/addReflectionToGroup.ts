@@ -79,7 +79,6 @@ const addReflectionToGroup = async (
     }
 
     if (oldReflections.length > 0) {
-      // Get team for AI access check (reuse from above if possible)
       const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       await updateGroupTitle({
         reflections: oldReflections,

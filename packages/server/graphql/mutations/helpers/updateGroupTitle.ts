@@ -16,14 +16,15 @@ type Input = {
 
 const updateGroupTitle = async (input: Input) => {
   const {reflections, reflectionGroupId, meetingId, teamId, dataLoader} = input
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const hasAIAccess = await canAccessAI(team, 'retrospective', dataLoader)
-
   if (reflections.length === 1) {
     // For single reflection, use its content as the title
     const newTitle = reflections[0].plaintextContent
     await updateSmartGroupTitle(reflectionGroupId, newTitle)
-  } else if (!hasAIAccess) {
+    return
+  }
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const hasAIAccess = await canAccessAI(team, 'retrospective', dataLoader)
+  if (!hasAIAccess) {
     const smartTitle = getGroupSmartTitle(reflections)
     await updateSmartGroupTitle(reflectionGroupId, smartTitle)
   } else {
@@ -34,7 +35,7 @@ const updateGroupTitle = async (input: Input) => {
       .where('id', '=', reflectionGroupId)
       .execute()
     // Generate title and don't await or the reflection will hang when it's dropped
-    generateAIGroupTitle(reflections, reflectionGroupId, meetingId, team, dataLoader)
+    generateAIGroupTitle(reflections, reflectionGroupId, meetingId, dataLoader)
   }
 }
 
