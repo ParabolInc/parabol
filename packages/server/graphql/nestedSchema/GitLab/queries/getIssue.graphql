@@ -1,6 +1,7 @@
 query getIssue($gid: IssueID!) {
   issue(id: $gid) {
     id
+    iid
     projectId
   }
 }

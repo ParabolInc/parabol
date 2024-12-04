@@ -6,6 +6,7 @@ import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
 import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
+import updateIssue from '../../graphql/nestedSchema/GitLab/mutations/updateIssue.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
@@ -18,7 +19,8 @@ import {
   GetProfileQuery,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
-  GetProjectsQuery
+  GetProjectsQuery,
+  UpdateIssueMutation
 } from '../../types/gitlabTypes'
 import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
@@ -144,6 +146,15 @@ class GitLabServerManager implements TaskIntegrationManager {
       input: {body, noteableId}
     })
     return [noteData, noteError] as const
+  }
+
+  async updateIssue(input: {projectPath: string; iid: string; timeEstimate: string}) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [issuesData, issuesError] = await gitlabRequest<UpdateIssueMutation>(
+      updateIssue,
+      {input}
+    )
+    return [issuesData, issuesError] as const
   }
 
   async getProjectIssues(projectIssuesArgs: GetProjectIssuesQueryVariables) {

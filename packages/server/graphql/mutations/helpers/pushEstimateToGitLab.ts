@@ -36,7 +36,7 @@ const pushEstimateToGitLab = async (
   if (issueError) return issueError
   const {issue} = issueData
   if (!issue) return new Error(`Unable to get GitLab issue with id: ${gid}`)
-  const {projectId} = issue
+  const {iid, projectId} = issue
   const fieldMap = await dataLoader
     .get('gitlabDimensionFieldMaps')
     .load({teamId, dimensionName, projectId, providerId})
@@ -55,16 +55,18 @@ const pushEstimateToGitLab = async (
       discussionURL
     )
     if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
-    const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
     const [, commentError] = await manager.createNote({body, noteableId: gid})
     if (commentError) return commentError
   }
   if (labelTemplate === SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE) {
-    const body = `/estimate ${value}`
+    const [projectsData, projectsError] = await manager.getProjects({ids: [`gid://gitlab/Project/${projectId}`]})
+    if (projectsError) return projectsError
+    const project = projectsData?.projects?.edges?.[0].node
+    if (!project) return new Error(`Unable to get GitLab project with id: ${projectId}`)
+    const {fullPath} = project
     if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
-    const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
-    const [, commentError] = await manager.createNote({body, noteableId: gid})
-    if (commentError) return commentError
+    const [, updateError] = await manager.updateIssue({iid, projectPath: fullPath, timeEstimate: value})
+    if (updateError) return updateError
   }
 
   return null
