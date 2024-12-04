@@ -105,7 +105,7 @@ const PushReflectionModal = () => {
 
     const markdown = `${comment}\n\n${formattedPost}`
     const rawObject = markdownToDraft(markdown)
-    return JSON.stringify(rawObject)
+    const content = JSON.stringify(rawObject)
 
     createReflection({
       variables: {

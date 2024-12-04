@@ -1,4 +1,3 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
 
 import {useDispatch} from 'react-redux'
@@ -9,27 +8,34 @@ import LoadingSpinner from '../LoadingSpinner'
 import {useLazyLoadQuery} from 'react-relay'
 import {ActiveMeetingsQuery} from '../../__generated__/ActiveMeetingsQuery.graphql'
 import MeetingRow from './MeetingRow'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 
 
 const ActiveMeetings = () => {
   //const {data: meetings, isLoading, error, refetch} = useActiveMeetingsQuery()
+  const channel = useCurrentChannel()
   const data = useLazyLoadQuery<ActiveMeetingsQuery>(
     graphql`
-      query ActiveMeetingsQuery {
+      query ActiveMeetingsQuery($channel: ID!) {
         config {
           __typename
           parabolUrl
         }
         viewer {
+          linkedTeams(channel: $channel) @waterfall {
+            id
+          }
           teams {
             id
             activeMeetings {
-              ...MeetingRow_meeting @relay(plural: true)
+              ...MeetingRow_meeting
             }
           }
         }
       }
-    `, {})
+    `, {
+      channel: channel.id
+    })
   console.log('GEORG data', data)
   const viewer = data.viewer
   const teams = viewer.teams

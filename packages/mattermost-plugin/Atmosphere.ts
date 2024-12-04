@@ -51,6 +51,10 @@ const relayFieldLogger: RelayFieldLogger = (event) => {
   }
 }
 
+export type ResolverContext = {
+  serverUrl: string
+}
+
 export class Atmosphere extends Environment {
   state: State
 
