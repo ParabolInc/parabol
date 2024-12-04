@@ -40,6 +40,8 @@ const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}
 
 const labelLookup = {
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
+  [SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE]:
+    SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
 }
 

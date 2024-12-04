@@ -59,6 +59,14 @@ const pushEstimateToGitLab = async (
     const [, commentError] = await manager.createNote({body, noteableId: gid})
     if (commentError) return commentError
   }
+  if (labelTemplate === SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE) {
+    const body = `/estimate ${value}`
+    if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
+    const manager = new GitLabServerManager(auth, context, info, provider.serverBaseUrl)
+    const [, commentError] = await manager.createNote({body, noteableId: gid})
+    if (commentError) return commentError
+  }
+
   return null
 }
 
