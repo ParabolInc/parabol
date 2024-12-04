@@ -148,7 +148,7 @@ class GitLabServerManager implements TaskIntegrationManager {
     return [noteData, noteError] as const
   }
 
-  async updateIssue(input: {projectPath: string; iid: string; timeEstimate: string}) {
+  async updateIssue(input: {projectPath: string; iid: string; timeEstimate?: string, weight?: number}) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
     const [issuesData, issuesError] = await gitlabRequest<UpdateIssueMutation>(
       updateIssue,

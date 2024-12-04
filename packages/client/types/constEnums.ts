@@ -494,7 +494,9 @@ export const enum SprintPokerDefaults {
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type',
   GITLAB_FIELD_TIME_ESTIMATE = 'time-estimate',
-  GITLAB_FIELD_TIME_ESTIMATE_LABEL = 'Time Estimate'
+  GITLAB_FIELD_TIME_ESTIMATE_LABEL = 'Time Estimate',
+  GITLAB_FIELD_WEIGHT = 'weight',
+  GITLAB_FIELD_WEIGHT_LABEL = 'Weight'
 }
 
 export const enum AriaLabels {

@@ -58,15 +58,24 @@ const pushEstimateToGitLab = async (
     const [, commentError] = await manager.createNote({body, noteableId: gid})
     if (commentError) return commentError
   }
-  if (labelTemplate === SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE) {
+  if (labelTemplate === SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE || labelTemplate === SprintPokerDefaults.GITLAB_FIELD_WEIGHT) {
     const [projectsData, projectsError] = await manager.getProjects({ids: [`gid://gitlab/Project/${projectId}`]})
     if (projectsError) return projectsError
-    const project = projectsData?.projects?.edges?.[0].node
+    const project = projectsData?.projects?.edges?.[0]?.node
     if (!project) return new Error(`Unable to get GitLab project with id: ${projectId}`)
     const {fullPath} = project
     if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
-    const [, updateError] = await manager.updateIssue({iid, projectPath: fullPath, timeEstimate: value})
-    if (updateError) return updateError
+
+    if (labelTemplate === SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE) {
+      const [, updateError] = await manager.updateIssue({iid, projectPath: fullPath, timeEstimate: value})
+      if (updateError) return updateError
+    }
+    else {
+      const weight = parseInt(value)
+      if (isNaN(weight)) return new Error('Weight must be an integer')
+      const [, updateError] = await manager.updateIssue({iid, projectPath: fullPath, weight})
+      if (updateError) return updateError
+    }
   }
 
   return null

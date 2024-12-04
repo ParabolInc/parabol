@@ -92,6 +92,10 @@ const GitLabFieldMenu = (props: Props) => {
         onClick={handleClick(SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE)}
       />
       <MenuItem
+        label={SprintPokerDefaults.GITLAB_FIELD_WEIGHT_LABEL}
+        onClick={handleClick(SprintPokerDefaults.GITLAB_FIELD_WEIGHT)}
+      />
+      <MenuItem
         label={SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL}
         onClick={handleClick(SprintPokerDefaults.SERVICE_FIELD_NULL)}
       />
