@@ -181,12 +181,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
       <RootBlock data-cy='group-title-editor'>
         <FormBlock onSubmit={onSubmit}>
           {isLoading ? (
-            <span
-              className={`inline-block text-left font-semibold transition-all duration-200 ${
-                isExpanded ? 'text-white' : 'text-slate-700'
-              }`}
-              style={{width: '172px'}}
-            >
+            <span className='inline-block text-left font-semibold'>
               <Ellipsis />
             </span>
           ) : (

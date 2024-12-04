@@ -18,11 +18,9 @@ const generateAIGroupTitle = async (
 ) => {
   const manager = new OpenAIServerManager()
   const aiTitle = await manager.generateGroupTitle(reflections)
-  if (!aiTitle) {
-    standardError(new Error('Failed to generate AI title'))
-    return
-  }
-  await updateSmartGroupTitle(reflectionGroupId, aiTitle)
+  const newTitle = aiTitle ?? reflections[0]?.plaintextContent ?? ''
+  if (!aiTitle) standardError(new Error('Failed to generate AI title'))
+  await updateSmartGroupTitle(reflectionGroupId, newTitle)
   dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
   publish(
     SubscriptionChannel.MEETING,
