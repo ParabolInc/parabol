@@ -72,7 +72,7 @@ const pushEstimateToGitLab = async (
     }
     else {
       const weight = parseInt(value)
-      if (isNaN(weight)) return new Error('Weight must be an integer')
+      if (isNaN(weight) || weight < 0 || `${weight}` !== value.trim()) return new Error('Weight must be a whole positive number')
       const [, updateError] = await manager.updateIssue({iid, projectPath: fullPath, weight})
       if (updateError) return updateError
     }
