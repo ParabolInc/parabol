@@ -5,8 +5,8 @@ import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapConten
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
-import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
 import updateIssue from '../../graphql/nestedSchema/GitLab/mutations/updateIssue.graphql'
+import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
@@ -148,12 +148,14 @@ class GitLabServerManager implements TaskIntegrationManager {
     return [noteData, noteError] as const
   }
 
-  async updateIssue(input: {projectPath: string; iid: string; timeEstimate?: string, weight?: number}) {
+  async updateIssue(input: {
+    projectPath: string
+    iid: string
+    timeEstimate?: string
+    weight?: number
+  }) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
-    const [issuesData, issuesError] = await gitlabRequest<UpdateIssueMutation>(
-      updateIssue,
-      {input}
-    )
+    const [issuesData, issuesError] = await gitlabRequest<UpdateIssueMutation>(updateIssue, {input})
     return [issuesData, issuesError] as const
   }
 
