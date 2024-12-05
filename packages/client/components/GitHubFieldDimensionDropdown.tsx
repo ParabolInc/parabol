@@ -6,7 +6,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {GitHubFieldDimensionDropdown_stage$key} from '../__generated__/GitHubFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import interpolateGitHubLabelTemplate from '../shared/interpolateGitHubLabelTemplate'
+import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
 import GitHubFieldMenu from './GitHubFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
@@ -76,7 +76,7 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
 
   const label =
     labelLookup[serviceFieldName as keyof typeof labelLookup] ||
-    interpolateGitHubLabelTemplate(serviceFieldName, finalScore)
+    interpolateVotingLabelTemplate(serviceFieldName, finalScore)
 
   return (
     <>

@@ -6,6 +6,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {GitLabFieldDimensionDropdown_stage$key} from '../__generated__/GitLabFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
+import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
 import GitLabFieldMenu from './GitLabFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
@@ -39,10 +40,10 @@ const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}
 }))
 
 const labelLookup = {
-  [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
   [SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE]:
     SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE_LABEL,
   [SprintPokerDefaults.GITLAB_FIELD_WEIGHT]: SprintPokerDefaults.GITLAB_FIELD_WEIGHT_LABEL,
+  [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
 }
 
@@ -60,11 +61,14 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
     `,
     stageRef
   )
-  const {serviceField} = stage
+  const {finalScore, serviceField} = stage
   const {name: serviceFieldName} = serviceField
   const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
     MenuPosition.UPPER_RIGHT,
-    {isDropdown: true}
+    {
+      isDropdown: true,
+      id: 'gitlabFieldMenu'
+    }
   )
 
   const onClick = () => {
@@ -73,7 +77,9 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
     clearError()
   }
 
-  const label = labelLookup[serviceFieldName as keyof typeof labelLookup]
+  const label =
+    labelLookup[serviceFieldName as keyof typeof labelLookup] ||
+    interpolateVotingLabelTemplate(serviceFieldName, finalScore)
 
   return (
     <>

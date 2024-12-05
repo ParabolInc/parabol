@@ -4,9 +4,11 @@ import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
+import createLabel from '../../graphql/nestedSchema/GitLab/mutations/createLabel.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
 import updateIssue from '../../graphql/nestedSchema/GitLab/mutations/updateIssue.graphql'
 import getIssue from '../../graphql/nestedSchema/GitLab/queries/getIssue.graphql'
+import getLabels from '../../graphql/nestedSchema/GitLab/queries/getLabels.graphql'
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
@@ -14,13 +16,17 @@ import {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {RootSchema} from '../../types/custom'
 import {
   CreateIssueMutation,
+  CreateLabelMutation,
+  CreateLabelMutationVariables,
   CreateNoteMutation,
   GetIssueQuery,
+  GetLabelsQuery,
   GetProfileQuery,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
   GetProjectsQuery,
-  UpdateIssueMutation
+  UpdateIssueMutation,
+  UpdateIssueMutationVariables
 } from '../../types/gitlabTypes'
 import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
@@ -148,15 +154,10 @@ class GitLabServerManager implements TaskIntegrationManager {
     return [noteData, noteError] as const
   }
 
-  async updateIssue(input: {
-    projectPath: string
-    iid: string
-    timeEstimate?: string
-    weight?: number
-  }) {
+  async updateIssue(input: UpdateIssueMutationVariables['input']) {
     const gitlabRequest = this.getGitLabRequest(this.info, this.context)
-    const [issuesData, issuesError] = await gitlabRequest<UpdateIssueMutation>(updateIssue, {input})
-    return [issuesData, issuesError] as const
+    const [data, error] = await gitlabRequest<UpdateIssueMutation>(updateIssue, {input})
+    return [data, error] as const
   }
 
   async getProjectIssues(projectIssuesArgs: GetProjectIssuesQueryVariables) {
@@ -183,6 +184,40 @@ class GitLabServerManager implements TaskIntegrationManager {
       gid
     })
     return [issueData, issueError] as const
+  }
+
+  /**
+   * @param title - Search for the exact title of the label
+   * @param titleSearch - Search for labels which titles contain the searched words
+   */
+  async getLabels({
+    fullPath,
+    first = 100,
+    after,
+    title,
+    titleSearch
+  }: {
+    fullPath: string
+    first?: number
+    after?: string
+    title?: string
+    titleSearch?: string
+  }) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [data, error] = await gitlabRequest<GetLabelsQuery>(getLabels, {
+      fullPath,
+      first,
+      after,
+      title,
+      titleSearch
+    })
+    return [data, error] as const
+  }
+
+  async createLabel(input: CreateLabelMutationVariables['input']) {
+    const gitlabRequest = this.getGitLabRequest(this.info, this.context)
+    const [data, error] = await gitlabRequest<CreateLabelMutation>(createLabel, {input})
+    return [data, error] as const
   }
 
   async isTokenValid(
