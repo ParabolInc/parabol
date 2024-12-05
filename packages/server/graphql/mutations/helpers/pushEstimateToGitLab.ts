@@ -132,7 +132,7 @@ const pushEstimateToGitLab = async (
     }
     if (!labelId) return new Error('Could not create label')
 
-    let removeLabelIds: string[] = []
+    const removeLabelIds: string[] = []
     const latestTaskEstimates = await dataLoader.get('latestTaskEstimates').load(taskId)
     const dimensionTaskEstimate = latestTaskEstimates.find(
       (estimate) => estimate.name === dimensionName
