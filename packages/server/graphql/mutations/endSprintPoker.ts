@@ -3,7 +3,6 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
@@ -108,7 +107,6 @@ export default {
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {
       sendNewMeetingSummary(completedMeeting, context).catch(Logger.log)
-      checkTeamsLimit(team.orgId, dataLoader)
     }
     const events = teamMembers.map(
       (teamMember) =>

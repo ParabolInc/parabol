@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
-import {maybeRemoveRestrictions} from '../../billing/helpers/teamLimitsCheck'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import removeMeetingTemplatesForTeam from '../../postgres/queries/removeMeetingTemplatesForTeam'
@@ -88,8 +87,6 @@ export default {
       const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
-
-    await maybeRemoveRestrictions(team.orgId, dataLoader)
 
     return data
   }

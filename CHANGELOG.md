@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.8.0](https://github.com/ParabolInc/parabol/compare/v8.7.1...v8.8.0) (2024-12-03)
+
+
+### Added
+
+* use TipTap for the Check-in Question ([#10534](https://github.com/ParabolInc/parabol/issues/10534)) ([4787895](https://github.com/ParabolInc/parabol/commit/478789549e10495d5582f0db14e0e37fbb0e0b4d))
+
+
+### Changed
+
+* convert legacy tasks to TipTap ([#10533](https://github.com/ParabolInc/parabol/issues/10533)) ([561468c](https://github.com/ParabolInc/parabol/commit/561468cd68154820f11ced7887d4d4c0626efa8d))
+* remove teams limit ([#10514](https://github.com/ParabolInc/parabol/issues/10514)) ([908aba1](https://github.com/ParabolInc/parabol/commit/908aba1af7d7a7c804bc7db99f0e991b755a6347))
+
 ## [8.7.1](https://github.com/ParabolInc/parabol/compare/v8.7.0...v8.7.1) (2024-12-02)
 
 
