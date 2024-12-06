@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
@@ -69,7 +69,6 @@ interface Props {
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCard_task$key
   useTaskChild: UseTaskChild
-  dataCy: string
 }
 
 const OutcomeCard = memo((props: Props) => {
@@ -84,13 +83,13 @@ const OutcomeCard = memo((props: Props) => {
     isAgenda,
     isDraggingOver,
     task: taskRef,
-    useTaskChild,
-    dataCy
+    useTaskChild
   } = props
   const task = useFragment(
     graphql`
       fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
         ...IntegratedTaskContent_task
+        discussionId
         editors {
           userId
         }
@@ -135,7 +134,7 @@ const OutcomeCard = memo((props: Props) => {
     const nextContent = JSON.stringify(editor.getJSON())
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, content: nextContent}}, {})
   }
-  const {integration, status, id: taskId, isHighlighted, editors} = task
+  const {integration, status, id: taskId, isHighlighted, editors, discussionId} = task
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
@@ -148,6 +147,12 @@ const OutcomeCard = memo((props: Props) => {
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
     isArchived ? archivedTitle : ''
   }`
+  const onFocusChange = (isFocus: boolean) => () => {
+    if (!discussionId) return
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(discussionId)?.setValue(isFocus ? taskId : null, 'editingTaskId')
+    })
+  }
   return (
     <RootCard
       isTaskHovered={isTaskHovered}
@@ -163,7 +168,7 @@ const OutcomeCard = memo((props: Props) => {
           task={task}
           useTaskChild={useTaskChild}
         >
-          <StatusIndicatorBlock data-cy={`${dataCy}-status`} title={statusIndicatorTitle}>
+          <StatusIndicatorBlock title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
@@ -183,12 +188,13 @@ const OutcomeCard = memo((props: Props) => {
               linkState={linkState}
               setLinkState={setLinkState}
               useLinkEditor={() => useTaskChild('editor-link-changer')}
+              onBlur={onFocusChange(false)}
+              onFocus={onFocusChange(true)}
             />
           </TaskEditorWrapper>
         )}
-        <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
+        <TaskIntegrationLink integration={integration || null} />
         <TaskFooter
-          dataCy={`${dataCy}`}
           area={area}
           cardIsActive={isTaskFocused || isTaskHovered || isEditing}
           toggleTag={toggleTag}

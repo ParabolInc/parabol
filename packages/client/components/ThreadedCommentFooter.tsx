@@ -40,7 +40,7 @@ const ThreadedCommentFooter = (props: Props) => {
   if (!hasReactjis) return null
   return (
     <FooterActions>
-      <ThreadedReplyButton dataCy={`comment-footer`} onReply={onReply} />
+      <ThreadedReplyButton onReply={onReply} />
       <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
     </FooterActions>
   )

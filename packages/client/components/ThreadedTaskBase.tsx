@@ -10,12 +10,10 @@ import {PALETTE} from '~/styles/paletteV3'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import NullableTask from './NullableTask/NullableTask'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
-import {ReplyMention, SetReplyMention} from './ThreadedItem'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 import ThreadedReplyButton from './ThreadedReplyButton'
-import useFocusedReply from './useFocusedReply'
 
 const BodyCol = styled('div')({
   display: 'flex',
@@ -39,10 +37,6 @@ interface Props {
   task: ThreadedTaskBase_task$key
   children?: ReactNode
   discussion: ThreadedTaskBase_discussion$key
-  isReply?: boolean // this comment is a reply & should be indented
-  setReplyMention: SetReplyMention
-  replyMention?: ReplyMention
-  dataCy: string
   viewer: ThreadedTaskBase_viewer$key
 }
 
@@ -51,10 +45,7 @@ const ThreadedTaskBase = (props: Props) => {
     allowedThreadables,
     children,
     discussion: discussionRef,
-    setReplyMention,
-    replyMention,
     task: taskRef,
-    dataCy,
     viewer: viewerRef
   } = props
   const viewer = useFragment(
@@ -70,7 +61,9 @@ const ThreadedTaskBase = (props: Props) => {
       fragment ThreadedTaskBase_discussion on Discussion {
         ...ThreadedItemReply_discussion
         id
-        replyingToCommentId
+        replyingTo {
+          id
+        }
       }
     `,
     discussionRef
@@ -91,39 +84,35 @@ const ThreadedTaskBase = (props: Props) => {
     `,
     taskRef
   )
-  const isReply = !!props.isReply
-  const {id: discussionId, replyingToCommentId} = discussion
+  const {id: discussionId, replyingTo} = discussion
+  const isReply = !!replyingTo
   const {id: taskId, createdByUser, threadParentId} = task
   const {picture, preferredName} = createdByUser
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
-  const replyEditorRef = useRef<HTMLTextAreaElement>(null)
   const ownerId = threadParentId || taskId
   const onReply = () => {
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(discussionId)?.setValue(ownerId, 'replyingToCommentId')
+      const owner = store.get(ownerId)
+      if (!owner) return
+      store.get(discussionId)?.setLinkedRecord(owner, 'replyingTo')
     })
   }
-  useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
   return (
-    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <BodyCol>
         <ThreadedItemHeaderDescription title={preferredName} subTitle={'added a Task'}>
           <HeaderActions>
-            <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
+            <ThreadedReplyButton onReply={onReply} />
           </HeaderActions>
         </ThreadedItemHeaderDescription>
-        <StyledNullableTask dataCy={`${dataCy}`} area='meeting' task={task} />
+        <StyledNullableTask area='meeting' task={task} />
         {children}
         <ThreadedItemReply
           allowedThreadables={allowedThreadables}
-          dataCy={`${dataCy}-reply`}
           discussion={discussion}
           threadable={task}
-          editorRef={replyEditorRef}
-          replyMention={replyMention}
-          setReplyMention={setReplyMention}
           viewer={viewer}
         />
       </BodyCol>

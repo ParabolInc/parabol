@@ -300,13 +300,7 @@ const TeamArchive = (props: Props) => {
               key={`cardBlockFor${task.id}`}
               style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem'}}
             >
-              <NullableTask
-                className='max-w-[296px]'
-                dataCy={`archive-task`}
-                key={key}
-                area='teamDash'
-                task={task}
-              />
+              <NullableTask className='max-w-[296px]' key={key} area='teamDash' task={task} />
             </div>
           )
         }}

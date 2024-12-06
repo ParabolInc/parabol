@@ -1,24 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {Editor} from 'draft-js'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
-import useEditorState from '../hooks/useEditorState'
 import useRouter from '../hooks/useRouter'
-import {cardShadow} from '../styles/elevation'
+import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import NotificationTemplate from './NotificationTemplate'
-
-const EditorWrapper = styled('div')({
-  backgroundColor: '#fff',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  fontSize: 14,
-  lineHeight: '20px',
-  margin: '4px 0 0',
-  padding: 8
-})
+import {TipTapEditor} from './promptResponse/TipTapEditor'
 
 interface Props {
   notification: ResponseReplied_notification$key
@@ -58,7 +46,10 @@ const ResponseReplied = (props: Props) => {
     history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
-  const [editorState] = useEditorState(comment.content)
+  const {editor, setLinkState, linkState} = useTipTapCommentEditor(comment.content, {
+    readOnly: true
+  })
+  if (!editor) return null
 
   return (
     <NotificationTemplate
@@ -67,15 +58,9 @@ const ResponseReplied = (props: Props) => {
       notification={notification}
       action={<NotificationAction label={'See the discussion'} onClick={goThere} />}
     >
-      <EditorWrapper>
-        <Editor
-          readOnly
-          editorState={editorState}
-          onChange={() => {
-            /*noop*/
-          }}
-        />
-      </EditorWrapper>
+      <div className='my-1 rounded bg-white p-2 text-sm leading-5 shadow-card'>
+        <TipTapEditor editor={editor} setLinkState={setLinkState} linkState={linkState} />
+      </div>
     </NotificationTemplate>
   )
 }

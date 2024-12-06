@@ -5,15 +5,12 @@ import {ThreadedRepliesList_replies$key} from '~/__generated__/ThreadedRepliesLi
 import {ThreadedRepliesList_viewer$key} from '~/__generated__/ThreadedRepliesList_viewer.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
-import {SetReplyMention} from './ThreadedItem'
 import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   discussion: ThreadedRepliesList_discussion$key
   replies: ThreadedRepliesList_replies$key
-  setReplyMention: SetReplyMention
-  dataCy: string
   viewer: ThreadedRepliesList_viewer$key
 }
 
@@ -21,9 +18,7 @@ const ThreadedRepliesList = (props: Props) => {
   const {
     allowedThreadables,
     replies: repliesRef,
-    setReplyMention,
     discussion: discussionRef,
-    dataCy,
     viewer: viewerRef
   } = props
   const viewer = useFragment(
@@ -65,23 +60,18 @@ const ThreadedRepliesList = (props: Props) => {
         return __typename === 'Task' ? (
           <ThreadedTaskBase
             allowedThreadables={allowedThreadables}
-            dataCy={`${dataCy}-task`}
             key={id}
-            isReply
             task={reply}
             discussion={discussion}
-            setReplyMention={setReplyMention}
             viewer={viewer}
           />
         ) : (
           <ThreadedCommentBase
             allowedThreadables={allowedThreadables}
-            dataCy={`${dataCy}-comment`}
             key={id}
             isReply
             comment={reply}
             discussion={discussion}
-            setReplyMention={setReplyMention}
             viewer={viewer}
           />
         )
