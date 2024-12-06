@@ -21,6 +21,7 @@ export type PortalId =
   | 'snackbar'
   | 'githubFieldMenu'
   | 'editGitHubLabel'
+  | 'editGitLabLabel'
   | 'azureDevOpsFieldMenu'
   | 'editAzureDevOpsLabel'
   | 'templateModal'

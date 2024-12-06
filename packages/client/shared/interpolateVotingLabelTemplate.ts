@@ -1,6 +1,6 @@
 import interpolateMustache from './interpolateMustache'
 
-const interpolateGitHubLabelTemplate = (labelTemplate: string, score?: string | null) => {
+const interpolateVotingLabelTemplate = (labelTemplate: string, score?: string | null) => {
   const rawLabel = interpolateMustache(labelTemplate, {
     '#': score ?? '#'
   })
@@ -9,4 +9,4 @@ const interpolateGitHubLabelTemplate = (labelTemplate: string, score?: string | 
   return rawLabel.trim()
 }
 
-export default interpolateGitHubLabelTemplate
+export default interpolateVotingLabelTemplate

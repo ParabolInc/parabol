@@ -1,0 +1,9 @@
+mutation createLabel($input: LabelCreateInput!) {
+  labelCreate(input: $input) {
+    clientMutationId
+    errors
+    label {
+      id
+    }
+  }
+}

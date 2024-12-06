@@ -1,6 +1,6 @@
 import {GraphQLResolveInfo} from 'graphql'
 import GitHubRepoId from 'parabol-client/shared/gqlIds/GitHubRepoId'
-import interpolateGitHubLabelTemplate from 'parabol-client/shared/interpolateGitHubLabelTemplate'
+import interpolateVotingLabelTemplate from 'parabol-client/shared/interpolateVotingLabelTemplate'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -68,7 +68,7 @@ const pushEstimateToGitHub = async (
   const {repoName, repoOwner} = GitHubRepoId.split(nameWithOwner)
 
   // Set up githubRequest
-  const githubLabelName = interpolateGitHubLabelTemplate(labelTemplate, value)
+  const githubLabelName = interpolateVotingLabelTemplate(labelTemplate, value)
   const {accessToken} = auth
   const githubRequest = getGitHubRequest(info, context, {
     accessToken,
