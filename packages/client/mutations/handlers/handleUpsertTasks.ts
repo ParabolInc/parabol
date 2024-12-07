@@ -4,6 +4,7 @@ import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseQueryParams} from '~/utils/useQueryParameterParser'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
+import safeRemoveNodeFromUnknownConn from '../../utils/relay/safeRemoveNodeFromUnknownConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
@@ -53,6 +54,7 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   if (isNowArchived) {
     safeRemoveNodeFromConn(taskId, teamConn)
     safeRemoveNodeFromConn(taskId, userConn)
+    safeRemoveNodeFromUnknownConn(store, viewerId, 'ParabolScopingSearchResults_tasks', taskId)
     archiveConns.forEach((archiveConn) => safePutNodeInConn(archiveConn, task, store))
   } else {
     archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))
