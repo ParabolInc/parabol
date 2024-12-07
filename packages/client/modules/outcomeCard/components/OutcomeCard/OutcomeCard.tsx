@@ -55,8 +55,6 @@ const StatusIndicatorBlock = styled('div')({
   display: 'flex'
 })
 
-const TaskEditorWrapper = styled('div')()
-
 interface Props {
   area: AreaEnum
   isTaskFocused: boolean
@@ -171,7 +169,8 @@ const OutcomeCard = memo((props: Props) => {
         </EditingStatus>
         <IntegratedTaskContent task={task} />
         {!type && (
-          <TaskEditorWrapper
+          <div
+            className='cursor-text'
             onBlur={() => {
               removeTaskChild('root')
               setTimeout(handleCardUpdate)
@@ -184,7 +183,7 @@ const OutcomeCard = memo((props: Props) => {
               setLinkState={setLinkState}
               useLinkEditor={() => useTaskChild('editor-link-changer')}
             />
-          </TaskEditorWrapper>
+          </div>
         )}
         <TaskIntegrationLink dataCy={`${dataCy}`} integration={integration || null} />
         <TaskFooter
