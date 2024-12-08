@@ -9,7 +9,7 @@ import DeleteUserPayload from '../types/DeleteUserPayload'
 import sendAccountRemovedEvent from './helpers/sendAccountRemovedEvent'
 import softDeleteUser from './helpers/softDeleteUser'
 
-const markUserSoftDeleted = async (
+export const markUserSoftDeleted = async (
   userIdToDelete: string,
   deletedUserEmail: string,
   validReason: string
