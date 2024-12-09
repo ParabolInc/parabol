@@ -15,6 +15,7 @@ type Input = {
 }
 
 const updateGroupTitle = async (input: Input) => {
+  console.log('in update group...')
   const {reflections, reflectionGroupId, meetingId, teamId, dataLoader} = input
   if (reflections.length === 1) {
     // For single reflection, use its content as the title
