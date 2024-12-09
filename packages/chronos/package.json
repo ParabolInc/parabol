@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@types/cron": "^2.0.1",
-    "@types/node": "^20.11.17"
+    "@types/node": "^20.14.8"
   },
   "dependencies": {
     "cron": "^2.3.1",
