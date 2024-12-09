@@ -4,6 +4,7 @@ import {
   GenerationModelParams,
   GenerationOptions
 } from './AbstractGenerationModel'
+import {Logger} from '../../server/utils/Logger'
 
 export type ModelId = 'gpt-3.5-turbo-0125' | 'gpt-4-turbo-preview'
 
@@ -37,7 +38,7 @@ export class OpenAIGeneration extends AbstractGenerationModel {
   async summarize(content: string, options: OpenAIGenerationOptions) {
     if (!this.openAIApi) {
       const eMsg = 'OpenAI is not configured'
-      console.log('OpenAIGenerationSummarizer.summarize(): ', eMsg)
+      Logger.log('OpenAIGenerationSummarizer.summarize(): ', eMsg)
       throw new Error(eMsg)
     }
     const {maxNewTokens: max_tokens = 512, seed, stop, temperature = 0.8, topP: top_p} = options
@@ -64,7 +65,7 @@ export class OpenAIGeneration extends AbstractGenerationModel {
       if (!maybeSummary) throw new Error('OpenAI returned empty summary')
       return maybeSummary
     } catch (e) {
-      console.log('OpenAIGenerationSummarizer.summarize(): ', e)
+      Logger.log('OpenAIGenerationSummarizer.summarize(): ', e)
       throw e
     }
   }

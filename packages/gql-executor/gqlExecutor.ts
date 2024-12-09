@@ -8,6 +8,7 @@ import '../server/monkeyPatchFetch'
 import {GQLRequest} from '../server/types/custom'
 import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
+import {Logger} from '../server/utils/Logger'
 
 tracer.init({
   service: `gql`,
@@ -31,14 +32,14 @@ const run = async () => {
 
   // on shutdown, remove consumer from the group
   process.on('SIGTERM', async (signal) => {
-    console.log(`Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`)
+    Logger.log(`Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`)
     await publisher.xgroup(
       'DELCONSUMER',
       ServerChannel.GQL_EXECUTOR_STREAM,
       ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
       executorChannel
     )
-    console.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
+    Logger.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
     process.exit()
   })
 
@@ -71,7 +72,7 @@ const run = async () => {
     ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
     executorChannel
   )
-  console.log(`\n💧💧💧 Server ID: ${SERVER_ID}. Ready for GraphQL Execution 💧💧💧`)
+  Logger.log(`\n💧💧💧 Server ID: ${SERVER_ID}. Ready for GraphQL Execution 💧💧💧`)
 
   for await (const message of incomingStream) {
     // don't await the call below so this instance can immediately call incomingStream.next()
