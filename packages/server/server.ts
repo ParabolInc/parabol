@@ -22,8 +22,8 @@ import handleUpgrade from './socketHandlers/handleUpgrade'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
-import SAMLHandler from './utils/SAMLHandler'
 import {Logger} from './utils/Logger'
+import SAMLHandler from './utils/SAMLHandler'
 
 tracer.init({
   service: `web`,

@@ -1,8 +1,8 @@
 // call with yarn sucrase-node billing/debug.ts
 import '../../scripts/webpack/utils/dotenv'
 import getKysely from '../server/postgres/getKysely'
-import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 import {Logger} from '../server/utils/Logger'
+import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
 const debugFailedJob = async () => {
   const pg = getKysely()

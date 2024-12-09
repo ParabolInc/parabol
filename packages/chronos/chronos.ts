@@ -17,8 +17,8 @@
 
 import {CronJob} from 'cron'
 import getGraphQLExecutor from 'parabol-server/utils/getGraphQLExecutor'
-import publishWebhookGQL from 'parabol-server/utils/publishWebhookGQL'
 import {Logger} from 'parabol-server/utils/Logger'
+import publishWebhookGQL from 'parabol-server/utils/publishWebhookGQL'
 
 interface PossibleJob {
   onTick(): void

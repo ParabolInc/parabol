@@ -2,8 +2,8 @@ import fs from 'fs'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
-import FileStoreManager from './FileStoreManager'
 import {Logger} from '../utils/Logger'
+import FileStoreManager from './FileStoreManager'
 
 export default class LocalFileStoreManager extends FileStoreManager {
   baseUrl = makeAppURL(appOrigin, 'self-hosted')

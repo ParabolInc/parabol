@@ -1,7 +1,7 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import acceptsBrotli from './acceptsBrotli'
-import serveStatic from './utils/serveStatic'
 import {Logger} from './utils/Logger'
+import serveStatic from './utils/serveStatic'
 
 const ROUTE = '/static/'
 let hasWarned = false

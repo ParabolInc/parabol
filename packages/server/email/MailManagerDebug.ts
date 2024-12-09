@@ -1,6 +1,6 @@
 import fs from 'fs'
-import MailManager, {MailManagerOptions} from './MailManager'
 import {Logger} from '../utils/Logger'
+import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerDebug extends MailManager {
   async sendEmail(options: MailManagerOptions) {

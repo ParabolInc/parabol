@@ -6,8 +6,8 @@ import getProjectRoot from '../../../../../scripts/webpack/utils/getProjectRoot'
 import getKysely from '../../../postgres/getKysely'
 import getPg from '../../../postgres/getPg'
 import getPgConfig from '../../../postgres/getPgConfig'
-import {MutationResolvers} from '../resolverTypes'
 import {Logger} from '../../../utils/Logger'
+import {MutationResolvers} from '../resolverTypes'
 
 const exec = util.promisify(childProcess.exec)
 

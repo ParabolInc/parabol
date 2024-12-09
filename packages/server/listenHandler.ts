@@ -1,7 +1,7 @@
 import {us_listen_socket} from 'uWebSockets.js'
 import getGraphQLExecutor from './utils/getGraphQLExecutor'
-import serverHealthChecker from './utils/serverHealthChecker'
 import {Logger} from './utils/Logger'
+import serverHealthChecker from './utils/serverHealthChecker'
 
 const listenHandler = (listenSocket: us_listen_socket) => {
   const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)

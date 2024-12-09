@@ -4,8 +4,8 @@ import type {RetryErrorInfo, StandardRetryToken} from '@smithy/types'
 import {StandardRetryStrategy} from '@smithy/util-retry'
 import mime from 'mime-types'
 import path from 'path'
-import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 import {Logger} from '../utils/Logger'
+import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 class CloudflareRetry extends StandardRetryStrategy {
   public async refreshRetryTokenForRetry(

@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import {toEpochSeconds} from '../epochTime'
-import StripeManager from './StripeManager'
 import {Logger} from '../Logger'
+import StripeManager from './StripeManager'
 
 // using proxy to start gradual coverage of StripeManager
 export default function StubStripeManager() {
