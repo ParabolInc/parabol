@@ -1,5 +1,6 @@
 const generateGraphQLArtifacts = require('./generateGraphQLArtifacts')
 const cp = require('child_process')
+const {Logger} = require('../packages/server/utils/Logger')
 
 const runChild = (cmd) => {
   return new Promise((resolve, reject) => {
@@ -19,15 +20,15 @@ const runChild = (cmd) => {
 }
 
 const prod = async (isDeploy, noDeps) => {
-  console.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
+  Logger.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
   try {
     await generateGraphQLArtifacts()
   } catch (e) {
-    console.log('ERR generating artifacts', e)
+    Logger.log('ERR generating artifacts', e)
     process.exit(1)
   }
 
-  console.log('starting webpack build')
+  Logger.log('starting webpack build')
   try {
     await Promise.all([
       runChild(
@@ -38,7 +39,7 @@ const prod = async (isDeploy, noDeps) => {
       )
     ])
   } catch (e) {
-    console.log('error webpackifying', e)
+    Logger.log('error webpackifying', e)
     process.exit(1)
   }
 }

@@ -6,6 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import {convertFromRaw, RawDraftContentState} from 'draft-js'
 import {Options, stateToHTML} from 'draft-js-export-html'
 import type {Kysely} from 'kysely'
+import {Logger} from '../../utils/Logger'
 
 export const serverTipTapExtensions = [
   StarterKit,
@@ -46,7 +47,7 @@ const getNameFromEntity = (content: RawDraftContentState, userId: string) => {
     const {length, offset} = entityRange
     return text.slice(offset, offset + length)
   }
-  console.log('found unknown for', userId, JSON.stringify(content))
+  Logger.log('found unknown for', userId, JSON.stringify(content))
   return 'Unknown User'
 }
 
@@ -95,7 +96,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .orderBy('id asc')
       .limit(1000)
       .execute()
-    console.log('converting tasks', i * 1000)
+    Logger.log('converting tasks', i * 1000)
     if (tasks.length === 0) break
     const updatePromises = [] as Promise<any>[]
     for (const task of tasks) {
@@ -112,7 +113,7 @@ export async function up(db: Kysely<any>): Promise<void> {
               .where('id', '=', id)
               .execute()
           } catch (e) {
-            console.log('GOT ERR', id, contentStr, e)
+            Logger.log('GOT ERR', id, contentStr, e)
             throw e
           }
         }
