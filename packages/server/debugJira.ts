@@ -1,6 +1,7 @@
 // call with yarn sucrase-node debugJira.ts
 import '../../scripts/webpack/utils/dotenv'
 import AtlassianServerManager from './utils/AtlassianServerManager'
+import {Logger} from './utils/Logger'
 
 const debugJira = async () => {
   // const cloudId = "foo"
@@ -12,7 +13,7 @@ const debugJira = async () => {
   if (res instanceof Error) return
   const manager = new AtlassianServerManager(res.accessToken)
   const screens = await manager.getCloudNameLookup()
-  console.log(JSON.stringify(screens))
+  Logger.log(JSON.stringify(screens))
 }
 
 debugJira()

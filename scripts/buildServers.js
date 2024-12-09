@@ -9,6 +9,7 @@ require('sucrase/register')
 const webpack = require('webpack')
 const waitForFileExists = require('./waitForFileExists').default
 const path = require('path')
+const {Logger} = require('../packages/server/utils/Logger')
 
 const buildServers = async () => {
   const config = require('./webpack/dev.servers.config')
@@ -17,11 +18,11 @@ const buildServers = async () => {
   if (!queryMapExists) throw Error('QueryMap Not Available. Run `yarn relay:build`')
   compiler.watch({aggregateTimeout: 100}, (err, stats) => {
     if (err) {
-      console.log('Webpack error:', err)
+      Logger.log('Webpack error:', err)
     }
     const errors = stats?.compilation?.errors ?? []
     if (errors.length > 0) {
-      console.log('COMPILATION ERRORS:', errors)
+      Logger.log('COMPILATION ERRORS:', errors)
     }
     /* servers finished rebuilding */
   })

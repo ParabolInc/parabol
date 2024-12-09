@@ -1,5 +1,6 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
+import {Logger} from '../../../utils/Logger'
 import {OrgActivityRow, QueryResolvers} from '../resolverTypes'
 
 const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDate, endDate}) => {
@@ -100,7 +101,7 @@ const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDat
     const rows = Object.values(combinedResults)
     return {rows}
   } catch (error) {
-    console.error('Error executing Org Activity Report:', error)
+    Logger.error('Error executing Org Activity Report:', error)
     return {error: {message: 'Error executing Org Activity Report'}}
   }
 }

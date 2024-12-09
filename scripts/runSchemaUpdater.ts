@@ -5,6 +5,7 @@
   They are included in the build to minimize the number of webpack builds we perform
 */
 import webpack from 'webpack'
+import {Logger} from 'parabol-server/utils/Logger'
 
 const compileToolbox = async (ignoreErrors: boolean) => {
   return new Promise<void>((resolve) => {
@@ -12,11 +13,11 @@ const compileToolbox = async (ignoreErrors: boolean) => {
     const compiler = webpack(config)
     compiler.run((err, stats) => {
       if (err) {
-        console.log('Webpack error:', err)
+        Logger.log('Webpack error:', err)
       }
       const errors = stats?.compilation?.errors ?? []
       if (!ignoreErrors && errors.length > 0) {
-        console.log('COMPILATION ERRORS:', errors)
+        Logger.log('COMPILATION ERRORS:', errors)
       }
       resolve()
     })

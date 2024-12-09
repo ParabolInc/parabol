@@ -1,3 +1,5 @@
+import {Logger} from '../../../server/utils/Logger'
+
 interface FetchWithRetryOptions extends RequestInit {
   deadline: Date // Deadline for the request to complete
   debug?: boolean // Enable debug tracing
@@ -22,7 +24,7 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       attempt++
 
       if (debug) {
-        console.log(`Attempt ${attempt}: Fetching ${JSON.stringify(url)}`)
+        Logger.log(`Attempt ${attempt}: Fetching ${JSON.stringify(url)}`)
       }
 
       const response = await fetch(url, fetchOptions)
@@ -40,7 +42,7 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       waitTime = Math.min(waitTime, deadline.getTime() - Date.now())
 
       if (debug) {
-        console.log(
+        Logger.log(
           `Waiting ${waitTime / 1000} seconds before retrying due to status ${response.status}...`
         )
       }
@@ -54,7 +56,7 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       throw new Error('Request aborted due to deadline')
     }
     if (debug) {
-      console.error(`Attempt ${attempt} failed: ${error}`)
+      Logger.error(`Attempt ${attempt} failed: ${error}`)
     }
     const currentTime = Date.now()
     if (currentTime >= deadline.getTime()) {

@@ -880,7 +880,7 @@ export const featureFlagByOwnerId = (parent: RootDataLoader) => {
 
         const missingFeatureNames = featureNames.filter((name) => !existingFeatureNameSet.has(name))
         if (missingFeatureNames.length > 0) {
-          console.error(
+          Logger.error(
             `Feature flag name(s) not found: ${missingFeatureNames.join(', ')}. Add the feature flag name with the addFeatureFlag mutation.`
           )
         }

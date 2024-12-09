@@ -5,6 +5,7 @@ const relayCompilerPath = require('relay-compiler')
 const cp = require('child_process')
 const runSchemaUpdater = require('./runSchemaUpdater').default
 const RelayPersistServer = require('./RelayPersistServer').default
+const {Logger} = require('../packages/server/utils/Logger')
 
 const generateGraphQLArtifacts = async () => {
   await runSchemaUpdater(true)
@@ -17,11 +18,11 @@ const generateGraphQLArtifacts = async () => {
       })
       relayCompiler.stderr.pipe(process.stderr)
     })
-  console.log('gen graphql artifacts start')
+  Logger.log('gen graphql artifacts start')
   await generate(codegenSchema)
-  console.log('codegen complete')
+  Logger.log('codegen complete')
   await runCompiler()
-  console.log('relay compiler complete')
+  Logger.log('relay compiler complete')
   persistServer.close()
 }
 

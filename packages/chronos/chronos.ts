@@ -17,6 +17,7 @@
 
 import {CronJob} from 'cron'
 import getGraphQLExecutor from 'parabol-server/utils/getGraphQLExecutor'
+import {Logger} from 'parabol-server/utils/Logger'
 import publishWebhookGQL from 'parabol-server/utils/publishWebhookGQL'
 
 interface PossibleJob {
@@ -124,13 +125,13 @@ const chronos = () => {
         cronTime: cronTime!,
         onTick
       })
-      console.log(`🌱 Chronos Job ${name}: STARTED`)
+      Logger.log(`🌱 Chronos Job ${name}: STARTED`)
     } catch {
-      console.log(`🌱 Chronos Job ${name}: SKIPPED`)
+      Logger.log(`🌱 Chronos Job ${name}: SKIPPED`)
     }
   })
 
-  console.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
+  Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
 }
 
 chronos()

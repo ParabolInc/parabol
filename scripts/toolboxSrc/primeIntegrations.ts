@@ -1,5 +1,6 @@
 import getPg from '../../packages/server/postgres/getPg'
 import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
+import {Logger} from '../../packages/server/utils/Logger'
 
 const upsertGlobalIntegrationProvidersFromEnv = async () => {
   const providers = [
@@ -40,9 +41,9 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
 }
 
 const primeIntegrations = async () => {
-  console.log('⛓️ Prime Integrationgs Started')
+  Logger.log('⛓️ Prime Integrationgs Started')
   await upsertGlobalIntegrationProvidersFromEnv()
-  console.log('⛓️ Prime Integrations Complete')
+  Logger.log('⛓️ Prime Integrations Complete')
 }
 
 export default primeIntegrations

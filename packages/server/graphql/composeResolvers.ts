@@ -13,6 +13,7 @@ import {defaultFieldResolver} from 'graphql'
 import {allow} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import hash from 'object-hash'
+import {Logger} from '../utils/Logger'
 import {ResolverFn} from './private/resolverTypes'
 
 type Resolver = ResolverFn<any, any, any, any>
@@ -43,7 +44,7 @@ const wrapResolve =
         return res
       }
     } catch (err) {
-      console.log(err)
+      Logger.log(err)
       throw err
     }
   }

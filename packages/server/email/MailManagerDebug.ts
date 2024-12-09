@@ -1,10 +1,11 @@
 import fs from 'fs'
+import {Logger} from '../utils/Logger'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerDebug extends MailManager {
   async sendEmail(options: MailManagerOptions) {
     const {to, subject, body} = options
-    console.warn(`SENDING EMAIL
+    Logger.warn(`SENDING EMAIL
     To: ${to}
     Subject: ${subject}
     Body: ${body}`)
@@ -17,7 +18,7 @@ export default class MailManagerDebug extends MailManager {
     const folder = '/tmp'
     fs.writeFileSync(`${folder}/${filename}`, html)
     // make it a link so you can click it in the terminal
-    console.warn(`Wrote email to file://${folder}/${encodeURIComponent(filename)}`)
+    Logger.warn(`Wrote email to file://${folder}/${encodeURIComponent(filename)}`)
     return true
   }
 }

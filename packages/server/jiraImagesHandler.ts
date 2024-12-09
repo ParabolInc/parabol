@@ -3,6 +3,7 @@ import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png
 import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getRedis, {RedisPipelineResponse} from './utils/getRedis'
+import {Logger} from './utils/Logger'
 
 const getImageFromCache = async (
   imgUrlHash: string,
@@ -33,7 +34,7 @@ const servePlaceholderImage = async (res: HttpResponse) => {
       const res = await fetch(jiraPlaceholder)
       jiraPlaceholderBuffer = Buffer.from(await res.arrayBuffer())
     } catch (e) {
-      console.error('Jira Placeholder image could not be fetched', e)
+      Logger.error('Jira Placeholder image could not be fetched', e)
     }
   }
   res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)

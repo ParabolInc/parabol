@@ -2,6 +2,7 @@ import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
 import path from 'path'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
+import {Logger} from 'parabol-server/utils/Logger'
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -12,7 +13,7 @@ const pushClientAssetsToCDN = async () => {
   const fileStoreManager = getFileStoreManager()
   const localClientAssetsDir = path.join(PROJECT_ROOT, 'build')
   if (process.env.FILE_STORE_PROVIDER === 'local') {
-    console.log('⛅️ Using Local File Store for client assets. Skipping...')
+    Logger.log('⛅️ Using Local File Store for client assets. Skipping...')
     return
   }
 
@@ -29,7 +30,7 @@ const pushClientAssetsToCDN = async () => {
       })
     )
   }
-  console.log(`⛅️ Uploaded ${dirEnts.length} client assets to CDN`)
+  Logger.log(`⛅️ Uploaded ${dirEnts.length} client assets to CDN`)
 }
 
 const pushServerAssetsToCDN = async () => {
@@ -56,7 +57,7 @@ const pushServerAssetsToCDN = async () => {
     const buffer = await fs.promises.readFile(path.join(localServerAssetsDir, filename))
     const {name, ext} = path.parse(filename)
     const url = await fileStoreManager.putTemplateIllustration(buffer, 'aGhostOrg', ext, name)
-    console.log(`⛅️ Uploaded template ${filename} to ${url}`)
+    Logger.log(`⛅️ Uploaded template ${filename} to ${url}`)
     return true
   }
 
@@ -69,7 +70,7 @@ const pushServerAssetsToCDN = async () => {
     if (exists) return false
     const buffer = await fs.promises.readFile(path.join(localServerAssetsDir, filename))
     const url = await fileStoreManager.putBuildFile(buffer, targetObject)
-    console.log(`⛅️ Uploaded server asset ${targetObject} to ${url}`)
+    Logger.log(`⛅️ Uploaded server asset ${targetObject} to ${url}`)
     return true
   }
 
@@ -92,15 +93,15 @@ const pushServerAssetsToCDN = async () => {
     )
   }
 
-  console.log(`⛅️ Server upload complete. Pushed ${pushed} assets to CDN`)
+  Logger.log(`⛅️ Server upload complete. Pushed ${pushed} assets to CDN`)
 }
 
 const pushToCDN = async () => {
-  console.log('⛅️ Push to CDN Started')
+  Logger.log('⛅️ Push to CDN Started')
   // Perform in serial to guarantee no more than 50 uploads at a time
   await pushClientAssetsToCDN()
   await pushServerAssetsToCDN()
-  console.log('⛅️ Push to CDN Complete')
+  Logger.log('⛅️ Push to CDN Complete')
 }
 
 // If called via CLI

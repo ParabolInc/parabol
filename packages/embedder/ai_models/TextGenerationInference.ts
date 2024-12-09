@@ -1,3 +1,4 @@
+import {Logger} from '../../server/utils/Logger'
 import {
   AbstractGenerationModel,
   GenerationModelParams,
@@ -52,7 +53,7 @@ export class TextGenerationInference extends AbstractGenerationModel {
         throw new Error('TextGenerationInference.summarize(): malformed response')
       return json.generated_text as string
     } catch (e) {
-      console.log('TextGenerationInferenceSummarizer.summarize(): timeout')
+      Logger.log('TextGenerationInferenceSummarizer.summarize(): timeout')
       throw e
     }
   }
