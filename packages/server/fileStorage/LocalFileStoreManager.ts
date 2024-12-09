@@ -3,6 +3,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import FileStoreManager from './FileStoreManager'
+import {Logger} from '../utils/Logger'
+
 export default class LocalFileStoreManager extends FileStoreManager {
   baseUrl = makeAppURL(appOrigin, 'self-hosted')
   constructor() {
@@ -33,7 +35,7 @@ export default class LocalFileStoreManager extends FileStoreManager {
   }
 
   async putBuildFile() {
-    console.error(
+    Logger.error(
       'Cannot call `putBuildFile` when using Local File Storage. The build files are already there'
     )
     return ''

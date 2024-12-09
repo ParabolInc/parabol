@@ -23,6 +23,7 @@ import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
 import staticFileHandler from './staticFileHandler'
 import SAMLHandler from './utils/SAMLHandler'
+import {Logger} from './utils/Logger'
 
 tracer.init({
   service: `web`,
@@ -33,7 +34,7 @@ tracer.init({
 tracer.use('ioredis').use('http').use('pg')
 
 process.on('SIGTERM', async (signal) => {
-  console.log(
+  Logger.log(
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
   )
   const RECONNECT_WINDOW = 60_000 // ms
@@ -44,7 +45,7 @@ process.on('SIGTERM', async (signal) => {
       await handleDisconnect(connectionContext)
     })
   )
-  console.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
+  Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })
 
