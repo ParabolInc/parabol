@@ -20,6 +20,7 @@ export type PortalId =
   | 'phaseItemEditor'
   | 'snackbar'
   | 'githubFieldMenu'
+  | 'gitlabFieldMenu'
   | 'editGitHubLabel'
   | 'editGitLabLabel'
   | 'azureDevOpsFieldMenu'

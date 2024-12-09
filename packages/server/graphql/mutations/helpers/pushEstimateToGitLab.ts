@@ -39,6 +39,7 @@ const pushEstimateToGitLab = async (
   const {issue} = issueData
   if (!issue) return new Error(`Unable to get GitLab issue with id: ${gid}`)
   const {iid, projectId} = issue
+  if (!projectId) return new Error(`Unable to get GitLab projectId for issue with id: ${gid}`)
   const fieldMap = await dataLoader
     .get('gitlabDimensionFieldMaps')
     .load({teamId, dimensionName, projectId, providerId})

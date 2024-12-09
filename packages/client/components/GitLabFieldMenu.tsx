@@ -121,6 +121,7 @@ const GitLabFieldMenu = (props: Props) => {
   if (task?.integration?.__typename !== '_xGitLabIssue') return null
   const {integration} = task
   const {projectId} = integration
+  if (!projectId) return null
   const handleClick = (labelTemplate: string) => () => {
     if (labelTemplate !== serviceFieldName) {
       UpdateGitLabDimensionFieldMutation(
