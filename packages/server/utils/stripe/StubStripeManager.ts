@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import {toEpochSeconds} from '../epochTime'
+import {Logger} from '../Logger'
 import StripeManager from './StripeManager'
 
 // using proxy to start gradual coverage of StripeManager
@@ -25,7 +26,7 @@ export default function StubStripeManager() {
             } as unknown as Stripe.Subscription
           }
         default:
-          console.warn('StubStripeManager forwarding to real StripeManager', propKey)
+          Logger.warn('StubStripeManager forwarding to real StripeManager', propKey)
           return target[propKey]
       }
     }
