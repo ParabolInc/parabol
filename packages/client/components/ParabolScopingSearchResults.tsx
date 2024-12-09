@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
@@ -17,9 +16,6 @@ import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ParabolScopingSearchResultItem from './ParabolScopingSearchResultItem'
 import ParabolScopingSelectAllTasks from './ParabolScopingSelectAllTasks'
 
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
 interface Props {
   queryRef: PreloadedQuery<ParabolScopingSearchResultsQuery>
   meetingRef: ParabolScopingSearchResults_meeting$key
@@ -145,7 +141,7 @@ const ParabolScopingSearchResults = (props: Props) => {
         tasks={edges}
         meetingId={meetingId}
       />
-      <ResultScroller>
+      <div className='overflow-auto'>
         {edges.map(({node}) => {
           return (
             <ParabolScopingSearchResultItem
@@ -159,7 +155,7 @@ const ParabolScopingSearchResults = (props: Props) => {
           )
         })}
         {lastItem}
-      </ResultScroller>
+      </div>
       {!isEditing && (
         <NewIntegrationRecordButton labelText={'New Task'} onClick={handleAddTaskClick} />
       )}

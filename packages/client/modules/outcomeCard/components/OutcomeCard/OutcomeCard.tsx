@@ -13,7 +13,7 @@ import {LinkMenuState} from '../../../../components/promptResponse/TipTapLinkMen
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -68,10 +68,14 @@ interface Props {
   task: OutcomeCard_task$key
   useTaskChild: UseTaskChild
   dataCy: string
+  addTaskChild(name: string): void
+  removeTaskChild(name: string): void
 }
 
 const OutcomeCard = memo((props: Props) => {
   const {
+    addTaskChild,
+    removeTaskChild,
     area,
     isTaskFocused,
     isTaskHovered,
@@ -138,7 +142,6 @@ const OutcomeCard = memo((props: Props) => {
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
-  const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const type = integration?.__typename
   const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
@@ -181,7 +184,9 @@ const OutcomeCard = memo((props: Props) => {
               editor={editor}
               linkState={linkState}
               setLinkState={setLinkState}
-              useLinkEditor={() => useTaskChild('editor-link-changer')}
+              useLinkEditor={() => {
+                useTaskChild('editor-link-changer')
+              }}
             />
           </div>
         )}
