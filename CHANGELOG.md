@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.10.0](https://github.com/ParabolInc/parabol/compare/v8.9.0...v8.10.0) (2024-12-10)
+
+
+### Added
+
+* GitLab voting to time estimate, weight or label ([#10549](https://github.com/ParabolInc/parabol/issues/10549)) ([1cdbf0b](https://github.com/ParabolInc/parabol/commit/1cdbf0b7b30da60b53cddf76076070b2a9a4edab))
+
+
+### Fixed
+
+* tasks in poker scoping ([#10563](https://github.com/ParabolInc/parabol/issues/10563)) ([d2b1ef8](https://github.com/ParabolInc/parabol/commit/d2b1ef8d2253100e518b78d10ee9bd36da969878))
+
 ## [8.9.0](https://github.com/ParabolInc/parabol/compare/v8.8.0...v8.9.0) (2024-12-09)
 
 
