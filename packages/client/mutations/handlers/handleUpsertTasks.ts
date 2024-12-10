@@ -61,6 +61,11 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
     safePutNodeInConn(teamConn, task, store)
     safePutNodeInConn(threadConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
+    /* updates parabol search query if task is created from a sprint poker meeting
+     * should also implement updating parabol search query if task is created elsewhere?
+     */
+    const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
+    safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
     if (userConn) {
       const isPrivate = isTaskPrivate(tags)
       const ownedByViewer = task.getValue('userId') === viewerId
@@ -71,11 +76,6 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
       }
     }
   }
-  /* updates parabol search query if task is created from a sprint poker meeting
-   * should also implement updating parabol search query if task is created elsewhere?
-   */
-  const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
-  safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)
