@@ -7,9 +7,10 @@ import {
 interface Input
   extends Omit<
     IInsertTaskEstimateQueryParams,
-    'githubLabelName' | 'jiraFieldId' | 'azureDevOpsFieldName'
+    'githubLabelName' | 'gitlabLabelId' | 'jiraFieldId' | 'azureDevOpsFieldName'
   > {
   githubLabelName?: string
+  gitlabLabelId?: string
   jiraFieldId?: string
   azureDevOpsFieldName?: string
 }

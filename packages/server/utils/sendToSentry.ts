@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/node'
 import {getUserById} from '../postgres/queries/getUsersByIds'
+import {Logger} from './Logger'
 
 export interface SentryOptions {
   sampleRate?: number
@@ -13,7 +14,7 @@ export interface SentryOptions {
 
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
 const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
-  console.log('SEND TO SENTRY', error || JSON.stringify(error))
+  Logger.log('SEND TO SENTRY', error || JSON.stringify(error))
   const {sampleRate, tags, extras, userId, ip} = options
   if (sampleRate && Math.random() > sampleRate) return
   const fullUser = userId ? await getUserById(userId) : null

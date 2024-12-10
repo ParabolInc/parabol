@@ -1,5 +1,6 @@
 import getKysely from 'parabol-server/postgres/getKysely'
-import {defaultTier} from '../../packages/server/utils/defaultTier'
+import {defaultTier} from 'parabol-server/utils/defaultTier'
+import {Logger} from 'parabol-server/utils/Logger'
 
 export default async function setIsEnterprise() {
   if (defaultTier !== 'enterprise') {
@@ -16,7 +17,7 @@ export default async function setIsEnterprise() {
     pg.updateTable('Team').set({tier: 'enterprise'}).execute()
   ])
 
-  console.log('Finished updating tiers.')
+  Logger.log('Finished updating tiers.')
 
   await pg.destroy()
   process.exit()

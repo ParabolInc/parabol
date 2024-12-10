@@ -2,9 +2,9 @@ import sleep from '../../client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../socketHandlers/handleDisconnect'
+import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
 import publishInternalGQL from './publishInternalGQL'
-import sendToSentry from './sendToSentry'
 
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
@@ -24,7 +24,7 @@ class ServerHealthChecker {
             this.publisher.publish(`socketServerPong:${remoteServerId}`, INSTANCE_ID)
           } else if (channel === `socketServerPong:${INSTANCE_ID}`) {
             if (!this.remoteSocketServers) {
-              console.error('unsolicited pong received before getLivingServers was called')
+              Logger.error('unsolicited pong received before getLivingServers was called')
             } else {
               this.remoteSocketServers.push(remoteServerId)
             }
@@ -83,7 +83,6 @@ class ServerHealthChecker {
     await new Promise((resolve, reject) => {
       userPresenceStream.on('end', resolve)
       userPresenceStream.on('error', (e) => {
-        sendToSentry(e)
         reject(e)
       })
     })

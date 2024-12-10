@@ -1,6 +1,7 @@
 // call with yarn sucrase-node hubSpot/backfillHubSpot.ts
 import '../../../scripts/webpack/utils/dotenv'
 import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
+import {Logger} from '../utils/Logger'
 
 const contactKeys = {
   lastMetAt: 'last_met_at',
@@ -49,7 +50,7 @@ const upsertHubspotContact = async (
   )
   if (!String(res.status).startsWith('2')) {
     const responseBody = await res.json()
-    console.error(`Failed to update HubSpot for ${email}: `, responseBody.message)
+    Logger.error(`Failed to update HubSpot for ${email}: `, responseBody.message)
   }
 }
 

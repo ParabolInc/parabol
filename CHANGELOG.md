@@ -5,6 +5,43 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.10.0](https://github.com/ParabolInc/parabol/compare/v8.9.0...v8.10.0) (2024-12-10)
+
+
+### Added
+
+* GitLab voting to time estimate, weight or label ([#10549](https://github.com/ParabolInc/parabol/issues/10549)) ([1cdbf0b](https://github.com/ParabolInc/parabol/commit/1cdbf0b7b30da60b53cddf76076070b2a9a4edab))
+
+
+### Fixed
+
+* tasks in poker scoping ([#10563](https://github.com/ParabolInc/parabol/issues/10563)) ([d2b1ef8](https://github.com/ParabolInc/parabol/commit/d2b1ef8d2253100e518b78d10ee9bd36da969878))
+
+## [8.9.0](https://github.com/ParabolInc/parabol/compare/v8.8.0...v8.9.0) (2024-12-09)
+
+
+### Added
+
+* **node:** upgrade to 20.18.1, latest stable in v20 ([#10558](https://github.com/ParabolInc/parabol/issues/10558)) ([6061003](https://github.com/ParabolInc/parabol/commit/60610038cd30532e36330582a96454de5dbca122))
+
+
+### Changed
+
+* Use Logger instead of console ([#10557](https://github.com/ParabolInc/parabol/issues/10557)) ([31ce19b](https://github.com/ParabolInc/parabol/commit/31ce19bbfc21da7edb2b0d57df126a0d21f85930))
+
+## [8.8.0](https://github.com/ParabolInc/parabol/compare/v8.7.1...v8.8.0) (2024-12-03)
+
+
+### Added
+
+* use TipTap for the Check-in Question ([#10534](https://github.com/ParabolInc/parabol/issues/10534)) ([4787895](https://github.com/ParabolInc/parabol/commit/478789549e10495d5582f0db14e0e37fbb0e0b4d))
+
+
+### Changed
+
+* convert legacy tasks to TipTap ([#10533](https://github.com/ParabolInc/parabol/issues/10533)) ([561468c](https://github.com/ParabolInc/parabol/commit/561468cd68154820f11ced7887d4d4c0626efa8d))
+* remove teams limit ([#10514](https://github.com/ParabolInc/parabol/issues/10514)) ([908aba1](https://github.com/ParabolInc/parabol/commit/908aba1af7d7a7c804bc7db99f0e991b755a6347))
+
 ## [8.7.1](https://github.com/ParabolInc/parabol/compare/v8.7.0...v8.7.1) (2024-12-02)
 
 
