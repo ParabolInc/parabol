@@ -13,22 +13,17 @@ const Reply = styled(PlainButton)({
 
 interface Props {
   onReply: () => void
-  dataCy: string
 }
 
 const ThreadedReplyButton = (props: Props) => {
-  const {onReply, dataCy} = props
+  const {onReply} = props
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     // stop propagating so the new reply is not immediately cancelled
     e.stopPropagation()
     onReply()
   }
-  return (
-    <Reply data-cy={`${dataCy}-reply-button`} onClick={onClick}>
-      Reply
-    </Reply>
-  )
+  return <Reply onClick={onClick}>Reply</Reply>
 }
 
 export default ThreadedReplyButton

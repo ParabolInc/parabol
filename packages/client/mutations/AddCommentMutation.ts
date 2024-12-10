@@ -1,10 +1,11 @@
+import {generateJSON} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {AddCommentMutation_meeting$data} from '~/__generated__/AddCommentMutation_meeting.graphql'
-import makeEmptyStr from '~/utils/draftjs/makeEmptyStr'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import {AddCommentMutation as TAddCommentMutation} from '../__generated__/AddCommentMutation.graphql'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
@@ -84,7 +85,7 @@ const AddCommentMutation: StandardMutation<TAddCommentMutation> = (
         createdAt: now,
         updatedAt: now,
         createdBy: isAnonymous ? null : viewerId,
-        comtent: comment.content || makeEmptyStr(),
+        comtent: comment.content || JSON.stringify(generateJSON('<p></p>', serverTipTapExtensions)),
         isActive: true,
         isViewerComment: true
       })

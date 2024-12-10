@@ -44,11 +44,10 @@ const SendIcon = styled(ArrowUpward, {
 interface Props {
   commentSubmitState: CommentSubmitState
   onSubmit: () => void
-  dataCy: string
 }
 
 const SendCommentButton = (props: Props) => {
-  const {commentSubmitState, onSubmit, dataCy} = props
+  const {commentSubmitState, onSubmit} = props
   const {
     tooltipPortal,
     openTooltip,
@@ -67,7 +66,6 @@ const SendCommentButton = (props: Props) => {
   return (
     <>
       <StyledPlainButton
-        data-cy={`${dataCy}-send`}
         onClick={onSubmit}
         onTouchEnd={handleTouched}
         onMouseEnter={openTooltip}

@@ -137,7 +137,9 @@ extend type TeamPromptResponseStage {
 
 extend type Discussion {
   isAnonymousComment: Boolean!
-  replyingToCommentId: String!
+  replyingTo: Threadable
+  # the taskId if the Viewer is ecurrently editing one in the context of a discussion
+  editingTaskId: ID
 }
 
 extend type Organization {

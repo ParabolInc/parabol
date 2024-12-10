@@ -1,8 +1,9 @@
-import {Editor, EditorContent} from '@tiptap/react'
+import {Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
+import {cn} from '../../ui/cn'
 import {StandardBubbleMenu} from './StandardBubbleMenu'
 import TipTapLinkMenu, {LinkMenuState} from './TipTapLinkMenu'
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface Props extends EditorContentProps {
   editor: Editor
   linkState?: LinkMenuState
   setLinkState?: (linkState: LinkMenuState) => void
@@ -10,9 +11,10 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   useLinkEditor?: () => void
 }
 export const TipTapEditor = (props: Props) => {
-  const {editor, linkState, setLinkState, showBubbleMenu, useLinkEditor} = props
+  const {className, editor, linkState, setLinkState, showBubbleMenu, useLinkEditor, ref, ...rest} =
+    props
   return (
-    <div className='px-4 text-sm leading-5'>
+    <>
       {showBubbleMenu && setLinkState && (
         <StandardBubbleMenu editor={editor} setLinkState={setLinkState} />
       )}
@@ -27,7 +29,12 @@ export const TipTapEditor = (props: Props) => {
           useLinkEditor={useLinkEditor}
         />
       )}
-      <EditorContent editor={editor} />
-    </div>
+      <EditorContent
+        ref={ref as any}
+        {...rest}
+        editor={editor}
+        className={cn('min-h-10 cursor-text px-4 text-sm leading-5', className)}
+      />
+    </>
   )
 }

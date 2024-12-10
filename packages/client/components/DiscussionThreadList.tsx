@@ -1,38 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef, ReactNode, RefObject} from 'react'
+import {ReactNode, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {DiscussionThreadList_discussion$key} from '~/__generated__/DiscussionThreadList_discussion.graphql'
 import {DiscussionThreadList_threadables$key} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import {DiscussionThreadList_viewer$key} from '~/__generated__/DiscussionThreadList_viewer.graphql'
-import useScrollThreadList from '~/hooks/useScrollThreadList'
 import {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import CommentingStatusText from './CommentingStatusText'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
 import Transcription from './Transcription'
-
-const EmptyWrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  flex: 1,
-  overflow: 'auto'
-})
-
-const Wrapper = styled('div')({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'auto'
-})
-
-// https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar
-const PusherDowner = styled('div')({
-  margin: '0 0 auto'
-})
 
 export const Header = styled(LabelHeading)({
   borderBottom: `1px solid ${PALETTE.SLATE_300}`,
@@ -42,34 +20,25 @@ export const Header = styled(LabelHeading)({
   width: '100%'
 })
 
-const CommentingStatusBlock = styled('div')({
-  height: 36,
-  width: '100%'
-})
-
 export type DiscussionThreadables = 'task' | 'comment' | 'poll'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
-  editorRef: RefObject<HTMLTextAreaElement>
   discussion: DiscussionThreadList_discussion$key
   preferredNames: string[] | null
   threadables: DiscussionThreadList_threadables$key
   viewer: DiscussionThreadList_viewer$key
-  dataCy: string
   header?: ReactNode
   emptyState?: ReactNode
   transcription?: RetroDiscussPhase_meeting$data['transcription']
   showTranscription?: boolean
 }
 
-const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
+const DiscussionThreadList = (props: Props) => {
   const {
     allowedThreadables,
-    editorRef,
     discussion: discussionRef,
     threadables: threadablesRef,
-    dataCy,
     preferredNames,
     viewer: viewerRef,
     header,
@@ -100,32 +69,47 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
         ... on Poll {
           updatedAt
         }
+        threadParentId
         id
       }
     `,
     threadablesRef
   )
-
   const isEmpty = showTranscription
     ? !transcription || transcription.length === 0
     : threadables.length === 0
-  useScrollThreadList(threadables, editorRef, ref, preferredNames)
+
+  // Scroll to the new message at bottom if the viewer is already at the bottom
+  const listRef = useRef<HTMLDivElement>(null)
+  const threadBottomRef = useRef<HTMLDivElement>(null)
+  const [isAtBottom, setIsAtBottom] = useState(true)
+  const handleScroll = () => {
+    const listEl = listRef.current
+    if (!listEl) return
+    const {scrollTop, scrollHeight, clientHeight} = listEl
+    setIsAtBottom(scrollTop + clientHeight >= scrollHeight - 20)
+  }
+  useEffect(() => {
+    if (!isAtBottom) return
+    threadBottomRef.current?.scrollIntoView({behavior: 'smooth'})
+  }, [threadables])
+
   if (isEmpty && emptyState) {
     return (
-      <EmptyWrapper>
+      <div className='flex flex-1 flex-col items-center justify-center overflow-auto'>
         {header}
         {emptyState}
-        <CommentingStatusBlock>
+        <div className='h-9 w-full'>
           <CommentingStatusText preferredNames={preferredNames} />
-        </CommentingStatusBlock>
-      </EmptyWrapper>
+        </div>
+      </div>
     )
   }
-
   return (
-    <Wrapper data-cy={`${dataCy}`} ref={ref}>
+    <div ref={listRef} className='flex flex-1 flex-col overflow-auto' onScroll={handleScroll}>
       {header}
-      <PusherDowner />
+      {/* https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar */}
+      <div className='mx-0 mb-auto mt-0' />
       {showTranscription && transcription ? (
         <Transcription transcription={transcription} />
       ) : (
@@ -142,9 +126,10 @@ const DiscussionThreadList = forwardRef((props: Props, ref: any) => {
           )
         })
       )}
+      <div ref={threadBottomRef}></div>
       <CommentingStatusText preferredNames={preferredNames} />
-    </Wrapper>
+    </div>
   )
-})
+}
 
 export default DiscussionThreadList

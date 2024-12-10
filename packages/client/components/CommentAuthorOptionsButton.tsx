@@ -38,16 +38,14 @@ const StyledIcon = styled(MoreVert)({
 interface Props {
   commentId: string
   editComment: () => void
-  dataCy: string
   meetingId: string
 }
 
 const CommentAuthorOptionsButton = (props: Props) => {
-  const {commentId, editComment, dataCy, meetingId} = props
+  const {commentId, editComment, meetingId} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <StyledButton
-      data-cy={`${dataCy}-dropdown-menu`}
       onMouseEnter={CommentAuthorOptionsDropdown.preload}
       ref={originRef}
       onClick={togglePortal}

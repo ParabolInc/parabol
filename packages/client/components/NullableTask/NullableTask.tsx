@@ -15,7 +15,6 @@ interface Props {
   isAgenda?: boolean
   isDraggingOver?: TaskStatusEnum
   task: NullableTask_task$key
-  dataCy: string
   isViewerMeetingSection?: boolean
   meetingId?: string
 }
@@ -27,7 +26,6 @@ const NullableTask = (props: Props) => {
     isAgenda,
     task: taskRef,
     isDraggingOver,
-    dataCy,
     isViewerMeetingSection,
     meetingId
   } = props
@@ -69,7 +67,6 @@ const NullableTask = (props: Props) => {
     editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
   return showOutcome ? (
     <OutcomeCardContainer
-      dataCy={`${dataCy}`}
       area={area}
       className={className}
       editor={editor}

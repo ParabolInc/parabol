@@ -30,7 +30,6 @@ interface Props {
   editComment: () => void
   onToggleReactji: (emojiId: string) => void
   onReply: () => void
-  dataCy: string
   meetingId: string
 }
 
@@ -42,7 +41,7 @@ const getName = (comment: ThreadedCommentHeader_comment$data) => {
 }
 
 const ThreadedCommentHeader = (props: Props) => {
-  const {comment: commentRef, onReply, editComment, onToggleReactji, dataCy, meetingId} = props
+  const {comment: commentRef, onReply, editComment, onToggleReactji, meetingId} = props
   const comment = useFragment(
     graphql`
       fragment ThreadedCommentHeader_comment on Comment {
@@ -80,12 +79,11 @@ const ThreadedCommentHeader = (props: Props) => {
           {!hasReactjis && (
             <>
               <AddReactji onToggle={onToggleReactji} />
-              <ThreadedReplyButton dataCy={`${dataCy}`} onReply={onReply} />
+              <ThreadedReplyButton onReply={onReply} />
             </>
           )}
           {isEditable && (
             <CommentAuthorOptionsButton
-              dataCy={`${dataCy}`}
               editComment={editComment}
               commentId={commentId}
               meetingId={meetingId}

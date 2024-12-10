@@ -82,7 +82,7 @@ const ParabolTasksPanel = (props: Props) => {
       </div>
       <ParabolTasksResultsRoot selectedStatus={selectedStatus} />
       <div className='flex items-center justify-center border-t border-solid border-slate-200 p-2'>
-        <AddTaskButton dataCy={`your-work-task`} onClick={handleAddTask} />
+        <AddTaskButton onClick={handleAddTask} />
       </div>
     </>
   )

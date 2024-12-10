@@ -13,7 +13,7 @@ import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import safeProxy from '../utils/relay/safeProxy'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
-import {isViewerTypingInComment, isViewerTypingInTask} from '../utils/viewerTypingUtils'
+import {isViewerTyping} from '../utils/viewerTypingUtils'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 
 graphql`
@@ -130,8 +130,7 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     const viewerPhaseType = meeting
       .getLinkedRecord('localPhase')!
       .getValue('phaseType') as NewMeetingPhaseTypeEnum
-    const isViewerTyping = isViewerTypingInTask() || isViewerTypingInComment()
-    if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping) {
+    if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping()) {
       setLocalStageAndPhase(store, meetingId, facilitatorStageId)
     }
   }

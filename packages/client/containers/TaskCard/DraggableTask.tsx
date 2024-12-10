@@ -44,7 +44,6 @@ const DraggableTask = (props: Props) => {
         >
           <NullableTask
             className='max-w-[296px]'
-            dataCy={`draggable-task`}
             area={area}
             task={task}
             isDraggingOver={dragSnapshot.draggingOver as TaskStatusEnum}

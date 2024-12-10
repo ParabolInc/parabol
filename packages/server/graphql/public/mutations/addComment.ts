@@ -1,62 +1,42 @@
+import {generateText, type JSONContent} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
-import getTypeFromEntityMap from '../../../../client/utils/draftjs/getTypeFromEntityMap'
+import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import GenericMeetingPhase, {
   NewMeetingPhaseTypeEnum
 } from '../../../database/types/GenericMeetingPhase'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {IGetDiscussionsByIdsQueryResult} from '../../../postgres/queries/generated/getDiscussionsByIdsQuery'
+import type {Discussion} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 
 const getMentionNotifications = (
-  content: string,
+  jsonContent: JSONContent,
   viewerId: string,
-  discussion: IGetDiscussionsByIdsQueryResult,
+  discussion: Discussion,
   commentId: string,
   meetingId: string
 ) => {
-  let parsedContent: any
-  try {
-    parsedContent = JSON.parse(content)
-  } catch {
-    // If we can't parse the content, assume no new notifications.
-    return []
-  }
+  const subjectUserId =
+    discussion.discussionTopicType === 'teamPromptResponse'
+      ? TeamMemberId.split(discussion.discussionTopicId).userId
+      : null
 
-  const {entityMap} = parsedContent
-  return getTypeFromEntityMap('MENTION', entityMap)
-    .filter((mentionedUserId) => {
-      if (mentionedUserId === viewerId) {
-        return false
-      }
-
-      if (discussion.discussionTopicType === 'teamPromptResponse') {
-        const {userId: responseUserId} = TeamMemberId.split(discussion.discussionTopicId)
-        if (responseUserId === mentionedUserId) {
-          // The mentioned user will already receive a 'RESPONSE_REPLIED' notification for this
-          // comment
-          return false
-        }
-      }
-
-      // :TODO: (jmtaber129): Consider limiting these to when the mentionee is *not* on the
-      // relevant page.
-      return true
-    })
-    .map((mentioneeUserId) => ({
+  return getAllNodesAttributesByType<{id: string; label: string}>(jsonContent, 'mention')
+    .filter((mention) => ![viewerId, subjectUserId].includes(mention.id))
+    .map((mention) => ({
       id: generateUID(),
       type: 'DISCUSSION_MENTIONED' as const,
-      userId: mentioneeUserId,
+      userId: mention.id,
       meetingId: meetingId,
       authorId: viewerId,
       commentId,
@@ -96,7 +76,8 @@ const addComment: MutationResolvers['addComment'] = async (
   }
 
   // VALIDATION
-  const content = normalizeRawDraftJS(comment.content)
+  const content = convertToTipTap(comment.content)
+  const plaintextContent = generateText(content, serverTipTapExtensions)
 
   const commentId = generateUID()
   await getKysely()
@@ -105,7 +86,7 @@ const addComment: MutationResolvers['addComment'] = async (
       id: commentId,
       content,
       isAnonymous: isAnonymous ?? undefined,
-      plaintextContent: extractTextFromDraftString(content),
+      plaintextContent,
       createdBy: viewerId,
       threadSortOrder,
       threadParentId,

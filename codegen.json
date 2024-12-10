@@ -82,7 +82,7 @@
           "CreateStripeSubscriptionSuccess": "./types/CreateStripeSubscriptionSuccess#CreateStripeSubscriptionSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "DeleteCommentSuccess": "./types/DeleteCommentSuccess#DeleteCommentSuccessSource",
-          "Discussion": "../../postgres/queries/generated/getDiscussionsByIdsQuery#IGetDiscussionsByIdsQueryResult",
+          "Discussion": "../../postgres/types/index#Discussion",
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",
           "File": "./types/File#TFile",

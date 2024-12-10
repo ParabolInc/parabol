@@ -1,37 +1,23 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Editor} from 'draft-js'
-import {RefObject, useRef} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {ThreadedItemReply_discussion$key} from '~/__generated__/ThreadedItemReply_discussion.graphql'
 import {ThreadedItemReply_threadable$key} from '~/__generated__/ThreadedItemReply_threadable.graphql'
 import {ThreadedItemReply_viewer$key} from '~/__generated__/ThreadedItemReply_viewer.graphql'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import useClickAway from '~/hooks/useClickAway'
-import isAndroid from '~/utils/draftjs/isAndroid'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import {DiscussionThreadables} from './DiscussionThreadList'
-import {ReplyMention, SetReplyMention} from './ThreadedItem'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   threadable: ThreadedItemReply_threadable$key
-  editorRef: RefObject<HTMLTextAreaElement>
   discussion: ThreadedItemReply_discussion$key
   viewer: ThreadedItemReply_viewer$key
-  replyMention?: ReplyMention
-  setReplyMention: SetReplyMention
-  dataCy: string
 }
 
 const ThreadedItemReply = (props: Props) => {
   const {
     allowedThreadables,
-    replyMention,
     threadable: threadableRef,
-    editorRef,
     discussion: discussionRef,
-    setReplyMention,
-    dataCy,
     viewer: viewerRef
   } = props
   const viewer = useFragment(
@@ -58,39 +44,16 @@ const ThreadedItemReply = (props: Props) => {
     graphql`
       fragment ThreadedItemReply_discussion on Discussion {
         ...DiscussionThreadInput_discussion
-        id
-        replyingToCommentId
+        replyingTo {
+          id
+        }
       }
     `,
     discussionRef
   )
   const {id: threadableId, replies} = threadable
-  const {id: discussionId, replyingToCommentId} = discussion
-  const isReplying = replyingToCommentId === threadableId
-  const replyRef = useRef<HTMLTextAreaElement>(null)
-  const atmosphere = useAtmosphere()
-  const clearReplyingToCommentId = () => {
-    commitLocalUpdate(atmosphere, (store) => {
-      store
-        .getRoot()
-        .getLinkedRecord('viewer')
-        ?.getLinkedRecord('discussion', {id: discussionId})
-        ?.setValue('', 'replyingToCommentId')
-    })
-  }
-
-  const listeningRef = isReplying ? replyRef : null
-  useClickAway(listeningRef, () => {
-    const editorEl = editorRef.current
-    if (!editorEl) return
-    const hasText = isAndroid
-      ? editorEl.value
-      : (editorEl as any as Editor).props.editorState.getCurrentContent().hasText()
-    if (!hasText) {
-      clearReplyingToCommentId()
-    }
-  })
-
+  const {replyingTo} = discussion
+  const isReplying = replyingTo?.id === threadableId
   if (!isReplying) return null
   const getMaxSortOrder = () => {
     return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
@@ -98,15 +61,9 @@ const ThreadedItemReply = (props: Props) => {
   return (
     <DiscussionThreadInput
       allowedThreadables={allowedThreadables}
-      dataCy={`${dataCy}-input`}
-      ref={replyRef}
-      editorRef={editorRef}
       isReply
-      replyMention={replyMention}
       getMaxSortOrder={getMaxSortOrder}
       discussion={discussion}
-      onSubmitCommentSuccess={clearReplyingToCommentId}
-      setReplyMention={setReplyMention}
       threadParentId={threadableId}
       viewer={viewer}
     />

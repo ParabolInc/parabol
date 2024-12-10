@@ -30,7 +30,6 @@ interface Props {
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task$key
   clearIsCreatingNewTask?: () => void
-  dataCy: string
   isViewerMeetingSection?: boolean
   meetingId?: string
 }
@@ -45,7 +44,6 @@ const OutcomeCardContainer = memo((props: Props) => {
     task: taskRef,
     area,
     isAgenda,
-    dataCy,
     isViewerMeetingSection,
     meetingId
   } = props
@@ -108,7 +106,6 @@ const OutcomeCardContainer = memo((props: Props) => {
       ref={ref}
     >
       <OutcomeCard
-        dataCy={`${dataCy}-card`}
         area={area}
         editor={editor}
         linkState={linkState}

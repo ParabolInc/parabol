@@ -17,7 +17,8 @@ import {
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateScale,
-  selectTemplateScaleRef
+  selectTemplateScaleRef,
+  type selectDiscussion
 } from '../select'
 import {
   Discussion as DiscussionPG,
@@ -98,3 +99,5 @@ export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatu
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
 export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
 export type TaskEstimate = Selectable<TaskEstimatePG>
+
+export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
