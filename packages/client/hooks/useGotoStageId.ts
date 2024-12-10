@@ -31,6 +31,9 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
             isNavigableByFacilitator
           }
         }
+        localStage {
+          id
+        }
       }
     `,
     meetingRef
@@ -43,9 +46,11 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
         facilitatorStageId,
         facilitatorUserId,
         id: meetingId,
-        phases
+        phases,
+        localStage
       } = meeting
       const {viewerId} = atmosphere
+      if (localStage?.id === stageId) return
       const isViewerFacilitator = viewerId === facilitatorUserId
       const res = findStageById(phases, stageId)
       if (!res) return

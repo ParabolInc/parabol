@@ -5,7 +5,6 @@ import {disconnectQuery} from '../socketHandlers/handleDisconnect'
 import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
 import publishInternalGQL from './publishInternalGQL'
-import sendToSentry from './sendToSentry'
 
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
@@ -84,7 +83,6 @@ class ServerHealthChecker {
     await new Promise((resolve, reject) => {
       userPresenceStream.on('end', resolve)
       userPresenceStream.on('error', (e) => {
-        sendToSentry(e)
         reject(e)
       })
     })
