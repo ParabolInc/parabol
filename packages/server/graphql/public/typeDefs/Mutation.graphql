@@ -227,6 +227,16 @@ type Mutation {
   ): DeleteUserPayload!
 
   """
+  Delete a list of users, removing them from all teams and orgs
+  """
+  deleteUsers(
+    """
+    a list of user emails
+    """
+    emails: [Email!]!
+  ): DeleteUsersPayload!
+
+  """
   Deny a user from joining via push invitation
   """
   denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload
