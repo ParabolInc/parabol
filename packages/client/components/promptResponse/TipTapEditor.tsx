@@ -12,7 +12,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const TipTapEditor = (props: Props) => {
   const {editor, linkState, setLinkState, showBubbleMenu, useLinkEditor} = props
   return (
-    <div className=' cursor-text px-4 text-sm leading-5'>
+    <div className='px-4 text-sm leading-5'>
       {showBubbleMenu && setLinkState && (
         <StandardBubbleMenu editor={editor} setLinkState={setLinkState} />
       )}
