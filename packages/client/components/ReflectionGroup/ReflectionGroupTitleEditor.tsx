@@ -12,6 +12,7 @@ import {PALETTE} from '../../styles/paletteV3'
 import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
+import Ellipsis from '../Ellipsis/Ellipsis'
 import StyledError from '../StyledError'
 
 interface Props {
@@ -127,6 +128,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   const {id: reflectionGroupId, title} = reflectionGroup
   const dirtyRef = useRef(false)
   const initialTitleRef = useRef(title)
+  const isLoading = title === ''
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value
@@ -178,19 +180,25 @@ const ReflectionGroupTitleEditor = (props: Props) => {
     <InputWithIconWrap>
       <RootBlock data-cy='group-title-editor'>
         <FormBlock onSubmit={onSubmit}>
-          <NameInput
-            data-cy='group-title-editor-input'
-            isExpanded={isExpanded}
-            onBlur={onSubmit}
-            onChange={onChange}
-            onKeyPress={onKeyPress}
-            placeholder={RETRO_TOPIC_LABEL}
-            readOnly={readOnly}
-            ref={titleInputRef}
-            maxLength={200}
-            type='text'
-            value={title || ''}
-          />
+          {isLoading ? (
+            <span className='inline-block text-left font-semibold'>
+              <Ellipsis />
+            </span>
+          ) : (
+            <NameInput
+              data-cy='group-title-editor-input'
+              isExpanded={isExpanded}
+              onBlur={onSubmit}
+              onChange={onChange}
+              onKeyPress={onKeyPress}
+              placeholder={RETRO_TOPIC_LABEL}
+              readOnly={readOnly}
+              ref={titleInputRef}
+              maxLength={200}
+              type='text'
+              value={title || ''}
+            />
+          )}
         </FormBlock>
         {error && <StyledError>{error.message}</StyledError>}
       </RootBlock>

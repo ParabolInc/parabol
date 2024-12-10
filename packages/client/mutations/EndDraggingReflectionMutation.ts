@@ -170,6 +170,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
       const oldReflectionGroupId = reflection.getValue('reflectionGroupId') as string
       let reflectionGroupProxy: RecordProxy<{meetingId: string}>
       const newReflectionGroupId = clientTempId()
+
       // move a reflection into its own group
       if (!reflectionGroupId) {
         // create the new group
@@ -179,7 +180,9 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           meetingId: reflection.getValue('meetingId') as string,
           isActive: true,
           sortOrder: 0,
-          updatedAt: nowISO
+          updatedAt: nowISO,
+          title: '',
+          smartTitle: ''
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
@@ -197,6 +200,8 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           reflectionGroupId
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
+        reflectionGroupProxy.setValue('', 'title')
+        reflectionGroupProxy.setValue('', 'smartTitle')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }

@@ -1,9 +1,8 @@
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import dndNoise from '../../../../../client/utils/dndNoise'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
 import {GQLContext} from '../../../graphql'
-import updateSmartGroupTitle from './updateSmartGroupTitle'
+import updateGroupTitle from '../updateGroupTitle'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
   const pg = getKysely()
@@ -57,12 +56,23 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
     .get('retroReflectionsByGroupId')
     .load(oldReflectionGroupId)
 
-  const nextTitle = getGroupSmartTitle([reflection])
-  await updateSmartGroupTitle(reflectionGroupId, nextTitle)
+  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+  await updateGroupTitle({
+    reflections: [reflection],
+    reflectionGroupId: reflectionGroupId,
+    meetingId,
+    teamId: meeting.teamId,
+    dataLoader
+  })
 
   if (oldReflections.length > 0) {
-    const oldTitle = getGroupSmartTitle(oldReflections)
-    await updateSmartGroupTitle(oldReflectionGroupId, oldTitle)
+    await updateGroupTitle({
+      reflections: oldReflections,
+      reflectionGroupId: oldReflectionGroupId,
+      meetingId,
+      teamId: meeting.teamId,
+      dataLoader
+    })
   } else {
     await pg
       .updateTable('RetroReflectionGroup')
