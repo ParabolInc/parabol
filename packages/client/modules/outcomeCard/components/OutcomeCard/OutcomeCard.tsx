@@ -13,7 +13,7 @@ import {LinkMenuState} from '../../../../components/promptResponse/TipTapLinkMen
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useTaskChildFocus, {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -55,8 +55,6 @@ const StatusIndicatorBlock = styled('div')({
   display: 'flex'
 })
 
-const TaskEditorWrapper = styled('div')()
-
 interface Props {
   area: AreaEnum
   isTaskFocused: boolean
@@ -69,10 +67,14 @@ interface Props {
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCard_task$key
   useTaskChild: UseTaskChild
+  addTaskChild(name: string): void
+  removeTaskChild(name: string): void
 }
 
 const OutcomeCard = memo((props: Props) => {
   const {
+    addTaskChild,
+    removeTaskChild,
     area,
     isTaskFocused,
     isTaskHovered,
@@ -139,7 +141,6 @@ const OutcomeCard = memo((props: Props) => {
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
-  const {addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
   const type = integration?.__typename
   const statusTitle = `Card status: ${taskStatusLabels[status]}`
   const privateTitle = ', marked as #private'
@@ -176,7 +177,8 @@ const OutcomeCard = memo((props: Props) => {
         </EditingStatus>
         <IntegratedTaskContent task={task} />
         {!type && (
-          <TaskEditorWrapper
+          <div
+            className='cursor-text'
             onBlur={() => {
               removeTaskChild('root')
               setTimeout(handleCardUpdate)
@@ -191,7 +193,7 @@ const OutcomeCard = memo((props: Props) => {
               onBlur={onFocusChange(false)}
               onFocus={onFocusChange(true)}
             />
-          </TaskEditorWrapper>
+          </div>
         )}
         <TaskIntegrationLink integration={integration || null} />
         <TaskFooter

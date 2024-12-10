@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
+import areEqual from 'fbjs/lib/areEqual'
 import {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
@@ -64,7 +65,7 @@ const OutcomeCardContainer = memo((props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
 
-  const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
+  const {useTaskChild, isTaskFocused, addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
 
   const isHighlighted = isTaskHovered || !!isDraggingOver
   useEffect(() => {
@@ -79,12 +80,13 @@ const OutcomeCardContainer = memo((props: Props) => {
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
+    if (isFocused) return
     if (editor.isEmpty && !isFocused) {
       DeleteTaskMutation(atmosphere, {taskId})
       return
     }
     const nextContent = JSON.stringify(editor.getJSON())
-    if (content === nextContent) return
+    if (areEqual(JSON.parse(content), editor.getJSON())) return
     const updatedTask = {
       id: taskId,
       content: nextContent
@@ -115,6 +117,8 @@ const OutcomeCardContainer = memo((props: Props) => {
         isDraggingOver={isDraggingOver}
         task={task}
         useTaskChild={useTaskChild}
+        addTaskChild={addTaskChild}
+        removeTaskChild={removeTaskChild}
       />
     </Wrapper>
   )

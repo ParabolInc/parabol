@@ -70,7 +70,7 @@ const EditGitHubLabelTemplateModal = (props: Props) => {
   }
   return (
     <StyledDialogContainer>
-      <DialogTitle>{'Edit GitHub Label'}</DialogTitle>
+      <DialogTitle>{'Edit Label Template'}</DialogTitle>
       <DialogContent>
         <div>
           <LabelTemplateInput

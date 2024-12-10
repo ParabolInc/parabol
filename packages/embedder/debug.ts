@@ -1,6 +1,7 @@
 // call with yarn sucrase-node billing/debug.ts
 import '../../scripts/webpack/utils/dotenv'
 import getKysely from '../server/postgres/getKysely'
+import {Logger} from '../server/utils/Logger'
 import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
 const debugFailedJob = async () => {
@@ -14,11 +15,11 @@ const debugFailedJob = async () => {
     .executeTakeFirst()
 
   if (!failedJob) {
-    console.log('No failed jobs found')
+    Logger.log('No failed jobs found')
     return
   }
 
-  console.log('Debugging job:', failedJob.id)
+  Logger.log('Debugging job:', failedJob.id)
   const orch = new WorkflowOrchestrator()
   await orch.runStep(failedJob as any)
   // const man = getModelManager()
