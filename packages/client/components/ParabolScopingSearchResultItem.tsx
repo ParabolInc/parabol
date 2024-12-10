@@ -100,7 +100,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const handleTaskUpdate = () => {
     if (!editor) return
     const isFocused = isTaskFocused()
-    if (editor.isEmpty && !isFocused) {
+    if (isFocused) return
+    if (editor.isEmpty) {
       DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
       return
     }
