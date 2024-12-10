@@ -2,6 +2,7 @@ import sleep from '../../client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../socketHandlers/handleDisconnect'
+import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
 import publishInternalGQL from './publishInternalGQL'
 import sendToSentry from './sendToSentry'
@@ -24,7 +25,7 @@ class ServerHealthChecker {
             this.publisher.publish(`socketServerPong:${remoteServerId}`, INSTANCE_ID)
           } else if (channel === `socketServerPong:${INSTANCE_ID}`) {
             if (!this.remoteSocketServers) {
-              console.error('unsolicited pong received before getLivingServers was called')
+              Logger.error('unsolicited pong received before getLivingServers was called')
             } else {
               this.remoteSocketServers.push(remoteServerId)
             }

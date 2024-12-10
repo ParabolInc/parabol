@@ -12,7 +12,7 @@ import textOverflow from '../styles/helpers/textOverflow'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
-import EditGitHubLabelTemplateModal from './EditGitHubLabelTemplateModal'
+import EditVotingLabelTemplateModal from './EditVotingLabelTemplateModal'
 import FlatButton from './FlatButton'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
@@ -186,7 +186,7 @@ const GitHubFieldMenu = (props: Props) => {
         />
       </Menu>
       {modalPortal(
-        <EditGitHubLabelTemplateModal
+        <EditVotingLabelTemplateModal
           updateLabelTemplate={handleClick}
           closePortal={closeModal}
           defaultValue={serviceFieldTemplate}

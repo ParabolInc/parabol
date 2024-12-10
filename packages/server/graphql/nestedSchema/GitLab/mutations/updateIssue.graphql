@@ -1,0 +1,9 @@
+mutation updateIssue($input: UpdateIssueInput!) {
+  updateIssue(input: $input) {
+    clientMutationId
+    errors
+    issue {
+      id
+    }
+  }
+}
