@@ -148,6 +148,7 @@ const EstimateStage: EstimateStageResolvers = {
       const {issue} = issueData
       if (!issue) return NULL_FIELD
       const {projectId} = issue
+      if (!projectId) return NULL_FIELD
       const dimensionName = await getDimensionName(meetingId)
       const gitlabFieldMap = await dataLoader
         .get('gitlabDimensionFieldMaps')

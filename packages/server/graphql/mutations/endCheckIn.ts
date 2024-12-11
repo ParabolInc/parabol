@@ -5,7 +5,6 @@ import {AGENDA_ITEMS, LAST_CALL} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {positionAfter} from '../../../client/shared/sortOrder'
-import {checkTeamsLimit} from '../../billing/helpers/teamLimitsCheck'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
@@ -210,7 +209,6 @@ export default {
 
     analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader)
     sendNewMeetingSummary(completedCheckIn, context).catch(Logger.log)
-    checkTeamsLimit(team.orgId, dataLoader)
 
     const events = teamMembers.map(
       (teamMember) =>

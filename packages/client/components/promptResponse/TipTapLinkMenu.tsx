@@ -43,10 +43,11 @@ export const TipTapLinkMenu = (props: Props) => {
       return {link: '', text}
     }
   })
-
-  const handleEdit = useCallback(() => {
+  const oldLinkStateRef = useRef<LinkMenuState>(null)
+  const handleEdit = () => {
     setLinkState('edit')
-  }, [])
+    oldLinkStateRef.current = 'preview'
+  }
 
   const onSetLink = useCallback(
     ({text, url}: {text: string; url: string}) => {
@@ -104,7 +105,16 @@ export const TipTapLinkMenu = (props: Props) => {
     setLinkState(null)
   }, [editor])
   const onOpenChange = (willOpen: boolean) => {
-    setLinkState(willOpen ? (editor.isActive('link') ? 'preview' : 'edit') : null)
+    const isLinkActive = editor.isActive('link')
+    if (willOpen) {
+      setLinkState(isLinkActive ? 'preview' : 'edit')
+    } else {
+      // special case when switching from preview to edit radix-ui triggers onOpenChange(false)
+      if (!(oldLinkStateRef.current === 'preview' && linkState === 'edit')) {
+        setLinkState(null)
+      }
+      oldLinkStateRef.current = null
+    }
   }
   const transformRef = useRef<undefined | string>(undefined)
   const getTransform = () => {
@@ -122,7 +132,7 @@ export const TipTapLinkMenu = (props: Props) => {
       <Popover.Portal>
         <Popover.Content
           onOpenAutoFocus={(e) => {
-            // necessary for link preview to preview focusing the first button
+            // necessary for link preview to prevent focusing the first button
             e.preventDefault()
           }}
         >

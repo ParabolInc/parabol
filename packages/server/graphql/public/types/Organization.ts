@@ -90,7 +90,7 @@ const Organization: OrganizationResolvers = {
       dataLoader.get('teamsByOrgIds').load(orgId),
       dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'publicTeams'})
     ])
-    if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []
+    if (!isSuperUser(authToken) && !hasPublicTeamsFlag) return []
     const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))
     return publicTeams
   },

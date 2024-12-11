@@ -1,5 +1,5 @@
-import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
 import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
+import {convertTipTapTaskContent} from '../../../client/shared/tiptap/convertTipTapTaskContent'
 import CheckInStage from './CheckInStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
@@ -18,7 +18,7 @@ export default class CheckInPhase extends GenericMeetingPhase {
     super('checkin')
     const {teamId, meetingCount, stages} = input
     this.checkInGreeting = makeCheckinGreeting(meetingCount, teamId)
-    this.checkInQuestion = convertToTaskContent(makeCheckinQuestion(meetingCount, teamId))
+    this.checkInQuestion = convertTipTapTaskContent(makeCheckinQuestion(meetingCount, teamId))
     this.stages = stages
   }
 }

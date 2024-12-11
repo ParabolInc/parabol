@@ -68,10 +68,14 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {atmosphere, teamId})
+  const isEditingThisItem = !plaintextContent
+  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+    atmosphere,
+    teamId,
+    readOnly: !isEditingThisItem
+  })
   const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} =
     useTaskChildFocus(serviceTaskId)
-  const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
     if (submitting || disabled) return
@@ -96,7 +100,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const handleTaskUpdate = () => {
     if (!editor) return
     const isFocused = isTaskFocused()
-    if (editor.isEmpty && !isFocused) {
+    if (isFocused) return
+    if (editor.isEmpty) {
       DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
       return
     }
