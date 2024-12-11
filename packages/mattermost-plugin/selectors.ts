@@ -56,12 +56,19 @@ export const getAssetsUrl = (state: GlobalState) => {
   return `${siteURL}/public`
 }
 
-export const getPluginState = (state: GlobalState) => ((state as any)[`plugins-${id}`] ?? {}) as PluginState
+export const getPluginState = (state: GlobalState) =>
+  ((state as any)[`plugins-${id}`] ?? {}) as PluginState
 
-export const isStartActivityModalVisible = (state: GlobalState) => getPluginState(state).isStartActivityModalVisible
+export const isStartActivityModalVisible = (state: GlobalState) =>
+  getPluginState(state).isStartActivityModalVisible
 
-export const isLinkTeamModalVisible = (state: GlobalState) => getPluginState(state).isLinkTeamModalVisible
+export const isLinkTeamModalVisible = (state: GlobalState) =>
+  getPluginState(state).isLinkTeamModalVisible
 
-export const pushPostAsReflection = (state: GlobalState) => getPluginState(state).pushPostAsReflection
+export const pushPostAsReflection = (state: GlobalState) =>
+  getPluginState(state).pushPostAsReflection
+
+export const linkedTeamIds = (state: GlobalState, channel: string) =>
+  getPluginState(state).linkedTeamIds[channel]
 
 //e

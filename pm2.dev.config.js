@@ -100,7 +100,6 @@ module.exports = {
     {
       name: 'Mattermost Plugin Dev Server',
       script: 'yarn workspace parabol-mattermost-plugin dev',
-      atuorestart: false,
       instances: 1
     }
   ].map((app) => ({

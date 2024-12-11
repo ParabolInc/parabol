@@ -1,14 +1,15 @@
-import React from 'react'
-
-import {useSelector} from 'react-redux'
-import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/common'
-
+import graphql from 'babel-plugin-relay/macro'
 import styled from 'styled-components'
 
+import {useFragment} from 'react-relay'
+import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
+import {useConfig} from '../../hooks/useConfig'
 import MoreMenu from '../Menu'
-import {isError, useConfigQuery, useLinkedTeamsQuery, useUnlinkTeamMutation} from '../../api'
 
-const Card = styled.div`
+import plural from '../../../client/utils/plural'
+import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
+
+const Card = styled.div!`
   display: flex;
   flex-direction: column;
   padding: 8px;
@@ -17,12 +18,12 @@ const Card = styled.div`
   border-radius: 5px;
 `
 
-const Col = styled.div`
+const Col = styled.div!`
   display: flex;
   flex-direction: column;
 `
 
-const Row = styled.div`
+const Row = styled.div!`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -30,38 +31,40 @@ const Row = styled.div`
   padding: 4px 0;
 `
 
-const Name = styled.div`
+const Name = styled.div!`
   font-size: 1.5rem;
   font-weight: bold;
 `
-const MemberCount = styled.div`
+const MemberCount = styled.div!`
   font-size: 1.5rem;
 `
 
 type Props = {
-  team: {
-    id: string
-    name: string
-    teamMembers: {}[]
-  }
+  teamRef: TeamRow_team$key
 }
-const TeamRow = ({team}: Props) => {
+const TeamRow = ({teamRef}: Props) => {
+  const config = useConfig()
+  const team = useFragment(
+    graphql`
+      fragment TeamRow_team on Team {
+        id
+        name
+        teamMembers {
+          id
+        }
+      }
+    `,
+    teamRef
+  )
+
   const {id, name, teamMembers} = team
-  const channelId = useSelector(getCurrentChannelId)
-  const [unlinkTeam] = useUnlinkTeamMutation()
-  const {refetch: refetchLinkedTeams} = useLinkedTeamsQuery({channelId})
-  const {data: config} = useConfigQuery()
+  const unlinkTeam = useUnlinkTeam()
 
   const handleUnlink = async () => {
     if (!id) {
       return
     }
-    const res = await unlinkTeam({channelId, teamId: id})
-    refetchLinkedTeams()
-
-    if (isError(res)) {
-      console.error('Failed to unlink team', res.error)
-    }
+    await unlinkTeam(id)
   }
 
   return (
@@ -73,19 +76,19 @@ const TeamRow = ({team}: Props) => {
         </Col>
         <Col>
           <MoreMenu
-            options={[{
-              label: 'Unlink',
-              onClick: handleUnlink,
-            }]}
+            options={[
+              {
+                label: 'Unlink',
+                onClick: handleUnlink
+              }
+            ]}
           />
         </Col>
       </Row>
       <Row>
-        <a
-          href={`${config?.parabolURL}/team/${id}`}
-          target='_blank'
-          rel='noreferrer'
-        >{'View in Parabol'}</a>
+        <a href={`${config?.parabolUrl}/team/${id}`} target='_blank' rel='noreferrer'>
+          {'View in Parabol'}
+        </a>
       </Row>
     </Card>
   )

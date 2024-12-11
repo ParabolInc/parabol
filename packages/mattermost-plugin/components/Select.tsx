@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactSelect from 'react-select'
 
 interface IdName {
@@ -17,12 +16,12 @@ const LinkTeamModal = <T extends IdName>(props: SelectProps<T>) => {
   const {label, required, options, value, onChange} = props
   return (
     <div className='form-group'>
-      {label &&
-        <label
-          className='control-label'
-          htmlFor='team'
-        >{label}{required && <span className='error-text'> *</span>}</label>
-      }
+      {label && (
+        <label className='control-label' htmlFor='team'>
+          {label}
+          {required && <span className='error-text'> *</span>}
+        </label>
+      )}
       <div className='Input_Wrapper'>
         <ReactSelect
           id='team'

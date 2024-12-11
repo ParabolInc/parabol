@@ -1,19 +1,11 @@
-import graphql from 'babel-plugin-relay/macro'
-import {readFragment} from 'relay-runtime'
-import {Client4} from "mattermost-redux/client"
-import {Options} from "mattermost-redux/types/client4"
-import {LiveState, suspenseSentinel} from "relay-runtime"
-import {ResolverContext} from "./Atmosphere"
-import {resolversUserLinkedTeamsFragment$key} from './__generated__/resolversUserLinkedTeamsFragment.graphql'
+import {Client4} from 'mattermost-redux/client'
+import {Options} from 'mattermost-redux/types/client4'
+import {LiveState, suspenseSentinel} from 'relay-runtime'
+import {ResolverContext} from './Atmosphere'
+import {fetchLinkedTeamIds} from './reducers'
+import {linkedTeamIds as selectLinkedTeamIds} from './selectors'
 
-/**
- * @RelayResolver Query.greeting: String
- */
-export function greeting(): string {
-  return "Hello World"
-}
-
-const fetchOnce = <T>(url: string, options: Options): LiveState<T> => {
+const fetchOnce = <T>(url: string, options: Options): LiveState<T | null> => {
   const letsGo = async () => {
     const res = await fetch(url, Client4.getOptions(options))
     const json = await res.json()
@@ -21,15 +13,17 @@ const fetchOnce = <T>(url: string, options: Options): LiveState<T> => {
   }
 
   let result: T | null = null
+  let pending = false
   const callbacks = new Set<() => void>()
   letsGo().then((res) => {
     result = res
+    pending = false
     callbacks.forEach((cb) => cb())
   })
 
   return {
     read: () => {
-      if (!result) {
+      if (pending) {
         return suspenseSentinel()
       }
       return result
@@ -55,9 +49,9 @@ export type ConfigSource = {
  * @RelayResolver Query.config: Config
  * @live
  */
-export function config(_args: any, context: ResolverContext): LiveState<ConfigSource> {
+export function config(_args: any, context: ResolverContext): LiveState<ConfigSource | null> {
   return fetchOnce(`${context.serverUrl}/config`, {
-    method: 'GET',
+    method: 'GET'
   })
 }
 
@@ -73,25 +67,29 @@ export function parabolUrl(config: ConfigSource): string {
  * @RelayResolver User.linkedTeamIds(channel: ID!): [ID!]
  * @live
  */
-export function linkedTeamIds({channel}: {channel: string}, context: ResolverContext): LiveState<string[]> {
-  return fetchOnce(`${context.serverUrl}/linkedTeams/${channel}`, {
-    method: 'GET',
-  })
-}
+export function linkedTeamIds(
+  {channel}: {channel: string},
+  context: ResolverContext
+): LiveState<string[] | null> {
+  const {store} = context
 
-/**
- * @RelayResolver User.linkedTeams: [Team!]
- * @rootFragment resolversUserLinkedTeamsFragment
- * @live
- */
-export function linkedTeams(userRef: resolversUserLinkedTeamsFragment$key): string {
-  const user = readFragment(graphql`
-    fragment resolversUserLinkedTeamsFragment on User @argumentDefinitions(channel: {type: "ID!"}) {
-      teams {
-        id
-      }
-      linkedTeamIds(channel: $channel)
+  store.dispatch(fetchLinkedTeamIds(channel) as any)
+  let current = selectLinkedTeamIds(store.getState(), channel)
+
+  return {
+    read: () => {
+      console.log('GEORG read', current?.teamIds)
+      return current?.teamIds ?? null
+    },
+    subscribe: (callback: () => void) => {
+      return store.subscribe(() => {
+        const newValue = selectLinkedTeamIds(store.getState(), channel)
+        console.log('GEORG newValue', newValue, current, newValue !== current)
+        if (newValue !== current) {
+          current = newValue
+          callback()
+        }
+      })
     }
-  `, userRef)
-  return user.linkedTeamIds.map((id) => user.teams.find((team) => team.id === id))
+  }
 }

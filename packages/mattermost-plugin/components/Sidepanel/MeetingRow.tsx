@@ -2,12 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 
 import styled from 'styled-components'
 
-import {MeetingRow_meeting$key} from '../../__generated__/MeetingRow_meeting.graphql'
-import {useFragment} from 'react-relay'
-import {getPluginServerRoute} from '../../selectors'
 import {useSelector} from 'react-redux'
+import {useFragment} from 'react-relay'
+import {MeetingRow_meeting$key} from '../../__generated__/MeetingRow_meeting.graphql'
+import {getPluginServerRoute} from '../../selectors'
 
-const Card = styled.div`
+const Card = styled.div!`
   display: flex;
   flex-direction: column;
   padding: 8px;
@@ -16,12 +16,12 @@ const Card = styled.div`
   border-radius: 5px;
 `
 
-const Col = styled.div`
+const Col = styled.div!`
   display: flex;
   flex-direction: column;
 `
 
-const Row = styled.div`
+const Row = styled.div!`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -29,11 +29,11 @@ const Row = styled.div`
   padding: 4px 0;
 `
 
-const Name = styled.div`
+const Name = styled.div!`
   font-size: 1.5rem;
   font-weight: bold;
 `
-const MemberCount = styled.div`
+const MemberCount = styled.div!`
   font-size: 1.5rem;
 `
 
@@ -42,15 +42,18 @@ type Props = {
 }
 
 const MeetingRow = ({meetingRef}: Props) => {
-  const meeting = useFragment(graphql`
-    fragment MeetingRow_meeting on NewMeeting {
-      id
-      name
-      team {
+  const meeting = useFragment(
+    graphql`
+      fragment MeetingRow_meeting on NewMeeting {
+        id
         name
+        team {
+          name
+        }
       }
-    }
-  `, meetingRef)
+    `,
+    meetingRef
+  )
   const {id, name, team} = meeting
   const pluginServerRoute = useSelector(getPluginServerRoute)
   //const {data: config} = useConfigQuery()
@@ -65,15 +68,12 @@ const MeetingRow = ({meetingRef}: Props) => {
         </Col>
       </Row>
       <Row>
-        <a
-          href={`${pluginServerRoute}/parabol/meet/${id}`}
-          target='_blank'
-          rel='noreferrer'
-        >{'Join Meeting'}</a>
+        <a href={`${pluginServerRoute}/parabol/meet/${id}`} target='_blank' rel='noreferrer'>
+          {'Join Meeting'}
+        </a>
       </Row>
     </Card>
   )
 }
 
 export default MeetingRow
-

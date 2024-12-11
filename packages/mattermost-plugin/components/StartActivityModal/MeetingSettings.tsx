@@ -1,30 +1,32 @@
-import React from 'react'
 import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery, useMutation} from 'react-relay';
-import {MeetingSettingsQuery} from '../../__generated__/MeetingSettingsQuery.graphql';
-import {MeetingSettingsMutation} from '../../__generated__/MeetingSettingsMutation.graphql';
+import {useLazyLoadQuery, useMutation} from 'react-relay'
+import {MeetingSettingsMutation} from '../../__generated__/MeetingSettingsMutation.graphql'
+import {MeetingSettingsQuery} from '../../__generated__/MeetingSettingsQuery.graphql'
 
 interface Props {
-  teamId: string;
-  meetingType: string;//'retrospective' | 'action' | 'poker';
+  teamId: string
+  meetingType: string //'retrospective' | 'action' | 'poker';
 }
 
 const MeetingSettings = ({teamId, meetingType}: Props) => {
-  const data = useLazyLoadQuery<MeetingSettingsQuery>(graphql`
-    query MeetingSettingsQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
-      viewer {
-        team(teamId: $teamId) {
-          meetingSettings(meetingType: $meetingType) {
-            id
-            phaseTypes
-            ... on RetrospectiveMeetingSettings {
-              disableAnonymity
+  const data = useLazyLoadQuery<MeetingSettingsQuery>(
+    graphql`
+      query MeetingSettingsQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
+        viewer {
+          team(teamId: $teamId) {
+            meetingSettings(meetingType: $meetingType) {
+              id
+              phaseTypes
+              ... on RetrospectiveMeetingSettings {
+                disableAnonymity
+              }
             }
           }
         }
       }
-    }
-    `, {teamId, meetingType: meetingType as any})
+    `,
+    {teamId, meetingType: meetingType as any}
+  )
   const [setMeetingSettings] = useMutation<MeetingSettingsMutation>(graphql`
     mutation MeetingSettingsMutation(
       $id: ID!
@@ -55,12 +57,13 @@ const MeetingSettings = ({teamId, meetingType}: Props) => {
   }
 
   const onChange = async (key: any, value: boolean) => {
-    setMeetingSettings({variables: {
-      ...settings,
-      [key]: value,
-    }})
+    setMeetingSettings({
+      variables: {
+        ...settings,
+        [key]: value
+      }
+    })
   }
-
 
   const {phaseTypes, disableAnonymity} = settings
   const checkinEnabled = phaseTypes.includes('checkin')

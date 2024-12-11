@@ -1,33 +1,26 @@
-import React, {useCallback} from 'react'
-
 import styled from 'styled-components'
 
-//import LinkedTeams from './LinkedTeams'
-import ActiveMeetings from './ActiveMeetings'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import ActiveMeetings from './ActiveMeetings'
+import LinkedTeams from './LinkedTeams'
 
-const Panel = styled.div`
+const Panel = styled.div!`
   display: flex;
   flex-direction: column;
   align-items: stretch;
   padding: 16px 8px;
+  overflow-y: auto;
 `
 
 const SidePanelRoot = () => {
-  const [selectedTab, setSelectedTab] = React.useState('linked-teams')
   const atmosphere = useAtmosphere()
 
   return (
     <Panel>
-      {/*
-      <LinkedTeams/>
-        */}
-      {atmosphere.state.authToken &&
-        <ActiveMeetings/>
-      }
+      <LinkedTeams />
+      {atmosphere.state.authToken && <ActiveMeetings />}
     </Panel>
   )
 }
 
 export default SidePanelRoot
-

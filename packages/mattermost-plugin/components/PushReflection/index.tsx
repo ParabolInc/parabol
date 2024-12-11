@@ -1,9 +1,11 @@
-import React, {lazy, Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 import {useSelector} from 'react-redux'
 
 import {pushPostAsReflection} from '../../selectors'
 
-const PushReflectionModal = lazy(() => import(/* webpackChunkName: 'PushReflectionModal' */ './PushReflectionModal'))
+const PushReflectionModal = lazy(
+  () => import(/* webpackChunkName: 'PushReflectionModal' */ './PushReflectionModal')
+)
 
 const PushReflectionModalRoot = () => {
   const postId = useSelector(pushPostAsReflection)

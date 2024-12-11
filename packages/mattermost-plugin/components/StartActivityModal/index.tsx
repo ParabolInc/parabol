@@ -1,9 +1,11 @@
-import React, {lazy, Suspense} from 'react'
+import {lazy, Suspense} from 'react'
 import {useSelector} from 'react-redux'
 
 import {isStartActivityModalVisible} from '../../selectors'
 
-const StartActivityModal = lazy(() => import(/* webpackChunkName: 'StartActivityModal' */ './StartActivityModal'))
+const StartActivityModal = lazy(
+  () => import(/* webpackChunkName: 'StartActivityModal' */ './StartActivityModal')
+)
 
 const StartActivityModalRoot = () => {
   const isVisible = useSelector(isStartActivityModalVisible)
@@ -12,7 +14,7 @@ const StartActivityModalRoot = () => {
   }
   return (
     <Suspense fallback={null}>
-      <StartActivityModal/>
+      <StartActivityModal />
     </Suspense>
   )
 }
