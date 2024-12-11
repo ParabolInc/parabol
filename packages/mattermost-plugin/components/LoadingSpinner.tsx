@@ -13,9 +13,7 @@ const LoadingSpinner = ({text, style}: Props) => {
       style={style}
       data-testid='loadingSpinner'
     >
-      <span
-        className='fa fa-spinner fa-fw fa-pulse spinner'
-      />
+      <span className='fa fa-spinner fa-fw fa-pulse spinner' />
       {text}
     </span>
   )

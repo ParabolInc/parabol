@@ -13,7 +13,7 @@ const LinkTeamModalRoot = () => {
 
   return (
     <Suspense fallback={null}>
-      <LinkTeamModal/>
+      <LinkTeamModal />
     </Suspense>
   )
 }

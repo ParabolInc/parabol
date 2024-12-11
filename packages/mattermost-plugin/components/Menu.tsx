@@ -1,7 +1,5 @@
+import {DotsVerticalIcon} from '@mattermost/compass-icons/components'
 import {IconButton, Menu, MenuItem} from '@mui/material'
-import {
-  DotsVerticalIcon,
-} from '@mattermost/compass-icons/components'
 import React from 'react'
 
 type MenuOption = {
@@ -32,12 +30,12 @@ const MoreMenu = ({options}: Props) => {
         aria-haspopup='true'
         onClick={handleOpen}
       >
-        <DotsVerticalIcon/>
+        <DotsVerticalIcon />
       </IconButton>
       <Menu
         id='long-menu'
         MenuListProps={{
-          'aria-labelledby': 'long-button',
+          'aria-labelledby': 'long-button'
         }}
         anchorEl={anchorEl}
         open={open}
