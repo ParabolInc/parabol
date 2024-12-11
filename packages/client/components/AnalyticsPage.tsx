@@ -155,7 +155,9 @@ const AnalyticsPage = () => {
       window.localStorage.setItem(LocalStorageKey.EMAIL, email)
       safeIdentify(atmosphere.viewerId, email)
     }
-    cacheEmail().catch()
+    cacheEmail().catch(() => {
+      /*ignore*/
+    })
   }, [])
 
   useEffect(() => {

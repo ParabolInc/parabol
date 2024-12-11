@@ -33,7 +33,9 @@ export const useGotoPrev = (
     const {
       stage: {id: nextStageId}
     } = nextStageRes
-    gotoStageId(nextStageId).catch()
+    gotoStageId(nextStageId).catch(() => {
+      /*ignore*/
+    })
   }, [gotoStageId, meeting])
 }
 

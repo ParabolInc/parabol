@@ -29,7 +29,9 @@ const useAutoCheckIn = (meetingRef: useAutoCheckIn_meeting$key) => {
     const {id: meetingId, endedAt, viewerMeetingMember} = meeting
     const subscribeToMeeting = () => {
       if (atmosphere.registerQuery) {
-        atmosphere.registerQuery(queryKey, MeetingSubscription, {meetingId}, router).catch()
+        atmosphere.registerQuery(queryKey, MeetingSubscription, {meetingId}, router).catch(() => {
+          /*ignore*/
+        })
       }
     }
     if (viewerMeetingMember) {

@@ -41,7 +41,9 @@ const useSlackChannels = (
       availableChannels.unshift({...botChannel, name: '@Parabol'})
       setChannels(availableChannels)
     }
-    getChannels().catch()
+    getChannels().catch(() => {
+      /*ignore*/
+    })
     return () => {
       isMounted = false
     }

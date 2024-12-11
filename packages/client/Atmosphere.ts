@@ -217,7 +217,9 @@ export default class Atmosphere extends Environment {
             : value
         _next(nextObj)
       }
-      this.handleSubscribePromise(operation, variables, _cacheConfig, sink).catch()
+      this.handleSubscribePromise(operation, variables, _cacheConfig, sink).catch(() => {
+        /*ignore*/
+      })
     })
   }
 
@@ -297,7 +299,9 @@ export default class Atmosphere extends Environment {
     let data = request.id
     if (!__PRODUCTION__) {
       try {
-        const queryMap = await import('../../queryMap.json').catch()
+        const queryMap = await import('../../queryMap.json').catch(() => {
+          /*ignore*/
+        })
         data = queryMap[request.id as keyof typeof queryMap] as string
       } catch (e) {
         return

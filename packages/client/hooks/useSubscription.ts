@@ -15,7 +15,9 @@ const useSubscription = (
   const router = {history, location}
   useEffect(() => {
     if (atmosphere.registerQuery) {
-      atmosphere.registerQuery(queryKey, subscription, variables, router).catch()
+      atmosphere.registerQuery(queryKey, subscription, variables, router).catch(() => {
+        /*ignore*/
+      })
     }
     return () => {
       if (atmosphere.scheduleUnregisterQuery) {

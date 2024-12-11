@@ -38,7 +38,9 @@ export const useGotoNext = (
       const {stage} = nextStageRes
       const {id: nextStageId} = stage
       if (!options.isHotkey || currentStageRes.stage.isComplete) {
-        gotoStageId(nextStageId).catch()
+        gotoStageId(nextStageId).catch(() => {
+          /*ignore*/
+        })
       } else if (options.isHotkey) {
         ref.current && ref.current.focus()
       }

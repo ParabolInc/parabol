@@ -177,7 +177,9 @@ const imageStyle = {
 const ExportToCSV = (props: Props) => {
   useEffect(() => {
     if (props.urlAction === 'csv') {
-      exportToCSV().catch()
+      exportToCSV().catch(() => {
+        /*ignore*/
+      })
     }
   }, [props.urlAction])
   const atmosphere = useAtmosphere()
