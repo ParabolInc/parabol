@@ -2,6 +2,7 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import getKysely from '../../../../postgres/getKysely'
 import updateGroupTitle from '../updateGroupTitle'
 import {GQLContext} from './../../../graphql'
+import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const addReflectionToGroup = async (
   reflectionId: string,
@@ -14,10 +15,9 @@ const addReflectionToGroup = async (
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
-  const [reflectionGroup, oldReflectionGroup] = await Promise.all([
-    dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
-    dataLoader.get('retroReflectionGroups').loadNonNull(oldReflectionGroupId)
-  ])
+  const reflectionGroup = await dataLoader
+    .get('retroReflectionGroups')
+    .loadNonNull(reflectionGroupId)
   dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
   dataLoader.get('retroReflectionGroups').clear(oldReflectionGroupId)
 
@@ -56,17 +56,11 @@ const addReflectionToGroup = async (
       .get('retroReflectionsByGroupId')
       .load(oldReflectionGroupId)
 
-    const oldGroupHasSingleReflectionCustomTitle =
-      oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
-    const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
-
-    if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
-      // Edge case of dragging a single card with a custom group name on a group with smart name
-      await pg
-        .updateTable('RetroReflectionGroup')
-        .set({title: oldReflectionGroup.title, smartTitle: smartTitle ?? ''})
-        .where('id', '=', reflectionGroupId)
-        .execute()
+    if (smartTitle) {
+      // smartTitle exists when autogrouping or resetting groups
+      await updateSmartGroupTitle(reflectionGroupId, smartTitle)
+      reflectionGroup.smartTitle = smartTitle
+      reflectionGroup.title = smartTitle
     } else {
       const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       await updateGroupTitle({
