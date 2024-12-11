@@ -14,36 +14,36 @@ import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+import DiscussionThreadInput from './DiscussionThreadInput'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
-import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   comment: ThreadedCommentBase_comment$key
-  children?: ReactNode // the replies, listed here to avoid a circular reference
   discussion: ThreadedCommentBase_discussion$key
-  isReply?: boolean // this comment is a reply & should be indented
-
   viewer: ThreadedCommentBase_viewer$key
+  repliesList?: ReactNode
+  getMaxSortOrder: () => number
 }
 
 const ThreadedCommentBase = (props: Props) => {
   const {
     allowedThreadables,
-    children,
     comment: commentRef,
     discussion: discussionRef,
-    viewer: viewerRef
+    viewer: viewerRef,
+    repliesList,
+    getMaxSortOrder
   } = props
   const viewer = useFragment(
     graphql`
       fragment ThreadedCommentBase_viewer on User {
-        ...ThreadedItemReply_viewer
+        ...DiscussionThreadInput_viewer
         billingTier
       }
     `,
@@ -53,11 +53,13 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_discussion on Discussion {
         ...DiscussionThreadInput_discussion
-        ...ThreadedItemReply_discussion
         id
         meetingId
         teamId
         discussionTopicId
+        replyingTo {
+          id
+        }
       }
     `,
     discussionRef
@@ -66,7 +68,6 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_comment on Comment {
         ...ThreadedCommentHeader_comment
-        ...ThreadedItemReply_threadable
         id
         isActive
         content
@@ -80,21 +81,13 @@ const ThreadedCommentBase = (props: Props) => {
           id
           isViewerReactji
         }
-        threadParentId
       }
     `,
     commentRef
   )
-  const isReply = !!props.isReply
-  const {id: discussionId, meetingId, teamId, discussionTopicId} = discussion
-  const {
-    id: commentId,
-    content,
-    createdByUserNullable,
-    isActive,
-    reactjis,
-    threadParentId
-  } = comment
+  const isReply = !repliesList
+  const {id: discussionId, meetingId, teamId, discussionTopicId, replyingTo} = discussion
+  const {id: commentId, content, createdByUserNullable, isActive, reactjis} = comment
   const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -143,7 +136,6 @@ const ThreadedCommentBase = (props: Props) => {
     commitLocalUpdate(atmosphere, (store) => {
       const comment = store.get(commentId)
       if (!comment) return
-      comment.setValue(threadParentId, 'threadParentId')
       store
         .getRoot()
         .getLinkedRecord('viewer')
@@ -193,13 +185,16 @@ const ThreadedCommentBase = (props: Props) => {
             onReply={onReply}
           />
         )}
-        {children}
-        <ThreadedItemReply
-          allowedThreadables={allowedThreadables}
-          discussion={discussion}
-          threadable={comment}
-          viewer={viewer}
-        />
+        {repliesList}
+        {replyingTo?.id === comment.id && (
+          <DiscussionThreadInput
+            allowedThreadables={allowedThreadables}
+            isReply
+            getMaxSortOrder={getMaxSortOrder}
+            discussion={discussion}
+            viewer={viewer}
+          />
+        )}
       </div>
     </ThreadedItemWrapper>
   )

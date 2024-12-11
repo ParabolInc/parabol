@@ -7,11 +7,11 @@ import {ThreadedTaskBase_task$key} from '~/__generated__/ThreadedTaskBase_task.g
 import {ThreadedTaskBase_viewer$key} from '~/__generated__/ThreadedTaskBase_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {PALETTE} from '~/styles/paletteV3'
+import DiscussionThreadInput from './DiscussionThreadInput'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import NullableTask from './NullableTask/NullableTask'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
-import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 import ThreadedReplyButton from './ThreadedReplyButton'
 
@@ -35,15 +35,17 @@ const StyledNullableTask = styled(NullableTask)({
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   task: ThreadedTaskBase_task$key
-  children?: ReactNode
+  repliesList?: ReactNode
   discussion: ThreadedTaskBase_discussion$key
   viewer: ThreadedTaskBase_viewer$key
+  getMaxSortOrder: () => number
 }
 
 const ThreadedTaskBase = (props: Props) => {
   const {
     allowedThreadables,
-    children,
+    repliesList,
+    getMaxSortOrder,
     discussion: discussionRef,
     task: taskRef,
     viewer: viewerRef
@@ -51,7 +53,7 @@ const ThreadedTaskBase = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment ThreadedTaskBase_viewer on User {
-        ...ThreadedItemReply_viewer
+        ...DiscussionThreadInput_viewer
       }
     `,
     viewerRef
@@ -59,7 +61,7 @@ const ThreadedTaskBase = (props: Props) => {
   const discussion = useFragment(
     graphql`
       fragment ThreadedTaskBase_discussion on Discussion {
-        ...ThreadedItemReply_discussion
+        ...DiscussionThreadInput_discussion
         id
         replyingTo {
           id
@@ -72,7 +74,6 @@ const ThreadedTaskBase = (props: Props) => {
     graphql`
       fragment ThreadedTaskBase_task on Task {
         ...NullableTask_task
-        ...ThreadedItemReply_threadable
         id
         content
         createdByUser {
@@ -85,7 +86,7 @@ const ThreadedTaskBase = (props: Props) => {
     taskRef
   )
   const {id: discussionId, replyingTo} = discussion
-  const isReply = !!replyingTo
+  const isReply = !repliesList
   const {id: taskId, createdByUser, threadParentId} = task
   const {picture, preferredName} = createdByUser
   const atmosphere = useAtmosphere()
@@ -108,13 +109,16 @@ const ThreadedTaskBase = (props: Props) => {
           </HeaderActions>
         </ThreadedItemHeaderDescription>
         <StyledNullableTask area='meeting' task={task} />
-        {children}
-        <ThreadedItemReply
-          allowedThreadables={allowedThreadables}
-          discussion={discussion}
-          threadable={task}
-          viewer={viewer}
-        />
+        {repliesList}
+        {replyingTo?.id === task.id && (
+          <DiscussionThreadInput
+            allowedThreadables={allowedThreadables}
+            isReply
+            discussion={discussion}
+            viewer={viewer}
+            getMaxSortOrder={getMaxSortOrder}
+          />
+        )}
       </BodyCol>
     </ThreadedItemWrapper>
   )

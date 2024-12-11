@@ -51,7 +51,6 @@ interface Props {
   getMaxSortOrder: () => number
   discussion: DiscussionThreadInput_discussion$key
   viewer: DiscussionThreadInput_viewer$key
-  threadParentId?: string
   isReply?: boolean
   isDisabled?: boolean
   isCreatingPoll?: boolean
@@ -62,7 +61,6 @@ const DiscussionThreadInput = (props: Props) => {
     allowedThreadables,
     getMaxSortOrder,
     discussion: discussionRef,
-    threadParentId,
     viewer: viewerRef,
     isCreatingPoll
   } = props
@@ -186,6 +184,7 @@ const DiscussionThreadInput = (props: Props) => {
 
   const addComment = (rawContent: string) => {
     submitMutation()
+    const threadParentId = replyingTo?.threadParentId ?? replyingTo?.id
     const comment = {
       content: rawContent,
       isAnonymous: isAnonymousComment,
@@ -234,6 +233,7 @@ const DiscussionThreadInput = (props: Props) => {
 
   const addTask = () => {
     const {viewerId} = atmosphere
+    const threadParentId = replyingTo?.threadParentId ?? replyingTo?.id
     const newTask = {
       status: 'active',
       sortOrder: dndNoise(),

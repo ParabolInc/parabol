@@ -60,13 +60,17 @@ export const ThreadedItem = (props: Props) => {
         __typename
         replies {
           ...ThreadedRepliesList_replies
+          threadSortOrder
         }
       }
     `,
     threadableRef
   )
   const {__typename, replies} = threadable
-  const child = (
+  const getMaxSortOrder = () => {
+    return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
+  }
+  const repliesList = (
     <ThreadedRepliesList
       allowedThreadables={allowedThreadables}
       discussion={discussion}
@@ -81,9 +85,9 @@ export const ThreadedItem = (props: Props) => {
         task={threadable}
         discussion={discussion}
         viewer={viewer}
-      >
-        {child}
-      </ThreadedTaskBase>
+        repliesList={repliesList}
+        getMaxSortOrder={getMaxSortOrder}
+      />
     )
   }
   if (__typename === 'Poll') {
@@ -101,9 +105,9 @@ export const ThreadedItem = (props: Props) => {
       comment={threadable}
       discussion={discussion}
       viewer={viewer}
-    >
-      {child}
-    </ThreadedCommentBase>
+      repliesList={repliesList}
+      getMaxSortOrder={getMaxSortOrder}
+    />
   )
 }
 

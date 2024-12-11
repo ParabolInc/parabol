@@ -46,16 +46,17 @@ const ThreadedRepliesList = (props: Props) => {
         ...ThreadedCommentBase_comment
         __typename
         id
+        threadSortOrder
       }
     `,
     repliesRef
   )
-  // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
-  // not sure why this is required addComment and createTask but request replies
-  if (!replies) return null
+  const getMaxSortOrder = () => {
+    return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
+  }
   return (
     <>
-      {replies.map((reply) => {
+      {replies?.map((reply) => {
         const {__typename, id} = reply
         return __typename === 'Task' ? (
           <ThreadedTaskBase
@@ -64,15 +65,16 @@ const ThreadedRepliesList = (props: Props) => {
             task={reply}
             discussion={discussion}
             viewer={viewer}
+            getMaxSortOrder={getMaxSortOrder}
           />
         ) : (
           <ThreadedCommentBase
             allowedThreadables={allowedThreadables}
             key={id}
-            isReply
             comment={reply}
             discussion={discussion}
             viewer={viewer}
+            getMaxSortOrder={getMaxSortOrder}
           />
         )
       })}
