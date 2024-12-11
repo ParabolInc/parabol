@@ -60,7 +60,9 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
     const teamMemberStage =
       sidebarPhase && sidebarPhase.stages.find((stage) => stage.teamMemberId === teamMemberId)
     const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || ''
-    gotoStageId(teamMemberStageId).catch()
+    gotoStageId(teamMemberStageId).catch(() => {
+      /*ignore*/
+    })
     handleMenuClick()
   }
   const atmosphere = useAtmosphere()

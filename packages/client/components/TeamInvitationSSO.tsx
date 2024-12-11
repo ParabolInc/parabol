@@ -37,7 +37,9 @@ const TeamInvitationSSO = (props: Props) => {
       emitGA4SignUpEvent(ga4Args)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     }
-    loginWithSAML().catch()
+    loginWithSAML().catch(() => {
+      /*ignore*/
+    })
   }, [])
   useDocumentTitle('SSO Login | Team Invitation', 'Team Invitation')
 

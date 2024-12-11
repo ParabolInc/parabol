@@ -26,7 +26,9 @@ const AuthProvider = () => {
         setError('Error logging in')
       }
     }
-    callOpener().catch()
+    callOpener().catch(() => {
+      /*ignore*/
+    })
   }, [])
 
   if (!error) return null

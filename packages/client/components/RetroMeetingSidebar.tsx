@@ -116,7 +116,9 @@ const RetroMeetingSidebar = (props: Props) => {
               confirmingPhase === phaseType
             ) {
               setConfirmingPhase(null)
-              gotoStageId(itemStageId).catch()
+              gotoStageId(itemStageId).catch(() => {
+                /*ignore*/
+              })
               handleMenuClick()
             } else {
               setConfirmingPhase(phaseType)
