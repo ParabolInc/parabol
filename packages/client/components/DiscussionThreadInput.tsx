@@ -127,11 +127,18 @@ const DiscussionThreadInput = (props: Props) => {
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
   const allowPolls = false // TODO: change to "allowedThreadables.includes('poll')" once feature is done
+  const onSubmit = () => {
+    if (submitting || !editor || editor.isEmpty) return
+    ensureNotCommenting()
+    addComment(JSON.stringify(editor.getJSON()))
+  }
   const {editor, setLinkState, linkState} = useTipTapCommentEditor(initialContent, {
     readOnly: !allowComments,
     atmosphere,
     teamId,
-    placeholder: isAnonymousComment ? 'Comment anonymously' : 'Comment publicly'
+    placeholder: isAnonymousComment ? 'Comment anonymously' : 'Comment publicly',
+    onEnter: onSubmit,
+    onEscape: clearReplyingTo
   })
 
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
@@ -225,12 +232,6 @@ const DiscussionThreadInput = (props: Props) => {
     setIsCommenting(false)
   }
 
-  const onSubmit = () => {
-    if (submitting || !editor || editor.isEmpty) return
-    ensureNotCommenting()
-    addComment(JSON.stringify(editor.getJSON()))
-  }
-
   const addTask = () => {
     const {viewerId} = atmosphere
     const threadParentId = replyingTo?.threadParentId ?? replyingTo?.id
@@ -257,8 +258,8 @@ const DiscussionThreadInput = (props: Props) => {
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   const inputBottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    // containerRef.current?.scrollIntoView({behavior: 'smooth', block: 'center'})
-  })
+    containerRef.current?.scrollIntoView({behavior: 'smooth', block: 'center'})
+  }, [])
   const containerRef = useRef<HTMLDivElement>(null)
   useClickAway(containerRef, clearReplyingTo)
   if (!editor) return null
@@ -279,16 +280,6 @@ const DiscussionThreadInput = (props: Props) => {
             setLinkState={setLinkState}
             onBlur={ensureNotCommenting}
             onFocus={ensureCommenting}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                onSubmit()
-              }
-              if (isReply && e.key === 'Escape') {
-                e.preventDefault()
-                clearReplyingTo()
-              }
-            }}
           />
         </div>
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />

@@ -1,11 +1,12 @@
+import {generateText, type JSONContent} from '@tiptap/core'
+import {generateJSON} from '@tiptap/html'
 import {Insertable} from 'kysely'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
-import extractTextFromDraftString from '../../../../client/utils/draftjs/extractTextFromDraftString'
 import DiscussStage from '../../../database/types/DiscussStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {Comment} from '../../../postgres/types/pg'
-import {convertHtmlToTaskContent} from '../../../utils/draftjs/convertHtmlToTaskContent'
 import {DataLoaderWorker} from '../../graphql'
 
 export const buildCommentContentBlock = (
@@ -14,15 +15,15 @@ export const buildCommentContentBlock = (
   explainerText?: string
 ) => {
   const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
-  const html = `<html><body>${explainerBlock}<p><b>${title}</b></p><p>${content}</p></body></html>`
-  return convertHtmlToTaskContent(html)
+  const html = `${explainerBlock}<p><b>${title}</b></p><p>${content}</p>`
+  return generateJSON(html, serverTipTapExtensions) as JSONContent
 }
 
-export const createAIComment = (discussionId: string, content: string, order: number) => ({
+export const createAIComment = (discussionId: string, jsonContent: JSONContent, order: number) => ({
   id: generateUID(),
   discussionId,
-  content,
-  plaintextContent: extractTextFromDraftString(content),
+  content: JSON.stringify(jsonContent),
+  plaintextContent: generateText(jsonContent, serverTipTapExtensions),
   threadSortOrder: order,
   createdBy: PARABOL_AI_USER_ID
 })

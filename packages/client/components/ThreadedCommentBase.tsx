@@ -91,10 +91,27 @@ const ThreadedCommentBase = (props: Props) => {
   const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
+  const onSubmit = () => {
+    if (submitting || isTempId(commentId) || !editor || editor.isEmpty) return
+    editor.setEditable(false)
+    const nextContent = JSON.stringify(editor.getJSON())
+    if (content === nextContent) return
+    submitMutation()
+    UpdateCommentContentMutation(
+      atmosphere,
+      {commentId, content: nextContent, meetingId},
+      {onError, onCompleted}
+    )
+  }
   const {editor, setLinkState, linkState} = useTipTapCommentEditor(content, {
     readOnly: true,
     atmosphere,
-    teamId
+    teamId,
+    onEnter: onSubmit,
+    onEscape: () => {
+      editor?.commands.setContent(JSON.parse(content))
+      editor?.setEditable(false)
+    }
   })
   const editComment = () => {
     if (!editor) return
@@ -144,18 +161,6 @@ const ThreadedCommentBase = (props: Props) => {
     })
   }
 
-  const onSubmit = () => {
-    if (submitting || isTempId(commentId) || !editor || editor.isEmpty) return
-    editor.setEditable(false)
-    const nextContent = JSON.stringify(editor.getJSON())
-    if (content === nextContent) return
-    submitMutation()
-    UpdateCommentContentMutation(
-      atmosphere,
-      {commentId, content: nextContent, meetingId},
-      {onError, onCompleted}
-    )
-  }
   if (!editor) return null
   return (
     <ThreadedItemWrapper isReply={isReply}>

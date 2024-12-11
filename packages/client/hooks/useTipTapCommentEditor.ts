@@ -1,6 +1,6 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
-import {useEditor} from '@tiptap/react'
+import {Extension, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useRef, useState} from 'react'
 import Atmosphere from '../Atmosphere'
@@ -13,6 +13,10 @@ import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
 import {useTipTapEditorContent} from './useTipTapEditorContent'
 
+const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
+  return !!obj
+}
+
 export const useTipTapCommentEditor = (
   content: string,
   options: {
@@ -20,9 +24,11 @@ export const useTipTapCommentEditor = (
     teamId?: string
     readOnly?: boolean
     placeholder?: string
+    onEnter?: () => void
+    onEscape?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, placeholder} = options
+  const {atmosphere, teamId, readOnly, placeholder, onEnter, onEscape} = options
   const [contentJSON, editorRef] = useTipTapEditorContent(content)
   const [linkState, setLinkState] = useState<LinkMenuState>(null)
   const placeholderRef = useRef(placeholder)
@@ -50,8 +56,25 @@ export const useTipTapCommentEditor = (
           popover: {
             setLinkState
           }
-        })
-      ],
+        }),
+        onEnter &&
+          onEscape &&
+          Extension.create({
+            name: 'commentKeyboardShortcuts',
+            addKeyboardShortcuts(this) {
+              return {
+                Enter: () => {
+                  onEnter()
+                  return true
+                },
+                Escape: () => {
+                  onEscape()
+                  return true
+                }
+              }
+            }
+          })
+      ].filter(isValid),
       editable: !readOnly,
       autofocus: true,
       onCreate: ({editor}) => {

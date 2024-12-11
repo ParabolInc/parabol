@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useLayoutEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {ThreadedCommentFooter_reactjis$key} from '~/__generated__/ThreadedCommentFooter_reactjis.graphql'
 import {PALETTE} from '~/styles/paletteV3'
@@ -37,9 +38,19 @@ const ThreadedCommentFooter = (props: Props) => {
     reactjisRef
   )
   const hasReactjis = reactjis.length > 0
+  const hadReactjisRef = useRef(hasReactjis)
+  const ref = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    if (hasReactjis && !hadReactjisRef.current) {
+      hadReactjisRef.current = true
+      ref.current?.scrollIntoView({behavior: 'smooth', block: 'end'})
+    } else if (!hasReactjis) {
+      hadReactjisRef.current = false
+    }
+  }, [hasReactjis])
   if (!hasReactjis) return null
   return (
-    <FooterActions>
+    <FooterActions ref={ref}>
       <ThreadedReplyButton onReply={onReply} />
       <StyledReactjis reactjis={reactjis} onToggle={onToggleReactji} />
     </FooterActions>
