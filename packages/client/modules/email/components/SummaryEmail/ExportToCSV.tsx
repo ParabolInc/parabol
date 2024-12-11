@@ -8,7 +8,6 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {isDraftJSContent} from '../../../../shared/tiptap/isDraftJSContent'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import {CorsOptions} from '../../../../types/cors'
@@ -248,9 +247,7 @@ const ExportToCSV = (props: Props) => {
         const {createdAt, createdByUser, __typename: type, replies, content} = node
         const author = createdByUser?.preferredName ?? 'Anonymous'
         const contentJSON = JSON.parse(content!)
-        const discussionThread = isDraftJSContent(contentJSON)
-          ? extractTextFromDraftString(content!)
-          : generateText(contentJSON, serverTipTapExtensions)
+        const discussionThread = generateText(contentJSON, serverTipTapExtensions)
         rows.push({
           reflectionGroup: title!,
           author,

@@ -54,11 +54,10 @@ interface Props {
   isAgenda: boolean
   task: TaskFooter_task$key
   useTaskChild: UseTaskChild
-  dataCy: string
 }
 
 const TaskFooter = (props: Props) => {
-  const {area, cardIsActive, toggleTag, isAgenda, task: taskRef, useTaskChild, dataCy} = props
+  const {area, cardIsActive, toggleTag, isAgenda, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment TaskFooter_task on Task {
@@ -131,7 +130,6 @@ const TaskFooter = (props: Props) => {
             <ButtonSpacer />
           ) : (
             <TaskFooterIntegrateToggle
-              dataCy={`${dataCy}-integration`}
               mutationProps={mutationProps}
               task={task}
               useTaskChild={useTaskChild}
@@ -143,7 +141,6 @@ const TaskFooter = (props: Props) => {
             </CardButton>
           ) : (
             <TaskFooterTagMenuToggle
-              dataCy={`${dataCy}-tag`}
               area={area}
               toggleTag={toggleTag}
               isAgenda={isAgenda}

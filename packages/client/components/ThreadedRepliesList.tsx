@@ -5,15 +5,12 @@ import {ThreadedRepliesList_replies$key} from '~/__generated__/ThreadedRepliesLi
 import {ThreadedRepliesList_viewer$key} from '~/__generated__/ThreadedRepliesList_viewer.graphql'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
-import {SetReplyMention} from './ThreadedItem'
 import ThreadedTaskBase from './ThreadedTaskBase'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   discussion: ThreadedRepliesList_discussion$key
   replies: ThreadedRepliesList_replies$key
-  setReplyMention: SetReplyMention
-  dataCy: string
   viewer: ThreadedRepliesList_viewer$key
 }
 
@@ -21,9 +18,7 @@ const ThreadedRepliesList = (props: Props) => {
   const {
     allowedThreadables,
     replies: repliesRef,
-    setReplyMention,
     discussion: discussionRef,
-    dataCy,
     viewer: viewerRef
   } = props
   const viewer = useFragment(
@@ -51,38 +46,35 @@ const ThreadedRepliesList = (props: Props) => {
         ...ThreadedCommentBase_comment
         __typename
         id
+        threadSortOrder
       }
     `,
     repliesRef
   )
-  // https://sentry.io/organizations/parabol/issues/1569570376/?project=107196&query=is%3Aunresolved
-  // not sure why this is required addComment and createTask but request replies
-  if (!replies) return null
+  const getMaxSortOrder = () => {
+    return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
+  }
   return (
     <>
-      {replies.map((reply) => {
+      {replies?.map((reply) => {
         const {__typename, id} = reply
         return __typename === 'Task' ? (
           <ThreadedTaskBase
             allowedThreadables={allowedThreadables}
-            dataCy={`${dataCy}-task`}
             key={id}
-            isReply
             task={reply}
             discussion={discussion}
-            setReplyMention={setReplyMention}
             viewer={viewer}
+            getMaxSortOrder={getMaxSortOrder}
           />
         ) : (
           <ThreadedCommentBase
             allowedThreadables={allowedThreadables}
-            dataCy={`${dataCy}-comment`}
             key={id}
-            isReply
             comment={reply}
             discussion={discussion}
-            setReplyMention={setReplyMention}
             viewer={viewer}
+            getMaxSortOrder={getMaxSortOrder}
           />
         )
       })}
