@@ -5,6 +5,7 @@ import sendToSentry from './sendToSentry'
 const SERVER_SECRET_BUFFER = Buffer.from(process.env.SERVER_SECRET!, 'base64')
 
 const getVerifiedAuthToken = (jwt: string | undefined | null, ignoreExp?: boolean) => {
+  console.log('GEORG jwt', jwt)
   if (!jwt) {
     return {} as AuthToken
   }

@@ -10,8 +10,10 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     viewer: {
       type: new GraphQLNonNull(User),
-      resolve: async (_source: unknown, _args: unknown, {authToken, dataLoader}: GQLContext) => {
+      resolve: async (_source: unknown, _args: unknown, context: GQLContext) => {
+        const {authToken, dataLoader} = context
         const viewerId = getUserId(authToken)
+        console.log('GEORG context', context)
         if (!viewerId) throw new Error('401 Please log in')
         return dataLoader.get('users').load(viewerId)
       }
