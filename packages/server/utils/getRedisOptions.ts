@@ -1,6 +1,7 @@
 import {readFileSync} from 'fs'
 import path from 'node:path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
+import {Logger} from './Logger'
 
 const getAbsPath = (maybeRelativePath: string) => {
   if (path.isAbsolute(maybeRelativePath)) return maybeRelativePath
@@ -54,7 +55,7 @@ export const getRedisOptions = () => {
   const mode = getMode(tls, password)
   // Keep logs quiet if using default
   if (mode !== 'Unsecure') {
-    console.log(`Redis mode: ${mode}`)
+    Logger.log(`Redis mode: ${mode}`)
   }
   return {tls, password}
 }

@@ -4,6 +4,7 @@ import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseQueryParams} from '~/utils/useQueryParameterParser'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
+import safeRemoveNodeFromUnknownConn from '../../utils/relay/safeRemoveNodeFromUnknownConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
 import getScopingTasksConn from '../connections/getScopingTasksConn'
 import getTeamTasksConn from '../connections/getTeamTasksConn'
@@ -53,12 +54,18 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
   if (isNowArchived) {
     safeRemoveNodeFromConn(taskId, teamConn)
     safeRemoveNodeFromConn(taskId, userConn)
+    safeRemoveNodeFromUnknownConn(store, viewerId, 'ParabolScopingSearchResults_tasks', taskId)
     archiveConns.forEach((archiveConn) => safePutNodeInConn(archiveConn, task, store))
   } else {
     archiveConns.forEach((archiveConn) => safeRemoveNodeFromConn(taskId, archiveConn))
     safePutNodeInConn(teamConn, task, store)
     safePutNodeInConn(threadConn, task, store, 'threadSortOrder', true)
     addNodeToArray(task, meeting, 'tasks', 'createdAt')
+    /* updates parabol search query if task is created from a sprint poker meeting
+     * should also implement updating parabol search query if task is created elsewhere?
+     */
+    const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
+    safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
     if (userConn) {
       const isPrivate = isTaskPrivate(tags)
       const ownedByViewer = task.getValue('userId') === viewerId
@@ -69,11 +76,6 @@ const handleUpsertTask = (task: Task | null, store: RecordSourceSelectorProxy<an
       }
     }
   }
-  /* updates parabol search query if task is created from a sprint poker meeting
-   * should also implement updating parabol search query if task is created elsewhere?
-   */
-  const scopingTasksConn = getScopingTasksConn(store, meetingId, viewer, [teamId])
-  safePutNodeInConn(scopingTasksConn, task, store, 'updatedAt', false)
 }
 
 const handleUpsertTasks = pluralizeHandler(handleUpsertTask)

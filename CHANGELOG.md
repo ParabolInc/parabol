@@ -5,6 +5,51 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.11.0](https://github.com/ParabolInc/parabol/compare/v8.10.0...v8.11.0) (2024-12-10)
+
+
+### Added
+
+* improve reflection group titles ([#10546](https://github.com/ParabolInc/parabol/issues/10546)) ([cfde723](https://github.com/ParabolInc/parabol/commit/cfde72340fff8f27e85f40a4ede9f968dc055988))
+
+
+### Fixed
+
+* prevent navigation if already at local stage ([#10575](https://github.com/ParabolInc/parabol/issues/10575)) ([1478bd2](https://github.com/ParabolInc/parabol/commit/1478bd27cf651fa445ca9f555ee306646ba4d643))
+
+
+### Changed
+
+* Catch server health checker errors ([#10566](https://github.com/ParabolInc/parabol/issues/10566)) ([4a1f511](https://github.com/ParabolInc/parabol/commit/4a1f5111e2915ef215dc1e62946a0021a1512591))
+* **deps:** bump @eslint/plugin-kit from 0.2.2 to 0.2.3 ([#10495](https://github.com/ParabolInc/parabol/issues/10495)) ([75ff869](https://github.com/ParabolInc/parabol/commit/75ff86923f3b00b8e94357e0d8c8cd44a14e78ca))
+* **deps:** bump marked from 0.8.2 to 13.0.3 ([#10529](https://github.com/ParabolInc/parabol/issues/10529)) ([f56f1b4](https://github.com/ParabolInc/parabol/commit/f56f1b4c15db74dd2ee233666d6850ec5cc903df))
+* **deps:** bump nanoid from 3.3.7 to 3.3.8 ([#10565](https://github.com/ParabolInc/parabol/issues/10565)) ([f096c47](https://github.com/ParabolInc/parabol/commit/f096c472f2f58da9d8fb4aa4635b164bd0d35ec4))
+* Migration checkInQuestion to tiptap format ([#10542](https://github.com/ParabolInc/parabol/issues/10542)) ([4815669](https://github.com/ParabolInc/parabol/commit/481566998efb34b13b23d39a5626cee72e1b2772))
+
+## [8.10.0](https://github.com/ParabolInc/parabol/compare/v8.9.0...v8.10.0) (2024-12-10)
+
+
+### Added
+
+* GitLab voting to time estimate, weight or label ([#10549](https://github.com/ParabolInc/parabol/issues/10549)) ([1cdbf0b](https://github.com/ParabolInc/parabol/commit/1cdbf0b7b30da60b53cddf76076070b2a9a4edab))
+
+
+### Fixed
+
+* tasks in poker scoping ([#10563](https://github.com/ParabolInc/parabol/issues/10563)) ([d2b1ef8](https://github.com/ParabolInc/parabol/commit/d2b1ef8d2253100e518b78d10ee9bd36da969878))
+
+## [8.9.0](https://github.com/ParabolInc/parabol/compare/v8.8.0...v8.9.0) (2024-12-09)
+
+
+### Added
+
+* **node:** upgrade to 20.18.1, latest stable in v20 ([#10558](https://github.com/ParabolInc/parabol/issues/10558)) ([6061003](https://github.com/ParabolInc/parabol/commit/60610038cd30532e36330582a96454de5dbca122))
+
+
+### Changed
+
+* Use Logger instead of console ([#10557](https://github.com/ParabolInc/parabol/issues/10557)) ([31ce19b](https://github.com/ParabolInc/parabol/commit/31ce19bbfc21da7edb2b0d57df126a0d21f85930))
+
 ## [8.8.0](https://github.com/ParabolInc/parabol/compare/v8.7.1...v8.8.0) (2024-12-03)
 
 

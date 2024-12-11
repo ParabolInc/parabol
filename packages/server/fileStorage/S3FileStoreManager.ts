@@ -4,6 +4,7 @@ import type {RetryErrorInfo, StandardRetryToken} from '@smithy/types'
 import {StandardRetryStrategy} from '@smithy/util-retry'
 import mime from 'mime-types'
 import path from 'path'
+import {Logger} from '../utils/Logger'
 import FileStoreManager, {FileAssetDir} from './FileStoreManager'
 
 class CloudflareRetry extends StandardRetryStrategy {
@@ -14,7 +15,7 @@ class CloudflareRetry extends StandardRetryStrategy {
     const status = errorInfo.error?.$response?.statusCode
     if (status && status >= 520 && status < 530) {
       const date = errorInfo.error?.$response?.headers?.date
-      console.log('Retrying after Cloudflare error', {
+      Logger.log('Retrying after Cloudflare error', {
         status,
         date: date && new Date(date).toISOString(),
         path: errorInfo.error?.$response?.body?.req?.path
