@@ -25,7 +25,6 @@ type State = {
 
 const fetchFunction = (state: State) => (params: RequestParameters, variables: Variables) => {
   const {serverUrl, authToken} = state
-  console.log('GEORG fetchFunction', serverUrl, authToken, params, variables)
   const response = fetch(
     serverUrl,
     Client4.getOptions({

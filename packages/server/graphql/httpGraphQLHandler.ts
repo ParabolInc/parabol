@@ -41,7 +41,6 @@ const httpGraphQLBodyHandler = async (
     res.writeStatus('200').end()
   }
   if (body.type !== 'start' && body.type !== 'stop') {
-    console.log('GEORG no body.type', body)
     res.writeStatus('415').end()
     return
   }
@@ -78,22 +77,15 @@ const httpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
     contentTypeHeader.startsWith(key)
   )
   if (!shortCt) {
-    console.log('GEORG no shortCt', shortCt, req)
     res.writeStatus('415').end()
     return
   }
-  console.log('GEORG authToken')
-  console.log('GEORG headers')
-  req.forEach((key, value) => {
-    console.log('GEORG', key, value)
-  })
   const parseFn = contentTypeBodyParserMap[shortCt as keyof typeof contentTypeBodyParserMap]
   const body = await parseFn({res, contentType: contentTypeHeader})
   if (!body) {
     res.writeStatus('422').end()
     return
   }
-  console.log('GEORG body', body)
   await httpGraphQLBodyHandler(res, body, authToken, connectionId, ip)
 })
 

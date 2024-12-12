@@ -14,7 +14,6 @@ export const fetchLinkedTeamIds = createAsyncThunk(
       throw new Error(`Failed to fetch linked teams: ${res.statusText}`)
     }
     const teamIds = await res.json()
-    console.log('GEORG teamIds', teamIds)
     return {channel, teamIds}
   }
 )

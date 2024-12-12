@@ -78,13 +78,11 @@ export function linkedTeamIds(
 
   return {
     read: () => {
-      console.log('GEORG read', current?.teamIds)
       return current?.teamIds ?? null
     },
     subscribe: (callback: () => void) => {
       return store.subscribe(() => {
         const newValue = selectLinkedTeamIds(store.getState(), channel)
-        console.log('GEORG newValue', newValue, current, newValue !== current)
         if (newValue !== current) {
           current = newValue
           callback()

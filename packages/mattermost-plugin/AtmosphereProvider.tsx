@@ -24,7 +24,6 @@ export default function AtmosphereProvider({environment, children}: Props) {
       })
     )
     const body = await response.json()
-    console.log('GEORG response', body)
     environment.state.authToken = body.authToken
   }, [serverUrl])
 

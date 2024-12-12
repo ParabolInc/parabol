@@ -14,10 +14,8 @@ import ModalRoot from './components/ModalRoot'
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
   const environment = createEnvironment(serverUrl, store)
-  console.log('GEORG environment', environment)
   //registry.registerRootComponent(StartActivityModal)
   /*registry.registerSlashCommandWillBePostedHook((message: string) => {
-    console.log('GEORG message', message)
     return message
   })
    */

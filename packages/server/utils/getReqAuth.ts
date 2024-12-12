@@ -7,7 +7,6 @@ const getReqAuth = (req: HttpRequest) => {
   // Our cloud offering has an nginx config that copies x-applicaitn-authorization to the authorization header
   // However, local & private deployments may not do that
   const authHeader = req.getHeader('x-application-authorization') || req.getHeader('authorization')
-  console.log('GEORG authHeader', authHeader)
   const token = authHeader.slice(7)
   return getVerifiedAuthToken(token)
 }
