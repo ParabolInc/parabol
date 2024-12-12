@@ -97,8 +97,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const signInWithSSOOnly = isSSOAuthEnabled && !isInternalAuthEnabled
   const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
   const [pendingDomain, setPendingDomain] = useState('')
-  const [ssoURL, setSSOURL] = useState('')
-  const [ssoDomain, setSSODomain] = useState('')
+  const [ssoDomain, setSSODomain] = useState<string>()
   const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -131,9 +130,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       const domain = getSSODomainFromEmail(email)
       if (domain && domain !== pendingDomain) {
         setPendingDomain(domain)
+        // Fetch the url to verify SSO is configured for this domain.
+        // Don't cache it as we need a fresh one for login
         const url = await getSSOUrl(atmosphere, email)
-        setSSODomain(domain)
-        setSSOURL(url || '')
+        setSSODomain(url ? domain : undefined)
       }
     }
   }
@@ -148,8 +148,8 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
 
   const tryLoginWithSSO = async (email: string) => {
     const domain = getSSODomainFromEmail(email)!
-    const validSSOURL = domain === ssoDomain && ssoURL
-    const isProbablySSO = isSSO || !fields.password.value || validSSOURL
+    const hadValidSSOURL = domain === ssoDomain
+    const isProbablySSO = isSSO || !fields.password.value || hadValidSSOURL
     const top = getOffsetTop?.() || 56
     let optimisticPopup
     if (isProbablySSO) {
@@ -168,7 +168,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         getOAuthPopupFeatures({width: 385, height: 576, top})
       )
     }
-    const url = validSSOURL || (await getSSOUrl(atmosphere, email))
+    const url = await getSSOUrl(atmosphere, email)
     if (!url) {
       optimisticPopup?.close()
       return false
