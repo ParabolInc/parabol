@@ -49,7 +49,6 @@ const getSAMLURLFromEmail = async (
   const {id, metadata} = saml
   if (!metadata) return null
   const url = getSignOnURL(metadata, id)
-  console.log('GEORG SAML url', url)
   if (url instanceof Error) return null
   return urlWithRelayState(url, isInvited)
 }
