@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.12.1](https://github.com/ParabolInc/parabol/compare/v8.12.0...v8.12.1) (2024-12-12)
+
+
+### Fixed
+
+* add useEventCallback on keyboard shortcuts ([#10585](https://github.com/ParabolInc/parabol/issues/10585)) ([39e7ad1](https://github.com/ParabolInc/parabol/commit/39e7ad1e6515b737cc3248b553ba64677d01de77))
+
 ## [8.12.0](https://github.com/ParabolInc/parabol/compare/v8.11.0...v8.12.0) (2024-12-11)
 
 
