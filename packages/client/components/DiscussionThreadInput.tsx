@@ -259,7 +259,8 @@ const DiscussionThreadInput = (props: Props) => {
   const inputBottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     containerRef.current?.scrollIntoView({behavior: 'smooth', block: 'center'})
-  }, [])
+    editor?.commands.focus('end')
+  }, [discussionId])
   const containerRef = useRef<HTMLDivElement>(null)
   useClickAway(containerRef, clearReplyingTo)
   if (!editor) return null
@@ -285,7 +286,7 @@ const DiscussionThreadInput = (props: Props) => {
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
       {isActionsContainerVisible && (
-        <div className='flex items-center justify-center border-t-[1px] border-solid border-t-slate-200'>
+        <div className='flex items-center justify-center border-t-[1px] border-solid border-t-slate-200 py-1'>
           {allowTasks && <AddTaskButton onClick={addTask} disabled={isActionsContainerDisabled} />}
           {allowPolls && <AddPollButton onClick={addPoll} disabled={isActionsContainerDisabled} />}
         </div>
