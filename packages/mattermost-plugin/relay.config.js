@@ -3,12 +3,10 @@ const path = require('path')
 module.exports = {
   artifactDirectory: path.join(__dirname, '__generated__'),
   schemaExtensions: [path.join(__dirname, 'schemaExtensions')],
-  /*
   persistConfig: {
     url: 'http://localhost:2999',
     concurrency: 10
   },
- */
   language: 'typescript',
   src: path.join(__dirname),
   customScalarTypes: {
