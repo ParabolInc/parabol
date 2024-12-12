@@ -9,6 +9,7 @@ import useMutationProps from '~/hooks/useMutationProps'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutation'
 import isTempId from '~/utils/relay/isTempId'
+import useEventCallback from '../hooks/useEventCallback'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
@@ -91,7 +92,7 @@ const ThreadedCommentBase = (props: Props) => {
   const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const onSubmit = () => {
+  const onSubmit = useEventCallback(() => {
     if (submitting || isTempId(commentId) || !editor || editor.isEmpty) return
     editor.setEditable(false)
     const nextContent = JSON.stringify(editor.getJSON())
@@ -102,16 +103,18 @@ const ThreadedCommentBase = (props: Props) => {
       {commentId, content: nextContent, meetingId},
       {onError, onCompleted}
     )
-  }
+  })
+  const onEscape = useEventCallback(() => {
+    editor?.commands.setContent(JSON.parse(content))
+    editor?.setEditable(false)
+  })
+
   const {editor, setLinkState, linkState} = useTipTapCommentEditor(content, {
     readOnly: true,
     atmosphere,
     teamId,
     onEnter: onSubmit,
-    onEscape: () => {
-      editor?.commands.setContent(JSON.parse(content))
-      editor?.setEditable(false)
-    }
+    onEscape
   })
   const editComment = () => {
     if (!editor) return

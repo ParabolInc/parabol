@@ -11,6 +11,7 @@ import {SORT_STEP} from '~/utils/constants'
 import dndNoise from '~/utils/dndNoise'
 import {useBeforeUnload} from '../hooks/useBeforeUnload'
 import useClickAway from '../hooks/useClickAway'
+import useEventCallback from '../hooks/useEventCallback'
 import useInitialLocalState from '../hooks/useInitialLocalState'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
@@ -107,8 +108,7 @@ const DiscussionThreadInput = (props: Props) => {
   } = discussion
   const {id: teamId} = team
   const atmosphere = useAtmosphere()
-
-  const clearReplyingTo = () => {
+  const clearReplyingTo = useEventCallback(() => {
     if (!isReply) return
     commitLocalUpdate(atmosphere, (store) => {
       store
@@ -117,7 +117,7 @@ const DiscussionThreadInput = (props: Props) => {
         ?.getLinkedRecord('discussion', {id: discussionId})
         ?.setValue(null, 'replyingTo')
     })
-  }
+  })
   const [initialContent] = useState(() => {
     return replyingTo?.createdByUser && !!replyingTo?.threadParentId
       ? JSON.stringify(makeReplyTo(replyingTo.createdByUser))
@@ -127,11 +127,11 @@ const DiscussionThreadInput = (props: Props) => {
   const allowTasks = allowedThreadables.includes('task')
   const allowComments = allowedThreadables.includes('comment')
   const allowPolls = false // TODO: change to "allowedThreadables.includes('poll')" once feature is done
-  const onSubmit = () => {
+  const onSubmit = useEventCallback(() => {
     if (submitting || !editor || editor.isEmpty) return
     ensureNotCommenting()
     addComment(JSON.stringify(editor.getJSON()))
-  }
+  })
   const {editor, setLinkState, linkState} = useTipTapCommentEditor(initialContent, {
     readOnly: !allowComments,
     atmosphere,
