@@ -11,11 +11,11 @@ import {DataLoaderWorker} from '../../graphql'
 
 export const buildCommentContentBlock = (
   title: string,
-  content: string,
+  contentHTML: string,
   explainerText?: string
 ) => {
   const explainerBlock = explainerText ? `<i>${explainerText}</i><br>` : ''
-  const html = `${explainerBlock}<p><b>${title}</b></p><p>${content}</p>`
+  const html = `${explainerBlock}<p><b>${title}</b></p>${contentHTML}`
   return generateJSON(html, serverTipTapExtensions) as JSONContent
 }
 
@@ -42,7 +42,10 @@ const addAIGeneratedContentToThreads = async (
     if (group.discussionPromptQuestion) {
       const topicSummaryComment = createAIComment(
         discussionId,
-        buildCommentContentBlock('🤖 Discussion Question', group.discussionPromptQuestion),
+        buildCommentContentBlock(
+          '🤖 Discussion Question',
+          `<p>${group.discussionPromptQuestion}</p>`
+        ),
         1
       )
       comments.push(topicSummaryComment)
