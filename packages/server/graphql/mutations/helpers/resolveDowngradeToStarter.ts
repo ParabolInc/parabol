@@ -38,7 +38,7 @@ const resolveDowngradeToStarter = async (
       .execute(),
     pg
       .updateTable('SAML')
-      .set({metadata: null, url: null, lastUpdatedBy: user.id})
+      .set({metadata: null, metadataURL: null, lastUpdatedBy: user.id})
       .where('orgId', '=', orgId)
       .execute(),
     updateTeamByOrgId(
