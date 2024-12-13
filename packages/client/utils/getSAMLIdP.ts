@@ -9,7 +9,9 @@ const query = graphql`
 `
 
 const getSAMLIdP = async (atmosphere: Atmosphere, variables: getSAMLIdPQuery['variables']) => {
-  const res = await atmosphere.fetchQuery<getSAMLIdPQuery>(query, variables)
+  const res = await atmosphere.fetchQuery<getSAMLIdPQuery>(query, variables, {
+    fetchPolicy: 'network-only'
+  })
   return res?.SAMLIdP ?? null
 }
 
