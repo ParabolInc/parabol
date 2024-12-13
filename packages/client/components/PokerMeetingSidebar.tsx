@@ -92,7 +92,9 @@ const PokerMeetingSidebar = (props: Props) => {
           } = itemStage || {}
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
           const handleClick = () => {
-            gotoStageId(itemStageId).catch()
+            gotoStageId(itemStageId).catch(() => {
+              /*ignore*/
+            })
             handleMenuClick()
           }
           const estimatePhase = phases.find((phase) => {

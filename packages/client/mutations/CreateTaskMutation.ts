@@ -32,7 +32,6 @@ graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
     task {
       ...CompleteTaskFrag @relay(mask: false)
-      ...ThreadedItemReply_threadable
       ...ThreadedItem_threadable
       discussionId
       threadSortOrder

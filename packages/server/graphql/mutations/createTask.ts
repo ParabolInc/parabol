@@ -235,7 +235,9 @@ export default {
     handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
       operationId,
       mutatorId
-    }).catch()
+    }).catch(() => {
+      /*ignore*/
+    })
 
     const meeting = meetingId ? await dataLoader.get('newMeetings').load(meetingId) : undefined
     const taskProperties = {

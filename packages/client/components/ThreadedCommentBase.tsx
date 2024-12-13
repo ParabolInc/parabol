@@ -1,71 +1,50 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw, EditorState} from 'draft-js'
-import {ReactNode, useEffect, useRef, useState} from 'react'
+import {ReactNode, useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ThreadedCommentBase_comment$key} from '~/__generated__/ThreadedCommentBase_comment.graphql'
 import {ThreadedCommentBase_discussion$key} from '~/__generated__/ThreadedCommentBase_discussion.graphql'
 import {ThreadedCommentBase_viewer$key} from '~/__generated__/ThreadedCommentBase_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutation'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
-import isAndroid from '~/utils/draftjs/isAndroid'
 import isTempId from '~/utils/relay/isTempId'
+import useEventCallback from '../hooks/useEventCallback'
+import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+import DiscussionThreadInput from './DiscussionThreadInput'
 import {DiscussionThreadables} from './DiscussionThreadList'
-import CommentEditor from './TaskEditor/CommentEditor'
+import {TipTapEditor} from './promptResponse/TipTapEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
-import {ReplyMention, SetReplyMention} from './ThreadedItem'
-import ThreadedItemReply from './ThreadedItemReply'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
-import useFocusedReply from './useFocusedReply'
-
-const BodyCol = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingBottom: 8,
-  width: 'calc(100% - 56px)'
-})
-
-const EditorWrapper = styled('div')({
-  paddingRight: 16
-})
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   comment: ThreadedCommentBase_comment$key
-  children?: ReactNode // the replies, listed here to avoid a circular reference
   discussion: ThreadedCommentBase_discussion$key
-  isReply?: boolean // this comment is a reply & should be indented
-  setReplyMention: SetReplyMention
-  replyMention?: ReplyMention
-  dataCy: string
   viewer: ThreadedCommentBase_viewer$key
+  repliesList?: ReactNode
+  getMaxSortOrder: () => number
 }
 
 const ThreadedCommentBase = (props: Props) => {
   const {
     allowedThreadables,
-    children,
     comment: commentRef,
-    replyMention,
-    setReplyMention,
     discussion: discussionRef,
-    dataCy,
-    viewer: viewerRef
+    viewer: viewerRef,
+    repliesList,
+    getMaxSortOrder
   } = props
   const viewer = useFragment(
     graphql`
       fragment ThreadedCommentBase_viewer on User {
-        ...ThreadedItemReply_viewer
+        ...DiscussionThreadInput_viewer
         billingTier
       }
     `,
@@ -75,12 +54,13 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_discussion on Discussion {
         ...DiscussionThreadInput_discussion
-        ...ThreadedItemReply_discussion
         id
         meetingId
-        replyingToCommentId
         teamId
         discussionTopicId
+        replyingTo {
+          id
+        }
       }
     `,
     discussionRef
@@ -89,7 +69,6 @@ const ThreadedCommentBase = (props: Props) => {
     graphql`
       fragment ThreadedCommentBase_comment on Comment {
         ...ThreadedCommentHeader_comment
-        ...ThreadedItemReply_threadable
         id
         isActive
         content
@@ -103,37 +82,44 @@ const ThreadedCommentBase = (props: Props) => {
           id
           isViewerReactji
         }
-        threadParentId
       }
     `,
     commentRef
   )
-  const isReply = !!props.isReply
-  const {id: discussionId, meetingId, replyingToCommentId, teamId, discussionTopicId} = discussion
-  const {
-    id: commentId,
-    content,
-    createdByUserNullable,
-    isActive,
-    reactjis,
-    threadParentId
-  } = comment
-  const ownerId = threadParentId || commentId
+  const isReply = !repliesList
+  const {id: discussionId, meetingId, teamId, discussionTopicId, replyingTo} = discussion
+  const {id: commentId, content, createdByUserNullable, isActive, reactjis} = comment
   const picture = isActive ? (createdByUserNullable?.picture ?? anonymousAvatar) : deletedAvatar
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
-  const [editorState, setEditorState] = useEditorState(content)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
-  const ref = useRef<HTMLDivElement>(null)
-  const replyEditorRef = useRef<HTMLTextAreaElement>(null)
-  const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
-  useFocusedReply(ownerId, replyingToCommentId, ref, replyEditorRef)
+  const onSubmit = useEventCallback(() => {
+    if (submitting || isTempId(commentId) || !editor || editor.isEmpty) return
+    editor.setEditable(false)
+    const nextContent = JSON.stringify(editor.getJSON())
+    if (content === nextContent) return
+    submitMutation()
+    UpdateCommentContentMutation(
+      atmosphere,
+      {commentId, content: nextContent, meetingId},
+      {onError, onCompleted}
+    )
+  })
+  const onEscape = useEventCallback(() => {
+    editor?.commands.setContent(JSON.parse(content))
+    editor?.setEditable(false)
+  })
+
+  const {editor, setLinkState, linkState} = useTipTapCommentEditor(content, {
+    readOnly: true,
+    atmosphere,
+    teamId,
+    onEnter: onSubmit,
+    onEscape
+  })
   const editComment = () => {
-    setIsEditing(true)
-    setImmediate(() => {
-      setEditorState(EditorState.moveFocusToEnd(editorState))
-      editorRef.current?.focus()
-    })
+    if (!editor) return
+    editor.setEditable(true)
+    editor.commands.focus()
   }
 
   useEffect(() => {
@@ -164,65 +150,26 @@ const ThreadedCommentBase = (props: Props) => {
       },
       {onCompleted, onError}
     )
-    // when the reactjis move to the bottom & increase the height, make sure they're visible
-    setImmediate(() => ref.current?.scrollIntoView({behavior: 'smooth'}))
   }
 
   const onReply = () => {
-    if (createdByUserNullable && threadParentId) {
-      const {id: userId, preferredName} = createdByUserNullable
-      setReplyMention({userId, preferredName})
-    }
-
     commitLocalUpdate(atmosphere, (store) => {
+      const comment = store.get(commentId)
+      if (!comment) return
       store
         .getRoot()
         .getLinkedRecord('viewer')
         ?.getLinkedRecord('discussion', {id: discussionId})
-        ?.setValue(ownerId, 'replyingToCommentId')
+        ?.setLinkedRecord(comment, 'replyingTo')
     })
   }
 
-  const ensureHasText = (value: string) => value.trim().length
-
-  const onSubmit = () => {
-    if (submitting || isTempId(commentId)) return
-    const editorEl = editorRef.current
-    if (isAndroid) {
-      if (!editorEl || editorEl.type !== 'textarea') return
-      const {value} = editorEl
-      if (!ensureHasText(value)) return
-      const initialContentState = editorState.getCurrentContent()
-      const initialText = initialContentState.getPlainText()
-      setIsEditing(false)
-      if (initialText === value) return
-      submitMutation()
-      UpdateCommentContentMutation(
-        atmosphere,
-        {commentId, content: convertToTaskContent(value), meetingId},
-        {onError, onCompleted}
-      )
-      return
-    }
-    const contentState = editorState.getCurrentContent()
-    if (!ensureHasText(contentState.getPlainText())) return
-    const nextContent = JSON.stringify(convertToRaw(contentState))
-    setIsEditing(false)
-    if (content === nextContent) return
-    submitMutation()
-    UpdateCommentContentMutation(
-      atmosphere,
-      {commentId, content: nextContent, meetingId},
-      {onError, onCompleted}
-    )
-  }
-
+  if (!editor) return null
   return (
-    <ThreadedItemWrapper data-cy={`${dataCy}-wrapper`} isReply={isReply} ref={ref}>
+    <ThreadedItemWrapper isReply={isReply}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
-      <BodyCol>
+      <div className='flex w-[calc(100%-56px)] flex-col pb-2'>
         <ThreadedCommentHeader
-          dataCy={dataCy}
           comment={comment}
           editComment={editComment}
           meetingId={meetingId}
@@ -230,19 +177,14 @@ const ThreadedCommentBase = (props: Props) => {
           onReply={onReply}
         />
         {isActive && (
-          <EditorWrapper>
-            <CommentEditor
-              dataCy={`${dataCy}`}
-              editorRef={editorRef}
-              teamId={teamId}
-              editorState={editorState}
-              setEditorState={setEditorState}
+          <div className='pr-4'>
+            <TipTapEditor
+              editor={editor}
+              setLinkState={setLinkState}
+              linkState={linkState}
               onBlur={onSubmit}
-              onSubmit={onSubmit}
-              readOnly={!isEditing}
-              placeholder={'Edit your comment'}
             />
-          </EditorWrapper>
+          </div>
         )}
         {isActive && (
           <ThreadedCommentFooter
@@ -251,18 +193,17 @@ const ThreadedCommentBase = (props: Props) => {
             onReply={onReply}
           />
         )}
-        {children}
-        <ThreadedItemReply
-          allowedThreadables={allowedThreadables}
-          dataCy={`${dataCy}-reply`}
-          discussion={discussion}
-          editorRef={replyEditorRef}
-          replyMention={replyMention}
-          setReplyMention={setReplyMention}
-          threadable={comment}
-          viewer={viewer}
-        />
-      </BodyCol>
+        {repliesList}
+        {replyingTo?.id === comment.id && (
+          <DiscussionThreadInput
+            allowedThreadables={allowedThreadables}
+            isReply
+            getMaxSortOrder={getMaxSortOrder}
+            discussion={discussion}
+            viewer={viewer}
+          />
+        )}
+      </div>
     </ThreadedItemWrapper>
   )
 }

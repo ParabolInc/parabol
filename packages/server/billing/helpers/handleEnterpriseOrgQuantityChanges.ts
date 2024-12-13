@@ -25,8 +25,10 @@ const sendEnterpriseOverageEvent = async (
       ({role}) => role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)
     )!
     const {id: userId} = billingLeaderOrgUser
-    const user = await dataLoader.get('users').loadNonNull(userId)
-    analytics.enterpriseOverUserLimit(user, orgId)
+    const user = await dataLoader.get('users').load(userId)
+    if (user) {
+      analytics.enterpriseOverUserLimit(user, orgId)
+    }
   }
 }
 
@@ -37,7 +39,9 @@ const handleEnterpriseOrgQuantityChanges = async (
   const enterpriseOrgs = paidOrgs.filter((org) => org.tier === 'enterprise')
   if (enterpriseOrgs.length === 0) return
   for (const org of enterpriseOrgs) {
-    sendEnterpriseOverageEvent(org, dataLoader).catch()
+    sendEnterpriseOverageEvent(org, dataLoader).catch(() => {
+      /*ignore*/
+    })
   }
 }
 

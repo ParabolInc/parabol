@@ -53,8 +53,6 @@ const DiscussionThread = (props: Props) => {
   } = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
-  const listRef = useRef<HTMLDivElement>(null)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
   const ref = useRef<HTMLDivElement>(null)
   const data = usePreloadedQuery<DiscussionThreadQuery>(
     graphql`
@@ -66,7 +64,9 @@ const DiscussionThread = (props: Props) => {
             ...DiscussionThreadInput_discussion
             ...DiscussionThreadList_discussion
             id
-            replyingToCommentId
+            replyingTo {
+              id
+            }
             commentors {
               id
               preferredName
@@ -108,7 +108,7 @@ const DiscussionThread = (props: Props) => {
     return <div>No discussion found!</div>
   }
 
-  const {replyingToCommentId, thread} = discussion
+  const {replyingTo, thread} = discussion
   const edges = thread?.edges ?? [] // should never happen, but Terry reported it in demo. likely relay error
   const threadables = edges.map(({node}) => node)
   const getMaxSortOrder = () => {
@@ -119,13 +119,10 @@ const DiscussionThread = (props: Props) => {
   return (
     <Wrapper isExpanded={isExpanded} width={width} ref={ref}>
       <DiscussionThreadList
-        dataCy='discuss-thread-list'
         discussion={discussion}
         allowedThreadables={allowedThreadables}
         preferredNames={preferredNames}
         threadables={threadables}
-        ref={listRef}
-        editorRef={editorRef}
         viewer={viewer}
         header={header}
         emptyState={emptyState}
@@ -135,9 +132,7 @@ const DiscussionThread = (props: Props) => {
       {!showTranscription && (
         <DiscussionThreadInput
           allowedThreadables={allowedThreadables}
-          dataCy='discuss-input'
-          editorRef={editorRef}
-          isDisabled={!!replyingToCommentId}
+          isDisabled={!!replyingTo?.id}
           getMaxSortOrder={getMaxSortOrder}
           discussion={discussion}
           viewer={viewer}

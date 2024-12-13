@@ -176,10 +176,6 @@
 }
 
 /** Customize TipTap */
-.ProseMirror {
-  min-height: 40px;
-  line-height: 1.25;
-}
 
 .ProseMirror :is(ul, ol) {
   list-style-position: outside;

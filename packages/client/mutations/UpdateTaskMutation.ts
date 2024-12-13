@@ -13,7 +13,6 @@ import {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
-import updateProxyRecord from '../utils/relay/updateProxyRecord'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
@@ -107,23 +106,18 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
       updateTaskTaskUpdater(payload, {atmosphere, store: store as any})
     },
     optimisticUpdater: (store) => {
-      const {id, content, userId} = updatedTask
+      const {id, content, userId, status, sortOrder} = updatedTask
       const task = store.get(id)
       if (!task) return
-      const now = new Date()
-      const optimisticTask = {
-        // do not update content because that will cause the editor to rebuild itself
-        // we only want a rebuild if someone else changes the content
-        id,
-        userId,
-        updatedAt: now.toJSON()
-      }
-      updateProxyRecord(task, optimisticTask)
+      status && task.setValue(status, 'status')
+      sortOrder && task.setValue(sortOrder, 'sortOrder')
       if (userId) {
         task.setValue(userId, 'userId')
         task.setLinkedRecord(store.get(userId)!, 'user')
       }
       if (content) {
+        // do not update content because that will cause the editor to rebuild itself
+        // we only want a rebuild if someone else changes the content
         const contentJSON = JSON.parse(content)
         const nextTags = getTagsFromTipTapTask(contentJSON)
         task.setValue(nextTags, 'tags')

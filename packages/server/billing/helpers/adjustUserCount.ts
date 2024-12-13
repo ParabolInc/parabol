@@ -149,6 +149,8 @@ export default async function adjustUserCount(
   const organizations = await dataLoader.get('organizations').loadMany(orgIds)
   const paidOrgs = organizations.filter(isValid).filter((org) => org.stripeSubscriptionId)
 
-  handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch()
+  handleEnterpriseOrgQuantityChanges(paidOrgs, dataLoader).catch(() => {
+    /*ignore*/
+  })
   handleTeamOrgQuantityChanges(paidOrgs).catch(Logger.error)
 }

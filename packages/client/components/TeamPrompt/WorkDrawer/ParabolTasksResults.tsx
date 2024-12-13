@@ -55,7 +55,6 @@ const ParabolTasksResults = (props: Props) => {
           <NullableTask
             className='w-full rounded border border-solid border-slate-100'
             key={task.id}
-            dataCy='foo'
             area={'userDash'}
             task={task}
           />
