@@ -76,11 +76,7 @@ export const useTipTapCommentEditor = (
           })
       ].filter(isValid),
       editable: !readOnly,
-      autofocus: true,
-      onCreate: ({editor}) => {
-        // Focus the editor and move the cursor to the end of the content
-        editor.commands.focus('end')
-      }
+      autofocus: true
     },
     [readOnly]
   )

@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.12.2](https://github.com/ParabolInc/parabol/compare/v8.12.1...v8.12.2) (2024-12-12)
+
+
+### Fixed
+
+* Discussion bugs ([#10596](https://github.com/ParabolInc/parabol/issues/10596)) ([5114948](https://github.com/ParabolInc/parabol/commit/511494880a06adc99f93c2b4f762f2082a29842b))
+
+## [8.12.1](https://github.com/ParabolInc/parabol/compare/v8.12.0...v8.12.1) (2024-12-12)
+
+
+### Fixed
+
+* add useEventCallback on keyboard shortcuts ([#10585](https://github.com/ParabolInc/parabol/issues/10585)) ([39e7ad1](https://github.com/ParabolInc/parabol/commit/39e7ad1e6515b737cc3248b553ba64677d01de77))
+
+## [8.12.0](https://github.com/ParabolInc/parabol/compare/v8.11.0...v8.12.0) (2024-12-11)
+
+
+### Added
+
+* move Comment to TipTap ([#10576](https://github.com/ParabolInc/parabol/issues/10576)) ([2fa20b1](https://github.com/ParabolInc/parabol/commit/2fa20b164907f3849fc10dff74de35f732791fb7))
+
+
+### Changed
+
+* Properly ignore supposedly ignored errors ([#10580](https://github.com/ParabolInc/parabol/issues/10580)) ([9572815](https://github.com/ParabolInc/parabol/commit/9572815497b2e6f9c74cf0f7d4dd6502153c6fe3))
+
 ## [8.11.0](https://github.com/ParabolInc/parabol/compare/v8.10.0...v8.11.0) (2024-12-10)
 
 
