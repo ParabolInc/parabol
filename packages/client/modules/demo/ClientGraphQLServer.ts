@@ -164,14 +164,6 @@ const makeReflectionGroupThread = () => ({
   }
 })
 
-const BOT_GROUP_TITLES: Record<string, string> = {
-  botGroup1: 'Empower Junior Staff',
-  botGroup2: 'Documentation Practices',
-  botGroup4: 'Chat Communication Issues',
-  botGroup5: 'Unproductive Discussions',
-  botGroup6: 'Meeting Overload'
-}
-
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   atmosphere: LocalAtmosphere
   db: RetroDemoDB
@@ -1587,26 +1579,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(SubscriptionChannel.MEETING, data)
       }
       return {updateCommentContent: data}
-    },
-    async updateGroupTitle(reflectionGroup: DemoReflectionGroup, reflections: DemoReflection[]) {
-      // Use hardcoded title for bot groups, otherwise use first reflection's content
-      const title =
-        BOT_GROUP_TITLES[reflectionGroup.id] ??
-        reflections[0]?.plaintextContent?.slice(0, 20) ??
-        'New Group'
-
-      reflectionGroup.smartTitle = title
-      if (!reflectionGroup.titleIsUserDefined) {
-        reflectionGroup.title = title
-      }
-
-      const data = {
-        __typename: 'UpdateReflectionGroupTitlePayload',
-        meetingId: RetroDemo.MEETING_ID,
-        reflectionGroupId: reflectionGroup.id,
-        title
-      }
-      this.emit(SubscriptionChannel.MEETING, data)
     }
   } as const
 
