@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.12.4](https://github.com/ParabolInc/parabol/compare/v8.12.3...v8.12.4) (2024-12-16)
+
+
+### Fixed
+
+* Parabol poker task overwrites, ignore prototypes for equality check on tiptap ([#10609](https://github.com/ParabolInc/parabol/issues/10609)) ([7a93bfc](https://github.com/ParabolInc/parabol/commit/7a93bfc7c50e195dcb2d1cfa186bed8b11781baa))
+
 ## [8.12.3](https://github.com/ParabolInc/parabol/compare/v8.12.2...v8.12.3) (2024-12-13)
 
 
