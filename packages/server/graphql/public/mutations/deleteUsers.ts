@@ -7,6 +7,7 @@ import {
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
+import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import {GQLContext} from '../../graphql'
 import {markUserSoftDeleted} from '../../mutations/deleteUser'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
@@ -58,22 +59,31 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
     usersToDelete.map(async (userToDelete) => {
       if (!userToDelete) return false
 
-      const userOrgUsers = await dataLoader.get('organizationUsersByUserId').load(userToDelete.id)
-      const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(userToDelete.id)
+      const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userToDelete.id)
+      const teamMembers = await dataLoader.get('teamMembersByUserId').load(userToDelete.id)
 
-      // Check org-level permissions
-      const hasOrgPermission = userOrgUsers.some((userOrgUser) => {
-        const viewerOrgPermission = viewerOrgPermissions.find((p) => p.orgId === userOrgUser.orgId)
-        return (
-          viewerOrgPermission &&
-          (viewerOrgPermission.isOrgAdmin || viewerOrgPermission.isBillingLeader)
-        )
-      })
+      // Check org-level permissions and domain ownership
+      const hasOrgPermission = await Promise.all(
+        orgUsers.map(async (orgUser) => {
+          const viewerOrgPermission = viewerOrgPermissions.find((p) => p.orgId === orgUser.orgId)
+          if (
+            !viewerOrgPermission ||
+            !(viewerOrgPermission.isOrgAdmin || viewerOrgPermission.isBillingLeader)
+          ) {
+            return false
+          }
 
-      if (hasOrgPermission) return true
+          // Check if org owns the user's email domain
+          const organization = await dataLoader.get('organizations').loadNonNull(orgUser.orgId)
+          const userDomain = getDomainFromEmail(userToDelete.email)
+          return organization.activeDomain === userDomain
+        })
+      )
+
+      if (hasOrgPermission.some(Boolean)) return true
 
       // Check team-level permissions
-      const hasTeamPermission = userTeamMembers.some((userTeamMember) =>
+      const hasTeamPermission = teamMembers.some((userTeamMember) =>
         viewerTeamLeadPermissions.has(userTeamMember.teamId)
       )
 
