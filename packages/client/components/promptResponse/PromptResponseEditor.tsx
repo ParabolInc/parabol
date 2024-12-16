@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
-import {Editor as EditorState} from '@tiptap/core'
+import {Editor} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import {JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import areEqual from 'fbjs/lib/areEqual'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
@@ -40,7 +40,7 @@ interface Props {
   autoFocus?: boolean
   teamId: string
   content: JSONContent | null
-  handleSubmit?: (editor: EditorState) => void
+  handleSubmit?: (editor: Editor) => void
   readOnly: boolean
   placeholder?: string
   draftStorageKey?: string
@@ -74,31 +74,29 @@ const PromptResponseEditor = (props: Props) => {
   )
 
   const onUpdate = useCallback(
-    ({editor: editorState}: {editor: EditorState}) => {
+    ({editor}: {editor: Editor}) => {
       setEditing(true)
       if (draftStorageKey) {
-        window.localStorage.setItem(draftStorageKey, JSON.stringify(editorState.getJSON()))
+        window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
       }
     },
     [setEditing, draftStorageKey]
   )
 
-  const onSubmit = useCallback(
-    (newEditorState: EditorState) => {
-      setEditing(false)
-      const newContent = newEditorState.getJSON()
+  const onSubmit = useCallback(() => {
+    if (!editor) return
+    setEditing(false)
+    const newContentJSON = editor.getJSON()
 
-      // to avoid creating an empty post on first blur
-      if (!content && newEditorState.isEmpty) return
+    // to avoid creating an empty post on first blur
+    if (!content && editor.isEmpty) return
 
-      if (areEqual(content, newContent)) return
+    if (isEqualWhenSerialized(content, newContentJSON)) return
 
-      handleSubmit?.(newEditorState)
-    },
-    [setEditing, content, handleSubmit]
-  )
+    handleSubmit?.(editor)
+  }, [setEditing, content, handleSubmit])
 
-  const onCancel = (editor: EditorState) => {
+  const onCancel = () => {
     setEditing(false)
     editor?.commands.setContent(content)
     if (draftStorageKey) {
@@ -146,7 +144,7 @@ const PromptResponseEditor = (props: Props) => {
     }
 
     const draftContent: JSONContent = JSON.parse(maybeDraft)
-    if (areEqual(content, draftContent)) return
+    if (isEqualWhenSerialized(content, draftContent)) return
 
     setEditing(true)
     editor?.commands.setContent(draftContent)
@@ -166,13 +164,13 @@ const PromptResponseEditor = (props: Props) => {
         // about it.
         <div className='flex items-center justify-end'>
           {!!content && isEditing && (
-            <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
+            <CancelButton onClick={() => onCancel()} size='medium'>
               Cancel
             </CancelButton>
           )}
           {(!content || isEditing) && (
             <SubmitButton
-              onClick={() => editor && onSubmit(editor)}
+              onClick={() => onSubmit()}
               size='medium'
               disabled={!editor || editor.isEmpty}
             >

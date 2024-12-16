@@ -13,6 +13,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {ParabolScopingSearchResultItem_task$key} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
+import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {Threshold} from '../types/constEnums'
 import Checkbox from './Checkbox'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
@@ -105,13 +106,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
       DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
       return
     }
-    const nextContent = JSON.stringify(editor.getJSON())
-    if (content === nextContent) {
-      return
-    }
+    const nextContentJSON = editor.getJSON()
+    if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
     const updatedTask = {
       id: serviceTaskId,
-      content: nextContent
+      content: JSON.stringify(nextContentJSON)
     }
     UpdateTaskMutation(atmosphere, {updatedTask}, {})
   }

@@ -16,6 +16,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import {useTipTapIcebreakerEditor} from '../../../../hooks/useTipTapIcebreakerEditor'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
+import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
 import {convertTipTapTaskContent} from '../../../../shared/tiptap/convertTipTapTaskContent'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
@@ -115,13 +116,17 @@ const NewCheckInQuestion = (props: Props) => {
     if (!editor) return
     const {isFocused} = editor
     if (!isFocused) {
-      const nextCheckInQuestion = JSON.stringify(editor.getJSON())
-      if (nextCheckInQuestion === checkInQuestion) return
+      const nextCheckInQuestionJSON = editor.getJSON()
+      if (
+        checkInQuestion &&
+        isEqualWhenSerialized(nextCheckInQuestionJSON, JSON.parse(checkInQuestion))
+      )
+        return
       UpdateNewCheckInQuestionMutation(
         atmosphere,
         {
           meetingId,
-          checkInQuestion: nextCheckInQuestion
+          checkInQuestion: JSON.stringify(nextCheckInQuestionJSON)
         },
         {onCompleted, onError}
       )
