@@ -14,8 +14,6 @@ import {AnyAction, Store} from '@reduxjs/toolkit'
 import {Client4} from 'mattermost-redux/client'
 import {GlobalState} from 'mattermost-redux/types/store'
 RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true
-//;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
-//;(RelayFeatureFlags as any).ENABLE_RELAY_RESOLVERS = false
 
 type State = {
   authToken: string | null
@@ -33,7 +31,6 @@ const fetchFunction = (state: State) => (params: RequestParameters, variables: V
         accept: 'application/json',
         'content-type': 'application/json',
         'x-application-authorization': authToken ? `Bearer ${authToken}` : ''
-        //'x-correlation-id': connectionId || '',
       },
       body: JSON.stringify({
         type: 'start',
