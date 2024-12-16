@@ -29,15 +29,14 @@ const AddPollLabel = styled('div')({
 
 interface Props {
   onClick: () => void
-  dataCy: string
   disabled?: boolean
 }
 
 const AddPollButton = (props: Props) => {
-  const {onClick, dataCy, disabled} = props
+  const {onClick, disabled} = props
 
   return (
-    <StyledPlainButton data-cy={`${dataCy}-add`} onClick={onClick} disabled={disabled}>
+    <StyledPlainButton onClick={onClick} disabled={disabled}>
       <AddPollIcon />
       <AddPollLabel>Add a poll</AddPollLabel>
     </StyledPlainButton>

@@ -148,7 +148,7 @@ test.describe('retrospective-demo / discuss page', () => {
       }
 
       for await (const comment of comments || []) {
-        await expect(page.locator(`[data-cy=comment-wrapper] :text('${comment}')`)).toBeVisible({
+        await expect(page.locator(`:text('${comment}')`)).toBeVisible({
           timeout: 30_000
         })
       }

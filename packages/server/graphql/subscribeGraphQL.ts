@@ -128,7 +128,9 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
   if (resubIdx !== -1) {
     // reinitialize the subscription
     connectionContext.availableResubs.splice(resubIdx, 1)
-    subscribeGraphQL({...req, hideErrors: true}).catch()
+    subscribeGraphQL({...req, hideErrors: true}).catch(() => {
+      /*ignore*/
+    })
   } else {
     sendGQLMessage(connectionContext, opId, 'complete', false)
   }

@@ -12,6 +12,7 @@ import {
   ConcreteRequest,
   Environment,
   FetchFunction,
+  FetchQueryFetchPolicy,
   GraphQLResponse,
   GraphQLTaggedNode,
   Network,
@@ -217,7 +218,9 @@ export default class Atmosphere extends Environment {
             : value
         _next(nextObj)
       }
-      this.handleSubscribePromise(operation, variables, _cacheConfig, sink).catch()
+      this.handleSubscribePromise(operation, variables, _cacheConfig, sink).catch(() => {
+        /*ignore*/
+      })
     })
   }
 
@@ -297,7 +300,9 @@ export default class Atmosphere extends Environment {
     let data = request.id
     if (!__PRODUCTION__) {
       try {
-        const queryMap = await import('../../queryMap.json').catch()
+        const queryMap = await import('../../queryMap.json').catch(() => {
+          /*ignore*/
+        })
         data = queryMap[request.id as keyof typeof queryMap] as string
       } catch (e) {
         return
@@ -336,13 +341,22 @@ export default class Atmosphere extends Environment {
 
   fetchQuery = async <T extends OperationType>(
     taggedNode: GraphQLTaggedNode,
-    variables: Variables = {}
+    variables: Variables = {},
+    cacheConfig?: {
+      networkCacheConfig?: CacheConfig
+      fetchPolicy?: FetchQueryFetchPolicy
+    }
   ) => {
     let res: T['response']
     try {
-      res = await fetchQuery<T>(this, taggedNode, variables, {
-        fetchPolicy: 'store-or-network'
-      }).toPromise()
+      res = await fetchQuery<T>(
+        this,
+        taggedNode,
+        variables,
+        cacheConfig ?? {
+          fetchPolicy: 'store-or-network'
+        }
+      ).toPromise()
     } catch (e) {
       return null
     }

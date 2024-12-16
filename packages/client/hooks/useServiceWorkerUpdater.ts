@@ -28,7 +28,9 @@ const useServiceWorkerUpdater = () => {
       })
     }
     if ('serviceWorker' in navigator) {
-      setFirstServiceWorker().catch()
+      setFirstServiceWorker().catch(() => {
+        /*ignore*/
+      })
       navigator.serviceWorker.addEventListener('controllerchange', onServiceWorkerChange)
       return () => {
         navigator.serviceWorker.removeEventListener('controllerchange', onServiceWorkerChange)

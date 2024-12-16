@@ -1,10 +1,11 @@
+import {generateText} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -40,10 +41,10 @@ const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
   }
 
   // VALIDATION
-  const normalizedContent = normalizeRawDraftJS(content)
+  const normalizedContent = convertToTipTap(content)
+  const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
 
   // RESOLUTION
-  const plaintextContent = extractTextFromDraftString(normalizedContent)
   await getKysely()
     .updateTable('Comment')
     .set({content: normalizedContent, plaintextContent})

@@ -17,7 +17,7 @@ type Discussion {
   createdAt: DateTime!
 
   """
-  The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId
+  The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId, teamMemberId
   """
   discussionTopicId: ID!
 
