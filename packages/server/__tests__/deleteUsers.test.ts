@@ -16,7 +16,7 @@ test('Delete users by email', async () => {
             }
           }
           ... on DeleteUsersSuccess {
-            success
+            deletedEmails
           }
         }
       }
@@ -29,7 +29,7 @@ test('Delete users by email', async () => {
   expect(deleteUsers).toMatchObject({
     data: {
       deleteUsers: {
-        success: true
+        deletedEmails: emails
       }
     }
   })
