@@ -1,4 +1,4 @@
-import {USER_EMAIL_LIMIT} from '../../../postgres/constants'
+import {USER_BATCH_DELETE_LIMIT} from '../../../postgres/constants'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {
@@ -18,11 +18,11 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
   {authToken, dataLoader}: GQLContext
 ) => {
   if (emails.length === 0) {
-    return {error: {message: 'Provide emails'}}
+    return {error: {message: 'No any emails were provided'}}
   }
 
-  if (emails.length > USER_EMAIL_LIMIT) {
-    return {error: {message: 'Cannot delete more than 100 users at once'}}
+  if (emails.length > USER_BATCH_DELETE_LIMIT) {
+    return {error: {message: `Cannot delete more than ${USER_BATCH_DELETE_LIMIT} users at once`}}
   }
 
   const su = isSuperUser(authToken)
@@ -90,12 +90,14 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
     }
   }
 
+  const deletedEmails = []
   for (const userToDelete of usersToDelete) {
     const deletedUserEmail = await softDeleteUser(userToDelete.id, dataLoader)
     await markUserSoftDeleted(userToDelete.id, deletedUserEmail, 'Mass user deletion')
+    deletedEmails.push(deletedUserEmail)
   }
 
-  return {success: true}
+  return {deletedEmails}
 }
 
 export default deleteUsers

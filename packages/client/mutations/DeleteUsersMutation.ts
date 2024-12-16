@@ -12,7 +12,7 @@ const mutation = graphql`
         }
       }
       ... on DeleteUsersSuccess {
-        success
+        deletedEmails
       }
     }
   }
