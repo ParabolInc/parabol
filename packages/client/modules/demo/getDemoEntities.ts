@@ -3,6 +3,18 @@ import {fetchQuery} from 'relay-runtime'
 import {getDemoEntitiesQuery} from '~/__generated__/getDemoEntitiesQuery.graphql'
 import Atmosphere from '../../Atmosphere'
 
+const BOT_GROUP_TITLES: Record<string, string> = {
+  botGroup1: 'Empower Junior Staff',
+  botGroup2: 'Documentation Practices',
+  botGroup4: 'Chat Communication Issues',
+  botGroup5: 'Unproductive Discussions',
+  botGroup6: 'Meeting Overload'
+}
+
+export const getDemoGroupTitle = (groupId: string, firstReflectionContent?: string) => {
+  return BOT_GROUP_TITLES[groupId] ?? firstReflectionContent ?? 'New Group'
+}
+
 const query = graphql`
   query getDemoEntitiesQuery($text: String!) {
     getDemoEntities(text: $text) {

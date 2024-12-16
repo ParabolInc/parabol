@@ -8,7 +8,7 @@ import {MutationResolvers} from '../../private/resolverTypes'
 
 const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   _source,
-  {domain, identityType, addLocal},
+  {domain, identityType, addLocal, sendEmail = true},
   {ip}
 ) => {
   // VALIDATION
@@ -44,7 +44,7 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
 
   await Promise.all(
     usersWithUpdatedIdentities.map(({identities, id: userId, email}) =>
-      processEmailPasswordReset(ip, email, identities, userId)
+      processEmailPasswordReset(ip, email, identities, userId, sendEmail)
     )
   )
 
