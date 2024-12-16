@@ -91,8 +91,7 @@ module.exports = {
       name: 'Mattermost Relay Compiler',
       script: 'yarn workspace parabol-mattermost-plugin relay-compiler',
       watch: [
-        'packages/mattermost-plugin/**/*.ts*',
-        'packages/mattermost-plugin/schemaExtensions/*.graphql',
+        'packages/mattermost-plugin/**/*.ts*'
       ],
       autorestart: false,
       instances: 1
