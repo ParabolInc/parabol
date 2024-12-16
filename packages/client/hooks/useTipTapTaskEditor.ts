@@ -19,9 +19,12 @@ export const useTipTapTaskEditor = (
     atmosphere?: Atmosphere
     teamId?: string
     readOnly?: boolean
+    // onBlur here vs. on the component means when the component mounts with new editor content
+    // (e.g. HeaderCard changes taskId) the onBlur won't fire, which is probably desireable
+    onBlur?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly} = options
+  const {atmosphere, teamId, readOnly, onBlur} = options
   const [contentJSON, editorRef] = useTipTapEditorContent(content)
   const [linkState, setLinkState] = useState<LinkMenuState>(null)
   editorRef.current = useEditor(
@@ -47,9 +50,10 @@ export const useTipTapTaskEditor = (
         })
       ],
       editable: !readOnly,
+      onBlur,
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0
     },
-    [contentJSON, readOnly]
+    [contentJSON, readOnly, onBlur]
   )
   return {editor: editorRef.current, linkState, setLinkState}
 }

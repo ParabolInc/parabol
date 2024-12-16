@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import areEqual from 'fbjs/lib/areEqual'
 import {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
@@ -14,6 +13,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
+import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
 
 const Wrapper = styled('div')({
@@ -85,11 +85,11 @@ const OutcomeCardContainer = memo((props: Props) => {
       DeleteTaskMutation(atmosphere, {taskId})
       return
     }
-    const nextContent = JSON.stringify(editor.getJSON())
-    if (areEqual(JSON.parse(content), editor.getJSON())) return
+    const nextContentJSON = editor.getJSON()
+    if (isEqualWhenSerialized(JSON.parse(content), nextContentJSON)) return
     const updatedTask = {
       id: taskId,
-      content: nextContent
+      content: JSON.stringify(nextContentJSON)
     }
     UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
   }
