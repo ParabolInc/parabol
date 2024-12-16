@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {EditorState} from 'draft-js'
 import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
@@ -13,7 +12,6 @@ import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import {Card} from '../../../../types/constEnums'
 import {CompletedHandler} from '../../../../types/relayMutations'
 import {USER_DASH} from '../../../../utils/constants'
-import removeContentTag from '../../../../utils/draftjs/removeContentTag'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
 import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
@@ -52,20 +50,18 @@ const AvatarBlock = styled('div')({
 interface Props {
   area: AreaEnum
   cardIsActive: boolean
-  editorState: EditorState
+  toggleTag: (tag: string) => void
   isAgenda: boolean
   task: TaskFooter_task$key
   useTaskChild: UseTaskChild
-  dataCy: string
 }
 
 const TaskFooter = (props: Props) => {
-  const {area, cardIsActive, editorState, isAgenda, task: taskRef, useTaskChild, dataCy} = props
+  const {area, cardIsActive, toggleTag, isAgenda, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment TaskFooter_task on Task {
         id
-        content
         error
         integration {
           __typename
@@ -105,7 +101,7 @@ const TaskFooter = (props: Props) => {
   }
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
-  const {content, id: taskId, error, integration, tags, userId} = task
+  const {id: taskId, error, integration, tags, userId} = task
   const isArchived = isTaskArchived(tags)
   const canAssignUser = !integration && !isArchived
   const canAssignTeam = !isArchived
@@ -134,23 +130,19 @@ const TaskFooter = (props: Props) => {
             <ButtonSpacer />
           ) : (
             <TaskFooterIntegrateToggle
-              dataCy={`${dataCy}-integration`}
               mutationProps={mutationProps}
               task={task}
               useTaskChild={useTaskChild}
             />
           )}
           {isArchived ? (
-            <CardButton
-              onClick={() => removeContentTag('archived', atmosphere, taskId, content, area)}
-            >
+            <CardButton onClick={() => toggleTag('archived')}>
               <IconLabel icon='reply' />
             </CardButton>
           ) : (
             <TaskFooterTagMenuToggle
-              dataCy={`${dataCy}-tag`}
               area={area}
-              editorState={editorState}
+              toggleTag={toggleTag}
               isAgenda={isAgenda}
               task={task}
               useTaskChild={useTaskChild}

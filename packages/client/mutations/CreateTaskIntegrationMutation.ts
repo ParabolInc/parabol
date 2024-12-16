@@ -1,12 +1,13 @@
+import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {stateToHTML} from 'draft-js-export-html'
 import {commitMutation} from 'react-relay'
 import {RecordSourceSelectorProxy} from 'relay-runtime'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
 import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {StandardMutation} from '../types/relayMutations'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import splitDraftContent from '../utils/draftjs/splitDraftContent'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
@@ -99,8 +100,8 @@ const jiraTaskIntegrationOptimisticUpdater = (
   if (!task) return
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
-  const {title: summary, contentState} = splitDraftContent(contentStr)
-  const descriptionHTML = stateToHTML(contentState)
+  const {title: summary, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
     summary,
     descriptionHTML,
@@ -127,8 +128,8 @@ const githubTaskIntegrationOptimisitcUpdater = (
   })
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
-  const {title, contentState} = splitDraftContent(contentStr)
-  const bodyHTML = stateToHTML(contentState)
+  const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
     title,
     bodyHTML,
@@ -153,8 +154,8 @@ const gitlabTaskIntegrationOptimisitcUpdater = (
   })
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
-  const {title, contentState} = splitDraftContent(contentStr)
-  const descriptionHtml = stateToHTML(contentState)
+  const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const descriptionHtml = generateHTML(bodyContent, serverTipTapExtensions)
   const webPath = `${fullPath}/-/issues/0`
   const optimisticIntegration = {
     title,
@@ -179,8 +180,8 @@ const jiraServerTaskIntegrationOptimisticUpdater = (
   if (!task) return
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
-  const {title: summary, contentState} = splitDraftContent(contentStr)
-  const descriptionHTML = stateToHTML(contentState)
+  const {title: summary, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
     summary,
     descriptionHTML,
@@ -201,8 +202,8 @@ const azureTaskIntegrationOptimisitcUpdater = (
   if (!task) return
   const contentStr = task.getValue('content') as string
   if (!contentStr) return
-  const {title, contentState} = splitDraftContent(contentStr)
-  const descriptionHTML = stateToHTML(contentState)
+  const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
   const optimisticIntegration = {
     id: '?',
     title,

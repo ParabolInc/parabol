@@ -90,7 +90,7 @@ const Organization: OrganizationResolvers = {
       dataLoader.get('teamsByOrgIds').load(orgId),
       dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'publicTeams'})
     ])
-    if (!isSuperUser(authToken) || !hasPublicTeamsFlag) return []
+    if (!isSuperUser(authToken) && !hasPublicTeamsFlag) return []
     const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))
     return publicTeams
   },
@@ -135,7 +135,10 @@ const Organization: OrganizationResolvers = {
         organizationUser.role === 'BILLING_LEADER' || organizationUser.role === 'ORG_ADMIN'
     )
   },
-  integrationProviders: ({id: orgId}) => ({orgId})
+  integrationProviders: ({id: orgId}) => ({orgId}),
+  orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
+  }
 }
 
 export default Organization

@@ -1,11 +1,20 @@
 import type {JSONContent} from '@tiptap/core'
-import {NotNull, sql} from 'kysely'
+import {NotNull, sql, type SelectQueryBuilder} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {JiraDimensionField, ReactjiDB, TaskTag} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import {AnyNotification} from './types/Notification'
 import {AnyTaskIntegration} from './types/TaskIntegration'
+
+// This type is to allow us to perform a selectAll & then overwrite any column with another type
+// e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
+// since string[] && {id: string}[] do not intersect, we can't do this natively within kysely with $assertType
+type AssertedQuery<Q, K> =
+  Q extends SelectQueryBuilder<infer T1, infer T2, infer X>
+    ? SelectQueryBuilder<T1, T2, Omit<X, keyof K> & K>
+    : never
+
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
@@ -16,6 +25,10 @@ export const selectTimelineEvent = () => {
       }
     | {type: 'createdTeam'; teamId: NotNull; orgId: NotNull}
   >()
+}
+
+export const selectDiscussion = () => {
+  return getKysely().selectFrom('Discussion').selectAll()
 }
 
 export const selectTeamMemberIntegrationAuth = () => {
@@ -138,6 +151,7 @@ export const selectOrganizations = () =>
       'trialStartDate',
       'scheduledLockAt',
       'lockedAt',
+      'useAI',
       'updatedAt'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
@@ -201,23 +215,14 @@ export const selectSlackAuths = () => getKysely().selectFrom('SlackAuth').select
 export const selectSlackNotifications = () =>
   getKysely().selectFrom('SlackNotification').selectAll()
 
-export const selectComments = () =>
-  getKysely()
+export const selectComments = () => {
+  const query = getKysely()
     .selectFrom('Comment')
-    .select([
-      'id',
-      'createdAt',
-      'isActive',
-      'isAnonymous',
-      'threadParentId',
-      'updatedAt',
-      'content',
-      'createdBy',
-      'plaintextContent',
-      'discussionId',
-      'threadSortOrder'
-    ])
+    .selectAll()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
+    .$narrowType<{content: JSONContent}>()
+  return query as AssertedQuery<typeof query, {reactjis: ReactjiDB[]}>
+}
 
 export const selectReflectPrompts = () => getKysely().selectFrom('ReflectPrompt').selectAll()
 

@@ -1,26 +1,61 @@
+import {generateJSON} from '@tiptap/core'
+import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
+
 const taskLookup = {
   botRef1: [
-    `{"blocks":[{"key":"2t991","text":"Create a process for making a collective decision, together","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(
+      generateJSON(
+        '<p>Create a process for making a collective decision, together</p>',
+        serverTipTapExtensions
+      )
+    )
   ],
   botRef2: [
-    `{"blocks":[{"key":"2t992","text":"Document our testing process","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
-    `{"blocks":[{"key":"2t902","text":"When onboarding new employees, have them document our processes as they learn them","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(generateJSON('<p>Document our testing process</p>', serverTipTapExtensions)),
+    JSON.stringify(
+      generateJSON(
+        '<p>When onboarding new employees, have them document our processes as they learn them</p>',
+        serverTipTapExtensions
+      )
+    )
   ],
   botRef3: [
-    `{"blocks":[{"key":"2t993","text":"Set a timer for speakers during meetings","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(
+      generateJSON('<p>Set a timer for speakers during meetings</p>', serverTipTapExtensions)
+    )
   ],
   botRef4: [
-    `{"blocks":[{"key":"2t994","text":"Propose which kind of decisions need to be made by the whole group","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(
+      generateJSON(
+        '<p>Propose which kind of decisions need to be made by the whole group</p>',
+        serverTipTapExtensions
+      )
+    )
   ],
   botRef5: [
-    `{"blocks":[{"key":"2t995","text":"Create a policy for when to decide in-person vs. when to decide over Slack, and who needs to be involved for each type","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(
+      generateJSON(
+        '<p>Create a policy for when to decide in-person vs. when to decide over Slack, and who needs to be involved for each type</p>',
+        serverTipTapExtensions
+      )
+    )
   ],
   botRef6: [
-    `{"blocks":[{"key":"2t996","text":"Try no-meeting Thursdays","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
-    `{"blocks":[{"key":"2t906","text":"Use our planning meetings to discover which meetings and attendees to schedule","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(generateJSON('<p>Try no-meeting Thursdays</p>', serverTipTapExtensions)),
+    JSON.stringify(
+      generateJSON(
+        '<p>Use our planning meetings to discover which meetings and attendees to schedule</p>',
+        serverTipTapExtensions
+      )
+    )
   ],
   botRef7: [
-    `{"blocks":[{"key":"2t997","text":"Research reputable methods for prioritizing work that the team can review together","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(
+      generateJSON(
+        '<p>Research reputable methods for prioritizing work that the team can review together</p>',
+        serverTipTapExtensions
+      )
+    )
   ],
   botRef8: []
 } as const

@@ -92,6 +92,7 @@ const setTaskEstimate = {
     // RESOLUTION
     let jiraFieldId: string | undefined = undefined
     let githubLabelName: string | undefined = undefined
+    let gitlabLabelId: string | undefined = undefined
     const {integration} = task
     const service = integration?.service
     const stageIdx = stages.findIndex((stage) => stage.id === stageId)
@@ -217,7 +218,7 @@ const setTaskEstimate = {
         ])
 
         if (!auth) {
-          errorMessage = 'User no longer has access to Jira Server'
+          errorMessage = 'User no longer has access to Jira Data Center'
           break
         }
 
@@ -363,6 +364,7 @@ const setTaskEstimate = {
           errorMessage = message
           break
         }
+        gitlabLabelId = gitlabPushRes
         success = true
         break
       }
@@ -387,6 +389,7 @@ const setTaskEstimate = {
         discussionId,
         jiraFieldId,
         githubLabelName,
+        gitlabLabelId,
         label: value,
         name: dimensionName,
         meetingId,

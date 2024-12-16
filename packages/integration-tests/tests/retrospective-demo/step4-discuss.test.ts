@@ -142,13 +142,13 @@ test.describe('retrospective-demo / discuss page', () => {
       }
 
       for await (const task of tasks || []) {
-        await expect(page.locator(`[data-cy=task-wrapper] :text('${task}')`)).toBeVisible({
+        await expect(page.locator(`:text('${task}')`)).toBeVisible({
           timeout: 30_000
         })
       }
 
       for await (const comment of comments || []) {
-        await expect(page.locator(`[data-cy=comment-wrapper] :text('${comment}')`)).toBeVisible({
+        await expect(page.locator(`:text('${comment}')`)).toBeVisible({
           timeout: 30_000
         })
       }

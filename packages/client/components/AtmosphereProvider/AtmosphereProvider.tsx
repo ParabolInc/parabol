@@ -15,7 +15,9 @@ class AtmosphereProvider extends Component<Props> {
   constructor(props: Props) {
     super(props)
     if (props.getLocalAtmosphere) {
-      this.loadDemo().catch()
+      this.loadDemo().catch(() => {
+        /*ignore*/
+      })
     } else {
       this.atmosphere = new Atmosphere()
       this.atmosphere.getAuthToken(window)
@@ -23,9 +25,7 @@ class AtmosphereProvider extends Component<Props> {
   }
 
   async loadDemo() {
-    const LocalAtmosphere = await this.props.getLocalAtmosphere!()
-      .then((mod) => mod.default)
-      .catch()
+    const LocalAtmosphere = await this.props.getLocalAtmosphere!().then((mod) => mod.default)
     this.atmosphere = new LocalAtmosphere()
     this.forceUpdate()
   }

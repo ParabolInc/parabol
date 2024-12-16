@@ -125,7 +125,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   }
 
   const handleClick = (id: string) => {
-    gotoStageId(id).catch()
+    gotoStageId(id).catch(() => {
+      /*ignore*/
+    })
     handleMenuClick()
   }
   return (

@@ -22,14 +22,13 @@ const StyledLink = styled('a')({
 
 interface Props {
   integration: TaskIntegrationLink_integration$key | null
-  dataCy: string
   className?: string
   children?: ReactNode
   showJiraLabelPrefix?: boolean
 }
 
 const TaskIntegrationLink = (props: Props) => {
-  const {integration: integrationRef, dataCy, className, children, showJiraLabelPrefix} = props
+  const {integration: integrationRef, className, children, showJiraLabelPrefix} = props
   const integration = useFragment(
     graphql`
       fragment TaskIntegrationLink_integration on TaskIntegration {
@@ -48,7 +47,6 @@ const TaskIntegrationLink = (props: Props) => {
     const {issueKey, projectKey, cloudName} = integration
     return (
       <JiraIssueLink
-        dataCy={`${dataCy}-jira-issue-link`}
         issueKey={issueKey}
         projectKey={projectKey}
         cloudName={cloudName}
@@ -65,7 +63,7 @@ const TaskIntegrationLink = (props: Props) => {
         href={url}
         rel='noopener noreferrer'
         target='_blank'
-        title={`Jira Server Issue #${issueKey} on ${projectKey}`}
+        title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
         className={className}
       >
         {`Issue #${issueKey}`}

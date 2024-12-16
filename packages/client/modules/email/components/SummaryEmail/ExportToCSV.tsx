@@ -1,3 +1,4 @@
+import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
@@ -7,6 +8,7 @@ import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractText
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import {CorsOptions} from '../../../../types/cors'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
@@ -174,7 +176,9 @@ const imageStyle = {
 const ExportToCSV = (props: Props) => {
   useEffect(() => {
     if (props.urlAction === 'csv') {
-      exportToCSV().catch()
+      exportToCSV().catch(() => {
+        /*ignore*/
+      })
     }
   }, [props.urlAction])
   const atmosphere = useAtmosphere()
@@ -242,7 +246,8 @@ const ExportToCSV = (props: Props) => {
         const {node} = edge
         const {createdAt, createdByUser, __typename: type, replies, content} = node
         const author = createdByUser?.preferredName ?? 'Anonymous'
-        const discussionThread = extractTextFromDraftString(content!)
+        const contentJSON = JSON.parse(content!)
+        const discussionThread = generateText(contentJSON, serverTipTapExtensions)
         rows.push({
           reflectionGroup: title!,
           author,

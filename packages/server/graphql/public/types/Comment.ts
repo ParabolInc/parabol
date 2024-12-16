@@ -1,13 +1,17 @@
-import convertToTaskContent from 'parabol-client/utils/draftjs/convertToTaskContent'
+import {convertTipTapTaskContent} from '../../../../client/shared/tiptap/convertTipTapTaskContent'
+import {isDraftJSContent} from '../../../../client/shared/tiptap/isDraftJSContent'
 import {getUserId} from '../../../utils/authorization'
+import {convertKnownDraftToTipTap} from '../../../utils/convertToTipTap'
 import resolveReactjis from '../../resolvers/resolveReactjis'
 import {CommentResolvers} from '../resolverTypes'
 
-const TOMBSTONE = convertToTaskContent('[deleted]')
+const TOMBSTONE = convertTipTapTaskContent('[deleted]')
 
 const Comment: CommentResolvers = {
   content: ({isActive, content}) => {
-    return isActive ? JSON.stringify(content) : TOMBSTONE
+    if (!isActive) return TOMBSTONE
+    const validContent = isDraftJSContent(content) ? convertKnownDraftToTipTap(content) : content
+    return JSON.stringify(validContent)
   },
 
   createdBy: ({createdBy, isAnonymous}) => {

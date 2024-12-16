@@ -3,12 +3,12 @@ import {PALETTE} from '~/styles/paletteV3'
 import {Task as ITask} from '../../../server/postgres/types/index.d'
 import {RetrospectiveMeeting} from '../../../server/postgres/types/Meeting'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
+import {convertTipTapTaskContent} from '../../shared/tiptap/convertTipTapTaskContent'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
-import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
 import DemoDiscussStage from './DemoDiscussStage'
 import DemoGenericMeetingStage from './DemoGenericMeetingStage'
@@ -433,7 +433,7 @@ export class DemoComment {
     },
     db: RetroDemoDB
   ) {
-    this.content = normalizeRawDraftJS(content)
+    this.content = convertTipTapTaskContent(content)
     this.createdAt = new Date().toJSON()
     this.updatedAt = new Date().toJSON()
     this.createdBy = isAnonymous ? null : userId

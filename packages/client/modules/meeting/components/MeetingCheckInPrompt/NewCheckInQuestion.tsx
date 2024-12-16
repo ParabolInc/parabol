@@ -1,27 +1,28 @@
 import styled from '@emotion/styled'
 import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
+import {EditorContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import {ContentState, EditorState, SelectionState, convertToRaw} from 'draft-js'
-import {useRef, useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
 import {
   ModifyType,
   useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
 } from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
-import EditorInputWrapper from '../../../../components/EditorInputWrapper'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import '../../../../components/TaskEditor/Draft.css'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useEditorState from '../../../../hooks/useEditorState'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useTooltip from '../../../../hooks/useTooltip'
+import {useTipTapIcebreakerEditor} from '../../../../hooks/useTipTapIcebreakerEditor'
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
+import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
+import {convertTipTapTaskContent} from '../../../../shared/tiptap/convertTipTapTaskContent'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
-import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 
 const CogIcon = styled('div')({
   color: PALETTE.SLATE_700,
@@ -66,7 +67,6 @@ interface Props {
 }
 
 const NewCheckInQuestion = (props: Props) => {
-  const editorRef = useRef<HTMLTextAreaElement>()
   const atmosphere = useAtmosphere()
   const {meeting: meetingRef} = props
   const meeting = useFragment(
@@ -87,96 +87,56 @@ const NewCheckInQuestion = (props: Props) => {
         }
         team {
           organization {
-            hasNoAISummaryFlag: featureFlag(featureName: "noAISummary")
+            useAI
           }
         }
       }
     `,
     meetingRef
   )
-  const [isEditing, setIsEditing] = useState(false)
   const [aiUpdatedIcebreaker, setAiUpdatedIcebreaker] = useState('')
   const {
     id: meetingId,
     localPhase,
     facilitatorUserId,
     team: {
-      organization: {hasNoAISummaryFlag}
+      organization: {useAI}
     }
   } = meeting
   const {checkInQuestion} = localPhase
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
 
-  const [editorState, setEditorState] = useEditorState(checkInQuestion)
+  const {editor} = useTipTapIcebreakerEditor(checkInQuestion || convertTipTapTaskContent(''), {
+    readOnly: !isFacilitating
+  })
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
 
-  const updateQuestion = (nextEditorState: EditorState) => {
-    const wasFocused = editorState.getSelection().getHasFocus()
-    const isFocused = nextEditorState.getSelection().getHasFocus()
-    setIsEditing(isFocused)
-    if (wasFocused && !isFocused) {
-      const nextContent = nextEditorState.getCurrentContent()
-      const nextCheckInQuestion = nextContent.hasText()
-        ? JSON.stringify(convertToRaw(nextContent))
-        : ''
-
-      if (nextCheckInQuestion === checkInQuestion) return
+  const updateQuestion = () => {
+    if (!editor) return
+    const {isFocused} = editor
+    if (!isFocused) {
+      const nextCheckInQuestionJSON = editor.getJSON()
+      if (
+        checkInQuestion &&
+        isEqualWhenSerialized(nextCheckInQuestionJSON, JSON.parse(checkInQuestion))
+      )
+        return
       UpdateNewCheckInQuestionMutation(
         atmosphere,
         {
           meetingId,
-          checkInQuestion: nextCheckInQuestion
+          checkInQuestion: JSON.stringify(nextCheckInQuestionJSON)
         },
         {onCompleted, onError}
       )
     }
-    setEditorState(nextEditorState)
   }
-
-  // Handles question update for android devices.
-  const updateQuestionAndroidFallback = () => {
-    const currentText = editorRef.current?.value
-    const nextCheckInQuestion = convertToTaskContent(currentText || '')
-    if (nextCheckInQuestion === checkInQuestion) return
-    UpdateNewCheckInQuestionMutation(
-      atmosphere,
-      {
-        meetingId,
-        checkInQuestion: nextCheckInQuestion
-      },
-      {onCompleted, onError}
-    )
-  }
-
-  const {
-    tooltipPortal: editIcebreakerTooltipPortal,
-    openTooltip: openEditIcebreakerTooltip,
-    closeTooltip: closeEditIcebreakerTooltip,
-    originRef: editIcebreakerOriginRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER, {
-    disabled: isEditing || !isFacilitating
-  })
-  const {
-    tooltipPortal: refreshIcebreakerTooltipPortal,
-    openTooltip: openRefreshIcebreakerTooltip,
-    closeTooltip: closeRefreshIcebreakerTooltip,
-    originRef: refreshIcebreakerOriginRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER, {
-    disabled: !isFacilitating
-  })
 
   const focusQuestion = () => {
-    closeEditIcebreakerTooltip()
-    editorRef.current && editorRef.current.focus()
-    const selection = editorState.getSelection()
-    const contentState = editorState.getCurrentContent()
-    const jumpToEnd = (selection as any).merge({
-      anchorOffset: contentState.getLastBlock().getLength(),
-      focusOffset: contentState.getLastBlock().getLength()
-    }) as SelectionState
-    const nextEditorState = EditorState.forceSelection(editorState, jumpToEnd)
-    setEditorState(nextEditorState)
+    if (!editor) return
+    editor?.commands.focus('all')
+    editor?.commands.selectAll()
   }
 
   const refresh = () => {
@@ -197,9 +157,7 @@ const NewCheckInQuestion = (props: Props) => {
       atmosphere,
       {
         meetingId,
-        checkInQuestion: JSON.stringify(
-          convertToRaw(ContentState.createFromText(aiUpdatedIcebreaker))
-        )
+        checkInQuestion: convertTipTapTaskContent(aiUpdatedIcebreaker)
       },
       {onCompleted, onError}
     )
@@ -226,45 +184,35 @@ const NewCheckInQuestion = (props: Props) => {
       }
     })
   }
-  const showAiIcebreaker = !hasNoAISummaryFlag && isFacilitating && window.__ACTION__.hasOpenAI
+  const showAiIcebreaker = useAI && isFacilitating && window.__ACTION__.hasOpenAI
 
   return (
     <>
       <QuestionBlock id='test'>
         {/* cannot set min width because iPhone 5 has a width of 320*/}
-        <EditorInputWrapper
-          ariaLabel={'Edit the icebreaker'}
-          editorState={editorState}
-          setEditorState={updateQuestion}
-          readOnly={!isFacilitating}
-          placeholder='e.g. How are you?'
-          editorRef={editorRef}
-          setEditorStateFallback={updateQuestionAndroidFallback}
-        />
+        <EditorContent editor={editor} onBlur={updateQuestion} />
         {isFacilitating && (
           <div className='flex gap-x-2'>
-            <PlainButton
-              aria-label={'Edit icebreaker'}
-              onClick={focusQuestion}
-              onMouseEnter={openEditIcebreakerTooltip}
-              onMouseLeave={closeEditIcebreakerTooltip}
-              ref={editIcebreakerOriginRef}
-            >
-              <CogIcon>
-                <CreateIcon />
-              </CogIcon>
-            </PlainButton>
-            <PlainButton
-              aria-label={'Refresh icebreaker'}
-              onClick={refresh}
-              onMouseEnter={openRefreshIcebreakerTooltip}
-              onMouseLeave={closeRefreshIcebreakerTooltip}
-              ref={refreshIcebreakerOriginRef}
-            >
-              <CogIcon>
-                <RefreshIcon />
-              </CogIcon>
-            </PlainButton>
+            <Tooltip open={isFacilitating ? undefined : false}>
+              <TooltipTrigger asChild>
+                <PlainButton aria-label={'Edit icebreaker'} onClick={focusQuestion}>
+                  <CogIcon>
+                    <CreateIcon />
+                  </CogIcon>
+                </PlainButton>
+              </TooltipTrigger>
+              <TooltipContent side={'bottom'}>Edit icebreaker</TooltipContent>
+            </Tooltip>
+            <Tooltip open={isFacilitating ? undefined : false}>
+              <TooltipTrigger asChild>
+                <PlainButton aria-label={'Refresh icebreaker'} onClick={refresh}>
+                  <CogIcon>
+                    <RefreshIcon />
+                  </CogIcon>
+                </PlainButton>
+              </TooltipTrigger>
+              <TooltipContent side={'bottom'}>Refresh icebreaker</TooltipContent>
+            </Tooltip>
           </div>
         )}
       </QuestionBlock>
@@ -322,8 +270,6 @@ const NewCheckInQuestion = (props: Props) => {
           </div>
         </div>
       )}
-      {editIcebreakerTooltipPortal(<>Edit icebreaker</>)}
-      {refreshIcebreakerTooltipPortal(<>Refresh icebreaker</>)}
     </>
   )
 }

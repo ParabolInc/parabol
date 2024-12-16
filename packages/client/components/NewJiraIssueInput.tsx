@@ -17,8 +17,8 @@ import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
+import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
 import {CompletedHandler} from '../types/relayMutations'
-import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewJiraIssueMenu from './NewJiraIssueMenu'
@@ -199,7 +199,7 @@ const NewJiraIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertToTaskContent(`${newIssueTitle} #archived`),
+      content: convertTipTapTaskContent(newIssueTitle, ['archived']),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {

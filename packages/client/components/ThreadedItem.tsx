@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {ThreadedItem_discussion$key} from '~/__generated__/ThreadedItem_discussion.graphql'
 import {ThreadedItem_threadable$key} from '~/__generated__/ThreadedItem_threadable.graphql'
@@ -61,20 +60,21 @@ export const ThreadedItem = (props: Props) => {
         __typename
         replies {
           ...ThreadedRepliesList_replies
+          threadSortOrder
         }
       }
     `,
     threadableRef
   )
   const {__typename, replies} = threadable
-  const [replyMention, setReplyMention] = useState<ReplyMention>(null)
-  const child = (
+  const getMaxSortOrder = () => {
+    return replies ? Math.max(0, ...replies.map((reply) => reply.threadSortOrder || 0)) : 0
+  }
+  const repliesList = (
     <ThreadedRepliesList
       allowedThreadables={allowedThreadables}
-      dataCy={`child`}
       discussion={discussion}
       replies={replies}
-      setReplyMention={setReplyMention}
       viewer={viewer}
     />
   )
@@ -82,15 +82,12 @@ export const ThreadedItem = (props: Props) => {
     return (
       <ThreadedTaskBase
         allowedThreadables={allowedThreadables}
-        dataCy={`task`}
         task={threadable}
         discussion={discussion}
-        replyMention={replyMention}
-        setReplyMention={setReplyMention}
         viewer={viewer}
-      >
-        {child}
-      </ThreadedTaskBase>
+        repliesList={repliesList}
+        getMaxSortOrder={getMaxSortOrder}
+      />
     )
   }
   if (__typename === 'Poll') {
@@ -105,15 +102,12 @@ export const ThreadedItem = (props: Props) => {
   return (
     <ThreadedCommentBase
       allowedThreadables={allowedThreadables}
-      dataCy={`comment`}
       comment={threadable}
       discussion={discussion}
-      replyMention={replyMention}
-      setReplyMention={setReplyMention}
       viewer={viewer}
-    >
-      {child}
-    </ThreadedCommentBase>
+      repliesList={repliesList}
+      getMaxSortOrder={getMaxSortOrder}
+    />
   )
 }
 

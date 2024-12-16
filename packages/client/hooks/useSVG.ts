@@ -24,7 +24,9 @@ const useSVG = (src: string, onLoad?: (el: SVGElement) => void) => {
         setSVG(res2)
       }
     }
-    fetchSVG().catch()
+    fetchSVG().catch(() => {
+      /*ignore*/
+    })
     return () => {
       isMountedRef.current = false
     }

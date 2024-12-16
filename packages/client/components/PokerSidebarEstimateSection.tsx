@@ -112,7 +112,9 @@ const PokerSidebarEstimateSection = (props: Props) => {
   const handleClick = (stageIds: string[]) => {
     // if the facilitator is at one of the stages, go there
     if (stageIds.includes(facilitatorStageId)) {
-      gotoStageId(facilitatorStageId).catch()
+      gotoStageId(facilitatorStageId).catch(() => {
+        /*ignore*/
+      })
     } else {
       // goto the first stage that the user hasn't voted on
       const summaryStages = stageIds.map((id) => stages.find((stage) => stage.id === id))

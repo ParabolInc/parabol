@@ -125,7 +125,7 @@ const ProviderList = (props: Props) => {
       )
     },
     {
-      name: 'Jira Server',
+      name: 'Jira Data Center',
       connected:
         !!integrations?.jiraServer?.auth?.isActive && integrations.jiraServer?.sharedProviders[0],
       component: <JiraServerProviderRow key='jira' teamId={teamId} viewerRef={viewer} />

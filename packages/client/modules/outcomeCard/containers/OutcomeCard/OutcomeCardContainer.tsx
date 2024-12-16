@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
+import {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {ContentState, convertToRaw} from 'draft-js'
 import {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
@@ -8,13 +8,12 @@ import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graph
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
+import {LinkMenuState} from '../../../../components/promptResponse/TipTapLinkMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useEditorState from '../../../../hooks/useEditorState'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import convertToTaskContent from '../../../../utils/draftjs/convertToTaskContent'
-import isAndroid from '../../../../utils/draftjs/isAndroid'
+import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
 
 const Wrapper = styled('div')({
@@ -23,26 +22,28 @@ const Wrapper = styled('div')({
 
 interface Props {
   area: AreaEnum
-  contentState: ContentState
+  editor: Editor
+  linkState: LinkMenuState
+  setLinkState: (linkState: LinkMenuState) => void
   className?: string
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task$key
   clearIsCreatingNewTask?: () => void
-  dataCy: string
   isViewerMeetingSection?: boolean
   meetingId?: string
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
   const {
-    contentState,
+    editor,
+    linkState,
+    setLinkState,
     className,
     isDraggingOver,
     task: taskRef,
     area,
     isAgenda,
-    dataCy,
     isViewerMeetingSection,
     meetingId
   } = props
@@ -63,10 +64,8 @@ const OutcomeCardContainer = memo((props: Props) => {
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
 
-  const [editorState, setEditorState] = useEditorState(content)
-  const {useTaskChild, isTaskFocused} = useTaskChildFocus(taskId)
+  const {useTaskChild, isTaskFocused, addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
 
   const isHighlighted = isTaskHovered || !!isDraggingOver
   useEffect(() => {
@@ -81,40 +80,21 @@ const OutcomeCardContainer = memo((props: Props) => {
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
-    if (isAndroid) {
-      const editorEl = editorRef.current
-      if (!editorEl || editorEl.type !== 'textarea') return
-      const {value} = editorEl
-      if (!value.trim() && !isFocused) {
-        DeleteTaskMutation(atmosphere, {taskId})
-      } else {
-        const initialContentState = editorState.getCurrentContent()
-        const initialText = initialContentState.getPlainText()
-        if (initialText === value) return
-        const updatedTask = {
-          id: taskId,
-          content: convertToTaskContent(value)
-        }
-        UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
-      }
+    if (isFocused) return
+    if (editor.isEmpty && !isFocused) {
+      DeleteTaskMutation(atmosphere, {taskId})
       return
     }
-    const nextContentState = editorState.getCurrentContent()
-    const hasText = nextContentState.getPlainText().trim().length > 0
-    if (!hasText && !isFocused) {
-      DeleteTaskMutation(atmosphere, {taskId})
-    } else {
-      const content = JSON.stringify(convertToRaw(nextContentState))
-      const initialContent = JSON.stringify(convertToRaw(contentState))
-      if (content === initialContent) return
-      const updatedTask = {
-        id: taskId,
-        content
-      }
-      UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
+    const nextContentJSON = editor.getJSON()
+    if (isEqualWhenSerialized(JSON.parse(content), nextContentJSON)) return
+    const updatedTask = {
+      id: taskId,
+      content: JSON.stringify(nextContentJSON)
     }
+    UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
   }
-  useScrollIntoView(ref, !contentState.hasText())
+
+  useScrollIntoView(ref, editor.isEmpty)
   useClickAway(ref, () => setIsTaskHovered(false))
   return (
     <Wrapper
@@ -126,18 +106,19 @@ const OutcomeCardContainer = memo((props: Props) => {
       ref={ref}
     >
       <OutcomeCard
-        dataCy={`${dataCy}-card`}
         area={area}
-        editorRef={editorRef}
-        editorState={editorState}
+        editor={editor}
+        linkState={linkState}
+        setLinkState={setLinkState}
         handleCardUpdate={handleCardUpdate}
         isTaskFocused={isTaskFocused()}
         isTaskHovered={isTaskHovered}
         isAgenda={!!isAgenda}
         isDraggingOver={isDraggingOver}
         task={task}
-        setEditorState={setEditorState}
         useTaskChild={useTaskChild}
+        addTaskChild={addTaskChild}
+        removeTaskChild={removeTaskChild}
       />
     </Wrapper>
   )

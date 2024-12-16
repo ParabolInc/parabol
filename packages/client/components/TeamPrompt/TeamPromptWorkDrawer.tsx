@@ -84,7 +84,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
           {
             icon: <JiraServerSVG />,
             service: 'jiraServer',
-            label: 'Jira Server',
+            label: 'Jira Data Center',
             Component: JiraServerIntegrationPanel
           }
         ]

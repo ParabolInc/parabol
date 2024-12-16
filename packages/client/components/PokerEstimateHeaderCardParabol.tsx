@@ -1,22 +1,21 @@
 import styled from '@emotion/styled'
+import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw} from 'draft-js'
-import {useRef, useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useEditorState from '~/hooks/useEditorState'
-import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
-import isAndroid from '~/utils/draftjs/isAndroid'
 import {PokerEstimateHeaderCardParabol_task$key} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useTaskChildFocus from '../hooks/useTaskChildFocus'
+import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import convertToTaskContent from '../utils/draftjs/convertToTaskContent'
+import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
-import TaskEditor from './TaskEditor/TaskEditor'
+import {TipTapEditor} from './promptResponse/TipTapEditor'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -52,13 +51,6 @@ const EditorWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
   transition: 'all 300ms'
 }))
 
-const StyledTaskEditor = styled(TaskEditor)({
-  width: '100%',
-  padding: '0 0',
-  lineHeight: 'normal',
-  height: 'auto'
-})
-
 const Content = styled('div')({
   flex: 1,
   paddingRight: 4
@@ -86,54 +78,39 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const atmosphere = useAtmosphere()
   const [isExpanded, setIsExpanded] = useState(true)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const [editorState, setEditorState] = useEditorState(content)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
   const {useTaskChild} = useTaskChildFocus(taskId)
-
   const {teamId} = task
-  const onBlur = () => {
-    if (isAndroid) {
-      const editorEl = editorRef.current
-      if (!editorEl || editorEl.type !== 'textarea') return
-      const {value} = editorEl
-      if (!value) return
-      const initialContentState = editorState.getCurrentContent()
-      const initialText = initialContentState.getPlainText()
-      if (initialText === value) return
-      const updatedTask = {
-        id: taskId,
-        content: convertToTaskContent(value)
-      }
-      UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
-      return
-    }
-    const nextContentState = editorState.getCurrentContent()
-    const hasText = nextContentState.hasText()
-    if (!hasText) return
-    const nextContent = JSON.stringify(convertToRaw(nextContentState))
-    if (nextContent === content) return
+  const onBlur = useEventCallback(() => {
+    if (!editor || editor.isEmpty) return
+    const nextContent = editor.getJSON()
+    if (isEqualWhenSerialized(nextContent, JSON.parse(content))) return
     const updatedTask = {
       id: taskId,
-      content: nextContent
+      content: JSON.stringify(nextContent)
     }
-    UpdateTaskMutation(atmosphere, {updatedTask, area: 'meeting'}, {})
-  }
+    UpdateTaskMutation(atmosphere, {updatedTask}, {})
+  })
+  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+    atmosphere,
+    teamId,
+    onBlur
+  })
+
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
 
+  if (!editor) return null
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
         <Content>
-          <EditorWrapper isExpanded={isExpanded} onBlur={onBlur}>
-            <StyledTaskEditor
-              dataCy={`task`}
-              editorRef={editorRef}
-              editorState={editorState}
-              setEditorState={setEditorState}
-              teamId={teamId}
-              useTaskChild={useTaskChild}
+          <EditorWrapper isExpanded={isExpanded}>
+            <TipTapEditor
+              editor={editor}
+              linkState={linkState}
+              setLinkState={setLinkState}
+              useLinkEditor={() => useTaskChild('editor-link-changer')}
             />
           </EditorWrapper>
         </Content>

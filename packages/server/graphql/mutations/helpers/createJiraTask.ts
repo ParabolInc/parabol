@@ -1,17 +1,18 @@
+import {JSONContent} from '@tiptap/core'
+import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
-import splitDraftContent from 'parabol-client/utils/draftjs/splitDraftContent'
 import {AtlassianAuth} from '../../../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import convertContentStateToADF from '../../../utils/convertContentStateToADF'
+import {convertTipTapToADF} from '../../../utils/convertTipTapToADF'
 
 const createJiraTask = async (
-  rawContent: string,
+  rawContent: JSONContent,
   cloudId: string,
   projectKey: string,
   atlassianAuth: AtlassianAuth
 ) => {
-  const {title: summary, contentState} = splitDraftContent(rawContent)
-  const description = convertContentStateToADF(contentState)
+  const {title: summary, bodyContent} = splitTipTapContent(rawContent)
+  const description = convertTipTapToADF(bodyContent)
 
   const {accessToken, accountId} = atlassianAuth
   const manager = new AtlassianServerManager(accessToken)

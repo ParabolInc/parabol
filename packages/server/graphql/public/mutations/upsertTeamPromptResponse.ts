@@ -1,7 +1,7 @@
 import {generateText, JSONContent} from '@tiptap/core'
-import {createEditorExtensions} from 'parabol-client/components/promptResponse/tiptapConfig'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
 import {TeamPromptResponse} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -12,7 +12,6 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 import createTeamPromptMentionNotifications from './helpers/publishTeamPromptMentions'
-
 const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = async (
   _source,
   {teamPromptResponseId: inputTeamPromptResponseId, meetingId, content},
@@ -63,7 +62,7 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
 
   let plaintextContent: string
   try {
-    plaintextContent = generateText(contentJSON, createEditorExtensions())
+    plaintextContent = generateText(contentJSON, serverTipTapExtensions)
   } catch (e) {
     return standardError(new Error('Invalid editor format'), {userId: viewerId})
   }

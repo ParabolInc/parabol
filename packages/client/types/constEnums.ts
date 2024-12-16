@@ -295,8 +295,8 @@ export const enum Pricing {
 export const enum Providers {
   ATLASSIAN_NAME = 'Atlassian',
   ATLASSIAN_DESC = 'Use Jira Cloud Issues from within Parabol.',
-  JIRA_SERVER_NAME = 'Jira Server',
-  JIRA_SERVER_DESC = 'Use Jira Server Issues from within Parabol.',
+  JIRA_SERVER_NAME = 'Jira Data Center',
+  JIRA_SERVER_DESC = 'Use Jira Data Center Issues from within Parabol.',
   GITHUB_NAME = 'GitHub',
   GCAL_NAME = 'Google Calendar',
   GCAL_DESC = 'Create Google Calendar events from within Parabol.',
@@ -492,7 +492,11 @@ export const enum SprintPokerDefaults {
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
-  JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type'
+  JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type',
+  GITLAB_FIELD_TIME_ESTIMATE = '__timeEstimate',
+  GITLAB_FIELD_TIME_ESTIMATE_LABEL = 'Time Estimate',
+  GITLAB_FIELD_WEIGHT = '__weight',
+  GITLAB_FIELD_WEIGHT_LABEL = 'Weight'
 }
 
 export const enum AriaLabels {

@@ -1,3 +1,4 @@
+import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
 import GitHubIssueId from '../../../client/shared/gqlIds/GitHubIssueId'
 import GitHubRepoId from '../../../client/shared/gqlIds/GitHubRepoId'
@@ -60,16 +61,16 @@ export default class GitHubServerManager implements TaskIntegrationManager {
   }
 
   async createTask({
-    rawContentStr,
+    rawContentJSON,
     integrationRepoId
   }: {
-    rawContentStr: string
+    rawContentJSON: JSONContent
     integrationRepoId: string
   }): Promise<CreateTaskResponse> {
     const {repoOwner, repoName} = GitHubRepoId.split(integrationRepoId)
 
     const res = await createGitHubTask(
-      rawContentStr,
+      rawContentJSON,
       repoOwner,
       repoName,
       this.auth,

@@ -103,16 +103,12 @@ const RetroTopic = (props: Props) => {
     graphql`
       fragment RetroTopic_meeting on RetrospectiveMeeting {
         id
-        organization {
-          hasShareSummaryFlag: featureFlag(featureName: "shareSummary")
-        }
       }
     `,
     meetingRef
   )
 
   const {id: meetingId} = meeting
-  const hasShareSummaryFlag = meeting.organization.hasShareSummaryFlag
   const {reflectionGroup, discussion, id: stageId} = stage
   const {commentCount, discussionSummary} = discussion
   const {reflections, title, voteCount} = reflectionGroup
@@ -169,17 +165,15 @@ const RetroTopic = (props: Props) => {
                     {commentLinkLabel}
                   </AnchorIfEmail>
                 </td>
-                {hasShareSummaryFlag && (
-                  <td style={{padding: '10px'}}>
-                    <ShareTopic
-                      isEmail={isEmail}
-                      isDemo={isDemo}
-                      meetingId={meetingId}
-                      stageId={stageId}
-                      appOrigin={appOrigin}
-                    />
-                  </td>
-                )}
+                <td style={{padding: '10px'}}>
+                  <ShareTopic
+                    isEmail={isEmail}
+                    isDemo={isDemo}
+                    meetingId={meetingId}
+                    stageId={stageId}
+                    appOrigin={appOrigin}
+                  />
+                </td>
               </tr>
             </table>
           </td>

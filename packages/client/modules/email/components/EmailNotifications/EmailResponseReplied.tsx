@@ -1,9 +1,8 @@
+import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
-import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import {EmailResponseReplied_notification$key} from 'parabol-client/__generated__/EmailResponseReplied_notification.graphql'
-import editorDecorators from 'parabol-client/components/TaskEditor/decorators'
-import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.png'
@@ -71,15 +70,7 @@ const EmailResponseReplied = (props: Props) => {
     }
   })
 
-  const contentState = useMemo(() => convertFromRaw(JSON.parse(comment.content)), [comment.content])
-  const editorStateRef = useRef<EditorState>()
-  const getEditorState = () => {
-    return editorStateRef.current
-  }
-  editorStateRef.current = EditorState.createWithContent(
-    contentState,
-    editorDecorators(getEditorState)
-  )
+  const htmlContent = generateHTML(JSON.parse(comment.content), serverTipTapExtensions)
 
   return (
     <EmailNotificationTemplate
@@ -90,13 +81,7 @@ const EmailResponseReplied = (props: Props) => {
       linkUrl={linkUrl}
     >
       <div style={editorStyles}>
-        <Editor
-          readOnly
-          editorState={editorStateRef.current}
-          onChange={() => {
-            /**/
-          }}
-        />
+        <div dangerouslySetInnerHTML={{__html: htmlContent}}></div>
       </div>
     </EmailNotificationTemplate>
   )

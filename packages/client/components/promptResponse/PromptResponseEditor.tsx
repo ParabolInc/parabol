@@ -1,50 +1,21 @@
 import styled from '@emotion/styled'
-import {Link} from '@mui/icons-material'
-import {Editor as EditorState} from '@tiptap/core'
-import {BubbleMenu, EditorContent, JSONContent, useEditor} from '@tiptap/react'
-import areEqual from 'fbjs/lib/areEqual'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Editor} from '@tiptap/core'
+import Mention from '@tiptap/extension-mention'
+import Placeholder from '@tiptap/extension-placeholder'
+import {JSONContent, useEditor} from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
+import useAtmosphere from '../../hooks/useAtmosphere'
+import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
+import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
+import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
-import EditorLinkChangerTipTap from '../EditorLinkChanger/EditorLinkChangerTipTap'
-import EditorLinkViewerTipTap from '../EditorLinkViewer/EditorLinkViewerTipTap'
-import EmojiMenuTipTap from './EmojiMenuTipTap'
-import MentionsTipTap from './MentionsTipTap'
-import {unfurlLoomLinks} from './loomExtension'
-import {LinkMenuProps, LinkPreviewProps, createEditorExtensions, getLinkProps} from './tiptapConfig'
-
-const LinkIcon = styled(Link)({
-  height: 18,
-  width: 18
-})
-
-const BubbleMenuWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  background: '#FFFFFF',
-  border: '1px solid',
-  borderRadius: '4px',
-  borderColor: PALETTE.SLATE_600,
-  padding: '4px'
-})
-
-const BubbleMenuButton = styled(BaseButton)<{isActive: boolean}>(({isActive}) => ({
-  height: '20px',
-  width: '22px',
-  padding: '4px 0px 4px 0px',
-  borderRadius: '2px',
-  background: isActive ? PALETTE.SLATE_300 : undefined,
-  ':hover': {
-    background: PALETTE.SLATE_300
-  }
-}))
-
-const SubmissionButtonWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center'
-})
+import {LoomExtension, unfurlLoomLinks} from './loomExtension'
+import {TipTapEditor} from './TipTapEditor'
+import {TiptapLinkExtension} from './TiptapLinkExtension'
+import {LinkMenuState} from './TipTapLinkMenu'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
@@ -65,68 +36,11 @@ const CancelButton = styled(SubmitButton)({
   color: PALETTE.SLATE_700
 })
 
-const StyledEditor = styled('div')`
-  .ProseMirror {
-    min-height: 40px;
-    line-height: 1.25;
-  }
-
-  .ProseMirror :is(ul, ol) {
-    list-style-position: outside;
-    padding-inline-start: 16px;
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  .ProseMirror :is(ol) {
-    margin-inline-start: 2px;
-  }
-
-  .ProseMirror p.is-editor-empty:first-child::before {
-    color: #adb5bd;
-    content: attr(data-placeholder);
-    float: left;
-    height: 0;
-    pointer-events: none;
-  }
-
-  .ProseMirror [data-type='mention'] {
-    background-color: ${PALETTE.GOLD_100};
-    border-radius: 2;
-    font-weight: 600;
-  }
-
-  .ProseMirror-focused:focus {
-    outline: none;
-  }
-
-  a {
-    text-decoration: underline;
-    color: ${PALETTE.SLATE_700};
-    :hover {
-      cursor: pointer;
-    }
-  }
-
-  .ProseMirror p {
-    margin-block-start: 4px;
-    margin-block-end: 4px;
-  }
-
-  hr.ProseMirror-selectednode {
-    border-top: 1px solid #68cef8;
-  }
-
-  hr {
-    border-top: 1px solid ${PALETTE.SLATE_400};
-  }
-`
-
 interface Props {
   autoFocus?: boolean
-  teamId?: string
+  teamId: string
   content: JSONContent | null
-  handleSubmit?: (editor: EditorState) => void
+  handleSubmit?: (editor: Editor) => void
   readOnly: boolean
   placeholder?: string
   draftStorageKey?: string
@@ -142,6 +56,7 @@ const PromptResponseEditor = (props: Props) => {
     teamId,
     draftStorageKey
   } = props
+  const atmosphere = useAtmosphere()
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
 
@@ -149,33 +64,6 @@ const PromptResponseEditor = (props: Props) => {
     () => (rawContent && readOnly ? unfurlLoomLinks(rawContent) : rawContent),
     [rawContent, readOnly]
   )
-
-  const [linkOverlayProps, setLinkOverlayProps] = useState<
-    | {
-        linkMenuProps: LinkMenuProps
-        linkPreviewProps: undefined
-      }
-    | {
-        linkMenuProps: undefined
-        linkPreviewProps: LinkPreviewProps
-      }
-    | undefined
-  >()
-
-  const setLinkMenuProps = useCallback(
-    (props: LinkMenuProps) => {
-      setLinkOverlayProps({linkMenuProps: props, linkPreviewProps: undefined})
-    },
-    [setLinkOverlayProps]
-  )
-  const setLinkPreviewProps = useCallback(
-    (props: LinkPreviewProps) => {
-      setLinkOverlayProps({linkPreviewProps: props, linkMenuProps: undefined})
-    },
-    [setLinkOverlayProps]
-  )
-
-  const editorRef = useRef<HTMLDivElement>(null)
 
   const setEditing = useCallback(
     (newIsEditing: boolean) => {
@@ -186,31 +74,29 @@ const PromptResponseEditor = (props: Props) => {
   )
 
   const onUpdate = useCallback(
-    ({editor: editorState}: {editor: EditorState}) => {
+    ({editor}: {editor: Editor}) => {
       setEditing(true)
       if (draftStorageKey) {
-        window.localStorage.setItem(draftStorageKey, JSON.stringify(editorState.getJSON()))
+        window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
       }
     },
     [setEditing, draftStorageKey]
   )
 
-  const onSubmit = useCallback(
-    (newEditorState: EditorState) => {
-      setEditing(false)
-      const newContent = newEditorState.getJSON()
+  const onSubmit = useCallback(() => {
+    if (!editor) return
+    setEditing(false)
+    const newContentJSON = editor.getJSON()
 
-      // to avoid creating an empty post on first blur
-      if (!content && newEditorState.isEmpty) return
+    // to avoid creating an empty post on first blur
+    if (!content && editor.isEmpty) return
 
-      if (areEqual(content, newContent)) return
+    if (isEqualWhenSerialized(content, newContentJSON)) return
 
-      handleSubmit?.(newEditorState)
-    },
-    [setEditing, content, handleSubmit]
-  )
+    handleSubmit?.(editor)
+  }, [setEditing, content, handleSubmit])
 
-  const onCancel = (editor: EditorState) => {
+  const onCancel = () => {
     setEditing(false)
     editor?.commands.setContent(content)
     if (draftStorageKey) {
@@ -218,28 +104,32 @@ const PromptResponseEditor = (props: Props) => {
     }
   }
 
+  const [linkState, setLinkState] = useState<LinkMenuState>(null)
+
   const editor = useEditor(
     {
       content,
-      extensions: createEditorExtensions(
-        setLinkMenuProps,
-        setLinkPreviewProps,
-        setLinkOverlayProps,
-        placeholder
-      ),
+      extensions: [
+        StarterKit,
+        LoomExtension,
+        Placeholder.configure({
+          showOnlyWhenEditable: false,
+          placeholder
+        }),
+        Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
+        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
+        TiptapLinkExtension.configure({
+          openOnClick: false,
+          popover: {
+            setLinkState
+          }
+        })
+      ],
       autofocus: autoFocus,
       onUpdate,
       editable: !readOnly
     },
-    [
-      content,
-      readOnly,
-      setLinkMenuProps,
-      setLinkPreviewProps,
-      setLinkOverlayProps,
-      onSubmit,
-      onUpdate
-    ]
+    [content, readOnly, onSubmit, onUpdate]
   )
 
   useEffect(() => {
@@ -254,99 +144,40 @@ const PromptResponseEditor = (props: Props) => {
     }
 
     const draftContent: JSONContent = JSON.parse(maybeDraft)
-    if (areEqual(content, draftContent)) return
+    if (isEqualWhenSerialized(content, draftContent)) return
 
     setEditing(true)
     editor?.commands.setContent(draftContent)
   }, [editor])
 
-  const onAddHyperlink = () => {
-    if (!editor) {
-      return
-    }
-
-    setLinkMenuProps(getLinkProps(editor))
-  }
-
+  if (!editor) return null
   return (
     <>
-      <StyledEditor>
-        {editor && !readOnly && (
-          <>
-            <div>
-              <BubbleMenu editor={editor} tippyOptions={{duration: 100}}>
-                <BubbleMenuWrapper>
-                  <BubbleMenuButton
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    isActive={editor.isActive('bold')}
-                  >
-                    <b>B</b>
-                  </BubbleMenuButton>
-                  <BubbleMenuButton
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    isActive={editor.isActive('italic')}
-                  >
-                    <i>I</i>
-                  </BubbleMenuButton>
-                  <BubbleMenuButton
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
-                    isActive={editor.isActive('strike')}
-                  >
-                    <s>S</s>
-                  </BubbleMenuButton>
-                  <BubbleMenuButton onClick={onAddHyperlink} isActive={editor.isActive('link')}>
-                    <LinkIcon />
-                  </BubbleMenuButton>
-                </BubbleMenuWrapper>
-              </BubbleMenu>
-            </div>
-            <EmojiMenuTipTap tiptapEditor={editor} />
-            {teamId && <MentionsTipTap tiptapEditor={editor} teamId={teamId} />}
-            {linkOverlayProps?.linkMenuProps && (
-              <EditorLinkChangerTipTap
-                text={linkOverlayProps.linkMenuProps.text}
-                link={linkOverlayProps.linkMenuProps.href}
-                tiptapEditor={editor}
-                originCoords={linkOverlayProps.linkMenuProps.originCoords}
-                removeModal={() => {
-                  setLinkOverlayProps(undefined)
-                }}
-              />
-            )}
-            {linkOverlayProps?.linkPreviewProps && (
-              <EditorLinkViewerTipTap
-                href={linkOverlayProps.linkPreviewProps.href}
-                tiptapEditor={editor}
-                addHyperlink={onAddHyperlink}
-                originCoords={linkOverlayProps.linkPreviewProps.originCoords}
-                removeModal={() => {
-                  setLinkOverlayProps(undefined)
-                }}
-              />
-            )}
-          </>
-        )}
-        <EditorContent ref={editorRef} editor={editor} />
-      </StyledEditor>
+      <TipTapEditor
+        linkState={linkState}
+        setLinkState={setLinkState}
+        editor={editor}
+        showBubbleMenu={!readOnly}
+      />
       {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
-        <SubmissionButtonWrapper>
+        <div className='flex items-center justify-end'>
           {!!content && isEditing && (
-            <CancelButton onClick={() => editor && onCancel(editor)} size='medium'>
+            <CancelButton onClick={() => onCancel()} size='medium'>
               Cancel
             </CancelButton>
           )}
           {(!content || isEditing) && (
             <SubmitButton
-              onClick={() => editor && onSubmit(editor)}
+              onClick={() => onSubmit()}
               size='medium'
               disabled={!editor || editor.isEmpty}
             >
               {!content ? 'Submit' : 'Update'}
             </SubmitButton>
           )}
-        </SubmissionButtonWrapper>
+        </div>
       )}
     </>
   )

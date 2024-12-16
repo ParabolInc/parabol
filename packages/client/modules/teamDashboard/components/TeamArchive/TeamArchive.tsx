@@ -12,7 +12,6 @@ import {
 } from 'react-virtualized'
 import {GridCellRenderer, GridCoreProps} from 'react-virtualized/dist/es/Grid'
 import {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
-import extractTextFromDraftString from '~/utils/draftjs/extractTextFromDraftString'
 import getSafeRegex from '~/utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
@@ -140,6 +139,7 @@ const TeamArchive = (props: Props) => {
                 teamId
                 userId
                 content
+                plaintextContent
                 ...NullableTask_task
               }
             }
@@ -191,7 +191,7 @@ const TeamArchive = (props: Props) => {
     if (!dashSearch) return teamMemberFilteredTasks
     const dashSearchRegex = getSafeRegex(dashSearch, 'i')
     const filteredEdges = teamMemberFilteredTasks.edges.filter((edge) =>
-      extractTextFromDraftString(edge.node.content).match(dashSearchRegex)
+      edge.node.plaintextContent.match(dashSearchRegex)
     )
     return {...teamMemberFilteredTasks, edges: filteredEdges}
   }, [dashSearch, teamMemberFilteredTasks])
@@ -300,13 +300,7 @@ const TeamArchive = (props: Props) => {
               key={`cardBlockFor${task.id}`}
               style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem'}}
             >
-              <NullableTask
-                className='max-w-[296px]'
-                dataCy={`archive-task`}
-                key={key}
-                area='teamDash'
-                task={task}
-              />
+              <NullableTask className='max-w-[296px]' key={key} area='teamDash' task={task} />
             </div>
           )
         }}

@@ -1,10 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {convertToRaw} from 'draft-js'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useEditorState from '~/hooks/useEditorState'
 import useMutationProps from '~/hooks/useMutationProps'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import useTaskChildFocus from '~/hooks/useTaskChildFocus'
@@ -12,14 +10,13 @@ import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
 import {PALETTE} from '~/styles/paletteV3'
-import convertToTaskContent from '~/utils/draftjs/convertToTaskContent'
-import isAndroid from '~/utils/draftjs/isAndroid'
 import {ParabolScopingSearchResultItem_task$key} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
-import {AreaEnum} from '../__generated__/UpdateTaskMutation.graphql'
+import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
+import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {Threshold} from '../types/constEnums'
 import Checkbox from './Checkbox'
-import TaskEditor from './TaskEditor/TaskEditor'
+import {TipTapEditor} from './promptResponse/TipTapEditor'
 
 const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
   backgroundColor: isEditingThisItem ? PALETTE.SLATE_100 : 'transparent',
@@ -32,14 +29,6 @@ const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) =
 
 const Task = styled('div')({
   width: '100%'
-})
-
-const StyledTaskEditor = styled(TaskEditor)({
-  width: '100%',
-  paddingTop: 4,
-  fontSize: '16px',
-  lineHeight: 'normal',
-  height: 'auto'
 })
 
 interface Props {
@@ -80,11 +69,14 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const disabled = !isSelected && usedServiceTaskIds.size >= Threshold.MAX_POKER_STORIES
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const [editorState, setEditorState] = useEditorState(content)
-  const editorRef = useRef<HTMLTextAreaElement>(null)
+  const isEditingThisItem = !plaintextContent
+  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+    atmosphere,
+    teamId,
+    readOnly: !isEditingThisItem
+  })
   const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} =
     useTaskChildFocus(serviceTaskId)
-  const isEditingThisItem = !plaintextContent
 
   const updatePokerScope = () => {
     if (submitting || disabled) return
@@ -107,44 +99,25 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   }
 
   const handleTaskUpdate = () => {
+    if (!editor) return
     const isFocused = isTaskFocused()
-    const area: AreaEnum = 'meeting'
-    if (isAndroid) {
-      const editorEl = editorRef.current
-      if (!editorEl || editorEl.type !== 'textarea') return
-      const {value} = editorEl
-      if (!value && !isFocused) {
-        DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
-      } else {
-        const initialContentState = editorState.getCurrentContent()
-        const initialText = initialContentState.getPlainText()
-        if (initialText === value) return
-        const updatedTask = {
-          id: serviceTaskId,
-          content: convertToTaskContent(value)
-        }
-        UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
-      }
+    if (isFocused) return
+    if (editor.isEmpty) {
+      DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
       return
     }
-    const nextContentState = editorState.getCurrentContent()
-    const hasText = nextContentState.hasText()
-    if (!hasText && !isFocused) {
-      DeleteTaskMutation(atmosphere, {taskId: serviceTaskId})
-    } else {
-      const nextContent = JSON.stringify(convertToRaw(nextContentState))
-      if (nextContent === content) return
-      const updatedTask = {
-        id: serviceTaskId,
-        content: nextContent
-      }
-      UpdateTaskMutation(atmosphere, {updatedTask, area}, {onCompleted: updatePokerScope})
+    const nextContentJSON = editor.getJSON()
+    if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
+    const updatedTask = {
+      id: serviceTaskId,
+      content: JSON.stringify(nextContentJSON)
     }
+    UpdateTaskMutation(atmosphere, {updatedTask}, {})
   }
 
   const ref = useRef<HTMLDivElement>(null)
   useScrollIntoView(ref, isEditingThisItem)
-
+  if (!editor) return null
   return (
     <Item
       onClick={() => {
@@ -167,14 +140,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           addTaskChild('root')
         }}
       >
-        <StyledTaskEditor
-          dataCy={`task`}
-          editorRef={editorRef}
-          readOnly={!isEditingThisItem}
-          editorState={editorState}
-          setEditorState={setEditorState}
-          teamId={teamId}
-          useTaskChild={useTaskChild}
+        <TipTapEditor
+          editor={editor}
+          linkState={linkState}
+          setLinkState={setLinkState}
+          useLinkEditor={() => useTaskChild('editor-link-changer')}
         />
       </Task>
     </Item>

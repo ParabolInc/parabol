@@ -54,7 +54,7 @@ export default {
     if (!task) {
       return standardError(new Error('Task not found'), {userId: viewerId})
     }
-    const {content: rawContentStr, teamId, userId} = task
+    const {content: rawContentJSON, teamId, userId} = task
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
@@ -124,7 +124,7 @@ export default {
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createTaskResponse = await taskIntegrationManager.createTask({
-      rawContentStr,
+      rawContentJSON: JSON.parse(rawContentJSON),
       integrationRepoId
     })
 

@@ -68,7 +68,9 @@ const useTrebuchetEvents = () => {
           serverVersionRef.current = obj.version
           if ('serviceWorker' in navigator) {
             const registration = await navigator.serviceWorker.getRegistration()
-            registration?.update().catch()
+            registration?.update().catch(() => {
+              /*ignore*/
+            })
           }
         } else if (recentDisconnectsRef.current.length > 0) {
           // retry if reconnect and versions are the same

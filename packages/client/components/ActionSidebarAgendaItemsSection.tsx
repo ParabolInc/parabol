@@ -35,7 +35,9 @@ const ActionSidebarAgendaItemsSection = (props: Props) => {
   )
   const {team} = meeting
   const handleClick = async (stageId: string) => {
-    gotoStageId(stageId).catch()
+    gotoStageId(stageId).catch(() => {
+      /*ignore*/
+    })
     handleMenuClick()
   }
   // show agenda (no blur) at all times if the updates phase isNavigable

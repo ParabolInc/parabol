@@ -3,7 +3,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {checkTeamsLimit} from '../../../billing/helpers/teamLimitsCheck'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
 import getKysely from '../../../postgres/getKysely'
 import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
@@ -19,8 +18,8 @@ import {InternalContext} from '../../graphql'
 import isValid from '../../isValid'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
+import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
-import generateWholeMeetingSummary from './generateWholeMeetingSummary'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
@@ -34,22 +33,20 @@ const getTranscription = async (recallBotId?: string | null) => {
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
-  const {id: meetingId, phases, facilitatorUserId, teamId, recallBotId} = meeting
+  const {id: meetingId, phases, teamId, recallBotId} = meeting
   const pg = getKysely()
-  const [reflectionGroups, reflections, sentimentScore] = await Promise.all([
+  const [reflectionGroups, reflections, sentimentScore, transcription] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
-    generateWholeMeetingSentimentScore(meetingId, facilitatorUserId!, dataLoader)
+    generateWholeMeetingSentimentScore(meetingId, dataLoader),
+    getTranscription(recallBotId),
+    generateRetroSummary(meetingId, dataLoader)
   ])
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
 
   const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-  const [summary, transcription] = await Promise.all([
-    generateWholeMeetingSummary(discussionIds, meetingId, teamId, facilitatorUserId!, dataLoader),
-    getTranscription(recallBotId)
-  ])
   const commentCounts = (
     await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
   ).filter(isValid)
@@ -67,7 +64,6 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
       topicCount: reflectionGroupIds.length,
       reflectionCount: reflections.length,
       sentimentScore,
-      summary,
       transcription
     })
     .where('id', '=', meetingId)
@@ -140,7 +136,6 @@ const safeEndRetrospective = async ({
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
   summarizeRetroMeeting(completedRetrospective, context)
   analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
-  checkTeamsLimit(team.orgId, dataLoader)
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventRetroComplete({
