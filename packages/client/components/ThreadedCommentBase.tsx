@@ -11,6 +11,7 @@ import UpdateCommentContentMutation from '~/mutations/UpdateCommentContentMutati
 import isTempId from '~/utils/relay/isTempId'
 import useEventCallback from '../hooks/useEventCallback'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
+import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import deletedAvatar from '../styles/theme/images/deleted-avatar-placeholder.svg'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
@@ -95,12 +96,12 @@ const ThreadedCommentBase = (props: Props) => {
   const onSubmit = useEventCallback(() => {
     if (submitting || isTempId(commentId) || !editor || editor.isEmpty) return
     editor.setEditable(false)
-    const nextContent = JSON.stringify(editor.getJSON())
-    if (content === nextContent) return
+    const nextContentJSON = editor.getJSON()
+    if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
     submitMutation()
     UpdateCommentContentMutation(
       atmosphere,
-      {commentId, content: nextContent, meetingId},
+      {commentId, content: JSON.stringify(nextContentJSON), meetingId},
       {onError, onCompleted}
     )
   })
