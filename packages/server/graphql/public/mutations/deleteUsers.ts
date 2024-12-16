@@ -91,11 +91,14 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
     })
   )
 
+  const unauthorizedEmails = usersToDelete
+    .filter((_, index) => !userPermissions[index])
+    .map((user) => user.email)
   // If viewer doesn't have permission for ANY user and is not super user, return error
   if (!su && userPermissions.some((hasPermission) => !hasPermission)) {
     return {
       error: {
-        message: 'You must have permission to remove all specified users'
+        message: `You don't have permission to remove the following users: ${unauthorizedEmails.join(', ')}`
       }
     }
   }
