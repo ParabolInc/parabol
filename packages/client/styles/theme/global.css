@@ -177,6 +177,9 @@
 
 /** Customize TipTap */
 
+.ProseMirror {
+  width: 100%;
+}
 .ProseMirror :is(ul, ol) {
   list-style-position: outside;
   padding-inline-start: 16px;

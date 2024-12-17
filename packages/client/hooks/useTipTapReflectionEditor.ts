@@ -76,7 +76,7 @@ export const useTipTapReflectionEditor = (
       ].filter(isValid),
       editable: !readOnly
     },
-    [readOnly]
+    [contentJSON, readOnly]
   )
   return {editor: editorRef.current, linkState, setLinkState}
 }

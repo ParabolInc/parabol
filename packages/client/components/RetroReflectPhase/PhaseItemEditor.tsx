@@ -123,7 +123,7 @@ const PhaseItemEditor = (props: Props) => {
     })
   })
   const {editor, linkState, setLinkState} = useTipTapReflectionEditor(
-    JSON.stringify({type: 'doc', content: []}),
+    JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
       teamId,

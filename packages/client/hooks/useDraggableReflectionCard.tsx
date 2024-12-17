@@ -335,8 +335,9 @@ const useDragAndDrop = (
       // We want to clone the reflection card after the properties were set correctly, especially isDragging, thus the mutation needs to run first.
       // in some cases, e.g. moving a card out of a reflection group, the component tree is shuffled which will set the drag.ref to null.
       const dragRef = drag.ref
-      StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
+      // clone must come first because once isViewerDragging gets set then the tiptap element disappears if dragging from an expanded stack ???
       drag.clone = cloneReflection(dragRef, reflectionId)
+      StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
     }
     if (!drag.clone) return
     drag.clientY = clientY

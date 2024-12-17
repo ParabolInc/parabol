@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {MouseEvent, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -19,7 +18,6 @@ import useTooltip from '../../hooks/useTooltip'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
-import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {PALETTE} from '../../styles/paletteV3'
 import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
@@ -296,7 +294,6 @@ const ReflectionCard = (props: Props) => {
     !isDemoRoute() &&
     (isHovering || !isDesktop)
   if (!editor) return null
-  console.log('render a card', generateText(editor.getJSON(), serverTipTapExtensions))
   return (
     <ReflectionCardRoot
       data-cy={`${dataCy}-root`}
@@ -309,15 +306,15 @@ const ReflectionCard = (props: Props) => {
 
       <div
         className={cn(
-          'relative   w-full overflow-auto text-sm leading-5 text-slate-700',
-          isClipped ? 'max-h-11' : 'max-h-[104px]',
-          userSelect
+          'relative w-full overflow-auto text-sm leading-5 text-slate-700',
+          isClipped ? 'max-h-11' : 'max-h-[104px]'
         )}
       ></div>
       <TipTapEditor
         className={cn(
           'flex min-h-4 w-full items-center px-4 pt-3 leading-4',
-          disableAnonymity ? 'pb-0' : 'pb-3'
+          disableAnonymity ? 'pb-0' : 'pb-3',
+          userSelect
         )}
         editor={editor}
         linkState={linkState}
