@@ -115,13 +115,14 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   if (newMetadata) {
     // The user is updating their SAML metadata
     // Revalidate it & persist to DB
+    // Generate the URL to verify the metadata, don't persist it as it needs to be generated fresh
     const url = getSignOnURL(metadata, normalizedName)
     if (url instanceof Error) {
       return standardError(url)
     }
     await pg
       .updateTable('SAML')
-      .set({metadata: newMetadata, metadataURL: newMetadataURL, url})
+      .set({metadata: newMetadata, metadataURL: newMetadataURL})
       .where('id', '=', normalizedName)
       .execute()
   }
