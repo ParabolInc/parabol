@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.13.0](https://github.com/ParabolInc/parabol/compare/v8.12.4...v8.13.0) (2024-12-17)
+
+
+### Added
+
+* remove sso without emailing all users ([#10608](https://github.com/ParabolInc/parabol/issues/10608)) ([670c5a0](https://github.com/ParabolInc/parabol/commit/670c5a05e10969ac7da7d9e92b24c1e65b9a83e0))
+
 ## [8.12.4](https://github.com/ParabolInc/parabol/compare/v8.12.3...v8.12.4) (2024-12-16)
 
 
