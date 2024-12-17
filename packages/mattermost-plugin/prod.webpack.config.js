@@ -94,7 +94,7 @@ module.exports = (config) => {
     plugins: [
       new ModuleFederationPlugin({
         name: "parabol",
-        filename: "remoteEntry.js",
+        filename: "mattermost-plugin-entry.js",
         exposes: {
           "./plugin": "./index",
         },
