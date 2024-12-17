@@ -14,7 +14,8 @@ const processEmailPasswordReset = async (
   ip: string,
   email: string,
   identities: AuthIdentity[],
-  userId: string
+  userId: string,
+  sendEmail?: boolean | null
 ) => {
   const pg = getKysely()
   const tokenBuffer = await randomBytes(48)
@@ -37,6 +38,8 @@ const processEmailPasswordReset = async (
     .execute()
 
   await updateUser({identities}, userId)
+
+  if (sendEmail === false) return {success: true}
 
   const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
   const success = await getMailManager().sendEmail({
