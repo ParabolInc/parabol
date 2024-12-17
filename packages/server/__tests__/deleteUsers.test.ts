@@ -16,7 +16,11 @@ test('Delete users by email', async () => {
             }
           }
           ... on DeleteUsersSuccess {
-            deletedEmails
+            deletedUsers {
+              id
+              email
+              isRemoved
+            }
           }
         }
       }
@@ -26,13 +30,7 @@ test('Delete users by email', async () => {
     }
   })
 
-  expect(deleteUsers).toMatchObject({
-    data: {
-      deleteUsers: {
-        deletedEmails: emails
-      }
-    }
-  })
+  expect(deleteUsers.data.deleteUsers.deletedUsers).toHaveLength(2)
 
   // Verify both users were deleted
   for (const userId of userIds) {

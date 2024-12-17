@@ -103,14 +103,16 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
     }
   }
 
-  const deletedEmails = []
-  for (const userToDelete of usersToDelete) {
-    const deletedUserEmail = await softDeleteUser(userToDelete.id, dataLoader)
-    await markUserSoftDeleted(userToDelete.id, deletedUserEmail, 'Mass user deletion')
-    deletedEmails.push(userToDelete.email)
-  }
+  // Perform deletions
+  const deletedUserIds = await Promise.all(
+    usersToDelete.map(async (userToDelete) => {
+      const deletedUserEmail = await softDeleteUser(userToDelete.id, dataLoader)
+      await markUserSoftDeleted(userToDelete.id, deletedUserEmail, 'Mass user deletion')
+      return userToDelete.id
+    })
+  )
 
-  return {deletedEmails}
+  return {deletedUserIds}
 }
 
 export default deleteUsers

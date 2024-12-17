@@ -82,6 +82,7 @@
           "CreateStripeSubscriptionSuccess": "./types/CreateStripeSubscriptionSuccess#CreateStripeSubscriptionSuccessSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
           "DeleteCommentSuccess": "./types/DeleteCommentSuccess#DeleteCommentSuccessSource",
+          "DeleteUsersSuccess": "./types/DeleteUsersSuccess#DeleteUsersSuccessSource",
           "Discussion": "../../postgres/types/index#Discussion",
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",

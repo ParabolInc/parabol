@@ -1,3 +1,11 @@
 type DeleteUsersSuccess {
-  deletedEmails: [String!]!
+  """
+  the ids of the deleted users
+  """
+  deletedUserIds: [ID!]
+
+  """
+  the deleted users
+  """
+  deletedUsers: [User!]
 }
