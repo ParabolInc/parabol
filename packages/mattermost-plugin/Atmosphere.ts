@@ -35,6 +35,7 @@ const fetchFunction = (state: State) => (params: RequestParameters, variables: V
       body: JSON.stringify({
         type: 'start',
         payload: {
+          documentId: params.id,
           query: params.text,
           variables
         }

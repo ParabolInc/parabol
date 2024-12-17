@@ -15,7 +15,7 @@ const runChild = (cmd) => {
     })
     build.stderr.pipe(process.stderr)
     // enable this for debugging webpack scripts
-    // build.stdout.pipe(process.stdout)
+    build.stdout.pipe(process.stdout)
   })
 }
 
@@ -37,10 +37,11 @@ const prod = async (isDeploy, noDeps) => {
       runChild(
         `yarn webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isDeploy}`
       ),
-      runChild(
-        `yarn workspace parabol-mattermost-plugin webpack --config ./prod.webpack.config.js --env=minimize=${isDeploy}`
-      )
     ])
+    Logger.log('building mattermost-plugin')
+    await runChild(
+      `yarn workspace parabol-mattermost-plugin webpack --config ./prod.webpack.config.js --env=minimize=${isDeploy}`
+    )
   } catch (e) {
     Logger.log('error webpackifying', e)
     process.exit(1)

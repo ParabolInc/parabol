@@ -4,7 +4,7 @@ const path = require('path')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
-const buildPath = path.join(PROJECT_ROOT, 'build', 'components')
+const buildPath = path.join(PROJECT_ROOT, 'build')
 
 const clientTransformRules = (projectRoot) => {
   const clientRoot = path.join(projectRoot, 'packages', 'mattermost-plugin')
@@ -58,6 +58,9 @@ module.exports = (config) => {
     output: {
       path: buildPath,
       publicPath: "auto",
+      filename: 'mattermost-plugin_[name]_[contenthash].js',
+      chunkFilename: 'mattermost-plugin_[name]_[contenthash].js',
+      assetModuleFilename: 'mattermost-plugin_[name]_[contenthash][ext]'
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
