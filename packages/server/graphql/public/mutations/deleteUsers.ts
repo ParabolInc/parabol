@@ -19,7 +19,7 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
   {authToken, dataLoader}: GQLContext
 ) => {
   if (emails.length === 0) {
-    return {error: {message: 'No any emails were provided'}}
+    return {error: {message: 'No emails provided'}}
   }
 
   if (emails.length > USER_BATCH_DELETE_LIMIT) {
@@ -32,83 +32,65 @@ const deleteUsers: MutationResolvers['deleteUsers'] = async (
   if (!viewer) return {error: {message: 'Invalid viewer'}}
 
   const usersToDelete = await getUsersByEmails(emails)
-
   if (usersToDelete.length === 0) {
     return {error: {message: 'No valid users found to delete'}}
+  } else if (usersToDelete.length !== emails.length) {
+    const missingEmails = emails.filter(
+      (email) => !usersToDelete.some((user) => user.email === email)
+    )
+    return {error: {message: `Some users were not found: ${missingEmails.join(', ')}`}}
   }
 
+  // First check all permissions before making any changes
   const viewerOrgUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-  const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
-
-  // Pre-compute org-level permissions
-  const viewerOrgPermissions = await Promise.all(
-    viewerOrgUsers.map(async (orgUser) => ({
-      orgId: orgUser.orgId,
-      isOrgAdmin: await isUserOrgAdmin(viewerId, orgUser.orgId, dataLoader),
-      isBillingLeader: await isUserBillingLeader(viewerId, orgUser.orgId, dataLoader)
-    }))
-  )
-
-  // Pre-compute team-level permissions
-  const viewerTeamLeadPermissions = new Set(
-    viewerTeamMembers.filter((tm) => tm.isLead).map((tm) => tm.teamId)
-  )
-
-  // Now check permissions for each user to delete
-  const userPermissions = await Promise.all(
+  const permissionChecks = await Promise.all(
     usersToDelete.map(async (userToDelete) => {
-      if (!userToDelete) return false
+      // Super users can delete anyone
+      if (su) return {userId: userToDelete.id, hasPermission: true}
 
       const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userToDelete.id)
-      const teamMembers = await dataLoader.get('teamMembersByUserId').load(userToDelete.id)
 
-      // Check org-level permissions and domain ownership
+      // Check permissions for each org the user belongs to
       const hasOrgPermission = await Promise.all(
-        orgUsers.map(async (orgUser) => {
-          const viewerOrgPermission = viewerOrgPermissions.find((p) => p.orgId === orgUser.orgId)
-          if (
-            !viewerOrgPermission ||
-            !(viewerOrgPermission.isOrgAdmin || viewerOrgPermission.isBillingLeader)
-          ) {
-            return false
-          }
+        orgUsers.map(async ({orgId}) => {
+          const viewerOrgUser = viewerOrgUsers.find((vu) => vu.orgId === orgId)
+          if (!viewerOrgUser) return false
 
-          // Check if org owns the user's email domain
-          const organization = await dataLoader.get('organizations').loadNonNull(orgUser.orgId)
-          const userDomain = getDomainFromEmail(userToDelete.email)
-          return organization.activeDomain === userDomain
+          const [isOrgAdmin, isBillingLeader] = await Promise.all([
+            isUserOrgAdmin(viewerId, orgId, dataLoader),
+            isUserBillingLeader(viewerId, orgId, dataLoader)
+          ])
+
+          if (!(isOrgAdmin || isBillingLeader)) return false
+
+          const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+          return organization.activeDomain === getDomainFromEmail(userToDelete.email)
         })
       )
 
-      if (hasOrgPermission.some(Boolean)) return true
-
-      // Check team-level permissions
-      const hasTeamPermission = teamMembers.some((userTeamMember) =>
-        viewerTeamLeadPermissions.has(userTeamMember.teamId)
-      )
-
-      return hasTeamPermission
+      return {
+        userId: userToDelete.id,
+        hasPermission: hasOrgPermission.some(Boolean)
+      }
     })
   )
 
-  const unauthorizedEmails = usersToDelete
-    .filter((_, index) => !userPermissions[index])
-    .map((user) => user.email)
-  // If viewer doesn't have permission for ANY user and is not super user, return error
-  if (!su && userPermissions.some((hasPermission) => !hasPermission)) {
+  // Check if we have permission to delete ALL users
+  const unauthorizedUsers = usersToDelete.filter((_, idx) => !permissionChecks[idx]!.hasPermission)
+  if (unauthorizedUsers.length > 0) {
     return {
       error: {
-        message: `You don't have permission to remove the following users: ${unauthorizedEmails.join(', ')}`
+        message: `You don't have permission to remove the following users: ${unauthorizedUsers.map((user) => user.email).join(', ')}`
       }
     }
   }
 
-  // Perform deletions
+  // If we have permission for all users, perform the deletions
   const deletedUserIds = await Promise.all(
-    usersToDelete.map(async (userToDelete) => {
-      const deletedUserEmail = await softDeleteUser(userToDelete.id, dataLoader)
-      await markUserSoftDeleted(userToDelete.id, deletedUserEmail, 'Mass user deletion')
-      return userToDelete.id
+    permissionChecks.map(async ({userId}) => {
+      const deletedUserEmail = await softDeleteUser(userId, dataLoader)
+      await markUserSoftDeleted(userId, deletedUserEmail, 'Mass user deletion')
+      return userId
     })
   )
 
