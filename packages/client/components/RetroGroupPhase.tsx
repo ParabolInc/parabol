@@ -63,7 +63,7 @@ const RetroGroupPhase = (props: Props) => {
         }
         organization {
           tier
-          hasSuggestGroupsFlag: featureFlag(featureName: "suggestGroups")
+          useAI
         }
       }
     `,
@@ -80,7 +80,7 @@ const RetroGroupPhase = (props: Props) => {
     autogroupReflectionGroups,
     resetReflectionGroups
   } = meeting
-  const {hasSuggestGroupsFlag, tier} = organization
+  const {useAI, tier} = organization
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -114,7 +114,7 @@ const RetroGroupPhase = (props: Props) => {
             <PhaseHeaderDescription>
               {'Drag cards to group by common topics'}
             </PhaseHeaderDescription>
-            {hasSuggestGroupsFlag &&
+            {useAI &&
               (showSuggestGroups ? (
                 <ButtonWrapper>
                   <StyledButton

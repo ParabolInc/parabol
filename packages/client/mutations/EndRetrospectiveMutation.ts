@@ -124,11 +124,6 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
       const search = new URLSearchParams()
-      const hasSuggestGroups = !!autogroupReflectionGroups?.length
-      if (hasSuggestGroups) {
-        const suggestGroupsStr = reflections.length > 40 ? 'sg-xl' : 'sg'
-        search.append(suggestGroupsStr, 'true')
-      }
       if (hasOpenAISummary) {
         search.append('ai', 'true')
       }
