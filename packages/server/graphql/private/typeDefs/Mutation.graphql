@@ -474,6 +474,11 @@ type Mutation {
     Add a local auth with a dummy hashed password
     """
     addLocal: Boolean!
+
+    """
+    Send an email to the user to let them know their auth identity has been removed and they need to reset their password. Defaults to true.
+    """
+    sendEmail: Boolean
   ): RemoveAuthIdentityPayload!
 
   """
