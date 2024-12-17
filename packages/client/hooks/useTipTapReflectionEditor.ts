@@ -1,18 +1,18 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
-import {Extension, useEditor} from '@tiptap/react'
+import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
-import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
+import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
+import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {BlurOnSubmit} from '../utils/tiptap/BlurOnSubmit'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
-import {useTipTapEditorContent} from './useTipTapEditorContent'
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
@@ -30,12 +30,11 @@ export const useTipTapReflectionEditor = (
   }
 ) => {
   const {atmosphere, teamId, readOnly, placeholder, onEnter} = options
-  const [contentJSON, editorRef] = useTipTapEditorContent(content)
   const [linkState, setLinkState] = useState<LinkMenuState>(null)
   const placeholderRef = useRef(placeholder)
-  // Keeping it in a ref means we don't have to re-initialize the editor, so content is preserved
+  const [contentJSON] = useState(() => JSON.parse(content))
   placeholderRef.current = placeholder
-  editorRef.current = useEditor(
+  const editor = useEditor(
     {
       content: contentJSON,
       extensions: [
@@ -43,7 +42,9 @@ export const useTipTapReflectionEditor = (
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
-          placeholder: '*New Reflection*'
+          placeholder: () => {
+            return placeholderRef.current || '*New Reflection*'
+          }
         }),
         Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
         Mention.configure(
@@ -74,9 +75,23 @@ export const useTipTapReflectionEditor = (
           }),
         !onEnter && BlurOnSubmit
       ].filter(isValid),
+      autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly
     },
-    [contentJSON, readOnly]
+    []
   )
-  return {editor: editorRef.current, linkState, setLinkState}
+  useEffect(() => {
+    if (!editor) return
+    const oldDoc = editor.getJSON()
+    const newDoc = JSON.parse(content)
+    if (isEqualWhenSerialized(oldDoc, newDoc)) return
+    editor.commands.setContent(newDoc)
+  }, [content])
+
+  useEffect(() => {
+    if (!editor) return
+    editor.setEditable(!readOnly)
+  }, [readOnly])
+
+  return {editor, linkState, setLinkState}
 }

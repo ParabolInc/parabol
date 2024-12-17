@@ -18,6 +18,7 @@ import useTooltip from '../../hooks/useTooltip'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
+import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import {PALETTE} from '../../styles/paletteV3'
 import {Breakpoint, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
@@ -185,11 +186,6 @@ const ReflectionCard = (props: Props) => {
     phases,
     isSpotlightSource
   )
-  const userSelect = readOnly
-    ? phaseType === 'discuss' || phaseType === 'vote'
-      ? 'text'
-      : 'none'
-    : undefined
   const {editor, linkState, setLinkState} = useTipTapReflectionEditor(content, {
     atmosphere,
     teamId,
@@ -230,14 +226,13 @@ const ReflectionCard = (props: Props) => {
 
   const handleContentUpdate = () => {
     if (!editor) return
-    // const contentState = editorState.getCurrentContent()
     if (editor.isEmpty) {
       submitMutation()
       RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
       return
     }
     const nextContentJSON = editor.getJSON()
-    // if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
+    if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
     submitMutation()
     UpdateReflectionContentMutation(
       atmosphere,
@@ -293,7 +288,15 @@ const ReflectionCard = (props: Props) => {
     !isComplete &&
     !isDemoRoute() &&
     (isHovering || !isDesktop)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) {
+      el.scrollTop = isClipped ? el.scrollHeight : 0
+    }
+  }, [isClipped])
   if (!editor) return null
+
   return (
     <ReflectionCardRoot
       data-cy={`${dataCy}-root`}
@@ -305,23 +308,29 @@ const ReflectionCard = (props: Props) => {
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
 
       <div
+        ref={scrollRef}
         className={cn(
           'relative w-full overflow-auto text-sm leading-5 text-slate-700',
           isClipped ? 'max-h-11' : 'max-h-[104px]'
         )}
-      ></div>
-      <TipTapEditor
-        className={cn(
-          'flex min-h-4 w-full items-center px-4 pt-3 leading-4',
-          disableAnonymity ? 'pb-0' : 'pb-3',
-          userSelect
-        )}
-        editor={editor}
-        linkState={linkState}
-        setLinkState={setLinkState}
-        onBlur={handleEditorBlur}
-        onFocus={handleEditorFocus}
-      />
+      >
+        <TipTapEditor
+          className={cn(
+            'flex min-h-4 w-full items-center px-4 pt-3 leading-4',
+            disableAnonymity ? 'pb-0' : 'pb-3',
+            readOnly
+              ? phaseType === 'discuss' || phaseType === 'vote'
+                ? 'select-text'
+                : 'select-none'
+              : undefined
+          )}
+          editor={editor}
+          linkState={linkState}
+          setLinkState={setLinkState}
+          onFocus={handleEditorFocus}
+          onBlur={handleEditorBlur}
+        />
+      </div>
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
         <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
