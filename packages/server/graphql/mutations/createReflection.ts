@@ -1,16 +1,17 @@
+import {generateText} from '@tiptap/core'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
+import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -59,13 +60,13 @@ export default {
     }
 
     // VALIDATION
-    const normalizedContent = normalizeRawDraftJS(content)
+    const normalizedContent = convertToTipTap(content)
     if (normalizedContent.length > 2000) {
       return {error: {message: 'Reflection content is too long'}}
     }
 
     // RESOLUTION
-    const plaintextContent = extractTextFromDraftString(normalizedContent)
+    const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
 
     const [entities, sentimentScore] = await Promise.all([
       getReflectionEntities(plaintextContent),
@@ -78,7 +79,7 @@ export default {
     const reflection = {
       id: generateUID(),
       creatorId: viewerId,
-      content: normalizedContent,
+      content: JSON.stringify(normalizedContent),
       plaintextContent,
       entities,
       sentimentScore,

@@ -1,4 +1,3 @@
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {AnyMeeting} from '../../../postgres/types/Meeting'
@@ -12,7 +11,7 @@ const removeEmptyReflections = async (meeting: AnyMeeting, dataLoader: DataLoade
   const emptyReflectionGroupIds = [] as string[]
   const emptyReflectionIds = [] as string[]
   reflections.forEach((reflection) => {
-    const text = extractTextFromDraftString(reflection.content)
+    const text = reflection.plaintextContent
     if (text.length === 0) {
       emptyReflectionGroupIds.push(reflection.reflectionGroupId)
       emptyReflectionIds.push(reflection.id)
