@@ -36,6 +36,9 @@ const prod = async (isDeploy, noDeps) => {
       ),
       runChild(
         `yarn webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isDeploy}`
+      ),
+      runChild(
+        `yarn workspace parabol-mattermost-plugin webpack --config ./prod.webpack.config.js --env=minimize=${isDeploy}`
       )
     ])
   } catch (e) {
