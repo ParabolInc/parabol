@@ -420,11 +420,11 @@ class OpenAIServerManager {
 
   async generateGroupTitle(reflections: {plaintextContent: string}[]) {
     if (!this.openAIApi) return null
-    const prompt = `Given these related retrospective comments, generate a short (2-4 words) theme or title that captures their essence. The title should be clear and actionable:
+    const prompt = `Generate a short (2-4 words) theme or title that captures the essence of these related retrospective comments. The title should be clear and actionable.
 
 ${reflections.map((r) => r.plaintextContent).join('\n')}
 
-Return only the title, nothing else. Do not include quote marks around the title.`
+Important: Respond with ONLY the title itself. Do not include any prefixes like "Title:" or any quote marks. Do not provide any additional explanation.`
 
     try {
       const response = await this.openAIApi.chat.completions.create({
@@ -442,7 +442,9 @@ Return only the title, nothing else. Do not include quote marks around the title
         presence_penalty: 0
       })
       const title =
-        (response.choices[0]?.message?.content?.trim() as string)?.replaceAll(/['"]/g, '') ?? null
+        (response.choices[0]?.message?.content?.trim() as string)
+          ?.replace(/^[Tt]itle:*\s*/gi, '') // Remove "Title:" prefix
+          ?.replaceAll(/['"]/g, '') ?? null
 
       return title
     } catch (e) {

@@ -15,9 +15,10 @@ const addReflectionToGroup = async (
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
-  const reflectionGroup = await dataLoader
-    .get('retroReflectionGroups')
-    .loadNonNull(reflectionGroupId)
+  const [reflectionGroup, oldReflectionGroup] = await Promise.all([
+    dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
+    dataLoader.get('retroReflectionGroups').loadNonNull(oldReflectionGroupId)
+  ])
   dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)
   dataLoader.get('retroReflectionGroups').clear(oldReflectionGroupId)
 
@@ -56,7 +57,18 @@ const addReflectionToGroup = async (
       .get('retroReflectionsByGroupId')
       .load(oldReflectionGroupId)
 
-    if (smartTitle) {
+    const oldGroupHasSingleReflectionCustomTitle =
+      oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
+    const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
+
+    if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
+      // Edge case of dragging a single card with a custom group name on a group with smart name
+      await pg
+        .updateTable('RetroReflectionGroup')
+        .set({title: oldReflectionGroup.title, smartTitle: smartTitle ?? ''})
+        .where('id', '=', reflectionGroupId)
+        .execute()
+    } else if (smartTitle) {
       // smartTitle exists when autogrouping or resetting groups
       await updateSmartGroupTitle(reflectionGroupId, smartTitle)
       reflectionGroup.smartTitle = smartTitle
