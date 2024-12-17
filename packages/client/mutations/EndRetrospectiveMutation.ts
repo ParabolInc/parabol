@@ -28,9 +28,6 @@ graphql`
       reflectionCount
       taskCount
       topicCount
-      autogroupReflectionGroups {
-        groupTitle
-      }
       organization {
         useAI
       }
@@ -97,14 +94,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {
-    id: meetingId,
-    teamId,
-    reflectionGroups,
-    phases,
-    autogroupReflectionGroups,
-    organization
-  } = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases, organization} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
