@@ -1,4 +1,0 @@
-"""
-Return value for getSAMLConfigForDomain, which could be an error
-"""
-union GetSAMLConfigForDomainPayload = ErrorPayload | GetSAMLConfigForDomainSuccess

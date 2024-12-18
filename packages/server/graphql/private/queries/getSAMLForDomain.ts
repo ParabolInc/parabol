@@ -1,20 +1,23 @@
 import getKysely from '../../../postgres/getKysely'
 import standardError from '../../../utils/standardError'
+import {QueryResolvers} from '../resolverTypes'
 
-const getSAMLConfigForDomain = async (domain: string) => {
+const getSAMLForDomain: QueryResolvers['getSAMLForDomain'] = async (_parent, {domain}) => {
   const pg = getKysely()
 
-  const response = await pg
+  const samlResult = await pg
     .selectFrom('SAML')
     .innerJoin('SAMLDomain', 'SAML.id', 'SAMLDomain.samlId')
-    .select(['SAML.id as slug', 'SAML.orgId'])
+    .selectAll('SAML')
     .where('SAMLDomain.domain', '=', domain.toLowerCase())
     .executeTakeFirst()
 
-  if (!response) {
+  if (!samlResult) {
     return standardError(new Error('No SAML configuration found for domain'))
   }
-  return response
+  return {
+    saml: samlResult
+  }
 }
 
-export default getSAMLConfigForDomain
+export default getSAMLForDomain
