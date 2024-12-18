@@ -1,7 +1,11 @@
+interface Node {
+  id: ID!
+}
+
 """
 A team
 """
-type Team {
+type Team implements Node {
   """
   A shortid for the team
   """
