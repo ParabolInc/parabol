@@ -1,0 +1,4 @@
+"""
+Return value for getSAMLForDomain, which could be an error
+"""
+union GetSAMLForDomainPayload = ErrorPayload | GetSAMLForDomainSuccess
