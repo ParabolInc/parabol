@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.14.0](https://github.com/ParabolInc/parabol/compare/v8.13.1...v8.14.0) (2024-12-18)
+
+
+### Added
+
+* get saml config for domain ([#10618](https://github.com/ParabolInc/parabol/issues/10618)) ([2da5af3](https://github.com/ParabolInc/parabol/commit/2da5af3d845cd1bb6b445ca20d3807cd229d150b))
+* update suggest group titles ([#10568](https://github.com/ParabolInc/parabol/issues/10568)) ([81043ad](https://github.com/ParabolInc/parabol/commit/81043ad1a1265ca567778f95a5507cb5ae35734b))
+
 ## [8.13.1](https://github.com/ParabolInc/parabol/compare/v8.13.0...v8.13.1) (2024-12-18)
 
 

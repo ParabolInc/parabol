@@ -138,4 +138,11 @@ type Query {
     """
     includeInactive: Boolean! = false
   ): [Organization!]
+
+  getSAMLForDomain(
+    """
+    the domain to get the SAML record for
+    """
+    domain: String!
+  ): GetSAMLForDomainPayload
 }

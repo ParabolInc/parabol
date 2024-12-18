@@ -128,9 +128,11 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   const {id: reflectionGroupId, title} = reflectionGroup
   const dirtyRef = useRef(false)
   const initialTitleRef = useRef(title)
-  const isLoading = title === ''
+
+  const isLoading = title === '' && !dirtyRef.current
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dirtyRef.current = true
     const title = e.target.value
     commitLocalUpdate(atmosphere, (store) => {
       const reflectionGroup = store.get(reflectionGroupId)

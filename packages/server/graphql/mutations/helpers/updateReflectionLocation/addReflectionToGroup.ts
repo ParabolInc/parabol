@@ -2,6 +2,7 @@ import dndNoise from 'parabol-client/utils/dndNoise'
 import getKysely from '../../../../postgres/getKysely'
 import updateGroupTitle from '../updateGroupTitle'
 import {GQLContext} from './../../../graphql'
+import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const addReflectionToGroup = async (
   reflectionId: string,
@@ -67,6 +68,11 @@ const addReflectionToGroup = async (
         .set({title: oldReflectionGroup.title, smartTitle: smartTitle ?? ''})
         .where('id', '=', reflectionGroupId)
         .execute()
+    } else if (smartTitle) {
+      // smartTitle exists when autogrouping or resetting groups
+      await updateSmartGroupTitle(reflectionGroupId, smartTitle)
+      reflectionGroup.smartTitle = smartTitle
+      reflectionGroup.title = smartTitle
     } else {
       const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       await updateGroupTitle({
