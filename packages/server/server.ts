@@ -21,7 +21,7 @@ import handleOpen from './socketHandlers/handleOpen'
 import handleUpgrade from './socketHandlers/handleUpgrade'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
-import staticFileHandler from './staticFileHandler'
+import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
 import SAMLHandler from './utils/SAMLHandler'
 
@@ -55,7 +55,8 @@ uws
   .get('/favicon.ico', PWAHandler)
   .get('/sw.js', PWAHandler)
   .get('/manifest.json', PWAHandler)
-  .get('/static/*', staticFileHandler)
+  .get('/static/*', createStaticFileHandler('/static/'))
+  .get('/components/*', createStaticFileHandler('/components/'))
   .get('/email/createics', ICSHandler)
   .get('/sse/*', SSEConnectionHandler)
   .get('/sse-ping', SSEPingHandler)
