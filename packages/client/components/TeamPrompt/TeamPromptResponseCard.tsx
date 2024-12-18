@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
-import {Editor as EditorState} from '@tiptap/core'
+import {Editor} from '@tiptap/core'
 import {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
@@ -182,12 +182,12 @@ const TeamPromptResponseCard = (props: Props) => {
   const nonViewerEmptyResponsePlaceholder = isMeetingEnded ? 'No response' : 'No response yet...'
 
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const handleSubmit = useEventCallback((editorState: EditorState) => {
+  const handleSubmit = useEventCallback((editor: Editor) => {
     if (submitting) return
     submitMutation()
 
-    const content = JSON.stringify(editorState.getJSON())
-    const plaintextContent = editorState.getText()
+    const content = JSON.stringify(editor.getJSON())
+    const plaintextContent = editor.getText()
 
     UpsertTeamPromptResponseMutation(
       atmosphere,

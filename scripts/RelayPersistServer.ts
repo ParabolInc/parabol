@@ -3,7 +3,8 @@ import crypto from 'crypto'
 import fs from 'fs'
 import http, {RequestListener, Server} from 'http'
 import path from 'path'
-import config from '../relay.config'
+import clientConfig from '../relay.config'
+import mattermostPluginConfig from '../packages/mattermost-plugin/relay.config'
 
 export default class RelayPersistServer {
   server: Server
@@ -67,10 +68,14 @@ export default class RelayPersistServer {
     res.end(JSON.stringify({id}))
   }
   prepareArtifactDirectory(flushArtifacts: boolean) {
-    const {artifactDirectory} = config
-    if (flushArtifacts) fs.rmSync(artifactDirectory, {recursive: true, force: true})
-    if (!fs.existsSync(artifactDirectory)) {
-      fs.mkdirSync(artifactDirectory)
+    const prepare = (config: {artifactDirectory: string}) => {
+      const {artifactDirectory} = config
+      if (flushArtifacts) fs.rmSync(artifactDirectory, {recursive: true, force: true})
+      if (!fs.existsSync(artifactDirectory)) {
+        fs.mkdirSync(artifactDirectory)
+      }
     }
+    prepare(clientConfig)
+    prepare(mattermostPluginConfig)
   }
 }

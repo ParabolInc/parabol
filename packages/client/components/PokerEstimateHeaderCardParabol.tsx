@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -11,6 +12,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useTaskChildFocus from '../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
+import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
@@ -78,17 +80,22 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {useTaskChild} = useTaskChildFocus(taskId)
   const {teamId} = task
-  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {atmosphere, teamId})
-  const onBlur = () => {
+  const onBlur = useEventCallback(() => {
     if (!editor || editor.isEmpty) return
-    const nextContent = JSON.stringify(editor.getJSON())
-    if (content === nextContent) return
+    const nextContent = editor.getJSON()
+    if (isEqualWhenSerialized(nextContent, JSON.parse(content))) return
     const updatedTask = {
       id: taskId,
-      content: nextContent
+      content: JSON.stringify(nextContent)
     }
     UpdateTaskMutation(atmosphere, {updatedTask}, {})
-  }
+  })
+  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+    atmosphere,
+    teamId,
+    onBlur
+  })
+
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
@@ -98,7 +105,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
         <Content>
-          <EditorWrapper isExpanded={isExpanded} onBlur={onBlur}>
+          <EditorWrapper isExpanded={isExpanded}>
             <TipTapEditor
               editor={editor}
               linkState={linkState}

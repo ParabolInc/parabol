@@ -12,6 +12,7 @@ import {
   ConcreteRequest,
   Environment,
   FetchFunction,
+  FetchQueryFetchPolicy,
   GraphQLResponse,
   GraphQLTaggedNode,
   Network,
@@ -340,13 +341,22 @@ export default class Atmosphere extends Environment {
 
   fetchQuery = async <T extends OperationType>(
     taggedNode: GraphQLTaggedNode,
-    variables: Variables = {}
+    variables: Variables = {},
+    cacheConfig?: {
+      networkCacheConfig?: CacheConfig
+      fetchPolicy?: FetchQueryFetchPolicy
+    }
   ) => {
     let res: T['response']
     try {
-      res = await fetchQuery<T>(this, taggedNode, variables, {
-        fetchPolicy: 'store-or-network'
-      }).toPromise()
+      res = await fetchQuery<T>(
+        this,
+        taggedNode,
+        variables,
+        cacheConfig ?? {
+          fetchPolicy: 'store-or-network'
+        }
+      ).toPromise()
     } catch (e) {
       return null
     }
