@@ -1,3 +1,4 @@
+import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import {Extension, generateText, useEditor} from '@tiptap/react'
@@ -57,6 +58,7 @@ export const useTipTapReflectionEditor = (
             setLinkState
           }
         }),
+        SearchAndReplace.configure(),
         onEnter &&
           Extension.create({
             name: 'commentKeyboardShortcuts',

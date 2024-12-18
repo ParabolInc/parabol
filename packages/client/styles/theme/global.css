@@ -180,6 +180,11 @@
 .ProseMirror {
   width: 100%;
 }
+
+.ProseMirror .search-result {
+  background-color: rgba(255, 217, 0, 0.5);
+}
+
 .ProseMirror :is(ul, ol) {
   list-style-position: outside;
   padding-inline-start: 16px;

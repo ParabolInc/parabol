@@ -168,7 +168,7 @@ const ReflectionCard = (props: Props) => {
     spotlightGroup,
     phases,
     disableAnonymity,
-    // spotlightSearchQuery,
+    spotlightSearchQuery,
     teamId
   } = meeting
   const {phaseType} = localPhase
@@ -219,10 +219,10 @@ const ReflectionCard = (props: Props) => {
     return () => updateIsEditing(false)
   }, [])
 
-  // useEffect(() => {
-  //   const refreshedState = remountDecorators(() => editorState, spotlightSearchQuery)
-  //   setEditorState(refreshedState)
-  // }, [spotlightSearchQuery])
+  useEffect(() => {
+    if (!editor) return
+    editor.commands.setSearchTerm(spotlightSearchQuery || '')
+  }, [spotlightSearchQuery])
 
   const handleContentUpdate = () => {
     if (!editor) return
