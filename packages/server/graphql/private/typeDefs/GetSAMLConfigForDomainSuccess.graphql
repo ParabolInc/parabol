@@ -1,0 +1,11 @@
+type GetSAMLConfigForDomainSuccess {
+  """
+  The id of the organization
+  """
+  orgId: String | null
+
+  """
+  The slug of the organization, e.g. parabol
+  """
+  slug: String!
+}
