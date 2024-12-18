@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.13.1](https://github.com/ParabolInc/parabol/compare/v8.13.0...v8.13.1) (2024-12-18)
+
+
+### Changed
+
+* Mattermost plugin module federation ([#10517](https://github.com/ParabolInc/parabol/issues/10517)) ([79fd8a2](https://github.com/ParabolInc/parabol/commit/79fd8a212d51dda6cc3951b9ed91c87d0a24d6bd))
+* migrate existing comments to TipTap ([#10584](https://github.com/ParabolInc/parabol/issues/10584)) ([d136564](https://github.com/ParabolInc/parabol/commit/d1365646831a9720836d49e1011446e423b5a12e))
+
 ## [8.13.0](https://github.com/ParabolInc/parabol/compare/v8.12.4...v8.13.0) (2024-12-17)
 
 
