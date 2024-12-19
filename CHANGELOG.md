@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.15.0](https://github.com/ParabolInc/parabol/compare/v8.14.0...v8.15.0) (2024-12-19)
+
+
+### Added
+
+* Reflections to TipTap ([#10616](https://github.com/ParabolInc/parabol/issues/10616)) ([7678afb](https://github.com/ParabolInc/parabol/commit/7678afbc0b64067e8aa6039390ce1cacdd76ec0b))
+
 ## [8.14.0](https://github.com/ParabolInc/parabol/compare/v8.13.1...v8.14.0) (2024-12-18)
 
 
