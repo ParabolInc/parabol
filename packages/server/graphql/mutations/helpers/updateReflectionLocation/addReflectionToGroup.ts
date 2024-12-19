@@ -14,6 +14,7 @@ const addReflectionToGroup = async (
   const now = new Date()
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
   if (!reflection) throw new Error('Reflection not found')
+
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
   const [reflectionGroup, oldReflectionGroup] = await Promise.all([
     dataLoader.get('retroReflectionGroups').loadNonNull(reflectionGroupId),
