@@ -6,6 +6,8 @@
     "esbenp.prettier-vscode",
     "github.vscode-github-actions",
     "meta.relay",
-    "yzhang.markdown-all-in-one"
+    "yzhang.markdown-all-in-one",
+    "GraphQL.vscode-graphql",
+    "GraphQL.vscode-graphql-syntax"
   ]
 }
