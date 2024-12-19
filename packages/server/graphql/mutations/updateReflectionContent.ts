@@ -26,7 +26,7 @@ export default {
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'A stringified draft-js document containing thoughts'
+      description: 'A stringified TipTap JSONContent document containing thoughts'
     }
   },
   async resolve(

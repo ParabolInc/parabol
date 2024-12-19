@@ -161,15 +161,6 @@
   --rdp-background-color-dark: theme(colors.grape.500 / 30%);
 }
 
-/** Customize draft-js */
-.draft-blockquote {
-  @apply mx-0 my-[8px] border-l-2 border-solid border-l-slate-500 px-[8px] py-0 italic;
-}
-
-.draft-codeblock {
-  @apply m-0 rounded-[1px] border-l-2 border-solid border-l-slate-500 bg-slate-200 px-[8px] py-0 font-mono font-[13px] leading-normal;
-}
-
 .link-style a {
   @apply text-sky-500;
   text-decoration: underline;

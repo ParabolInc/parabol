@@ -1,4 +1,4 @@
-import {generateHTML, generateJSON, generateText} from '@tiptap/core'
+import {generateHTML, generateJSON, generateText, type JSONContent} from '@tiptap/core'
 import EventEmitter from 'eventemitter3'
 import {parse, stringify} from 'flatted'
 import ms from 'ms'
@@ -549,7 +549,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
-      const normalizedContent = JSON.parse(content)
+      const normalizedContent = JSON.parse(content) as JSONContent
       const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
       let entities = [] as GoogleAnalyzedEntity[]
       if (userId !== demoViewerId) {
@@ -565,7 +565,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflectionId,
         createdAt: now,
         creatorId: userId,
-        content: normalizedContent,
+        creator: this.db.users.find((user) => user.id === userId),
+        content: JSON.stringify(normalizedContent),
         groupColor: PALETTE.JADE_400,
         plaintextContent,
         dragContext: null,

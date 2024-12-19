@@ -37,7 +37,7 @@ Tailwind CSS is a style-agnostic, build time, utility CSS framework that provide
    Tailwind CSS breakpoints use `@media (min-width: ...) { ... }`, which makes supporting various screen sizes effortless. The example below shows how easy it is to apply different styles for various breakpoints. Text will be small on the small screen, and it’ll get bigger when reaching the subsequent breakpoints. The same mechanism makes it very easy to support things like [dark mode.](https://tailwindcss.com/docs/dark-mode) too.
 
    ```jsx
-   <div className='md:text-md text-sm text-black dark:text-white lg:text-lg xl:text-xl'>
+   <div className='md:text-md text-sm text-black lg:text-lg xl:text-xl dark:text-white'>
      I should scale and change color depeding on the theme
    </div>
    ```
@@ -71,25 +71,14 @@ Tailwind CSS is a style-agnostic, build time, utility CSS framework that provide
    The easiest way is to use `@apply` directive. See the example in Parabol’s repo here: [https://github.com/ParabolInc/parabol/pull/7597/files#diff-10d9decef8eb3746d2eabf83b8f35b380c852e39e0726e7392808ace853d93b2R150](https://github.com/ParabolInc/parabol/pull/7597/files#diff-10d9decef8eb3746d2eabf83b8f35b380c852e39e0726e7392808ace853d93b2R150)
 
    ```css
-   /** Customize draft-js */
-     .draft-blockquote {
-       @apply my-[8px] mx-0 border-l-[2px] border-slate-500 px-[8px] py-0 italic;
-     }
-
-     .draft-codeblock {
-       @apply m-0 border-[1px] border-l-[2px] border-slate-500 bg-slate-200 px-0 py-[8px] font-mono font-[13px] leading-normal;
-     }
-     /* ---------------------------------------------------- */
-
-     /** Customize daypicker styles *
-     .rdp {
-       @apply m-[8px];
-       --rdp-cell-size: 36px;
-       --rdp-accent-color: theme(colors.grape.500);
-       --rdp-background-color: theme(colors.grape.500 / 30%);
-       --rdp-accent-color-dark: theme(colors.grape.500);
-       --rdp-background-color-dark: theme(colors.grape.500 / 30%);
-     }
+   .rdp {
+     @apply m-[8px];
+     --rdp-cell-size: 36px;
+     --rdp-accent-color: theme(colors.grape.500);
+     --rdp-background-color: theme(colors.grape.500 / 30%);
+     --rdp-accent-color-dark: theme(colors.grape.500);
+     --rdp-background-color-dark: theme(colors.grape.500 / 30%);
+   }
    ```
 
    More info [https://tailwindcss.com/docs/functions-and-directives#apply](https://tailwindcss.com/docs/functions-and-directives#apply)
@@ -287,7 +276,6 @@ Anything in the `tailwind.config.js` can be configured to use a CSS variable. Th
 2. When working with old components, the preferred way would be to migrate styles to Tailwind CSS. If the component is big enough, it’s ok to fix/change something and leave Emotion in place. Do your best, though ;)
 3. Gradually improve our `tailwind.config.js` i.e. if you see a spacing value, color, breakpoint or something we use for styling in many places, configure the value in the config and use it via Tailwind CSS generated classes.
 4. When migrating exisiting Emotion components, it might be useful to use Chat GPT with a given prompt: TODO
-
 
 #### Examples of using Tailwind CSS
 

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
-import {generateHTML, generateJSON} from '@tiptap/core'
+import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
@@ -46,9 +46,6 @@ interface Props {
   readOnly?: boolean
   meetingRef: PhaseItemEditor_meeting$key
 }
-
-const emptyContent = generateJSON(`<p></p>`, serverTipTapExtensions)
-console.log({emptyContent})
 
 const PhaseItemEditor = (props: Props) => {
   const {
