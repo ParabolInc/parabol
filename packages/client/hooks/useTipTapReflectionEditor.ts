@@ -32,8 +32,8 @@ export const useTipTapReflectionEditor = (
 ) => {
   const {atmosphere, teamId, readOnly, placeholder, onEnter} = options
   const [linkState, setLinkState] = useState<LinkMenuState>(null)
-  const placeholderRef = useRef(placeholder)
   const [contentJSON] = useState(() => JSON.parse(content))
+  const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
   const editor = useEditor(
     {

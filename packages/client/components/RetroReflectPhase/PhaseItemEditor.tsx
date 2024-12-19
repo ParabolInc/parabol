@@ -123,6 +123,7 @@ const PhaseItemEditor = (props: Props) => {
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
+      placeholder: 'My reflection… (press enter to add)',
       teamId,
       readOnly: !!readOnly,
       onEnter: handleSubmit
@@ -187,7 +188,7 @@ const PhaseItemEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef}>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='max-h-28 overflow-auto'>
         <TipTapEditor
           className={cn(
             'flex min-h-0 items-center px-4 pt-3 leading-4',
@@ -208,13 +209,19 @@ const PhaseItemEditor = (props: Props) => {
           {cardsInFlightRef.current.map((card) => {
             return (
               <CardInFlightStyles
+                className='max-h-28 overflow-auto'
                 key={card.key}
                 transform={card.transform}
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
-                <div className={cn('flex min-h-0 items-center px-4 text-sm leading-5')}>
-                  <div dangerouslySetInnerHTML={{__html: card.html}}></div>
+                <div
+                  className={cn(
+                    'flex min-h-0 items-center px-4 pt-3 text-sm leading-4',
+                    disableAnonymity ? 'pb-0' : 'pb-3'
+                  )}
+                >
+                  <div className='ProseMirror' dangerouslySetInnerHTML={{__html: card.html}}></div>
                 </div>
                 {disableAnonymity && (
                   <ReflectionCardAuthor>
