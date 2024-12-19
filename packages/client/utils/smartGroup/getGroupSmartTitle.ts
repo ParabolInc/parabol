@@ -6,7 +6,7 @@ import computeDistanceMatrix from './computeDistanceMatrix'
 import getAllLemmasFromReflections from './getAllLemmasFromReflections'
 import getTitleFromComputedGroup from './getTitleFromComputedGroup'
 
-const getGroupSmartTitle = (reflections: {entities: any[]}[]) => {
+const getGroupSmartTitle = (reflections: {plaintextContent: string; entities: any[]}[]) => {
   const allReflectionEntities = reflections.map(({entities}) => entities).filter(Boolean)
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities)
 

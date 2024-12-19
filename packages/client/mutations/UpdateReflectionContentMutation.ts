@@ -6,7 +6,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {UpdateReflectionContentMutation as TUpdateReflectionContentMutation} from '../__generated__/UpdateReflectionContentMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
-import updateProxyRecord from '../utils/relay/updateProxyRecord'
 
 graphql`
   fragment UpdateReflectionContentMutation_meeting on UpdateReflectionContentPayload {
@@ -43,17 +42,7 @@ const UpdateReflectionContentMutation: StandardMutation<TUpdateReflectionContent
     mutation,
     variables,
     onCompleted,
-    onError,
-    optimisticUpdater: (store) => {
-      const {reflectionId, content} = variables
-      const reflectionProxy = store.get(reflectionId)!
-      const nowISO = new Date().toJSON()
-      const optimisticReflection = {
-        content,
-        updatedAt: nowISO
-      }
-      updateProxyRecord(reflectionProxy, optimisticReflection)
-    }
+    onError
   })
 }
 

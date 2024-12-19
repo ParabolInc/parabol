@@ -297,7 +297,12 @@ const initDemoOrg = () => {
       activeUserCount: 5,
       inactiveUserCount: 0
     },
-    showConversionModal: false
+    hasSuggestGroupsFlag: false,
+    hasZoomFlag: false,
+    tierLimitExceededAt: null,
+    showConversionModal: false,
+    useAI: true
+    // viewerOrganizationUser
   } as const
 }
 
@@ -500,6 +505,7 @@ const initNewMeeting = (
     createdAt: now,
     createdBy: demoViewerId,
     createdByUser: viewerMeetingMember?.user,
+    disableAnonymity: false,
     endedAt: null,
     facilitatorStageId: RetroDemo.REFLECT_STAGE_ID,
     facilitatorUserId: demoViewerId,
@@ -523,7 +529,10 @@ const initNewMeeting = (
     summary: `The team are feeling the strain of too many meetings and over-packed sprints, which is stifling creativity, especially for the interns and junior staff. Clarifying processes, reducing unproductive group chats, and giving everyone more space to share ideas should help.`,
     totalVotes: MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
     maxVotesPerGroup: MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
-    teamId: demoTeamId
+    teamId: demoTeamId,
+    videoMeetingURL: null,
+    transcription: null,
+    locked: false
   } as Partial<IRetrospectiveMeeting>
 }
 

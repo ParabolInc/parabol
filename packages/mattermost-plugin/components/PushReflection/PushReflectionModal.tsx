@@ -1,13 +1,13 @@
+import {generateJSON, mergeAttributes} from '@tiptap/core'
+import BaseLink from '@tiptap/extension-link'
+import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {markdownToDraft} from 'markdown-draft-js'
+import {marked} from 'marked'
+import {getPost} from 'mattermost-redux/selectors/entities/posts'
+import {GlobalState} from 'mattermost-redux/types/store'
 import React, {useEffect, useMemo} from 'react'
 import {Modal} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
-
-import {getPost} from 'mattermost-redux/selectors/entities/posts'
-
-import {GlobalState} from 'mattermost-redux/types/store'
-
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
@@ -122,7 +122,23 @@ const PushReflectionModal = () => {
     }
 
     const markdown = `${comment}\n\n${formattedPost}`
-    const rawObject = markdownToDraft(markdown)
+    const html = await marked.parse(markdown)
+    const rawObject = generateJSON(html, [
+      StarterKit,
+      BaseLink.extend({
+        parseHTML() {
+          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+        },
+
+        renderHTML({HTMLAttributes}) {
+          return [
+            'a',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
+            0
+          ]
+        }
+      })
+    ])
     const content = JSON.stringify(rawObject)
 
     createReflection({

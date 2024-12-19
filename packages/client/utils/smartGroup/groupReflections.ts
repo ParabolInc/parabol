@@ -27,7 +27,9 @@ export type GroupingOptions = {
   maxReductionPercent?: number
 }
 
-const groupReflections = <T extends {entities: any[]; reflectionGroupId: string; id: string}>(
+const groupReflections = <
+  T extends {entities: any[]; reflectionGroupId: string; id: string; plaintextContent: string}
+>(
   reflections: T[],
   groupingOptions: GroupingOptions
 ) => {

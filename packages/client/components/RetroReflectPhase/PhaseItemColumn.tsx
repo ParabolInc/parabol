@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {EditorState} from 'draft-js'
 import {RefObject, useEffect, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {PhaseItemColumn_prompt$key} from '~/__generated__/PhaseItemColumn_prompt.graphql'
@@ -126,7 +125,7 @@ const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
 
 export interface ReflectColumnCardInFlight {
   key: string
-  editorState: EditorState
+  html: string
   transform: string
   isStart: boolean
 }

@@ -16,7 +16,6 @@ module.exports = {
       '@mattkrick/trebuchet-client',
       '@sentry/browser',
       'debug',
-      'draft-js',
       'email-addresses',
       'emoji-mart',
       'eventemitter3',

@@ -1,13 +1,13 @@
+import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {Editor} from 'draft-js'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import anonymousAvatar from '~/styles/theme/images/anonymous-avatar.svg'
 import {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
-import useEditorState from '../hooks/useEditorState'
 import useRouter from '../hooks/useRouter'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -80,7 +80,9 @@ const Mentioned = (props: Props) => {
     history.push(actionUrl)
   }
 
-  const [editorState] = useEditorState(previewContent)
+  const htmlContent = previewContent
+    ? generateHTML(JSON.parse(previewContent), serverTipTapExtensions)
+    : ''
 
   return (
     <NotificationTemplate
@@ -91,13 +93,7 @@ const Mentioned = (props: Props) => {
     >
       {previewContent && (
         <div className='mx-0 my-1 mt-4 rounded bg-white p-2 text-sm leading-5 shadow-card'>
-          <Editor
-            readOnly
-            editorState={editorState}
-            onChange={() => {
-              /*noop*/
-            }}
-          />
+          <div dangerouslySetInnerHTML={{__html: htmlContent}}></div>
         </div>
       )}
     </NotificationTemplate>

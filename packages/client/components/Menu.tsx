@@ -25,7 +25,6 @@ const MenuStyles = styled('div')({
   maxHeight: 224,
   maxWidth: 400,
   outline: 0,
-  // VERY important! If not present, draft-js gets confused & thinks the menu is the selection rectangle
   userSelect: 'none'
 })
 

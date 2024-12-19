@@ -1,4 +1,4 @@
-import {generateHTML, generateJSON, generateText} from '@tiptap/core'
+import {generateHTML, generateJSON, generateText, type JSONContent} from '@tiptap/core'
 import EventEmitter from 'eventemitter3'
 import {parse, stringify} from 'flatted'
 import ms from 'ms'
@@ -28,14 +28,12 @@ import {
 } from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
-import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
-import normalizeRawDraftJS from '../../validation/normalizeRawDraftJS'
 import LocalAtmosphere from './LocalAtmosphere'
 import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
@@ -551,8 +549,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const prompt = reflectPhase.reflectPrompts.find((prompt) => prompt.id === promptId)
       const reflectionGroupId = groupId || this.getTempId('refGroup')
       const reflectionId = id || this.getTempId('ref')
-      const normalizedContent = normalizeRawDraftJS(content)
-      const plaintextContent = extractTextFromDraftString(normalizedContent)
+      const normalizedContent = JSON.parse(content) as JSONContent
+      const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
       let entities = [] as GoogleAnalyzedEntity[]
       if (userId !== demoViewerId) {
         entities = entityLookup[reflectionId as keyof typeof entityLookup].entities
@@ -567,7 +565,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reflectionId,
         createdAt: now,
         creatorId: userId,
-        content: normalizedContent,
+        creator: this.db.users.find((user) => user.id === userId),
+        content: JSON.stringify(normalizedContent),
         groupColor: PALETTE.JADE_400,
         plaintextContent,
         dragContext: null,
@@ -742,7 +741,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
-      const plaintextContent = extractTextFromDraftString(content)
+      const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
       const isVeryDifferent =
         stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
       const entities = isVeryDifferent

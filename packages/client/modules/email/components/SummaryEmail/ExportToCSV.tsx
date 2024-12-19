@@ -4,7 +4,6 @@ import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
 import {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -223,6 +222,7 @@ const ExportToCSV = (props: Props) => {
         const {prompt, content} = reflection
         const createdAt = reflection.createdAt!
         const {question} = prompt
+        const contentJSON = JSON.parse(content!)
         rows.push({
           reflectionGroup: title!,
           author: 'Anonymous',
@@ -231,7 +231,7 @@ const ExportToCSV = (props: Props) => {
           createdAt,
           discussionThread: '',
           prompt: question,
-          content: extractTextFromDraftString(content)
+          content: generateText(contentJSON, serverTipTapExtensions)
         })
       })
     })
@@ -261,6 +261,7 @@ const ExportToCSV = (props: Props) => {
         replies.forEach((reply) => {
           const {createdAt, createdByUser} = reply
           const author = createdByUser?.preferredName ?? 'Anonymous'
+          const contentJSON = JSON.parse(reply.content!)
           rows.push({
             reflectionGroup: title!,
             author,
@@ -269,7 +270,7 @@ const ExportToCSV = (props: Props) => {
             createdAt,
             discussionThread,
             prompt: '',
-            content: extractTextFromDraftString(reply.content!)
+            content: generateText(contentJSON, serverTipTapExtensions)
           })
         })
       })
@@ -292,7 +293,7 @@ const ExportToCSV = (props: Props) => {
         const {node} = edge
         const {createdAt, createdByUser, __typename: type, replies, content} = node
         const author = createdByUser?.preferredName ?? 'Anonymous'
-        const discussionThread = extractTextFromDraftString(content!)
+        const discussionThread = generateText(JSON.parse(content!), serverTipTapExtensions)
         rows.push({
           author,
           status: 'present',
@@ -312,7 +313,7 @@ const ExportToCSV = (props: Props) => {
             type: reply.__typename === 'Task' ? 'Task' : 'Reply',
             createdAt,
             discussionThread,
-            content: extractTextFromDraftString(reply.content!)
+            content: generateText(JSON.parse(reply.content!), serverTipTapExtensions)
           })
         })
       })
