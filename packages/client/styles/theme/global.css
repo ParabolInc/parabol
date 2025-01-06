@@ -220,6 +220,7 @@
 .ProseMirror p {
   margin-block-start: 4px;
   margin-block-end: 4px;
+  line-height: 1rem;
 }
 
 hr.ProseMirror-selectednode {

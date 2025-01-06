@@ -191,7 +191,7 @@ const PhaseItemEditor = (props: Props) => {
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
         <TipTapEditor
           className={cn(
-            'flex max-h-28 min-h-0 items-center overflow-auto px-4 pt-3 leading-4',
+            'flex max-h-28 min-h-0 overflow-auto px-4 pt-3',
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}
@@ -220,7 +220,7 @@ const PhaseItemEditor = (props: Props) => {
                 >
                   <div
                     className={cn(
-                      'ProseMirror flex max-h-28 min-h-4 w-full items-center px-4 pt-3 leading-4',
+                      'ProseMirror flex max-h-28 min-h-4 w-full items-center px-4 pt-3 leading-none',
                       disableAnonymity ? 'pb-0' : 'pb-3'
                     )}
                     dangerouslySetInnerHTML={{__html: card.html}}
