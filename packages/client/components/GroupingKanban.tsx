@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {captureException} from '@sentry/minimal'
 import graphql from 'babel-plugin-relay/macro'
 import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
@@ -12,6 +11,7 @@ import useModal from '../hooks/useModal'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
@@ -23,18 +23,6 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
 }
 
-const ColumnsBlock = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flex: '1',
-  flexDirection: 'column',
-  height: '100%',
-  justifyContent: 'center',
-  margin: '0',
-  overflow: 'auto',
-  padding: isDesktop ? '0 0 16px' : undefined,
-  width: '100%'
-}))
 export type SwipeColumn = (offset: number) => void
 const GroupingKanban = (props: Props) => {
   const {meeting: meetingRef, phaseRef} = props
@@ -191,7 +179,12 @@ const GroupingKanban = (props: Props) => {
 
   return (
     <PortalProvider>
-      <ColumnsBlock isDesktop={isDesktop}>
+      <div
+        className={cn(
+          'm-0 flex h-full w-full flex-1 flex-col items-center justify-center overflow-auto',
+          isDesktop && 'px-4'
+        )}
+      >
         <ColumnWrapper
           setActiveIdx={setActiveIdx}
           activeIdx={activeIdx}
@@ -215,7 +208,7 @@ const GroupingKanban = (props: Props) => {
             />
           ))}
         </ColumnWrapper>
-      </ColumnsBlock>
+      </div>
       {modalPortal(
         <SpotlightModal
           closeSpotlight={closePortal}
