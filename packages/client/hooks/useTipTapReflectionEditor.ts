@@ -1,4 +1,5 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
+import CharacterCount from '@tiptap/extension-character-count'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import {Extension, generateText, useEditor} from '@tiptap/react'
@@ -57,6 +58,10 @@ export const useTipTapReflectionEditor = (
           }
         }),
         SearchAndReplace.configure(),
+        CharacterCount.configure({
+          // this is a rough estimate because we store the JSON content as a string, not plaintext
+          limit: 1900
+        }),
         onEnter &&
           Extension.create({
             name: 'commentKeyboardShortcuts',

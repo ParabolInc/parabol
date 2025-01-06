@@ -82,6 +82,14 @@ const PhaseItemEditor = (props: Props) => {
     if (!editor || editor.isEmpty) return
     const contentJSON = editor?.getJSON()
     const content = JSON.stringify(contentJSON)
+    if (content.length > 2000) {
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'reflectionTooLong',
+        message: 'Reflection is too long',
+        autoDismiss: 5
+      })
+      return
+    }
     const input = {
       content,
       meetingId,

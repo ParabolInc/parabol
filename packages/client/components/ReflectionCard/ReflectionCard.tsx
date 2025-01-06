@@ -233,10 +233,15 @@ const ReflectionCard = (props: Props) => {
     }
     const nextContentJSON = editor.getJSON()
     if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
+    const contentStr = JSON.stringify(nextContentJSON)
+    if (contentStr.length > 2000) {
+      onError(new Error('Reflection is too long'))
+      return
+    }
     submitMutation()
     UpdateReflectionContentMutation(
       atmosphere,
-      {content: JSON.stringify(nextContentJSON), reflectionId},
+      {content: contentStr, reflectionId},
       {onError, onCompleted}
     )
     commitLocalUpdate(atmosphere, (store) => {
