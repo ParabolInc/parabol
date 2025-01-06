@@ -79,7 +79,7 @@ const PhaseItemEditor = (props: Props) => {
   const {disableAnonymity, viewerMeetingMember, teamId} = meeting
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const handleSubmit = useEventCallback(() => {
-    if (!editor) return
+    if (!editor || editor.isEmpty) return
     const contentJSON = editor?.getJSON()
     const content = JSON.stringify(contentJSON)
     const input = {
@@ -188,10 +188,10 @@ const PhaseItemEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='max-h-28 overflow-auto'>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
         <TipTapEditor
           className={cn(
-            'flex min-h-0 items-center px-4 pt-3 leading-4',
+            'flex max-h-28 min-h-0 items-center overflow-auto px-4 pt-3 leading-4',
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}
@@ -209,19 +209,22 @@ const PhaseItemEditor = (props: Props) => {
           {cardsInFlightRef.current.map((card) => {
             return (
               <CardInFlightStyles
-                className='max-h-28 overflow-auto'
+                className=''
                 key={card.key}
                 transform={card.transform}
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
                 <div
-                  className={cn(
-                    'flex min-h-0 items-center px-4 pt-3 text-sm leading-4',
-                    disableAnonymity ? 'pb-0' : 'pb-3'
-                  )}
+                  className={cn('relative w-full overflow-auto text-sm leading-4 text-slate-700')}
                 >
-                  <div className='ProseMirror' dangerouslySetInnerHTML={{__html: card.html}}></div>
+                  <div
+                    className={cn(
+                      'ProseMirror flex max-h-28 min-h-4 w-full items-center px-4 pt-3 leading-4',
+                      disableAnonymity ? 'pb-0' : 'pb-3'
+                    )}
+                    dangerouslySetInnerHTML={{__html: card.html}}
+                  ></div>
                 </div>
                 {disableAnonymity && (
                   <ReflectionCardAuthor>
