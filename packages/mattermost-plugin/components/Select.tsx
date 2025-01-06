@@ -12,7 +12,7 @@ export type SelectProps<T extends IdName> = {
   onChange: (value: any) => void
 }
 
-const LinkTeamModal = <T extends IdName>(props: SelectProps<T>) => {
+const Select = <T extends IdName>(props: SelectProps<T>) => {
   const {label, required, options, value, onChange} = props
   return (
     <div className='form-group'>
@@ -38,4 +38,4 @@ const LinkTeamModal = <T extends IdName>(props: SelectProps<T>) => {
   )
 }
 
-export default LinkTeamModal
+export default Select

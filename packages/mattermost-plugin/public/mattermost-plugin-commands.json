@@ -1,0 +1,10 @@
+[
+  {
+    "trigger": "start",
+    "description": "Start a Parabol Activity"
+  },
+  {
+    "trigger": "task",
+    "description": "Create a new task"
+  }
+]
