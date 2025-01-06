@@ -13,7 +13,6 @@ import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipT
 import {BlurOnSubmit} from '../utils/tiptap/BlurOnSubmit'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
-import {tiptapTagConfig} from '../utils/tiptapTagConfig'
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
@@ -47,7 +46,6 @@ export const useTipTapReflectionEditor = (
             return placeholderRef.current || '*New Reflection*'
           }
         }),
-        Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
         ),
