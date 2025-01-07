@@ -44,13 +44,11 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const {question} = reflectPrompt
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
@@ -76,7 +74,7 @@ export default {
       reflectionGroupId
     }
 
-    const smartTitle = getSimpleGroupTitle(plaintextContent)
+    const smartTitle = getSimpleGroupTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,
