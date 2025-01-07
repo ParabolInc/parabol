@@ -2,7 +2,6 @@ import {generateText} from '@tiptap/core'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
@@ -11,6 +10,7 @@ import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import {convertToTipTap} from '../../utils/convertToTipTap'
+import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -76,7 +76,7 @@ export default {
       reflectionGroupId
     }
 
-    const smartTitle = getGroupSmartTitle([reflection])
+    const smartTitle = getSimpleGroupTitle(plaintextContent)
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,
@@ -114,6 +114,7 @@ export default {
       unlockedStageIds
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)
+
     return data
   }
 }
