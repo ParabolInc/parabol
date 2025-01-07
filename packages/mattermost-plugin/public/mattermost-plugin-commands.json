@@ -5,14 +5,14 @@
   },
   {
     "trigger": "task",
-    "description": "Create a new task"
+    "description": "Adds a task in Parabol"
   },
   {
     "trigger": "invite",
-    "description": "Invite users to your Parabol Team"
+    "description": "Shares an invite to a Parabol team in the current channel"
   },
   {
     "trigger": "share",
-    "description": "Shares Parabol activity so channel members can join"
+    "description": "Shares a Parabol activity so channel members can join"
   }
 ]
