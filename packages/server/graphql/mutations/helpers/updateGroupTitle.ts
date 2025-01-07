@@ -1,4 +1,5 @@
 import getGroupSmartTitle from '../../../../client/utils/smartGroup/getGroupSmartTitle'
+import {makeGroupTitleFromPlaintext} from '../../../../client/utils/smartGroup/getTitleFromComputedGroup'
 import getKysely from '../../../postgres/getKysely'
 import {DataLoaderWorker} from '../../graphql'
 import {RetroReflection} from '../../public/resolverTypes'
@@ -18,7 +19,7 @@ const updateGroupTitle = async (input: Input) => {
   const {reflections, reflectionGroupId, meetingId, teamId, dataLoader} = input
   if (reflections.length === 1) {
     // For single reflection, use its content as the title
-    const newTitle = reflections[0].plaintextContent
+    const newTitle = makeGroupTitleFromPlaintext(reflections[0].plaintextContent)
     await updateSmartGroupTitle(reflectionGroupId, newTitle)
     return
   }

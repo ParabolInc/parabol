@@ -8,6 +8,11 @@ const MIN_ENTITIES = 2
 const MAX_CHARS = 30
 const MIN_SALIENCE = 0.1
 
+export const makeGroupTitleFromPlaintext = (plaintextContent?: string) => {
+  if (!plaintextContent) return ''
+  return plaintextContent.trim().slice(0, MAX_CHARS).replace(/\n\n/g, ' ')
+}
+
 type DistanceArray = number[]
 const getNameFromLemma = (
   lemma: string,
@@ -65,8 +70,7 @@ const getTitleFromComputedGroup = (
   if (titleArr.length === 0) {
     const [firstReflection] = reflections
     if (!firstReflection) return 'Unknown Topic'
-    const text = firstReflection.plaintextContent
-    const maxStr = text.trim().slice(0, MAX_CHARS)
+    const maxStr = makeGroupTitleFromPlaintext(firstReflection.plaintextContent)
     const lastSpace = maxStr.lastIndexOf(' ')
     const wordsOrMax = lastSpace === -1 ? maxStr : maxStr.slice(0, lastSpace).trim()
     return wordsOrMax || 'New Topic' // New Topic should never occur unless str value is falsy

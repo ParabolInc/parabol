@@ -18,9 +18,18 @@ const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
 }
 
-const isCursorInListItem = (editor: Editor) => {
-  // Check if the parent node of the selection is a bullet list item
-  return editor.state.selection.$from.node(-1).type.name === 'listItem'
+const isCursorMakingNode = (editor: Editor) => {
+  const from = editor.state.selection.$from
+  const nodeType = from.node().type.name
+  const parentType = from.node(-1).type.name
+  /*
+    Support cases (nodeType/parentType):
+      - Headings (heading/doc)
+      - Bullet Lists (paragraph/listItem)
+      - Blockquotes (paragraph/blockQuote)
+      - CodeBlocks (codeBlock/doc)
+  */
+  return !(nodeType === 'paragraph' && parentType === 'doc')
 }
 
 export const useTipTapReflectionEditor = (
@@ -72,8 +81,8 @@ export const useTipTapReflectionEditor = (
             addKeyboardShortcuts(this) {
               return {
                 Enter: () => {
-                  const isMakingList = isCursorInListItem(this.editor)
-                  if (isMakingList) return false
+                  const isMakingNode = isCursorMakingNode(this.editor)
+                  if (isMakingNode) return false
                   onEnter()
                   return true
                 }
@@ -90,8 +99,8 @@ export const useTipTapReflectionEditor = (
             addKeyboardShortcuts(this) {
               return {
                 Enter: () => {
-                  const isMakingList = isCursorInListItem(this.editor)
-                  if (isMakingList) return false
+                  const isMakingNode = isCursorMakingNode(this.editor)
+                  if (isMakingNode) return false
                   this.editor.commands.blur()
                   return true
                 },
