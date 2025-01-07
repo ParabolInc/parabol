@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useEffect, useMemo} from 'react'
+import {Suspense, useEffect, useMemo, useState} from 'react'
 import {Modal} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
@@ -58,9 +58,9 @@ const StartActivityModal = () => {
   const {config, viewer} = data
   const {availableTemplates, teams} = viewer
 
-  const [selectedTeam, setSelectedTeam] = React.useState<NonNullable<typeof teams>[number]>()
+  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
   const [selectedTemplate, setSelectedTemplate] =
-    React.useState<NonNullable<typeof availableTemplates.edges>[number]['node']>()
+    useState<NonNullable<typeof availableTemplates.edges>[number]['node']>()
 
   const filteredTemplates = useMemo(
     () =>
