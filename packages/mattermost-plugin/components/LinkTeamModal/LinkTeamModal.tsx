@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect} from 'react'
-import {Modal} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 
 import {useLazyLoadQuery} from 'react-relay'
@@ -9,7 +8,8 @@ import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useLinkTeam} from '../../hooks/useLinkTeam'
 import {closeLinkTeamModal} from '../../reducers'
-import {getAssetsUrl, isLinkTeamModalVisible} from '../../selectors'
+import {isLinkTeamModalVisible} from '../../selectors'
+import Modal from '../Modal'
 import Select from '../Select'
 
 const LinkTeamModal = () => {
@@ -58,57 +58,37 @@ const LinkTeamModal = () => {
     handleClose()
   }
 
-  const assetsPath = useSelector(getAssetsUrl)
-
   if (!isVisible) {
     return null
   }
 
   return (
     <Modal
-      dialogClassName='modal--scroll'
-      show={true}
-      onHide={handleClose}
-      onExited={handleClose}
-      bsSize='large'
-      backdrop='static'
+      title={`Link a Parabol Team to ${channel.name}`}
+      commitButtonLabel='Link Team'
+      handleClose={handleClose}
+      handleCommit={handleLink}
     >
-      <Modal.Header closeButton={true}>
-        <Modal.Title>
-          <img width={36} height={36} src={`${assetsPath}/parabol.png`} />
-          {` Link a Parabol Team to ${channel.name}`}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {unlinkedTeams && unlinkedTeams.length > 0 ? (
-          <>
-            <Select
-              label='Choose Parabol Team'
-              required={true}
-              value={selectedTeam}
-              options={unlinkedTeams}
-              onChange={setSelectedTeam}
-            />
-          </>
-        ) : (
-          <>
-            <div>
-              <p>
-                All your teams are already linked to this channel. Visit{' '}
-                <a href={`${config?.parabolUrl}/newteam/`}>Parabol</a> to create new teams.
-              </p>
-            </div>
-          </>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handleLink}>
-          Link Team
-        </button>
-      </Modal.Footer>
+      {unlinkedTeams && unlinkedTeams.length > 0 ? (
+        <>
+          <Select
+            label='Choose Parabol Team'
+            required={true}
+            value={selectedTeam}
+            options={unlinkedTeams}
+            onChange={setSelectedTeam}
+          />
+        </>
+      ) : (
+        <>
+          <div>
+            <p>
+              All your teams are already linked to this channel. Visit{' '}
+              <a href={`${config?.parabolUrl}/newteam/`}>Parabol</a> to create new teams.
+            </p>
+          </div>
+        </>
+      )}
     </Modal>
   )
 }

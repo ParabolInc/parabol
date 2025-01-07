@@ -5,6 +5,7 @@ import PanelTitle from './components/Sidepanel/PanelTitle'
 import manifest from './manifest'
 import rootReducer, {
   openCreateTaskModal,
+  openInviteToTeamModal,
   openPushPostAsReflection,
   openStartActivityModal
 } from './reducers'
@@ -52,6 +53,10 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
 
   registry.registerWebSocketEventHandler(`custom_${manifest.id}_task`, () => {
     store.dispatch(openCreateTaskModal())
+  })
+
+  registry.registerWebSocketEventHandler(`custom_${manifest.id}_invite`, () => {
+    store.dispatch(openInviteToTeamModal())
   })
 
   registry.registerPostDropdownMenuAction(

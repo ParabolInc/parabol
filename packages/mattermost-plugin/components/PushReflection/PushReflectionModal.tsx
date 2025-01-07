@@ -6,13 +6,13 @@ import {marked} from 'marked'
 import {getPost} from 'mattermost-redux/selectors/entities/posts'
 import {GlobalState} from 'mattermost-redux/types/store'
 import React, {useEffect, useMemo} from 'react'
-import {Modal} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
 import {closePushPostAsReflection} from '../../reducers'
-import {getAssetsUrl, getPostURL, pushPostAsReflection} from '../../selectors'
+import {getPostURL, pushPostAsReflection} from '../../selectors'
+import Modal from '../Modal'
 import Select from '../Select'
 
 const PostUtils = (window as any).PostUtils
@@ -155,97 +155,77 @@ const PushReflectionModal = () => {
     handleClose()
   }
 
-  const assetsPath = useSelector(getAssetsUrl)
-
   if (!postId) {
     return null
   }
 
   return (
     <Modal
-      dialogClassName='modal--scroll'
-      show={true}
-      onHide={handleClose}
-      onExited={handleClose}
-      bsSize='large'
-      backdrop='static'
+      title='Add Comment to Parabol Activity'
+      commitButtonLabel='Add Comment'
+      handleClose={handleClose}
+      handleCommit={handlePush}
     >
-      <Modal.Header closeButton={true}>
-        <Modal.Title>
-          <img width={36} height={36} src={`${assetsPath}/parabol.png`} />
-          {' Add Comment to Parabol Activity'}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div>
-          <p>
-            Choose an open Retro activity and the Prompt where you want to send the Mattermost
-            comment. A reference link back to Mattermost will be inlcuded in the reflection.
-          </p>
-        </div>
-        {post && (
-          <div className='form-group'>
-            <label className='control-label' htmlFor='comment'>
-              Add a Comment<span className='error-text'> *</span>
-            </label>
-            <div
-              className='form-control'
+      <div>
+        <p>
+          Choose an open Retro activity and the Prompt where you want to send the Mattermost
+          comment. A reference link back to Mattermost will be inlcuded in the reflection.
+        </p>
+      </div>
+      {post && (
+        <div className='form-group'>
+          <label className='control-label' htmlFor='comment'>
+            Add a Comment<span className='error-text'> *</span>
+          </label>
+          <div
+            className='form-control'
+            style={{
+              resize: 'none',
+              height: 'auto'
+            }}
+          >
+            <textarea
               style={{
-                resize: 'none',
-                height: 'auto'
+                border: 'none',
+                width: '100%'
               }}
-            >
-              <textarea
-                style={{
-                  border: 'none',
-                  width: '100%'
-                }}
-                id='comment'
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder='Add your comment for the retro...'
-              />
-              <blockquote>
-                {PostUtils.messageHtmlToComponent(PostUtils.formatText(post.message))}
-              </blockquote>
-              <a>See comment in Mattermost</a>
-            </div>
+              id='comment'
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder='Add your comment for the retro...'
+            />
+            <blockquote>
+              {PostUtils.messageHtmlToComponent(PostUtils.formatText(post.message))}
+            </blockquote>
+            <a>See comment in Mattermost</a>
           </div>
-        )}
-        {data && (
-          <>
-            <Select
-              label='Choose Activity'
-              required={true}
-              value={selectedMeeting}
-              options={retroMeetings ?? []}
-              onChange={setSelectedMeeting}
-            />
-            <Select
-              label='Choose Prompt'
-              required={true}
-              value={selectedPrompt && {id: selectedPrompt.id, name: selectedPrompt.question}}
-              options={
-                reflectPhase?.reflectPrompts?.map(({id, question}) => ({id, name: question})) ?? []
-              }
-              onChange={(selected) =>
-                selected &&
-                setSelectedPrompt(
-                  reflectPhase?.reflectPrompts?.find((prompt) => prompt.id === selected.id)
-                )
-              }
-            />
-          </>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handlePush}>
-          Add Comment
-        </button>
-      </Modal.Footer>
+        </div>
+      )}
+      {data && (
+        <>
+          <Select
+            label='Choose Activity'
+            required={true}
+            value={selectedMeeting}
+            options={retroMeetings ?? []}
+            onChange={setSelectedMeeting}
+          />
+          <Select
+            label='Choose Prompt'
+            required={true}
+            value={selectedPrompt && {id: selectedPrompt.id, name: selectedPrompt.question}}
+            options={
+              reflectPhase?.reflectPrompts?.map(({id, question}) => ({id, name: question})) ?? []
+            }
+            onChange={(selected) =>
+              selected &&
+              setSelectedPrompt(
+                reflectPhase?.reflectPrompts?.find((prompt) => prompt.id === selected.id)
+              )
+            }
+          />
+        </>
+      )}
     </Modal>
   )
 }
