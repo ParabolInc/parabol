@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 
 import {closeInviteToTeamModal} from '../../reducers'
-import {getAssetsUrl} from '../../selectors'
 
 import Select from '../Select'
 
@@ -15,6 +13,7 @@ import {Post} from 'mattermost-redux/types/posts'
 import {InviteToTeamModalQuery} from '../../__generated__/InviteToTeamModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import LoadingSpinner from '../LoadingSpinner'
+import Modal from '../Modal'
 import useMassInvitationToken from './useMassInvitationToken'
 
 const InviteToTeamModal = () => {
@@ -94,44 +93,24 @@ const InviteToTeamModal = () => {
     handleClose()
   }
 
-  const assetsPath = useSelector(getAssetsUrl)
-
   return (
     <Modal
-      dialogClassName='modal--scroll'
-      show={true}
-      onHide={handleClose}
-      onExited={handleClose}
-      bsSize='large'
-      backdrop='static'
+      title='Invite to Parabol Team'
+      commitButtonLabel='Share Invite'
+      handleCommit={handleStart}
+      handleClose={handleClose}
     >
-      <Modal.Header closeButton={true}>
-        <Modal.Title>
-          <img width={36} height={36} src={`${assetsPath}/parabol.png`} />
-          {' Add a Task'}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {teams ? (
-          <Select
-            label='Parabol Team'
-            required={true}
-            options={teams ?? []}
-            value={selectedTeam}
-            onChange={setSelectedTeam}
-          />
-        ) : (
-          <LoadingSpinner />
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handleStart}>
-          Add Task
-        </button>
-      </Modal.Footer>
+      {teams ? (
+        <Select
+          label='Parabol Team'
+          required={true}
+          options={teams ?? []}
+          value={selectedTeam}
+          onChange={setSelectedTeam}
+        />
+      ) : (
+        <LoadingSpinner />
+      )}
     </Modal>
   )
 }

@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
 import {closeCreateTaskModal} from '../../reducers'
-import {getAssetsUrl} from '../../selectors'
 
 import Select from '../Select'
 import SimpleSelect from '../SimpleSelect'
@@ -14,6 +12,7 @@ import type {TaskStatusEnum} from '../../__generated__/CreateTaskModalMutation.g
 import {CreateTaskModalMutation} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalQuery} from '../../__generated__/CreateTaskModalQuery.graphql'
 import LoadingSpinner from '../LoadingSpinner'
+import Modal from '../Modal'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
@@ -105,66 +104,46 @@ const CreateTaskModal = () => {
     handleClose()
   }
 
-  const assetsPath = useSelector(getAssetsUrl)
-
   return (
     <Modal
-      dialogClassName='modal--scroll'
-      show={true}
-      onHide={handleClose}
-      onExited={handleClose}
-      bsSize='large'
-      backdrop='static'
+      title='Add a Task'
+      commitButtonLabel='Add Task'
+      handleClose={handleClose}
+      handleCommit={handleStart}
     >
-      <Modal.Header closeButton={true}>
-        <Modal.Title>
-          <img width={36} height={36} src={`${assetsPath}/parabol.png`} />
-          {' Add a Task'}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className='form-group'>
-          <label className='control-label' htmlFor='description'>
-            Description<span className='error-text'> *</span>
-          </label>
-          <textarea
-            style={{
-              width: '100%'
-            }}
-            id='description'
-            className='form-control'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder='Description'
-          />
-        </div>
-        {teams ? (
-          <Select
-            label='Parabol Team'
-            required={true}
-            options={teams ?? []}
-            value={selectedTeam}
-            onChange={setSelectedTeam}
-          />
-        ) : (
-          <LoadingSpinner />
-        )}
-        <SimpleSelect
-          label='Status'
-          required={true}
-          options={TaskStatus}
-          value={selectedStatus}
-          onChange={setSelectedStatus}
+      <div className='form-group'>
+        <label className='control-label' htmlFor='description'>
+          Description<span className='error-text'> *</span>
+        </label>
+        <textarea
+          style={{
+            width: '100%'
+          }}
+          id='description'
+          className='form-control'
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder='Description'
         />
-      </Modal.Body>
-      <Modal.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handleStart}>
-          Add Task
-        </button>
-      </Modal.Footer>
+      </div>
+      {teams ? (
+        <Select
+          label='Parabol Team'
+          required={true}
+          options={teams ?? []}
+          value={selectedTeam}
+          onChange={setSelectedTeam}
+        />
+      ) : (
+        <LoadingSpinner />
+      )}
+      <SimpleSelect
+        label='Status'
+        required={true}
+        options={TaskStatus}
+        value={selectedStatus}
+        onChange={setSelectedStatus}
+      />
     </Modal>
   )
 }
