@@ -6,7 +6,6 @@ import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import stringSimilarity from 'string-similarity'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
-import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
@@ -192,6 +191,34 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     if (!isFresh) return
 
     return validDB
+  }
+
+  private getDemoGroupTitle(groupId: string, reflections: {plaintextContent: string}[]) {
+    // Titles derived from the 9 reflections in initBotScript.ts
+    const BOT_GROUP_TITLES: Record<string, string> = {
+      botGroup1: 'Fresh Perspectives',
+      botGroup2: 'Process Documentation',
+      botGroup3: 'Meeting Participation',
+      botGroup4: 'Decision Making',
+      botGroup5: 'Debates Over Chat',
+      botGroup6: 'Meeting Overload',
+      botGroup7: 'Overstuffed Sprints',
+      botGroup8: 'Team Retreats'
+    }
+
+    // If we recognize the group as one of our bot-created groups, return that
+    if (groupId.startsWith('botGroup') && BOT_GROUP_TITLES[groupId]) {
+      return BOT_GROUP_TITLES[groupId]
+    }
+
+    // Otherwise, for any user-created group, try the first reflection’s text
+    if (reflections.length > 0) {
+      const firstText = reflections[0].plaintextContent.trim()
+      return firstText.length > 40 ? firstText.substring(0, 37) + '...' : firstText
+    }
+
+    // Fallback for an empty group
+    return 'New Group'
   }
 
   startDemo() {
@@ -1009,7 +1036,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         dropTargetType,
         dropTargetId,
         dragId
-      }: {reflectionId: string; dropTargetType: any; dropTargetId: string; dragId: string},
+      }: {reflectionId: string; dropTargetType: string; dropTargetId: string; dragId: string},
       userId: string
     ) => {
       const now = new Date().toJSON()
@@ -1024,7 +1051,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )!
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
-      if ((dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GRID') {
+      if (dropTargetType === 'REFLECTION_GRID') {
         const {promptId} = reflection
         newReflectionGroupId = this.getTempId('group')
         const newReflectionGroup = {
@@ -1057,14 +1084,14 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           reflectionGroupId: newReflectionGroupId,
           updatedAt: now
         })
-        const nextTitle = getGroupSmartTitle([reflection as DemoReflection])
+        const nextTitle = this.getDemoGroupTitle(newReflectionGroupId, [reflection])
         newReflectionGroup.smartTitle = nextTitle
         newReflectionGroup.title = nextTitle
         if (oldReflections.length > 0) {
-          const oldTitle = getGroupSmartTitle(oldReflections)
-          const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
+          const oldTitle = this.getDemoGroupTitle(oldReflectionGroupId, oldReflections)
+          const isUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
           oldReflectionGroup.smartTitle = oldTitle
-          if (!titleIsUserDefined) {
+          if (!isUserDefined) {
             oldReflectionGroup.title = oldTitle
           }
         } else {
@@ -1075,10 +1102,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             updatedAt: now
           })
         }
-      } else if (
-        (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
-        dropTargetId
-      ) {
+      } else if (dropTargetType === 'REFLECTION_GROUP' && dropTargetId) {
         // group
         const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === dropTargetId)!
         if (reflectionGroup) {
@@ -1107,20 +1131,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             const oldReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
-            const nextTitle = getGroupSmartTitle(nextReflections)
-            const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
+            const nextTitle = this.getDemoGroupTitle(newReflectionGroupId, nextReflections)
+            const isUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
             reflectionGroup.smartTitle = nextTitle
-            if (!titleIsUserDefined) {
+            if (!isUserDefined) {
               reflectionGroup.title = nextTitle
             }
             const oldReflectionGroup = this.db.reflectionGroups.find(
               (group) => group.id === oldReflectionGroupId
             )!
             if (oldReflections.length > 0) {
-              const oldTitle = getGroupSmartTitle(oldReflections)
-              const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
+              const oldTitle = this.getDemoGroupTitle(oldReflectionGroupId, oldReflections)
+              const oldIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
               oldReflectionGroup.smartTitle = oldTitle
-              if (!titleIsUserDefined) {
+              if (!oldIsUserDefined) {
                 oldReflectionGroup.title = oldTitle
               }
             } else {

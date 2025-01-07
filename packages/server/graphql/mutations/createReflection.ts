@@ -8,7 +8,6 @@ import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTap
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
-import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import {convertToTipTap} from '../../utils/convertToTipTap'
@@ -17,9 +16,6 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import getReflectionEntities from './helpers/getReflectionEntities'
-import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 
 export default {
   type: CreateReflectionPayload,
@@ -68,12 +64,6 @@ export default {
     // RESOLUTION
     const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
 
-    const [entities, sentimentScore] = await Promise.all([
-      getReflectionEntities(plaintextContent),
-      getFeatureTier(team) !== 'starter'
-        ? getReflectionSentimentScore(question, plaintextContent)
-        : undefined
-    ])
     const reflectionGroupId = generateUID()
 
     const reflection = {
@@ -81,8 +71,6 @@ export default {
       creatorId: viewerId,
       content: JSON.stringify(normalizedContent),
       plaintextContent,
-      entities,
-      sentimentScore,
       meetingId,
       promptId,
       reflectionGroupId
@@ -101,7 +89,7 @@ export default {
     await pg
       .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
       .insertInto('RetroReflection')
-      .values({...reflection, entities: toGoogleAnalyzedEntity(entities)})
+      .values(reflection)
       .execute()
 
     const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
