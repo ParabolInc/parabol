@@ -53,6 +53,7 @@ const localSlice = createSlice({
   initialState: {
     isStartActivityModalVisible: false,
     isCreateTaskModalVisible: false,
+    isInviteToTeamModalVisible: false,
     pushPostAsReflection: null as string | null,
     isLinkTeamModalVisible: false,
     linkedTeamIds: {} as Record<string, {loading: boolean; teamIds: string[]}>
@@ -69,6 +70,12 @@ const localSlice = createSlice({
     },
     closeCreateTaskModal: (state) => {
       state.isCreateTaskModalVisible = false
+    },
+    openInviteToTeamModal: (state) => {
+      state.isInviteToTeamModalVisible = true
+    },
+    closeInviteToTeamModal: (state) => {
+      state.isInviteToTeamModalVisible = false
     },
     openPushPostAsReflection: (state, action: PayloadAction<string>) => {
       state.pushPostAsReflection = action.payload
@@ -126,6 +133,8 @@ export const {
   closeStartActivityModal,
   openCreateTaskModal,
   closeCreateTaskModal,
+  openInviteToTeamModal,
+  closeInviteToTeamModal,
   openPushPostAsReflection,
   closePushPostAsReflection,
   openLinkTeamModal,
