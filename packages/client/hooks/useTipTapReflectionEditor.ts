@@ -2,7 +2,7 @@ import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import CharacterCount from '@tiptap/extension-character-count'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
-import {Extension, generateText, useEditor} from '@tiptap/react'
+import {Extension, generateText, useEditor, type Editor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useEffect, useRef, useState} from 'react'
 import Atmosphere from '../Atmosphere'
@@ -11,12 +11,16 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
-import {BlurOnSubmit} from '../utils/tiptap/BlurOnSubmit'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
+}
+
+const isCursorInListItem = (editor: Editor) => {
+  // Check if the parent node of the selection is a bullet list item
+  return editor.state.selection.$from.node(-1).type.name === 'listItem'
 }
 
 export const useTipTapReflectionEditor = (
@@ -68,6 +72,8 @@ export const useTipTapReflectionEditor = (
             addKeyboardShortcuts(this) {
               return {
                 Enter: () => {
+                  const isMakingList = isCursorInListItem(this.editor)
+                  if (isMakingList) return false
                   onEnter()
                   return true
                 }
@@ -78,7 +84,24 @@ export const useTipTapReflectionEditor = (
               }
             }
           }),
-        !onEnter && BlurOnSubmit
+        !onEnter &&
+          Extension.create({
+            name: 'blurOnSubmitExceptList',
+            addKeyboardShortcuts(this) {
+              return {
+                Enter: () => {
+                  const isMakingList = isCursorInListItem(this.editor)
+                  if (isMakingList) return false
+                  this.editor.commands.blur()
+                  return true
+                },
+                Tab: () => {
+                  this.editor.commands.blur()
+                  return true
+                }
+              }
+            }
+          })
       ].filter(isValid),
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly
