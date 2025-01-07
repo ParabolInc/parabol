@@ -170,6 +170,11 @@
 
 .ProseMirror {
   width: 100%;
+  blockquote {
+    border-left: 3px solid theme(colors.slate.500);
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+  }
 }
 
 .ProseMirror .search-result {
@@ -220,6 +225,7 @@
 .ProseMirror p {
   margin-block-start: 4px;
   margin-block-end: 4px;
+  line-height: 1rem;
 }
 
 hr.ProseMirror-selectednode {

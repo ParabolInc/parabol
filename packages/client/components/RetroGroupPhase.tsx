@@ -103,7 +103,8 @@ const RetroGroupPhase = (props: Props) => {
 
   return (
     <>
-      <MeetingContent ref={callbackRef}>
+      {/* select-none is for Safari. Repro: drag a card & see the whole area get highlighted */}
+      <MeetingContent ref={callbackRef} className='select-none'>
         <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
           <MeetingTopBar
             avatarGroup={avatarGroup}
