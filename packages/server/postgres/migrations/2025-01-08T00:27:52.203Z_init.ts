@@ -10,7 +10,6 @@ export async function up(db: Kysely<any>): Promise<void> {
   // if the DB already exists then do not initialize
   if (hasUserTable.rows[0].exists) return
   const {CDN_BASE_URL, FILE_STORE_PROVIDER} = process.env
-  if (!CDN_BASE_URL) throw new Error('Missng Env: CDN_BASE_URL')
   if (!FILE_STORE_PROVIDER) throw new Error('Missng Env: FILE_STORE_PROVIDER')
 
   let backupScript = `--
@@ -11569,6 +11568,8 @@ ALTER TABLE ONLY public."TaskEstimate"
 --
 `
   if (FILE_STORE_PROVIDER !== 'local') {
+    if (!CDN_BASE_URL)
+      throw new Error('Missng Env: CDN_BASE_URL when FILE_STORE_PROVIDER is not "local"')
     const hostPath = CDN_BASE_URL.replace(/^\/+/, '')
     const stringToReplace = '/self-hosted/Organization/aGhostOrg/template/'
     const replacementStr = `https://${hostPath}/store/Organization/aGhostOrg/template/`

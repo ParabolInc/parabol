@@ -1,4 +1,4 @@
-import {generateText, type JSONContent} from '@tiptap/core'
+import {generateText} from '@tiptap/core'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
@@ -11,6 +11,7 @@ import getKysely from '../../postgres/getKysely'
 import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
+import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -63,9 +64,7 @@ export default {
       return {error: {message: 'Reflection content is too long'}}
     }
 
-    const normalizedContent = content
-      ? (JSON.parse(content) as JSONContent)
-      : {type: 'doc', content: [{type: 'paragraph'}]}
+    const normalizedContent = convertToTipTap(content)
 
     // RESOLUTION
     const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
