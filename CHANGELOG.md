@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.16.0](https://github.com/ParabolInc/parabol/compare/v8.15.0...v8.16.0) (2025-01-07)
+
+
+### Added
+
+* Create task from Mattermost plugin ([#10630](https://github.com/ParabolInc/parabol/issues/10630)) ([b885f15](https://github.com/ParabolInc/parabol/commit/b885f15114f67ec6365126510866d1dedca223c3))
+* **Mattermost:** Add invite team slash command ([#10632](https://github.com/ParabolInc/parabol/issues/10632)) ([d02bfb8](https://github.com/ParabolInc/parabol/commit/d02bfb8989e4cc315d80fb44f1394b900897e522))
+* release suggest groups ([#10615](https://github.com/ParabolInc/parabol/issues/10615)) ([4581783](https://github.com/ParabolInc/parabol/commit/4581783b16d85a8ba2ff7ba830761a251874b10b))
+
+
+### Fixed
+
+* bugs in TipTap Reflection editor ([#10636](https://github.com/ParabolInc/parabol/issues/10636)) ([8fbfd15](https://github.com/ParabolInc/parabol/commit/8fbfd15a4e0db7ddf7236bffa0a32b0974d1e82c))
+* Comments in demo meeting ([#10623](https://github.com/ParabolInc/parabol/issues/10623)) ([f0883c1](https://github.com/ParabolInc/parabol/commit/f0883c19729b2c18d0c615ff9ae0a799f7e1683f))
+* correct graphql.config.js ([#10582](https://github.com/ParabolInc/parabol/issues/10582)) ([af1b034](https://github.com/ParabolInc/parabol/commit/af1b03415b03fc33acab4191f2fa12c0fc16649f))
+
 ## [8.15.0](https://github.com/ParabolInc/parabol/compare/v8.14.0...v8.15.0) (2024-12-19)
 
 

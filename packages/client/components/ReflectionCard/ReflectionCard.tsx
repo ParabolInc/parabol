@@ -233,10 +233,15 @@ const ReflectionCard = (props: Props) => {
     }
     const nextContentJSON = editor.getJSON()
     if (isEqualWhenSerialized(nextContentJSON, JSON.parse(content))) return
+    const contentStr = JSON.stringify(nextContentJSON)
+    if (contentStr.length > 2000) {
+      onError(new Error('Reflection is too long'))
+      return
+    }
     submitMutation()
     UpdateReflectionContentMutation(
       atmosphere,
-      {content: JSON.stringify(nextContentJSON), reflectionId},
+      {content: contentStr, reflectionId},
       {onError, onCompleted}
     )
     commitLocalUpdate(atmosphere, (store) => {
@@ -309,20 +314,14 @@ const ReflectionCard = (props: Props) => {
 
       <div
         ref={scrollRef}
-        className={cn(
-          'relative w-full overflow-auto text-sm leading-5 text-slate-700',
-          isClipped ? 'max-h-11' : 'max-h-[104px]'
-        )}
+        className={cn('relative w-full overflow-auto text-sm leading-4 text-slate-700')}
       >
         <TipTapEditor
           className={cn(
-            'flex min-h-4 w-full items-center px-4 pt-3 leading-4',
+            'flex min-h-4 w-full px-4 pt-3',
+            isClipped ? 'max-h-11' : 'max-h-28',
             disableAnonymity ? 'pb-0' : 'pb-3',
-            readOnly
-              ? phaseType === 'discuss' || phaseType === 'vote'
-                ? 'select-text'
-                : 'select-none'
-              : undefined
+            readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
           editor={editor}
           linkState={linkState}
