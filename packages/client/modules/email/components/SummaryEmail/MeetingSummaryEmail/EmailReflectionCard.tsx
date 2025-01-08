@@ -30,7 +30,8 @@ const contentStyle = {
   verticalAlign: 'top',
   width: 188,
   minWidth: 188,
-  maxWidth: 188
+  maxWidth: 188,
+  wordBreak: 'break-all'
 } as React.CSSProperties
 
 const reflectionCardFooter = {

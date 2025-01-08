@@ -131,12 +131,13 @@ export const TipTapLinkMenu = (props: Props) => {
       <Popover.Trigger asChild />
       <Popover.Portal>
         <Popover.Content
+          asChild
           onOpenAutoFocus={(e) => {
             // necessary for link preview to prevent focusing the first button
             e.preventDefault()
           }}
         >
-          <div className='absolute left-0 top-0' style={{transform: getTransform()}}>
+          <div className='absolute left-0 top-0 z-10' style={{transform: getTransform()}}>
             {linkState === 'edit' && (
               <TipTapLinkEditor
                 initialUrl={link}
