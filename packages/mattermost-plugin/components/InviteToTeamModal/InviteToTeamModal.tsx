@@ -10,6 +10,7 @@ import Select from '../Select'
 import {Client4} from 'mattermost-redux/client'
 import {getCurrentUser} from 'mattermost-redux/selectors/entities/common'
 import {Post} from 'mattermost-redux/types/posts'
+import {PALETTE} from '~/styles/paletteV3'
 import {InviteToTeamModalQuery} from '../../__generated__/InviteToTeamModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import useMassInvitationToken from '../../hooks/useMassInvitationToken'
@@ -72,7 +73,9 @@ const InviteToTeamModal = () => {
     const props = {
       attachments: [
         {
-          fallback: `${userName} invited you to join a team in Parabol: ${teamName}, [Join Team](${inviteUrl})`,
+          title: `${userName} invited you to join a team in [Parabol](${teamUrl})`,
+          fallback: `${userName} invited you to join a team ${teamName} in Parabol`,
+          color: PALETTE.GRAPE_500,
           fields: [
             {short: true, value: teamName},
             {
@@ -82,8 +85,7 @@ const InviteToTeamModal = () => {
 |:--------------------:|
 ||`
             }
-          ],
-          title: `${userName} invited you to join a team in [Parabol](${teamUrl})`
+          ]
         }
       ]
     }

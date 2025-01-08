@@ -10,6 +10,7 @@ import Select from '../Select'
 import {Client4} from 'mattermost-redux/client'
 import {getCurrentUser} from 'mattermost-redux/selectors/entities/common'
 import {Post} from 'mattermost-redux/types/posts'
+import {PALETTE} from '~/styles/paletteV3'
 import {InviteToMeetingModalQuery} from '../../__generated__/InviteToMeetingModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import useMassInvitationToken from '../../hooks/useMassInvitationToken'
@@ -94,7 +95,9 @@ const InviteToMeetingModal = () => {
     const props = {
       attachments: [
         {
-          fallback: `${userName} invited you to join the meeting ${meetingName}, [Join Meeting](${inviteUrl})`,
+          fallback: `${userName} invited you to join the meeting ${meetingName}`,
+          title: `${userName} invited you to join a meeting in [Parabol](${meetingUrl})`,
+          color: PALETTE.GRAPE_500,
           fields: [
             {
               short: true,
@@ -113,8 +116,7 @@ const InviteToMeetingModal = () => {
 |:--------------------:|
 ||`
             }
-          ],
-          title: `${userName} invited you to join a meeting in [Parabol](${meetingUrl})`
+          ]
         }
       ]
     }
