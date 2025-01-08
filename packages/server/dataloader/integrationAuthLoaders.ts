@@ -133,6 +133,7 @@ export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
             keys.map((key) => tuple(key.teamId, key.userId, key.service))
           )
         )
+        .where('isActive', '=', true)
         .execute()
       return keys.map(
         (key) =>
