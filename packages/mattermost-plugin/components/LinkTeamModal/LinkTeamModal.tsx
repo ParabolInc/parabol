@@ -19,8 +19,8 @@ const LinkTeamModal = () => {
   const data = useLazyLoadQuery<LinkTeamModalQuery>(
     graphql`
       query LinkTeamModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
-          linkedTeamIds(channel: $channel)
           teams {
             id
             name
@@ -32,8 +32,8 @@ const LinkTeamModal = () => {
       channel: channel.id
     }
   )
-  const viewer = data.viewer
-  const unlinkedTeams = viewer.teams.filter((team) => !viewer.linkedTeamIds?.includes(team.id))
+  const {viewer, linkedTeamIds} = data
+  const unlinkedTeams = viewer.teams.filter((team) => !linkedTeamIds?.includes(team.id))
   const linkTeam = useLinkTeam()
 
   const [selectedTeam, setSelectedTeam] = React.useState<(typeof data.viewer.teams)[number]>()

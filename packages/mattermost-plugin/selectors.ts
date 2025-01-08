@@ -68,6 +68,9 @@ export const isCreateTaskModalVisible = (state: GlobalState) =>
 export const isInviteToTeamModalVisible = (state: GlobalState) =>
   getPluginState(state).isInviteToTeamModalVisible
 
+export const isInviteToMeetingModalVisible = (state: GlobalState) =>
+  getPluginState(state).isInviteToMeetingModalVisible
+
 export const isLinkTeamModalVisible = (state: GlobalState) =>
   getPluginState(state).isLinkTeamModalVisible
 

@@ -15,8 +15,8 @@ const LinkedTeams = () => {
         config {
           parabolUrl
         }
+        linkedTeamIds(channel: $channel)
         viewer {
-          linkedTeamIds(channel: $channel)
           teams {
             id
             ...TeamRow_team
@@ -28,9 +28,9 @@ const LinkedTeams = () => {
       channel: channel.id
     }
   )
-  const viewer = data.viewer
+  const {viewer, linkedTeamIds} = data
   const linkedTeams = viewer.teams.filter(
-    (team) => !viewer.linkedTeamIds || viewer.linkedTeamIds.includes(team.id)
+    (team) => !linkedTeamIds || linkedTeamIds.includes(team.id)
   )
 
   const dispatch = useDispatch()

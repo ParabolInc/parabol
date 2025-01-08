@@ -3,15 +3,15 @@ const path = require('path')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
+const PLUGIN_ROOT = path.join(PROJECT_ROOT, 'packages', 'mattermost-plugin')
+const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 
-const clientTransformRules = (projectRoot) => {
-  const clientRoot = path.join(projectRoot, 'packages', 'mattermost-plugin')
-  console.log('clientRoot', clientRoot)
+const clientTransformRules = (pluginRoot) => {
   return [
     {
       test: /\.tsx?$/,
       // things that need the relay plugin
-      include: clientRoot,
+      include: pluginRoot,
       use: [
         {
           loader: 'babel-loader',
@@ -23,7 +23,7 @@ const clientTransformRules = (projectRoot) => {
                 'macros',
                 {
                   relay: {
-                    artifactDirectory: path.join(clientRoot, '__generated__')
+                    artifactDirectory: path.join(pluginRoot, '__generated__')
                   }
                 }
               ],
@@ -55,11 +55,14 @@ module.exports = {
     publicPath: "auto",
   },
   resolve: {
+    alias: {
+      '~': path.join(CLIENT_ROOT),
+    },
     extensions: [".ts", ".tsx", ".js"],
   },
   module: {
     rules: [
-      ...clientTransformRules(PROJECT_ROOT),
+      ...clientTransformRules(PLUGIN_ROOT),
       {
         test: /\.tsx?$/,
         loader: "babel-loader",

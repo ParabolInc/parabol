@@ -64,7 +64,7 @@ export function parabolUrl(config: ConfigSource): string {
 }
 
 /**
- * @RelayResolver User.linkedTeamIds(channel: ID!): [ID!]
+ * @RelayResolver Query.linkedTeamIds(channel: ID!): [ID!]
  * @live
  */
 export function linkedTeamIds(
