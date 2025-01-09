@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
 import {useRef} from 'react'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import useMetaTagContent from '../hooks/useMetaTagContent'
 import useRouter from '../hooks/useRouter'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
@@ -88,6 +90,17 @@ const GenericAuthentication = (props: Props) => {
   }
 
   const isCreate = page === 'create-account'
+  if (isCreate) {
+    useDocumentTitle('Parabol | Create Account', 'Create Account')
+    useMetaTagContent(
+      'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
+    )
+  } else {
+    useDocumentTitle('Parabol | Sign In', 'Sign In')
+    useMetaTagContent(
+      'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
+    )
+  }
   const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const counterAction = isCreate ? SIGNIN_LABEL : CREATE_ACCOUNT_LABEL
   const counterActionSlug = isCreate ? SIGNIN_SLUG : CREATE_ACCOUNT_SLUG

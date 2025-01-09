@@ -5,6 +5,7 @@ import {Route, Switch} from 'react-router-dom'
 import {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
+import useMetaTagContent from '../../../../hooks/useMetaTagContent'
 import getTeamIdFromPathname from '../../../../utils/getTeamIdFromPathname'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import TeamDashActivityTab from '../TeamDashActivityTab/TeamDashActivityTab'
@@ -44,7 +45,10 @@ const TeamDashMain = (props: Props) => {
   const team = viewer.team!
   const {name: teamName} = team
   const teamId = getTeamIdFromPathname()
-  useDocumentTitle(`Team Dashboard | ${teamName}`, teamName)
+  useDocumentTitle(`${teamName} | Parabol`, teamName)
+  useMetaTagContent(
+    `Overview of ${teamName} on Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
+  )
 
   return (
     <div className='flex h-full w-full'>
