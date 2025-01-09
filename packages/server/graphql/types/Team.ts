@@ -81,13 +81,14 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         const invitationTokens = await dataLoader
           .get('massInvitationsByTeamMemberId')
           .load(teamMemberId)
-        const [newestInvitationToken] = invitationTokens
+        const matchingInvitation = invitationTokens.find((token) => token.meetingId === meetingId)
         // if the token is valid, return it
-        if ((newestInvitationToken?.expiration ?? new Date(0)) > new Date())
-          return newestInvitationToken
-        // if the token is not valid, delete it to keep the table clean of expired things
-        if (newestInvitationToken) {
-          await pg.deleteFrom('MassInvitation').where('teamMemberId', '=', teamMemberId).execute()
+        if ((matchingInvitation?.expiration ?? new Date(0)) > new Date())
+          return matchingInvitation
+
+        // if there is no matching token, let's use the opportunity to clean up old tokens
+        if (invitationTokens.length > 0) {
+          await pg.deleteFrom('MassInvitation').where('teamMemberId', '=', teamMemberId).where('expiration', '<', new Date(Date.now())).execute()
         }
         const massInvitation = {
           id: generateRandomString(Security.MASS_INVITATION_TOKEN_LENGTH),
@@ -96,8 +97,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           expiration: new Date(Date.now() + Threshold.MASS_INVITATION_TOKEN_LIFESPAN)
         }
         await pg.insertInto('MassInvitation').values(massInvitation).execute()
-        invitationTokens.length = 1
-        invitationTokens[0] = massInvitation
+        dataLoader.get('massInvitationsByTeamMemberId').clear(teamMemberId)
         return massInvitation
       }
     },
