@@ -10,11 +10,12 @@ import Select from '../Select'
 import {Client4} from 'mattermost-redux/client'
 import {getCurrentUser} from 'mattermost-redux/selectors/entities/common'
 import {Post} from 'mattermost-redux/types/posts'
+import {PALETTE} from '~/styles/paletteV3'
 import {InviteToTeamModalQuery} from '../../__generated__/InviteToTeamModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import useMassInvitationToken from '../../hooks/useMassInvitationToken'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
-import useMassInvitationToken from './useMassInvitationToken'
 
 const InviteToTeamModal = () => {
   const data = useLazyLoadQuery<InviteToTeamModalQuery>(
@@ -60,29 +61,31 @@ const InviteToTeamModal = () => {
     if (!selectedTeam) {
       return
     }
-    const {name: teamName} = selectedTeam
+    const {id: teamId, name: teamName} = selectedTeam
     const token = await getToken()
     if (!token) {
       return
     }
-    const url = `${parabolUrl}/invitation-link/${token}`
+    const inviteUrl = `${parabolUrl}/invitation-link/${token}`
+    const teamUrl = `${parabolUrl}/team/${teamId}`
     const {username, nickname, first_name, last_name} = currentUser
     const userName = nickname || username || `${first_name} ${last_name}`
     const props = {
       attachments: [
         {
-          fallback: `Join our team ${teamName}, [Join Team](${url})`,
+          title: `${userName} invited you to join a team in [Parabol](${teamUrl})`,
+          fallback: `${userName} invited you to join a team ${teamName} in Parabol`,
+          color: PALETTE.GRAPE_500,
           fields: [
             {short: true, value: teamName},
             {
               short: false,
               value: `
-| [Join Team](${url}) |
+| [Join Team](${inviteUrl}) |
 |:--------------------:|
 ||`
             }
-          ],
-          title: `${userName} invited you to join a team in Parabol`
+          ]
         }
       ]
     }
@@ -95,7 +98,7 @@ const InviteToTeamModal = () => {
 
   return (
     <Modal
-      title='Invite to Parabol Team'
+      title='Invite Channel to Join Parabol Team'
       commitButtonLabel='Share Invite'
       handleCommit={handleStart}
       handleClose={handleClose}

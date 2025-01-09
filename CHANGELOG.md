@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.17.0](https://github.com/ParabolInc/parabol/compare/v8.16.0...v8.17.0) (2025-01-09)
+
+
+### Added
+
+* **Mattermost:** Invite to Meeting ([#10635](https://github.com/ParabolInc/parabol/issues/10635)) ([cf48ae2](https://github.com/ParabolInc/parabol/commit/cf48ae2934cd6ed29e4b11f62180a1b466b6a303))
+
+
+### Fixed
+
+* Check if integration was removed ([#10641](https://github.com/ParabolInc/parabol/issues/10641)) ([d6ba0cc](https://github.com/ParabolInc/parabol/commit/d6ba0ccd319c06433d31a67c16e4638359615f51))
+
+
+### Changed
+
+* Disable processRecurrence tests ([#10642](https://github.com/ParabolInc/parabol/issues/10642)) ([be72f7a](https://github.com/ParabolInc/parabol/commit/be72f7a34a434ecc49b7caa9509d6592e9ad11d9))
+* migrate old reflections to tiptap ([#10653](https://github.com/ParabolInc/parabol/issues/10653)) ([078e50e](https://github.com/ParabolInc/parabol/commit/078e50e0699ed5d7098be00074d8aebdfe34c8b8))
+
 ## [8.16.0](https://github.com/ParabolInc/parabol/compare/v8.15.0...v8.16.0) (2025-01-07)
 
 
