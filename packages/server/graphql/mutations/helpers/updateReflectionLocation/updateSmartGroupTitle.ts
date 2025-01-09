@@ -1,8 +1,9 @@
 import {sql} from 'kysely'
 import getKysely from '../../../../postgres/getKysely'
 
-const updateSmartGroupTitle = async (reflectionGroupId: string, smartTitle: string) => {
+const updateSmartGroupTitle = async (reflectionGroupId: string, longSmartTitle: string) => {
   const pg = getKysely()
+  const smartTitle = longSmartTitle.slice(0, 255)
   await pg
     .updateTable('RetroReflectionGroup')
     .set({

@@ -3,12 +3,15 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
-import extractTextFromDraftString from '../draftjs/extractTextFromDraftString'
-
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2
 const MAX_CHARS = 30
 const MIN_SALIENCE = 0.1
+
+export const makeGroupTitleFromPlaintext = (plaintextContent?: string) => {
+  if (!plaintextContent) return ''
+  return plaintextContent.trim().slice(0, MAX_CHARS).replace(/\n\n/g, ' ')
+}
 
 type DistanceArray = number[]
 const getNameFromLemma = (
@@ -32,7 +35,7 @@ const getTitleFromComputedGroup = (
   uniqueLemmaArr: string[],
   group: DistanceArray[],
   reflectionEntities: {lemma?: string; name: string; salience: number}[][],
-  reflections: any[]
+  reflections: {plaintextContent: string}[]
 ) => {
   const sumArr = new Array(uniqueLemmaArr.length).fill(0)
   group.forEach((reflectionDistanceArr) => {
@@ -67,8 +70,7 @@ const getTitleFromComputedGroup = (
   if (titleArr.length === 0) {
     const [firstReflection] = reflections
     if (!firstReflection) return 'Unknown Topic'
-    const text = extractTextFromDraftString(firstReflection.content)
-    const maxStr = text.trim().slice(0, MAX_CHARS)
+    const maxStr = makeGroupTitleFromPlaintext(firstReflection.plaintextContent)
     const lastSpace = maxStr.lastIndexOf(' ')
     const wordsOrMax = lastSpace === -1 ? maxStr : maxStr.slice(0, lastSpace).trim()
     return wordsOrMax || 'New Topic' // New Topic should never occur unless str value is falsy

@@ -1,3 +1,5 @@
+import CreateTaskModalRoot from './CreateTaskModal'
+import InviteToTeamModalRoot from './InviteToTeamModal'
 import LinkTeamModal from './LinkTeamModal'
 import PushReflectionModalRoot from './PushReflection'
 import StartActivityModalRoot from './StartActivityModal'
@@ -5,9 +7,11 @@ import StartActivityModalRoot from './StartActivityModal'
 const ModalRoot = () => {
   return (
     <>
-      <StartActivityModalRoot />
+      <CreateTaskModalRoot />
+      <InviteToTeamModalRoot />
       <LinkTeamModal />
       <PushReflectionModalRoot />
+      <StartActivityModalRoot />
     </>
   )
 }

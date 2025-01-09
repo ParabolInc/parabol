@@ -844,7 +844,7 @@ type Mutation {
     commentId: ID!
 
     """
-    A stringified draft-js document containing thoughts
+    A stringified TipTap JSONContent document containing thoughts
     """
     content: String!
     meetingId: ID!
@@ -924,7 +924,7 @@ type Mutation {
     reflectionId: ID!
 
     """
-    A stringified draft-js document containing thoughts
+    A stringified TipTap JSONContent document containing thoughts
     """
     content: String!
   ): UpdateReflectionContentPayload

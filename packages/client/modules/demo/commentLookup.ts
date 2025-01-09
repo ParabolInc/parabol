@@ -1,6 +1,9 @@
+import {generateJSON} from '@tiptap/core'
+import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
+
 const commentLookup = {
   botRef6: [
-    `{"blocks":[{"key":"2c991","text":"We could make our standups async?","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    JSON.stringify(generateJSON('<p>We could make our standups async?</p>', serverTipTapExtensions))
   ]
 } as const
 

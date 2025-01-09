@@ -1,5 +1,7 @@
+import {generateJSON} from '@tiptap/core'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {RetroDemo} from '~/types/constEnums'
+import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {demoTeamId} from './initDB'
 
 // 3 -> 1
@@ -44,7 +46,12 @@ const initBotScript = () => {
           input: {
             id: 'botRef1',
             groupId: 'botGroup1',
-            content: `{"blocks":[{"key":"2t965","text":"I'd like to give our interns and junior staff more space to share their ideas & fresh thinking","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(
+                `<p>I'd like to give our interns and junior staff more space to share their ideas & fresh thinking</p>`,
+                serverTipTapExtensions
+              )
+            ),
             promptId: 'startId',
             sortOrder: 0
           }
@@ -58,7 +65,9 @@ const initBotScript = () => {
           input: {
             id: 'botRef2',
             groupId: 'botGroup2',
-            content: `{"blocks":[{"key":"2t966","text":"Writing down our processes","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(`<p>Writing down our processes</p>`, serverTipTapExtensions)
+            ),
             promptId: 'startId',
             sortOrder: 0
           }
@@ -90,7 +99,12 @@ const initBotScript = () => {
           input: {
             id: 'botRef3',
             groupId: 'botGroup3',
-            content: `{"blocks":[{"key":"2t967","text":"Some people always take all the air time. It's hard to get my ideas on the floor","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(
+                `<p>Some people always take all the air time. It's hard to get my ideas on the floor</p>`,
+                serverTipTapExtensions
+              )
+            ),
             promptId: 'stopId',
             sortOrder: 1
           }
@@ -122,7 +136,9 @@ const initBotScript = () => {
           input: {
             id: 'botRef4',
             groupId: 'botGroup4',
-            content: `{"blocks":[{"key":"2t968","text":"Making important decisions in chat","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(`<p>Making important decisions in chat</p>`, serverTipTapExtensions)
+            ),
             promptId: 'stopId',
             sortOrder: 1
           }
@@ -136,7 +152,12 @@ const initBotScript = () => {
           input: {
             id: 'botRef5',
             groupId: 'botGroup5',
-            content: `{"blocks":[{"key":"2t969","text":"Having debates that go nowhere over group chat","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(
+                `<p>Having debates that go nowhere over group chat</p>`,
+                serverTipTapExtensions
+              )
+            ),
             promptId: 'stopId',
             sortOrder: 2
           }
@@ -150,7 +171,9 @@ const initBotScript = () => {
           input: {
             id: 'botRef6',
             groupId: 'botGroup6',
-            content: `{"blocks":[{"key":"2t970","text":"Having so many meetings","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(`<p>Having so many meetings</p>`, serverTipTapExtensions)
+            ),
             promptId: 'stopId',
             sortOrder: 2
           }
@@ -164,7 +187,12 @@ const initBotScript = () => {
           input: {
             id: 'botRef7',
             groupId: 'botGroup7',
-            content: `{"blocks":[{"key":"2t971","text":" Prioritizing so much work every sprint, we can't get it all done!","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(
+                `<p>Prioritizing so much work every sprint, we can't get it all done!</p>`,
+                serverTipTapExtensions
+              )
+            ),
             promptId: 'stopId',
             sortOrder: 2
           }
@@ -214,7 +242,9 @@ const initBotScript = () => {
           input: {
             id: 'botRef8',
             groupId: 'botGroup8',
-            content: `{"blocks":[{"key":"2t971","text":"Team retreats every quarter","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+            content: JSON.stringify(
+              generateJSON(`<p>Team retreats every quarter</p>`, serverTipTapExtensions)
+            ),
             promptId: 'continueId',
             sortOrder: 3
           }

@@ -33,7 +33,7 @@ export const TipTapEditor = (props: Props) => {
         ref={ref as any}
         {...rest}
         editor={editor}
-        className={cn('min-h-10 cursor-text px-4 text-sm leading-5', className)}
+        className={cn('min-h-10 px-4 text-sm leading-none', className)}
       />
     </>
   )

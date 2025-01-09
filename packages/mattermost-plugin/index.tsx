@@ -3,7 +3,12 @@ import {GlobalState} from 'mattermost-redux/types/store'
 import SidePanelRoot from './components/Sidepanel'
 import PanelTitle from './components/Sidepanel/PanelTitle'
 import manifest from './manifest'
-import rootReducer, {openPushPostAsReflection, openStartActivityModal} from './reducers'
+import rootReducer, {
+  openCreateTaskModal,
+  openInviteToTeamModal,
+  openPushPostAsReflection,
+  openStartActivityModal
+} from './reducers'
 import {getAssetsUrl, getPluginServerRoute} from './selectors'
 import {PluginRegistry} from './types/mattermost-webapp'
 
@@ -14,7 +19,6 @@ import ModalRoot from './components/ModalRoot'
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
   const environment = createEnvironment(serverUrl, store)
-  //registry.registerRootComponent(StartActivityModal)
   /*registry.registerSlashCommandWillBePostedHook((message: string) => {
     return message
   })
@@ -43,8 +47,16 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
     'Open Parabol Panel'
   )
 
-  registry.registerWebSocketEventHandler(`custom_${manifest.id}_open_start_activity_modal`, () => {
+  registry.registerWebSocketEventHandler(`custom_${manifest.id}_start`, () => {
     store.dispatch(openStartActivityModal())
+  })
+
+  registry.registerWebSocketEventHandler(`custom_${manifest.id}_task`, () => {
+    store.dispatch(openCreateTaskModal())
+  })
+
+  registry.registerWebSocketEventHandler(`custom_${manifest.id}_invite`, () => {
+    store.dispatch(openInviteToTeamModal())
   })
 
   registry.registerPostDropdownMenuAction(

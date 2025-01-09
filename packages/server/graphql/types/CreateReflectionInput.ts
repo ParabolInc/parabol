@@ -11,7 +11,7 @@ const CreateReflectionInput = new GraphQLInputObjectType({
   fields: () => ({
     content: {
       type: GraphQLString,
-      description: 'A stringified draft-js document containing thoughts'
+      description: 'A stringified TipTap JSONContent document containing thoughts'
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID)

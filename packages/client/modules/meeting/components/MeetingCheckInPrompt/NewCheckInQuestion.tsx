@@ -10,7 +10,6 @@ import {
   useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
 } from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
-import '../../../../components/TaskEditor/Draft.css'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {useTipTapIcebreakerEditor} from '../../../../hooks/useTipTapIcebreakerEditor'

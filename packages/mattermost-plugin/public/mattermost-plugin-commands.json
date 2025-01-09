@@ -1,0 +1,18 @@
+[
+  {
+    "trigger": "start",
+    "description": "Start a Parabol Activity"
+  },
+  {
+    "trigger": "task",
+    "description": "Create a new task"
+  },
+  {
+    "trigger": "invite",
+    "description": "Invite users to your Parabol Team"
+  },
+  {
+    "trigger": "share",
+    "description": "Shares Parabol activity so channel members can join"
+  }
+]

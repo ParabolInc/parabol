@@ -1,12 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {Suspense, useEffect, useMemo} from 'react'
-import {Modal} from 'react-bootstrap'
-import {useDispatch, useSelector} from 'react-redux'
+import {Suspense, useEffect, useMemo, useState} from 'react'
+import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 
 import useStartMeeting from '../../hooks/useStartMeeting'
 import {closeStartActivityModal} from '../../reducers'
-import {getAssetsUrl} from '../../selectors'
 
 import Select from '../Select'
 import MeetingSettings from './MeetingSettings'
@@ -14,6 +12,7 @@ import MeetingSettings from './MeetingSettings'
 import styled from 'styled-components'
 import {StartActivityModalQuery} from '../../__generated__/StartActivityModalQuery.graphql'
 import LoadingSpinner from '../LoadingSpinner'
+import Modal from '../Modal'
 
 const SettingsArea = styled.div!`
   min-height: 80px;
@@ -58,9 +57,9 @@ const StartActivityModal = () => {
   const {config, viewer} = data
   const {availableTemplates, teams} = viewer
 
-  const [selectedTeam, setSelectedTeam] = React.useState<NonNullable<typeof teams>[number]>()
+  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
   const [selectedTemplate, setSelectedTemplate] =
-    React.useState<NonNullable<typeof availableTemplates.edges>[number]['node']>()
+    useState<NonNullable<typeof availableTemplates.edges>[number]['node']>()
 
   const filteredTemplates = useMemo(
     () =>
@@ -107,70 +106,50 @@ const StartActivityModal = () => {
     handleClose()
   }
 
-  const assetsPath = useSelector(getAssetsUrl)
-
   return (
     <Modal
-      dialogClassName='modal--scroll'
-      show={true}
-      onHide={handleClose}
-      onExited={handleClose}
-      bsSize='large'
-      backdrop='static'
+      title='Start a Parabol Activity'
+      commitButtonLabel='Start Activity'
+      handleClose={handleClose}
+      handleCommit={handleStart}
     >
-      <Modal.Header closeButton={true}>
-        <Modal.Title>
-          <img width={36} height={36} src={`${assetsPath}/parabol.png`} />
-          {' Start a Parabol Activity'}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div>
-          <p>
-            To see the full details for any activity, visit
-            <a href={`${config?.parabolUrl}/activity-library/`} target='_blank' rel='noreferrer'>
-              {"Parabol's Activity Library"}
-            </a>
-          </p>
-        </div>
-        {teams && (
+      <div>
+        <p>
+          To see the full details for any activity, visit
+          <a href={`${config?.parabolUrl}/activity-library/`} target='_blank' rel='noreferrer'>
+            {"Parabol's Activity Library"}
+          </a>
+        </p>
+      </div>
+      {teams && (
+        <Select
+          label='Choose Parabol Team'
+          required={true}
+          options={teams ?? []}
+          value={selectedTeam}
+          onChange={setSelectedTeam}
+        />
+      )}
+      {selectedTeam && availableTemplates && (
+        <>
           <Select
-            label='Choose Parabol Team'
+            label='Choose Activity'
             required={true}
-            options={teams ?? []}
-            value={selectedTeam}
-            onChange={setSelectedTeam}
+            options={filteredTemplates ?? []}
+            value={selectedTemplate}
+            onChange={setSelectedTemplate}
           />
-        )}
-        {selectedTeam && availableTemplates && (
-          <>
-            <Select
-              label='Choose Activity'
-              required={true}
-              options={filteredTemplates ?? []}
-              value={selectedTemplate}
-              onChange={setSelectedTemplate}
-            />
-            <SettingsArea>
-              {selectedTeam &&
-                selectedTemplate &&
-                ['retrospective', 'action', 'poker'].includes(selectedTemplate.type) && (
-                  <Suspense fallback=<LoadingSpinner />>
-                    <MeetingSettings teamId={selectedTeam.id} meetingType={selectedTemplate.type} />
-                  </Suspense>
-                )}
-            </SettingsArea>
-          </>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handleStart}>
-          Start Activity
-        </button>
-      </Modal.Footer>
+          <SettingsArea>
+            {selectedTeam &&
+              selectedTemplate &&
+              ['retrospective', 'action', 'poker'].includes(selectedTemplate.type) && (
+                <Suspense fallback=<LoadingSpinner />>
+                  <MeetingSettings teamId={selectedTeam.id} meetingType={selectedTemplate.type} />
+                </Suspense>
+              )}
+          </SettingsArea>
+        </>
+      )}
     </Modal>
   )
 }

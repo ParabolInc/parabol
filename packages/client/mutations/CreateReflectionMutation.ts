@@ -2,12 +2,13 @@
  * Creates a reflection for the retrospective meeting.
  *
  */
+import {generateJSON} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {CreateReflectionMutation_meeting$data} from '~/__generated__/CreateReflectionMutation_meeting.graphql'
 import {CreateReflectionMutation as TCreateReflectionMutation} from '../__generated__/CreateReflectionMutation.graphql'
+import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {SharedUpdater, StandardMutation} from '../types/relayMutations'
-import makeEmptyStr from '../utils/draftjs/makeEmptyStr'
 import clientTempId from '../utils/relay/clientTempId'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import handleAddReflectionGroups from './handlers/handleAddReflectionGroups'
@@ -73,7 +74,7 @@ const CreateReflectionMutation: StandardMutation<TCreateReflectionMutation> = (
       const nowISO = new Date().toJSON()
       const optimisticReflection = {
         id: clientTempId(),
-        content: input.content || makeEmptyStr(),
+        content: input.content || JSON.stringify(generateJSON('<p></p>', serverTipTapExtensions)),
         createdAt: nowISO,
         creatorId: viewerId,
         isActive: true,

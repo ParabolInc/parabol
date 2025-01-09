@@ -1,6 +1,6 @@
 input AddCommentInput {
   """
-  A stringified draft-js document containing thoughts
+  A stringified TipTap JSONContent  document containing thoughts
   """
   content: String!
 

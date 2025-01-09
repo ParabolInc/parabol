@@ -6,6 +6,7 @@ import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import publish from '../../../utils/publish'
 import {DataLoaderWorker} from '../../graphql'
+import canAccessAI from './canAccessAI'
 
 const generateGroups = async (
   reflections: RetroReflection[],
@@ -15,10 +16,7 @@ const generateGroups = async (
   if (reflections.length === 0) return
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const hasSuggestGroupsFlag = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: team.orgId, featureName: 'suggestGroups'})
-  if (!hasSuggestGroupsFlag) return
+  if (!(await canAccessAI(team, 'retrospective', dataLoader))) return
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()
 

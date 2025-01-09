@@ -14,7 +14,6 @@ import PlainButton from '../PlainButton/PlainButton'
 interface Props extends WithMutationProps {
   meetingId: string
   reflectionId: string
-  dataCy: string
 }
 
 const DeleteButton = styled(PlainButton)({
@@ -59,11 +58,11 @@ const ReflectionCardDeleteButton = (props: Props) => {
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
   }
 
-  const {submitting, dataCy} = props
+  const {submitting} = props
   const userLabel = 'Delete this reflection card'
   if (submitting) return null
   return (
-    <DeleteButton data-cy={dataCy} aria-label={userLabel} onClick={handleDelete} title={userLabel}>
+    <DeleteButton aria-label={userLabel} onClick={handleDelete} title={userLabel}>
       <StyledIcon />
       <Background />
     </DeleteButton>

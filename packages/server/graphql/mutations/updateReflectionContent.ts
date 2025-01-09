@@ -1,12 +1,13 @@
+import {generateText} from '@tiptap/core'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import extractTextFromDraftString from 'parabol-client/utils/draftjs/extractTextFromDraftString'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import normalizeRawDraftJS from 'parabol-client/validation/normalizeRawDraftJS'
 import stringSimilarity from 'string-similarity'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../postgres/getKysely'
 import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -25,7 +26,7 @@ export default {
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'A stringified draft-js document containing thoughts'
+      description: 'A stringified TipTap JSONContent document containing thoughts'
     }
   },
   async resolve(
@@ -65,13 +66,13 @@ export default {
     }
 
     // VALIDATION
-    const normalizedContent = normalizeRawDraftJS(content)
+    const normalizedContent = convertToTipTap(content)
     if (normalizedContent.length > 2000) {
       return {error: {message: 'Reflection content is too long'}}
     }
 
     // RESOLUTION
-    const plaintextContent = extractTextFromDraftString(normalizedContent)
+    const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
     const isVeryDifferent =
       stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
     const entities = isVeryDifferent
@@ -86,7 +87,7 @@ export default {
     await pg
       .updateTable('RetroReflection')
       .set({
-        content: normalizedContent,
+        content: JSON.stringify(normalizedContent),
         entities: toGoogleAnalyzedEntity(entities),
         sentimentScore,
         plaintextContent

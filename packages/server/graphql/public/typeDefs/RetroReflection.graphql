@@ -43,7 +43,7 @@ type RetroReflection implements Reactable {
   isViewerCreator: Boolean!
 
   """
-  The stringified draft-js content
+  The stringified TipTap JSONContent content
   """
   content: String!
 

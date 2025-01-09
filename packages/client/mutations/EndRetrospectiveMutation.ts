@@ -28,9 +28,6 @@ graphql`
       reflectionCount
       taskCount
       topicCount
-      autogroupReflectionGroups {
-        groupTitle
-      }
       organization {
         useAI
       }
@@ -97,14 +94,7 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {
-    id: meetingId,
-    teamId,
-    reflectionGroups,
-    phases,
-    autogroupReflectionGroups,
-    organization
-  } = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases, organization} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -124,11 +114,6 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
       const hasTeamHealth = phases.some((phase) => phase.phaseType === 'TEAM_HEALTH')
       const pathname = `/new-summary/${meetingId}`
       const search = new URLSearchParams()
-      const hasSuggestGroups = !!autogroupReflectionGroups?.length
-      if (hasSuggestGroups) {
-        const suggestGroupsStr = reflections.length > 40 ? 'sg-xl' : 'sg'
-        search.append(suggestGroupsStr, 'true')
-      }
       if (hasOpenAISummary) {
         search.append('ai', 'true')
       }

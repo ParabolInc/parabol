@@ -130,7 +130,11 @@ export const navigateMeetingTeamUpdater: SharedUpdater<NavigateMeetingMutation_t
     const viewerPhaseType = meeting
       .getLinkedRecord('localPhase')!
       .getValue('phaseType') as NewMeetingPhaseTypeEnum
-    if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping()) {
+    if (
+      (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping()) &&
+      // if i have spotlight open, i don't want the facilitator to move me around
+      !meeting.getValue('spotlightReflectionId')
+    ) {
       setLocalStageAndPhase(store, meetingId, facilitatorStageId)
     }
   }

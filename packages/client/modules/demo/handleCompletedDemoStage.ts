@@ -1,6 +1,5 @@
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {ACTIVE, GROUP, REFLECT, VOTE} from '../../utils/constants'
-import extractTextFromDraftString from '../../utils/draftjs/extractTextFromDraftString'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import clientTempId from '../../utils/relay/clientTempId'
 import DemoDiscussStage from './DemoDiscussStage'
@@ -14,7 +13,7 @@ const removeEmptyReflections = (db: RetroDemoDB) => {
   const emptyReflectionGroupIds: string[] = []
   const emptyReflectionIds: string[] = []
   reflections.forEach((reflection) => {
-    const text = extractTextFromDraftString(reflection.content)
+    const text = reflection.plaintextContent
     if (text.length === 0) {
       emptyReflectionGroupIds.push(reflection.reflectionGroupId)
       emptyReflectionIds.push(reflection.id)
