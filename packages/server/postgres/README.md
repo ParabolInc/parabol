@@ -38,6 +38,12 @@ To rebase:
 - Table options
   - Exclude Patterns: Tables: `_*` (excludes `_migration`, `_migrationLock`)
 
+4. `yarn kysely migrate:make init` to create a new initial migration
+5. Copy the contents of the old `_init.ts` migration to the new file you just created & just replace the SQL.
+   At the beginning of the file, update the old `migrationTableName` so we delete the old migration table
+6. Delete all old migrations
+7. Increment the table version number in `kyselyMigrations.ts` for `migrationTableName`, e.g. `_migrationV3`
+
 ### Queries
 
 - [Queries](./queries/README.md)
