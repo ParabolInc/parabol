@@ -8,7 +8,11 @@ export async function up(db: Kysely<any>): Promise<void> {
     AND tablename = 'User'
 	);`.execute(db)
   // if the DB already exists then do not initialize
-  if (hasUserTable.rows[0].exists) return
+  if (hasUserTable.rows[0].exists) {
+    // migrationTableName should have been incremented, so delete the previous table
+    await db.schema.dropTable('_migration').execute()
+    return
+  }
   const {CDN_BASE_URL, FILE_STORE_PROVIDER} = process.env
   if (!FILE_STORE_PROVIDER) throw new Error('Missng Env: FILE_STORE_PROVIDER')
 
