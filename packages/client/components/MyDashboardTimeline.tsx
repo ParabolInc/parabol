@@ -20,6 +20,7 @@ const TimelineFeed = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   flex: 1,
+  height: 'auto',
   paddingLeft: DashTimeline.MIN_PADDING,
   paddingRight: DashTimeline.MIN_PADDING,
   paddingTop: DashTimeline.MIN_PADDING
@@ -33,8 +34,7 @@ export const TimelineFeedItems = styled('div')({
 
 const FeedAndDrawer = styled('div')({
   display: 'flex',
-  height: '100%',
-  overflow: 'auto'
+  height: 'unset'
 })
 
 const MyDashboardTimeline = (props: Props) => {
