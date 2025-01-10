@@ -32,12 +32,21 @@ export default class S3Manager extends FileStoreManager {
   // e.g. development, production
   private envSubDir: string
 
+  // e.g. action-files.parabol.co
+  private bucket: string
+
   // e.g. https://action-files.parabol.co
   baseUrl: string
   private s3: S3Client
   constructor() {
     super()
-    const {CDN_BASE_URL, AWS_REGION, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID} = process.env
+    const {
+      CDN_BASE_URL,
+      AWS_REGION,
+      AWS_SECRET_ACCESS_KEY,
+      AWS_ACCESS_KEY_ID,
+      AWS_S3_BUCKET
+    } = process.env
     if (!CDN_BASE_URL || CDN_BASE_URL === 'key_CDN_BASE_URL') {
       throw new Error('CDN_BASE_URL ENV VAR NOT SET')
     }
@@ -53,6 +62,10 @@ export default class S3Manager extends FileStoreManager {
     this.envSubDir = pathname.split('/').at(-1) as string
 
     this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
+
+    if (AWS_S3_BUCKET) this.bucket = AWS_S3_BUCKET
+    else throw new Error('AWS_S3_BUCKET required when using AWS S3 as filestore provider')
+
     // credentials are optional since the file store could be public & not need a key to write
     const credentials =
       AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY
@@ -61,7 +74,7 @@ export default class S3Manager extends FileStoreManager {
     this.s3 = new S3Client({
       credentials,
       // The bucket is inferred from the CDN_BASE_URL
-      bucketEndpoint: true,
+      bucketEndpoint: false,
       region: AWS_REGION,
       followRegionRedirects: true,
       retryStrategy: new CloudflareRetry(3)
@@ -75,7 +88,7 @@ export default class S3Manager extends FileStoreManager {
   protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const s3Params = {
       Body: Buffer.from(file),
-      Bucket: this.baseUrl,
+      Bucket: this.bucket,
       Key: fullPath,
       ContentType: mime.lookup(fullPath) || 'application/octet-stream'
     }
@@ -98,9 +111,13 @@ export default class S3Manager extends FileStoreManager {
   async checkExists(key: string, assetDir?: FileAssetDir) {
     const Key = this.prependPath(key, assetDir)
     try {
-      await this.s3.send(new HeadObjectCommand({Bucket: this.baseUrl, Key}))
+      await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
     } catch (e) {
       if (e instanceof Error && e.name === 'NotFound') return false
+      else {
+        Logger.log(`Invalid error ${(e as Error).name}`)
+        throw new Error(`Can't verify if the object ${Key} is in the S3 bucket  ${this.bucket}`)
+      }
     }
     return true
   }
@@ -108,7 +125,7 @@ export default class S3Manager extends FileStoreManager {
   async presignUrl(url: string) {
     // Important to decodeURI so `getSignedUrl` doesn't double encode e.g. local|123/avatars/123.jpg
     const key = decodeURI(url.slice(this.baseUrl.length))
-    const command = new GetObjectCommand({Bucket: this.baseUrl, Key: key})
+    const command = new GetObjectCommand({Bucket: this.bucket, Key: key})
     const encodedUri = await getSignedUrl(this.s3, command, {expiresIn: 604800})
     return encodedUri
   }
