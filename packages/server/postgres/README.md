@@ -12,6 +12,32 @@ There are 3 ways migrations are triggered:
 
 To create a new migration run `yarn kysely migrate:make NAME`
 
+### Rebasing Migrations
+
+Rebasing migrations means deleting all the migrations in /migrations and starting fresh.
+It is time to rebase migrations when one of the following is true:
+
+- a migration has a dependency that you want to remove from the project
+- there are too many migrations and they're slowing down CI/CD
+
+To rebase:
+
+1. create a new DB in postgres & change it in the .env, e.g. `POSTGRES_DB='init1'`.
+2. run `yarn kysely migrate:latest` to build it
+3. goto pgadmin, right click the database and click backup
+
+- General Tab
+  - Filename: init.sql
+  - Encoding: UTF8
+- Data Options
+  - Sections: Pre-data, Data, Post-data
+  - Do not save: Owner
+- Query Options
+  - Use Insert Commands
+  - On conflict do nothing to INSERT command
+- Table options
+  - Exclude Patterns: Tables: `_*` (excludes `_migration`, `_migrationLock`)
+
 ### Queries
 
 - [Queries](./queries/README.md)
