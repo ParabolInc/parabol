@@ -112,7 +112,8 @@ const safeEndRetrospective = async ({
       endedAt: sql`CURRENT_TIMESTAMP`,
       phases: JSON.stringify(phases),
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement
+      engagement: insights.engagement,
+      summary: '' // empty string signals "loading" to the client
     })
     .where('id', '=', meetingId)
     .executeTakeFirst()
