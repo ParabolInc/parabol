@@ -298,21 +298,55 @@ class OpenAIServerManager {
     if (!this.openAIApi) return null
     const meetingURL = 'https://action.parabol.co/meet/'
     const promptForMeetingData = `
-    You work at a start-up and you need to discover behavioral trends for a given team.
-    Below is a list of reflection topics in YAML format from meetings over recent months.
-    You should describe the situation in two sections with no more than 3 bullet points each.
-    The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    When citing the quote, include the meetingId in the format of https://action.parabol.co/meet/[meetingId].
-    Prioritize topics with more votes.
-    Be sure that each author is only mentioned once.
-    Your tone should be kind and straight forward. Use plain English. No yapping.
-    Return the output as a JSON object with the following structure:
-    {
-      "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
-      "challenges": ["bullet point 1", "bullet point 2"]
-    }
-    `
+You are a Team Lead and want to use your meeting data to help write a report on your team's performance. You care about team productivity, morale, roadblocks, relationships, and progress against goals. Below is a list of retrospective meeting summaries (in YAML format) from the past several months.
+
+**Task:**
+Analyze the provided meeting data and identify patterns in teamwork and collaboration. Focus on "wins" and "challenges" that appear in at two or more different meetings, prioritizing trends that appear in the highest number of meetings. Reference those meetings by hyperlink. Prioritize trends that have received the most combined votes, if that information is available.
+
+**Output Format:**
+Return the analysis as a JSON object with this structure:
+{
+  "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
+  "challenges": ["bullet point 1", "bullet point 2", "bullet point 3"]
+}
+
+**Instructions:**
+1. **Wins (3 bullet points)**:
+   - Highlight positive trends or patterns observed across multiple meetings.
+   - Include at least one direct quote from one meeting, attributing it to its author.
+   - Link to the referenced meeting(s) using the format:
+     [<meeting title>](https://action.parabol.co/meet/[meetingId])
+   - Mention each author at most once across the entire output.
+   - Keep the tone kind, straightforward, and professional. Avoid jargon.
+
+2. **Challenges (3 bullet points)**:
+   - Highlight trends or patterns that indicate areas for improvement.
+   - Include at least one direct quote from one meeting, attributing it to its author.
+   - Suggest a concrete action or next step to improve the situation.
+   - Link to the referenced meeting(s) using the format:
+     [<meeting title>](https://action.parabol.co/meet/[meetingId])
+   - Mention each author at most once across the entire output.
+   - Keep the tone kind, straightforward, and professional. Avoid jargon.
+
+3. **References to Meetings**:
+   - Each bullet point in both "wins" and "challenges" should reference at least one meeting.
+   - Ensure that each cited trend is supported by data from at least two different meetings.
+
+4. **Key Focus Areas**:
+   Consider the following when choosing trends:
+   - What is the team's core work? Are desired outcomes clear, and how are they measured?
+   - Who utilizes the team's work, and what do they need?
+   - Does the team collaborate effectively with related teams?
+   - How does the team prioritize its work?
+   - What factors speed up or slow down progress?
+   - What habits, rules, or rituals help or hinder performance?
+
+5. **Translation**:
+   - If the source language of the meetings tends not to be English, identify the language and translate your output to this language
+
+6. **Final Answer**:
+   - Return only the JSON object.
+   - No extraneous text, explanations, or commentary outside the JSON object.`
 
     const promptForSummaries = `
     You work at a start-up and you need to discover behavioral trends for a given team.
