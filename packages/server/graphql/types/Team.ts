@@ -83,12 +83,15 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           .load(teamMemberId)
         const matchingInvitation = invitationTokens.find((token) => token.meetingId === meetingId)
         // if the token is valid, return it
-        if ((matchingInvitation?.expiration ?? new Date(0)) > new Date())
-          return matchingInvitation
+        if ((matchingInvitation?.expiration ?? new Date(0)) > new Date()) return matchingInvitation
 
         // if there is no matching token, let's use the opportunity to clean up old tokens
         if (invitationTokens.length > 0) {
-          await pg.deleteFrom('MassInvitation').where('teamMemberId', '=', teamMemberId).where('expiration', '<', new Date(Date.now())).execute()
+          await pg
+            .deleteFrom('MassInvitation')
+            .where('teamMemberId', '=', teamMemberId)
+            .where('expiration', '<', new Date(Date.now()))
+            .execute()
         }
         const massInvitation = {
           id: generateRandomString(Security.MASS_INVITATION_TOKEN_LENGTH),
