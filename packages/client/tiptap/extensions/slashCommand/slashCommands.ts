@@ -1,4 +1,4 @@
-import ChecklistIcon from '@mui/icons-material/CheckListIcon'
+import ChecklistIcon from '@mui/icons-material/Checklist'
 import CodeIcon from '@mui/icons-material/Code'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'

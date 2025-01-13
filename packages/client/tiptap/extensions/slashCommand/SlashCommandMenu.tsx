@@ -23,11 +23,11 @@ export const SlashCommandMenu = forwardRef(
     }
 
     const upHandler = () => {
-      setSelectedIndex((selectedIndex + items.length - 1) % items.length)
+      setSelectedIndex((selectedIndex + flatItems.length - 1) % flatItems.length)
     }
 
     const downHandler = () => {
-      setSelectedIndex((selectedIndex + 1) % items.length)
+      setSelectedIndex((selectedIndex + 1) % flatItems.length)
     }
 
     const enterHandler = () => {
@@ -63,19 +63,26 @@ export const SlashCommandMenu = forwardRef(
       <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-none [[data-placement="bottom-start"]_&]:animate-slideDown [[data-placement="top-start"]_&]:animate-slideUp'>
         {items.map((item, idx) => (
           <Fragment key={item.group}>
-            <div>{item.group}</div>
+            <div className='mx-1 px-3 py-2 text-xs font-semibold'>{item.group}</div>
             {item.commands.map((command) => (
-              <div
-                ref={command === activeItem ? activeRef : undefined}
-                data-highlighted={command === activeItem}
-                className={
-                  'flex w-full cursor-pointer items-center rounded-md px-4 py-1 text-sm leading-8 text-slate-700 outline-none hover:!bg-slate-200 hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
-                }
-                key={command.title}
-                onClick={() => selectItem(idx)}
-              >
-                <span>{command.title}</span>
-                <span>{command.description}</span>
+              <div className='mx-1 flex'>
+                <div
+                  ref={command === activeItem ? activeRef : undefined}
+                  data-highlighted={command === activeItem}
+                  className={
+                    ' flex w-full cursor-pointer items-center rounded-md px-3 py-2 text-sm leading-8 text-slate-700 outline-none hover:!bg-slate-200 hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+                  }
+                  key={command.title}
+                  onClick={() => selectItem(idx)}
+                >
+                  <div className='flex items-center justify-center'>
+                    <command.icon className='size-11' />
+                  </div>
+                  <div className='flex flex-col text-sm'>
+                    <span>{command.title}</span>
+                    <span className='text-xs text-slate-600'>{command.description}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </Fragment>
