@@ -5,6 +5,45 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.18.1](https://github.com/ParabolInc/parabol/compare/v8.18.0...v8.18.1) (2025-01-10)
+
+
+### Fixed
+
+* rebasing migrations ([#10666](https://github.com/ParabolInc/parabol/issues/10666)) ([d174162](https://github.com/ParabolInc/parabol/commit/d174162abeee217b4b567b65aa75468b834fe930))
+
+## [8.18.0](https://github.com/ParabolInc/parabol/compare/v8.17.0...v8.18.0) (2025-01-10)
+
+
+### Added
+
+* rebase migrations, remove draft-js enitrely ([#10640](https://github.com/ParabolInc/parabol/issues/10640)) ([db4832f](https://github.com/ParabolInc/parabol/commit/db4832f02c5c37b9bfd98cae0854b82aac089775))
+
+
+### Fixed
+
+* move generate retro summaries mutation to public folder ([#10660](https://github.com/ParabolInc/parabol/issues/10660)) ([dead68c](https://github.com/ParabolInc/parabol/commit/dead68cb4f7f8aa40f955fdc1cdafe4fa9b51504))
+* remove extra migration after rebase ([#10663](https://github.com/ParabolInc/parabol/issues/10663)) ([12afb74](https://github.com/ParabolInc/parabol/commit/12afb747eb8e71c9ae61019a2a888da2113050b3))
+* Update mattermost-plugin version on release ([#10658](https://github.com/ParabolInc/parabol/issues/10658)) ([ddaa9b9](https://github.com/ParabolInc/parabol/commit/ddaa9b9b9666d3c9a557c6f52b236c5a29ce2013))
+
+## [8.17.0](https://github.com/ParabolInc/parabol/compare/v8.16.0...v8.17.0) (2025-01-09)
+
+
+### Added
+
+* **Mattermost:** Invite to Meeting ([#10635](https://github.com/ParabolInc/parabol/issues/10635)) ([cf48ae2](https://github.com/ParabolInc/parabol/commit/cf48ae2934cd6ed29e4b11f62180a1b466b6a303))
+
+
+### Fixed
+
+* Check if integration was removed ([#10641](https://github.com/ParabolInc/parabol/issues/10641)) ([d6ba0cc](https://github.com/ParabolInc/parabol/commit/d6ba0ccd319c06433d31a67c16e4638359615f51))
+
+
+### Changed
+
+* Disable processRecurrence tests ([#10642](https://github.com/ParabolInc/parabol/issues/10642)) ([be72f7a](https://github.com/ParabolInc/parabol/commit/be72f7a34a434ecc49b7caa9509d6592e9ad11d9))
+* migrate old reflections to tiptap ([#10653](https://github.com/ParabolInc/parabol/issues/10653)) ([078e50e](https://github.com/ParabolInc/parabol/commit/078e50e0699ed5d7098be00074d8aebdfe34c8b8))
+
 ## [8.16.0](https://github.com/ParabolInc/parabol/compare/v8.15.0...v8.16.0) (2025-01-07)
 
 

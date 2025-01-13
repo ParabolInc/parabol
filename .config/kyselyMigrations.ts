@@ -5,6 +5,6 @@ export const migrations = {
   getMigrationPrefix: () => `${new Date().toISOString()}_`,
   migrationFolder: './packages/server/postgres/migrations',
   migrationTableSchema: 'public',
-  migrationTableName: '_migration',
+  migrationTableName: '_migrationV2',
   migrationLockTableName: '_migrationLock'
 }
