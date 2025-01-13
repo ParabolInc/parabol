@@ -31,6 +31,7 @@ export const slashCommands: SlashCommandGroup[] = [
         description: 'Just start typing with plain text.',
         searchTerms: ['p', 'paragraph'],
         icon: TextFieldsIcon,
+        shouldHide: () => true,
         action: (editor: Editor) => {
           editor.chain().focus().toggleNode('paragraph', 'paragraph').run()
         }
