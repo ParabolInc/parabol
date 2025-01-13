@@ -120,6 +120,7 @@ export const slashCommands: SlashCommandGroup[] = [
         description: 'Upload any image from your device.',
         searchTerms: ['photo', 'picture', 'media', 'gif', 'giphy', 'tenor'],
         icon: ImageIcon,
+        shouldHide: () => true,
         action: (editor: Editor) => {
           editor.chain().focus().run()
 
