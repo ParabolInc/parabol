@@ -44,7 +44,7 @@ const WholeMeetingSummary = (props: Props) => {
     meetingRef
   )
   if (meeting.__typename === 'RetrospectiveMeeting') {
-    const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
+    const {reflectionGroups, organization, isLoadingSummary} = meeting
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
     const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
     if (!hasMoreThanOneReflection || !organization.useAI || !hasAiApiKey) return null
