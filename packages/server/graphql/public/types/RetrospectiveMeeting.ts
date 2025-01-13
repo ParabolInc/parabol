@@ -14,6 +14,7 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
     const res = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     return res as RetroMeetingMember[]
   },
+  isLoadingSummary: ({summary}) => summary === '<loading>',
   reflectionCount: ({reflectionCount}) => reflectionCount || 0,
   reflectionGroup: async ({id: meetingId}, {reflectionGroupId}, {dataLoader}) => {
     const reflectionGroup = await dataLoader.get('retroReflectionGroups').load(reflectionGroupId)

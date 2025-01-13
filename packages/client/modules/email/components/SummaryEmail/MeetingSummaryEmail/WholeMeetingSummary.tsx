@@ -22,6 +22,7 @@ const WholeMeetingSummary = (props: Props) => {
         __typename
         id
         summary
+        isLoadingSummary
         organization {
           hasStandupAISummaryFlag: featureFlag(featureName: "standupAISummary")
           useAI
@@ -47,7 +48,7 @@ const WholeMeetingSummary = (props: Props) => {
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
     const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
     if (!hasMoreThanOneReflection || !organization.useAI || !hasAiApiKey) return null
-    if (wholeMeetingSummary === '') return <WholeMeetingSummaryLoading /> // summary is undefined if it hasn't been generated yet. it's null if unsuccessful
+    if (isLoadingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting

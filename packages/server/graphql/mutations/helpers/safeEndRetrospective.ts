@@ -113,7 +113,7 @@ const safeEndRetrospective = async ({
       phases: JSON.stringify(phases),
       usedReactjis: JSON.stringify(insights.usedReactjis),
       engagement: insights.engagement,
-      summary: '' // empty string signals "loading" to the client
+      summary: '<loading>' // set as "<loading>" while the AI summary is being generated
     })
     .where('id', '=', meetingId)
     .executeTakeFirst()
