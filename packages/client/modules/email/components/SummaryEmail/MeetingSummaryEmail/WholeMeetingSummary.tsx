@@ -22,12 +22,12 @@ const WholeMeetingSummary = (props: Props) => {
         __typename
         id
         summary
-        isLoadingSummary
         organization {
           hasStandupAISummaryFlag: featureFlag(featureName: "standupAISummary")
           useAI
         }
         ... on RetrospectiveMeeting {
+          isLoadingSummary
           reflectionGroups(sortBy: voteCount) {
             reflections {
               id
