@@ -34,9 +34,22 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   if (!(await isUserBillingLeader(viewerId, orgId, dataLoader)) && !isSuperUser(authToken)) {
     return standardError(new Error('Must be the organization leader'), {userId: viewerId})
   }
+
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
     return standardError(new Error('Organization not found'), {userId: viewerId})
+  }
+
+  const orgUserPromises = userIds.map((userId) =>
+    dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
+  )
+  const orgUsers = await Promise.all(orgUserPromises)
+  const nonOrgUsers = userIds.filter((_, idx) => !orgUsers[idx])
+  if (nonOrgUsers.length > 0) {
+    return standardError(
+      new Error(`User(s) ${nonOrgUsers.join(', ')} are not members of the organization ${orgId}`),
+      {userId: viewerId}
+    )
   }
 
   const data = {
