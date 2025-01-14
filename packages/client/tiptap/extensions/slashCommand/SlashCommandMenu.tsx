@@ -65,7 +65,7 @@ export const SlashCommandMenu = forwardRef(
           <Fragment key={item.group}>
             <div className='mx-1 px-3 py-2 text-xs font-semibold'>{item.group}</div>
             {item.commands.map((command) => (
-              <div className='mx-1 flex'>
+              <div className='mx-1 flex' key={command.title}>
                 <div
                   ref={command === activeItem ? activeRef : undefined}
                   data-highlighted={command === activeItem}

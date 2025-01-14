@@ -1,4 +1,5 @@
 import {Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
+import {ImageUploadMenu} from '../../tiptap/extensions/imageUpload/ImageUploadMenu'
 import {cn} from '../../ui/cn'
 import {StandardBubbleMenu} from './StandardBubbleMenu'
 import TipTapLinkMenu, {LinkMenuState} from './TipTapLinkMenu'
@@ -29,6 +30,7 @@ export const TipTapEditor = (props: Props) => {
           useLinkEditor={useLinkEditor}
         />
       )}
+      <ImageUploadMenu editor={editor} />
       <EditorContent
         ref={ref as any}
         {...rest}

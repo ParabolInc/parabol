@@ -119,30 +119,11 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Image',
         description: 'Upload any image from your device',
-        searchTerms: ['photo', 'picture', 'media', 'gif', 'giphy', 'tenor'],
+        searchTerms: ['gif', 'giphy', 'image', 'media', 'photo', 'picture', 'tenor'],
         icon: ImageIcon,
-        shouldHide: () => true,
+        // shouldHide: () => true,
         action: (editor: Editor) => {
-          editor.chain().focus().run()
-
-          const pageId = editor.storage?.pageId
-          if (!pageId) return
-
-          // upload image
-          const input = document.createElement('input')
-          input.type = 'file'
-          input.accept = 'image/*'
-          input.multiple = true
-          input.onchange = async () => {
-            if (input.files?.length) {
-              for (const file of input.files) {
-                const pos = editor.view.state.selection.from
-                console.log({file, pos})
-                // uploadImageAction(file, editor.view, pos, pageId)
-              }
-            }
-          }
-          input.click()
+          editor.chain().focus().setImageUpload().run()
         }
       }
     ]
