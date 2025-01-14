@@ -100,7 +100,7 @@ module.exports = (config) => {
         inject: false,
         filename: 'skeleton.html',
         template: path.join(PROJECT_ROOT, 'template.html'),
-        title: 'Free Online Retrospectives | Parabol',
+        title: 'Streamline or Replace Meetings | Parabol',
         // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
         publicPath: '__PUBLIC_PATH__'
       }),

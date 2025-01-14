@@ -4,6 +4,8 @@ import {useFragment} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import useMetaTagContent from '../hooks/useMetaTagContent'
 import useRouter from '../hooks/useRouter'
 import {LocalStorageKey} from '../types/constEnums'
 import InvitationLinkAuthentication from './InvitationLinkAuthentication'
@@ -46,6 +48,10 @@ const InvitationLinkDialog = (props: Props) => {
     case 'expired':
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }
+  useDocumentTitle(`${teamName} | Parabol`, `Join ${teamName}`)
+  useMetaTagContent(
+    `Join ${teamName} on Parabol,the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
+  )
   const {authToken} = atmosphere
   if (authToken) {
     return <TeamInvitationAccept invitationToken={token} />

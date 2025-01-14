@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useDocumentTitle from '../hooks/useDocumentTitle'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
@@ -25,7 +24,6 @@ const AuthenticationPage = (props: Props) => {
   const {page} = props
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
-  useDocumentTitle('Sign Up for Free Online Retrospectives | Parabol', 'Sign Up')
   useCanonical(page)
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
@@ -50,5 +48,4 @@ const AuthenticationPage = (props: Props) => {
     </TeamInvitationWrapper>
   )
 }
-
 export default AuthenticationPage
