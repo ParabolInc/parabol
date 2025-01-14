@@ -51,6 +51,9 @@ module.exports = {
     //contentBase: path.join(__dirname, "dist"),
     port: 3002,
   },
+  watchOptions: {
+    ignored: /node_modules/
+  },
   output: {
     publicPath: "auto",
   },
