@@ -48,7 +48,7 @@ const InvitationLinkDialog = (props: Props) => {
     case 'expired':
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }
-  useDocumentTitle(`Parabol | ${teamName}`, `Join ${teamName}`)
+  useDocumentTitle(`${teamName} | Parabol`, `Join ${teamName}`)
   useMetaTagContent(
     `Join ${teamName} on Parabol,the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
   )

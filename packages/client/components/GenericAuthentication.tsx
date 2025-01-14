@@ -90,21 +90,16 @@ const GenericAuthentication = (props: Props) => {
   }
 
   const isCreate = page === 'create-account'
-  if (isCreate) {
-    useDocumentTitle('Parabol | Create Account', 'Create Account')
-    useMetaTagContent(
-      'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
-    )
-  } else {
-    useDocumentTitle('Parabol | Sign In', 'Sign In')
-    useMetaTagContent(
-      'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
-    )
-  }
   const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const counterAction = isCreate ? SIGNIN_LABEL : CREATE_ACCOUNT_LABEL
   const counterActionSlug = isCreate ? SIGNIN_SLUG : CREATE_ACCOUNT_SLUG
   const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
+  const pageTitle = `${action} | Parabol`
+  const metaCopy = isCreate
+    ? 'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
+    : 'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
+  useDocumentTitle(pageTitle, action)
+  useMetaTagContent(metaCopy)
   const title = teamName ? `${teamName} is waiting` : action
   const onForgot = () => {
     goToPage('forgot-password', `?email=${emailRef.current?.email()}`)
