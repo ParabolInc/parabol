@@ -1,11 +1,11 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../postgres/constants'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import removeFromOrg from '../../mutations/helpers/removeFromOrg'
 import {MutationResolvers} from '../resolverTypes'
-
 const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = async (
   _source,
   {userIds, orgId},
@@ -14,7 +14,19 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  // AUTH
+  if (userIds.length === 0) {
+    return standardError(new Error('Empty userIds array is provided'), {
+      userId: getUserId(authToken)
+    })
+  }
+  if (userIds.length > BATCH_ORG_USER_REMOVAL_LIMIT) {
+    return standardError(
+      new Error(`Cannot remove more than ${BATCH_ORG_USER_REMOVAL_LIMIT} org users at once`),
+      {userId: getUserId(authToken)}
+    )
+  }
+
+  // Validation
   const viewerId = getUserId(authToken)
   if (userIds.includes(viewerId)) {
     return standardError(new Error('Cannot remove yourself'), {userId: viewerId})
@@ -22,7 +34,6 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
     return standardError(new Error('Must be the organization leader'), {userId: viewerId})
   }
-
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
     return standardError(new Error('Organization not found'), {userId: viewerId})
