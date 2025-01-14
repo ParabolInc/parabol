@@ -296,12 +296,12 @@ class OpenAIServerManager {
     userPrompt?: string | null
   ): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
-    const meetingURL = 'https://action.parabol.co/meet/'
+    const meetingURL = 'https://action.parabol.co/meet/[meetingId]'
     const promptForMeetingData = `
 You are a Team Lead and want to use your meeting data to help write a report on your team's performance. You care about team productivity, morale, roadblocks, relationships, and progress against goals. Below is a list of retrospective meeting summaries (in YAML format) from the past several months.
 
 **Task:**
-Analyze the provided meeting data and identify patterns in teamwork and collaboration. Focus on "wins" and "challenges" that appear in at two or more different meetings, prioritizing trends that appear in the highest number of meetings. Reference those meetings by hyperlink. Prioritize trends that have received the most combined votes, if that information is available.
+Analyze the provided meeting data and identify patterns in teamwork and collaboration. Focus on "wins" and "challenges" that appear in two or more different meetings, prioritizing trends that appear in the highest number of meetings. Reference those meetings by hyperlink. Prioritize trends that have received the most combined votes, if that information is available.
 
 **Output Format:**
 Return the analysis as a JSON object with this structure:
@@ -315,7 +315,7 @@ Return the analysis as a JSON object with this structure:
    - Highlight positive trends or patterns observed across multiple meetings.
    - Include at least one direct quote from one meeting, attributing it to its author.
    - Link to the referenced meeting(s) using the format:
-     [<meeting title>](https://action.parabol.co/meet/[meetingId])
+     [<meeting title>](${meetingURL})
    - Mention each author at most once across the entire output.
    - Keep the tone kind, straightforward, and professional. Avoid jargon.
 
@@ -324,7 +324,7 @@ Return the analysis as a JSON object with this structure:
    - Include at least one direct quote from one meeting, attributing it to its author.
    - Suggest a concrete action or next step to improve the situation.
    - Link to the referenced meeting(s) using the format:
-     [<meeting title>](https://action.parabol.co/meet/[meetingId])
+     [<meeting title>](${meetingURL})
    - Mention each author at most once across the entire output.
    - Keep the tone kind, straightforward, and professional. Avoid jargon.
 
@@ -355,7 +355,7 @@ Return the analysis as a JSON object with this structure:
     The first section should describe the team's positive behavior in bullet points.
     The second section should pick out one or two examples of the team's negative behavior.
     Cite direct quotes from the meeting, attributing them to the person who wrote it, if they're included in the summary.
-    Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
+    Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}/discuss/[discussionId]).
     Try to spot trends. If a topic comes up in several summaries, prioritize it.
     The most important topics are usually at the beginning of each summary, so prioritize them.
     Don't repeat the same points in both the wins and challenges.
