@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../postgres/constants'
-import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
+import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
@@ -31,7 +31,7 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   if (userIds.includes(viewerId)) {
     return standardError(new Error('Cannot remove yourself'), {userId: viewerId})
   }
-  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader)) && !isSuperUser(authToken)) {
     return standardError(new Error('Must be the organization leader'), {userId: viewerId})
   }
   const organization = await dataLoader.get('organizations').load(orgId)
