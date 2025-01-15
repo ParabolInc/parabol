@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.19.0](https://github.com/ParabolInc/parabol/compare/v8.18.1...v8.19.0) (2025-01-15)
+
+
+### Added
+
+* add SlashCommand to TipTap ([#10664](https://github.com/ParabolInc/parabol/issues/10664)) ([03d96e2](https://github.com/ParabolInc/parabol/commit/03d96e2fd33392522530b48455c9ae2a99ac69b5))
+* added I Like, I Wish, I Wonder retrospective template ([#10650](https://github.com/ParabolInc/parabol/issues/10650)) ([795b436](https://github.com/ParabolInc/parabol/commit/795b436be9a0e524d693f01599f99f31536648a9))
+* modified/added meta tags with new content ([#10652](https://github.com/ParabolInc/parabol/issues/10652)) ([9501494](https://github.com/ParabolInc/parabol/commit/9501494e2868a48cdb8a313b9db02a7e30ef56d3))
+
+
+### Fixed
+
+* kill mattermost plugin dev server on pm2 kill ([#10671](https://github.com/ParabolInc/parabol/issues/10671)) ([e73dc39](https://github.com/ParabolInc/parabol/commit/e73dc39d76ae795089163a7920aa7032047a90a4))
+* Restrict Timeline Feed scrolling to its column on /me route ([#10649](https://github.com/ParabolInc/parabol/issues/10649)) ([052647f](https://github.com/ParabolInc/parabol/commit/052647fd029f59622e69038d30226831fdf321c6))
+* Shorten chunk names for Mattermost plugin ([#10672](https://github.com/ParabolInc/parabol/issues/10672)) ([8af66f4](https://github.com/ParabolInc/parabol/commit/8af66f485be5f7de25fe8cfbe19e67547f334d5e))
+* summary does not load indefinitely if there are no votes ([#10669](https://github.com/ParabolInc/parabol/issues/10669)) ([84b8d60](https://github.com/ParabolInc/parabol/commit/84b8d60e9d4be37004fdb2ea6e6c9a4355b38bd2))
+
+
+### Changed
+
+* **deps:** bump systeminformation from 5.23.5 to 5.23.14 ([#10626](https://github.com/ParabolInc/parabol/issues/10626)) ([f0d006f](https://github.com/ParabolInc/parabol/commit/f0d006f345fd72148d2ef2a6a916be9078063353))
+* Upgrade [@mui](https://github.com/mui) dependencies ([#10627](https://github.com/ParabolInc/parabol/issues/10627)) ([18abb1a](https://github.com/ParabolInc/parabol/commit/18abb1a0df5ffc9262149d158a3b1e97309eaad0))
+
 ## [8.18.1](https://github.com/ParabolInc/parabol/compare/v8.18.0...v8.18.1) (2025-01-10)
 
 
