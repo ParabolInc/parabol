@@ -10,6 +10,8 @@ import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
 
+export type CommandTitle = (typeof slashCommands)[number]['commands'][number]['title']
+
 export interface SlashCommandGroup {
   group: string
   commands: {
@@ -22,7 +24,7 @@ export interface SlashCommandGroup {
   }[]
 }
 
-export const slashCommands: SlashCommandGroup[] = [
+export const slashCommands = [
   {
     group: 'Basic blocks',
     commands: [
@@ -48,7 +50,7 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Heading 1',
         description: 'Big section heading',
-        searchTerms: ['title', 'big', 'large'],
+        searchTerms: ['title', 'big', 'large', 'heading'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 1}).run()
@@ -57,7 +59,7 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Heading 2',
         description: 'Medium section heading',
-        searchTerms: ['subtitle', 'medium'],
+        searchTerms: ['subtitle', 'medium', 'heading'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 2}).run()
@@ -66,7 +68,7 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Heading 3',
         description: 'Small section heading',
-        searchTerms: ['subtitle', 'small'],
+        searchTerms: ['subtitle', 'small', 'heading'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 3}).run()
@@ -128,4 +130,4 @@ export const slashCommands: SlashCommandGroup[] = [
       }
     ]
   }
-]
+] as const

@@ -62,7 +62,11 @@ export const useTipTapReflectionEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure(),
+        SlashCommand.configure({
+          'Heading 1': false,
+          'Heading 2': false,
+          'To-do list': false
+        }),
         ImageUpload.configure(),
         ImageBlock,
         LoomExtension,

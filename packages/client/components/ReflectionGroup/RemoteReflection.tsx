@@ -272,10 +272,7 @@ const RemoteReflection = (props: Props) => {
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
           <TipTapEditor
-            className={cn(
-              'flex min-h-0 items-center px-4 pt-3 leading-4',
-              disableAnonymity ? 'pb-0' : 'pb-3'
-            )}
+            className={cn('flex min-h-0 items-center px-4 leading-4')}
             editor={editor}
           />
           {disableAnonymity && (

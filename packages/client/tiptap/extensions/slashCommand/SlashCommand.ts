@@ -3,12 +3,22 @@ import {PluginKey} from '@tiptap/pm/state'
 import Suggestion from '@tiptap/suggestion'
 import renderSuggestion from '../renderSuggestion'
 import {SlashCommandMenu} from './SlashCommandMenu'
-import {slashCommands} from './slashCommands'
+import {slashCommands, type CommandTitle, type SlashCommandGroup} from './slashCommands'
 
 const extensionName = 'slashCommand'
-export const SlashCommand = Extension.create({
+export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({
   name: extensionName,
   priority: 200,
+  addOptions() {
+    const commands = slashCommands.flatMap((sc) => sc.commands.map((command) => command.title))
+    return commands.reduce(
+      (obj, item) => {
+        obj[item] = true
+        return obj
+      },
+      {} as Record<CommandTitle, boolean>
+    )
+  },
   addProseMirrorPlugins() {
     return [
       Suggestion({
@@ -56,12 +66,14 @@ export const SlashCommand = Extension.create({
             .map((group) => ({
               ...group,
               commands: group.commands.filter((item) => {
+                if (!this.options[item.title]) return false
                 const queryNormalized = query.toLowerCase().trim()
                 const isQueryInTerm = item.searchTerms.some((searchTerm) =>
                   searchTerm.includes(queryNormalized)
                 )
                 if (!isQueryInTerm) return false
-                return item.shouldHide ? !item.shouldHide(this.editor) : true
+                const {shouldHide} = item as unknown as SlashCommandGroup['commands'][number]
+                return shouldHide ? !shouldHide(this.editor) : true
               })
             }))
             .filter((group) => group.commands.length > 0)
