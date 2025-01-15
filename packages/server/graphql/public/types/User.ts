@@ -6,6 +6,7 @@ import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import sortByTier from 'parabol-client/utils/sortByTier'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
@@ -430,14 +431,14 @@ const User: ReqResolvers<'User'> = {
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
     const orgIds = organizationUsers.map(({orgId}) => orgId)
     const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
-    organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
+    const sortedOrgs = sortByTier(organizations)
     const viewerId = getUserId(authToken)
     if (viewerId === userId || isSuperUser(authToken)) {
-      return organizations
+      return sortedOrgs
     }
     const viewerOrganizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
-    return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
+    return sortedOrgs.filter((organization) => viewerOrgIds.includes(organization.id))
   },
 
   overLimitCopy: async ({id: userId, overLimitCopy}, _args, {dataLoader}) => {
