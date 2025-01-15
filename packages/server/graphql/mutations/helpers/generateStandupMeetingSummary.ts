@@ -19,7 +19,7 @@ const generateStandupMeetingSummary = async (
 
   const contentWithUsers = responses.map((response, idx) => ({
     content: response.plaintextContent,
-    user: users[idx]?.name ?? 'Anonymous'
+    user: users[idx]?.preferredName ?? 'Anonymous'
   }))
 
   if (contentWithUsers.length === 0) return
