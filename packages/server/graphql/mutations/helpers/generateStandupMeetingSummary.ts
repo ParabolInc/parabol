@@ -15,7 +15,7 @@ const generateStandupMeetingSummary = async (
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
 
   const userIds = responses.map((response) => response.userId)
-  const users = await dataLoader.get('users').loadMany(userIds)
+  const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
 
   const contentWithUsers = responses.map((response, idx) => ({
     content: response.plaintextContent,
