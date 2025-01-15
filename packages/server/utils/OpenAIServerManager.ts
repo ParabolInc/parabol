@@ -60,41 +60,6 @@ class OpenAIServerManager {
     }
   }
 
-  // TODO: remove this: https://github.com/ParabolInc/parabol/issues/10500
-  async getSummary(text: string | string[]) {
-    if (!this.openAIApi) return null
-    const textStr = Array.isArray(text) ? text.join('\n') : text
-    const prompt = `Below is newline delimited text from a discussion thread.
-    Summarize the text for the meeting facilitator in one or two sentences.
-    When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
-    Aim for brevity and clarity. If your summary exceeds 50 characters, iterate until it fits while retaining the essence. Your final response should only include the shortened summary.
-
-    Text: """
-    ${textStr}
-    """`
-    try {
-      const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 80,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      })
-      return (response.choices[0]?.message?.content?.trim() as string) ?? null
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
-      sendToSentry(error)
-      return null
-    }
-  }
-
   async getDiscussionPromptQuestion(topic: string, reflections: RetroReflection[]) {
     if (!this.openAIApi) return null
     const prompt = `As the meeting facilitator, your task is to steer the discussion in a productive direction. I will provide you with a topic and comments made by the participants around that topic. Your job is to generate a thought-provoking question based on these inputs. Here's how to do it step by step:

@@ -92,7 +92,6 @@ const RetroTopic = (props: Props) => {
         }
         discussion {
           commentCount
-          discussionSummary: summary
         }
       }
     `,
@@ -110,7 +109,7 @@ const RetroTopic = (props: Props) => {
 
   const {id: meetingId} = meeting
   const {reflectionGroup, discussion, id: stageId} = stage
-  const {commentCount, discussionSummary} = discussion
+  const {commentCount} = discussion
   const {reflections, title, voteCount} = reflectionGroup
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
@@ -133,18 +132,6 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {discussionSummary && (
-        <tr>
-          <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            <tr>
-              <td style={topicTitleStyle}>{'🤖 Discussion Summary'}</td>
-            </tr>
-            <tr>
-              <td style={textStyle}>{discussionSummary}</td>
-            </tr>
-          </td>
-        </tr>
-      )}
       <tr>
         <td align='center' style={votesBlock}>
           <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail}>
