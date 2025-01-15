@@ -27,6 +27,7 @@ const WholeMeetingSummary = (props: Props) => {
           useAI
         }
         ... on RetrospectiveMeeting {
+          isLoadingSummary
           reflectionGroups(sortBy: voteCount) {
             reflections {
               id
@@ -43,11 +44,11 @@ const WholeMeetingSummary = (props: Props) => {
     meetingRef
   )
   if (meeting.__typename === 'RetrospectiveMeeting') {
-    const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
+    const {reflectionGroups, organization, isLoadingSummary} = meeting
     const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
     const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
     if (!hasMoreThanOneReflection || !organization.useAI || !hasAiApiKey) return null
-    if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
+    if (isLoadingSummary) return <WholeMeetingSummaryLoading />
     return <WholeMeetingSummaryResult meetingRef={meeting} />
   } else if (meeting.__typename === 'TeamPromptMeeting') {
     const {summary: wholeMeetingSummary, responses, organization} = meeting
