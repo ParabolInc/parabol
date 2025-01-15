@@ -98,8 +98,8 @@ module.exports = {
     },
     {
       name: 'Mattermost Plugin Dev Server',
-      script: 'yarn workspace parabol-mattermost-plugin dev',
-      instances: 1
+      script: './scripts/hmrServer.js',
+      cwd: 'packages/mattermost-plugin'
     }
   ].map((app) => ({
     env_production: {

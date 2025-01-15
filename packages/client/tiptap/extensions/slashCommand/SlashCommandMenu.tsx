@@ -72,7 +72,6 @@ export const SlashCommandMenu = forwardRef(
                   className={
                     ' flex w-full cursor-pointer items-center rounded-md px-3 py-2 text-sm leading-8 text-slate-700 outline-none hover:!bg-slate-200 hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
                   }
-                  key={command.title}
                   onClick={() => selectItem(idx)}
                 >
                   <div className='flex items-center justify-center'>
