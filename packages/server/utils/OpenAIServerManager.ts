@@ -22,19 +22,24 @@ class OpenAIServerManager {
     })
   }
 
-  async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
+  async getStandupSummary(
+    responses: Array<{content: string; user: string}>,
+    meetingPrompt: string
+  ) {
     if (!this.openAIApi) return null
-    // :TODO: (jmtaber129): Include info about who made each response in the prompt
-    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence summary. Only include essential information from the responses. Use "they/them" pronouns when referring to people.
+
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". Each response includes the team member's name. Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence that includes who is working on what. Use "they/them" pronouns when referring to people.
 
     Desired format:
-    - <theme>: <brief summary>
-    - <theme>: <brief summary>
-    - <theme>: <brief summary>
+    - <theme>: <brief summary including names>
+    - <theme>: <brief summary including names>
+    - <theme>: <brief summary including names>
 
     Responses: """
-    ${plaintextResponses.join('\nNEW_RESPONSE\n')}
+    ${responses.map(({content, user}) => `${user}: ${content}`).join('\nNEW_RESPONSE\n')}
     """`
+    console.log('🚀 ~ prompt:', prompt)
+
     try {
       const response = await this.openAIApi.chat.completions.create({
         model: 'gpt-4o',
