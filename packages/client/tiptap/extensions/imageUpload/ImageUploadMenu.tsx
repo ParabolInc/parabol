@@ -34,7 +34,7 @@ export const ImageUploadMenu = ({editor}: Props) => {
           }}
         >
           <div className='absolute left-0 top-0 z-10' style={{transform}} ref={ref}>
-            <ImageSelector />
+            <ImageSelector editor={editor} />
           </div>
         </Popover.Content>
       </Popover.Portal>

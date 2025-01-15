@@ -1,22 +1,47 @@
 import {useRef} from 'react'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {useUploadUserAsset} from '../../../mutations/useUploadUserAsset'
 import {Button} from '../../../ui/Button/Button'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
-import resizeImageWithCanvas from '../../../utils/resizeImageWithCanvas'
 
-interface Props {}
+interface Props {
+  setImageURL: (url: string) => void
+}
 
-export const ImageSelectorUploadTab = (_props: Props) => {
+export const ImageSelectorUploadTab = (props: Props) => {
+  const {setImageURL} = props
   const ref = useRef<HTMLInputElement>(null)
+  const atmosphere = useAtmosphere()
+  const [commit] = useUploadUserAsset()
   const onSubmit = async (file: File) => {
     if (file.type === 'image/jpeg') {
       file = (await jpgWithoutEXIF(file)) as File
     }
     if (file.size > 2 ** 23) {
-      file = await resizeImageWithCanvas(file, 1280, 720, 2 ** 23)
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'fileTooBIG',
+        message: 'The image is too large. Please select an image smaller than 8MB',
+        autoDismiss: 5
+      })
     }
-    // TODO upload to server
-    // submitMutation()
-    // UploadUserImageMutation(atmosphere, {}, {onCompleted, onError}, {file})
+    commit({
+      variables: {},
+      uploadables: {file: file},
+      onCompleted: (res) => {
+        const {uploadUserAsset} = res
+        const {url} = uploadUserAsset!
+        const message = uploadUserAsset?.error?.message
+        if (message) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'errorUploadIdPtMetadata',
+            message,
+            autoDismiss: 5
+          })
+          return
+        }
+        setImageURL(url!)
+      }
+    })
   }
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>) => {
@@ -26,9 +51,12 @@ export const ImageSelectorUploadTab = (_props: Props) => {
     onSubmit(imageToUpload)
   }
 
+  const onClick = () => {
+    ref.current?.click()
+  }
   return (
     <div className='flex min-w-44 items-center justify-center rounded-md bg-slate-100 p-2'>
-      <Button variant='outline' shape='pill' className='w-full'>
+      <Button variant='outline' shape='pill' className='w-full' onClick={onClick}>
         Upload file
       </Button>
       <input

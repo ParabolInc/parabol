@@ -1,9 +1,12 @@
+import type {Editor} from '@tiptap/core'
 import {useState} from 'react'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {ImageSelectorUploadTab} from './ImageSelectorUploadTab'
 
-interface Props {}
+interface Props {
+  editor: Editor
+}
 
 const tabs = [
   {
@@ -23,9 +26,14 @@ const tabs = [
   }
 ] as const
 
-export const ImageSelector = (_props: Props) => {
+export const ImageSelector = (props: Props) => {
+  const {editor} = props
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
+  const setImageURL = (url: string) => {
+    const {from} = editor.state.selection
+    editor.chain().setImageBlock({src: url}).deleteRange({from, to: from}).focus().run()
+  }
   return (
     <div className='min-w-44 rounded-md bg-slate-100 p-2'>
       <Tabs activeIdx={activeIdx}>
@@ -44,7 +52,7 @@ export const ImageSelector = (_props: Props) => {
           />
         ))}
       </Tabs>
-      <Component />
+      <Component setImageURL={setImageURL} />
     </div>
   )
 }

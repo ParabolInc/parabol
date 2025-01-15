@@ -1978,6 +1978,16 @@ type Mutation {
   ): UpdateOrgPayload!
 
   """
+  Upload any asset owned by a user
+  """
+  uploadUserAsset(
+    """
+    the user avatar image file
+    """
+    file: File!
+  ): UploadUserAssetPayload
+
+  """
   Upload an image for a user avatar
   """
   uploadUserImage(
