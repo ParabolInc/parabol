@@ -2,6 +2,7 @@ import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTe
 import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import canAccessAI from './canAccessAI'
 
 const generateStandupMeetingSummary = async (
