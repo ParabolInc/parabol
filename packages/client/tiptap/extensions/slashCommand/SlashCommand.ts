@@ -70,17 +70,4 @@ export const SlashCommand = Extension.create({
       })
     ]
   }
-
-  // addStorage() {
-  //   return {
-  //     rect: {
-  //       width: 0,
-  //       height: 0,
-  //       left: 0,
-  //       top: 0,
-  //       right: 0,
-  //       bottom: 0
-  //     }
-  //   }
-  // }
 })
