@@ -24,22 +24,20 @@ class OpenAIServerManager {
 
   async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
     if (!this.openAIApi) return null
-    // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
-    // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
-    // working on AI Summaries".
-    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the responses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
+    // :TODO: (jmtaber129): Include info about who made each response in the prompt
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence summary. Only include essential information from the responses. Use "they/them" pronouns when referring to people.
 
     Desired format:
-    - <theme title>: <theme summary>
-    - <theme title>: <theme summary>
-    - <theme title>: <theme summary>
+    - <theme>: <brief summary>
+    - <theme>: <brief summary>
+    - <theme>: <brief summary>
 
     Responses: """
     ${plaintextResponses.join('\nNEW_RESPONSE\n')}
     """`
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
@@ -47,7 +45,7 @@ class OpenAIServerManager {
           }
         ],
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 500,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
@@ -454,5 +452,7 @@ Important: Respond with ONLY the title itself. Do not include any prefixes like 
     }
   }
 }
+
+export default OpenAIServerManager
 
 export default OpenAIServerManager
