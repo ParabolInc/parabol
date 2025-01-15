@@ -38,7 +38,6 @@ class OpenAIServerManager {
     Responses: """
     ${responses.map(({content, user}) => `${user}: ${content}`).join('\nNEW_RESPONSE\n')}
     """`
-    console.log('🚀 ~ prompt:', prompt)
 
     try {
       const response = await this.openAIApi.chat.completions.create({
@@ -457,7 +456,5 @@ Important: Respond with ONLY the title itself. Do not include any prefixes like 
     }
   }
 }
-
-export default OpenAIServerManager
 
 export default OpenAIServerManager
