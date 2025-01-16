@@ -10,7 +10,7 @@ const generateStandupMeetingSummary = async (
   dataLoader: DataLoaderWorker
 ) => {
   const team = await dataLoader.get('teams').loadNonNull(meeting.teamId)
-  const isAIAvailable = await canAccessAI(team, 'standup', dataLoader)
+  const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return
 
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
