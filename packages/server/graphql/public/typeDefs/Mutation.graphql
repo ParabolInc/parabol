@@ -787,11 +787,28 @@ type Mutation {
     """
     timeRemaining: Float
   ): SetStageTimerPayload!
+
   setSlackNotification(
     slackChannelId: ID
     slackNotificationEvents: [SlackNotificationEventEnum!]!
     teamId: ID!
   ): SetSlackNotificationPayload!
+
+  """
+  Set the notification settings for a provider and team
+  """
+  setNotificationSetting(
+    """
+    ID of the TeamMemberIntegrationAuth for which to set the notification setting
+    """
+    authId: ID!
+
+    """
+    Event type to modify
+    """
+    event: SlackNotificationEventEnum!
+    isEnabled: Boolean!
+  ): SetNotificationSettingPayload!
 
   """
   Broadcast that the viewer started dragging a reflection

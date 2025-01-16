@@ -1,0 +1,10 @@
+type SetNotificationSettingSuccess {
+  authId: ID!
+
+  auth: TeamMemberIntegrationAuth!
+
+  """
+  Enabled events for this provider and team
+  """
+  events: [SlackNotificationEventEnum!]!
+}

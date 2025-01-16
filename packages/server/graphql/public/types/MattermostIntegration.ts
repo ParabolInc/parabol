@@ -8,7 +8,7 @@ export type MattermostIntegrationSource = {
 const MattermostIntegration: MattermostIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
     const res = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'mattermost', teamId, userId})
     return res!
   },

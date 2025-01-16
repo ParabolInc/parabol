@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader'
-import TeamMemberIntegrationAuthId from '../../client/shared/gqlIds/TeamMemberIntegrationAuthId'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
@@ -11,10 +10,11 @@ import getIntegrationProvidersByIds, {
 } from '../postgres/queries/getIntegrationProvidersByIds'
 import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../postgres/select'
 import {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
+import {NotificationSettings} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 
-interface TeamMemberIntegrationAuthPrimaryKey {
+interface TeamMemberIntegrationAuthServiceTeamUserKey {
   service: IntegrationProviderServiceEnum
   teamId: string
   userId: string
@@ -32,7 +32,7 @@ const teamMemberIntegrationAuthCacheKeyFn = ({
   service,
   teamId,
   userId
-}: TeamMemberIntegrationAuthPrimaryKey) => TeamMemberIntegrationAuthId.join(service, teamId, userId)
+}: TeamMemberIntegrationAuthServiceTeamUserKey) => `${service}-${teamId}-${userId}`
 
 export const integrationProviders = (parent: RootDataLoader) => {
   return new NullableDataLoader<number, TIntegrationProvider, string>(
@@ -88,7 +88,11 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
 }
 
 export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
-  return new DataLoader<TeamMemberIntegrationAuthPrimaryKey, TIntegrationProvider | null, string>(
+  return new DataLoader<
+    TeamMemberIntegrationAuthServiceTeamUserKey,
+    TIntegrationProvider | null,
+    string
+  >(
     async (keys) => {
       // given token params, get the best team token
       const bestTeamIntegrationAuths = (
@@ -118,9 +122,9 @@ export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
   )
 }
 
-export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
+export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (parent: RootDataLoader) => {
   return new DataLoader<
-    TeamMemberIntegrationAuthPrimaryKey,
+    TeamMemberIntegrationAuthServiceTeamUserKey,
     TeamMemberIntegrationAuth | null,
     string
   >(
@@ -152,7 +156,7 @@ export const teamMemberIntegrationAuths = (parent: RootDataLoader) => {
 
 export const bestTeamIntegrationAuths = (parent: RootDataLoader) => {
   return new DataLoader<
-    TeamMemberIntegrationAuthPrimaryKey,
+    TeamMemberIntegrationAuthServiceTeamUserKey,
     IGetBestTeamIntegrationAuthQueryResult | null,
     string
   >(
@@ -244,6 +248,24 @@ export const teamMemberIntegrationAuthsByTeamId = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, service}) => `${teamId}-${service}`
+    }
+  )
+}
+
+export const notificationSettingsByAuthId = (parent: RootDataLoader) => {
+  return new DataLoader<number, NotificationSettings['event'][], string>(
+    async (keys) => {
+      const pg = getKysely()
+      const res = await pg
+        .selectFrom('NotificationSettings')
+        .selectAll()
+        .where(({eb}) => eb('authId', 'in', keys))
+        .execute()
+
+      return keys.map((key) => res.filter(({authId}) => authId === key).map(({event}) => event))
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
