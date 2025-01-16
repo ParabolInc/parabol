@@ -1,7 +1,11 @@
 type SetNotificationSettingSuccess {
   authId: ID!
 
-  auth: TeamMemberIntegrationAuth!
+  """
+  The updated auth object
+  For now this is only implemented for webhook
+  """
+  auth: TeamMemberIntegrationAuthWebhook!
 
   """
   Enabled events for this provider and team

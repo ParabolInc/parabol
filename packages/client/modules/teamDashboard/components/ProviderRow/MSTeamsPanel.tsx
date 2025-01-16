@@ -20,6 +20,7 @@ import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateInteg
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
+import NotificationSettings from './NotificationSettings'
 
 interface Props {
   viewerRef: MSTeamsPanel_viewer$key
@@ -72,6 +73,7 @@ const MSTeamsPanel = (props: Props) => {
           integrations {
             msTeams {
               auth {
+                ...NotificationSettings_auth
                 provider {
                   id
                   webhookUrl
@@ -207,6 +209,7 @@ const MSTeamsPanel = (props: Props) => {
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
+      {auth && <NotificationSettings auth={auth} />}
     </MSTeamsPanelStyles>
   )
 }
