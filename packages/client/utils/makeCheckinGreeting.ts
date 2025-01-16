@@ -343,7 +343,7 @@ const questions = [
   'If you could have any author, living or dead, write the story of your life, who would it be and why?',
   'Imagine you could teleport to any place in the world for your next meal. Where would you go and what would you eat?',
   'What’s one song that always boosts your mood, no matter how many times you hear it?',
-  'Whats’ something you would like to do again for the first time?'
+  'What’s something you would like to do again for the first time?'
 ]
 
 export const makeCheckinGreeting = (meetingCount: number, seedId = '') => {
