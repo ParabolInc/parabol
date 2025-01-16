@@ -1,4 +1,5 @@
 import {KickedOutNotification} from '../../../postgres/types/Notification'
+import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
 import {RemoveMultipleOrgUsersSuccessResolvers} from '../resolverTypes'
 
@@ -28,10 +29,11 @@ const RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccessResolvers = {
   users: async ({userIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
   },
-  kickOutNotifications: async ({kickOutNotificationIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('notifications').loadMany(kickOutNotificationIds)).filter(
-      isValid
-    ) as KickedOutNotification[]
+  kickOutNotifications: async ({kickOutNotificationIds}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return (await dataLoader.get('notifications').loadMany(kickOutNotificationIds))
+      .filter(isValid)
+      .filter(({userId}) => userId === viewerId) as KickedOutNotification[]
   },
   removedOrgMembers: async ({organizationUserIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('organizationUsers').loadMany(organizationUserIds)).filter(isValid)
