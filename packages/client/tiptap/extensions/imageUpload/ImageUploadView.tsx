@@ -15,7 +15,7 @@ export const ImageUploadView = (props: Props) => {
 
   return (
     <NodeViewWrapper>
-      <div className='m-0 p-0' data-drag-handle onClick={onClick}>
+      <div className='m-0 p-0' onClick={onClick} contentEditable={false}>
         <div className='flex items-center rounded bg-slate-200 p-2'>
           <ImageIcon className='size-6' />
           <span className='text-sm'>Add an image</span>

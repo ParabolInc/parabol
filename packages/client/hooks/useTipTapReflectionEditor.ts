@@ -1,5 +1,6 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import CharacterCount from '@tiptap/extension-character-count'
+import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import {TaskItem} from '@tiptap/extension-task-item'
@@ -67,6 +68,7 @@ export const useTipTapReflectionEditor = (
           'Heading 2': false,
           'To-do list': false
         }),
+        Focus,
         ImageUpload.configure(),
         ImageBlock,
         LoomExtension,

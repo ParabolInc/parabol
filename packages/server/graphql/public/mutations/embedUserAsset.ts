@@ -1,3 +1,5 @@
+import base64url from 'base64url'
+import {createHash} from 'crypto'
 import mime from 'mime-types'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId} from '../../../utils/authorization'
@@ -39,13 +41,14 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (_, {url}, {au
   if (!ext) {
     return {error: {message: `Unable to determine extension for ${contentType}`}}
   }
+  const hashName = base64url.fromBase64(createHash('sha256').update(buffer).digest('base64'))
   const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
   if (compressedBuffer.byteLength > 2 ** 23) {
     return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
   }
   // RESOLUTION
   const manager = getFileStoreManager()
-  const hostedUrl = await manager.putUserAsset(compressedBuffer, userId, extension)
+  const hostedUrl = await manager.putUserAsset(compressedBuffer, userId, extension, hashName)
   return {url: hostedUrl}
 }
 

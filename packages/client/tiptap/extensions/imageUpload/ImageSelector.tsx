@@ -19,12 +19,12 @@ const tabs = [
     id: 'embedLink',
     label: 'Embed link',
     Component: ImageSelectorEmbedTab
-  },
-  {
-    id: 'addGif',
-    label: 'Add Gif',
-    Component: ImageSelectorUploadTab
   }
+  // {
+  //   id: 'addGif',
+  //   label: 'Add Gif',
+  //   Component: ImageSelectorUploadTab
+  // }
 ] as const
 
 export const ImageSelector = (props: Props) => {
