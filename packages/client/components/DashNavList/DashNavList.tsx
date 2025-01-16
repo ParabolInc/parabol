@@ -3,10 +3,10 @@ import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
-import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import sortByTier from '../../utils/sortByTier'
 import DashNavListTeams from './DashNavListTeams'
 
 const EmptyTeams = styled('div')({
@@ -43,14 +43,7 @@ const DashNavList = (props: Props) => {
     organizationsRef
   )
 
-  const TierEnumValues: TierEnum[] = ['enterprise', 'team', 'starter']
-
-  const sortedOrgs = organizations.toSorted((a, b) => {
-    const aTier = TierEnumValues.indexOf(a.tier)
-    const bTier = TierEnumValues.indexOf(b.tier)
-    return aTier < bTier ? -1 : aTier > bTier ? 1 : a.name.localeCompare(b.name)
-  })
-
+  const sortedOrgs = sortByTier(organizations)
   const teams = organizations.flatMap((org) => org.viewerTeams)
 
   return (
