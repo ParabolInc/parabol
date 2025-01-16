@@ -106,6 +106,14 @@ const greetings = [
   {
     content: 'Iska warran',
     language: 'Somalian'
+  },
+  {
+    content: 'Kaixo',
+    language: 'Basque'
+  },
+  {
+    content: 'Hei',
+    language: 'Finnish'
   }
 ]
 
@@ -334,7 +342,8 @@ const questions = [
   'What’s a small victory you had this week that might seem trivial but was important to you?',
   'If you could have any author, living or dead, write the story of your life, who would it be and why?',
   'Imagine you could teleport to any place in the world for your next meal. Where would you go and what would you eat?',
-  'What’s one song that always boosts your mood, no matter how many times you hear it?'
+  'What’s one song that always boosts your mood, no matter how many times you hear it?',
+  'Whats’ something you would like to do again for the first time?'
 ]
 
 export const makeCheckinGreeting = (meetingCount: number, seedId = '') => {
