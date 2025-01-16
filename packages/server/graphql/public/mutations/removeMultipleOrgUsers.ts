@@ -1,6 +1,11 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../postgres/constants'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isUserBillingLeader,
+  isUserOrgAdmin
+} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
@@ -14,9 +19,10 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
+  const viewerId = getUserId(authToken)
   if (userIds.length === 0) {
     return standardError(new Error('Empty userIds array is provided'), {
-      userId: getUserId(authToken)
+      userId: viewerId
     })
   }
   if (userIds.length > BATCH_ORG_USER_REMOVAL_LIMIT) {
@@ -27,11 +33,14 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   }
 
   // Validation
-  const viewerId = getUserId(authToken)
   if (userIds.includes(viewerId)) {
     return standardError(new Error('Cannot remove yourself'), {userId: viewerId})
   }
-  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader)) && !isSuperUser(authToken)) {
+  if (
+    !(await isUserBillingLeader(viewerId, orgId, dataLoader)) &&
+    !isUserOrgAdmin(viewerId, orgId, dataLoader) &&
+    !isSuperUser(authToken)
+  ) {
     return standardError(new Error('Must be the organization leader'), {userId: viewerId})
   }
 
@@ -40,10 +49,9 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
     return standardError(new Error('Organization not found'), {userId: viewerId})
   }
 
-  const orgUserPromises = userIds.map((userId) =>
-    dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
-  )
-  const orgUsers = await Promise.all(orgUserPromises)
+  const orgUsers = await dataLoader
+    .get('organizationUsersByUserIdOrgId')
+    .loadMany(userIds.map((userId) => ({userId, orgId})))
   const nonOrgUsers = userIds.filter((_, idx) => !orgUsers[idx])
   if (nonOrgUsers.length > 0) {
     return standardError(
@@ -64,29 +72,37 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   // Process each user removal
   await Promise.all(
     userIds.map(async (userId: string) => {
-      const {tms, taskIds, kickOutNotificationIds, teamIds, teamMemberIds, organizationUserId} =
-        await removeFromOrg(userId, orgId, viewerId, dataLoader)
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
+      const userData = await removeFromOrg(userId, orgId, viewerId, dataLoader)
+      publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: userData.tms})
 
-      data.taskIds.push(...taskIds)
-      data.kickOutNotificationIds.push(...kickOutNotificationIds)
-      data.teamIds.push(...teamIds)
-      data.teamMemberIds.push(...teamMemberIds)
+      // Push all fields from userData to data
+      data.taskIds.push(...userData.taskIds)
+      data.kickOutNotificationIds.push(...userData.kickOutNotificationIds)
+      data.teamIds.push(...userData.teamIds)
+      data.teamMemberIds.push(...userData.teamMemberIds)
       data.userIds.push(userId)
-      data.organizationUserIds.push(organizationUserId)
+      data.organizationUserIds.push(userData.organizationUserId)
 
-      publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', data, subOptions)
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveOrgUserPayload', data, subOptions)
-      teamIds.forEach((teamId) => {
-        const teamData = {...data, teamFilterId: teamId}
+      publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', userData, subOptions)
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        userId,
+        'RemoveOrgUserPayload',
+        userData,
+        subOptions
+      )
+      userData.teamIds.forEach((teamId) => {
+        const teamData = {...userData, teamFilterId: teamId}
         publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
       })
 
-      const remainingTeamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
+      const remainingTeamMembers = (
+        await dataLoader.get('teamMembersByTeamId').loadMany(userData.teamIds)
+      )
         .filter(isValid)
         .flat()
       remainingTeamMembers.forEach((teamMember) => {
-        if (teamMemberIds.includes(teamMember.id)) return
+        if (userData.teamMemberIds.includes(teamMember.id)) return
         publish(
           SubscriptionChannel.TASK,
           teamMember.userId,
