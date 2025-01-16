@@ -2,6 +2,7 @@ import type {Editor} from '@tiptap/core'
 import {useState} from 'react'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
+import {ImageSelectorEmbedTab} from './ImageSelectorEmbedTab'
 import {ImageSelectorUploadTab} from './ImageSelectorUploadTab'
 
 interface Props {
@@ -17,7 +18,7 @@ const tabs = [
   {
     id: 'embedLink',
     label: 'Embed link',
-    Component: ImageSelectorUploadTab
+    Component: ImageSelectorEmbedTab
   },
   {
     id: 'addGif',

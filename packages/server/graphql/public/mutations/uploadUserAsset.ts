@@ -1,6 +1,7 @@
 import mime from 'mime-types'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId} from '../../../utils/authorization'
+import {compressImage} from '../../../utils/compressImage'
 import {MutationResolvers} from '../resolverTypes'
 
 const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (_, {file}, {authToken}) => {
@@ -14,12 +15,13 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (_, {file}, 
   if (!ext) {
     return {error: {message: `Unable to determine extension for ${contentType}`}}
   }
-  if (buffer.byteLength > 2 ** 23) {
+  const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
+  if (compressedBuffer.byteLength > 2 ** 23) {
     return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
   }
   // RESOLUTION
   const manager = getFileStoreManager()
-  const url = await manager.putUserAsset(buffer, userId, ext)
+  const url = await manager.putUserAsset(compressedBuffer, userId, extension)
   return {url}
 }
 

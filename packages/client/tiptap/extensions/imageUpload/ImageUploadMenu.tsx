@@ -11,19 +11,29 @@ export const ImageUploadMenu = ({editor}: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   const [transform, setTransform] = useState('')
   const isActive = editor.isActive('imageUpload')
+  useEffect(() => {
+    setOpen(isActive)
+  }, [isActive])
 
+  const [open, setOpen] = useState(isActive)
+  const onOpenChange = (willOpen: boolean) => {
+    if (!willOpen) {
+      setOpen(false)
+      return
+    }
+  }
   useEffect(() => {
     if (!ref.current) return
     if (!isActive) return
     const coords = editor.view.coordsAtPos(editor.state.selection.from)
     const {left, top, right} = coords
     const childWidth = ref.current?.getBoundingClientRect().width ?? 0
-    const widthDiff = (childWidth - (right - left)) / 2
+    const widthDiff = childWidth ? (childWidth - (right - left)) / 2 : 0
     setTransform(`translate(${left - widthDiff}px,${top + 40}px)`)
   }, [isActive, ref.current])
 
   return (
-    <Popover.Root open={isActive}>
+    <Popover.Root open={open} onOpenChange={onOpenChange}>
       <Popover.Trigger asChild />
       <Popover.Portal>
         <Popover.Content
