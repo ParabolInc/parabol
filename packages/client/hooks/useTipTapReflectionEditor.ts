@@ -93,42 +93,37 @@ export const useTipTapReflectionEditor = (
           // this is a rough estimate because we store the JSON content as a string, not plaintext
           limit: 1900
         }),
-        onEnter &&
-          Extension.create({
-            name: 'commentKeyboardShortcuts',
-            addKeyboardShortcuts(this) {
-              return {
-                Enter: () => {
-                  const isMakingNode = isCursorMakingNode(this.editor)
-                  if (isMakingNode) return false
+        Extension.create({
+          name: 'commentKeyboardShortcuts',
+          addKeyboardShortcuts(this) {
+            return {
+              'Shift-Enter': ({editor}) => {
+                const isMakingNode = isCursorMakingNode(this.editor)
+                if (isMakingNode) return false
+                editor.storage.shifted = true
+                return editor.commands.keyboardShortcut('Enter')
+              },
+              Enter: ({editor}) => {
+                if (editor.storage.shifted) {
+                  editor.storage.shifted = undefined
+                  return false
+                }
+                const isMakingNode = isCursorMakingNode(this.editor)
+                if (isMakingNode) return false
+                if (onEnter) {
                   onEnter()
-                  return true
-                }
-                // Escape: () => {
-                //   onEscape()
-                //   return true
-                // }
-              }
-            }
-          }),
-        !onEnter &&
-          Extension.create({
-            name: 'blurOnSubmitExceptList',
-            addKeyboardShortcuts(this) {
-              return {
-                Enter: () => {
-                  const isMakingNode = isCursorMakingNode(this.editor)
-                  if (isMakingNode) return false
+                } else {
                   this.editor.commands.blur()
-                  return true
-                },
-                Tab: () => {
-                  this.editor.commands.blur()
-                  return true
                 }
+                return true
               }
+              // Escape: () => {
+              //   onEscape()
+              //   return true
+              // }
             }
-          })
+          }
+        })
       ].filter(isValid),
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly
