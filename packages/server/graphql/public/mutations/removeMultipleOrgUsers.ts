@@ -69,20 +69,26 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
     kickOutNotificationIds: [] as string[],
     organizationUserIds: [] as string[]
   }
-  // Process each user removal
-  await Promise.all(
+
+  const userResults = await Promise.all(
     userIds.map(async (userId: string) => {
       const userData = await removeFromOrg(userId, orgId, viewerId, dataLoader)
+      return {userId, userData}
+    })
+  )
+
+  userResults.forEach(({userId, userData}) => {
+    data.taskIds.push(...userData.taskIds)
+    data.kickOutNotificationIds.push(...userData.kickOutNotificationIds)
+    data.teamIds.push(...userData.teamIds)
+    data.teamMemberIds.push(...userData.teamMemberIds)
+    data.userIds.push(userId)
+    data.organizationUserIds.push(userData.organizationUserId)
+  })
+
+  await Promise.all(
+    userResults.map(async ({userId, userData}) => {
       publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: userData.tms})
-
-      // Push all fields from userData to data
-      data.taskIds.push(...userData.taskIds)
-      data.kickOutNotificationIds.push(...userData.kickOutNotificationIds)
-      data.teamIds.push(...userData.teamIds)
-      data.teamMemberIds.push(...userData.teamMemberIds)
-      data.userIds.push(userId)
-      data.organizationUserIds.push(userData.organizationUserId)
-
       publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', userData, subOptions)
       publish(
         SubscriptionChannel.NOTIFICATION,
@@ -91,6 +97,7 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
         userData,
         subOptions
       )
+
       userData.teamIds.forEach((teamId) => {
         const teamData = {...userData, teamFilterId: teamId}
         publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
