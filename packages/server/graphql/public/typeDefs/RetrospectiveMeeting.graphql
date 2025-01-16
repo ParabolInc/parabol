@@ -68,6 +68,11 @@ type RetrospectiveMeeting implements NewMeeting {
   facilitator: TeamMember!
 
   """
+  If the AI generated summary is loading
+  """
+  isLoadingSummary: Boolean!
+
+  """
   The team members that were active during the time of the meeting
   """
   meetingMembers: [RetrospectiveMeetingMember!]!

@@ -1,4 +1,4 @@
-import {useAutocomplete} from '@mui/base/AutocompleteUnstyled'
+import {useAutocomplete} from '@mui/base/useAutocomplete'
 import CheckIcon from '@mui/icons-material/Check'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'

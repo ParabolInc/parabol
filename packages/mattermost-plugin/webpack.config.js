@@ -53,6 +53,8 @@ module.exports = {
   },
   output: {
     publicPath: "auto",
+    filename: '[name].js',
+    chunkFilename: '[name].chunk.js',
   },
   resolve: {
     alias: {

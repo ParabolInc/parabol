@@ -2,6 +2,8 @@ import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import CharacterCount from '@tiptap/extension-character-count'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import {TaskItem} from '@tiptap/extension-task-item'
+import {TaskList} from '@tiptap/extension-task-list'
 import {Extension, generateText, useEditor, type Editor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useEffect, useRef, useState} from 'react'
@@ -11,6 +13,7 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 
@@ -53,6 +56,11 @@ export const useTipTapReflectionEditor = (
       content: contentJSON,
       extensions: [
         StarterKit,
+        TaskList,
+        TaskItem.configure({
+          nested: true
+        }),
+        SlashCommand.configure(),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
