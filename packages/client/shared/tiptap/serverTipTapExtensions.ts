@@ -5,6 +5,8 @@ import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
+import ImageBlock from '../../tiptap/extensions/imageBlock/ImageBlock'
+import ImageUpload from '../../tiptap/extensions/imageUpload/ImageUpload'
 import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
@@ -21,6 +23,8 @@ export const serverTipTapExtensions = [
   TaskItem.configure({
     nested: true
   }),
+  ImageUpload.configure(),
+  ImageBlock,
   LoomExtension,
   Mention.configure(mentionConfig),
   Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),

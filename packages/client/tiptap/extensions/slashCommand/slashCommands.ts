@@ -10,6 +10,8 @@ import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
 
+export type CommandTitle = (typeof slashCommands)[number]['commands'][number]['title']
+
 export interface SlashCommandGroup {
   group: string
   commands: {
@@ -22,7 +24,7 @@ export interface SlashCommandGroup {
   }[]
 }
 
-export const slashCommands: SlashCommandGroup[] = [
+export const slashCommands = [
   {
     group: 'Basic blocks',
     commands: [
@@ -48,7 +50,7 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Heading 1',
         description: 'Big section heading',
-        searchTerms: ['title', 'big', 'large'],
+        searchTerms: ['title', 'big', 'large', 'heading'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 1}).run()
@@ -57,7 +59,7 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Heading 2',
         description: 'Medium section heading',
-        searchTerms: ['subtitle', 'medium'],
+        searchTerms: ['subtitle', 'medium', 'heading'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 2}).run()
@@ -66,7 +68,7 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Heading 3',
         description: 'Small section heading',
-        searchTerms: ['subtitle', 'small'],
+        searchTerms: ['subtitle', 'small', 'heading'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 3}).run()
@@ -119,32 +121,13 @@ export const slashCommands: SlashCommandGroup[] = [
       {
         title: 'Image',
         description: 'Upload any image from your device',
-        searchTerms: ['photo', 'picture', 'media', 'gif', 'giphy', 'tenor'],
+        searchTerms: ['gif', 'giphy', 'image', 'media', 'photo', 'picture', 'tenor'],
         icon: ImageIcon,
-        shouldHide: () => true,
+        // shouldHide: () => true,
         action: (editor: Editor) => {
-          editor.chain().focus().run()
-
-          const pageId = editor.storage?.pageId
-          if (!pageId) return
-
-          // upload image
-          const input = document.createElement('input')
-          input.type = 'file'
-          input.accept = 'image/*'
-          input.multiple = true
-          input.onchange = async () => {
-            if (input.files?.length) {
-              for (const file of input.files) {
-                const pos = editor.view.state.selection.from
-                console.log({file, pos})
-                // uploadImageAction(file, editor.view, pos, pageId)
-              }
-            }
-          }
-          input.click()
+          editor.chain().focus().setImageUpload().run()
         }
       }
     ]
   }
-]
+] as const

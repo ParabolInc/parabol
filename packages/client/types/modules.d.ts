@@ -17,6 +17,7 @@ declare module 'babel-plugin-relay/macro' {
 declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
 declare module 'tayden-clusterfck'
+declare module 'react/jsx-runtime'
 
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: string

@@ -1978,6 +1978,26 @@ type Mutation {
   ): UpdateOrgPayload!
 
   """
+  Take any asset & host it in the file store
+  """
+  embedUserAsset(
+    """
+    the asset URL
+    """
+    url: String!
+  ): UploadUserAssetPayload
+
+  """
+  Upload any asset owned by a user
+  """
+  uploadUserAsset(
+    """
+    the asset file
+    """
+    file: File!
+  ): UploadUserAssetPayload
+
+  """
   Upload an image for a user avatar
   """
   uploadUserImage(

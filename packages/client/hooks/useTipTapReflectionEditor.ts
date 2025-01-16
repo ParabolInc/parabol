@@ -1,5 +1,6 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import CharacterCount from '@tiptap/extension-character-count'
+import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import {TaskItem} from '@tiptap/extension-task-item'
@@ -13,6 +14,8 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
+import ImageUpload from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
@@ -60,7 +63,14 @@ export const useTipTapReflectionEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure(),
+        SlashCommand.configure({
+          'Heading 1': false,
+          'Heading 2': false,
+          'To-do list': false
+        }),
+        Focus,
+        ImageUpload.configure(),
+        ImageBlock,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -83,42 +93,37 @@ export const useTipTapReflectionEditor = (
           // this is a rough estimate because we store the JSON content as a string, not plaintext
           limit: 1900
         }),
-        onEnter &&
-          Extension.create({
-            name: 'commentKeyboardShortcuts',
-            addKeyboardShortcuts(this) {
-              return {
-                Enter: () => {
-                  const isMakingNode = isCursorMakingNode(this.editor)
-                  if (isMakingNode) return false
+        Extension.create({
+          name: 'commentKeyboardShortcuts',
+          addKeyboardShortcuts(this) {
+            return {
+              'Shift-Enter': ({editor}) => {
+                const isMakingNode = isCursorMakingNode(this.editor)
+                if (isMakingNode) return false
+                editor.storage.shifted = true
+                return editor.commands.keyboardShortcut('Enter')
+              },
+              Enter: ({editor}) => {
+                if (editor.storage.shifted) {
+                  editor.storage.shifted = undefined
+                  return false
+                }
+                const isMakingNode = isCursorMakingNode(this.editor)
+                if (isMakingNode) return false
+                if (onEnter) {
                   onEnter()
-                  return true
-                }
-                // Escape: () => {
-                //   onEscape()
-                //   return true
-                // }
-              }
-            }
-          }),
-        !onEnter &&
-          Extension.create({
-            name: 'blurOnSubmitExceptList',
-            addKeyboardShortcuts(this) {
-              return {
-                Enter: () => {
-                  const isMakingNode = isCursorMakingNode(this.editor)
-                  if (isMakingNode) return false
+                } else {
                   this.editor.commands.blur()
-                  return true
-                },
-                Tab: () => {
-                  this.editor.commands.blur()
-                  return true
                 }
+                return true
               }
+              // Escape: () => {
+              //   onEscape()
+              //   return true
+              // }
             }
-          })
+          }
+        })
       ].filter(isValid),
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly

@@ -186,10 +186,15 @@ const ReflectionGroup = (props: Props) => {
   }
 
   const watchForClick = useEventCallback((e: MouseEvent) => {
-    const isClickOnGroup = e.composedPath().find((el) => el === groupRef.current)
+    const target = e.target as Node
+    const isClickOnGroup = groupRef.current?.contains(target)
     if (!isClickOnGroup) {
-      document.removeEventListener('click', watchForClick)
-      setIsEditing(false)
+      const isClickInRoot = document.getElementById('root')?.contains(target)
+      // If the click is in a portal, ignore it, it could be link editing inside tiptap, etc.
+      if (isClickInRoot) {
+        document.removeEventListener('click', watchForClick)
+        setIsEditing(false)
+      }
     }
   })
   const onClick = () => {
