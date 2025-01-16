@@ -47,22 +47,6 @@ const someCommentsLinkStyle = {
   textDecoration: 'none'
 }
 
-const topicTitleStyle = {
-  color: PALETTE.SLATE_700,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontWeight: 600,
-  lineHeight: '22px',
-  fontSize: 14,
-  padding: '8px 48px'
-}
-
-const textStyle = {
-  color: PALETTE.SLATE_700,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  padding: '0px 48px 8px 48px',
-  fontSize: 14
-}
-
 const noCommentLinkStyle = {
   ...someCommentsLinkStyle,
   color: PALETTE.SLATE_600
