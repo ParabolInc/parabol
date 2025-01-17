@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.20.0](https://github.com/ParabolInc/parabol/compare/v8.19.0...v8.20.0) (2025-01-16)
+
+
+### Added
+
+* Add images to TipTap ([#10678](https://github.com/ParabolInc/parabol/issues/10678)) ([e62916f](https://github.com/ParabolInc/parabol/commit/e62916fcb78b4154ae3c6fdbff4a7e2ddbf537f7))
+* update insight prompt ([#10674](https://github.com/ParabolInc/parabol/issues/10674)) ([ce489aa](https://github.com/ParabolInc/parabol/commit/ce489aa42b33b877438534335b9f029910f35be6))
+
+
+### Fixed
+
+* consolidate organizations sorting logic ([#10680](https://github.com/ParabolInc/parabol/issues/10680)) ([3d9b6d2](https://github.com/ParabolInc/parabol/commit/3d9b6d22e89edb08ee21b2214cbb7a6d97417575))
+
 ## [8.19.0](https://github.com/ParabolInc/parabol/compare/v8.18.1...v8.19.0) (2025-01-15)
 
 
