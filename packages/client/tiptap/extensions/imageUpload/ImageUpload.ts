@@ -1,47 +1,43 @@
-import {Node, ReactNodeViewRenderer} from '@tiptap/react'
+import {ReactNodeViewRenderer} from '@tiptap/react'
+import {EventEmitter} from 'eventemitter3'
+import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    imageUpload: {
-      setImageUpload: () => ReturnType
+export const ImageUpload = ImageUploadBase.extend({
+  addStorage() {
+    return {
+      emitter: new EventEmitter()
     }
-  }
-}
+  },
 
-export const ImageUpload = Node.create({
-  name: 'imageUpload',
-
-  isolating: true,
-
-  defining: true,
-
-  group: 'block',
-
-  draggable: true,
-
-  selectable: true,
-
-  inline: false,
-
-  parseHTML() {
-    return [
-      {
-        tag: `div[data-type="${this.name}"]`
+  addKeyboardShortcuts(this) {
+    return {
+      Enter: ({editor}) => {
+        // the open state of the menu is kept in ImageUploadView
+        // and we can't communicate with that component via props or state
+        // so we attach an event emitter on the editor, since that's shared
+        if (editor.isActive('imageUpload')) {
+          this.storage.emitter.emit('enter')
+          return true
+        }
+        return false
       }
-    ]
+    }
   },
-
-  renderHTML() {
-    return ['div', {'data-type': this.name}]
-  },
-
   addCommands() {
     return {
       setImageUpload:
         () =>
-        ({commands}) =>
-          commands.insertContent(`<div data-type="${this.name}"></div>`)
+        ({commands, editor}) => {
+          const to = editor.state.selection.to
+          const size = editor.state.doc.content.size
+          if (size - to <= 1) {
+            // if we're at the end of the doc, add an extra paragraph to make it easier to click below
+            return commands.insertContent(`<div data-type="${this.name}"></div><p></p>`)
+          } else {
+            return commands.insertContent(`<div data-type="${this.name}"></div>`)
+          }
+        }
     }
   },
 
@@ -50,5 +46,3 @@ export const ImageUpload = Node.create({
     return ReactNodeViewRenderer(ImageUploadView)
   }
 })
-
-export default ImageUpload

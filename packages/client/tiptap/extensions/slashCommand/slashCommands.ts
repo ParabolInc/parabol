@@ -109,7 +109,7 @@ export const slashCommands = [
       {
         title: 'Divider',
         description: 'Insert horizontal rule divider',
-        searchTerms: ['horizontal rule', 'hr'],
+        searchTerms: ['horizontal rule', 'hr', 'divider', 'rule'],
         icon: HorizontalRuleIcon,
         action: (editor: Editor) => editor.chain().focus().setHorizontalRule().run()
       }

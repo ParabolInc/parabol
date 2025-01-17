@@ -15,7 +15,7 @@ import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
-import ImageUpload from '../tiptap/extensions/imageUpload/ImageUpload'
+import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
@@ -27,7 +27,7 @@ const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
 const isCursorMakingNode = (editor: Editor) => {
   const from = editor.state.selection.$from
   const nodeType = from.node().type.name
-  const parentType = from.node(-1).type.name
+  const parentType = from.node(-1)?.type.name
   /*
     Support cases (nodeType/parentType):
       - Headings (heading/doc)
@@ -69,7 +69,7 @@ export const useTipTapReflectionEditor = (
           'To-do list': false
         }),
         Focus,
-        ImageUpload.configure(),
+        ImageUpload,
         ImageBlock,
         LoomExtension,
         Placeholder.configure({
