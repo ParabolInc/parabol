@@ -13,6 +13,80 @@ const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
+const DateHeader = styled('div')({
+  padding: '16px 0 8px',
+  fontSize: '1rem',
+  fontWeight: 600,
+  color: 'rgb(71 85 105)', // slate-600
+  position: 'sticky',
+  top: 0,
+  backgroundColor: 'white',
+  zIndex: 1
+})
+
+interface TimelineGroup {
+  date: Date
+  events: any[]
+}
+
+interface TimelineEdge {
+  node: {
+    createdAt: string
+    [key: string]: any
+  }
+}
+
+const getGroupingFrequency = (events: readonly TimelineEdge[]): 'day' | 'week' | 'month' => {
+  if (!events.length) return 'day'
+  const firstEvent = events[0]
+  const lastEvent = events[events.length - 1]
+  if (!firstEvent?.node.createdAt || !lastEvent?.node.createdAt) return 'day'
+
+  const firstDate = new Date(firstEvent.node.createdAt)
+  const lastDate = new Date(lastEvent.node.createdAt)
+  const daysDiff = (lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)
+
+  if (daysDiff <= 14) return 'day'
+  if (daysDiff <= 60) return 'week'
+  return 'month'
+}
+
+const formatGroupDate = (date: Date, frequency: 'day' | 'week' | 'month'): string => {
+  const options: {[key in 'day' | 'week' | 'month']: Intl.DateTimeFormatOptions} = {
+    day: {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    },
+    week: {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    },
+    month: {
+      month: 'long',
+      year: 'numeric'
+    }
+  }
+
+  return new Intl.DateTimeFormat('en-US', options[frequency]).format(date)
+}
+
+const getGroupDate = (date: Date, frequency: 'day' | 'week' | 'month'): Date => {
+  const newDate = new Date(date)
+  if (frequency === 'day') {
+    newDate.setHours(0, 0, 0, 0)
+  } else if (frequency === 'week') {
+    newDate.setDate(newDate.getDate() - newDate.getDay()) // Start of week
+    newDate.setHours(0, 0, 0, 0)
+  } else {
+    newDate.setDate(1) // Start of month
+    newDate.setHours(0, 0, 0, 0)
+  }
+  return newDate
+}
+
 interface Props {
   queryRef: TimelineFeedList_query$key
 }
@@ -43,6 +117,7 @@ const TimelineFeedList = (props: Props) => {
                 __typename
                 id
                 teamId
+                createdAt
                 organization {
                   id
                   viewerOrganizationUser {
@@ -106,6 +181,25 @@ const TimelineFeedList = (props: Props) => {
     }
   }, [timeline.edges])
 
+  const groupedFreeHistory = useMemo(() => {
+    const frequency = getGroupingFrequency(freeHistory)
+    const groups: TimelineGroup[] = []
+
+    freeHistory.forEach((edge) => {
+      const eventDate = new Date(edge.node.createdAt)
+      const groupDate = getGroupDate(eventDate, frequency)
+
+      let group = groups.find((g) => g.date.getTime() === groupDate.getTime())
+      if (!group) {
+        group = {date: groupDate, events: []}
+        groups.push(group)
+      }
+      group.events.push(edge)
+    })
+
+    return {groups, frequency}
+  }, [freeHistory])
+
   if (freeHistory.length === 0 && !lockedHistory?.length) {
     return (
       <div className='text-base'>
@@ -120,8 +214,13 @@ const TimelineFeedList = (props: Props) => {
 
   return (
     <ResultScroller>
-      {freeHistory.map(({node: timelineEvent}) => (
-        <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
+      {groupedFreeHistory.groups.map(({date, events}) => (
+        <div key={date.toISOString()}>
+          <DateHeader>{formatGroupDate(date, groupedFreeHistory.frequency)}</DateHeader>
+          {events.map(({node: timelineEvent}) => (
+            <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
+          ))}
+        </div>
       ))}
       {lockedHistory && (
         <>
