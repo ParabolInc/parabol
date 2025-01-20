@@ -13,40 +13,6 @@ const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
-const DateHeaderContainer = styled('div')({
-  position: 'relative',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '16px 0',
-  margin: '8px 0',
-  '&::before, &::after': {
-    content: '""',
-    position: 'absolute',
-    top: '50%',
-    width: '42%',
-    height: '1px',
-    backgroundColor: 'rgb(226 232 240)' // slate-200
-  },
-  '&::before': {
-    left: 0
-  },
-  '&::after': {
-    right: 0
-  }
-})
-
-const DateHeader = styled('div')({
-  fontSize: '0.875rem', // 14px
-  fontWeight: 500,
-  color: 'rgb(71 85 105)', // slate-600
-  backgroundColor: 'rgb(248 250 252)', // slate-50
-  border: '1px solid rgb(226 232 240)', // slate-200
-  borderRadius: '9999px',
-  padding: '4px 12px',
-  zIndex: 1
-})
-
 interface TimelineGroup {
   date: Date
   events: any[]
@@ -213,9 +179,13 @@ const TimelineFeedList = (props: Props) => {
     <ResultScroller>
       {groupedFreeHistory.groups.map(({date, events, label}) => (
         <div key={date.toISOString()}>
-          <DateHeaderContainer>
-            <DateHeader>{label}</DateHeader>
-          </DateHeaderContainer>
+          <div className='my-2 flex items-center gap-4 py-4'>
+            <div className='h-[1px] flex-1 bg-slate-400' />
+            <div className='bg-slate-50 rounded-full border border-slate-200 px-3 py-1 text-sm font-medium text-slate-600'>
+              {label}
+            </div>
+            <div className='h-[1px] flex-1 bg-slate-400' />
+          </div>
           {events.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
           ))}
