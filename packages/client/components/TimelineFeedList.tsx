@@ -13,14 +13,37 @@ const ResultScroller = styled('div')({
   overflow: 'auto'
 })
 
+const DateHeaderContainer = styled('div')({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '16px 0',
+  margin: '8px 0',
+  '&::before, &::after': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    width: '42%',
+    height: '1px',
+    backgroundColor: 'rgb(226 232 240)' // slate-200
+  },
+  '&::before': {
+    left: 0
+  },
+  '&::after': {
+    right: 0
+  }
+})
+
 const DateHeader = styled('div')({
-  padding: '16px 0 8px',
-  fontSize: '1rem',
-  fontWeight: 600,
+  fontSize: '0.875rem', // 14px
+  fontWeight: 500,
   color: 'rgb(71 85 105)', // slate-600
-  position: 'sticky',
-  top: 0,
-  backgroundColor: 'white',
+  backgroundColor: 'rgb(248 250 252)', // slate-50
+  border: '1px solid rgb(226 232 240)', // slate-200
+  borderRadius: '9999px',
+  padding: '4px 12px',
   zIndex: 1
 })
 
@@ -190,7 +213,9 @@ const TimelineFeedList = (props: Props) => {
     <ResultScroller>
       {groupedFreeHistory.groups.map(({date, events, label}) => (
         <div key={date.toISOString()}>
-          <DateHeader>{label}</DateHeader>
+          <DateHeaderContainer>
+            <DateHeader>{label}</DateHeader>
+          </DateHeaderContainer>
           {events.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
           ))}
