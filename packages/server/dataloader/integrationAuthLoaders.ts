@@ -2,9 +2,7 @@ import DataLoader from 'dataloader'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
-import {IGetBestTeamIntegrationAuthQueryResult} from '../postgres/queries/generated/getBestTeamIntegrationAuthQuery'
 import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
-import getBestTeamIntegrationAuth from '../postgres/queries/getBestTeamIntegrationAuth'
 import getIntegrationProvidersByIds, {
   TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
@@ -87,41 +85,6 @@ export const sharedIntegrationProviders = (parent: RootDataLoader) => {
   )
 }
 
-export const bestTeamIntegrationProviders = (parent: RootDataLoader) => {
-  return new DataLoader<
-    TeamMemberIntegrationAuthServiceTeamUserKey,
-    TIntegrationProvider | null,
-    string
-  >(
-    async (keys) => {
-      // given token params, get the best team token
-      const bestTeamIntegrationAuths = (
-        await parent.get('bestTeamIntegrationAuths').loadMany(keys)
-      ).filter(isValid)
-      // dedupe providerIds
-      const providerIds = Array.from(
-        new Set(bestTeamIntegrationAuths.map((token) => token.providerId))
-      )
-      // get the providers for each token
-      const integrationProviders = (
-        await parent.get('integrationProviders').loadMany(providerIds)
-      ).filter(isValid)
-      return keys.map((key) => {
-        const token = bestTeamIntegrationAuths.find(
-          ({service, teamId}) => service === key.service && teamId === key.teamId
-        )
-        if (!token) return null
-        const provider = integrationProviders.find(({id}) => id === token.providerId)
-        return provider ?? null
-      })
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
-    }
-  )
-}
-
 export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (parent: RootDataLoader) => {
   return new DataLoader<
     TeamMemberIntegrationAuthServiceTeamUserKey,
@@ -146,29 +109,6 @@ export const teamMemberIntegrationAuthsByServiceTeamAndUserId = (parent: RootDat
               key.teamId === teamId && key.userId === userId && key.service === service
           ) || null
       )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: teamMemberIntegrationAuthCacheKeyFn
-    }
-  )
-}
-
-export const bestTeamIntegrationAuths = (parent: RootDataLoader) => {
-  return new DataLoader<
-    TeamMemberIntegrationAuthServiceTeamUserKey,
-    IGetBestTeamIntegrationAuthQueryResult | null,
-    string
-  >(
-    async (keys) => {
-      // TODO check the teamMemberIntegrationAuths loader first, it probably exists there & then we don't have to hit the DB
-      const results = await Promise.allSettled(
-        keys.map(async ({service, teamId, userId}) =>
-          getBestTeamIntegrationAuth(service, teamId, userId)
-        )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
     },
     {
       ...parent.dataLoaderOptions,
@@ -224,21 +164,25 @@ export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
   })
 }
 
-export const teamMemberIntegrationAuthsByTeamId = (parent: RootDataLoader) => {
+export const teamMemberIntegrationAuthsByTeamIdAndEvent = (parent: RootDataLoader) => {
   return new DataLoader<
-    {teamId: string; service: IntegrationProviderServiceEnum},
+    {teamId: string; service: IntegrationProviderServiceEnum; event: SlackNotification['event']},
     TeamMemberIntegrationAuth[],
     string
   >(
     async (keys) => {
       const pg = getKysely()
-      const teamIds = keys.map(({teamId}) => teamId)
-      const services = keys.map(({service}) => service)
       const res = (await pg
         .selectFrom('TeamMemberIntegrationAuth')
+        .innerJoin('NotificationSettings', 'authId', 'TeamMemberIntegrationAuth.id')
         .selectAll()
-        .where(({eb}) => eb('teamId', 'in', teamIds))
-        .where(({eb}) => eb('service', 'in', services))
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'service', 'event'),
+            'in',
+            keys.map(({teamId, service, event}) => tuple(teamId, service, event))
+          )
+        )
         .execute()) as unknown as TeamMemberIntegrationAuth[]
 
       return keys.map((key) =>
