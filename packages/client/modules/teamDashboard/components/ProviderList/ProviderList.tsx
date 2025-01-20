@@ -142,7 +142,7 @@ const ProviderList = (props: Props) => {
     },
     {
       name: 'Mattermost',
-      connected: window.__ACTION__.mattermostGlobal || !!integrations?.mattermost.auth,
+      connected: !!integrations?.mattermost.auth,
       component: <MattermostProviderRow key='mm' teamId={teamId} viewerRef={viewer} />
     },
     {
