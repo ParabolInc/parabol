@@ -4,6 +4,7 @@ import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
+import {TimelineGroup, getTimeGroup} from '~/utils/date/timelineGroups'
 import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
@@ -12,42 +13,6 @@ import TimelineHistoryLockedCard from './TimelineHistoryLockedCard'
 const ResultScroller = styled('div')({
   overflow: 'auto'
 })
-
-interface TimelineGroup {
-  date: Date
-  events: any[]
-  label: string
-}
-
-const getTimeGroup = (date: Date): {date: Date; label: string} => {
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  const lastWeek = new Date(today)
-  lastWeek.setDate(lastWeek.getDate() - 7)
-  const lastMonth = new Date(today)
-  lastMonth.setMonth(lastMonth.getMonth() - 1)
-  const last3Months = new Date(today)
-  last3Months.setMonth(last3Months.getMonth() - 3)
-  const last6Months = new Date(today)
-  last6Months.setMonth(last6Months.getMonth() - 6)
-
-  if (date >= today) {
-    return {date: today, label: '🌅 Today'}
-  } else if (date >= yesterday) {
-    return {date: yesterday, label: '🌙 Yesterday'}
-  } else if (date >= lastWeek) {
-    return {date: lastWeek, label: '📅 This week'}
-  } else if (date >= lastMonth) {
-    return {date: lastMonth, label: '📆 This month'}
-  } else if (date >= last3Months) {
-    return {date: last3Months, label: '🗓️ Past 3 months'}
-  } else if (date >= last6Months) {
-    return {date: last6Months, label: '📚 Past 6 months'}
-  }
-  return {date: last6Months, label: '🏛️ Ancient history'}
-}
 
 interface Props {
   queryRef: TimelineFeedList_query$key
