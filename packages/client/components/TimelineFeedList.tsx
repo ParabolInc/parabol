@@ -27,64 +27,37 @@ const DateHeader = styled('div')({
 interface TimelineGroup {
   date: Date
   events: any[]
+  label: string
 }
 
-interface TimelineEdge {
-  node: {
-    createdAt: string
-    [key: string]: any
+const getTimeGroup = (date: Date): {date: Date; label: string} => {
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const lastWeek = new Date(today)
+  lastWeek.setDate(lastWeek.getDate() - 7)
+  const lastMonth = new Date(today)
+  lastMonth.setMonth(lastMonth.getMonth() - 1)
+  const last3Months = new Date(today)
+  last3Months.setMonth(last3Months.getMonth() - 3)
+  const last6Months = new Date(today)
+  last6Months.setMonth(last6Months.getMonth() - 6)
+
+  if (date >= today) {
+    return {date: today, label: '🌅 Today'}
+  } else if (date >= yesterday) {
+    return {date: yesterday, label: '🌙 Yesterday'}
+  } else if (date >= lastWeek) {
+    return {date: lastWeek, label: '📅 This week'}
+  } else if (date >= lastMonth) {
+    return {date: lastMonth, label: '📆 This month'}
+  } else if (date >= last3Months) {
+    return {date: last3Months, label: '🗓️ Past 3 months'}
+  } else if (date >= last6Months) {
+    return {date: last6Months, label: '📚 Past 6 months'}
   }
-}
-
-const getGroupingFrequency = (events: readonly TimelineEdge[]): 'day' | 'week' | 'month' => {
-  if (!events.length) return 'day'
-  const firstEvent = events[0]
-  const lastEvent = events[events.length - 1]
-  if (!firstEvent?.node.createdAt || !lastEvent?.node.createdAt) return 'day'
-
-  const firstDate = new Date(firstEvent.node.createdAt)
-  const lastDate = new Date(lastEvent.node.createdAt)
-  const daysDiff = (lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)
-
-  if (daysDiff <= 14) return 'day'
-  if (daysDiff <= 60) return 'week'
-  return 'month'
-}
-
-const formatGroupDate = (date: Date, frequency: 'day' | 'week' | 'month'): string => {
-  const options: {[key in 'day' | 'week' | 'month']: Intl.DateTimeFormatOptions} = {
-    day: {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    },
-    week: {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    },
-    month: {
-      month: 'long',
-      year: 'numeric'
-    }
-  }
-
-  return new Intl.DateTimeFormat('en-US', options[frequency]).format(date)
-}
-
-const getGroupDate = (date: Date, frequency: 'day' | 'week' | 'month'): Date => {
-  const newDate = new Date(date)
-  if (frequency === 'day') {
-    newDate.setHours(0, 0, 0, 0)
-  } else if (frequency === 'week') {
-    newDate.setDate(newDate.getDate() - newDate.getDay()) // Start of week
-    newDate.setHours(0, 0, 0, 0)
-  } else {
-    newDate.setDate(1) // Start of month
-    newDate.setHours(0, 0, 0, 0)
-  }
-  return newDate
+  return {date: last6Months, label: '🏛️ Ancient history'}
 }
 
 interface Props {
@@ -182,22 +155,23 @@ const TimelineFeedList = (props: Props) => {
   }, [timeline.edges])
 
   const groupedFreeHistory = useMemo(() => {
-    const frequency = getGroupingFrequency(freeHistory)
     const groups: TimelineGroup[] = []
 
     freeHistory.forEach((edge) => {
       const eventDate = new Date(edge.node.createdAt)
-      const groupDate = getGroupDate(eventDate, frequency)
+      const {date: groupDate, label} = getTimeGroup(eventDate)
 
       let group = groups.find((g) => g.date.getTime() === groupDate.getTime())
       if (!group) {
-        group = {date: groupDate, events: []}
+        group = {date: groupDate, events: [], label}
         groups.push(group)
       }
       group.events.push(edge)
     })
 
-    return {groups, frequency}
+    // Sort groups by date (newest first)
+    groups.sort((a, b) => b.date.getTime() - a.date.getTime())
+    return {groups}
   }, [freeHistory])
 
   if (freeHistory.length === 0 && !lockedHistory?.length) {
@@ -214,9 +188,9 @@ const TimelineFeedList = (props: Props) => {
 
   return (
     <ResultScroller>
-      {groupedFreeHistory.groups.map(({date, events}) => (
+      {groupedFreeHistory.groups.map(({date, events, label}) => (
         <div key={date.toISOString()}>
-          <DateHeader>{formatGroupDate(date, groupedFreeHistory.frequency)}</DateHeader>
+          <DateHeader>{label}</DateHeader>
           {events.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
           ))}
