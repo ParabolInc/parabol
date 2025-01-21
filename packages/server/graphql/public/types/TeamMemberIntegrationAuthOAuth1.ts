@@ -10,7 +10,7 @@ const TeamMemberIntegrationAuthOAuth1: TeamMemberIntegrationAuthOAuth1Resolvers 
     accessToken: string | undefined | null
     accessTokenSecret: string | undefined | null
   }) => !!(accessToken && accessTokenSecret),
-  id: ({service, teamId, userId}) => TeamMemberIntegrationAuthId.join(service, teamId, userId),
+  id: ({id}) => TeamMemberIntegrationAuthId.join(id),
   providerId: ({providerId}) => IntegrationProviderId.join(providerId),
   provider: async ({providerId}, _args, {dataLoader}) => {
     return dataLoader.get('integrationProviders').loadNonNull(providerId)

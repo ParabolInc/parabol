@@ -1,8 +1,8 @@
 const TeamMemberIntegrationAuthId = {
-  join: (service: string, teamId: string, userId: string) => `${service}:${teamId}:${userId}`,
-  split: (id: string) => {
-    const [service, teamId, userId] = id.split(':')
-    return {service, teamId, userId}
+  join: (dbId: number) => `TeamMemberIntegrationAuth:${dbId}`,
+  split: (gqlId: string) => {
+    const [_, id] = gqlId.split(':')
+    return Number.parseInt(id!)!
   }
 }
 

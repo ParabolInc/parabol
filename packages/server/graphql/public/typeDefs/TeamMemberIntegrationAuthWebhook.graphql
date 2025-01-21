@@ -1,5 +1,5 @@
 """
-An integration authorization that connects via Webhook auth strategy
+A notification integration authorization that connects via Webhook auth strategy
 """
 type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
   """
@@ -41,4 +41,9 @@ type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
   The provider strategy this token connects to
   """
   provider: IntegrationProviderWebhook!
+
+  """
+  The events that trigger a notification
+  """
+  events: [SlackNotificationEventEnum!]!
 }

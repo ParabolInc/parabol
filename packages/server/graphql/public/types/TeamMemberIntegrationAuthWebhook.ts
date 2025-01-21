@@ -4,10 +4,13 @@ import {TeamMemberIntegrationAuthWebhookResolvers} from '../resolverTypes'
 
 const TeamMemberIntegrationAuthWebhook: TeamMemberIntegrationAuthWebhookResolvers = {
   __isTypeOf: ({accessToken, refreshToken, scopes}) => !accessToken || !refreshToken || !scopes,
-  id: ({service, teamId, userId}) => TeamMemberIntegrationAuthId.join(service, teamId, userId),
+  id: ({id}) => TeamMemberIntegrationAuthId.join(id),
   providerId: ({providerId}) => IntegrationProviderId.join(providerId),
   provider: async ({providerId}, _args, {dataLoader}) => {
     return dataLoader.get('integrationProviders').loadNonNull(providerId)
+  },
+  events: async ({id}, _args, {dataLoader}) => {
+    return dataLoader.get('notificationSettingsByAuthId').load(id)
   }
 }
 

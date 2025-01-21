@@ -7,7 +7,9 @@ export type MSTeamsIntegrationSource = {
 
 const MSTeamsIntegration: MsTeamsIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
-    return dataLoader.get('teamMemberIntegrationAuths').load({service: 'msTeams', teamId, userId})
+    return dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: 'msTeams', teamId, userId})
   },
 
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {
