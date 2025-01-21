@@ -1,17 +1,8 @@
-import {isDraftJSContent} from '../../../../client/shared/tiptap/isDraftJSContent'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
-import {convertKnownDraftToTipTap} from '../../../utils/convertToTipTap'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import {RetroReflectionResolvers} from '../resolverTypes'
 
 const RetroReflection: RetroReflectionResolvers = {
-  content: ({content}) => {
-    const contentJSON = JSON.parse(content)
-    const validContent = isDraftJSContent(contentJSON)
-      ? convertKnownDraftToTipTap(contentJSON)
-      : contentJSON
-    return JSON.stringify(validContent)
-  },
   creatorId: async ({creatorId, meetingId}, _args, {authToken, dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     const {meetingType} = meeting

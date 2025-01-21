@@ -18,7 +18,7 @@ type WorkItemArgs = {
 const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
     return dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'azureDevOps', teamId, userId})
   },
 

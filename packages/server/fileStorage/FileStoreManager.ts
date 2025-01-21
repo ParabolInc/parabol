@@ -13,6 +13,14 @@ export default abstract class FileStoreManager {
   abstract putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string>
 
   abstract presignUrl(url: string): Promise<string>
+
+  async putUserAsset(file: ArrayBufferLike, userId: string, ext: string, name?: string) {
+    const filename = name ?? generateUID()
+    // replace the first dot, if there is one, but not any other dots
+    const dotfreeExt = ext.replace(/^\./, '')
+    const partialPath = `User/${userId}/assets/${filename}.${dotfreeExt}`
+    return this.putUserFile(file, partialPath)
+  }
   async putUserAvatar(file: ArrayBufferLike, userId: string, ext: string, name?: string) {
     const filename = name ?? generateUID()
     // replace the first dot, if there is one, but not any other dots

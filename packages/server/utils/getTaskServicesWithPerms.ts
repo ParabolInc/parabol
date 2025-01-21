@@ -13,7 +13,9 @@ const getTaskServicesWithPerms = async (
     dataLoader.get('githubAuth').load({teamId, userId}),
     dataLoader.get('freshGitlabAuth').load({teamId, userId}),
     dataLoader.get('freshAzureDevOpsAuth').load({teamId, userId}),
-    dataLoader.get('teamMemberIntegrationAuths').load({service: 'jiraServer', teamId, userId})
+    dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: 'jiraServer', teamId, userId})
   ])
   const allPossibleTaskServices = IntegrationProviderServiceEnum.getValues().map(
     ({name}) => name

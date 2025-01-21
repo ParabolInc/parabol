@@ -7,6 +7,7 @@ import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../.
 import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {NotificationSettings} from '../../../../postgres/types/pg'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -333,20 +334,28 @@ export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNot
   }
 })
 
-async function getMSTeams(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
-  const [provider, user] = await Promise.all([
-    dataLoader.get('bestTeamIntegrationProviders').load({service: 'msTeams', teamId, userId}),
+async function getMSTeams(
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string,
+  event: NotificationSettings['event']
+) {
+  const [auths, user] = await Promise.all([
+    dataLoader
+      .get('teamMemberIntegrationAuthsByTeamIdAndEvent')
+      .load({service: 'msTeams', teamId, event}),
     dataLoader.get('users').loadNonNull(userId)
   ])
-  return provider && provider.teamId
-    ? [
-        MSTeamsNotificationHelper({
-          ...(provider as IntegrationProviderMSTeams),
-          userId,
-          email: user.email
-        })
-      ]
-    : []
+  return Promise.all(
+    auths.map(async (auth) => {
+      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
+      return MSTeamsNotificationHelper({
+        ...(provider as IntegrationProviderMSTeams),
+        userId,
+        email: user.email
+      })
+    })
+  )
 }
 
 export const MSTeamsNotifier = createNotifier(getMSTeams)

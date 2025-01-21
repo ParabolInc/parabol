@@ -1,9 +1,8 @@
 import {sql} from 'kysely'
-import {selectNewMeetings} from '../../postgres/select'
-import {RetrospectiveMeeting} from '../../postgres/types/Meeting'
-import standardError from '../../utils/standardError'
-import {MutationResolvers} from '../public/resolverTypes'
-import {generateRetroSummary} from './helpers/generateRetroSummary'
+import {selectNewMeetings} from '../../../postgres/select'
+import standardError from '../../../utils/standardError'
+import {generateRetroSummary} from '../../mutations/helpers/generateRetroSummary'
+import {MutationResolvers, RetrospectiveMeeting} from '../resolverTypes'
 
 const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = async (
   _source,
@@ -58,5 +57,4 @@ const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = asyn
 
   return {meetingIds: filteredMeetingIds}
 }
-
 export default generateRetroSummaries

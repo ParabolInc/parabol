@@ -309,6 +309,7 @@ const ReflectionCard = (props: Props) => {
       onMouseLeave={() => setIsHovering(false)}
       showDragHintAnimation={showDragHintAnimation}
       ref={reflectionDivRef}
+      className='py-2'
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
 
@@ -318,9 +319,8 @@ const ReflectionCard = (props: Props) => {
       >
         <TipTapEditor
           className={cn(
-            'flex min-h-4 w-full px-4 pt-3',
+            'flex min-h-4 w-full px-4',
             isClipped ? 'max-h-11' : 'max-h-28',
-            disableAnonymity ? 'pb-0' : 'pb-3',
             readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
           editor={editor}
