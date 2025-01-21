@@ -54,12 +54,14 @@ export default class S3Manager extends FileStoreManager {
     if (pathname.endsWith('/'))
       throw new Error('CDN_BASE_URL must end with the env, no trailing slash, e.g. /production')
 
+    if (!AWS_S3_BUCKET) {
+      throw new Error('AWS_S3_BUCKET required when using AWS S3 as filestore provider')
+    }
+
     this.envSubDir = pathname.split('/').at(-1) as string
 
     this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
-
-    if (AWS_S3_BUCKET) this.bucket = AWS_S3_BUCKET
-    else throw new Error('AWS_S3_BUCKET required when using AWS S3 as filestore provider')
+    this.bucket = AWS_S3_BUCKET
 
     // credentials are optional since the file store could be public & not need a key to write
     const credentials =
@@ -68,7 +70,7 @@ export default class S3Manager extends FileStoreManager {
         : undefined
     this.s3 = new S3Client({
       credentials,
-      // The bucket is inferred from the CDN_BASE_URL
+      // Using true fails to work on the checkExist method, it returns a 403
       bucketEndpoint: false,
       region: AWS_REGION,
       followRegionRedirects: true,
@@ -109,10 +111,7 @@ export default class S3Manager extends FileStoreManager {
       await this.s3.send(new HeadObjectCommand({Bucket: this.bucket, Key}))
     } catch (e) {
       if (e instanceof Error && e.name === 'NotFound') return false
-      else {
-        Logger.log(`Invalid error ${(e as Error).name}`)
-        throw new Error(`Can't verify if the object ${Key} is in the S3 bucket  ${this.bucket}`)
-      }
+      Logger.log(`Invalid error ${(e as Error).name}`)
     }
     return true
   }
