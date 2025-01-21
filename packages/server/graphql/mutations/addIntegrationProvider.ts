@@ -51,7 +51,7 @@ const addIntegrationProvider = {
       if (scope === 'global') {
         return {error: {message: 'Must be a super user to add a global provider'}}
       }
-      if (scope === 'org' && !isUserOrgAdmin(viewerId, orgId!, dataLoader)) {
+      if (scope === 'org' && !(await isUserOrgAdmin(viewerId, orgId!, dataLoader))) {
         return {
           error: {
             message:
