@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getUserId, isUserBillingLeader} from '../../utils/authorization'
+import {getUserId, isUserBillingLeader, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -32,7 +32,10 @@ const removeOrgUser = {
     // AUTH
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
-      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      if (
+        !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
+        !(await isUserBillingLeader(viewerId, orgId, dataLoader))
+      ) {
         return standardError(new Error('Must be the organization leader'), {userId: viewerId})
       }
     }

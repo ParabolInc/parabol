@@ -154,7 +154,6 @@ export const TipTapLinkMenu = (props: Props) => {
       </Popover.Portal>
     </Popover.Root>
   )
-  return null
 }
 
 export default TipTapLinkMenu

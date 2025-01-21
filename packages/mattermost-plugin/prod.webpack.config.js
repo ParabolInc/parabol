@@ -1,4 +1,4 @@
-const { ModuleFederationPlugin } = require("webpack").container;
+const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const path = require('path')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
@@ -7,6 +7,14 @@ const PROJECT_ROOT = getProjectRoot()
 const PLUGIN_ROOT = path.join(PROJECT_ROOT, 'packages', 'mattermost-plugin')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const buildPath = path.join(PROJECT_ROOT, 'build')
+
+// strip everything till the last node_modules directory in path
+const normalizeName = (pathData) => {
+  const name = pathData.chunk.name || pathData.chunk.id
+  return name
+  .replace(/.*node_modules/g, "")
+  .trim().replace(/ +/g, "-")
+}
 
 const clientTransformRules = (pluginRoot) => {
   return [
@@ -59,8 +67,8 @@ module.exports = (config) => {
       path: buildPath,
       publicPath: "auto",
       filename: 'mattermost-plugin_[name]_[contenthash].js',
-      chunkFilename: 'mattermost-plugin_[name]_[contenthash].js',
-      assetModuleFilename: 'mattermost-plugin_[name]_[contenthash][ext]'
+      chunkFilename: (pathData) => (`mattermost-plugin_${normalizeName(pathData)}_[contenthash].js`),
+      assetModuleFilename: 'mattermost-plugin_asset_[name]_[contenthash][ext]'
     },
     resolve: {
       alias: {
@@ -95,7 +103,7 @@ module.exports = (config) => {
       ]
     },
     plugins: [
-      new ModuleFederationPlugin({
+      new webpack.container.ModuleFederationPlugin({
         name: "parabol",
         filename: "mattermost-plugin-entry.js",
         exposes: {

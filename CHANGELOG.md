@@ -5,6 +5,77 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.21.0](https://github.com/ParabolInc/parabol/compare/v8.20.1...v8.21.0) (2025-01-21)
+
+
+### Added
+
+* Add GraphQL notification settings for MS Teams and Mattermost ([#10694](https://github.com/ParabolInc/parabol/issues/10694)) ([5cdaba2](https://github.com/ParabolInc/parabol/commit/5cdaba2b32a27cf677a831cc8a834f4f6978b42a))
+* add the `removeMultipleOrgUsers` mutation to support mass org user removal ([#10675](https://github.com/ParabolInc/parabol/issues/10675)) ([3044640](https://github.com/ParabolInc/parabol/commit/3044640b468f6e7966a0d55c7403be3519b44d10))
+* **greetings:** add Finnish and Basque greetings and a new icebreaker ([#10693](https://github.com/ParabolInc/parabol/issues/10693)) ([41eb26f](https://github.com/ParabolInc/parabol/commit/41eb26fd30cdcf19dd0fba918aa79a51e38bd3fd))
+* group timeline events by relative dates ([#10708](https://github.com/ParabolInc/parabol/issues/10708)) ([4b973a8](https://github.com/ParabolInc/parabol/commit/4b973a8b97f66e2dbdb7a4c191b18f0e770f5a59))
+* notification settings UI ([#10695](https://github.com/ParabolInc/parabol/issues/10695)) ([0e79cdb](https://github.com/ParabolInc/parabol/commit/0e79cdbf8d48483ac1ca39267cf8029f3982f469))
+
+
+### Fixed
+
+* Lint Promises in conditions ([#10710](https://github.com/ParabolInc/parabol/issues/10710)) ([0fd8d8c](https://github.com/ParabolInc/parabol/commit/0fd8d8c26684aea90de44915fd913b48f34ffab9))
+* remove imageuploadmenu ([#10705](https://github.com/ParabolInc/parabol/issues/10705)) ([de9002d](https://github.com/ParabolInc/parabol/commit/de9002d83d2b97f1330e96388244f05da635b1fc))
+
+
+### Changed
+
+* remove discussion summary ([#10690](https://github.com/ParabolInc/parabol/issues/10690)) ([bf8fc7e](https://github.com/ParabolInc/parabol/commit/bf8fc7e5739d313ee43b2d37b660e3e0ea77b306))
+
+## [8.20.1](https://github.com/ParabolInc/parabol/compare/v8.20.0...v8.20.1) (2025-01-17)
+
+
+### Fixed
+
+* Create mass invitation tokens for specific meetings ([#10651](https://github.com/ParabolInc/parabol/issues/10651)) ([0516f8f](https://github.com/ParabolInc/parabol/commit/0516f8f5a88448abbf901861f1771823d88018f9))
+* image placeholders in tiptap ([#10703](https://github.com/ParabolInc/parabol/issues/10703)) ([5c3f5f9](https://github.com/ParabolInc/parabol/commit/5c3f5f92bc69c8fa206dadb109d4621058a85d63))
+
+
+### Changed
+
+* make ai standups more concise and add context ([#10689](https://github.com/ParabolInc/parabol/issues/10689)) ([b67d07c](https://github.com/ParabolInc/parabol/commit/b67d07c0b2316fba638292b6c12f161a1e8660fc))
+
+## [8.20.0](https://github.com/ParabolInc/parabol/compare/v8.19.0...v8.20.0) (2025-01-16)
+
+
+### Added
+
+* Add images to TipTap ([#10678](https://github.com/ParabolInc/parabol/issues/10678)) ([e62916f](https://github.com/ParabolInc/parabol/commit/e62916fcb78b4154ae3c6fdbff4a7e2ddbf537f7))
+* update insight prompt ([#10674](https://github.com/ParabolInc/parabol/issues/10674)) ([ce489aa](https://github.com/ParabolInc/parabol/commit/ce489aa42b33b877438534335b9f029910f35be6))
+
+
+### Fixed
+
+* consolidate organizations sorting logic ([#10680](https://github.com/ParabolInc/parabol/issues/10680)) ([3d9b6d2](https://github.com/ParabolInc/parabol/commit/3d9b6d22e89edb08ee21b2214cbb7a6d97417575))
+
+## [8.19.0](https://github.com/ParabolInc/parabol/compare/v8.18.1...v8.19.0) (2025-01-15)
+
+
+### Added
+
+* add SlashCommand to TipTap ([#10664](https://github.com/ParabolInc/parabol/issues/10664)) ([03d96e2](https://github.com/ParabolInc/parabol/commit/03d96e2fd33392522530b48455c9ae2a99ac69b5))
+* added I Like, I Wish, I Wonder retrospective template ([#10650](https://github.com/ParabolInc/parabol/issues/10650)) ([795b436](https://github.com/ParabolInc/parabol/commit/795b436be9a0e524d693f01599f99f31536648a9))
+* modified/added meta tags with new content ([#10652](https://github.com/ParabolInc/parabol/issues/10652)) ([9501494](https://github.com/ParabolInc/parabol/commit/9501494e2868a48cdb8a313b9db02a7e30ef56d3))
+
+
+### Fixed
+
+* kill mattermost plugin dev server on pm2 kill ([#10671](https://github.com/ParabolInc/parabol/issues/10671)) ([e73dc39](https://github.com/ParabolInc/parabol/commit/e73dc39d76ae795089163a7920aa7032047a90a4))
+* Restrict Timeline Feed scrolling to its column on /me route ([#10649](https://github.com/ParabolInc/parabol/issues/10649)) ([052647f](https://github.com/ParabolInc/parabol/commit/052647fd029f59622e69038d30226831fdf321c6))
+* Shorten chunk names for Mattermost plugin ([#10672](https://github.com/ParabolInc/parabol/issues/10672)) ([8af66f4](https://github.com/ParabolInc/parabol/commit/8af66f485be5f7de25fe8cfbe19e67547f334d5e))
+* summary does not load indefinitely if there are no votes ([#10669](https://github.com/ParabolInc/parabol/issues/10669)) ([84b8d60](https://github.com/ParabolInc/parabol/commit/84b8d60e9d4be37004fdb2ea6e6c9a4355b38bd2))
+
+
+### Changed
+
+* **deps:** bump systeminformation from 5.23.5 to 5.23.14 ([#10626](https://github.com/ParabolInc/parabol/issues/10626)) ([f0d006f](https://github.com/ParabolInc/parabol/commit/f0d006f345fd72148d2ef2a6a916be9078063353))
+* Upgrade [@mui](https://github.com/mui) dependencies ([#10627](https://github.com/ParabolInc/parabol/issues/10627)) ([18abb1a](https://github.com/ParabolInc/parabol/commit/18abb1a0df5ffc9262149d158a3b1e97309eaad0))
+
 ## [8.18.1](https://github.com/ParabolInc/parabol/compare/v8.18.0...v8.18.1) (2025-01-10)
 
 

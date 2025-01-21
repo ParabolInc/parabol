@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
 
 const Author = styled('div')({
-  padding: '8px 16px',
+  padding: '2px 16px',
   color: PALETTE.SLATE_600,
   fontSize: 14,
   fontWeight: 700,

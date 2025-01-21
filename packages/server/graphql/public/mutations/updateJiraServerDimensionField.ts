@@ -38,7 +38,7 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
   const data = {teamId, meetingId}
 
   const auth = await dataLoader
-    .get('teamMemberIntegrationAuths')
+    .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
     .load({service: 'jiraServer', teamId, userId: viewerId})
   if (!auth) {
     return {error: {message: 'Not authenticated with JiraServer'}}
