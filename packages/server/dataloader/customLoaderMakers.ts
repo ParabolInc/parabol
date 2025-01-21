@@ -935,7 +935,7 @@ export const publicTemplatesByType = (parent: RootDataLoader) => {
           if (cachedTemplatesStr) {
             const cachedTemplates = JSON.parse(cachedTemplatesStr) as MeetingTemplate[]
             cachedTemplates.forEach(
-              (meetingTemplate) => meetingTemplate.createdAt === new Date(meetingTemplate.createdAt)
+              (meetingTemplate) => meetingTemplate.createdAt = new Date(meetingTemplate.createdAt)
             )
             return cachedTemplates
           }
