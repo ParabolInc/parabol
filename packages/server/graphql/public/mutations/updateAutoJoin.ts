@@ -12,10 +12,8 @@ const updateAutoJoin: MutationResolvers['updateAutoJoin'] = async (
   const viewerId = getUserId(authToken)
   if (!isSuperUser(authToken)) {
     const viewerTeams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-    const isNotBillingLeader = viewerTeams.some(
-      ({orgId}) => !(await isUserBillingLeader(viewerId, orgId, dataLoader))
-    )
-    if (isNotBillingLeader) {
+    const billingLeaders = await Promise.all(viewerTeams.map(({orgId}) => isUserBillingLeader(viewerId, orgId, dataLoader)))
+    if (!billingLeaders.every(Boolean)) {
       return standardError(new Error('Viewer is not billing leader'), {userId: viewerId})
     }
   }

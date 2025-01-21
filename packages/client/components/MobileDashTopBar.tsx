@@ -8,7 +8,7 @@ import {AppBar} from '~/types/constEnums'
 import {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
-import TopBarIcon from './TopBarIcon'
+//import TopBarIcon from './TopBarIcon'
 import TopBarNotifications from './TopBarNotifications'
 
 interface Props {
@@ -78,8 +78,8 @@ const MobileDashTopBar = (props: Props) => {
         <Title>{pageName}</Title>
       </LeftNavHeader>
       <TopBarIcons>
-        {/* Disable search in mobile for now */}
-        {false && <TopBarIcon icon={'search'} ariaLabel={'Search'} />}
+        {/* Disable search in mobile for now
+            <TopBarIcon icon={'search'} ariaLabel={'Search'} />*/}
         <TopBarHelp />
         <TopBarNotifications queryRef={data || null} />
       </TopBarIcons>
