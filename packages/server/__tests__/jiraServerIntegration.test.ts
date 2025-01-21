@@ -1,4 +1,4 @@
-import {getUserOrgs, getUserTeams, sendPublic, sendIntranet, signUp} from './common'
+import {getUserOrgs, getUserTeams, sendIntranet, sendPublic, signUp} from './common'
 
 const serverBaseUrl = 'https://jira.example.com/'
 const consumerKey = 'CvSE+9fww8PLH07mWTHKUZMiGyX7liUSFbB1pRLVDyQ='
@@ -44,7 +44,6 @@ const setOrgUserRole = async (orgId: string, userId: string, role: string) => {
   })
 
   return setOrgUserRole
-  
 }
 
 test('Add integration provider', async () => {
@@ -78,7 +77,7 @@ test('Add integration provider', async () => {
       input: {
         orgId,
         service: 'jiraServer',
-        authStrategy:'oauth1',
+        authStrategy: 'oauth1',
         scope: 'org',
         oAuth1ProviderMetadataInput: {
           serverBaseUrl,
