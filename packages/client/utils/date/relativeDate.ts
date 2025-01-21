@@ -6,12 +6,12 @@
 import humanizeDuration from 'humanize-duration'
 import plural from '../plural'
 
-const SECOND = 1000
-const MIN = SECOND * 60
-const HOUR = MIN * 60
-const DAY = HOUR * 24
-const YEAR = DAY * 365
-const MONTH = DAY * 30
+export const SECOND = 1000
+export const MIN = SECOND * 60
+export const HOUR = MIN * 60
+export const DAY = HOUR * 24
+export const YEAR = DAY * 365
+export const MONTH = DAY * 30
 
 interface Opts {
   max?: number
