@@ -1,5 +1,4 @@
 import getKysely from '../../../postgres/getKysely'
-import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {MutationResolvers} from '../resolverTypes'
 import {JsonObject} from '../../../postgres/types/pg'
 
@@ -11,52 +10,39 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
     throw new Error('New email is the same as the old one')
   }
 
-  const user = await getUserByEmail(oldEmail)
+  const user = await pg
+    .selectFrom('User')
+    .selectAll()
+    .where('email', '=', oldEmail)
+    .executeTakeFirst()
+
   if (!user) {
     throw new Error(`User with ${oldEmail} not found`)
   }
 
-  // Update isEmailVerified to false for the old email
-  // Part 1: Get identities for the user from db
-  const currentIdentitiesQuery = await pg
-    .selectFrom('User')
-    .select('identities')
-    .where('email', '=', oldEmail)
-    .limit(1)
-    .executeTakeFirst()
+  //Use identities array for the user above
+  const identitiesArray = user.identities
 
-  if (!currentIdentitiesQuery) {
-    throw new Error(`User with ${oldEmail} not found`)
-  }
-
-  const identitiesArray = currentIdentitiesQuery.identities
-
-  // Part 2: Update the last element of identities array
+  // Update the identities array for AuthIdentityLocal, isEmailVerified=false
   if (identitiesArray && identitiesArray.length > 0) {
-    const lastIndex = identitiesArray.length - 1
-    const lastElement = identitiesArray[lastIndex] as JsonObject;
-    lastElement!.isEmailVerified = false
+    const localIdentity = (identitiesArray as JsonObject[]).find((identity: JsonObject) => identity.type === 'LOCAL')
+    if (localIdentity) {
+      localIdentity.isEmailVerified = false
+    } else {
+      throw new Error('No LOCAL identity found!')
+    }
   } else {
     throw new Error('Empty Identities array!')
   }
 
-  // Part 3: Update the identities in the database
-  await pg
-    .updateTable('User')
-    .set({
-      identities: identitiesArray,
-    })
-    .where('email', '=', oldEmail)
-    .execute()
-
-  // RESOLUTION
+  // Update the email along with the identity
   const {id: userId} = user
   await pg
     .with('TeamMemberUpdate', (qc) =>
       qc.updateTable('TeamMember').set({email: newEmail}).where('userId', '=', userId)
     )
     .updateTable('User')
-    .set({email: newEmail})
+    .set({email: newEmail, identities: identitiesArray})
     .where('id', '=', userId)
     .execute()
 
