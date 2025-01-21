@@ -33,7 +33,7 @@ const removeOrgUser = {
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
       if (
-        !isUserOrgAdmin(viewerId, orgId, dataLoader) &&
+        !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
         !(await isUserBillingLeader(viewerId, orgId, dataLoader))
       ) {
         return standardError(new Error('Must be the organization leader'), {userId: viewerId})

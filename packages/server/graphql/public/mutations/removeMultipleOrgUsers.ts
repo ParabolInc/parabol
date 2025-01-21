@@ -38,7 +38,7 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   }
   if (
     !(await isUserBillingLeader(viewerId, orgId, dataLoader)) &&
-    !isUserOrgAdmin(viewerId, orgId, dataLoader) &&
+    !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
     !isSuperUser(authToken)
   ) {
     return standardError(new Error('Must be the organization leader'), {userId: viewerId})
