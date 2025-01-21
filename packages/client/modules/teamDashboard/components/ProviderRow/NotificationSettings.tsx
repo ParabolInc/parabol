@@ -12,12 +12,13 @@ import SetNotificationSettingMutation from '../../../../mutations/SetNotificatio
 import {MeetingLabels} from '../../../../types/constEnums'
 
 const EVENTS = [
-  'MEETING_STAGE_TIME_LIMIT_END',
-  'MEETING_STAGE_TIME_LIMIT_START',
-  'STANDUP_RESPONSE_SUBMITTED',
-  'TOPIC_SHARED',
+  'meetingStart',
   'meetingEnd',
-  'meetingStart'
+  'MEETING_STAGE_TIME_LIMIT_START',
+  'MEETING_STAGE_TIME_LIMIT_END'
+  //TODO these are not implemented yet:
+  //'STANDUP_RESPONSE_SUBMITTED',
+  //'TOPIC_SHARED',
 ] as SlackNotificationEventEnum[]
 
 const labelLookup = {
