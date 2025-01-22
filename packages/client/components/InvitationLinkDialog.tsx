@@ -42,16 +42,20 @@ const InvitationLinkDialog = (props: Props) => {
     return <TeamInvitationErrorNotFound isMassInvite />
   }
   const {errorType, teamName} = massInvitation
+  const pageTitle = teamName ? `${teamName} | Parabol` : 'Join | Parabol'
+  const pageName = teamName ? `Join ${teamName}` : 'Join Parabol'
+  const metaCopy = teamName
+    ? `Join ${teamName} on Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
+    : `Join Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
+  useDocumentTitle(pageTitle, pageName)
+  useMetaTagContent(metaCopy)
+
   switch (errorType) {
     case 'notFound':
       return <TeamInvitationErrorNotFound isMassInvite />
     case 'expired':
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }
-  useDocumentTitle(`${teamName} | Parabol`, `Join ${teamName}`)
-  useMetaTagContent(
-    `Join ${teamName} on Parabol,the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
-  )
   const {authToken} = atmosphere
   if (authToken) {
     return <TeamInvitationAccept invitationToken={token} />

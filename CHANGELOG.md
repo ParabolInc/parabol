@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.21.1](https://github.com/ParabolInc/parabol/compare/v8.21.0...v8.21.1) (2025-01-22)
+
+
+### Fixed
+
+* React error on forgot password page ([#10717](https://github.com/ParabolInc/parabol/issues/10717)) ([8c8d600](https://github.com/ParabolInc/parabol/commit/8c8d6003a6e5e65674784f6f41897ab886c540b0))
+* S3 bucket name used from the application configuration instead of infered from CDN_URL ([#10661](https://github.com/ParabolInc/parabol/issues/10661)) ([7f3051d](https://github.com/ParabolInc/parabol/commit/7f3051d6d82c44982d31d296875f834e2cad5a95))
+* Tab button style ([#10715](https://github.com/ParabolInc/parabol/issues/10715)) ([216eb40](https://github.com/ParabolInc/parabol/commit/216eb40d8baa062a708275aebe933d921b2d3f27))
+
+
+### Changed
+
+* Add AWS_S3_BUCKET to .env.example ([#10718](https://github.com/ParabolInc/parabol/issues/10718)) ([001cf41](https://github.com/ParabolInc/parabol/commit/001cf41eed554c97c0d719b898258f83643bc2e7))
+
 ## [8.21.0](https://github.com/ParabolInc/parabol/compare/v8.20.1...v8.21.0) (2025-01-21)
 
 
