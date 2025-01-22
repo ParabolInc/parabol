@@ -34,6 +34,7 @@ const WholeMeetingSummary = (props: Props) => {
           }
         }
         ... on TeamPromptMeeting {
+          isLoadingSummary
           responses {
             id
           }
@@ -42,25 +43,26 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  if (meeting.__typename === 'RetrospectiveMeeting') {
-    const {reflectionGroups, organization, isLoadingSummary} = meeting
-    const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
-    const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
-    const willReturnNull = !hasMoreThanOneReflection || !organization.useAI || !hasAiApiKey
-    console.log('🚀 ~ willReturnNull:', willReturnNull)
-    if (willReturnNull) return null
-    if (isLoadingSummary) return <WholeMeetingSummaryLoading />
-    return <WholeMeetingSummaryResult meetingRef={meeting} />
-  } else if (meeting.__typename === 'TeamPromptMeeting') {
-    const {summary: wholeMeetingSummary, responses, organization} = meeting
-    const {useAI} = organization
-    if (!useAI || !hasAiApiKey || !responses || responses.length === 0) {
-      return null
+
+  const {organization} = meeting
+  const {useAI} = organization
+
+  if (!useAI || !hasAiApiKey) return null
+
+  const hasContent = (() => {
+    if (meeting.__typename === 'RetrospectiveMeeting') {
+      const reflections = meeting.reflectionGroups?.flatMap((group) => group.reflections)
+      return reflections?.length && reflections.length > 1
+    } else if (meeting.__typename === 'TeamPromptMeeting') {
+      return meeting.responses && meeting.responses.length > 0
     }
-    if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
-    return <WholeMeetingSummaryResult meetingRef={meeting} />
-  }
-  return null
+    return false
+  })()
+
+  if (!hasContent) return null
+  if (meeting.isLoadingSummary) return <WholeMeetingSummaryLoading />
+
+  return <WholeMeetingSummaryResult meetingRef={meeting} />
 }
 
 export default WholeMeetingSummary
