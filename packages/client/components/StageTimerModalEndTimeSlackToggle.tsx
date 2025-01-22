@@ -117,7 +117,6 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
   const isMattermostActive = isNotificationActive(mattermost)
   const isMSTeamsActive = isNotificationActive(msTeams)
-  console.log('GEORG', slack, isMattermostActive, isMSTeamsActive)
   const noActiveIntegrations = !slack?.isActive && !isMattermostActive && !isMSTeamsActive
 
   const onClick = () => {
