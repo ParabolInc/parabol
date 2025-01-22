@@ -66,6 +66,7 @@ const isNotificationActive = (integration: {
   const {auth} = integration
   if (!auth?.isActive) return false
   const {events} = auth
+  if (!events) return false
   return (
     events.includes('MEETING_STAGE_TIME_LIMIT_START') ||
     events.includes('MEETING_STAGE_TIME_LIMIT_END')
