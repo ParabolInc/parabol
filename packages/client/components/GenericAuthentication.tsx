@@ -78,6 +78,16 @@ const GenericAuthentication = (props: Props) => {
   const isMicrosoftAuthEnabled = window.__ACTION__.AUTH_MICROSOFT_ENABLED
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
+
+  const isCreate = page === 'create-account'
+  const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
+  const pageTitle = `${action} | Parabol`
+  const metaCopy = isCreate
+    ? 'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
+    : 'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
+  useDocumentTitle(pageTitle, action)
+  useMetaTagContent(metaCopy)
+
   if (page === 'forgot-password') {
     return <ForgotPasswordPage goToPage={goToPage} />
   }
@@ -89,17 +99,9 @@ const GenericAuthentication = (props: Props) => {
     }
   }
 
-  const isCreate = page === 'create-account'
-  const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const counterAction = isCreate ? SIGNIN_LABEL : CREATE_ACCOUNT_LABEL
   const counterActionSlug = isCreate ? SIGNIN_SLUG : CREATE_ACCOUNT_SLUG
   const actionCopy = isCreate ? 'Already have an account? ' : 'New to Parabol? '
-  const pageTitle = `${action} | Parabol`
-  const metaCopy = isCreate
-    ? 'Give structure to your meetings to get your team talking and moving forward faster. Get started in 44 seconds or less.'
-    : 'Access Parabol to streamline your agile meetings. Collaborate, reflect, and grow with your team in real-time.'
-  useDocumentTitle(pageTitle, action)
-  useMetaTagContent(metaCopy)
   const title = teamName ? `${teamName} is waiting` : action
   const onForgot = () => {
     goToPage('forgot-password', `?email=${emailRef.current?.email()}`)
