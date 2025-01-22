@@ -11,7 +11,7 @@ const generateStandupMeetingSummary = async (
 ) => {
   const team = await dataLoader.get('teams').loadNonNull(meeting.teamId)
   const isAIAvailable = await canAccessAI(team, dataLoader)
-  if (!isAIAvailable) return
+  if (!isAIAvailable) return null
 
   const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
 
@@ -23,11 +23,11 @@ const generateStandupMeetingSummary = async (
     user: users[idx]?.preferredName ?? 'Anonymous'
   }))
 
-  if (contentWithUsers.length === 0) return
+  if (contentWithUsers.length === 0) return null
 
   const manager = new OpenAIServerManager()
   const summary = await manager.getStandupSummary(contentWithUsers, meeting.meetingPrompt)
-  if (!summary) return
+  if (!summary) return null
   return summary
 }
 
