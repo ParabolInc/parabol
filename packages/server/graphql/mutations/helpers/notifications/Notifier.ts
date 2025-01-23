@@ -1,5 +1,6 @@
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {SlackNotification} from '../../../../postgres/types'
+import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
 import {NotificationIntegration, NotifyResponse} from './NotificationIntegrationHelper'
 
@@ -57,19 +58,30 @@ async function loadMeetingTeam(dataLoader: DataLoaderWorker, meetingId: string, 
   }
 }
 
+const fireAndForget = (
+  notifiers: NotificationIntegration[],
+  call: (notifier: NotificationIntegration) => Promise<NotifyResponse> | undefined
+) => {
+  notifiers.forEach((notifier) => {
+    call(notifier)?.catch((e) => {
+      sendToSentry(e)
+    })
+  })
+}
+
 export const createNotifier = (loader: NotificationIntegrationLoader): Notifier => ({
   async startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
     const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingStart')
-    notifiers.forEach((notifier) => notifier.startMeeting(meeting, team, user))
+    fireAndForget(notifiers, (notifier) => notifier.startMeeting(meeting, team, user))
   },
 
   async updateMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
     const {meeting, team, user} = await loadMeetingTeam(dataLoader, meetingId, teamId)
     if (!meeting || !team || !user) return
     const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingStart')
-    notifiers.forEach((notifier) => notifier.updateMeeting?.(meeting, team, user))
+    fireAndForget(notifiers, (notifier) => notifier.updateMeeting?.(meeting, team, user))
   },
 
   async endMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
@@ -86,7 +98,9 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
       })
     )
     const notifiers = await loader(dataLoader, team.id, meeting.facilitatorUserId!, 'meetingEnd')
-    notifiers.forEach((notifier) => notifier.endMeeting(meeting, team, user, standupResponses))
+    fireAndForget(notifiers, (notifier) =>
+      notifier.endMeeting(meeting, team, user, standupResponses)
+    )
   },
 
   async startTimeLimit(
@@ -103,7 +117,9 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
       meeting.facilitatorUserId!,
       'MEETING_STAGE_TIME_LIMIT_START'
     )
-    notifiers.forEach((notifier) => notifier.startTimeLimit(scheduledEndTime, meeting, team, user))
+    fireAndForget(notifiers, (notifier) =>
+      notifier.startTimeLimit(scheduledEndTime, meeting, team, user)
+    )
   },
 
   async endTimeLimit(dataLoader: DataLoaderWorker, meetingId: string, teamId: string) {
@@ -115,14 +131,14 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
       meeting.facilitatorUserId!,
       'MEETING_STAGE_TIME_LIMIT_END'
     )
-    notifiers.forEach((notifier) => notifier.endTimeLimit(meeting, team, user))
+    fireAndForget(notifiers, (notifier) => notifier.endTimeLimit(meeting, team, user))
   },
 
   async integrationUpdated(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
     const notifiers = await loader(dataLoader, teamId, userId, 'meetingEnd')
     const user = await dataLoader.get('users').load(userId)
     if (!user) return
-    notifiers.forEach((notifier) => notifier.integrationUpdated(user))
+    fireAndForget(notifiers, (notifier) => notifier.integrationUpdated(user))
   },
 
   async standupResponseSubmitted(
@@ -144,7 +160,7 @@ export const createNotifier = (loader: NotificationIntegrationLoader): Notifier 
       meeting.facilitatorUserId!,
       'STANDUP_RESPONSE_SUBMITTED'
     )
-    notifiers.forEach((notifier) =>
+    fireAndForget(notifiers, (notifier) =>
       notifier.standupResponseSubmitted(meeting, team, user, response)
     )
   }
