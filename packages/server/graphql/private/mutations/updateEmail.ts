@@ -28,11 +28,7 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
     const localIdentity = (identitiesArray as JsonObject[]).find((identity: JsonObject) => identity.type === 'LOCAL')
     if (localIdentity) {
       localIdentity.isEmailVerified = false
-    } else {
-      throw new Error('No LOCAL identity found!')
     }
-  } else {
-    throw new Error('Empty Identities array!')
   }
 
   // Update the email along with the identity
