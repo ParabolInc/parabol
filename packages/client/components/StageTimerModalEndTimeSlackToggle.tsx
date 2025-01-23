@@ -66,6 +66,7 @@ const isNotificationActive = (integration: {
   const {auth} = integration
   if (!auth?.isActive) return false
   const {events} = auth
+  if (!events) return false
   return (
     events.includes('MEETING_STAGE_TIME_LIMIT_START') ||
     events.includes('MEETING_STAGE_TIME_LIMIT_END')
@@ -116,7 +117,6 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
   const isMattermostActive = isNotificationActive(mattermost)
   const isMSTeamsActive = isNotificationActive(msTeams)
-  console.log('GEORG', slack, isMattermostActive, isMSTeamsActive)
   const noActiveIntegrations = !slack?.isActive && !isMattermostActive && !isMSTeamsActive
 
   const onClick = () => {
