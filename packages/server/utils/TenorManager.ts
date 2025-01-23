@@ -9,7 +9,7 @@ interface ResponseObject {
   created: number // Unix timestamp representing when this post was created
   hasaudio: boolean // Indicates if the post contains audio (only video formats support audio)
   id: string // Tenor result identifier
-  media_formats: Record<MediaFilter, MediaObject> // Dictionary with content format as the key and MediaObject as the value
+  media_formats: Partial<Record<MediaFilter, MediaObject>> // Dictionary with content format as the key and MediaObject as the value
   tags: string[] // Array of tags for the post
   title: string // Title of the post
   content_description: string // Textual description of the content
@@ -109,7 +109,7 @@ export class TenorManager {
       pos,
       country,
       locale,
-      query
+      q: query
     }
     Object.entries(searchParams).forEach(([key, value]) => {
       // filters out country, locale

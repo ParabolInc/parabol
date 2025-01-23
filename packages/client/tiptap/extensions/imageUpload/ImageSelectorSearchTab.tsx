@@ -1,40 +1,85 @@
+import type {Editor} from '@tiptap/core'
+import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
-import {Button} from '../../../ui/Button/Button'
+import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import type {ImageSelectorSearchTabQuery} from '../../../__generated__/ImageSelectorSearchTabQuery.graphql'
+import {cn} from '../../../ui/cn'
 
 interface Props {
+  editor: Editor
+  queryRef: PreloadedQuery<ImageSelectorSearchTabQuery>
+  searchQuery: string
+  setSearchQuery: (query: string) => void
   setImageURL: (url: string) => void
 }
 
 export const ImageSelectorSearchTab = (props: Props) => {
-  const {setImageURL} = props
+  const {queryRef, setImageURL, searchQuery, setSearchQuery} = props
   const ref = useRef<HTMLInputElement>(null)
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const url = ref.current?.value
-    if (!url) return
-    setImageURL(url!)
-  }
+
+  const data = usePreloadedQuery<ImageSelectorSearchTabQuery>(
+    graphql`
+      query ImageSelectorSearchTabQuery($query: String!, $fetchOriginal: Boolean!) {
+        searchGifs(query: $query, first: 20) {
+          edges {
+            node {
+              previewUrl: url(size: tiny)
+              originalUrl: url(size: original) @include(if: $fetchOriginal)
+            }
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+  const {searchGifs} = data
+  const {edges} = searchGifs!
   const service = window.__ACTION__.GIF_PROVIDER
   // Per attribution spec, the exact wording is required
   // https://developers.google.com/tenor/guides/attribution
   const placeholder = service === 'tenor' ? 'Search Tenor' : 'Search Gifs'
-
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = e.target.value
+    setSearchQuery(nextValue)
+  }
   return (
-    <form
-      className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'
-      onSubmit={onSubmit}
-    >
-      <input
-        autoComplete='off'
-        autoFocus
-        placeholder={placeholder}
-        type='url'
-        className='w-full outline-none focus:ring-2'
-        ref={ref}
-      />
-      <Button variant='outline' shape='pill' className='w-full' type='submit'>
-        Search image
-      </Button>
-    </form>
+    <div className='flex flex-col overflow-hidden'>
+      <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'>
+        <input
+          autoFocus
+          placeholder={placeholder}
+          value={searchQuery}
+          className='w-full outline-none focus:ring-2'
+          ref={ref}
+          onChange={onChange}
+        />
+      </form>
+      <div className='grid w-96 auto-rows-[1px] grid-cols-[repeat(auto-fit,_minmax(112px,_1fr))] gap-x-1 overflow-auto'>
+        {edges.map((edge) => {
+          const {node} = edge
+          const {previewUrl, originalUrl} = node
+          console.log(node)
+          return (
+            <button
+              key={previewUrl}
+              className={cn('row-span-10 w-full cursor-pointer rounded')}
+              onClick={() => {
+                setImageURL(originalUrl || previewUrl)
+              }}
+            >
+              <img
+                src={previewUrl}
+                className='rounded'
+                onLoad={(e) => {
+                  const img = e.target as HTMLImageElement
+                  const button = img.parentElement!
+                  button.style.setProperty('grid-row', `span ${img.height + 2}`)
+                }}
+              />
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }

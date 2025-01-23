@@ -17,6 +17,7 @@ import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipT
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 
@@ -69,7 +70,7 @@ export const useTipTapReflectionEditor = (
           'To-do list': false
         }),
         Focus,
-        ImageUpload,
+        ImageUpload.configure({editorWidth: ElementWidth.REFLECTION_CARD}),
         ImageBlock,
         LoomExtension,
         Placeholder.configure({

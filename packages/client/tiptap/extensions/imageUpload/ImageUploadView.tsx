@@ -75,12 +75,13 @@ export const ImageUploadView = (props: NodeViewProps) => {
             asChild
             align='start'
             alignOffset={8}
+            collisionPadding={8}
             onOpenAutoFocus={(e) => {
               e.preventDefault()
             }}
           >
             {/* z-30 is for expanded reflection stacks using Zindex.DIALOG */}
-            <div className='absolute left-0 top-0 z-30'>
+            <div className='absolute left-0 top-0 z-30 flex max-h-[var(--radix-popper-available-height)] flex-col overflow-hidden'>
               <ImageSelector editor={editor} />
             </div>
           </Popover.Content>

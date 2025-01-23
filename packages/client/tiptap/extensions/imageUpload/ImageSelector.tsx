@@ -3,6 +3,7 @@ import {useState} from 'react'
 import Tab from '../../../components/Tab/Tab'
 import Tabs from '../../../components/Tabs/Tabs'
 import {ImageSelectorEmbedTab} from './ImageSelectorEmbedTab'
+import ImageSelectorSearchTabRoot from './ImageSelectorSearchTabRoot'
 import {ImageSelectorUploadTab} from './ImageSelectorUploadTab'
 
 interface Props {
@@ -19,12 +20,12 @@ const tabs = [
     id: 'embedLink',
     label: 'Embed link',
     Component: ImageSelectorEmbedTab
+  },
+  {
+    id: 'addGif',
+    label: 'Add Gif',
+    Component: ImageSelectorSearchTabRoot
   }
-  // {
-  //   id: 'addGif',
-  //   label: 'Add Gif',
-  //   Component: ImageSelectorUploadTab
-  // }
 ] as const
 
 export const ImageSelector = (props: Props) => {
@@ -36,7 +37,7 @@ export const ImageSelector = (props: Props) => {
     editor.chain().setImageBlock({src: url}).deleteRange({from, to: from}).focus().run()
   }
   return (
-    <div className='min-w-44 rounded-md bg-slate-100 p-2'>
+    <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md bg-slate-100 p-2'>
       <Tabs activeIdx={activeIdx}>
         {tabs.map((tab, idx) => (
           <Tab
@@ -53,7 +54,7 @@ export const ImageSelector = (props: Props) => {
           />
         ))}
       </Tabs>
-      <Component setImageURL={setImageURL} />
+      <Component setImageURL={setImageURL} editor={editor} />
     </div>
   )
 }

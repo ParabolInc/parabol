@@ -96,6 +96,10 @@
     text-decoration: none;
   }
 
+  button {
+    @apply p-0;
+  }
+
   button,
   input,
   select,

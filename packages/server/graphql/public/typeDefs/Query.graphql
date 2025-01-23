@@ -27,7 +27,7 @@ type Query {
     The pagination cursor, if any
     """
     after: String
-  ): GifResponseConnection
+  ): GifResponseConnection!
   verifiedInvitation(
     """
     The invitation token

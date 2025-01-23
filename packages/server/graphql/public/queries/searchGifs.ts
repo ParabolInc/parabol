@@ -21,14 +21,22 @@ const searchGifs: QueryResolvers['searchGifs'] = async (_source, {query, first, 
     const {next, results} = res
     const nodes = results.map((result) => {
       const {content_description: description, tags, id, media_formats} = result
-      const {nanowebp_transparent, tinywebp_transparent, webp_transparent} = media_formats
+      const {
+        nanowebp_transparent: nano,
+        tinywebp_transparent: tiny,
+        webp_transparent: webp,
+        webp: original
+      } = media_formats
+      const urlOriginal = webp || original || tiny || nano
+      const urlTiny = tiny || nano || webp || original
+      const urlNano = nano || tiny || webp || original
       return {
         id,
         description,
         tags,
-        urlOriginal: webp_transparent.url,
-        urlTiny: tinywebp_transparent.url,
-        urlNano: nanowebp_transparent.url
+        urlOriginal: urlOriginal?.url ?? '',
+        urlTiny: urlTiny?.url ?? '',
+        urlNano: urlNano?.url ?? ''
       }
     })
     const edges = nodes.map((node, idx) => ({
