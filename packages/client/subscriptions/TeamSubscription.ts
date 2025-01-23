@@ -152,6 +152,9 @@ const subscription = graphql`
       SetMeetingSettingsPayload {
         ...SetMeetingSettingsMutation_team @relay(mask: false)
       }
+      SetNotificationSettingSuccess {
+        ...SetNotificationSettingMutation_auth @relay(mask: false)
+      }
       StartCheckInSuccess {
         ...StartCheckInMutation_team @relay(mask: false)
       }

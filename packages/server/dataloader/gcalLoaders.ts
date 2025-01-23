@@ -10,11 +10,13 @@ export const freshGcalAuth = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {
-          const gcalAuth = await parent.get('teamMemberIntegrationAuths').load({
-            service: 'gcal',
-            teamId,
-            userId
-          })
+          const gcalAuth = await parent
+            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+            .load({
+              service: 'gcal',
+              teamId,
+              userId
+            })
           if (!gcalAuth) return null
           const {expiresAt} = gcalAuth
           const now = new Date()

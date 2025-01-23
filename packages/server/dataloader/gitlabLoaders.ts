@@ -10,11 +10,13 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {
-          const gitlabAuth = await parent.get('teamMemberIntegrationAuths').load({
-            service: 'gitlab',
-            teamId,
-            userId
-          })
+          const gitlabAuth = await parent
+            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+            .load({
+              service: 'gitlab',
+              teamId,
+              userId
+            })
           if (!gitlabAuth) return null
           const {expiresAt} = gitlabAuth
           const now = new Date()

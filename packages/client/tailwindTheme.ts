@@ -7,6 +7,7 @@ export default {
   theme: {
     colors: {
       transparent: 'transparent',
+      inherit: 'inherit',
       current: 'currentColor',
       black: defaultColors.black,
       white: defaultColors.white,

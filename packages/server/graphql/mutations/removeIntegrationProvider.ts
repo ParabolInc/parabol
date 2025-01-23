@@ -37,12 +37,12 @@ const removeIntegrationProvider = {
       if (scope === 'global') {
         return {error: {message: 'Must be a super user to remove a global provider'}}
       }
-      if (scope === 'org' && !isUserOrgAdmin(viewerId, orgId!, dataLoader)) {
+      if (scope === 'org' && !(await isUserOrgAdmin(viewerId, orgId!, dataLoader))) {
         return {error: {message: 'Must be a member of the organization that created the provider'}}
       }
       if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
         const team = await dataLoader.get('teams').load(teamId!)
-        if (!team || !isUserOrgAdmin(viewerId, team.orgId, dataLoader)) {
+        if (!team || !(await isUserOrgAdmin(viewerId, team.orgId, dataLoader))) {
           return {error: {message: 'Must be on the team that created the provider'}}
         }
       }

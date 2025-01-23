@@ -1,8 +1,8 @@
 import fs from 'fs'
 import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
+import {Logger} from 'parabol-server/utils/Logger'
 import path from 'path'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
-import {Logger} from 'parabol-server/utils/Logger'
 
 const PROJECT_ROOT = getProjectRoot()
 
@@ -66,7 +66,7 @@ const pushServerAssetsToCDN = async () => {
     // static assets in /dist/images are already hosted at /static/images
     if (process.env.FILE_STORE_PROVIDER === 'local') return
     const targetObject = `images/${filename}`
-    const exists = await fileStoreManager.checkExists(targetObject)
+    const exists = await fileStoreManager.checkExists(targetObject, 'build')
     if (exists) return false
     const buffer = await fs.promises.readFile(path.join(localServerAssetsDir, filename))
     const url = await fileStoreManager.putBuildFile(buffer, targetObject)

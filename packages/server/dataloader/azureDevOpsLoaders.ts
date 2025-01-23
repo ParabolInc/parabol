@@ -138,11 +138,13 @@ export const freshAzureDevOpsAuth = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const azureDevOpsAuthToRefresh = await parent.get('teamMemberIntegrationAuths').load({
-            service: 'azureDevOps',
-            teamId,
-            userId
-          })
+          const azureDevOpsAuthToRefresh = await parent
+            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+            .load({
+              service: 'azureDevOps',
+              teamId,
+              userId
+            })
           if (azureDevOpsAuthToRefresh === null) {
             return null
           }

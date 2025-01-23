@@ -10,7 +10,7 @@ const OrgIntegrationProviders: OrgIntegrationProvidersResolvers = {
 
   gitlab: async ({orgId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    if (!isUserInOrg(viewerId, orgId, dataLoader)) return []
+    if (!(await isUserInOrg(viewerId, orgId, dataLoader))) return []
     const providers = await dataLoader
       .get('sharedIntegrationProviders')
       .load({service: 'gitlab', orgIds: [orgId], teamIds: []})
