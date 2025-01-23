@@ -30,6 +30,9 @@ export default forwardRef(
 
     const enterHandler = () => {
       selectItem(selectedIndex)
+
+      if (items.length === 0) return false
+      return true
     }
 
     useEffect(() => setSelectedIndex(0), [items])
@@ -47,8 +50,7 @@ export default forwardRef(
         }
 
         if (event.key === 'Enter' || event.key === 'Tab') {
-          enterHandler()
-          return true
+          return enterHandler()
         }
         return false
       }

@@ -33,6 +33,7 @@ interface Window {
     google: string
     googleAnalytics: string
     mattermostDisabled: boolean | undefined
+    mattermostGlobal: boolean | undefined
     msTeamsDisabled: boolean | undefined
     publicPath: string
     sentry: string

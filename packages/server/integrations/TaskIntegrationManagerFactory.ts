@@ -79,7 +79,7 @@ export default class TaskIntegrationManagerFactory {
 
     if (service === 'jiraServer') {
       const auth = await dataLoader
-        .get('teamMemberIntegrationAuths')
+        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
         .load({service: 'jiraServer', teamId, userId})
 
       if (!auth) {
@@ -92,7 +92,7 @@ export default class TaskIntegrationManagerFactory {
 
     if (service === 'azureDevOps') {
       const auth = await dataLoader
-        .get('teamMemberIntegrationAuths')
+        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
         .load({service: 'azureDevOps', teamId, userId})
 
       if (!auth) {

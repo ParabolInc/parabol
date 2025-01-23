@@ -23,7 +23,7 @@ type IssueArgs = {
 const JiraServerIntegration: JiraServerIntegrationResolvers = {
   id: async ({teamId, userId}, _args, {dataLoader}) => {
     const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
 
     if (!auth) {
@@ -35,7 +35,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
 
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
     const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
     return auth!
   },
@@ -68,7 +68,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     }
 
     const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
 
     if (!auth) {
@@ -159,7 +159,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
 
   providerId: async ({teamId, userId}, _args, {dataLoader}) => {
     const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
 
     if (!auth) {
@@ -171,7 +171,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
 
   searchQueries: async ({teamId, userId}, _args, {dataLoader}) => {
     const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
 
     if (!auth) {
