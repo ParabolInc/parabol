@@ -28,7 +28,7 @@ const searchGifs: QueryResolvers['searchGifs'] = async (_source, {query, first, 
         webp: original
       } = media_formats
       const urlOriginal = webp || original || tiny || nano
-      const urlTiny = tiny || nano || webp || original
+      const urlTiny = tiny || webp || original || nano
       const urlNano = nano || tiny || webp || original
       return {
         id,

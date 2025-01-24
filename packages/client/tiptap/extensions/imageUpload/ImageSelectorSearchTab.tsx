@@ -1,8 +1,11 @@
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {usePaginationFragment, usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import type {ImageSelectorSearchTabPaginationQuery} from '../../../__generated__/ImageSelectorSearchTabPaginationQuery.graphql'
 import type {ImageSelectorSearchTabQuery} from '../../../__generated__/ImageSelectorSearchTabQuery.graphql'
+import type {ImageSelectorSearchTabQuery_query$key} from '../../../__generated__/ImageSelectorSearchTabQuery_query.graphql'
+import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import {cn} from '../../../ui/cn'
 
 interface Props {
@@ -17,10 +20,25 @@ export const ImageSelectorSearchTab = (props: Props) => {
   const {queryRef, setImageURL, searchQuery, setSearchQuery} = props
   const ref = useRef<HTMLInputElement>(null)
 
-  const data = usePreloadedQuery<ImageSelectorSearchTabQuery>(
+  const query = usePreloadedQuery<ImageSelectorSearchTabQuery>(
     graphql`
       query ImageSelectorSearchTabQuery($query: String!, $fetchOriginal: Boolean!) {
-        searchGifs(query: $query, first: 20) {
+        ...ImageSelectorSearchTabQuery_query
+      }
+    `,
+    queryRef
+  )
+
+  const paginationRes = usePaginationFragment<
+    ImageSelectorSearchTabPaginationQuery,
+    ImageSelectorSearchTabQuery_query$key
+  >(
+    graphql`
+      fragment ImageSelectorSearchTabQuery_query on Query
+      @argumentDefinitions(after: {type: "String"}, first: {type: "Int", defaultValue: 20})
+      @refetchable(queryName: "ImageSelectorSearchTabPaginationQuery") {
+        searchGifs(query: $query, first: $first, after: $after)
+          @connection(key: "ImageSelectorSearchTabQuery_searchGifs") {
           edges {
             node {
               previewUrl: url(size: tiny)
@@ -30,8 +48,9 @@ export const ImageSelectorSearchTab = (props: Props) => {
         }
       }
     `,
-    queryRef
+    query
   )
+  const {data} = paginationRes
   const {searchGifs} = data
   const {edges} = searchGifs!
   const service = window.__ACTION__.GIF_PROVIDER
@@ -42,6 +61,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
     const nextValue = e.target.value
     setSearchQuery(nextValue)
   }
+  const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   return (
     <div className='flex flex-col overflow-hidden'>
       <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'>
@@ -58,11 +78,11 @@ export const ImageSelectorSearchTab = (props: Props) => {
         {edges.map((edge) => {
           const {node} = edge
           const {previewUrl, originalUrl} = node
-          console.log(node)
           return (
             <button
               key={previewUrl}
-              className={cn('row-span-10 w-full cursor-pointer rounded')}
+              style={{gridRow: 'span 200'}} // initially too tall to prevent the lastItem from intersecting viewport
+              className={cn('row-span w-full cursor-pointer rounded')}
               onClick={() => {
                 setImageURL(originalUrl || previewUrl)
               }}
@@ -79,6 +99,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
             </button>
           )
         })}
+        {lastItem}
       </div>
     </div>
   )
