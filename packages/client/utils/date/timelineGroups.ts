@@ -1,21 +1,32 @@
 import {DAY, MONTH} from './relativeDate'
 
-interface TimelineGroup {
-  date: Date
-  events: any[]
-  label: string
+// Lower number = newer = should appear first
+const LABEL_SORT_ORDER = {
+  '🌅 Today': 0,
+  '🌙 Yesterday': 1,
+  '📅 This week': 2,
+  '📆 This month': 3,
+  '🗓️ Past 3 months': 4,
+  '📚 Past 6 months': 5,
+  '🏛️ Ancient history': 6
+} as const
+
+export type TimelineLabel = keyof typeof LABEL_SORT_ORDER
+
+export const compareTimelineLabels = (a: TimelineLabel, b: TimelineLabel) => {
+  return LABEL_SORT_ORDER[a] - LABEL_SORT_ORDER[b]
 }
 
-export interface TimelineGrouping {
-  date: Date
-  label: string
+interface TimelineGroup {
+  events: any[]
+  label: TimelineLabel
 }
 
 const getStartOfDay = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate())
 }
 
-export const getTimeGroup = (date: Date): TimelineGrouping => {
+export const getTimeGroup = (date: Date): TimelineLabel => {
   const now = new Date()
   const today = getStartOfDay(now)
   const yesterday = new Date(today.getTime() - DAY)
@@ -27,19 +38,19 @@ export const getTimeGroup = (date: Date): TimelineGrouping => {
   const compareDate = getStartOfDay(date)
 
   if (compareDate >= today) {
-    return {date: today, label: '🌅 Today'}
+    return '🌅 Today'
   } else if (compareDate >= yesterday) {
-    return {date: yesterday, label: '🌙 Yesterday'}
+    return '🌙 Yesterday'
   } else if (compareDate >= lastWeek) {
-    return {date: lastWeek, label: '📅 This week'}
+    return '📅 This week'
   } else if (compareDate >= lastMonth) {
-    return {date: lastMonth, label: '📆 This month'}
+    return '📆 This month'
   } else if (compareDate >= last3Months) {
-    return {date: last3Months, label: '🗓️ Past 3 months'}
+    return '🗓️ Past 3 months'
   } else if (compareDate >= last6Months) {
-    return {date: last6Months, label: '📚 Past 6 months'}
+    return '📚 Past 6 months'
   }
-  return {date: last6Months, label: '🏛️ Ancient history'}
+  return '🏛️ Ancient history'
 }
 
 export type {TimelineGroup}
