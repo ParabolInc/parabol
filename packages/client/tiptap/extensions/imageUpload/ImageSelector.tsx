@@ -33,8 +33,14 @@ export const ImageSelector = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
   const setImageURL = (url: string) => {
-    const {from} = editor.state.selection
-    editor.chain().setImageBlock({src: url}).deleteRange({from, to: from}).focus().run()
+    const {to} = editor.state.selection
+    const size = editor.state.doc.content.size
+    let command = editor.chain().focus().setImageBlock({src: url})
+    if (size - to <= 1) {
+      // if we're at the end of the doc, add an extra paragraph to make it easier to click below
+      command = command.insertContent('<p></p>').setTextSelection(editor.state.selection.to + 1)
+    }
+    command.scrollIntoView().run()
   }
   return (
     <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md bg-slate-100 p-2'>

@@ -34,15 +34,10 @@ export const ImageUpload = ImageUploadBase.extend<{editorWidth: number}>({
     return {
       setImageUpload:
         () =>
-        ({commands, editor}) => {
-          const to = editor.state.selection.to
-          const size = editor.state.doc.content.size
-          if (size - to <= 1) {
-            // if we're at the end of the doc, add an extra paragraph to make it easier to click below
-            return commands.insertContent(`<div data-type="${this.name}"></div><p></p>`)
-          } else {
-            return commands.insertContent(`<div data-type="${this.name}"></div>`)
-          }
+        ({commands}) => {
+          // note: only call 1 command here. Calling multiple here & then having the caller also chaining commands
+          // will result in a fatal "Applying a mismatched transaction"
+          return commands.insertContent(`<div data-type="${this.name}"></div>`)
         }
     }
   },
