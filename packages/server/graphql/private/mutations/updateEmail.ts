@@ -20,25 +20,22 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
     throw new Error(`User with ${oldEmail} not found`)
   }
 
-  //Use identities array for the user above
-  const identitiesArray = user.identities
+  const {id: userId, identities} = user
 
-  // Update the identities array for AuthIdentityLocal, isEmailVerified=false
-  if (identitiesArray && identitiesArray.length > 0) {
-    const localIdentity = (identitiesArray as JsonObject[]).find((identity: JsonObject) => identity.type === 'LOCAL')
+  if (identities && identities.length > 0) {
+    const localIdentity = (identities as JsonObject[]).find(identity => identity.type === 'LOCAL')
     if (localIdentity) {
       localIdentity.isEmailVerified = false
     }
   }
 
   // Update the email along with the identity
-  const {id: userId} = user
   await pg
     .with('TeamMemberUpdate', (qc) =>
       qc.updateTable('TeamMember').set({email: newEmail}).where('userId', '=', userId)
     )
     .updateTable('User')
-    .set({email: newEmail, identities: identitiesArray})
+    .set({email: newEmail, identities: identities})
     .where('id', '=', userId)
     .execute()
 
