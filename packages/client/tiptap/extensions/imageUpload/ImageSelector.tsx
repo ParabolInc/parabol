@@ -14,17 +14,20 @@ const tabs = [
   {
     id: 'upload',
     label: 'Upload',
-    Component: ImageSelectorUploadTab
+    Component: ImageSelectorUploadTab,
+    isVisible: true
   },
   {
     id: 'embedLink',
     label: 'Embed link',
-    Component: ImageSelectorEmbedTab
+    Component: ImageSelectorEmbedTab,
+    isVisible: true
   },
   {
     id: 'addGif',
     label: 'Add Gif',
-    Component: ImageSelectorSearchTabRoot
+    Component: ImageSelectorSearchTabRoot,
+    isVisible: !!window.__ACTION__.GIF_PROVIDER
   }
 ] as const
 
@@ -45,20 +48,22 @@ export const ImageSelector = (props: Props) => {
   return (
     <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md bg-slate-100 p-2'>
       <Tabs activeIdx={activeIdx}>
-        {tabs.map((tab, idx) => (
-          <Tab
-            key={tab.label}
-            onClick={() => {
-              setActiveIdx(idx)
-            }}
-            className='whitespace-nowrap px-2 py-0'
-            label={
-              <div className='flex items-center justify-center text-sm font-normal'>
-                {tab.label}
-              </div>
-            }
-          />
-        ))}
+        {tabs
+          .filter((tab) => tab.isVisible)
+          .map((tab, idx) => (
+            <Tab
+              key={tab.label}
+              onClick={() => {
+                setActiveIdx(idx)
+              }}
+              className='whitespace-nowrap px-2 py-0'
+              label={
+                <div className='flex items-center justify-center text-sm font-normal'>
+                  {tab.label}
+                </div>
+              }
+            />
+          ))}
       </Tabs>
       <Component setImageURL={setImageURL} editor={editor} />
     </div>

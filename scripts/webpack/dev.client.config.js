@@ -150,7 +150,12 @@ module.exports = {
         GLOBAL_BANNER_TEXT: process.env.GLOBAL_BANNER_TEXT,
         GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
         GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR,
-        GIF_PROVIDER: process.env.GIF_PROVIDER || 'tenor'
+        GIF_PROVIDER:
+          process.env.GIF_PROVIDER !== 'tenor'
+            ? process.env.GIF_PROVIDER
+            : process.env.TENOR_SECRET
+              ? 'tenor'
+              : ''
       })
     }),
     new ReactRefreshWebpackPlugin(),
