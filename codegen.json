@@ -90,6 +90,7 @@
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
           "GenerateRetroSummariesSuccess": "./types/GenerateRetroSummariesSuccess#GenerateRetroSummariesSuccessSource",
+          "GifResponse": "./types/GifResponse#GifResponseSource",
           "GitHubIntegration": "../../postgres/queries/getGitHubAuthByUserIdTeamId#GitHubAuth",
           "GitLabIntegration": "./types/GitLabIntegration#GitLabIntegrationSource",
           "IntegrationProviderOAuth1": "../../postgres/queries/getIntegrationProvidersByIds#TIntegrationProvider",
