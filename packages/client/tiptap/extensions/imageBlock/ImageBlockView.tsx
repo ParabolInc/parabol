@@ -9,11 +9,12 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const imageWrapperRef = useRef<HTMLDivElement>(null)
   const {src} = node.attrs
 
-  const wrapperClassName = cn(
-    node.attrs.align === 'left' ? 'ml-0' : 'ml-auto',
-    node.attrs.align === 'right' ? 'mr-0' : 'mr-auto',
-    node.attrs.align === 'center' && 'mx-auto'
-  )
+  const alignClass =
+    node.attrs.align === 'left'
+      ? 'justify-start'
+      : node.attrs.align === 'right'
+        ? 'justify-end'
+        : 'justify-center'
 
   const onClick = useCallback(() => {
     editor.commands.setNodeSelection(getPos())
@@ -28,7 +29,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const onMouseDownRight = onMouseDown('right')
   return (
     <NodeViewWrapper>
-      <div className={wrapperClassName}>
+      <div className={cn('flex', alignClass)}>
         <div contentEditable={false} ref={imageWrapperRef} className='group relative w-fit'>
           <img
             className='block'
