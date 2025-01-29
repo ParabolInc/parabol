@@ -96,6 +96,10 @@
     text-decoration: none;
   }
 
+  button {
+    @apply p-0;
+  }
+
   button,
   input,
   select,
@@ -170,6 +174,8 @@
 
 .ProseMirror {
   width: 100%;
+  /* Gap cursor is 2px above the top of an element */
+  padding-top: 2px;
   blockquote {
     border-left: 3px solid theme('colors.slate.500');
     margin: 1.5rem 0;
@@ -229,21 +235,17 @@
     }
     &.ProseMirror-selectednode::after {
       content: '';
-      @apply absolute inset-0 h-full w-full rounded bg-[#2383e247];
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none rounded bg-[#2383e247];
     }
   }
   .node-imageBlock {
+    @apply relative;
+    &.has-focus > div::after {
+      content: '';
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none bg-[#2383e247];
+    }
     & img {
-      @apply overflow-hidden rounded-xl border-2 border-transparent;
-    }
-
-    &:hover img {
-      @apply border-2 border-slate-100;
-    }
-
-    &:has(.is-active) img,
-    &.has-focus img {
-      @apply border-2 border-slate-800;
+      @apply overflow-hidden rounded-md;
     }
   }
 }

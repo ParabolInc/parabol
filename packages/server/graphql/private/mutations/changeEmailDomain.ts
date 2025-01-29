@@ -43,45 +43,46 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   // RESOLUTION
   const pg = getKysely()
 
-  const [updatedUserRes] = await Promise.all([
-    pg
-      .with('TeamMembersUpdate', (qc) =>
-        qc
-          .updateTable('TeamMember')
-          .set({
-            email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
-          })
-          .where('userId', 'in', userIdsToUpdate)
-      )
-      .with('OrganizationApprovedDomainUpdate', (qc) =>
-        qc
-          .updateTable('OrganizationApprovedDomain')
-          .set({
-            domain: sql`REPLACE("domain", ${normalizedOldDomain}, ${normalizedNewDomain})`
-          })
-          .where('domain', 'like', normalizedOldDomain)
-      )
-      .with('OrganizationUpdate', (qc) =>
-        qc
-          .updateTable('Organization')
-          .set({activeDomain: normalizedNewDomain})
-          .where('activeDomain', '=', normalizedOldDomain)
-      )
-      .with('SAMLUpdate', (qc) =>
-        qc
-          .updateTable('SAMLDomain')
-          .set({domain: normalizedNewDomain})
-          .where('domain', '=', normalizedOldDomain)
-      )
-      .updateTable('User')
-      .set({
-        email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
-      })
-      .where('id', 'in', userIdsToUpdate)
-      .returning('id')
-      .execute()
-  ])
+  await pg
+    .with('OrganizationApprovedDomainUpdate', (qc) =>
+      qc
+        .updateTable('OrganizationApprovedDomain')
+        .set({
+          domain: sql`REPLACE("domain", ${normalizedOldDomain}, ${normalizedNewDomain})`
+        })
+        .where('domain', 'like', normalizedOldDomain)
+    )
+    .with('OrganizationUpdate', (qc) =>
+      qc
+        .updateTable('Organization')
+        .set({activeDomain: normalizedNewDomain})
+        .where('activeDomain', '=', normalizedOldDomain)
+    )
+    .updateTable('SAMLDomain')
+    .set({domain: normalizedNewDomain})
+    .where('domain', '=', normalizedOldDomain)
+    .execute()
 
+  if (userIdsToUpdate.length === 0) {
+    return {usersUpdatedIds: [], usersNotUpdatedIds}
+  }
+
+  const updatedUserRes = await pg
+    .with('TeamMembersUpdate', (qc) =>
+      qc
+        .updateTable('TeamMember')
+        .set({
+          email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
+        })
+        .where('userId', 'in', userIdsToUpdate)
+    )
+    .updateTable('User')
+    .set({
+      email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
+    })
+    .where('id', 'in', userIdsToUpdate)
+    .returning('id')
+    .execute()
   const usersUpdatedIds = updatedUserRes.map(({id}) => id)
   const data = {usersUpdatedIds, usersNotUpdatedIds}
   return data

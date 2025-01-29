@@ -201,14 +201,16 @@ const ReflectionCard = (props: Props) => {
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
+    if (reflection.isEditing) {
+      return
+    }
+    updateIsEditing(true)
     EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
   }
 
   const updateIsEditing = (isEditing: boolean) => {
     commitLocalUpdate(atmosphere, (store) => {
-      const reflection = store.get(reflectionId)
-      if (!reflection) return
-      reflection.setValue(isEditing, 'isEditing')
+      store.get(reflectionId)?.setValue(isEditing, 'isEditing')
     })
   }
 
@@ -244,16 +246,22 @@ const ReflectionCard = (props: Props) => {
       {content: contentStr, reflectionId},
       {onError, onCompleted}
     )
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflection = store.get(reflectionId)
-      if (!reflection) return
-      reflection.setValue(false, 'isEditing')
-    })
   }
 
-  const handleEditorBlur = () => {
+  const handleEditorBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (isTempId(reflectionId)) return
+    const newFocusedElement = e.relatedTarget as Node
+    // don't trigger a blur if a button inside the element is clicked
+    if (e.currentTarget.contains(newFocusedElement)) return
+    const isClickInModal = !(
+      newFocusedElement === null || document.getElementById('root')?.contains(newFocusedElement)
+    )
+    // If they clicked in a modal, then ignore the blur event, we'll refocus the editor after the modal closes
+    if (isClickInModal) {
+      return
+    }
     handleContentUpdate()
+    updateIsEditing(false)
     EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
   }
 

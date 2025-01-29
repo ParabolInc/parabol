@@ -75,7 +75,13 @@ const rewriteIndexHTML = () => {
     GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED === 'true',
     GLOBAL_BANNER_TEXT: process.env.GLOBAL_BANNER_TEXT,
     GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
-    GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR
+    GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR,
+    GIF_PROVIDER:
+      process.env.GIF_PROVIDER !== 'tenor'
+        ? process.env.GIF_PROVIDER
+        : process.env.TENOR_SECRET
+          ? 'tenor'
+          : ''
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')

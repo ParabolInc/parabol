@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
-import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
@@ -12,7 +11,6 @@ import usePortal from '../../hooks/usePortal'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
-import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
@@ -101,7 +99,7 @@ const PhaseItemEditor = (props: Props) => {
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
       transform: `translate(${left}px,${top}px)`,
-      html: generateHTML(contentJSON, serverTipTapExtensions),
+      html: editor.getHTML(),
       key: content,
       isStart: true
     }

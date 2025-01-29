@@ -15,6 +15,7 @@ import {PluginRegistry} from './types/mattermost-webapp'
 
 import {createEnvironment} from './Atmosphere'
 import AtmosphereProvider from './AtmosphereProvider'
+import AutoLogin from './components/AutoLogin'
 import ModalRoot from './components/ModalRoot'
 
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
@@ -26,7 +27,11 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
    */
 
   registry.registerReducer(rootReducer)
-
+  registry.registerRootComponent(() => (
+    <AtmosphereProvider environment={environment}>
+      <AutoLogin />
+    </AtmosphereProvider>
+  ))
   registry.registerRootComponent(() => (
     <AtmosphereProvider environment={environment}>
       <ModalRoot />

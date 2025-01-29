@@ -24,6 +24,9 @@ import {
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
 
+const MATTERMOST_URL = process.env.MATTERMOST_URL && new URL(process.env.MATTERMOST_URL)
+const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
+
 const notifyMattermost = async (
   event: SlackNotification['event'],
   channel: {webhookUrl: string | null; serverBaseUrl: string | null; sharedSecret: string | null},
@@ -358,13 +361,13 @@ async function getMattermost(
   userId: string,
   event: NotificationSettings['event']
 ) {
-  if (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL) {
+  if (MATTERMOST_SECRET && MATTERMOST_URL) {
     return [
       MattermostNotificationHelper({
         userId,
         teamId,
-        serverBaseUrl: process.env.MATTERMOST_URL,
-        sharedSecret: process.env.MATTERMOST_SECRET,
+        serverBaseUrl: MATTERMOST_URL.toString(),
+        sharedSecret: MATTERMOST_SECRET,
         webhookUrl: null
       })
     ]

@@ -1,0 +1,29 @@
+"""
+A response with info about a gif
+"""
+type GifResponse {
+  """
+  The ID of the gif
+  """
+  id: ID!
+
+  """
+  A description of the gif
+  """
+  description: String!
+
+  """
+  A list of tags describing the gif
+  """
+  tags: [String!]!
+
+  """
+  url
+  """
+  url(
+    """
+    The size of the gif
+    """
+    size: ImageSize!
+  ): String!
+}
