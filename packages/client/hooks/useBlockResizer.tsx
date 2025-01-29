@@ -10,9 +10,9 @@ const makeDrag = () => ({
 })
 export const useBlockResizer = (
   width: number,
-  setWidth: (width: number) => void,
   updateAttributes: (attrs: Record<string, any>) => void,
-  aspectRatioRef: RefObject<number>
+  aspectRatioRef: RefObject<number>,
+  maxWidth: number
 ) => {
   const dragRef = useRef(makeDrag())
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -41,8 +41,8 @@ export const useBlockResizer = (
     const sideCoefficient = drag.side === 'left' ? 1 : -1
     const delta = (drag.lastX - clientX) * sideCoefficient
     drag.lastX = clientX
-    const nextWidth = Math.max(48, width + delta)
-    setWidth(nextWidth)
+    const nextWidth = Math.min(maxWidth, Math.max(48, width + delta))
+    updateAttributes({width: nextWidth, height: Math.round(nextWidth / aspectRatioRef.current!)})
   })
 
   const onMouseDown = useEventCallback(
