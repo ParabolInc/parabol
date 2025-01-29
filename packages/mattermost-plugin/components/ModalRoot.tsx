@@ -7,14 +7,14 @@ import StartActivityModalRoot from './StartActivityModal'
 
 const ModalRoot = () => {
   return (
-    <div>
+    <>
       <CreateTaskModalRoot />
       <InviteToTeamModalRoot />
       <InviteToMeetingModalRoot />
       <LinkTeamModal />
       <PushReflectionModalRoot />
       <StartActivityModalRoot />
-    </div>
+    </>
   )
 }
 

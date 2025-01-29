@@ -13,7 +13,7 @@ import RelayModernStore from 'relay-runtime/lib/store/RelayModernStore'
 import {AnyAction, Store} from '@reduxjs/toolkit'
 import {Client4} from 'mattermost-redux/client'
 import {GlobalState} from 'mattermost-redux/types/store'
-import {login as loggedIn} from './reducers'
+import {login as onLogin} from './reducers'
 import {authToken as getAuthToken} from './selectors'
 RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true
 
@@ -70,7 +70,7 @@ export class Atmosphere extends Environment {
 
   constructor(serverUrl: string, reduxStore: Store<GlobalState, AnyAction>) {
     const state = {
-      serverUrl: serverUrl, // + '/graphql',
+      serverUrl,
       store: reduxStore,
       authToken: null
     }
@@ -102,7 +102,7 @@ export class Atmosphere extends Environment {
       })
     )
     const body = await response.json()
-    store.dispatch(loggedIn(body.authToken))
+    store.dispatch(onLogin(body.authToken))
   }
 }
 
