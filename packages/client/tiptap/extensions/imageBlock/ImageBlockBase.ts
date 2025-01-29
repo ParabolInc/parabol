@@ -30,6 +30,12 @@ export const ImageBlockBase = Image.extend({
   },
 
   renderHTML({HTMLAttributes}) {
-    return ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
+    const align = HTMLAttributes['data-align']
+    const justify = align === 'left' ? 'start' : align === 'right' ? 'end' : 'center'
+    return [
+      'div',
+      {style: `width: 100%; display: flex; justify-content: ${justify};`},
+      ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
+    ]
   }
 })

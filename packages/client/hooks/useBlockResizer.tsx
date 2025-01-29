@@ -1,4 +1,4 @@
-import {useRef} from 'react'
+import {useRef, type RefObject} from 'react'
 import getIsDrag from '../utils/retroGroup/getIsDrag'
 import useEventCallback from './useEventCallback'
 
@@ -11,7 +11,8 @@ const makeDrag = () => ({
 export const useBlockResizer = (
   width: number,
   setWidth: (width: number) => void,
-  updateAttributes: (attrs: Record<string, any>) => void
+  updateAttributes: (attrs: Record<string, any>) => void,
+  aspectRatioRef: RefObject<number>
 ) => {
   const dragRef = useRef(makeDrag())
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
@@ -20,7 +21,8 @@ export const useBlockResizer = (
     } else {
       document.removeEventListener('mousemove', onMouseMove)
     }
-    updateAttributes({width})
+    const aspectRatio = aspectRatioRef.current!
+    updateAttributes({width, height: Math.round(width / aspectRatio)})
     dragRef.current = makeDrag()
   })
 

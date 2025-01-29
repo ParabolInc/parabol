@@ -251,6 +251,8 @@ const ReflectionCard = (props: Props) => {
   const handleEditorBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (isTempId(reflectionId)) return
     const newFocusedElement = e.relatedTarget as Node
+    // don't trigger a blur if a button inside the element is clicked
+    if (e.currentTarget.contains(newFocusedElement)) return
     const isClickInModal = !(
       newFocusedElement === null || document.getElementById('root')?.contains(newFocusedElement)
     )

@@ -12,11 +12,18 @@ export const ImageBlock = ImageBlockBase.extend({
           src: attributes.src
         })
       },
+      height: {
+        default: '100%',
+        parseHTML: (element) => element.getAttribute('height'),
+        renderHTML: (attributes) => ({
+          height: attributes.height
+        })
+      },
       width: {
         default: '100%',
-        parseHTML: (element) => element.getAttribute('data-width'),
+        parseHTML: (element) => element.getAttribute('width'),
         renderHTML: (attributes) => ({
-          'data-width': attributes.width
+          width: attributes.width
         })
       },
       align: {
