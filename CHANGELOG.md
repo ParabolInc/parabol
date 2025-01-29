@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.0](https://github.com/ParabolInc/parabol/compare/v8.22.0...v8.23.0) (2025-01-29)
+
+
+### Added
+
+* Support image resizing in TipTap ([#10747](https://github.com/ParabolInc/parabol/issues/10747)) ([4fb5f96](https://github.com/ParabolInc/parabol/commit/4fb5f968cff6e340072dbd8aef2ccebcb2b68b54))
+
+
+### Fixed
+
+* **Mattermost Plugin:** Load modals correctly ([#10744](https://github.com/ParabolInc/parabol/issues/10744)) ([976904e](https://github.com/ParabolInc/parabol/commit/976904e719237b3648111d615c9c03998ead1d8d))
+* show invoices for enterprise customers ([#10748](https://github.com/ParabolInc/parabol/issues/10748)) ([3e72a5f](https://github.com/ParabolInc/parabol/commit/3e72a5f8713c4695d4abcab91d786a21f933f3a4))
+* support edge case changeEmailDomain no users to update ([#10725](https://github.com/ParabolInc/parabol/issues/10725)) ([8c0c0db](https://github.com/ParabolInc/parabol/commit/8c0c0db6ad316235c4e956cc25ae069a61da38c0))
+
 ## [8.22.0](https://github.com/ParabolInc/parabol/compare/v8.21.1...v8.22.0) (2025-01-28)
 
 
