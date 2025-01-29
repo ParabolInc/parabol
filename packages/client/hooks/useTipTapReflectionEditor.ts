@@ -70,7 +70,7 @@ export const useTipTapReflectionEditor = (
           'To-do list': false
         }),
         Focus,
-        ImageUpload.configure({editorWidth: ElementWidth.REFLECTION_CARD}),
+        ImageUpload.configure({editorWidth: ElementWidth.REFLECTION_CARD, editorHeight: 88}),
         ImageBlock,
         LoomExtension,
         Placeholder.configure({

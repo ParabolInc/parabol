@@ -235,17 +235,17 @@
     }
     &.ProseMirror-selectednode::after {
       content: '';
-      @apply absolute inset-0 h-full w-full rounded bg-[#2383e247];
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none rounded bg-[#2383e247];
     }
   }
   .node-imageBlock {
     @apply relative;
     &.has-focus > div::after {
       content: '';
-      @apply absolute inset-0 h-full w-full bg-[#2383e247];
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none bg-[#2383e247];
     }
     & img {
-      @apply overflow-hidden rounded-md border-2 border-transparent;
+      @apply overflow-hidden rounded-md;
     }
   }
 }

@@ -6,12 +6,7 @@ import {useFragment} from 'react-relay'
 import {ReflectionStack_meeting$key} from '~/__generated__/ReflectionStack_meeting.graphql'
 import {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import {
-  Breakpoint,
-  ElementHeight,
-  ElementWidth,
-  ReflectionStackPerspective
-} from '../../types/constEnums'
+import {ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
@@ -25,22 +20,6 @@ interface Props {
   reflectionStack: readonly PhaseItemColumn_meeting$data['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
-
-const CardStack = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flex: 1,
-  margin: '0 0 24px', // stacked cards + row gutter = 6 + 6 + 12 = 24
-  position: 'relative',
-  justifyContent: 'center',
-  [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
-    minHeight: ElementHeight.REFLECTION_CARD_MAX
-  }
-})
-
-const CenteredCardStack = styled('div')({
-  position: 'relative'
-})
 
 const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
   const multiple = Math.min(idx, 2)
@@ -94,9 +73,15 @@ const ReflectionStack = (props: Props) => {
           closePortal={collapse}
         />
       )}
+
       <div>
-        <CardStack data-cy={dataCy} onClick={expand} ref={stackRef}>
-          <CenteredCardStack>
+        <div
+          data-cy={dataCy}
+          onClick={expand}
+          ref={stackRef}
+          className='relative mb-6 flex flex-1 select-none items-start justify-center single-reflection-column:min-h-[104px]'
+        >
+          <div className='relative'>
             {reflectionStack.map((reflection, idx) => {
               return (
                 <ReflectionWrapper
@@ -115,8 +100,8 @@ const ReflectionStack = (props: Props) => {
                 </ReflectionWrapper>
               )
             })}
-          </CenteredCardStack>
-        </CardStack>
+          </div>
+        </div>
       </div>
     </React.Fragment>
   )

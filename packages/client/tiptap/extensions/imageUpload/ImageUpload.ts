@@ -3,16 +3,18 @@ import {EventEmitter} from 'eventemitter3'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 
-export const ImageUpload = ImageUploadBase.extend<{editorWidth: number}>({
+export const ImageUpload = ImageUploadBase.extend<{editorWidth: number; editorHeight: number}>({
   addOptions() {
     return {
-      editorWidth: 300
+      editorWidth: 300,
+      editorHeight: 112
     }
   },
   addStorage(this) {
     return {
       emitter: new EventEmitter(),
-      editorWidth: this.options.editorWidth
+      editorWidth: this.options.editorWidth,
+      editorHeight: this.options.editorHeight
     }
   },
 
