@@ -1,28 +1,8 @@
-import {mergeAttributes, Range} from '@tiptap/core'
-import {Image} from '@tiptap/extension-image'
 import {ReactNodeViewRenderer} from '@tiptap/react'
+import {ImageBlockBase} from './ImageBlockBase'
 import {ImageBlockView} from './ImageBlockView'
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    imageBlock: {
-      setImageBlock: (attributes: {src: string}) => ReturnType
-      setImageBlockAt: (attributes: {src: string; pos: number | Range}) => ReturnType
-      setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType
-      setImageBlockWidth: (width: number) => ReturnType
-    }
-  }
-}
-
-export const ImageBlock = Image.extend({
-  name: 'imageBlock',
-
-  group: 'block',
-
-  defining: true,
-
-  isolating: true,
-
+export const ImageBlock = ImageBlockBase.extend({
   addAttributes() {
     return {
       src: {
@@ -55,19 +35,6 @@ export const ImageBlock = Image.extend({
       }
     }
   },
-
-  parseHTML() {
-    return [
-      {
-        tag: 'img[src]:not([src^="data:"])'
-      }
-    ]
-  },
-
-  renderHTML({HTMLAttributes}) {
-    return ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
-  },
-
   addCommands() {
     return {
       setImageBlock:
@@ -90,7 +57,7 @@ export const ImageBlock = Image.extend({
       setImageBlockWidth:
         (width) =>
         ({commands}) =>
-          commands.updateAttributes('imageBlock', {width: `${Math.max(0, Math.min(100, width))}%`})
+          commands.updateAttributes('imageBlock', {width})
     }
   },
 
