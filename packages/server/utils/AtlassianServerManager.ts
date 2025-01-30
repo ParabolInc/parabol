@@ -12,6 +12,7 @@ import {
 } from '../integrations/OAuth2Manager'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {Logger} from './Logger'
+import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 
 export interface JiraUser {
   self: string
@@ -280,7 +281,7 @@ class AtlassianServerManager extends AtlassianManager {
     return AtlassianServerManager.fetchToken({
       grant_type: 'authorization_code',
       code,
-      redirect_uri: process.env.OAUTH2_REDIRECT!
+      redirect_uri: makeOAuth2Redirect()
     })
   }
 

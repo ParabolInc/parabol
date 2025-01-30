@@ -1,6 +1,7 @@
 import fs from 'fs'
 import {minify} from 'html-minifier-terser'
 import path from 'path'
+import {makeOAuth2Redirect} from '../../packages/server/utils/makeOAuth2Redirect'
 import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
@@ -62,7 +63,7 @@ const rewriteIndexHTML = () => {
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
     publicPath: __webpack_public_path__,
-    oauth2Redirect: process.env.OAUTH2_REDIRECT,
+    oauth2Redirect: makeOAuth2Redirect(),
     hasOpenAI: !!process.env.OPEN_AI_API_KEY,
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',

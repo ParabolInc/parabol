@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
+const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redirect')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -136,7 +137,7 @@ module.exports = {
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-        oauth2Redirect: process.env.OAUTH2_REDIRECT,
+        oauth2Redirect: makeOAuth2Redirect(),
         hasOpenAI: !!process.env.OPEN_AI_API_KEY,
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',

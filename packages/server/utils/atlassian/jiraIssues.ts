@@ -6,7 +6,7 @@ import sleep from 'parabol-client/utils/sleep'
 import AtlassianServerManager, {JiraGetIssueRes} from '../AtlassianServerManager'
 import getRedis from '../getRedis'
 
-const ISSUE_TTL_MS = ms('2d')
+const ISSUE_TTL_MS = ms('1d')
 const MAX_ATTEMPT_DURATION = ms('9s')
 
 type StoreAndNetworkRequests = CacheHit | CacheMiss | CacheError
