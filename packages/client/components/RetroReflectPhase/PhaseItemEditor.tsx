@@ -226,7 +226,7 @@ const PhaseItemEditor = (props: Props) => {
                 >
                   <div
                     className={cn(
-                      'ProseMirror flex max-h-28 min-h-4 w-full items-center px-4 pt-3 leading-none',
+                      'ProseMirror flex max-h-28 min-h-4 w-full flex-col items-start justify-center px-4 pt-3 leading-none',
                       disableAnonymity ? 'pb-0' : 'pb-3'
                     )}
                     dangerouslySetInnerHTML={{__html: card.html}}
