@@ -25,6 +25,10 @@ import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
 import SAMLHandler from './utils/SAMLHandler'
 
+const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
+  ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
+  : 60_000 // ms
+
 tracer.init({
   service: `web`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
@@ -34,10 +38,6 @@ tracer.init({
 tracer.use('ioredis').use('http').use('pg')
 
 process.on('SIGTERM', async (signal) => {
-  const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
-    ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
-    : 60_000 // ms
-
   Logger.log(
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
