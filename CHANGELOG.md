@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.2](https://github.com/ParabolInc/parabol/compare/v8.23.1...v8.23.2) (2025-01-30)
+
+
+### Changed
+
+* **web-server:** reconnect window can be manually set but keeps a 60s default value ([#10754](https://github.com/ParabolInc/parabol/issues/10754)) ([da37f80](https://github.com/ParabolInc/parabol/commit/da37f803e310aec6ea42572e79fb5f64a171b4f7))
+
 ## [8.23.1](https://github.com/ParabolInc/parabol/compare/v8.23.0...v8.23.1) (2025-01-30)
 
 
