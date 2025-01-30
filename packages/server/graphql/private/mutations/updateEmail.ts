@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
 import {JsonObject} from '../../../postgres/types/pg'
+import {MutationResolvers} from '../resolverTypes'
 
 const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail, newEmail}) => {
   const pg = getKysely()
@@ -23,7 +23,7 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
   const {id: userId, identities} = user
 
   if (identities && identities.length > 0) {
-    const localIdentity = (identities as JsonObject[]).find(identity => identity.type === 'LOCAL')
+    const localIdentity = (identities as JsonObject[]).find((identity) => identity.type === 'LOCAL')
     if (localIdentity) {
       localIdentity.isEmailVerified = false
     }
