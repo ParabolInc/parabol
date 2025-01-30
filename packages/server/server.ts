@@ -35,11 +35,11 @@ tracer.use('ioredis').use('http').use('pg')
 
 process.on('SIGTERM', async (signal) => {
   const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
-    ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10)
+    ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
     : 60_000 // ms
 
   Logger.log(
-    `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}.`
+    `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
   await Promise.allSettled(
     Object.values(activeClients.store).map(async (connectionContext) => {
