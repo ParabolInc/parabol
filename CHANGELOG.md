@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.1](https://github.com/ParabolInc/parabol/compare/v8.23.0...v8.23.1) (2025-01-30)
+
+
+### Fixed
+
+* images keep size before loading ([#10750](https://github.com/ParabolInc/parabol/issues/10750)) ([72bbb65](https://github.com/ParabolInc/parabol/commit/72bbb65264ef521fd9d305dc121b34e5c217557b))
+
 ## [8.23.0](https://github.com/ParabolInc/parabol/compare/v8.22.0...v8.23.0) (2025-01-29)
 
 
