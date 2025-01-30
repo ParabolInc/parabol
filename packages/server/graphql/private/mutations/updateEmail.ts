@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
-import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {MutationResolvers} from '../resolverTypes'
+import {JsonObject} from '../../../postgres/types/pg'
 
 const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail, newEmail}) => {
   const pg = getKysely()
@@ -10,19 +10,32 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
     throw new Error('New email is the same as the old one')
   }
 
-  const user = await getUserByEmail(oldEmail)
+  const user = await pg
+    .selectFrom('User')
+    .selectAll()
+    .where('email', '=', oldEmail)
+    .executeTakeFirst()
+
   if (!user) {
     throw new Error(`User with ${oldEmail} not found`)
   }
 
-  // RESOLUTION
-  const {id: userId} = user
+  const {id: userId, identities} = user
+
+  if (identities && identities.length > 0) {
+    const localIdentity = (identities as JsonObject[]).find(identity => identity.type === 'LOCAL')
+    if (localIdentity) {
+      localIdentity.isEmailVerified = false
+    }
+  }
+
+  // Update the email along with the identity
   await pg
     .with('TeamMemberUpdate', (qc) =>
       qc.updateTable('TeamMember').set({email: newEmail}).where('userId', '=', userId)
     )
     .updateTable('User')
-    .set({email: newEmail})
+    .set({email: newEmail, identities: identities})
     .where('id', '=', userId)
     .execute()
 
