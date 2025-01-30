@@ -92,7 +92,7 @@ const GitLabProviderRow = (props: Props) => {
 
   return (
     <>
-      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded bg-white shadow-card'>
+      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-white shadow-card'>
         <div className='flex justify-start p-row-gutter pb-0'>
           <GitLabProviderLogo />
           <div className='flex w-full flex-col'>

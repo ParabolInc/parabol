@@ -23,7 +23,7 @@ export const RetroDescription = (props: RetroDescriptionProps) => {
             className='mr-4 mt-1 h-3 w-3 shrink-0 self-start rounded-full'
             style={{backgroundColor: prompt.groupColor}}
           />
-          <div className='flex min-w-0 flex-grow flex-col'>
+          <div className='flex min-w-0 grow flex-col'>
             <div className='text-sm font-semibold'>{prompt.question}</div>
             <div className='text-sm font-normal'>{prompt.description}</div>
           </div>
@@ -46,7 +46,7 @@ const PokerDescription = (props: PokerDescriptionProps) => {
           <div className='mr-4 shrink-0 self-start'>
             <LinearScale className='h-4 w-4' />
           </div>
-          <div className='flex min-w-0 flex-grow flex-col'>
+          <div className='flex min-w-0 grow flex-col'>
             <div className='text-sm font-semibold'>{dimension.name}</div>
             <div className='text-sm font-normal'>{dimension.selectedScale.name}</div>
           </div>
@@ -73,7 +73,7 @@ const ActionDescription = () => {
       {items.map((item, index) => (
         <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
           <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
-          <div className='flex min-w-0 flex-grow flex-col'>
+          <div className='flex min-w-0 grow flex-col'>
             <div className='text-sm font-normal'>{item.description}</div>
           </div>
         </div>
@@ -95,7 +95,7 @@ const TeamPromptDescription = () => {
       {items.map((item, index) => (
         <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
           <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
-          <div className='flex min-w-0 flex-grow flex-col'>
+          <div className='flex min-w-0 grow flex-col'>
             <div className='text-sm font-normal'>{item.description}</div>
           </div>
         </div>

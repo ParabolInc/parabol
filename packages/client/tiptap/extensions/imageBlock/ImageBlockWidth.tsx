@@ -24,7 +24,7 @@ export const ImageBlockWidth = memo(({onChange, value}: ImageBlockWidthProps) =>
   return (
     <div className='flex items-center gap-2'>
       <input
-        className='bg-neutral-200 fill-neutral-300 h-2 appearance-none rounded border-0'
+        className='bg-neutral-200 fill-neutral-300 h-2 appearance-none rounded-sm border-0'
         type='range'
         min='25'
         max='100'

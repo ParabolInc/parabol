@@ -250,7 +250,7 @@ export const CreateNewActivity = (props: Props) => {
                 value={activity.type}
               >
                 <ActivityCard
-                  className='aspect-[320/190] w-80'
+                  className='aspect-320/190 w-80'
                   theme={DEFAULT_CARD_THEME}
                   title={activity.title}
                   type={activity.type}
@@ -301,7 +301,7 @@ export const CreateNewActivity = (props: Props) => {
 
               <RaisedButton
                 palette='pink'
-                className='h-12 px-4 text-lg font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2'
+                className='focus:outline-hidden h-12 px-4 text-lg font-semibold text-white focus:ring-2 focus:ring-offset-2'
                 onClick={handleUpgrade}
               >
                 Upgrade to Team Plan
@@ -309,7 +309,7 @@ export const CreateNewActivity = (props: Props) => {
             </div>
           ) : (
             <BaseButton
-              className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+              className='focus:outline-hidden mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
               onClick={createCustomActivityLookup[selectedActivity.type]}
             >
               Confirm Format & Team

@@ -34,7 +34,7 @@ const OrgTeamsRow = (props: Props) => {
 
   return (
     <Link
-      className='block hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset'
+      className='focus-visible:outline-hidden block hover:bg-slate-100 focus-visible:ring-1 focus-visible:ring-inset'
       to={`teams/${teamId}`}
     >
       <div className='flex items-center p-4'>

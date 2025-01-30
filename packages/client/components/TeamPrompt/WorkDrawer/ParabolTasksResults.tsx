@@ -53,7 +53,7 @@ const ParabolTasksResults = (props: Props) => {
       {selectedTasks.length > 0 ? (
         selectedTasks.map((task) => (
           <NullableTask
-            className='w-full rounded border border-solid border-slate-100'
+            className='w-full rounded-sm border border-solid border-slate-100'
             key={task.id}
             area={'userDash'}
             task={task}

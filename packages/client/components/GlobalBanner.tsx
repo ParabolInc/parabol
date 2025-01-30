@@ -14,7 +14,7 @@ interface Props {
 const GlobalBanner = (props: Props) => {
   const {bgColor, color, text} = props
   return (
-    <div className='w-100 h-6 max-h-6 pt-6'>
+    <div className='h-6 max-h-6 w-full pt-6'>
       {/* Container div creates natural height to push down
           container wrapping <Switch /> in Action.tsx.
           Meanwhile the main div here is postion: fixed. */}

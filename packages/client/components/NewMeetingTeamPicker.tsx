@@ -106,7 +106,7 @@ const NewMeetingTeamPicker = (props: Props) => {
                   return (
                     <DropdownMenu.Item
                       key={team.id}
-                      className='px-3 py-1 text-base outline-none hover:bg-slate-200'
+                      className='outline-hidden px-3 py-1 text-base hover:bg-slate-200'
                       onClick={() => {
                         handleSelectTeam(team.id)
                       }}

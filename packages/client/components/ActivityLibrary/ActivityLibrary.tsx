@@ -392,7 +392,7 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={clsx(
-                    'flex flex-shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
+                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,

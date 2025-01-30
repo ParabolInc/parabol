@@ -121,7 +121,9 @@ const GCalEventCard = (props: Props) => {
   return (
     <div className='group'>
       <div
-        className={clsx('rounded border border-solid border-slate-300 p-4 hover:border-slate-600')}
+        className={clsx(
+          'rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'
+        )}
       >
         <div>
           <a

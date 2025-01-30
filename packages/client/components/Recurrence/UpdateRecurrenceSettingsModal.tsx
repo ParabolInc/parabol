@@ -217,7 +217,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   return (
     <UpdateRecurrenceSettingsModalRoot>
       <input
-        className='form-input border-none p-4 font-sans  text-base outline-none focus:outline-none focus:ring-1 focus:ring-slate-600'
+        className='outline-hidden focus:outline-hidden form-input border-none  p-4 font-sans text-base focus:ring-1 focus:ring-slate-600'
         type='text'
         name='title'
         placeholder={placeholder}

@@ -171,7 +171,7 @@ const UpdatePayment = (props: Props) => {
           </label>
           <div className='mt-1'>
             <CardNumberElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('CardNumber')}
             />
@@ -185,7 +185,7 @@ const UpdatePayment = (props: Props) => {
           </label>
           <div className='mt-1'>
             <CardExpiryElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('ExpiryDate')}
             />
@@ -199,7 +199,7 @@ const UpdatePayment = (props: Props) => {
           </label>
           <div className='mt-1'>
             <CardCvcElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-sm outline-none sm:text-sm'
+              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('CVC')}
             />

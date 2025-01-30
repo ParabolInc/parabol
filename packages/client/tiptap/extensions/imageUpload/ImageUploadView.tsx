@@ -64,7 +64,7 @@ export const ImageUploadView = (props: NodeViewProps) => {
       <Popover.Root open={open} onOpenChange={onOpenChange}>
         <Popover.Trigger asChild>
           <div className='m-0 p-0' contentEditable={false} ref={triggerRef}>
-            <div className='flex cursor-pointer items-center rounded bg-slate-200 p-2 hover:bg-slate-300'>
+            <div className='flex cursor-pointer items-center rounded-sm bg-slate-200 p-2 hover:bg-slate-300'>
               <ImageIcon className='size-6' />
               <span className='text-sm'>Add an image</span>
             </div>

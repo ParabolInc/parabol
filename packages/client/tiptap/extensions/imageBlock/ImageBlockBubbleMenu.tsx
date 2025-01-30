@@ -26,7 +26,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
         return (
           <button
             key={name}
-            className='flex rounded bg-inherit p-[1px]'
+            className='flex rounded-sm bg-inherit p-[1px]'
             onClick={() => {
               if (align === name) return
               updateAttributes({align: name})
@@ -34,7 +34,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
           >
             <Icon
               data-highlighted={align === name}
-              className='cursor-pointer rounded p-1 data-highlighted:cursor-default data-highlighted:bg-slate-600/80'
+              className='cursor-pointer rounded-sm p-1 data-highlighted:cursor-default data-highlighted:bg-slate-600/80'
             />
           </button>
         )

@@ -44,7 +44,7 @@ export const ImageSelectorEmbedTab = (props: Props) => {
         autoFocus
         placeholder='Paste the image link…'
         type='url'
-        className='w-full outline-none focus:ring-2'
+        className='outline-hidden w-full focus:ring-2'
         ref={ref}
       />
       <Button variant='outline' shape='pill' className='w-full' type='submit'>

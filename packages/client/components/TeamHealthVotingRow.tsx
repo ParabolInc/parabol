@@ -28,7 +28,7 @@ const TeamHealthVotingRow = (props: Props) => {
   )
   const {viewerVote, votedUsers} = stage
   return (
-    <div className='flex h-14 w-80 shrink-0 items-center rounded bg-slate-300 pl-2'>
+    <div className='flex h-14 w-80 shrink-0 items-center rounded-sm bg-slate-300 pl-2'>
       <div className='mr-4'>
         <MiniPokerCard color={!!viewerVote ? PALETTE.JADE_400 : undefined}>
           <CheckIcon className={!!viewerVote ? 'text-white' : 'text-jade-400'} />

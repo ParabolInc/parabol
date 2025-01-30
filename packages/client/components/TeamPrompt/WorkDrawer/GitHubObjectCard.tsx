@@ -125,7 +125,7 @@ const GitHubObjectCard = (props: Props) => {
       : PR_STATUS_MAP[modifiedStatus]
 
   return (
-    <div className='rounded border border-solid border-slate-300 p-4 hover:border-slate-600'>
+    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
       <div className='flex gap-2 text-xs text-slate-600'>
         {statusImg && <img src={statusImg} />}
         <a

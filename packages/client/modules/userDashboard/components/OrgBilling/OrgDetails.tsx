@@ -61,7 +61,7 @@ const OrgDetails = (props: Props) => {
             <Avatar picture={pictureOrDefault} />
           </div>
         )}
-        <div className='text-gray-600 ml-6 flex flex-grow flex-col items-start'>
+        <div className='text-gray-600 ml-6 flex grow flex-col items-start'>
           {isBillingLeader ? (
             <EditableOrgName organization={organization} />
           ) : (

@@ -78,7 +78,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
           {meetingPhaseLabel} • {teamName}
         </div>
       </div>
-      <div className='flex size-6 flex-grow items-center justify-end'>
+      <div className='flex size-6 grow items-center justify-end'>
         <ArrowForwardIcon />
       </div>
     </MenuItem>

@@ -170,11 +170,11 @@ const OrgMembers = (props: Props) => {
           placeholder='Search by name or email'
           value={searchInput}
           onChange={handleSearchChange}
-          className='focus:border-blue-500 focus:ring-blue-500 w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-1'
+          className='focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden w-full rounded-md border border-slate-300 px-3 py-2 focus:ring-1'
         />
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+      <div className='shadow-xs divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>

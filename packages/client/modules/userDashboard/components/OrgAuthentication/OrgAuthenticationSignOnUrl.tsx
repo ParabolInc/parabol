@@ -32,7 +32,7 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
           Paste the following URLs into your Identity Provider’s SAML configuration
         </div>
       </div>
-      <div className='column-ga grid grid-cols-[max-content,fit-content(300px),24px] items-center gap-x-2 px-6 pb-8'>
+      <div className='column-ga grid grid-cols-[max-content_fit-content(300px)_24px] items-center gap-x-2 px-6 pb-8'>
         <CopyServiceProviderURL url={acsURL} label={'ACS URL'} />
         <CopyServiceProviderURL url={entityId} label={'Entity ID'} />
         <CopyServiceProviderURL url={startURL} label={'Start URL'} />

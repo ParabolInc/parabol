@@ -1,62 +1,82 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@font-face {
-  font-family: 'IBM Plex Mono';
-  src: url('/static/fonts/IBMPlexMono-Regular.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-  font-stretch: normal;
-  font-display: swap;
+@config '../../../../tailwind.config.js';
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
-@font-face {
-  font-family: 'IBM Plex Mono';
-  src: url('/static/fonts/IBMPlexMono-SemiBold.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 600;
-  font-stretch: normal;
-  font-display: swap;
-}
+@layer utilities {
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/static/fonts/IBMPlexMono-Regular.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-Italic.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 400;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/static/fonts/IBMPlexMono-SemiBold.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-Italic.woff2') format('woff2');
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-SemiBold.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 600;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-SemiBoldItalic.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 600;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-SemiBold.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-/** Global styles - https://tailwindcss.com/docs/adding-custom-styles#adding-base-styles */
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-SemiBoldItalic.woff2') format('woff2');
+    font-style: italic;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+  }
+
+  /** Global styles - https://tailwindcss.com/docs/adding-custom-styles#adding-base-styles */
+}
 @layer base {
   /**
     bg is important since we do a slide up animation we don't want the background to slide up, too
@@ -159,10 +179,10 @@
 .rdp {
   @apply m-[8px];
   --rdp-cell-size: 36px;
-  --rdp-accent-color: theme(colors.grape.500);
-  --rdp-background-color: theme(colors.grape.500 / 30%);
-  --rdp-accent-color-dark: theme(colors.grape.500);
-  --rdp-background-color-dark: theme(colors.grape.500 / 30%);
+  --rdp-accent-color: var(--color-grape-500);
+  --rdp-background-color: --theme(--color-grape-500 / 30%);
+  --rdp-accent-color-dark: var(--color-grape-500);
+  --rdp-background-color-dark: --theme(--color-grape-500 / 30%);
 }
 
 .link-style a {
@@ -177,7 +197,7 @@
   /* Gap cursor is 2px above the top of an element */
   padding-top: 2px;
   blockquote {
-    border-left: 3px solid theme('colors.slate.500');
+    border-left: 3px solid var(--color-slate-500);
     margin: 1.5rem 0;
     padding-left: 1rem;
   }
@@ -222,20 +242,11 @@
     }
   }
   .node-imageUpload {
-    @apply relative rounded;
+    @apply relative rounded-sm;
     transition: border 160ms cubic-bezier(0.45, 0.05, 0.55, 0.95);
-
-    &:hover {
-      @apply border-opacity-30;
-    }
-
-    &:has(.is-active),
-    &.has-focus {
-      @apply border-opacity-40;
-    }
     &.ProseMirror-selectednode::after {
       content: '';
-      @apply pointer-events-none absolute inset-0 h-full w-full select-none rounded bg-[#2383e247];
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none rounded-sm bg-[#2383e247];
     }
   }
   .node-imageBlock {
@@ -274,7 +285,7 @@
 }
 
 .ProseMirror [data-type='mention'] {
-  background-color: theme('colors.gold.100');
+  background-color: var(--color-gold-100);
   border-radius: 2;
   font-weight: 600;
 }
@@ -289,7 +300,7 @@
 
 .ProseMirror a {
   text-decoration: underline;
-  color: theme('colors.slate.700');
+  color: var(--color-slate-700);
   :hover {
     cursor: pointer;
   }
@@ -306,5 +317,5 @@ hr.ProseMirror-selectednode {
 }
 
 .ProseMirror hr {
-  border-top: 1px solid theme('colors.slate.400');
+  border-top: 1px solid var(--color-slate-400);
 }

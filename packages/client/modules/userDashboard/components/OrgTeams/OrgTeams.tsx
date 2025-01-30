@@ -61,7 +61,7 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      <div className='overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+      <div className='shadow-xs overflow-hidden rounded-md border border-slate-300 bg-white'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>

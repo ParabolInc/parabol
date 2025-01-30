@@ -37,7 +37,7 @@ const ActivityGrid = (props: ActivityGridProps) => {
             className='flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500'
           >
             <ActivityCard
-              className='group aspect-[256/160] flex-1'
+              className='aspect-256/160 group flex-1'
               key={template.id}
               theme={CATEGORY_THEMES[template.category as CategoryID]}
               title={template.name}

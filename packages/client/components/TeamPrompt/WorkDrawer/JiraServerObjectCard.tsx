@@ -69,7 +69,7 @@ const JiraServerObjectCard = (props: Props) => {
   const {summary, url, issueKey, projectName, updatedAt} = result
 
   return (
-    <div className='rounded border border-solid border-slate-300 p-4 hover:border-slate-600'>
+    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
       <div className='flex gap-2 text-xs text-slate-600'>
         <a
           href={url}

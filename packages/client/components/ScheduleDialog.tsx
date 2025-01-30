@@ -143,7 +143,7 @@ export const ScheduleDialog = (props: Props) => {
       <div className='text-sm text-slate-800'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
-          className='form-input rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'
+          className='focus:outline-hidden form-input rounded-sm border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
           type='text'
           name='title'
           placeholder={placeholder}
@@ -157,7 +157,7 @@ export const ScheduleDialog = (props: Props) => {
       {gcal?.cloudProvider &&
         (gcal?.auth && addedInvite ? (
           <Collapsible.Root
-            className='flex flex-col rounded border border-slate-500'
+            className='flex flex-col rounded-sm border border-slate-500'
             open={openGcalEvent}
             onOpenChange={setOpenGcalEvent}
           >
@@ -184,7 +184,7 @@ export const ScheduleDialog = (props: Props) => {
         ))}
       {withRecurrence && (
         <Collapsible.Root
-          className='flex flex-col rounded border border-slate-500'
+          className='flex flex-col rounded-sm border border-slate-500'
           open={openRecurrence}
           onOpenChange={setOpenRecurrence}
         >
