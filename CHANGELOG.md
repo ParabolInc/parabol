@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.3](https://github.com/ParabolInc/parabol/compare/v8.23.2...v8.23.3) (2025-01-30)
+
+
+### Fixed
+
+* gif menu goes off screen ([#10753](https://github.com/ParabolInc/parabol/issues/10753)) ([a14d575](https://github.com/ParabolInc/parabol/commit/a14d5756f8e03ef3fc6e942012605b6a244d9cc7))
+* reduce jira issue TTL from 2 days to 1 day ([#10765](https://github.com/ParabolInc/parabol/issues/10765)) ([22060ff](https://github.com/ParabolInc/parabol/commit/22060ff14c24a80668903e213e3b4a7539f02565))
+* speed up updatePokerScope ([#10767](https://github.com/ParabolInc/parabol/issues/10767)) ([5504279](https://github.com/ParabolInc/parabol/commit/5504279753f7f7b06fd57a7b8d3b0c33359bd0c7))
+* tiptap bugs ([#10768](https://github.com/ParabolInc/parabol/issues/10768)) ([e12d980](https://github.com/ParabolInc/parabol/commit/e12d980e7530628dad211356c9489d205c9e0086))
+* to update isEmailVerified while updating email ([#10707](https://github.com/ParabolInc/parabol/issues/10707)) ([5e64bbe](https://github.com/ParabolInc/parabol/commit/5e64bbe3654206933c85129fa9c0edd447e11453))
+
+
+### Changed
+
+* set oauth2redirect defaults, document env vars ([#10766](https://github.com/ParabolInc/parabol/issues/10766)) ([417879c](https://github.com/ParabolInc/parabol/commit/417879c4e74be1b85a375c128bb0c19cb7dc482d))
+* update public teams feature flag expiry date ([#10742](https://github.com/ParabolInc/parabol/issues/10742)) ([aa009b5](https://github.com/ParabolInc/parabol/commit/aa009b57cfa1747bd2cd4f6a16078672c09b0066))
+
 ## [8.23.2](https://github.com/ParabolInc/parabol/compare/v8.23.1...v8.23.2) (2025-01-30)
 
 
