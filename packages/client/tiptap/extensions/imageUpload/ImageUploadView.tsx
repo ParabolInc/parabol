@@ -73,7 +73,7 @@ export const ImageUploadView = (props: NodeViewProps) => {
         <Popover.Portal>
           <Popover.Content asChild align='start' alignOffset={8} collisionPadding={8}>
             {/* z-30 is for expanded reflection stacks using Zindex.DIALOG */}
-            <div className='absolute left-0 top-0 z-30 flex max-h-[var(--radix-popper-available-height)] flex-col overflow-hidden'>
+            <div className='left-0 top-0 z-30 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden data-[side=bottom]:animate-slideDown data-[side=top]:animate-slideUp'>
               <ImageSelector editor={editor} />
             </div>
           </Popover.Content>
