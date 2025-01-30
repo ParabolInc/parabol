@@ -1,5 +1,5 @@
 import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {cn} from '../../../ui/cn'
 import {BlockResizer} from './BlockResizer'
@@ -7,8 +7,8 @@ import {ImageBlockBubbleMenu} from './ImageBlockBubbleMenu'
 export const ImageBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes} = props
   const imageWrapperRef = useRef<HTMLDivElement>(null)
-  const {src, align} = node.attrs
-
+  const {attrs} = node
+  const {src, align, height, width} = attrs
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
 
@@ -16,19 +16,20 @@ export const ImageBlockView = (props: NodeViewProps) => {
     editor.commands.setNodeSelection(getPos())
   }, [getPos, editor.commands])
 
-  const maxHeightRef = useRef<number | undefined>(editor.storage.imageUpload.editorHeight)
-  const {current: maxHeight} = maxHeightRef
-  const aspectRatioRef = useRef(0)
-  const ref = useRef<HTMLImageElement>(null)
-  const [width, setWidth] = useState<number>(node.attrs.width || 0)
-  const {onMouseDown} = useBlockResizer(width, setWidth, updateAttributes, aspectRatioRef)
+  const [maxHeight, setMaxHeight] = useState(
+    // if no height is provided (first load), make sure the image is no taller than the editor
+    height ? undefined : editor.storage.imageUpload.editorHeight
+  )
+
+  const aspectRatioRef = useRef(1)
+  const {onMouseDown} = useBlockResizer(
+    width,
+    updateAttributes,
+    aspectRatioRef,
+    editor.storage.imageUpload.editorWidth
+  )
   const onMouseDownLeft = onMouseDown('left')
   const onMouseDownRight = onMouseDown('right')
-  useEffect(() => {
-    if (width === node.attrs.width) return
-    // the attributes will change if another instance (e.g. a reflection in an expanded stack) edits them
-    setWidth(node.attrs.width)
-  }, [node.attrs.width])
   return (
     <NodeViewWrapper>
       <div className={cn('flex', alignClass)}>
@@ -38,15 +39,15 @@ export const ImageBlockView = (props: NodeViewProps) => {
             src={src}
             alt=''
             onClick={onClick}
-            style={{maxHeight, width: width === 0 ? undefined : width}}
-            ref={ref}
+            style={{maxHeight}}
+            width={width}
+            height={height}
             onLoad={(e) => {
               const img = e.target as HTMLImageElement
-              console.log('loaded', img.width, img.height, maxHeightRef.current)
-              maxHeightRef.current = undefined
               aspectRatioRef.current = img.width / img.height
-              if (img.width !== node.attrs.width) {
-                setWidth(img.width)
+              if (img.width !== width) {
+                // on initial load, once we grab the h/w/ar, remove the maxH constraint
+                setMaxHeight(undefined)
                 updateAttributes({width: img.width, height: img.height})
               }
             }}
