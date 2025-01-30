@@ -62,18 +62,22 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
     status: 'UPCOMING'
   }
 
-  const parabolPastInvoices: Invoice[] = invoices.data.map((stripeInvoice) => {
-    const {id, period_end, total, status: stripeStatus} = stripeInvoice
-    const status: InvoiceStatusEnum =
-      stripeStatus === 'uncollectible' ? 'FAILED' : stripeStatus === 'paid' ? 'PAID' : 'PENDING'
-    return {
-      id,
-      periodEndAt: fromEpochSeconds(period_end!),
-      total,
-      payUrl: session.url,
-      status
-    }
-  })
+  const parabolPastInvoices: Invoice[] = invoices.data
+    .filter(({status}) => {
+      return status !== 'deleted' && status !== 'void'
+    })
+    .map((stripeInvoice) => {
+      const {id, period_end, total, status: stripeStatus} = stripeInvoice
+      const status: InvoiceStatusEnum =
+        stripeStatus === 'uncollectible' ? 'FAILED' : stripeStatus === 'paid' ? 'PAID' : 'PENDING'
+      return {
+        id,
+        periodEndAt: fromEpochSeconds(period_end!),
+        total,
+        payUrl: session.url,
+        status
+      }
+    })
   const edges = [parabolUpcomingInvoice, ...parabolPastInvoices].map((node) => ({
     cursor: node.periodEndAt,
     node
