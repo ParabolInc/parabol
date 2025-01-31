@@ -79,7 +79,7 @@ const ReflectionStack = (props: Props) => {
           data-cy={dataCy}
           onClick={expand}
           ref={stackRef}
-          className='relative mb-6 flex flex-1 select-none items-start justify-center single-reflection-column:min-h-[104px]'
+          className='relative mb-6 flex flex-1 items-start justify-center select-none single-reflection-column:min-h-[104px]'
         >
           <div className='relative'>
             {reflectionStack.map((reflection, idx) => {

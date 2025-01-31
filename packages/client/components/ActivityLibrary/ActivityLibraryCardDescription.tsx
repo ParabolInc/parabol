@@ -20,7 +20,7 @@ export const RetroDescription = (props: RetroDescriptionProps) => {
       {prompts!.map((prompt) => (
         <div key={prompt.id} className='mb-1 flex flex-col items-start py-1 sm:flex-row'>
           <div
-            className='mr-4 mt-1 h-3 w-3 shrink-0 self-start rounded-full'
+            className='mt-1 mr-4 h-3 w-3 shrink-0 self-start rounded-full'
             style={{backgroundColor: prompt.groupColor}}
           />
           <div className='flex min-w-0 grow flex-col'>

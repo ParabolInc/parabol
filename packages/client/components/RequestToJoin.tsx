@@ -38,13 +38,13 @@ const RequestToJoinComponent = () => {
 
   return (
     <div className='relative z-10 flex h-full w-full flex-col items-center justify-center overflow-y-auto'>
-      <div className='mb-20 flex max-h-[90vh] w-[50%] min-w-[280px] max-w-[calc(100vw-48px)] flex-col items-center rounded-sm bg-white p-8 shadow-2xl'>
+      <div className='mb-20 flex max-h-[90vh] w-[50%] max-w-[calc(100vw-48px)] min-w-[280px] flex-col items-center rounded-sm bg-white p-8 shadow-2xl'>
         {isRequestSent ? (
           <MailOutline className='text-purple-500 h-10 w-10 rounded-full' />
         ) : (
           <Lock className='text-purple-500 h-10 w-10 rounded-full' />
         )}
-        <div className='text-gray-700 my-4 flex flex-col items-center justify-between text-sm font-semibold leading-5'>
+        <div className='text-gray-700 my-4 flex flex-col items-center justify-between text-sm leading-5 font-semibold'>
           {isRequestSent ? 'Request Sent' : 'Request to Join'}
         </div>
         <div className='my-2 mb-7 px-16 text-center text-sm leading-5'>

@@ -140,7 +140,7 @@ const GCalEventCard = (props: Props) => {
           {formatEventTimeRange(startDate, endDate)}
           <CopyToClipboard text={result.summary} onCopy={handleCopy}>
             <div
-              className='hidden h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 hover:text-slate-600 group-hover:block'
+              className='hidden h-5 cursor-pointer rounded-full bg-transparent p-0 text-slate-500 group-hover:block hover:text-slate-600'
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={mergeRefs(originRef, copiedTooltipRef)}

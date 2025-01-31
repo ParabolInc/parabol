@@ -53,7 +53,7 @@ const RemoveIntegrationProviderDialog = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle className='flex items-center'>Are you sure?</DialogTitle>
-        <div className='pb-2 pt-6'>
+        <div className='pt-6 pb-2'>
           If you remove this{' '}
           <b>
             {prettyService}

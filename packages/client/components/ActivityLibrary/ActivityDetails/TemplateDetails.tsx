@@ -308,7 +308,7 @@ export const TemplateDetails = (props: Props) => {
       </div>
 
       {isEditing && (
-        <div className='fixed bottom-0 left-0 right-0 flex h-20 w-full items-center justify-center bg-slate-200'>
+        <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-slate-200'>
           <button
             onClick={() => setIsEditing(false)}
             className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans text-lg font-semibold text-white hover:bg-sky-600'

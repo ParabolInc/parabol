@@ -181,7 +181,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
           <input
             {...getInputProps()}
             placeholder={!value.length ? 'ex. Traci or traci@example.com' : ''}
-            className='outline-hidden m-0 box-border min-h-[36px] w-0 min-w-[30px] grow border-0 bg-white pl-1 text-black'
+            className='m-0 box-border min-h-[36px] w-0 min-w-[30px] grow border-0 bg-white pl-1 text-black outline-hidden'
           />
         </div>
         {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>}
@@ -200,7 +200,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
                 key={option.id ?? option.email}
                 className={`[&.Mui-focused]:bg-slate-100 ${
                   isSelected ? 'bg-slate-100' : ''
-                } outline-hidden flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50`}
+                } flex h-10 w-full cursor-pointer items-center justify-between rounded px-3 text-sm outline-hidden select-none hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
                 {option.id && (

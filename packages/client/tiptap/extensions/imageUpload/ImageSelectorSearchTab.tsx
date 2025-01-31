@@ -69,7 +69,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
           autoFocus
           placeholder={placeholder}
           value={searchQuery}
-          className='outline-hidden w-full focus:ring-2'
+          className='w-full outline-hidden focus:ring-2'
           ref={ref}
           onChange={onChange}
         />

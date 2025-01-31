@@ -98,8 +98,8 @@ const DashSidebar = (props: Props) => {
                   label={'Organizations'}
                   exact
                 />
-                <div className='mb-1 mt-4 flex min-h-[32px] items-center'>
-                  <span className='flex-1 pl-3 text-base font-semibold leading-6 text-slate-700'>
+                <div className='mt-4 mb-1 flex min-h-[32px] items-center'>
+                  <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
                     {name}
                   </span>
                 </div>

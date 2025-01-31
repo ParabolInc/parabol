@@ -30,7 +30,7 @@ const OrgUsage = (props: Props) => {
 
   return (
     <Panel className='mb-4 max-w-[976px]' label='Usage'>
-      <div className='flex items-center justify-around border-t border-solid border-slate-300 p-4 '>
+      <div className='flex items-center justify-around border-t border-solid border-slate-300 p-4'>
         <a
           onClick={(e) => {
             e.preventDefault()

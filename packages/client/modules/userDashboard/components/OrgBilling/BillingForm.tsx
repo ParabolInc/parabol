@@ -180,7 +180,7 @@ const BillingForm = (props: Props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className='mb-4'>
-        <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+        <label className='block text-left text-xs font-semibold text-slate-600 uppercase'>
           Card number
         </label>
 
@@ -189,7 +189,7 @@ const BillingForm = (props: Props) => {
             onReady={(e) => {
               cardNumberRef.current = e
             }}
-            className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
+            className='focus:border-indigo-500 focus:ring-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-xs outline-hidden sm:text-sm'
             options={CARD_ELEMENT_OPTIONS}
             onChange={handleChange('CardNumber')}
           />
@@ -199,12 +199,12 @@ const BillingForm = (props: Props) => {
 
       <div className='flex space-x-5'>
         <div className='w-1/2'>
-          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+          <label className='block text-left text-xs font-semibold text-slate-600 uppercase'>
             Expiry date
           </label>
           <div className='mt-1'>
             <CardExpiryElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
+              className='focus:border-indigo-500 focus:ring-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-xs outline-hidden sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('ExpiryDate')}
             />
@@ -212,12 +212,12 @@ const BillingForm = (props: Props) => {
           </div>
         </div>
         <div className='w-1/2'>
-          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+          <label className='block text-left text-xs font-semibold text-slate-600 uppercase'>
             CVC
           </label>
           <div className='mt-1'>
             <CardCvcElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
+              className='focus:border-indigo-500 focus:ring-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-xs outline-hidden sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('CVC')}
             />

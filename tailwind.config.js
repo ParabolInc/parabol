@@ -13,10 +13,6 @@ module.exports = {
       // for elements where disabled doesn't exist, e.g. divs
       disabled: 'disabled=true'
     },
-    fontFamily: {
-      sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
-      mono: ['IBM Plex Mono', ...defaultTheme.fontFamily.mono]
-    },
     extend: {
       spacing: {
         'icon-md-18': '18px',

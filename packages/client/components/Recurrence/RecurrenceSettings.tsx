@@ -135,7 +135,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={clsx('break-words text-sm italic text-slate-600', className)} {...rest}>
+    <div className={clsx('text-sm break-words text-slate-600 italic', className)} {...rest}>
       {children}
     </div>
   )

@@ -88,7 +88,7 @@ const TimelineHeader = (props: Props) => {
     <DashSectionHeader>
       <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
         <DashFilterToggle
-          className='mb-4 ml-0 mr-16 mt-4 sidebar-left:mb-0 sidebar-left:ml-0 sidebar-left:mr-6 sidebar-left:mt-0'
+          className='mt-4 mr-16 mb-4 ml-0 sidebar-left:mt-0 sidebar-left:mr-6 sidebar-left:mb-0 sidebar-left:ml-0'
           label='Team'
           onClick={teamFilterTogglePortal}
           onMouseEnter={TeamFilterMenu.preload}
@@ -98,7 +98,7 @@ const TimelineHeader = (props: Props) => {
         />
         {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
         <DashFilterToggle
-          className='mb-4 ml-0 mr-16 mt-4 sidebar-left:mb-0 sidebar-left:ml-0 sidebar-left:mr-6 sidebar-left:mt-0'
+          className='mt-4 mr-16 mb-4 ml-0 sidebar-left:mt-0 sidebar-left:mr-6 sidebar-left:mb-0 sidebar-left:ml-0'
           label='Event Type'
           onClick={timelineEventTypeFilterTogglePortal}
           onMouseEnter={TimelineEventTypeMenu.preload}
@@ -116,7 +116,7 @@ const TimelineHeader = (props: Props) => {
         >
           <Checkbox
             active={showArchived}
-            className='mr-2 w-[24px] select-none text-center text-[24px]'
+            className='mr-2 w-[24px] text-center text-[24px] select-none'
           />
           {'Archived'}
         </LinkButton>

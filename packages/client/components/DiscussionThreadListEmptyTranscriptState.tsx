@@ -130,7 +130,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
           }}
         >
           <input
-            className='outline-hidden mt-4 w-full appearance-none rounded-sm border border-slate-400 bg-transparent p-3 text-sm text-slate-600'
+            className='mt-4 w-full appearance-none rounded-sm border border-slate-400 bg-transparent p-3 text-sm text-slate-600 outline-hidden'
             autoFocus
             placeholder='Zoom meeting URL'
             onChange={onChange}

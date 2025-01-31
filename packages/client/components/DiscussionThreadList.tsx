@@ -109,7 +109,7 @@ const DiscussionThreadList = (props: Props) => {
     <div ref={listRef} className='flex flex-1 flex-col overflow-auto' onScroll={handleScroll}>
       {header}
       {/* https://stackoverflow.com/questions/36130760/use-justify-content-flex-end-and-to-have-vertical-scrollbar */}
-      <div className='mx-0 mb-auto mt-0' />
+      <div className='mx-0 mt-0 mb-auto' />
       {showTranscription && transcription ? (
         <Transcription transcription={transcription} />
       ) : (

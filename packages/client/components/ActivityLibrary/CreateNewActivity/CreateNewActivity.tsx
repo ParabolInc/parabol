@@ -301,7 +301,7 @@ export const CreateNewActivity = (props: Props) => {
 
               <RaisedButton
                 palette='pink'
-                className='focus:outline-hidden h-12 px-4 text-lg font-semibold text-white focus:ring-2 focus:ring-offset-2'
+                className='h-12 px-4 text-lg font-semibold text-white focus:ring-2 focus:ring-offset-2 focus:outline-hidden'
                 onClick={handleUpgrade}
               >
                 Upgrade to Team Plan
@@ -309,7 +309,7 @@ export const CreateNewActivity = (props: Props) => {
             </div>
           ) : (
             <BaseButton
-              className='focus:outline-hidden mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+              className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:outline-hidden active:ring-sky-600'
               onClick={createCustomActivityLookup[selectedActivity.type]}
             >
               Confirm Format & Team

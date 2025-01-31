@@ -37,7 +37,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
       <div className='flex justify-start p-row-gutter'>
         {providerLogo}
         <RowInfo>
-          <div className='mr-4 flex items-center align-middle font-semibold leading-6 text-slate-700'>
+          <div className='mr-4 flex items-center align-middle leading-6 font-semibold text-slate-700'>
             {providerName}
           </div>
           <RowInfoCopy>{providerDescription} </RowInfoCopy>
@@ -58,7 +58,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
                     <div className='pl-[6px] text-sm font-semibold text-slate-700'>Connected</div>
                   </div>
                   <FlatButton
-                    className='min-w-[30px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                    className='min-w-[30px] border-slate-400 pr-0 pl-0 text-sm font-semibold text-slate-700'
                     onClick={togglePortal}
                     ref={menuRef}
                   >
@@ -67,7 +67,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
                 </>
               ) : (
                 <FlatButton
-                  className='min-w-[36px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                  className='min-w-[36px] border-slate-400 pr-0 pl-0 text-sm font-semibold text-slate-700'
                   onClick={togglePortal}
                   ref={menuRef}
                 >

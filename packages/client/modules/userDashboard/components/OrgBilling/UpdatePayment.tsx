@@ -166,12 +166,12 @@ const UpdatePayment = (props: Props) => {
     <form className='flex h-full w-full flex-col flex-wrap space-y-reverse' onSubmit={handleSubmit}>
       <div className='flex w-full'>
         <div className='w-3/5 pr-4'>
-          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+          <label className='block text-left text-xs font-semibold text-slate-600 uppercase'>
             Card number
           </label>
           <div className='mt-1'>
             <CardNumberElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
+              className='focus:border-indigo-500 focus:ring-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-xs outline-hidden sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('CardNumber')}
             />
@@ -180,12 +180,12 @@ const UpdatePayment = (props: Props) => {
         </div>
 
         <div className='w-1/4 pr-4'>
-          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+          <label className='block text-left text-xs font-semibold text-slate-600 uppercase'>
             Expiry
           </label>
           <div className='mt-1'>
             <CardExpiryElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
+              className='focus:border-indigo-500 focus:ring-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-xs outline-hidden sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('ExpiryDate')}
             />
@@ -194,12 +194,12 @@ const UpdatePayment = (props: Props) => {
         </div>
 
         <div className='w-1/6'>
-          <label className='block text-left text-xs font-semibold uppercase text-slate-600'>
+          <label className='block text-left text-xs font-semibold text-slate-600 uppercase'>
             CVC
           </label>
           <div className='mt-1'>
             <CardCvcElement
-              className='focus:ring-indigo-500 focus:border-indigo-500 shadow-xs outline-hidden block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 sm:text-sm'
+              className='focus:border-indigo-500 focus:ring-indigo-500 block w-full border-b border-slate-400 bg-slate-200 px-4 py-3 shadow-xs outline-hidden sm:text-sm'
               options={CARD_ELEMENT_OPTIONS}
               onChange={handleChange('CVC')}
             />
@@ -209,7 +209,7 @@ const UpdatePayment = (props: Props) => {
       </div>
       <div className='flex justify-start'>{errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}</div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
-        <div className='w-1/8 mt-4'>
+        <div className='mt-4 w-1/8'>
           <CancelButton size='medium' type='button' onClick={handleClose}>
             {'Cancel'}
           </CancelButton>

@@ -11,7 +11,7 @@ export const BubbleMenuButton = (props: Props) => {
     <Button
       variant='flat'
       data-highlighted={isActive}
-      className='rounded-xs h-5 w-5 py-1 hover:bg-slate-300 data-highlighted:bg-slate-300'
+      className='h-5 w-5 rounded-xs py-1 hover:bg-slate-300 data-highlighted:bg-slate-300'
       {...rest}
     >
       {children}

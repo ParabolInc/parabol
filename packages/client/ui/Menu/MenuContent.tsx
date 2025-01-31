@@ -13,7 +13,7 @@ export const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(
     return (
       <DropdownMenu.Content
         className={twMerge(
-          'border-rad outline-hidden z-10 w-auto min-w-[200px] max-w-[400px] rounded-md bg-white shadow-lg',
+          'border-rad z-10 w-auto max-w-[400px] min-w-[200px] rounded-md bg-white shadow-lg outline-hidden',
           className
         )}
         ref={ref}

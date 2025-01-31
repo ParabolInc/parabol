@@ -157,11 +157,7 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   return (
     <div
-      className={`relative ml-2 mr-2 flex h-full min-w-[320px] flex-1
-    flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4
-    last-of-type:mr-4 single-reflection-column:max-w-min
-    ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-56px)]'}
-    max-w-min`}
+      className={`relative mr-2 ml-2 flex h-full min-w-[320px] flex-1 flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 single-reflection-column:max-w-min ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-56px)]'} max-w-min`}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >

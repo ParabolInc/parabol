@@ -56,7 +56,7 @@ const NewMeetingTeamPicker = (props: Props) => {
 
   return (
     <Menu
-      className='data-[side=top]:animate-slide-up data-[side=bottom]:animate-slide-down'
+      className='data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
       trigger={
         <div className='group flex cursor-pointer items-center rounded-md bg-slate-200 p-2 hover:bg-slate-300'>
           <div className='p-2'>
@@ -64,7 +64,7 @@ const NewMeetingTeamPicker = (props: Props) => {
           </div>
           <div className='grow pl-2'>
             <div className='text-sm leading-4'>Team</div>
-            <div className='text-xl font-semibold leading-5'>{name}</div>
+            <div className='text-xl leading-5 font-semibold'>{name}</div>
           </div>
           <div className='s-6 p-2 pl-0'>
             <ExpandMore className='text-4xl text-slate-600 transition-transform group-data-[state=open]:rotate-180' />
@@ -106,7 +106,7 @@ const NewMeetingTeamPicker = (props: Props) => {
                   return (
                     <DropdownMenu.Item
                       key={team.id}
-                      className='outline-hidden px-3 py-1 text-base hover:bg-slate-200'
+                      className='px-3 py-1 text-base outline-hidden hover:bg-slate-200'
                       onClick={() => {
                         handleSelectTeam(team.id)
                       }}

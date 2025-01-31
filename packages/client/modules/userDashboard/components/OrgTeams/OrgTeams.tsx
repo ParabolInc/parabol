@@ -47,7 +47,7 @@ const OrgTeams = (props: Props) => {
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
         <div>
-          <h1 className='text-2xl font-semibold leading-7'>Teams</h1>
+          <h1 className='text-2xl leading-7 font-semibold'>Teams</h1>
         </div>
         <div className='ml-auto'>
           <Button
@@ -61,7 +61,7 @@ const OrgTeams = (props: Props) => {
         </div>
       </div>
 
-      <div className='shadow-xs overflow-hidden rounded-md border border-slate-300 bg-white'>
+      <div className='overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>

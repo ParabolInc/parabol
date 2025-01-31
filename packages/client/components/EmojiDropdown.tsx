@@ -51,7 +51,7 @@ export default forwardRef(
     }))
 
     return (
-      <div className='border-rad outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg'>
+      <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
         {items.length ? (
           items.map((item, idx) => {
             const isActive = idx === selectedIndex
@@ -60,7 +60,7 @@ export default forwardRef(
                 ref={isActive ? activeRef : undefined}
                 data-highlighted={isActive}
                 className={
-                  'outline-hidden hover:bg-slate-200! flex w-full cursor-pointer items-center rounded-md px-4 py-1 text-sm leading-8 text-slate-700 hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+                  'flex w-full cursor-pointer items-center rounded-md px-4 py-1 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
                 }
                 key={item.id}
                 onClick={() => selectItem(idx)}

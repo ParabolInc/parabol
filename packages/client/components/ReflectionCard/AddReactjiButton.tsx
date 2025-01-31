@@ -46,7 +46,7 @@ const AddReactjiButton = (props: Props) => {
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className='data-[side=top]:animate-slide-up data-[side=bottom]:animate-slide-down z-10'
+          className='z-10 data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
           sideOffset={5}
         >
           <ReactjiPicker onClick={onClick} />

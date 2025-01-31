@@ -47,7 +47,7 @@ const RetroDrawerTemplateCard = (props: Props) => {
     <form className='px-4 py-2' onClick={handleClick}>
       <div className='flex hover:rounded-2xl hover:bg-slate-100 focus:rounded-2xl focus:outline-sky-500'>
         <ActivityCard
-          className='aspect-256/160 group flex-1 hover:cursor-pointer'
+          className='group aspect-256/160 flex-1 hover:cursor-pointer'
           theme={CATEGORY_THEMES[template.category as CategoryID]}
           title={template.name}
           type='retrospective'

@@ -18,8 +18,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
   const scaleFactor = width > 100 ? 1 : width / 100
   return (
     <div
-      className='absolute right-1 top-1 flex origin-top-right items-center justify-center rounded bg-slate-800/60 text-white/80 opacity-0 transition-opacity group-hover:opacity-100
-'
+      className='absolute top-1 right-1 flex origin-top-right items-center justify-center rounded bg-slate-800/60 text-white/80 opacity-0 transition-opacity group-hover:opacity-100'
       style={{transform: `scale(${scaleFactor})`}}
     >
       {buttons.map(({name, Icon}) => {

@@ -29,7 +29,7 @@ export const Chip = (props: Props) => {
           />
         </div>
       )}
-      <div className='text-gray-700 text-sm font-semibold leading-normal'>{label}</div>
+      <div className='text-gray-700 text-sm leading-normal font-semibold'>{label}</div>
       {onDelete && (
         <Close
           className='text-gray-700 cursor-pointer text-sm hover:opacity-50'

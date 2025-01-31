@@ -72,7 +72,7 @@ const UpsertGitLabProviderDialog = (props: Props) => {
             onSubmit()
           }}
         >
-          <div className='pb-2 pt-6'>
+          <div className='pt-6 pb-2'>
             In the <b>Admin Area</b>, <b>Applications</b> add a <b>New application</b> with the
             following settings
           </div>
@@ -104,7 +104,7 @@ const UpsertGitLabProviderDialog = (props: Props) => {
               <b>api</b> (Access the authenticated user's API)
             </div>
           </div>
-          <div className='pb-2 pt-6'>
+          <div className='pt-6 pb-2'>
             Press <b>Save application</b> and enter the <b>Application ID</b> and <b>Secret</b>{' '}
             below
           </div>

@@ -70,7 +70,7 @@ const TeamInsightContent = (props: Props) => {
 
   return (
     <div className='mx-auto aspect-[1/1.414] w-[640px] max-w-3xl overflow-y-auto rounded-lg bg-white px-[56px] pt-8 shadow-md'>
-      <h2 className='mb-4 mt-0 flex items-center pt-0 text-2xl font-semibold leading-9'>
+      <h2 className='mt-0 mb-4 flex items-center pt-0 text-2xl leading-9 font-semibold'>
         <AutoAwesomeIcon className='mr-2 h-9 w-9 text-grape-500' />
         <span>Insights - {dateRange}</span>
       </h2>
@@ -79,7 +79,7 @@ const TeamInsightContent = (props: Props) => {
       {wins && wins.length > 0 && (
         <>
           <h3 className='mb-0 text-lg font-semibold text-slate-700'>Wins</h3>
-          <p className='mb-2 mt-0 text-sm italic text-slate-600'>
+          <p className='mt-0 mb-2 text-sm text-slate-600 italic'>
             What wins has "{teamName}" seen during this timeframe?
           </p>
           <ul className='mb-6 list-disc space-y-0 pl-6'>
@@ -98,7 +98,7 @@ const TeamInsightContent = (props: Props) => {
       {challenges && challenges.length > 0 && (
         <>
           <h3 className='mb-0 text-lg font-semibold text-slate-700'>Challenges</h3>
-          <p className='mb-2 mt-0 text-sm italic text-slate-600'>
+          <p className='mt-0 mb-2 text-sm text-slate-600 italic'>
             What challenges has "{teamName}" faced during this timeframe?
           </p>
           <ul className='list-disc space-y-0 pl-6'>
