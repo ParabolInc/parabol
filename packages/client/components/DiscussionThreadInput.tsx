@@ -211,16 +211,14 @@ const DiscussionThreadInput = (props: Props) => {
       data-reply={isReply}
       ref={containerRef}
     >
-      <div className='flex flex-1 items-center justify-center p-1'>
+      <div className='flex items-center justify-center p-1'>
         <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
-        <div className='flex-1 break-words'>
-          <TipTapEditor
-            className='flex min-h-0 items-center px-0 leading-4'
-            editor={editor}
-            linkState={linkState}
-            setLinkState={setLinkState}
-          />
-        </div>
+        <TipTapEditor
+          className='flex max-h-80 min-h-0 grow overflow-auto px-0 leading-4'
+          editor={editor}
+          linkState={linkState}
+          setLinkState={setLinkState}
+        />
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
       {isActionsContainerVisible && (
