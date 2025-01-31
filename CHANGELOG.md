@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.5](https://github.com/ParabolInc/parabol/compare/v8.23.4...v8.23.5) (2025-01-31)
+
+
+### Fixed
+
+* overflow-auto for comment input add max-h ([#10779](https://github.com/ParabolInc/parabol/issues/10779)) ([902c549](https://github.com/ParabolInc/parabol/commit/902c5495d32944eb8ed494647a7df4b05fd0c562))
+
 ## [8.23.4](https://github.com/ParabolInc/parabol/compare/v8.23.3...v8.23.4) (2025-01-31)
 
 
