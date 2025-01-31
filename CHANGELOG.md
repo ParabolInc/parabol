@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.4](https://github.com/ParabolInc/parabol/compare/v8.23.3...v8.23.4) (2025-01-31)
+
+
+### Fixed
+
+* hide deleted and voided invoices ([#10770](https://github.com/ParabolInc/parabol/issues/10770)) ([f893226](https://github.com/ParabolInc/parabol/commit/f893226fc8a7569561d9eafcc357c0becd6c422c))
+* line breaks in reflections ([#10777](https://github.com/ParabolInc/parabol/issues/10777)) ([da922ad](https://github.com/ParabolInc/parabol/commit/da922ad6049faee68c357f315592133db3e7c4ee))
+
 ## [8.23.3](https://github.com/ParabolInc/parabol/compare/v8.23.2...v8.23.3) (2025-01-30)
 
 
