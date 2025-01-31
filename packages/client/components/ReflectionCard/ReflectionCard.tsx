@@ -328,7 +328,7 @@ const ReflectionCard = (props: Props) => {
         <TipTapEditor
           className={cn(
             'flex min-h-4 w-full px-4',
-            isClipped ? 'max-h-11' : 'max-h-28',
+            isClipped ? 'max-h-8' : 'max-h-28',
             readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
           editor={editor}
