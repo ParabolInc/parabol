@@ -1,5 +1,4 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-
+// DEPRECATED! Try to use the global.css file instead
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   important: 'body',
@@ -14,13 +13,6 @@ module.exports = {
       disabled: 'disabled=true'
     },
     extend: {
-      spacing: {
-        'icon-md-18': '18px',
-        'icon-md-24': '24px',
-        'icon-md-36': '36px',
-        'icon-md-40': '40px',
-        'icon-md-48': '48px'
-      },
       padding: {
         'row-gutter': '16px'
       },
