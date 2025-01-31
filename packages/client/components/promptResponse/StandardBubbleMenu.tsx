@@ -22,7 +22,7 @@ export const StandardBubbleMenu = (props: Props) => {
 
   return (
     <BubbleMenu editor={editor} tippyOptions={{duration: 100}} shouldShow={shouldShowBubbleMenu}>
-      <div className='flex items-center rounded border-[1px] border-solid border-slate-600 bg-white p-1'>
+      <div className='flex items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-1'>
         <BubbleMenuButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}

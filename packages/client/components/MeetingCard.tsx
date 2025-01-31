@@ -303,7 +303,7 @@ const MeetingCard = (props: Props) => {
             {isRecurring && (
               <span
                 className={clsx(
-                  'absolute right-2 top-2 rounded-[64px] px-2 py-1 text-[11px] font-medium leading-3',
+                  'absolute top-2 right-2 rounded-[64px] px-2 py-1 text-[11px] leading-3 font-medium',
                   RECURRING_LABEL_COLORS[meetingType]
                 )}
               >

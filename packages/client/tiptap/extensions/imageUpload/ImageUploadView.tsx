@@ -64,7 +64,7 @@ export const ImageUploadView = (props: NodeViewProps) => {
       <Popover.Root open={open} onOpenChange={onOpenChange}>
         <Popover.Trigger asChild>
           <div className='m-0 p-0' contentEditable={false} ref={triggerRef}>
-            <div className='flex cursor-pointer items-center rounded bg-slate-200 p-2 hover:bg-slate-300'>
+            <div className='flex cursor-pointer items-center rounded-sm bg-slate-200 p-2 hover:bg-slate-300'>
               <ImageIcon className='size-6' />
               <span className='text-sm'>Add an image</span>
             </div>
@@ -73,7 +73,7 @@ export const ImageUploadView = (props: NodeViewProps) => {
         <Popover.Portal>
           <Popover.Content asChild align='start' alignOffset={8} collisionPadding={8}>
             {/* z-30 is for expanded reflection stacks using Zindex.DIALOG */}
-            <div className='left-0 top-0 z-30 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden data-[side=bottom]:animate-slideDown data-[side=top]:animate-slideUp'>
+            <div className='top-0 left-0 z-30 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
               <ImageSelector editor={editor} />
             </div>
           </Popover.Content>

@@ -29,12 +29,12 @@ const ActivityDetailsBadges = (props: Props) => {
     <div className='mb-4 flex gap-2'>
       <ActivityDetailsCategoryBadge isEditing={isEditing} templateRef={template} />
       {isPremium && (
-        <ActivityDetailsBadge className='select-none bg-gold-300 text-grape-700'>
+        <ActivityDetailsBadge className='bg-gold-300 text-grape-700 select-none'>
           Premium
         </ActivityDetailsBadge>
       )}
       {isCustom && (
-        <ActivityDetailsBadge className='select-none bg-grape-700 text-white'>
+        <ActivityDetailsBadge className='bg-grape-700 text-white select-none'>
           Custom
         </ActivityDetailsBadge>
       )}

@@ -63,7 +63,7 @@ export const OrgTeamMembers = (props: Props) => {
             <ArrowBack />
           </Link>
         </Button>
-        <h1 className='flex-1 text-2xl font-semibold leading-7'>{team.name}</h1>
+        <h1 className='flex-1 text-2xl leading-7 font-semibold'>{team.name}</h1>
         <div className='ml-auto'>
           {showMenuButton && (
             <Button
@@ -79,7 +79,7 @@ export const OrgTeamMembers = (props: Props) => {
         </div>
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>{teamMembers.length} Active</div>

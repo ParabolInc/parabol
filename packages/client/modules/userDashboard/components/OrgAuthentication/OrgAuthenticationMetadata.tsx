@@ -137,7 +137,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
   return (
     <>
       <div className='px-6 pb-3'>
-        <div className='flex text-base font-semibold leading-6 text-slate-700'>Metadata URL</div>
+        <div className='flex text-base leading-6 font-semibold text-slate-700'>Metadata URL</div>
         <div className={'flex items-center text-sm text-slate-700'}>
           Paste the metadata URL from your identity provider
         </div>

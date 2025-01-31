@@ -91,13 +91,13 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
             </ContactLink>{' '}
             {disabled ? 'to enable SSO' : 'to update email domains'}
           </SSOEnabledLabel>
-          <div className={'flex gap-2 pb-1 pt-2 empty:hidden'}>
+          <div className={'flex gap-2 pt-2 pb-1 empty:hidden'}>
             {domains.map((domain) => {
               return (
                 <div
                   key={domain}
                   className={
-                    'bg w-max select-none rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-800'
+                    'bg w-max rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-800 select-none'
                   }
                 >
                   {domain}

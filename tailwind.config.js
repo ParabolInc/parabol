@@ -1,12 +1,10 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-
+// DEPRECATED! Try to use the global.css file instead
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   important: 'body',
   corePlugins: {
     preflight: false
   },
-  presets: [require('./packages/client/tailwind.preset.js')],
   content: ['./packages/client/**/!(*node_modules*)/**/*.{ts,tsx,js,jsx,html}', './template.html'],
   theme: {
     data: {
@@ -14,18 +12,7 @@ module.exports = {
       // for elements where disabled doesn't exist, e.g. divs
       disabled: 'disabled=true'
     },
-    fontFamily: {
-      sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
-      mono: ['IBM Plex Mono', ...defaultTheme.fontFamily.mono]
-    },
     extend: {
-      spacing: {
-        'icon-md-18': '18px',
-        'icon-md-24': '24px',
-        'icon-md-36': '36px',
-        'icon-md-40': '40px',
-        'icon-md-48': '48px'
-      },
       padding: {
         'row-gutter': '16px'
       },

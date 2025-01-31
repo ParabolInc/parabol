@@ -69,12 +69,12 @@ export const ImageSelectorSearchTab = (props: Props) => {
           autoFocus
           placeholder={placeholder}
           value={searchQuery}
-          className='w-full outline-none focus:ring-2'
+          className='w-full outline-hidden focus:ring-2'
           ref={ref}
           onChange={onChange}
         />
       </form>
-      <div className='grid w-96 auto-rows-[1px] grid-cols-[repeat(auto-fit,_minmax(112px,_1fr))] gap-x-1 overflow-auto'>
+      <div className='grid w-96 auto-rows-[1px] grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-x-1 overflow-auto'>
         {edges.map((edge) => {
           const {node} = edge
           const {previewUrl, originalUrl} = node
@@ -82,14 +82,14 @@ export const ImageSelectorSearchTab = (props: Props) => {
             <button
               key={previewUrl}
               style={{gridRow: 'span 200'}} // initially too tall to prevent the lastItem from intersecting viewport
-              className={cn('row-span w-full cursor-pointer rounded')}
+              className={cn('row-span w-full cursor-pointer rounded-sm')}
               onClick={() => {
                 setImageURL(originalUrl || previewUrl)
               }}
             >
               <img
                 src={previewUrl}
-                className='rounded'
+                className='rounded-sm'
                 onLoad={(e) => {
                   const img = e.target as HTMLImageElement
                   const button = img.parentElement!

@@ -29,7 +29,7 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
   return (
     <div className='flex h-auto w-auto flex-col items-center rounded-lg bg-white'>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
-        <DialogTitle className='px-6 pb-4 pt-6 text-slate-700'>{'Archive all'}</DialogTitle>
+        <DialogTitle className='px-6 pt-6 pb-4 text-slate-700'>{'Archive all'}</DialogTitle>
         <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
       </div>
       <div className='px-6 pb-8 text-base text-slate-700'>
@@ -38,13 +38,13 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
       <div className='flex w-full justify-end'>
         <FlatButton
           onClick={handleClose}
-          className='mb-6 mr-6 bg-slate-500 font-semibold text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
+          className='mr-6 mb-6 bg-slate-500 font-semibold text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
         >
           {'Cancel'}
         </FlatButton>
         <FlatButton
           onClick={onSubmit}
-          className='mb-6 mr-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
+          className='mr-6 mb-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
         >
           {'Confirm'}
         </FlatButton>
