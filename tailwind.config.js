@@ -6,7 +6,6 @@ module.exports = {
   corePlugins: {
     preflight: false
   },
-  presets: [require('./packages/client/tailwind.preset.js')],
   content: ['./packages/client/**/!(*node_modules*)/**/*.{ts,tsx,js,jsx,html}', './template.html'],
   theme: {
     data: {

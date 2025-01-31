@@ -51,7 +51,7 @@ export default forwardRef(
     }))
 
     return (
-      <div className='border-rad outline-hidden in-data-[placement="bottom-start"]:animate-slideDown in-data-[placement="top-start"]:animate-slideUp z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg'>
+      <div className='border-rad outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg'>
         {items.length ? (
           items.map((item, idx) => {
             const isActive = idx === selectedIndex

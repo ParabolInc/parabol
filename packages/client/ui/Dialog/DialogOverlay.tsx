@@ -9,7 +9,7 @@ export const DialogOverlay = React.forwardRef<
   <RadixDialog.Overlay
     ref={ref}
     className={twMerge(
-      'fixed inset-0 bg-slate-700/[.3] data-[state=open]:animate-overlayShow',
+      'data-[state=open]:animate-overlay-show fixed inset-0 bg-slate-700/[.3]',
       className
     )}
     {...props}
