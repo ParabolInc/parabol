@@ -278,7 +278,7 @@
   }
 
   body {
-    @apply m-0 p-0 font-sans text-[16px] leading-[normal] font-normal text-slate-700 antialiased;
+    @apply m-0 p-0 font-sans text-[16px] font-normal leading-[normal] text-slate-700 antialiased;
   }
 
   a {
@@ -422,14 +422,14 @@
     transition: border 160ms cubic-bezier(0.45, 0.05, 0.55, 0.95);
     &.ProseMirror-selectednode::after {
       content: '';
-      @apply pointer-events-none absolute inset-0 h-full w-full rounded-sm bg-[#2383e247] select-none;
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none rounded-sm bg-[#2383e247];
     }
   }
   .node-imageBlock {
     @apply relative;
     &.has-focus > div::after {
       content: '';
-      @apply pointer-events-none absolute inset-0 h-full w-full bg-[#2383e247] select-none;
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none bg-[#2383e247];
     }
     & img {
       @apply overflow-hidden rounded-md;
