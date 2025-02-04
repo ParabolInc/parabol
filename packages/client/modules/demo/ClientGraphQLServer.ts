@@ -37,6 +37,7 @@ import unlockNextStages from '../../utils/unlockNextStages'
 import LocalAtmosphere from './LocalAtmosphere'
 import entityLookup from './entityLookup'
 import getDemoEntities from './getDemoEntities'
+import getDemoTitles from './getDemoTitles'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
 import initDB, {
@@ -1003,13 +1004,20 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {startDraggingReflection: data}
     },
-    EndDraggingReflectionMutation: (
+    EndDraggingReflectionMutation: async (
       {
         reflectionId,
         dropTargetType,
         dropTargetId,
-        dragId
-      }: {reflectionId: string; dropTargetType: any; dropTargetId: string; dragId: string},
+        dragId,
+        title
+      }: {
+        reflectionId: string
+        dropTargetType: any
+        dropTargetId: string
+        dragId: string
+        title?: string
+      },
       userId: string
     ) => {
       const now = new Date().toJSON()
@@ -1057,7 +1065,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           reflectionGroupId: newReflectionGroupId,
           updatedAt: now
         })
-        const nextTitle = getGroupSmartTitle([reflection as DemoReflection])
+        const reflectionContent = (reflection as DemoReflection).content
+        console.log('🚀 ~ reflectionContent____:', reflectionContent)
+        const nextTitle =
+          title ||
+          (await getDemoTitles([reflectionContent])) ||
+          getGroupSmartTitle([reflection as DemoReflection])
         newReflectionGroup.smartTitle = nextTitle
         newReflectionGroup.title = nextTitle
         if (oldReflections.length > 0) {
@@ -1107,12 +1120,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             const oldReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
-            const nextTitle = getGroupSmartTitle(nextReflections)
-            const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
+
+            const reflectionContents = nextReflections.map((r) => r.content)
+            const nextTitle =
+              title ||
+              (await getDemoTitles(reflectionContents)) ||
+              getGroupSmartTitle(nextReflections)
             reflectionGroup.smartTitle = nextTitle
-            if (!titleIsUserDefined) {
-              reflectionGroup.title = nextTitle
-            }
+            reflectionGroup.title = nextTitle
+
             const oldReflectionGroup = this.db.reflectionGroups.find(
               (group) => group.id === oldReflectionGroupId
             )!
@@ -1348,7 +1364,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // To reproduce, get to the discuss phase & quickly add a task before the bots do
       // the result is tasks == [undefined]
       // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
-      // (I removed MeetingAgendaCards, mentioned in the comment line above, as it’s unused, TA)
+      // (I removed MeetingAgendaCards, mentioned in the comment line above, as it's unused, TA)
       // Safe to test removing this now that MeetingAgendaCards is gone MK
       // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
       await sleep(100)

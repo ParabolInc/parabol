@@ -1,0 +1,20 @@
+import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import {QueryResolvers} from '../resolverTypes'
+
+const demoOpenAI: QueryResolvers['demoOpenAI'] = async (_source, {reflections}, {dataLoader}) => {
+  console.log('in the mutatio...')
+  const operationId = dataLoader.share()
+  const manager = new OpenAIServerManager()
+
+  try {
+    const formattedReflections = reflections.map((text) => ({plaintextContent: text}))
+    const title = await manager.generateGroupTitle(formattedReflections)
+    return {title}
+  } catch (e) {
+    // If OpenAI fails, fall back to using the first reflection as the title
+    const fallbackTitle = reflections[0] || 'Untitled Group'
+    return {title: fallbackTitle}
+  }
+}
+
+export default demoOpenAI

@@ -18,6 +18,12 @@ type Query {
     """
     text: String!
   ): GetDemoEntitiesPayload!
+  demoOpenAI(
+    """
+    The text to generate a response for
+    """
+    reflections: [String!]!
+  ): DemoOpenAIPayload!
   SAMLIdP(
     """
     the email associated with a SAML login. null if instance is SSO-only

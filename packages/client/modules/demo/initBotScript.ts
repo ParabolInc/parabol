@@ -350,7 +350,8 @@ const initBotScript = () => {
           reflectionId: 'botRef3',
           dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup1',
-          dragId: 'botDrag1'
+          dragId: 'botDrag1',
+          title: 'Communication Challenges'
         }
       },
       {
@@ -415,7 +416,8 @@ const initBotScript = () => {
           reflectionId: 'botRef4',
           dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup1',
-          dragId: 'botDrag2'
+          dragId: 'botDrag2',
+          title: 'Communication Challenges'
         }
       },
       {
@@ -480,7 +482,8 @@ const initBotScript = () => {
           reflectionId: 'botRef7',
           dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup8',
-          dragId: 'botDrag3'
+          dragId: 'botDrag3',
+          title: 'Process Issues'
         }
       },
       {
@@ -554,7 +557,8 @@ const initBotScript = () => {
           reflectionId: 'botRef5',
           dropTargetType: 'REFLECTION_GROUP' as DragReflectionDropTargetTypeEnum,
           dropTargetId: 'botGroup8',
-          dragId: 'botDrag4'
+          dragId: 'botDrag4',
+          title: 'Process Issues'
         }
       },
       // dummy op to make the user wait until dragging is complete
