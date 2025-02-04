@@ -36,6 +36,8 @@ const NewTeam = lazy(
       /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
     )
 )
+
+const Page = lazy(() => import(/* webpackChunkName: 'Page' */ '../modules/pages/Page'))
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
 }
@@ -156,6 +158,7 @@ const Dashboard = (props: Props) => {
             />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+            <Route path='/pages/:orgName?/:pageId?' component={Page} />
           </Switch>
         </DashMain>
       </DashPanel>

@@ -60,7 +60,7 @@ const PrivateRoutes = () => {
       <Switch location={state?.backgroundLocation || location}>
         <Route path='/activity-library' component={ActivityLibraryRoutes} />
         <Route
-          path='(/meetings|/me|/newteam|/team|/organization-join-request)'
+          path='(/meetings|/me|/newteam|/team|/organization-join-request|/pages)'
           component={DashboardRoot}
         />
         <Route path='/new-meeting'>
