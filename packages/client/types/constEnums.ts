@@ -407,8 +407,7 @@ export const enum Threshold {
   MAX_STARTER_TIER_TEAMS = 2,
   MAX_POKER_STORIES = 50,
   MAX_INTEGRATION_FETCH_TIME = 10000,
-  MIN_STICKY_TEAM_MEETING_ATTENDEES = 2,
-  MIN_STICKY_TEAM_MEETINGS = 3,
+  MIN_STICKY_TEAM_MEETING_ATTENDEES = 1,
   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000, // 30 days
   STARTER_TIER_LOCK_AFTER_DAYS = 30,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
@@ -421,7 +420,6 @@ export const enum Threshold {
 // Use these values for easier testing of team limits and usage stats
 export const enum ThresholdTest {
   MIN_STICKY_TEAM_MEETING_ATTENDEES = 0,
-  MIN_STICKY_TEAM_MEETINGS = 0,
   MAX_STARTER_TIER_TEAMS = 0,
   STARTER_TIER_LOCK_AFTER_DAYS = 0,
   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
@@ -490,7 +488,7 @@ export const enum SprintPokerDefaults {
   SERVICE_FIELD_NULL = '',
   SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
-  JIRA_FIELD_UPDATE_ERROR = 'Couldn’t fix the missing field! In Jira, use "Find my field" to determine the error',
+  JIRA_FIELD_UPDATE_ERROR = 'Couldn\'t fix the missing field! In Jira, use "Find my field" to determine the error',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type',
   GITLAB_FIELD_TIME_ESTIMATE = '__timeEstimate',
