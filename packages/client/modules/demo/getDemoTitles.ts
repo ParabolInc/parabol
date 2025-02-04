@@ -23,7 +23,6 @@ const getDemoTitles = async (reflections: string[]) => {
 
   console.log('about to try....')
   const res = await fetchQuery<getDemoTitlesQuery>(remoteAtmosphere, query, {
-    // const res = await fetchQuery<any>(remoteAtmosphere, query, {
     reflections
   }).toPromise()
   console.log('🚀 ~ res)))):', res)

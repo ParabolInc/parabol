@@ -1032,6 +1032,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )!
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
+
       if ((dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GRID') {
         const {promptId} = reflection
         newReflectionGroupId = this.getTempId('group')
@@ -1066,13 +1067,29 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           updatedAt: now
         })
         const reflectionContent = (reflection as DemoReflection).content
-        console.log('🚀 ~ reflectionContent____:', reflectionContent)
-        const nextTitle =
-          title ||
-          (await getDemoTitles([reflectionContent])) ||
-          getGroupSmartTitle([reflection as DemoReflection])
-        newReflectionGroup.smartTitle = nextTitle
-        newReflectionGroup.title = nextTitle
+
+        // Set a title to an empty string while waiting for openai to respond
+        const loadingTitle = ''
+        newReflectionGroup.smartTitle = loadingTitle
+        newReflectionGroup.title = loadingTitle
+
+        getDemoTitles([reflectionContent])
+          .then((aiTitle) => {
+            if (aiTitle && aiTitle !== loadingTitle) {
+              newReflectionGroup.smartTitle = aiTitle
+              newReflectionGroup.title = aiTitle
+              this.emit(SubscriptionChannel.MEETING, {
+                __typename: 'UpdateReflectionGroupTitlePayload',
+                meetingId: RetroDemo.MEETING_ID,
+                reflectionGroupId: newReflectionGroupId,
+                reflectionGroup: newReflectionGroup
+              })
+            }
+          })
+          .catch((err) => {
+            console.error('Error generating AI title:', err)
+          })
+
         if (oldReflections.length > 0) {
           const oldTitle = getGroupSmartTitle(oldReflections)
           const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
@@ -1092,7 +1109,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
         dropTargetId
       ) {
-        // group
+        // Handle the case for joining an existing group.
         const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === dropTargetId)!
         if (reflectionGroup) {
           newReflectionGroupId = dropTargetId
@@ -1117,23 +1134,36 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             const nextReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === newReflectionGroupId
             )
-            const oldReflections = reflections.filter(
+            const oldReflectionsForGroup = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
 
             const reflectionContents = nextReflections.map((r) => r.content)
-            const nextTitle =
-              title ||
-              (await getDemoTitles(reflectionContents)) ||
-              getGroupSmartTitle(nextReflections)
-            reflectionGroup.smartTitle = nextTitle
-            reflectionGroup.title = nextTitle
+            // Set fallback title.
+            const fallbackTitle = '' // title || getGroupSmartTitle(nextReflections)
+            reflectionGroup.smartTitle = fallbackTitle
+            reflectionGroup.title = fallbackTitle
 
-            const oldReflectionGroup = this.db.reflectionGroups.find(
-              (group) => group.id === oldReflectionGroupId
-            )!
-            if (oldReflections.length > 0) {
-              const oldTitle = getGroupSmartTitle(oldReflections)
+            // Fire async update for AI-generated title.
+            getDemoTitles(reflectionContents)
+              .then((aiTitle) => {
+                if (aiTitle && aiTitle !== fallbackTitle) {
+                  reflectionGroup.smartTitle = aiTitle
+                  reflectionGroup.title = aiTitle
+                  this.emit(SubscriptionChannel.MEETING, {
+                    __typename: 'UpdateReflectionGroupTitlePayload',
+                    meetingId: RetroDemo.MEETING_ID,
+                    reflectionGroupId: newReflectionGroupId,
+                    reflectionGroup: reflectionGroup
+                  })
+                }
+              })
+              .catch((err) => {
+                console.error('Error generating AI title:', err)
+              })
+
+            if (oldReflectionsForGroup.length > 0) {
+              const oldTitle = getGroupSmartTitle(oldReflectionsForGroup)
               const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
               oldReflectionGroup.smartTitle = oldTitle
               if (!titleIsUserDefined) {
