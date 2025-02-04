@@ -62,6 +62,8 @@ module.exports = {
   resolve: {
     alias: {
       '~': path.join(CLIENT_ROOT),
+      // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+      'react/jsx-runtime': require.resolve('react/jsx-runtime')
     },
     extensions: [".ts", ".tsx", ".js"],
   },
@@ -76,6 +78,31 @@ module.exports = {
           presets: ["@babel/preset-react", "@babel/preset-typescript"],
         },
       },
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  '@tailwindcss/postcss',
+                ],
+              },
+            },
+          }
+        ]
+      }
     ],
   },
   plugins: [
@@ -95,7 +122,7 @@ module.exports = {
         }
       },
       */
-    })
+    }),
   ],
   externals: {
     react: 'React',

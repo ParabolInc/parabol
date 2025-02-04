@@ -12,11 +12,13 @@ import rootReducer, {
 } from './reducers'
 import {getAssetsUrl, getPluginServerRoute} from './selectors'
 import {PluginRegistry} from './types/mattermost-webapp'
+import * as Tooltip from '@radix-ui/react-tooltip'
 
 import {createEnvironment} from './Atmosphere'
 import AtmosphereProvider from './AtmosphereProvider'
 import AutoLogin from './components/AutoLogin'
 import ModalRoot from './components/ModalRoot'
+import './index.css'
 
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
@@ -34,7 +36,9 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
   ))
   registry.registerRootComponent(() => (
     <AtmosphereProvider environment={environment}>
-      <ModalRoot />
+      <Tooltip.Provider>
+        <ModalRoot />
+      </Tooltip.Provider>
     </AtmosphereProvider>
   ))
   const {toggleRHSPlugin} = registry.registerRightHandSidebarComponent(

@@ -300,10 +300,12 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         }
         const viewerId = getUserId(authToken)
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        console.log('GEORG allTasks', JSON.stringify(allTasks, null, 2))
         const tasks = allTasks.filter((task) => {
           if (!task.userId || (isTaskPrivate(task.tags) && task.userId !== viewerId)) return false
           return true
         })
+        console.log('GEORG filtered', JSON.stringify(tasks, null, 2))
         return connectionFromTasks(tasks)
       }
     },
