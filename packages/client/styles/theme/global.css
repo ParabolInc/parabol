@@ -9,6 +9,12 @@
 @config '../../../../tailwind.config.js';
 
 @theme {
+  /* Fonts */
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
   /* Palette */
   --color-*: initial;
   --color-transparent: transparent;
