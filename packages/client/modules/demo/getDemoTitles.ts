@@ -12,20 +12,11 @@ const query = graphql`
 `
 
 const getDemoTitles = async (reflections: string[]) => {
-  console.log('in get demo..... ', reflections)
   if (!reflections || reflections.length === 0) return null
   const remoteAtmosphere = new Atmosphere()
-
-  const TEST_TITLES = {
-    botGroup1: 'Communication Challenges',
-    botGroup8: 'Process Issues'
-  }
-
-  console.log('about to try....')
   const res = await fetchQuery<getDemoTitlesQuery>(remoteAtmosphere, query, {
     reflections
   }).toPromise()
-  console.log('🚀 ~ res)))):', res)
   return res?.demoOpenAI?.title ?? reflections[0] ?? null
 }
 

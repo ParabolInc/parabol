@@ -8,7 +8,6 @@ import stringSimilarity from 'string-similarity'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
 import {
@@ -35,8 +34,6 @@ import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import LocalAtmosphere from './LocalAtmosphere'
-import entityLookup from './entityLookup'
-import getDemoEntities from './getDemoEntities'
 import getDemoTitles from './getDemoTitles'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
@@ -55,7 +52,6 @@ export type DemoReflection = {
   createdAt: string | Date
   dragContext: any
   editorIds: any
-  entities: any
   groupColor: string
   isEditing: any
   isHumanTouched: boolean
@@ -552,12 +548,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflectionId = id || this.getTempId('ref')
       const normalizedContent = JSON.parse(content) as JSONContent
       const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
-      let entities = [] as GoogleAnalyzedEntity[]
-      if (userId !== demoViewerId) {
-        entities = entityLookup[reflectionId as keyof typeof entityLookup].entities
-      } else {
-        entities = (await getDemoEntities(plaintextContent)) as any
-      }
 
       const reflection = {
         __typename: 'RetroReflection',
@@ -575,7 +565,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isActive: true,
         isEditing: null,
         isViewerCreator: userId === demoViewerId,
-        entities,
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         prompt,
@@ -587,15 +576,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         retroReflectionGroup: undefined as any
       } as DemoReflection
 
-      const smartTitle = getGroupSmartTitle([reflection])
-
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
         commentors: null,
         id: reflectionGroupId,
         reflectionGroupId,
-        smartTitle,
-        title: smartTitle,
+        smartTitle: null,
+        title: null,
         voteCount: 0,
         viewerVoteCount: 0,
         createdAt: now,
@@ -1091,19 +1078,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           })
 
         if (oldReflections.length > 0) {
-          const oldTitle = getGroupSmartTitle(oldReflections)
+          // Instead of using getGroupSmartTitle, just set an empty title
+          const loadingTitle = ''
           const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
-          oldReflectionGroup.smartTitle = oldTitle
+          oldReflectionGroup.smartTitle = loadingTitle
           if (!titleIsUserDefined) {
-            oldReflectionGroup.title = oldTitle
+            oldReflectionGroup.title = loadingTitle
           }
-        } else {
-          const meetingGroups = (this.db.newMeeting as any).reflectionGroups
-          meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
-          Object.assign(oldReflectionGroup, {
-            isActive: false,
-            updatedAt: now
-          })
+          // Then get the AI title
+          getDemoTitles(oldReflections.map((r) => r.content))
+            .then((aiTitle) => {
+              if (aiTitle && aiTitle !== loadingTitle) {
+                oldReflectionGroup.smartTitle = aiTitle
+                if (!titleIsUserDefined) {
+                  oldReflectionGroup.title = aiTitle
+                }
+                this.emit(SubscriptionChannel.MEETING, {
+                  __typename: 'UpdateReflectionGroupTitlePayload',
+                  meetingId: RetroDemo.MEETING_ID,
+                  reflectionGroupId: oldReflectionGroup.id,
+                  reflectionGroup: oldReflectionGroup
+                })
+              }
+            })
+            .catch((err) => {
+              console.error('Error generating AI title:', err)
+            })
         }
       } else if (
         (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
