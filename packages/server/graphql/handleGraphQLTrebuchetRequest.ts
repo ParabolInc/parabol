@@ -62,7 +62,8 @@ const handleGraphQLTrebuchetRequest = async (
             authToken: JSON.stringify(authToken),
             docId: docId || '',
             query: query || '',
-            variables: JSON.stringify(variables)
+            variables: JSON.stringify(variables),
+            socketServerId: socketId
           }
         })
         return {
