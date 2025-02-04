@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.23.8](https://github.com/ParabolInc/parabol/compare/v8.23.7...v8.23.8) (2025-02-04)
+
+
+### Fixed
+
+* Allow navigation in meetings with invalid facilitator stage ([#10791](https://github.com/ParabolInc/parabol/issues/10791)) ([968c4fd](https://github.com/ParabolInc/parabol/commit/968c4fd35eacecd71b4492810e55dd4ead68ec08))
+
 ## [8.23.7](https://github.com/ParabolInc/parabol/compare/v8.23.6...v8.23.7) (2025-02-04)
 
 
