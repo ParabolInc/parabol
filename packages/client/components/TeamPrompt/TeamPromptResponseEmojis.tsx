@@ -52,5 +52,5 @@ export const TeamPromptResponseEmojis = (props: Props) => {
     )
   }
 
-  return <ReactjiSection className='pr-2 pt-2' reactjis={reactjis} onToggle={onToggleReactji} />
+  return <ReactjiSection className='pt-2 pr-2' reactjis={reactjis} onToggle={onToggleReactji} />
 }

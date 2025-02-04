@@ -209,7 +209,7 @@ const ShareTopicModal = (props: Props) => {
                   value='teams'
                   disabled={true}
                   endAdornment={comingSoonBadge}
-                  className='data-[disabled]:opacity-100'
+                  className='data-disabled:opacity-100'
                 >
                   Teams
                 </SelectItem>
@@ -217,7 +217,7 @@ const ShareTopicModal = (props: Props) => {
                   value='mattermost'
                   disabled={true}
                   endAdornment={comingSoonBadge}
-                  className='data-[disabled]:opacity-100'
+                  className='data-disabled:opacity-100'
                 >
                   Mattermost
                 </SelectItem>

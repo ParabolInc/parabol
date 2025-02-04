@@ -18,15 +18,14 @@ export const ImageBlockBubbleMenu = (props: Props) => {
   const scaleFactor = width > 100 ? 1 : width / 100
   return (
     <div
-      className='absolute right-1 top-1 flex origin-top-right items-center justify-center rounded bg-slate-800/60 text-white/80 opacity-0 transition-opacity group-hover:opacity-100
-'
+      className='absolute top-1 right-1 flex origin-top-right items-center justify-center rounded bg-slate-800/60 text-white/80 opacity-0 transition-opacity group-hover:opacity-100'
       style={{transform: `scale(${scaleFactor})`}}
     >
       {buttons.map(({name, Icon}) => {
         return (
           <button
             key={name}
-            className='flex rounded bg-inherit p-[1px]'
+            className='flex rounded-sm bg-inherit p-[1px]'
             onClick={() => {
               if (align === name) return
               updateAttributes({align: name})
@@ -34,7 +33,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
           >
             <Icon
               data-highlighted={align === name}
-              className='cursor-pointer rounded p-1 data-highlighted:cursor-default data-highlighted:bg-slate-600/80'
+              className='cursor-pointer rounded-sm p-1 data-highlighted:cursor-default data-highlighted:bg-slate-600/80'
             />
           </button>
         )

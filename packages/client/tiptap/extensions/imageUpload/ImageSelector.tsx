@@ -56,7 +56,7 @@ export const ImageSelector = (props: Props) => {
               onClick={() => {
                 setActiveIdx(idx)
               }}
-              className='whitespace-nowrap px-2 py-0'
+              className='px-2 py-0 whitespace-nowrap'
               label={
                 <div className='flex items-center justify-center text-sm font-normal'>
                   {tab.label}

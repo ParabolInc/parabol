@@ -124,7 +124,7 @@ const OrgPlanDrawer = (props: Props) => {
           <OrgPlanDrawerContent tier={billingTier} />
         </Drawer>
       </ResponsiveDashSidebar>
-      <div className='fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
+      <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
         <Confetti active={showConfetti} />
       </div>
     </>

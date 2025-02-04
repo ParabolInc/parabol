@@ -137,7 +137,7 @@ export const TipTapLinkMenu = (props: Props) => {
             e.preventDefault()
           }}
         >
-          <div className='absolute left-0 top-0 z-10' style={{transform: getTransform()}}>
+          <div className='absolute top-0 left-0 z-10' style={{transform: getTransform()}}>
             {linkState === 'edit' && (
               <TipTapLinkEditor
                 initialUrl={link}

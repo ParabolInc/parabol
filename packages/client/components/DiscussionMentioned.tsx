@@ -73,7 +73,7 @@ const DiscussionMentioned = (props: Props) => {
       notification={notification}
       action={<NotificationAction label={'See the discussion'} onClick={goThere} />}
     >
-      <div className='my-1 rounded bg-white p-2 text-sm leading-5 shadow-card'>
+      <div className='my-1 rounded-sm bg-white p-2 text-sm leading-5 shadow-card'>
         <TipTapEditor editor={editor} />
       </div>
     </NotificationTemplate>

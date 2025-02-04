@@ -92,7 +92,7 @@ const Mentioned = (props: Props) => {
       action={<NotificationAction label={actionLabel} onClick={goThere} />}
     >
       {previewContent && (
-        <div className='mx-0 my-1 mt-4 rounded bg-white p-2 text-sm leading-5 shadow-card'>
+        <div className='mx-0 my-1 mt-4 rounded-sm bg-white p-2 text-sm leading-5 shadow-card'>
           <div dangerouslySetInnerHTML={{__html: htmlContent}}></div>
         </div>
       )}

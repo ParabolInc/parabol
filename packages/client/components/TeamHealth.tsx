@@ -95,7 +95,7 @@ const TeamHealth = (props: Props) => {
                   {labels?.map((label, index) => (
                     <div
                       key={label}
-                      className='m-3 flex h-32 w-20 flex-col justify-start rounded'
+                      className='m-3 flex h-32 w-20 flex-col justify-start rounded-sm'
                       style={{backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)}}
                     >
                       <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
@@ -119,7 +119,7 @@ const TeamHealth = (props: Props) => {
                       key={label}
                       value={label}
                       className={clsx(
-                        'group m-3 flex h-32 w-20 flex-col items-center justify-start rounded bg-slate-300 p-0 data-[state=checked]:bg-grape-300',
+                        'group m-3 flex h-32 w-20 flex-col items-center justify-start rounded-sm bg-slate-300 p-0 data-[state=checked]:bg-grape-300',
                         canVote
                           ? 'hover:cursor-pointer hover:bg-grape-100'
                           : 'hover:cursor-not-allowed'

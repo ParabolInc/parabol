@@ -155,7 +155,7 @@ const OrgMembers = (props: Props) => {
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-start py-1'>
         <div>
-          <h1 className='text-2xl font-semibold leading-7'>Members</h1>
+          <h1 className='text-2xl leading-7 font-semibold'>Members</h1>
         </div>
         <div className='ml-auto'>
           {isBillingLeader && (
@@ -170,11 +170,11 @@ const OrgMembers = (props: Props) => {
           placeholder='Search by name or email'
           value={searchInput}
           onChange={handleSearchChange}
-          className='focus:border-blue-500 focus:ring-blue-500 w-full rounded-md border border-slate-300 px-3 py-2 focus:outline-none focus:ring-1'
+          className='focus:border-blue-500 focus:ring-blue-500 w-full rounded-md border border-slate-300 px-3 py-2 focus:ring-1 focus:outline-hidden'
         />
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-sm'>
+      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
