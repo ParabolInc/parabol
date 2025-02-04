@@ -46,7 +46,10 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
         </PlainButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className='border-rad rounded-sm bg-white shadow-lg' sideOffset={5}>
+        <DropdownMenu.Content
+          className='border-rad rounded-sm bg-white shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
+          sideOffset={5}
+        >
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
             {MAIN_CATEGORIES.map((c) => {
               const categoryId = c as CategoryID
