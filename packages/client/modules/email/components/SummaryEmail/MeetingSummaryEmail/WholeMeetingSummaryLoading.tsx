@@ -24,12 +24,10 @@ const WholeMeetingSummary = () => {
           borderBottom: `1px solid ${PALETTE.SLATE_400}`
         }}
       >
-        <tr>
-          <td style={explainerStyle}>
-            {'Hold tight! Our AI 🤖 is generating your meeting summary'}
-            <Ellipsis />
-          </td>
-        </tr>
+        <div style={explainerStyle}>
+          {'Hold tight! Our AI 🤖 is generating your meeting summary'}
+          <Ellipsis />
+        </div>
       </td>
     </tr>
   )
