@@ -44,7 +44,17 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
     } catch (e) {
       const error =
         e instanceof Error ? e : new Error(`GQL executor failed to publish. docId: ${docId}`)
-      sendToSentry(error, {userId: getUserId(authToken)})
+      sendToSentry(error, {
+        userId: getUserId(authToken),
+        tags: {
+          authToken: JSON.stringify(authToken),
+          docId: docId || '',
+          query: query || '',
+          variables: JSON.stringify(variables),
+          socketServerId: socketId,
+          executorServerId
+        }
+      })
       return this.next()
     }
   }
