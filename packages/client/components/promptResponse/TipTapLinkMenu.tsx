@@ -29,7 +29,10 @@ export const TipTapLinkMenu = (props: Props) => {
   const [linkState, _setLinkState] = useState<LinkMenuState>(null)
 
   const setLinkState: typeof _setLinkState = (linkState) => {
-    editor.commands.focus()
+    if (!linkState) {
+      // closing the menu by hitting Esc should refocus on the editor
+      editor.commands.focus()
+    }
     _setLinkState(linkState)
   }
 
