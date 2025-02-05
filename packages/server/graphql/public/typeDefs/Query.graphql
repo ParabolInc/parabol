@@ -12,15 +12,9 @@ type Query {
     """
     token: ID!
   ): VerifiedInvitationPayload!
-  getDemoEntities(
-    """
-    the reflection bodies to entitize
-    """
-    text: String!
-  ): GetDemoEntitiesPayload!
   demoOpenAI(
     """
-    The text to generate a response for
+    Get a reflection group title for the demo using AI
     """
     reflections: [String!]!
   ): DemoOpenAIPayload!
