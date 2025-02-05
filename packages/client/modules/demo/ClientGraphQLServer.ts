@@ -4,7 +4,6 @@ import {parse, stringify} from 'flatted'
 import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import stringSimilarity from 'string-similarity'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
@@ -730,28 +729,43 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
       const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
-      const isVeryDifferent =
-        stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
-      const entities = isVeryDifferent
-        ? await getDemoEntities(plaintextContent)
-        : reflection.entities
       reflection.plaintextContent = plaintextContent
-      reflection.entities = entities as any
 
       const reflectionsInGroup = this.db.reflections.filter(
         ({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId
       )
-      const newTitle = getGroupSmartTitle(reflectionsInGroup)
       const reflectionGroup = this.db.reflectionGroups.find(
         (group) => group.id === reflection.reflectionGroupId
       )
+
       if (reflectionGroup) {
         const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
-        reflectionGroup.smartTitle = newTitle
         if (!titleIsUserDefined) {
-          reflectionGroup.title = newTitle
+          const reflectionContents = reflectionsInGroup.map((r) => r.content)
+          // Set loading state
+          const loadingTitle = ''
+          reflectionGroup.smartTitle = loadingTitle
+          reflectionGroup.title = loadingTitle
+
+          getDemoTitles(reflectionContents)
+            .then((aiTitle) => {
+              if (aiTitle && aiTitle !== loadingTitle) {
+                reflectionGroup.smartTitle = aiTitle
+                reflectionGroup.title = aiTitle
+                this.emit(SubscriptionChannel.MEETING, {
+                  __typename: 'UpdateReflectionGroupTitlePayload',
+                  meetingId: RetroDemo.MEETING_ID,
+                  reflectionGroupId: reflectionGroup.id,
+                  reflectionGroup: reflectionGroup
+                })
+              }
+            })
+            .catch((err) => {
+              console.error('Error generating AI title:', err)
+            })
         }
       }
+
       const data = {
         error: null,
         meeting: this.db.newMeeting,
