@@ -1,13 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Client4} from 'mattermost-redux/client'
 import {useEffect, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
 import {closeCreateTaskModal} from '../../reducers'
 
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import {useCurrentUser} from '../../hooks/useCurrentUser'
 import Select from '../Select'
 import SimpleSelect from '../SimpleSelect'
 
+import {Post} from 'mattermost-redux/types/posts'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
 import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
@@ -66,6 +70,10 @@ const CreateTaskModal = () => {
     }
   }, [teams, selectedTeam])
   const teamId = selectedTeam?.id
+  const teamName = selectedTeam?.name
+
+  const channel = useCurrentChannel()
+  const mmUser = useCurrentUser()
 
   const dispatch = useDispatch()
   const handleClose = () => {
@@ -91,6 +99,18 @@ const CreateTaskModal = () => {
           teamId
         }
       }
+    })
+
+    const message = `Task created in [${teamName}](www.example.com)`
+    Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
+      method: 'post',
+      body: JSON.stringify({
+        user_id: mmUser.id,
+        post: {
+          channel_id: channel.id,
+          message
+        }
+      } as Partial<Post>)
     })
 
     handleClose()

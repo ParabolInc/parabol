@@ -1,15 +1,21 @@
+import {Client4} from 'mattermost-redux/client'
+import {getPost} from 'mattermost-redux/selectors/entities/posts'
+import {GlobalState} from 'mattermost-redux/types/store'
+import React, {useEffect, useMemo} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {useLazyLoadQuery, useMutation} from 'react-relay'
+
 import {generateJSON, mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {getPost} from 'mattermost-redux/selectors/entities/posts'
-import {GlobalState} from 'mattermost-redux/types/store'
+
+import {Post} from 'mattermost-redux/types/posts'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
-import React, {useEffect, useMemo} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import {useLazyLoadQuery, useMutation} from 'react-relay'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
+import {useCurrentUser} from '../../hooks/useCurrentUser'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {closePushPostAsReflection} from '../../reducers'
 import {getPostURL, pushPostAsReflection} from '../../selectors'
@@ -22,6 +28,7 @@ const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
   const post = useSelector((state: GlobalState) => getPost(state, postId!))
   const postUrl = useSelector((state: GlobalState) => getPostURL(state, postId!))
+  const mmUser = useCurrentUser()
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
@@ -139,18 +146,55 @@ const PushReflectionModal = () => {
       console.log('missing data', selectedPrompt, selectedMeeting, post.message)
       return
     }
+    const {id: meetingId, name: meetingName} = selectedMeeting
+    const {id: promptId, question} = selectedPrompt
 
     const content = JSON.stringify(editor.getJSON())
 
     createReflection({
       variables: {
         input: {
-          meetingId: selectedMeeting.id,
-          promptId: selectedPrompt.id,
+          meetingId,
+          promptId,
           content,
           sortOrder: 0
         }
       }
+    })
+
+    const meetingUrl = `${window.location.origin}/meeting/${meetingId}`
+    const props = {
+      attachments: [
+        {
+          fallback: `Reflection added to meeting ${meetingName}`,
+          title: `Reflection added to meeting [${meetingName}](${meetingUrl})`,
+          color: PALETTE.GRAPE_500,
+          fields: [
+            {
+              short: true,
+              title: 'Meeting',
+              value: meetingName
+            },
+            {
+              short: true,
+              title: 'Question',
+              value: question
+            }
+          ]
+        }
+      ]
+    }
+
+    Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
+      method: 'post',
+      body: JSON.stringify({
+        user_id: mmUser.id,
+        post: {
+          channel_id: post.channel_id,
+          root_id: post.root_id || post.id,
+          props
+        }
+      } as Partial<Post>)
     })
 
     handleClose()

@@ -49,7 +49,9 @@ const ActiveMeetings = () => {
   return (
     <div>
       <h2>Active Meetings</h2>
-      <button onClick={handleStartActivity}>Start Activity</button>
+      <button className='btn btn-primary' onClick={handleStartActivity}>
+        Start Activity
+      </button>
       {isLoading && <LoadingSpinner text='Loading...' />}
       {error && <div className='error-text'>Loading meetings failed, try refreshing the page</div>}
       {linkedTeams?.map((team) =>
