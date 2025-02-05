@@ -156,7 +156,7 @@ const PushReflectionModal = () => {
     handleClose()
   }
 
-  const {editor, setLinkState, linkState} = useTipTapTaskEditor(tipTapJson)
+  const {editor} = useTipTapTaskEditor(tipTapJson)
   if (!editor) {
     return null
   }
@@ -187,8 +187,6 @@ const PushReflectionModal = () => {
             id='comment'
             className='channel-switch-modal form-control h-auto min-h-32 p-2'
             editor={editor}
-            linkState={linkState}
-            setLinkState={setLinkState}
             placeholder='TT Add your comment for the retro...'
           />
         </div>

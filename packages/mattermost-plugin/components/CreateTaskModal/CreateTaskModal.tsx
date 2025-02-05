@@ -96,7 +96,7 @@ const CreateTaskModal = () => {
     handleClose()
   })
 
-  const {editor, setLinkState, linkState} = useTipTapTaskEditor(convertTipTapTaskContent(''))
+  const {editor} = useTipTapTaskEditor(convertTipTapTaskContent(''))
   if (!editor) {
     return null
   }
@@ -119,8 +119,6 @@ const CreateTaskModal = () => {
           id='description'
           className='channel-switch-modal form-control h-auto min-h-32 p-2'
           editor={editor}
-          linkState={linkState}
-          setLinkState={setLinkState}
           placeholder='Description'
         />
       </div>
