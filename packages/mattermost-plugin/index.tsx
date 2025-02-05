@@ -1,3 +1,4 @@
+import * as Tooltip from '@radix-ui/react-tooltip'
 import {AnyAction, Store} from '@reduxjs/toolkit'
 import {GlobalState} from 'mattermost-redux/types/store'
 import SidePanelRoot from './components/Sidepanel'
@@ -12,7 +13,6 @@ import rootReducer, {
 } from './reducers'
 import {getAssetsUrl, getPluginServerRoute} from './selectors'
 import {PluginRegistry} from './types/mattermost-webapp'
-import * as Tooltip from '@radix-ui/react-tooltip'
 
 import {createEnvironment} from './Atmosphere'
 import AtmosphereProvider from './AtmosphereProvider'

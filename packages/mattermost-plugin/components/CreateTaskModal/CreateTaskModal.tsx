@@ -8,15 +8,15 @@ import {closeCreateTaskModal} from '../../reducers'
 import Select from '../Select'
 import SimpleSelect from '../SimpleSelect'
 
+import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
+import useEventCallback from 'parabol-client/hooks/useEventCallback'
+import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
 import type {TaskStatusEnum} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalMutation} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalQuery} from '../../__generated__/CreateTaskModalQuery.graphql'
+import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
-import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
-import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
-import useEventCallback from 'parabol-client/hooks/useEventCallback'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
@@ -108,7 +108,7 @@ const CreateTaskModal = () => {
       handleClose={handleClose}
       handleCommit={handleSubmit}
     >
-      <div className='z-10 z-1050 absolute top-0 left-0' />
+      <div className='absolute top-0 left-0 z-10 z-1050' />
       <div className='form-group'>
         <label className='control-label' htmlFor='description'>
           Description<span className='error-text'> *</span>
@@ -117,7 +117,7 @@ const CreateTaskModal = () => {
             https://github.com/mattermost/mattermost/blob/dc06bb21558aca05dbe330f25459528b39247c32/webapp/channels/src/components/advanced_text_editor/use_textbox_focus.tsx#L63 */}
         <TipTapEditor
           id='description'
-          className='channel-switch-modal form-control p-2 h-auto min-h-32'
+          className='channel-switch-modal form-control h-auto min-h-32 p-2'
           editor={editor}
           linkState={linkState}
           setLinkState={setLinkState}

@@ -87,6 +87,31 @@ module.exports = (config) => {
             presets: ["@babel/preset-react", "@babel/preset-typescript"],
           },
         },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'style-loader'
+            },
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+              }
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    '@tailwindcss/postcss',
+                  ],
+                },
+              },
+            },
+          ],
+        },
       ],
     },
     optimization: {

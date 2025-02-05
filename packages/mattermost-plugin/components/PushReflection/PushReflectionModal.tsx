@@ -4,17 +4,17 @@ import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {getPost} from 'mattermost-redux/selectors/entities/posts'
 import {GlobalState} from 'mattermost-redux/types/store'
+import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
+import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {closePushPostAsReflection} from '../../reducers'
 import {getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
-import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 
 const PostUtils = (window as any).PostUtils
 
@@ -105,7 +105,6 @@ const PushReflectionModal = () => {
     return JSON.stringify(json)
   }, [htmlPost])
 
-
   const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
     mutation PushReflectionModalMutation($input: CreateReflectionInput!) {
       createReflection(input: $input) {
@@ -166,7 +165,6 @@ const PushReflectionModal = () => {
     return null
   }
 
-
   return (
     <Modal
       title='Add Comment to Parabol Activity'
@@ -187,7 +185,7 @@ const PushReflectionModal = () => {
           </label>
           <TipTapEditor
             id='comment'
-            className='channel-switch-modal form-control p-2 h-auto min-h-32'
+            className='channel-switch-modal form-control h-auto min-h-32 p-2'
             editor={editor}
             linkState={linkState}
             setLinkState={setLinkState}

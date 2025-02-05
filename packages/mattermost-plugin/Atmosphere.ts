@@ -53,7 +53,7 @@ const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Va
   )
 }
 
-const login = (state: State) => async() => {
+const login = (state: State) => async () => {
   const {serverUrl, store} = state
   const response = await fetch(
     serverUrl + '/login',
