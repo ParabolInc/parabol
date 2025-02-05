@@ -18,8 +18,7 @@
     "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
     "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
     "test": "jest --verbose",
-    "typecheck": "yarn tsc --noEmit -p tsconfig.json",
-    "tw": "tailwindcss"
+    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"
@@ -64,7 +63,6 @@
     "classnames": "^2.5.1",
     "dd-trace": "^5.0.0",
     "franc-min": "^5.0.0",
-    "marked": "^15.0.4",
     "mattermost-redux": "5.33.1",
     "parabol-client": "8.23.8",
     "react-relay": "^18.2.0",

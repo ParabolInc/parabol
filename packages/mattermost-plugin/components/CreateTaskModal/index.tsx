@@ -1,4 +1,3 @@
-import '../../index.css'
 import {lazy, Suspense} from 'react'
 import {useSelector} from 'react-redux'
 

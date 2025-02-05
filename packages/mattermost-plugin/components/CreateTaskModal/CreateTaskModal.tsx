@@ -17,7 +17,6 @@ import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
-import '../../index.css'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 

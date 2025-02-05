@@ -4,7 +4,6 @@ import InviteToTeamModalRoot from './InviteToTeamModal'
 import LinkTeamModal from './LinkTeamModal'
 import PushReflectionModalRoot from './PushReflection'
 import StartActivityModalRoot from './StartActivityModal'
-import "../index.css"
 
 const ModalRoot = () => {
   return (

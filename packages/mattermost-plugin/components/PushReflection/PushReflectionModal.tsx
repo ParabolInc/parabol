@@ -2,7 +2,6 @@ import {generateJSON, mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {marked} from 'marked'
 import {getPost} from 'mattermost-redux/selectors/entities/posts'
 import {GlobalState} from 'mattermost-redux/types/store'
 import React, {useEffect, useMemo} from 'react'
@@ -16,6 +15,8 @@ import Modal from '../Modal'
 import Select from '../Select'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
+
+const PostUtils = (window as any).PostUtils
 
 const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
@@ -70,29 +71,39 @@ const PushReflectionModal = () => {
     description: string
   }>()
 
-  const [comment, setComment] = React.useState('')
-  const formattedPost = useMemo(() => {
-    if (!post) {
-      return null
-    }
-    const quotedMessage = post.message
-      .split('\n')
-      .map((line) => `> ${line}`)
-      .join('\n')
-    return `${quotedMessage}\n\n[See comment in Mattermost](${postUrl})`
-  }, [post])
-
   const htmlPost = useMemo(() => {
     if (!post) {
       return ''
     }
-    return `<p />
+    const quote = PostUtils.formatText(post.message)
+    return `
+    <p />
     <blockquote>
-    ${post.message}
+      ${quote}
     </blockquote>
     <a href=${postUrl}>See comment in Mattermost</a>
     `
   }, [post])
+
+  const tipTapJson = useMemo(() => {
+    const json = generateJSON(htmlPost, [
+      StarterKit,
+      BaseLink.extend({
+        parseHTML() {
+          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+        },
+
+        renderHTML({HTMLAttributes}) {
+          return [
+            'a',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
+            0
+          ]
+        }
+      })
+    ])
+    return JSON.stringify(json)
+  }, [htmlPost])
 
 
   const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
@@ -102,10 +113,6 @@ const PushReflectionModal = () => {
       }
     }
   `)
-
-  useEffect(() => {
-    setComment('')
-  }, [postId])
 
   useEffect(() => {
     if (!selectedMeeting && retroMeetings && retroMeetings.length > 0) {
@@ -129,30 +136,12 @@ const PushReflectionModal = () => {
   }
 
   const handlePush = async () => {
-    if (!selectedMeeting || !selectedPrompt || (!comment && !post.message)) {
-      console.log('missing data', selectedPrompt, selectedMeeting, comment, post.message)
+    if (!selectedMeeting || !selectedPrompt || !editor || editor.isEmpty) {
+      console.log('missing data', selectedPrompt, selectedMeeting, post.message)
       return
     }
 
-    const markdown = `${comment}\n\n${formattedPost}`
-    const html = await marked.parse(markdown)
-    const rawObject = generateJSON(html, [
-      StarterKit,
-      BaseLink.extend({
-        parseHTML() {
-          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
-        },
-
-        renderHTML({HTMLAttributes}) {
-          return [
-            'a',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
-            0
-          ]
-        }
-      })
-    ])
-    const content = JSON.stringify(rawObject)
+    const content = JSON.stringify(editor.getJSON())
 
     createReflection({
       variables: {
@@ -168,31 +157,15 @@ const PushReflectionModal = () => {
     handleClose()
   }
 
+  const {editor, setLinkState, linkState} = useTipTapTaskEditor(tipTapJson)
+  if (!editor) {
+    return null
+  }
+
   if (!postId) {
     return null
   }
 
-  const json = generateJSON(htmlPost, [
-      StarterKit,
-      BaseLink.extend({
-        parseHTML() {
-          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
-        },
-
-        renderHTML({HTMLAttributes}) {
-          return [
-            'a',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
-            0
-          ]
-        }
-      })
- 
-  ])
-  const {editor, setLinkState, linkState} = useTipTapTaskEditor(JSON.stringify(json))
-  if (!editor) {
-    return null
-  }
 
   return (
     <Modal

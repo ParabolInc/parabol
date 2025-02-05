@@ -17,12 +17,12 @@ export const TipTapLinkPreview = (props: Props) => {
         'flex items-center justify-center truncate rounded-md bg-white p-1 text-sm shadow-lg'
       }
     >
-      <Link className='flex-none pr-1 text-base text-grape-700' />
+      <Link className='flex-none pr-1 text-base text-slate-700' />
       <a
         href={url}
         target='_blank'
         rel='noopener noreferrer'
-        className='bg-red max-w-64 truncate text-sm break-all underline'
+        className='max-w-64 truncate text-sm break-all underline'
       >
         {url}
       </a>
