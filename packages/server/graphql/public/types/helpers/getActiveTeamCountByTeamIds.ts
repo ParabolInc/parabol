@@ -6,8 +6,6 @@ import isTeamActive from './isTeamActive'
 // 3. Has had at least 1 meeting in the last 30 days
 const getActiveTeamCountByTeamIds = async (teamIds: string[]) => {
   if (!teamIds.length) return 0
-
-  // Check each team's active status and count those that are active
   const activeTeams = await Promise.all(teamIds.map(async (teamId) => await isTeamActive(teamId)))
   return activeTeams.filter(Boolean).length
 }

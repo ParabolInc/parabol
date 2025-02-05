@@ -30,7 +30,7 @@ const isTeamActive = async (teamId: string): Promise<boolean> => {
     .execute()
 
   const activeMembers = teamMembersWithStatus.filter((member) => !member.inactive)
-  if (activeMembers.length < Threshold.MIN_STICKY_TEAM_MEETING_ATTENDEES) return false
+  if (activeMembers.length < Threshold.MIN_ACTIVE_TEAM_MEETING_ATTENDEES) return false
 
   // Check for recent meeting activity
   const recentMeeting = await pg
@@ -44,7 +44,7 @@ const isTeamActive = async (teamId: string): Promise<boolean> => {
   if (!recentMeeting) return false
 
   return (
-    recentMeeting.createdAt.getTime() > Date.now() - Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME
+    recentMeeting.createdAt.getTime() > Date.now() - Threshold.ACTIVE_TEAM_LAST_MEETING_TIMEFRAME
   )
 }
 

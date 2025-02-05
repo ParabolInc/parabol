@@ -132,6 +132,12 @@ describe('isTeamActive', () => {
   afterAll(cleanupTestData)
 
   it('should return false for archived team', async () => {
+    await addTeamMembers([
+      {userId: mockUserId1, isNotRemoved: true},
+      {userId: mockUserId2, isNotRemoved: true}
+    ])
+    const recentDate = new Date(Date.now() - Threshold.STICKY_TEAM_LAST_MEETING_TIMEFRAME / 2)
+    await addMeeting(recentDate)
     await pg.updateTable('Team').set({isArchived: true}).where('id', '=', mockTeamId).execute()
     const result = await isTeamActive(mockTeamId)
     expect(result).toBe(false)
