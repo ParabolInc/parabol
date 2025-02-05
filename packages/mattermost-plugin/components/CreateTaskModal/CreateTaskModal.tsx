@@ -17,15 +17,9 @@ import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
-import styled from 'styled-components'
-
-const StyledEditor = styled(TipTapEditor)`
-  height: auto;
-  min-height: 100px;
-`
+import '../../index.css'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
-
 
 const CreateTaskModal = () => {
   const data = useLazyLoadQuery<CreateTaskModalQuery>(
@@ -115,15 +109,16 @@ const CreateTaskModal = () => {
       handleClose={handleClose}
       handleCommit={handleSubmit}
     >
+      <div className='z-10 z-1050 absolute top-0 left-0' />
       <div className='form-group'>
         <label className='control-label' htmlFor='description'>
           Description<span className='error-text'> *</span>
         </label>
         {/* className='channel-switch-modal' is a hack to not lose focus on key press, see 
             https://github.com/mattermost/mattermost/blob/dc06bb21558aca05dbe330f25459528b39247c32/webapp/channels/src/components/advanced_text_editor/use_textbox_focus.tsx#L63 */}
-        <StyledEditor
+        <TipTapEditor
           id='description'
-          className='channel-switch-modal form-control p-2'
+          className='channel-switch-modal form-control p-2 h-auto min-h-32'
           editor={editor}
           linkState={linkState}
           setLinkState={setLinkState}

@@ -14,8 +14,8 @@ import {closePushPostAsReflection} from '../../reducers'
 import {getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
-
-const PostUtils = (window as any).PostUtils
+import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
+import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 
 const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
@@ -81,6 +81,19 @@ const PushReflectionModal = () => {
       .join('\n')
     return `${quotedMessage}\n\n[See comment in Mattermost](${postUrl})`
   }, [post])
+
+  const htmlPost = useMemo(() => {
+    if (!post) {
+      return ''
+    }
+    return `<p />
+    <blockquote>
+    ${post.message}
+    </blockquote>
+    <a href=${postUrl}>See comment in Mattermost</a>
+    `
+  }, [post])
+
 
   const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
     mutation PushReflectionModalMutation($input: CreateReflectionInput!) {
@@ -159,6 +172,28 @@ const PushReflectionModal = () => {
     return null
   }
 
+  const json = generateJSON(htmlPost, [
+      StarterKit,
+      BaseLink.extend({
+        parseHTML() {
+          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+        },
+
+        renderHTML({HTMLAttributes}) {
+          return [
+            'a',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
+            0
+          ]
+        }
+      })
+ 
+  ])
+  const {editor, setLinkState, linkState} = useTipTapTaskEditor(JSON.stringify(json))
+  if (!editor) {
+    return null
+  }
+
   return (
     <Modal
       title='Add Comment to Parabol Activity'
@@ -177,28 +212,14 @@ const PushReflectionModal = () => {
           <label className='control-label' htmlFor='comment'>
             Add a Comment<span className='error-text'> *</span>
           </label>
-          <div
-            className='form-control'
-            style={{
-              resize: 'none',
-              height: 'auto'
-            }}
-          >
-            <textarea
-              style={{
-                border: 'none',
-                width: '100%'
-              }}
-              id='comment'
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder='Add your comment for the retro...'
-            />
-            <blockquote>
-              {PostUtils.messageHtmlToComponent(PostUtils.formatText(post.message))}
-            </blockquote>
-            <a>See comment in Mattermost</a>
-          </div>
+          <TipTapEditor
+            id='comment'
+            className='channel-switch-modal form-control p-2 h-auto min-h-32'
+            editor={editor}
+            linkState={linkState}
+            setLinkState={setLinkState}
+            placeholder='TT Add your comment for the retro...'
+          />
         </div>
       )}
       {data && (

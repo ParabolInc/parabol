@@ -1,0 +1,15 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@source "../client";
+
+.form-control.h-auto {
+  @apply h-auto;
+}
+
+div[data-radix-popper-content-wrapper] {
+  @apply z-1500;
+  > div {
+    @apply z-1500;
+  }
+}
