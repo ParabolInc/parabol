@@ -1,21 +1,22 @@
-import {mergeAttributes} from '@tiptap/core'
-import BaseLink, {LinkOptions} from '@tiptap/extension-link'
+import {mergeAttributes, type Editor} from '@tiptap/core'
+import BaseLink from '@tiptap/extension-link'
 import {Plugin} from '@tiptap/pm/state'
 import {EditorView} from '@tiptap/pm/view'
 import {LinkMenuState} from './TipTapLinkMenu'
 
-interface ExtendedOptions extends LinkOptions {
-  popover: {
-    setLinkState: (linkState: LinkMenuState) => void
+declare module '@tiptap/core' {
+  interface EditorEvents {
+    linkStateChange: {editor: Editor; linkState: LinkMenuState}
   }
 }
-export const TiptapLinkExtension = BaseLink.extend<ExtendedOptions>({
+
+export const TiptapLinkExtension = BaseLink.extend({
   // if the caret is at the end of the link, it is not part of the link
   inclusive: false,
   addKeyboardShortcuts(this) {
     return {
       'Mod-k': () => {
-        this.options.popover.setLinkState('edit')
+        this.editor.emit('linkStateChange', {editor: this.editor, linkState: 'edit'})
         return true
       }
     }
@@ -29,7 +30,8 @@ export const TiptapLinkExtension = BaseLink.extend<ExtendedOptions>({
   },
   onSelectionUpdate() {
     const href = this.editor.getAttributes('link').href
-    this.options.popover.setLinkState(href ? 'preview' : null)
+    const linkState = href ? 'preview' : null
+    this.editor.emit('linkStateChange', {editor: this.editor, linkState})
   },
   addProseMirrorPlugins() {
     const {editor} = this

@@ -1,6 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
+import type {EditorEvents} from '@tiptap/core'
 import {Editor, getMarkRange, getMarkType, getTextBetween, useEditorState} from '@tiptap/react'
-import {useCallback, useRef} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {TipTapLinkEditor} from './TipTapLinkEditor'
 import {TipTapLinkPreview} from './TipTapLinkPreview'
 
@@ -21,12 +22,29 @@ const getRangeForType = (editor: Editor, typeOrName: string) => {
 export type LinkMenuState = 'preview' | 'edit' | null
 interface Props {
   editor: Editor
-  linkState: LinkMenuState
-  setLinkState: (linkState: LinkMenuState) => void
   useLinkEditor?: () => void
 }
 export const TipTapLinkMenu = (props: Props) => {
-  const {editor, linkState, setLinkState, useLinkEditor} = props
+  const {editor, useLinkEditor} = props
+  const [linkState, _setLinkState] = useState<LinkMenuState>(null)
+
+  const setLinkState: typeof _setLinkState = (linkState) => {
+    if (!linkState) {
+      // closing the menu by hitting Esc should refocus on the editor
+      editor.commands.focus()
+    }
+    _setLinkState(linkState)
+  }
+
+  useEffect(() => {
+    const updateState = (change: EditorEvents['linkStateChange']) => {
+      setLinkState(change.linkState)
+    }
+    editor.on('linkStateChange', updateState)
+    return () => {
+      editor.off('linkStateChange', updateState)
+    }
+  }, [])
 
   const {link, text} = useEditorState({
     editor,

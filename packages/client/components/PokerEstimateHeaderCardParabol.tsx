@@ -90,7 +90,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     }
     UpdateTaskMutation(atmosphere, {updatedTask}, {})
   })
-  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+  const {editor} = useTipTapTaskEditor(content, {
     atmosphere,
     teamId,
     onBlur
@@ -108,8 +108,6 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
           <EditorWrapper isExpanded={isExpanded}>
             <TipTapEditor
               editor={editor}
-              linkState={linkState}
-              setLinkState={setLinkState}
               useLinkEditor={() => useTaskChild('editor-link-changer')}
             />
           </EditorWrapper>

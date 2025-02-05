@@ -186,7 +186,7 @@ const ReflectionCard = (props: Props) => {
     phases,
     isSpotlightSource
   )
-  const {editor, linkState, setLinkState} = useTipTapReflectionEditor(content, {
+  const {editor} = useTipTapReflectionEditor(content, {
     atmosphere,
     teamId,
     readOnly: !!readOnly
@@ -332,8 +332,6 @@ const ReflectionCard = (props: Props) => {
             readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
           editor={editor}
-          linkState={linkState}
-          setLinkState={setLinkState}
           onFocus={handleEditorFocus}
           onBlur={handleEditorBlur}
         />
