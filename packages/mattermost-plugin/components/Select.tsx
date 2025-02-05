@@ -5,6 +5,7 @@ interface IdName {
   name: string
 }
 export type SelectProps<T extends IdName> = {
+  className?: string
   label?: string
   required?: boolean
   options: readonly T[]
@@ -13,7 +14,7 @@ export type SelectProps<T extends IdName> = {
 }
 
 const Select = <T extends IdName>(props: SelectProps<T>) => {
-  const {label, required, options, value, onChange} = props
+  const {label, required, options, value, onChange, className} = props
   return (
     <div className='form-group'>
       {label && (
@@ -24,6 +25,7 @@ const Select = <T extends IdName>(props: SelectProps<T>) => {
       )}
       <div className='Input_Wrapper'>
         <ReactSelect
+          className={className}
           id='team'
           value={value && {value: value.id, label: value.name}}
           options={options.map(({id, name}) => ({value: id, label: name}))}

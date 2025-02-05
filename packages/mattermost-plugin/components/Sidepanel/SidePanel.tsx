@@ -28,6 +28,7 @@ const SidePanel = () => {
       />
       {activePanel === 'teams' && <LinkedTeams />}
       {activePanel === 'meetings' && <ActiveMeetings />}
+ 
     </div>
   )
 }

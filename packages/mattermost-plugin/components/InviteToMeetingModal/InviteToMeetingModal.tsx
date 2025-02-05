@@ -81,7 +81,7 @@ const InviteToMeetingModal = () => {
     if (!selectedMeeting) {
       return
     }
-    const {name: meetingName, id: meetingId} = selectedMeeting
+    const {name: meetingName, id: meetingId, meetingType} = selectedMeeting
     const token = await getToken()
     if (!token) {
       return
@@ -95,8 +95,8 @@ const InviteToMeetingModal = () => {
     const props = {
       attachments: [
         {
-          fallback: `${userName} invited you to join the meeting ${meetingName}`,
-          title: `${userName} invited you to join a meeting in [Parabol](${meetingUrl})`,
+          fallback: `Join this meeting ${meetingName} in Parabol`,
+          title: `You’re invited to join a ${meetingType} meeting in Parabol.`,
           color: PALETTE.GRAPE_500,
           fields: [
             {

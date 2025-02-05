@@ -154,6 +154,7 @@ const CreateTaskModal = () => {
         <LoadingSpinner />
       )}
       <SimpleSelect
+        className='capitalize'
         label='Status'
         required={true}
         options={TaskStatus}

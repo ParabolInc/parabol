@@ -10,7 +10,7 @@ const Panel = styled.div!`
   align-items: center;
 `
 
-const TitleLink = styled.a!`
+const TitleLink = styled.div!`
   font-size: 1.5rem;
   font-weight: bold;
   margin-left: 8px;
@@ -22,12 +22,11 @@ const PanelTitle = () => {
   const channel = useSelector(getCurrentChannel)
   const {display_name: channelName} = channel
   const assetsPath = useSelector(getAssetsUrl)
-  const config = useConfig()
 
   return (
     <Panel>
       <img width={24} height={24} src={`${assetsPath}/parabol.png`} />
-      <TitleLink href={config?.parabolUrl} target='_blank'>
+      <TitleLink>
         Parabol{channelName && ` | ${channelName}`}
       </TitleLink>
     </Panel>

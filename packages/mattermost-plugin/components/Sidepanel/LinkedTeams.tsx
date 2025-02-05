@@ -44,10 +44,12 @@ const LinkedTeams = () => {
 
   return (
     <div>
-      <h2>Linked Parabol Teams</h2>
+      <div className='flex items-center justify-between'>
+      <div className='font-bold'>Linked Parabol Teams</div>
       <button className='btn btn-primary' onClick={handleLink}>
         Link Team
       </button>
+      </div>
       {isLoading && <LoadingSpinner text='Loading...' />}
       {error && <div className='error-text'>Loading teams failed, try refreshing the page</div>}
       {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}

@@ -216,12 +216,6 @@ const PushReflectionModal = () => {
       handleClose={handleClose}
       handleCommit={handlePush}
     >
-      <div>
-        <p>
-          Choose an open Retro activity and the Prompt where you want to send the Mattermost
-          comment. A reference link back to Mattermost will be inlcuded in the reflection.
-        </p>
-      </div>
       {post && (
         <div className='form-group'>
           <label className='control-label' htmlFor='comment'>

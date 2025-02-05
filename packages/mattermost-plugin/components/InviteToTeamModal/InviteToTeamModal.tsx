@@ -73,11 +73,12 @@ const InviteToTeamModal = () => {
     const props = {
       attachments: [
         {
-          title: `${userName} invited you to join a team in [Parabol](${teamUrl})`,
+          //title: `${userName} invited you to join a team in [Parabol](${teamUrl})`,
+          title: `You’re invited to join a team in Parabol.`,
           fallback: `${userName} invited you to join a team ${teamName} in Parabol`,
           color: PALETTE.GRAPE_500,
           fields: [
-            {short: true, value: teamName},
+            {short: true, title: 'Team', value: teamName},
             {
               short: false,
               value: `
