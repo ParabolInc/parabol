@@ -115,7 +115,7 @@ const StartActivityModal = () => {
     >
       <div>
         <p>
-          To see the full details for any activity, visit
+          To see the full details for any activity, visit{' '}
           <a href={`${config?.parabolUrl}/activity-library/`} target='_blank' rel='noreferrer'>
             {"Parabol's Activity Library"}
           </a>
