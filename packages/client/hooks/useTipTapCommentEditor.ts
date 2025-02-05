@@ -1,5 +1,6 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
 import {Extension, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useRef} from 'react'
@@ -37,6 +38,7 @@ export const useTipTapCommentEditor = (
       content: contentJSON,
       extensions: [
         StarterKit,
+        Underline,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,

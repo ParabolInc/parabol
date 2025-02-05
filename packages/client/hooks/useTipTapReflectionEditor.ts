@@ -5,6 +5,7 @@ import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
+import Underline from '@tiptap/extension-underline'
 import {Extension, generateText, useEditor, type Editor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useEffect, useRef, useState} from 'react'
@@ -58,6 +59,7 @@ export const useTipTapReflectionEditor = (
       content: contentJSON,
       extensions: [
         StarterKit,
+        Underline,
         TaskList,
         TaskItem.configure({
           nested: true

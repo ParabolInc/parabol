@@ -1,5 +1,6 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
 import {generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Atmosphere from '../Atmosphere'
@@ -29,6 +30,7 @@ export const useTipTapTaskEditor = (
       content: contentJSON,
       extensions: [
         StarterKit,
+        Underline,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
