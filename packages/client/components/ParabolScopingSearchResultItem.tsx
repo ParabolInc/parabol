@@ -70,7 +70,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const isEditingThisItem = !plaintextContent
-  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+  const {editor} = useTipTapTaskEditor(content, {
     atmosphere,
     teamId,
     readOnly: !isEditingThisItem
@@ -140,12 +140,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           addTaskChild('root')
         }}
       >
-        <TipTapEditor
-          editor={editor}
-          linkState={linkState}
-          setLinkState={setLinkState}
-          useLinkEditor={() => useTaskChild('editor-link-changer')}
-        />
+        <TipTapEditor editor={editor} useLinkEditor={() => useTaskChild('editor-link-changer')} />
       </Task>
     </Item>
   )

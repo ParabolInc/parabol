@@ -125,7 +125,7 @@ const PhaseItemEditor = (props: Props) => {
       setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
   })
-  const {editor, linkState, setLinkState} = useTipTapReflectionEditor(
+  const {editor} = useTipTapReflectionEditor(
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
@@ -201,8 +201,6 @@ const PhaseItemEditor = (props: Props) => {
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}
-          linkState={linkState}
-          setLinkState={setLinkState}
           onBlur={onBlur}
           onFocus={onFocus}
         />

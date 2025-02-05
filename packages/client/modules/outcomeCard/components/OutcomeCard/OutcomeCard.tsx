@@ -9,7 +9,6 @@ import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import {TipTapEditor} from '../../../../components/promptResponse/TipTapEditor'
-import {LinkMenuState} from '../../../../components/promptResponse/TipTapLinkMenu'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -60,8 +59,6 @@ interface Props {
   isTaskFocused: boolean
   isTaskHovered: boolean
   editor: Editor
-  linkState: LinkMenuState
-  setLinkState: (linkState: LinkMenuState) => void
   handleCardUpdate: () => void
   isAgenda: boolean
   isDraggingOver: TaskStatusEnum | undefined
@@ -79,8 +76,6 @@ const OutcomeCard = memo((props: Props) => {
     isTaskFocused,
     isTaskHovered,
     editor,
-    linkState,
-    setLinkState,
     handleCardUpdate,
     isAgenda,
     isDraggingOver,
@@ -187,8 +182,6 @@ const OutcomeCard = memo((props: Props) => {
           >
             <TipTapEditor
               editor={editor}
-              linkState={linkState}
-              setLinkState={setLinkState}
               useLinkEditor={() => useTaskChild('editor-link-changer')}
               onBlur={onFocusChange(false)}
               onFocus={onFocusChange(true)}

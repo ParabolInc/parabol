@@ -15,7 +15,6 @@ import BaseButton from '../BaseButton'
 import {LoomExtension, unfurlLoomLinks} from './loomExtension'
 import {TipTapEditor} from './TipTapEditor'
 import {TiptapLinkExtension} from './TiptapLinkExtension'
-import {LinkMenuState} from './TipTapLinkMenu'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
@@ -104,8 +103,6 @@ const PromptResponseEditor = (props: Props) => {
     }
   }
 
-  const [linkState, setLinkState] = useState<LinkMenuState>(null)
-
   const editor = useEditor(
     {
       content,
@@ -119,10 +116,7 @@ const PromptResponseEditor = (props: Props) => {
         Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
-          openOnClick: false,
-          popover: {
-            setLinkState
-          }
+          openOnClick: false
         })
       ],
       autofocus: autoFocus,
@@ -153,12 +147,7 @@ const PromptResponseEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <TipTapEditor
-        linkState={linkState}
-        setLinkState={setLinkState}
-        editor={editor}
-        showBubbleMenu={!readOnly}
-      />
+      <TipTapEditor editor={editor} showBubbleMenu={!readOnly} />
       {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.

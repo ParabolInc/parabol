@@ -11,7 +11,6 @@ import {useEffect, useRef, useState} from 'react'
 import Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
-import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
@@ -51,7 +50,6 @@ export const useTipTapReflectionEditor = (
   }
 ) => {
   const {atmosphere, teamId, readOnly, placeholder, onEnter} = options
-  const [linkState, setLinkState] = useState<LinkMenuState>(null)
   const [contentJSON] = useState(() => JSON.parse(content))
   const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
@@ -87,10 +85,7 @@ export const useTipTapReflectionEditor = (
         ),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
-          openOnClick: false,
-          popover: {
-            setLinkState
-          }
+          openOnClick: false
         }),
         SearchAndReplace.configure(),
         CharacterCount.configure({
@@ -147,5 +142,5 @@ export const useTipTapReflectionEditor = (
     editor.setEditable(!readOnly)
   }, [readOnly])
 
-  return {editor, linkState, setLinkState}
+  return {editor}
 }
