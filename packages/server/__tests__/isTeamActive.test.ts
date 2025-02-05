@@ -1,6 +1,9 @@
 import {ThresholdTest as Threshold} from '~/types/constEnums'
 import isTeamActive from '../graphql/public/types/helpers/isTeamActive'
 import getKysely from '../postgres/getKysely'
+import {createPGTables, truncatePGTables} from './common'
+
+const TEST_DB = 'isTeamActiveTest'
 
 // Mock data
 const mockOrgId = 'org123'
@@ -9,15 +12,22 @@ const mockUserId1 = 'user1'
 const mockUserId2 = 'user2'
 
 describe('isTeamActive', () => {
-  const pg = getKysely()
+  const pg = getKysely(TEST_DB)
 
-  const cleanupTestData = async () => {
-    await pg.deleteFrom('NewMeeting').where('teamId', '=', mockTeamId).execute()
-    await pg.deleteFrom('TeamMember').where('teamId', '=', mockTeamId).execute()
-    await pg.deleteFrom('Team').where('id', '=', mockTeamId).execute()
-    await pg.deleteFrom('User').where('id', 'in', [mockUserId1, mockUserId2]).execute()
-    await pg.deleteFrom('Organization').where('id', '=', mockOrgId).execute()
-  }
+  beforeAll(async () => {
+    await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
+    await createPGTables('Organization', 'Team', 'User', 'TeamMember', 'NewMeeting')
+  })
+
+  beforeEach(async () => {
+    await truncatePGTables('Organization', 'Team', 'User', 'TeamMember', 'NewMeeting')
+    await setupBaseTestData()
+  })
+
+  afterAll(async () => {
+    await pg.destroy()
+    console.log('isTeamActive destroy')
+  })
 
   const setupBaseTestData = async () => {
     await pg
@@ -123,13 +133,6 @@ describe('isTeamActive', () => {
       })
       .execute()
   }
-
-  beforeEach(async () => {
-    await cleanupTestData()
-    await setupBaseTestData()
-  })
-
-  afterAll(cleanupTestData)
 
   it('should return false for archived team', async () => {
     await addTeamMembers([
