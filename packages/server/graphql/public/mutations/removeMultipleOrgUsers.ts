@@ -89,18 +89,30 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   await Promise.all(
     userResults.map(async ({userId, userData}) => {
       publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: userData.tms})
-      publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', userData, subOptions)
       publish(
         SubscriptionChannel.NOTIFICATION,
         userId,
-        'RemoveOrgUserPayload',
-        userData,
+        'RemoveMultipleOrgUsersSuccess',
+        data,
+        subOptions
+      )
+      publish(
+        SubscriptionChannel.ORGANIZATION,
+        orgId,
+        'RemoveMultipleOrgUsersSuccess',
+        data,
         subOptions
       )
 
       userData.teamIds.forEach((teamId) => {
-        const teamData = {...userData, teamFilterId: teamId}
-        publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
+        const teamData = {...data, teamFilterId: teamId}
+        publish(
+          SubscriptionChannel.TEAM,
+          teamId,
+          'RemoveMultipleOrgUsersSuccess',
+          teamData,
+          subOptions
+        )
       })
 
       const remainingTeamMembers = (
@@ -113,7 +125,7 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
         publish(
           SubscriptionChannel.TASK,
           teamMember.userId,
-          'RemoveOrgUserPayload',
+          'RemoveMultipleOrgUsersSuccess',
           data,
           subOptions
         )
