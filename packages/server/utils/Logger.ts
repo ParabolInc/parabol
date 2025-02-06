@@ -21,6 +21,10 @@ function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
 
   if (span) {
     tracer.inject(span.context(), formats.LOG, record)
+    const tags = optionalParameters.find((param) => param.tags) as Record<string, any> | undefined
+    if (tags && typeof tags === 'object') {
+      span.addTags(tags)
+    }
   }
 
   LogFun[level](JSON.stringify(record))

@@ -33,7 +33,7 @@ tracer.init({
   service: `web`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false,
-  version: process.env.npm_package_version
+  version: __APP_VERSION__
 })
 tracer.use('ioredis').use('http').use('pg')
 
