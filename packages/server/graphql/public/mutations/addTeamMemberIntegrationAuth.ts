@@ -1,11 +1,12 @@
+import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import JiraServerOAuth1Manager, {
   OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
+import getKysely from '../../../postgres/getKysely'
 import {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import upsertTeamMemberIntegrationAuth from '../../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -27,6 +28,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 ) => {
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
+  const pg = getKysely()
 
   //AUTH
   if (!isTeamMember(authToken, teamId)) {
@@ -128,13 +130,41 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   }
 
   // RESOLUTION
-  await upsertTeamMemberIntegrationAuth({
-    ...tokenMetadata,
-    providerId: providerDbId,
-    service,
-    teamId,
-    userId: viewerId
-  })
+  const auth = await pg
+    .insertInto('TeamMemberIntegrationAuth')
+    .values({
+      ...tokenMetadata,
+      providerId: providerDbId,
+      service,
+      teamId,
+      userId: viewerId
+    })
+    .onConflict((oc) =>
+      oc.columns(['userId', 'teamId', 'service']).doUpdateSet({
+        ...tokenMetadata,
+        providerId: providerDbId,
+        isActive: true
+      })
+    )
+    .returning('id')
+    .executeTakeFirst()
+  const authId = auth?.id
+  if (!authId) {
+    return standardError(new Error('Failed to insert TeamMemberIntegrationAuth'), {
+      userId: viewerId
+    })
+  }
+
+  await pg
+    .insertInto('NotificationSettings')
+    .columns(['authId', 'event'])
+    .values(() => ({
+      authId,
+      event: sql`unnest(enum_range(NULL::"SlackNotificationEventEnum"))`
+    }))
+    .onConflict((oc) => oc.doNothing())
+    .execute()
+
   updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
   analytics.integrationAdded(viewer, teamId, service)

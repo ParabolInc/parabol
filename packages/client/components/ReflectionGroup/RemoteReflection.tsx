@@ -1,8 +1,8 @@
 import {keyframes} from '@emotion/core'
 import styled from '@emotion/styled'
+import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {RefObject, useEffect, useMemo, useRef} from 'react'
+import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
@@ -11,17 +11,16 @@ import {
   RemoteReflection_reflection$key
 } from '../../__generated__/RemoteReflection_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
+import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
 import {DeepNonNullable} from '../../types/generics'
-import {cn} from '../../ui/cn'
 import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
-import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import getBBox from '../RetroReflectPhase/getBBox'
+import HTMLReflection from '../RetroReflectPhase/HTMLReflection'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 
 const circleAnimation = (transform?: string) => keyframes`
@@ -214,7 +213,7 @@ const RemoteReflection = (props: Props) => {
     RemoteReflection_reflection$data['remoteDrag']
   >
   const ref = useRef<HTMLDivElement>(null)
-  const {editor} = useTipTapReflectionEditor(content, {readOnly: true})
+  const [html] = useState(() => generateHTML(JSON.parse(content), serverTipTapExtensions))
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   const spotlightResultGroups = useSpotlightResults(meeting)
@@ -253,11 +252,25 @@ const RemoteReflection = (props: Props) => {
     }
   }, [remoteDrag, meetingMembers])
 
-  if (!remoteDrag || !editor) return null
-  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
+  const [arrow, setArrow] = useState<RemoteReflectionArrow | undefined>('arrow_downward')
+  useEffect(() => {
+    if (!remoteDrag) return
+    const {minTop} = getCoords(remoteDrag)
+    requestAnimationFrame(() => {
+      const nextVal = getHeaderTransform(ref, minTop)
+      if (nextVal.headerTransform !== headerTransform) {
+        setHeaderTransform(nextVal.headerTransform)
+        setArrow(nextVal.arrow)
+      }
+    })
+  }, [remoteDrag])
+  const [headerTransform, setHeaderTransform] = useState<string | undefined>(undefined)
 
-  const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
-  const {headerTransform, arrow} = getHeaderTransform(ref, minTop)
+  if (!remoteDrag) return null
+
+  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
+  const {nextStyle, transform} = getStyle(remoteDrag, isDropping, isSpotlight, style)
+
   return (
     <>
       <RemoteReflectionModal
@@ -271,10 +284,7 @@ const RemoteReflection = (props: Props) => {
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
-          <TipTapEditor
-            className={cn('flex min-h-0 items-center px-4 leading-4')}
-            editor={editor}
-          />
+          <HTMLReflection html={html} disableAnonymity={disableAnonymity} />
           {disableAnonymity && (
             <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>
           )}

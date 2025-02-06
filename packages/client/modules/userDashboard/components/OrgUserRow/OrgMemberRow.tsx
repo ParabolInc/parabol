@@ -173,7 +173,7 @@ const OrgMemberRow = (props: Props) => {
       <td className='w-1/2 px-2 py-3 align-middle'>
         <div className='flex w-full items-center overflow-hidden'>
           <UserAvatar picture={picture} />
-          <div className='min-w-0 flex-grow'>
+          <div className='min-w-0 grow'>
             <UserInfo
               preferredName={preferredName}
               email={email}

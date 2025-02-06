@@ -1,6 +1,7 @@
 import fs from 'fs'
 import {minify} from 'html-minifier-terser'
 import path from 'path'
+import {makeOAuth2Redirect} from '../../packages/server/utils/makeOAuth2Redirect'
 import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
@@ -55,13 +56,14 @@ const rewriteIndexHTML = () => {
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     googleAnalytics: process.env.GA_TRACKING_ID,
-    mattermostDisabled: !!process.env.MATTERMOST_SECRET || process.env.MATTERMOST_DISABLED === 'true',
+    mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
+    mattermostGlobal: !!process.env.MATTERMOST_SECRET,
     msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
     sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
     publicPath: __webpack_public_path__,
-    oauth2Redirect: process.env.OAUTH2_REDIRECT,
+    oauth2Redirect: makeOAuth2Redirect(),
     hasOpenAI: !!process.env.OPEN_AI_API_KEY,
     prblIn: process.env.INVITATION_SHORTLINK,
     AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
@@ -74,7 +76,13 @@ const rewriteIndexHTML = () => {
     GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED === 'true',
     GLOBAL_BANNER_TEXT: process.env.GLOBAL_BANNER_TEXT,
     GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
-    GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR
+    GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR,
+    GIF_PROVIDER:
+      process.env.GIF_PROVIDER !== 'tenor'
+        ? process.env.GIF_PROVIDER
+        : process.env.TENOR_SECRET
+          ? 'tenor'
+          : ''
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')

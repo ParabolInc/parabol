@@ -60,8 +60,8 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
       return {error: {message: 'Must be a super user to add a global provider'}}
     }
     if (
-      (oldScope === 'org' && !isUserOrgAdmin(viewerId, oldOrgId!, dataLoader)) ||
-      (newScope === 'org' && !isUserOrgAdmin(viewerId, newOrgId!, dataLoader))
+      (oldScope === 'org' && !(await isUserOrgAdmin(viewerId, oldOrgId!, dataLoader))) ||
+      (newScope === 'org' && !(await isUserOrgAdmin(viewerId, newOrgId!, dataLoader)))
     ) {
       return {
         error: {
@@ -73,10 +73,10 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     if (
       (oldScope === 'team' &&
         !isTeamMember(authToken, oldTeamId!) &&
-        !isUserOrgAdmin(viewerId, oldTeam!.orgId, dataLoader)) ||
+        !(await isUserOrgAdmin(viewerId, oldTeam!.orgId, dataLoader))) ||
       (newScope === 'team' &&
         !isTeamMember(authToken, newTeamId!) &&
-        !isUserOrgAdmin(viewerId, newTeam!.orgId, dataLoader))
+        !(await isUserOrgAdmin(viewerId, newTeam!.orgId, dataLoader)))
     ) {
       return {error: {message: 'Must be on the team for the integration provider'}}
     }

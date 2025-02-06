@@ -109,7 +109,7 @@ export const slashCommands = [
       {
         title: 'Divider',
         description: 'Insert horizontal rule divider',
-        searchTerms: ['horizontal rule', 'hr'],
+        searchTerms: ['horizontal rule', 'hr', 'divider', 'rule'],
         icon: HorizontalRuleIcon,
         action: (editor: Editor) => editor.chain().focus().setHorizontalRule().run()
       }
@@ -125,7 +125,18 @@ export const slashCommands = [
         icon: ImageIcon,
         // shouldHide: () => true,
         action: (editor: Editor) => {
-          editor.chain().focus().setImageUpload().run()
+          const {to} = editor.state.selection
+          const size = editor.state.doc.content.size
+          let command = editor
+            .chain()
+            .focus()
+            .setImageUpload()
+            .setTextSelection(to + 1)
+          if (size - to <= 1) {
+            // if we're at the end of the doc, add an extra paragraph to make it easier to click below
+            command = command.insertContent('<p></p>').setTextSelection(to + 1)
+          }
+          return command.scrollIntoView().run()
         }
       }
     ]

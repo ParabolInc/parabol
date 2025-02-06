@@ -59,6 +59,9 @@ export const getAssetsUrl = (state: GlobalState) => {
 export const getPluginState = (state: GlobalState) =>
   ((state as any)[`plugins-${id}`] ?? {}) as PluginState
 
+export const authToken = (state: GlobalState) => getPluginState(state).authToken
+export const isAuthorized = (state: GlobalState) => !!authToken(state)
+
 export const isStartActivityModalVisible = (state: GlobalState) =>
   getPluginState(state).isStartActivityModalVisible
 

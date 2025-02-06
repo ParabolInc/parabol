@@ -12,7 +12,7 @@ const JiraServerRemoteProject: JiraServerRemoteProjectResolvers = {
   avatar: async ({avatarUrls, teamId, userId}, _args, {dataLoader}) => {
     const url = avatarUrls['48x48']
     const auth = await dataLoader
-      .get('teamMemberIntegrationAuths')
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
     if (!auth) return defaultJiraProjectAvatar
     const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)

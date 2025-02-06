@@ -1,0 +1,4 @@
+"""
+Return for setNotificationSetting mutation
+"""
+union SetNotificationSettingPayload = ErrorPayload | SetNotificationSettingSuccess

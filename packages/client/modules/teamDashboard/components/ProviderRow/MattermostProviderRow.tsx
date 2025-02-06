@@ -21,6 +21,7 @@ graphql`
   fragment MattermostProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
     mattermost {
       auth {
+        ...NotificationSettings_auth
         provider {
           id
         }
@@ -52,7 +53,7 @@ const MattermostProviderRow = (props: Props) => {
   const {mattermost} = integrations
   const {auth} = mattermost
 
-  if (window.__ACTION__.mattermostDisabled) return null
+  if (window.__ACTION__.mattermostGlobal || window.__ACTION__.mattermostDisabled) return null
 
   return (
     <>

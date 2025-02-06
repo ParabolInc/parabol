@@ -6,6 +6,28 @@ type Query {
     """
     token: ID!
   ): MassInvitationPayload!
+  searchGifs(
+    """
+    The search query to send to the service
+    """
+    query: String!
+    """
+    The ISO 3166-1 country of the user, default is US
+    """
+    country: String
+    """
+    The ISO 639-1 locale of the user, default is en_US
+    """
+    locale: String
+    """
+    The first n records to return
+    """
+    first: Int!
+    """
+    The pagination cursor, if any
+    """
+    after: String
+  ): GifResponseConnection!
   verifiedInvitation(
     """
     The invitation token

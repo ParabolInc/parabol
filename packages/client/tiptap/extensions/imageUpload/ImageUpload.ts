@@ -1,47 +1,50 @@
-import {Node, ReactNodeViewRenderer} from '@tiptap/react'
+import {ReactNodeViewRenderer, type Editor} from '@tiptap/react'
+import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 
 declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    imageUpload: {
-      setImageUpload: () => ReturnType
-    }
+  interface EditorEvents {
+    enter: {editor: Editor}
   }
 }
 
-export const ImageUpload = Node.create({
-  name: 'imageUpload',
+export const ImageUpload = ImageUploadBase.extend<{editorWidth: number; editorHeight: number}>({
+  addOptions() {
+    return {
+      editorWidth: 300,
+      editorHeight: 112
+    }
+  },
+  addStorage(this) {
+    return {
+      editorWidth: this.options.editorWidth,
+      editorHeight: this.options.editorHeight
+    }
+  },
 
-  isolating: true,
-
-  defining: true,
-
-  group: 'block',
-
-  draggable: true,
-
-  selectable: true,
-
-  inline: false,
-
-  parseHTML() {
-    return [
-      {
-        tag: `div[data-type="${this.name}"]`
+  addKeyboardShortcuts(this) {
+    return {
+      Enter: ({editor}) => {
+        // the open state of the menu is kept in ImageUploadView
+        // and we can't communicate with that component via props or state
+        // so we attach an event emitter on the editor, since that's shared
+        if (editor.isActive('imageUpload')) {
+          editor.emit('enter', {editor})
+          return true
+        }
+        return false
       }
-    ]
+    }
   },
-
-  renderHTML() {
-    return ['div', {'data-type': this.name}]
-  },
-
   addCommands() {
     return {
       setImageUpload:
         () =>
-        ({commands}) =>
-          commands.insertContent(`<div data-type="${this.name}"></div>`)
+        ({commands}) => {
+          // note: only call 1 command here. Calling multiple here & then having the caller also chaining commands
+          // will result in a fatal "Applying a mismatched transaction"
+          return commands.insertContent(`<div data-type="${this.name}"></div>`)
+        }
     }
   },
 
@@ -50,5 +53,3 @@ export const ImageUpload = Node.create({
     return ReactNodeViewRenderer(ImageUploadView)
   }
 })
-
-export default ImageUpload

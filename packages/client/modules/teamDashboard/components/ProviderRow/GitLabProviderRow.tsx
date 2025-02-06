@@ -92,7 +92,7 @@ const GitLabProviderRow = (props: Props) => {
 
   return (
     <>
-      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded bg-white shadow-card'>
+      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-white shadow-card'>
         <div className='flex justify-start p-row-gutter pb-0'>
           <GitLabProviderLogo />
           <div className='flex w-full flex-col'>
@@ -103,7 +103,7 @@ const GitLabProviderRow = (props: Props) => {
               return (
                 <div key={id} className='flex w-full flex-row pb-4'>
                   <RowInfo>
-                    <div className='mr-4 flex items-center align-middle font-semibold leading-6 text-slate-700'>
+                    <div className='mr-4 flex items-center align-middle leading-6 font-semibold text-slate-700'>
                       {isCloudProvider ? 'GitLab' : serverBaseUrl.replace(/https:\/\//, '')}
                     </div>
                     <RowInfoCopy>
@@ -130,7 +130,7 @@ const GitLabProviderRow = (props: Props) => {
                               </div>
                             </div>
                             <FlatButton
-                              className='min-w-[30px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                              className='min-w-[30px] border-slate-400 pr-0 pl-0 text-sm font-semibold text-slate-700'
                               onClick={togglePortal}
                               ref={menuRef}
                             >
@@ -139,7 +139,7 @@ const GitLabProviderRow = (props: Props) => {
                           </>
                         ) : (
                           <FlatButton
-                            className='min-w-[36px] border-slate-400 pl-0 pr-0 text-sm font-semibold text-slate-700'
+                            className='min-w-[36px] border-slate-400 pr-0 pl-0 text-sm font-semibold text-slate-700'
                             onClick={togglePortal}
                             ref={menuRef}
                           >

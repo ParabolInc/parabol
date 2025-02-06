@@ -1,62 +1,269 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+/* `layer(utilities)` makes tailwind classes come before emotion classes.
+   We want the opposite, so until emotion is gone, comment this out
+   Repro: OAuth buttons on login page
+*/
+@import 'tailwindcss/utilities.css' /* layer(utilities) */;
 
-@font-face {
-  font-family: 'IBM Plex Mono';
-  src: url('/static/fonts/IBMPlexMono-Regular.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-  font-stretch: normal;
-  font-display: swap;
+@config '../../../../tailwind.config.js';
+
+@theme {
+  /* Fonts */
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
+  /* Palette */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-inherit: inherit;
+  --color-current: currentColor;
+  --color-black: #000;
+  --color-white: #fff;
+  --color-primary: #493272;
+  --color-tomato-100: #ffe2e0;
+  --color-tomato-200: #ffc1bd;
+  --color-tomato-300: #fea09a;
+  --color-tomato-400: #fd7f77;
+  --color-tomato-500: #fd6157;
+  --color-tomato-600: #f23b31;
+  --color-tomato-700: #d5211a;
+  --color-tomato-800: #9f201e;
+  --color-tomato-900: #6D1D1;
+  --color-terra-100: #fedccd;
+  --color-terra-200: #ffb89c;
+  --color-terra-300: #fe975d;
+  --color-terra-400: #d28963;
+  --color-terra-500: #d35d22;
+  --color-terra-600: #a34f25;
+  --color-terra-700: #823917;
+  --color-terra-800: #501f08;
+  --color-terra-900: #3A140;
+  --color-gold-100: #faebd3;
+  --color-gold-200: #fadc9e;
+  --color-gold-300: #ffcc63;
+  --color-gold-400: #fbb337;
+  --color-gold-500: #de8e02;
+  --color-gold-600: #a36200;
+  --color-gold-700: #855000;
+  --color-gold-800: #703c00;
+  --color-gold-900: #522C0;
+  --color-grass-100: #ecf1a7;
+  --color-grass-200: #dee58a;
+  --color-grass-300: #c4cf66;
+  --color-grass-400: #becf3f;
+  --color-grass-500: #acc125;
+  --color-grass-600: #91a617;
+  --color-grass-700: #73880c;
+  --color-grass-800: #556704;
+  --color-grass-900: #35420;
+  --color-forest-100: #e3f7d4;
+  --color-forest-200: #c8ebad;
+  --color-forest-300: #9ec87e;
+  --color-forest-400: #73a153;
+  --color-forest-500: #639442;
+  --color-forest-600: #528433;
+  --color-forest-700: #427326;
+  --color-forest-800: #335f1b;
+  --color-forest-900: #244A1;
+  --color-jade-100: #cff2de;
+  --color-jade-200: #abedc8;
+  --color-jade-300: #91e8b7;
+  --color-jade-400: #66bc8c;
+  --color-jade-500: #40b574;
+  --color-jade-600: #2d9f5f;
+  --color-jade-700: #1d8647;
+  --color-jade-800: #116931;
+  --color-jade-900: #08491;
+  --color-aqua-100: #cbecf0;
+  --color-aqua-200: #a4dee5;
+  --color-aqua-300: #7ccfd9;
+  --color-aqua-400: #55c0cf;
+  --color-aqua-500: #33b1c7;
+  --color-aqua-600: #2792aa;
+  --color-aqua-700: #1c748d;
+  --color-aqua-800: #12566d;
+  --color-aqua-900: #0A3A4;
+  --color-sky-100: #e8f4fc;
+  --color-sky-200: #bbddf7;
+  --color-sky-300: #8ec7f1;
+  --color-sky-400: #61b1eb;
+  --color-sky-500: #329ae5;
+  --color-sky-600: #14649e;
+  --color-sky-700: #0f4a76;
+  --color-sky-800: #0a314d;
+  --color-sky-900: #051A2;
+  --color-lilac-100: #eeedf7;
+  --color-lilac-200: #d4d2ef;
+  --color-lilac-300: #b7b4e9;
+  --color-lilac-400: #9694e6;
+  --color-lilac-500: #7272e5;
+  --color-lilac-600: #5454e3;
+  --color-lilac-700: #3333cc;
+  --color-lilac-800: #2121ab;
+  --color-lilac-900: #1A1A7;
+  --color-grape-100: #bd6bd6;
+  --color-grape-200: #b66bd6;
+  --color-grape-300: #af6bd6;
+  --color-grape-400: #a86bd6;
+  --color-grape-500: #a06bd6;
+  --color-grape-600: #7340b5;
+  --color-grape-700: #493272;
+  --color-grape-800: #2d1d53;
+  --color-grape-900: #170F3;
+  --color-fuscia-100: #edd5f1;
+  --color-fuscia-200: #e4b5e8;
+  --color-fuscia-300: #de94e1;
+  --color-fuscia-400: #db70db;
+  --color-fuscia-500: #d345cf;
+  --color-fuscia-600: #bc29b2;
+  --color-fuscia-700: #941e88;
+  --color-fuscia-800: #6b1460;
+  --color-fuscia-900: #410B3;
+  --color-rose-100: #f9e2ed;
+  --color-rose-200: #f4bed7;
+  --color-rose-300: #f099bf;
+  --color-rose-400: #ee72a4;
+  --color-rose-500: #ed4c86;
+  --color-rose-600: #eb195f;
+  --color-rose-700: #c20f45;
+  --color-rose-800: #95092f;
+  --color-rose-900: #66051;
+  --color-slate-100: #f8f7fc;
+  --color-slate-200: #f1f0fa;
+  --color-slate-300: #e0ddec;
+  --color-slate-400: #c3c0d8;
+  --color-slate-500: #a7a3c2;
+  --color-slate-600: #82809a;
+  --color-slate-700: #444258;
+  --color-slate-800: #2d2d39;
+  --color-slate-900: #1C1C2;
+  --color-success-light: #2db553;
+  --color-starter: #f2e1f7;
+  --color-team: #cbecf0;
+  --color-enterprise: #FFE2E;
+
+  /* V3 default-- ring outlines are blue */
+  --default-ring-color: var(--color-sky-500);
+
+  /* Animations */
+  --animate-fade-in-scale: fade-in-scale 3s ease-out;
+  @keyframes fade-in-scale {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  --animate-slide-up: slide-up 200ms cubic-bezier(0, 0, 0.2, 1);
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  --animate-slide-down: slide-down 200ms cubic-bezier(0, 0, 0.2, 1);
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  --animate-overlay-show: overlay-show 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  @keyframes overlay-show {
+    from {
+      opacity: 0;
+    }
+  }
+  --animate-scale-in: scale-in 150ms cubic-bezier(0, 0, 0.2, 1);
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0);
+    }
+  }
 }
 
-@font-face {
-  font-family: 'IBM Plex Mono';
-  src: url('/static/fonts/IBMPlexMono-SemiBold.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 600;
-  font-stretch: normal;
-  font-display: swap;
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-Italic.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 400;
-  font-stretch: normal;
-  font-display: swap;
-}
+@layer utilities {
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/static/fonts/IBMPlexMono-Regular.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    src: url('/static/fonts/IBMPlexMono-SemiBold.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-SemiBold.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 600;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-Italic.woff2') format('woff2');
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'IBM Plex Sans';
-  src: url('/static/fonts/IBMPlexSans-SemiBoldItalic.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 600;
-  font-stretch: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-Regular.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+  }
 
-/** Global styles - https://tailwindcss.com/docs/adding-custom-styles#adding-base-styles */
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-SemiBold.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'IBM Plex Sans';
+    src: url('/static/fonts/IBMPlexSans-SemiBoldItalic.woff2') format('woff2');
+    font-style: italic;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+  }
+
+  /** Global styles - https://tailwindcss.com/docs/adding-custom-styles#adding-base-styles */
+}
 @layer base {
   /**
     bg is important since we do a slide up animation we don't want the background to slide up, too
@@ -74,7 +281,6 @@
     box-sizing: border-box;
     border-width: 0;
     border-style: solid;
-    border-color: theme('borderColor.DEFAULT');
   }
 
   html {
@@ -82,7 +288,7 @@
   }
 
   body {
-    @apply m-0 p-0 font-sans text-[16px] font-normal leading-[normal] text-slate-700 antialiased;
+    @apply m-0 p-0 font-sans text-[16px] leading-[normal] font-normal text-slate-700 antialiased;
   }
 
   a {
@@ -94,6 +300,10 @@
   a:focus {
     @apply text-grape-700;
     text-decoration: none;
+  }
+
+  button {
+    @apply p-0;
   }
 
   button,
@@ -155,10 +365,10 @@
 .rdp {
   @apply m-[8px];
   --rdp-cell-size: 36px;
-  --rdp-accent-color: theme(colors.grape.500);
-  --rdp-background-color: theme(colors.grape.500 / 30%);
-  --rdp-accent-color-dark: theme(colors.grape.500);
-  --rdp-background-color-dark: theme(colors.grape.500 / 30%);
+  --rdp-accent-color: var(--color-grape-500);
+  --rdp-background-color: --theme(--color-grape-500 / 30%);
+  --rdp-accent-color-dark: var(--color-grape-500);
+  --rdp-background-color-dark: --theme(--color-grape-500 / 30%);
 }
 
 .link-style a {
@@ -170,8 +380,10 @@
 
 .ProseMirror {
   width: 100%;
+  /* Gap cursor is 2px above the top of an element */
+  padding-top: 2px;
   blockquote {
-    border-left: 3px solid theme('colors.slate.500');
+    border-left: 3px solid var(--color-slate-500);
     margin: 1.5rem 0;
     padding-left: 1rem;
   }
@@ -216,30 +428,21 @@
     }
   }
   .node-imageUpload {
-    @apply rounded border-2 border-dotted border-black border-opacity-10 p-2;
+    @apply relative rounded-sm;
     transition: border 160ms cubic-bezier(0.45, 0.05, 0.55, 0.95);
-
-    &:hover {
-      @apply border-opacity-30;
-    }
-
-    &:has(.is-active),
-    &.has-focus {
-      @apply border-opacity-40;
+    &.ProseMirror-selectednode::after {
+      content: '';
+      @apply pointer-events-none absolute inset-0 h-full w-full rounded-sm bg-[#2383e247] select-none;
     }
   }
   .node-imageBlock {
+    @apply relative;
+    &.has-focus > div::after {
+      content: '';
+      @apply pointer-events-none absolute inset-0 h-full w-full bg-[#2383e247] select-none;
+    }
     & img {
-      @apply overflow-hidden rounded-xl border-2 border-transparent;
-    }
-
-    &:hover img {
-      @apply border-2 border-slate-100;
-    }
-
-    &:has(.is-active) img,
-    &.has-focus img {
-      @apply border-2 border-slate-800;
+      @apply overflow-hidden rounded-md;
     }
   }
 }
@@ -268,7 +471,7 @@
 }
 
 .ProseMirror [data-type='mention'] {
-  background-color: theme('colors.gold.100');
+  background-color: var(--color-gold-100);
   border-radius: 2;
   font-weight: 600;
 }
@@ -283,7 +486,7 @@
 
 .ProseMirror a {
   text-decoration: underline;
-  color: theme('colors.slate.700');
+  color: var(--color-slate-700);
   :hover {
     cursor: pointer;
   }
@@ -294,7 +497,7 @@ hr.ProseMirror-selectednode {
 }
 
 .ProseMirror hr {
-  border-top: 1px solid theme('colors.slate.400');
+  border-top: 1px solid var(--color-slate-400);
 }
 
 .ProseMirror p {

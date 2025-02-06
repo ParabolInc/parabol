@@ -28,6 +28,7 @@ import {
   TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
+export type {TaskTag} from 'parabol-client/shared/types'
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never
@@ -55,8 +56,6 @@ export type AutogroupReflectionGroupType = {
   groupTitle: string
   reflectionIds: string[]
 }
-
-export type TaskTag = 'private' | 'archived'
 
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}

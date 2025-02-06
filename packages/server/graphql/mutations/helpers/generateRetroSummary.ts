@@ -20,7 +20,7 @@ export const generateRetroSummary = async (
   const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const isAISummaryAccessible = await canAccessAI(team, 'retrospective', dataLoader)
+  const isAISummaryAccessible = await canAccessAI(team, dataLoader)
   if (!isAISummaryAccessible) {
     return setSummaryToNull(meetingId)
   }

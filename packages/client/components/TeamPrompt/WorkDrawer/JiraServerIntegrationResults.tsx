@@ -78,7 +78,7 @@ const JiraServerIntegrationResults = (props: Props) => {
 
   return (
     <>
-      <div className='flex flex h-full flex-col gap-y-2 overflow-auto p-4'>
+      <div className='flex h-full flex-col gap-y-2 overflow-auto p-4'>
         {jiraResults && jiraResults.length > 0 ? (
           jiraResults?.map((result, idx) => {
             if (!result) {

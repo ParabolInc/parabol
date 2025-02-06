@@ -25,6 +25,10 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
+  "files.associations": {
+    "*.mdx": "markdown",
+    "*.css": "tailwindcss"
+  },
   "search.exclude": {
     "**/__generated__": true,
     "**/graphql/private/schema.graphql": true,

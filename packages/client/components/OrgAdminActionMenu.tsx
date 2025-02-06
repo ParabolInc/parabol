@@ -96,7 +96,7 @@ export const OrgAdminActionMenu = (props: Props) => {
       }
     >
       <MenuContent
-        className='data-[side=bottom]:animate-slideDown data-[side=top]:animate-slideUp'
+        className='data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
         align='end'
         sideOffset={4}
       >

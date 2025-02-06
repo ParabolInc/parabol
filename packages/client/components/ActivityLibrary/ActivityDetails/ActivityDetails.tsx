@@ -101,7 +101,7 @@ const ActivityDetails = (props: Props) => {
             <div className='w-max text-xl font-semibold'>Start Activity</div>
           </div>
           <div className='mx-auto'>
-            <div className='flex flex-col justify-start pl-4 pr-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
+            <div className='flex flex-col justify-start pr-4 pl-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>
               <div>
                 <ActivityCard
                   className='mb-8 w-80 max-md:hidden sm:ml-14 xl:mb-0 xl:ml-0'

@@ -212,7 +212,7 @@ const setTaskEstimate = {
 
         const [auth /*, team*/] = await Promise.all([
           dataLoader
-            .get('teamMemberIntegrationAuths')
+            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
             .load({service: 'jiraServer', teamId, userId: accessUserId}),
           dataLoader.get('teams').load(teamId)
         ])

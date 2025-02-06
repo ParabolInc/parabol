@@ -38,7 +38,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       <DropdownMenu.Trigger asChild disabled={!isEditing}>
         <PlainButton className={clsx(!isEditing && 'cursor-default', 'flex')} disabled={false}>
           <ActivityDetailsBadge
-            className={clsx(`${CATEGORY_THEMES[category].primary}`, 'select-none text-white')}
+            className={clsx(`${CATEGORY_THEMES[category].primary}`, 'text-white select-none')}
           >
             {CATEGORY_ID_TO_NAME[category]}
           </ActivityDetailsBadge>
@@ -46,15 +46,17 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
         </PlainButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className='border-rad rounded bg-white shadow-lg' sideOffset={5}>
+        <DropdownMenu.Content
+          className='border-rad rounded-sm bg-white shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
+          sideOffset={5}
+        >
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
             {MAIN_CATEGORIES.map((c) => {
               const categoryId = c as CategoryID
               return (
                 <DropdownMenu.RadioItem
                   key={categoryId}
-                  className='flex cursor-pointer select-none px-4 py-3 outline-none data-[highlighted]:bg-slate-100
-                data-[state=checked]:bg-slate-200'
+                  className='flex cursor-pointer px-4 py-3 outline-hidden select-none data-highlighted:bg-slate-100 data-[state=checked]:bg-slate-200'
                   value={categoryId}
                 >
                   <span
@@ -63,7 +65,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
                       'h-5 w-5 rounded-full'
                     )}
                   ></span>
-                  <span className='pl-5 pr-10 text-xs font-semibold'>
+                  <span className='pr-10 pl-5 text-xs font-semibold'>
                     {CATEGORY_ID_TO_NAME[categoryId]}
                   </span>
                 </DropdownMenu.RadioItem>

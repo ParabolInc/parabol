@@ -6,7 +6,7 @@ import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
 import {useConfig} from '../../hooks/useConfig'
 import MoreMenu from '../Menu'
 
-import plural from '../../../client/utils/plural'
+import plural from 'parabol-client/utils/plural'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
 
 const Card = styled.div!`

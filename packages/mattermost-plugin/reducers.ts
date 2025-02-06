@@ -1,4 +1,4 @@
-import {AnyAction, createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {Client4} from 'mattermost-redux/client'
 import {getPluginServerRoute} from './selectors'
 
@@ -51,6 +51,7 @@ export const removeTeamFromChannel = createAsyncThunk(
 const localSlice = createSlice({
   name: 'local',
   initialState: {
+    authToken: null as string | null,
     isStartActivityModalVisible: false,
     isCreateTaskModalVisible: false,
     isInviteToTeamModalVisible: false,
@@ -60,6 +61,12 @@ const localSlice = createSlice({
     linkedTeamIds: {} as Record<string, {loading: boolean; teamIds: string[]}>
   },
   reducers: {
+    login: (state, action: PayloadAction<string>) => {
+      state.authToken = action.payload
+    },
+    logout: (state) => {
+      state.authToken = null
+    },
     openStartActivityModal: (state) => {
       state.isStartActivityModalVisible = true
     },
@@ -136,6 +143,8 @@ const localSlice = createSlice({
 })
 
 export const {
+  login,
+  logout,
   openStartActivityModal,
   closeStartActivityModal,
   openCreateTaskModal,
@@ -152,10 +161,4 @@ export const {
 
 export type PluginState = ReturnType<typeof localSlice.reducer>
 
-const rootReducer = (state: PluginState, action: AnyAction) => {
-  const localState = localSlice.reducer(state, action)
-  return {
-    ...localState
-  }
-}
-export default rootReducer
+export default localSlice.reducer

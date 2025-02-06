@@ -9,7 +9,7 @@ const AlertDialogAction = React.forwardRef<
   <AlertDialogPrimitive.Action
     ref={ref}
     className={clsx(
-      'bg-gradient-to-r from-tomato-600 to-rose-500 font-semibold text-white hover:opacity-90',
+      'bg-linear-to-r from-tomato-600 to-rose-500 font-semibold text-white hover:opacity-90',
       className
     )}
     {...props}

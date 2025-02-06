@@ -1,0 +1,17 @@
+"""
+The size of an image
+"""
+enum ImageSize {
+  """
+  Less than 90px tall
+  """
+  nano
+  """
+  Less than 220px tall
+  """
+  tiny
+  """
+  full size
+  """
+  original
+}

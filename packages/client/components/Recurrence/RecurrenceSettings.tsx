@@ -96,11 +96,12 @@ const Input = ({
 }: PropsWithChildren<
   {label?: React.ReactNode; hasError: boolean} & React.InputHTMLAttributes<HTMLInputElement>
 >) => {
-  const focusStyles = 'focus:outline-none focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
+  const focusStyles =
+    'focus:outline-hidden focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
   const activeStyles =
     'active:border-slate-600 active:outline active:outline-slate-600 active:outline-1'
   const baseStyles =
-    'form-input text-base font-sans p-2 border border-solid border-slate-500 rounded hover:border-slate-600'
+    'form-input text-base font-sans p-2 border border-solid border-slate-500 rounded-sm hover:border-slate-600'
   const errorStyles =
     'border-tomato-600 focus:border-tomato-600 focus:ring-tomato-600 active:border-tomato-600 active:outline-tomato-600'
 
@@ -134,7 +135,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={clsx('break-words text-sm italic text-slate-600', className)} {...rest}>
+    <div className={clsx('text-sm break-words text-slate-600 italic', className)} {...rest}>
       {children}
     </div>
   )

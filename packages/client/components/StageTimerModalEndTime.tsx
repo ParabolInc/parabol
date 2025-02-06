@@ -77,7 +77,7 @@ const StageTimerModalEndTime = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
 
   const startTimer = () => {
-    if (submitting || endTime === new Date(scheduledEndTime || 0)) return
+    if (submitting || endTime.getTime() === new Date(scheduledEndTime || 0).getTime()) return
     if (endTime.getTime() <= Date.now()) {
       onError(new Error('Time must be in the future'))
       return

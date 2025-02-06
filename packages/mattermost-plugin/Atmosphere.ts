@@ -13,18 +13,20 @@ import RelayModernStore from 'relay-runtime/lib/store/RelayModernStore'
 import {AnyAction, Store} from '@reduxjs/toolkit'
 import {Client4} from 'mattermost-redux/client'
 import {GlobalState} from 'mattermost-redux/types/store'
+import {login as onLogin} from './reducers'
+import {authToken as getAuthToken} from './selectors'
 RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true
 
 type State = {
-  authToken: string | null
   serverUrl: string
   store: Store<GlobalState, AnyAction>
 }
 
-const fetchFunction = (state: State) => (params: RequestParameters, variables: Variables) => {
-  const {serverUrl, authToken} = state
+const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Variables) => {
+  const {serverUrl, store} = state
+  const authToken = getAuthToken(store.getState())
   const response = fetch(
-    serverUrl,
+    serverUrl + '/graphql',
     Client4.getOptions({
       method: 'POST',
       headers: {
@@ -51,6 +53,21 @@ const fetchFunction = (state: State) => (params: RequestParameters, variables: V
   )
 }
 
+const login = (state: State) => async () => {
+  const {serverUrl, store} = state
+  const response = await fetch(
+    serverUrl + '/login',
+    Client4.getOptions({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  )
+  const body = await response.json()
+  store.dispatch(onLogin(body.authToken))
+}
+
 const relayFieldLogger: RelayFieldLogger = (event) => {
   if (event.kind === 'relay_resolver.error') {
     console.warn(`Resolver error encountered in ${event.owner}.${event.fieldPath}`)
@@ -65,15 +82,16 @@ export type ResolverContext = {
 
 export class Atmosphere extends Environment {
   state: State
+  login: () => Promise<void>
 
   constructor(serverUrl: string, reduxStore: Store<GlobalState, AnyAction>) {
     const state = {
-      serverUrl: serverUrl + '/graphql',
+      serverUrl,
       store: reduxStore,
       authToken: null
     }
 
-    const network = Network.create(fetchFunction(state))
+    const network = Network.create(fetchGraphQL(state))
     const relayStore = new RelayModernStore(new RecordSource(), {
       resolverContext: {
         store: reduxStore,
@@ -86,6 +104,8 @@ export class Atmosphere extends Environment {
       relayFieldLogger
     })
     this.state = state
+    // bind it here to avoid this == undefined errors
+    this.login = login(state)
   }
 }
 

@@ -1,5 +1,6 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
 import {generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
@@ -15,6 +16,7 @@ export const useTipTapIcebreakerEditor = (content: string, options: {readOnly?: 
       content: contentJSON,
       extensions: [
         StarterKit,
+        Underline,
         Placeholder.configure({
           showOnlyWhenEditable: false,
           placeholder: 'e.g. How are you?'

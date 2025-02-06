@@ -76,7 +76,7 @@ const OrgBillingDangerZone = (props: Props) => {
             <a
               onClick={handleDowngrade}
               title='Downgrade'
-              className='ml-1 mr-1 flex items-center text-sky-500'
+              className='mr-1 ml-1 flex items-center text-sky-500'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>
                 {'Downgrade'}
@@ -90,7 +90,7 @@ const OrgBillingDangerZone = (props: Props) => {
             <a
               href='mailto:love@parabol.co?subject=Instant Unsubscribe from Team Plan'
               title='Instant Unsubscribe from Team Plan'
-              className='ml-1 mr-1 flex items-center text-sky-500'
+              className='mr-1 ml-1 flex items-center text-sky-500'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>
                 {'Contact us'}

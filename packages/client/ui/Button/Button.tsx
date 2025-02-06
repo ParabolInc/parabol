@@ -7,18 +7,18 @@ type Size = 'sm' | 'md' | 'lg' | 'default'
 type Shape = 'pill' | 'circle' | 'default'
 
 const BASE_STYLES =
-  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap  transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
+  'cursor-pointer inline-flex items-center justify-center whitespace-nowrap  transition-colors focus-visible:outline-hidden focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
 
 // TODO: make sure the styles match the designs
 const VARIANT_STYLES: Record<Variant, string> = {
-  primary: 'bg-gradient-to-r from-tomato-600 to-rose-500 text-white font-semibold hover:opacity-90',
+  primary: 'bg-linear-to-r from-tomato-600 to-rose-500 text-white font-semibold hover:opacity-90',
   destructive: 'bg-tomato-500 text-white font-semibold hover:bg-tomato-500/90',
   outline:
     'text-slate-900 border border-slate-400 hover:bg-slate-200 px-2.5 py-1 bg-transparent font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',
-  flat: 'rounded-full bg-transparent outline-none shadow-none hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 focus-visible:ring-0'
+  flat: 'rounded-full bg-transparent outline-hidden shadow-none hover:bg-slate-200 focus:bg-slate-200 active:bg-slate-200 focus-visible:ring-0'
 }
 
 const SIZE_STYLES: Record<Size, string> = {

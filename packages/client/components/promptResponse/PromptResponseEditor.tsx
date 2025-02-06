@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Editor} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
 import {JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -15,7 +16,6 @@ import BaseButton from '../BaseButton'
 import {LoomExtension, unfurlLoomLinks} from './loomExtension'
 import {TipTapEditor} from './TipTapEditor'
 import {TiptapLinkExtension} from './TiptapLinkExtension'
-import {LinkMenuState} from './TipTapLinkMenu'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
@@ -104,13 +104,12 @@ const PromptResponseEditor = (props: Props) => {
     }
   }
 
-  const [linkState, setLinkState] = useState<LinkMenuState>(null)
-
   const editor = useEditor(
     {
       content,
       extensions: [
         StarterKit,
+        Underline,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -119,10 +118,7 @@ const PromptResponseEditor = (props: Props) => {
         Mention.configure(tiptapMentionConfig(atmosphere, teamId)),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
-          openOnClick: false,
-          popover: {
-            setLinkState
-          }
+          openOnClick: false
         })
       ],
       autofocus: autoFocus,
@@ -153,12 +149,7 @@ const PromptResponseEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <TipTapEditor
-        linkState={linkState}
-        setLinkState={setLinkState}
-        editor={editor}
-        showBubbleMenu={!readOnly}
-      />
+      <TipTapEditor editor={editor} showBubbleMenu={!readOnly} />
       {!readOnly && (
         // The render conditions for these buttons *should* only be true when 'readOnly' is false, but let's be explicit
         // about it.
