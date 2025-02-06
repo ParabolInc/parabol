@@ -30,7 +30,9 @@ const publishInternalGQL = async <NarrowResponse>(options: Options) => {
         userId: getUserId(authToken),
         tags: {
           authToken: JSON.stringify(authToken),
-          query: query || ''
+          query: query || '',
+          variables: JSON.stringify(variables),
+          socketServerId: socketId
         }
       })
     } else {
