@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.24.3](https://github.com/ParabolInc/parabol/compare/v8.24.2...v8.24.3) (2025-02-06)
+
+
+### Fixed
+
+* revert global styles change ([#10818](https://github.com/ParabolInc/parabol/issues/10818)) ([9434eb1](https://github.com/ParabolInc/parabol/commit/9434eb1dddebde7f2d8978e815fce5b0cb81e095))
+
 ## [8.24.2](https://github.com/ParabolInc/parabol/compare/v8.24.1...v8.24.2) (2025-02-06)
 
 
