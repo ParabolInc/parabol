@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.24.1](https://github.com/ParabolInc/parabol/compare/v8.24.0...v8.24.1) (2025-02-06)
+
+
+### Fixed
+
+* Don't scroll discussions on new reactjis ([#10806](https://github.com/ParabolInc/parabol/issues/10806)) ([bd0dd0b](https://github.com/ParabolInc/parabol/commit/bd0dd0bae8d7875f412a1fdc589e9ac20c769e2a))
+* Hook error during grouping reflections ([#10808](https://github.com/ParabolInc/parabol/issues/10808)) ([e67bf2b](https://github.com/ParabolInc/parabol/commit/e67bf2ba0e0bc2f0c7848eec89198741c0c07087))
+* TipTap link extension type error ([#10809](https://github.com/ParabolInc/parabol/issues/10809)) ([1490e39](https://github.com/ParabolInc/parabol/commit/1490e39167e12aa77431de147b85e4c3a4ce9e34))
+
 ## [8.24.0](https://github.com/ParabolInc/parabol/compare/v8.23.8...v8.24.0) (2025-02-05)
 
 
