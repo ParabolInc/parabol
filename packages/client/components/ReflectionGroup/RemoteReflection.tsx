@@ -252,14 +252,10 @@ const RemoteReflection = (props: Props) => {
     }
   }, [remoteDrag, meetingMembers])
 
-  if (!remoteDrag) return null
-  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
-
-  const {nextStyle, transform, minTop} = getStyle(remoteDrag, isDropping, isSpotlight, style)
   const [arrow, setArrow] = useState<RemoteReflectionArrow | undefined>('arrow_downward')
-  const [headerTransform, setHeaderTransform] = useState<string | undefined>(undefined)
-
   useEffect(() => {
+    if (!remoteDrag) return
+    const {minTop} = getCoords(remoteDrag)
     requestAnimationFrame(() => {
       const nextVal = getHeaderTransform(ref, minTop)
       if (nextVal.headerTransform !== headerTransform) {
@@ -267,7 +263,14 @@ const RemoteReflection = (props: Props) => {
         setArrow(nextVal.arrow)
       }
     })
-  }, [])
+  }, [remoteDrag])
+  const [headerTransform, setHeaderTransform] = useState<string | undefined>(undefined)
+
+  if (!remoteDrag) return null
+
+  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
+  const {nextStyle, transform} = getStyle(remoteDrag, isDropping, isSpotlight, style)
+
   return (
     <>
       <RemoteReflectionModal

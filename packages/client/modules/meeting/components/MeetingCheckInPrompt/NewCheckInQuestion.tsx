@@ -37,30 +37,6 @@ const CogIcon = styled('div')({
   width: 24
 })
 
-const QuestionBlock = styled('div')({
-  alignContent: 'center',
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  fontSize: 24,
-  lineHeight: 1.25,
-  padding: '16px 0',
-  '.DraftEditor-root, textarea': {
-    flexGrow: 1,
-    padding: '16px',
-    borderRadius: '4px',
-    '&:hover': {
-      backgroundColor: 'rgba(255,255,255,0.2)'
-    },
-    '&:focus-within': {
-      backgroundColor: 'rgba(255,255,255,0.6)'
-    },
-    '.public-DraftStyleDefault-block': {
-      textAlign: 'center'
-    }
-  }
-})
-
 interface Props {
   meeting: NewCheckInQuestion_meeting$key
 }
@@ -187,9 +163,8 @@ const NewCheckInQuestion = (props: Props) => {
 
   return (
     <>
-      <QuestionBlock id='test'>
-        {/* cannot set min width because iPhone 5 has a width of 320*/}
-        <EditorContent editor={editor} onBlur={updateQuestion} />
+      <div className='flex flex-col items-center py-4'>
+        <EditorContent className='text-2xl' editor={editor} onBlur={updateQuestion} />
         {isFacilitating && (
           <div className='flex gap-x-2'>
             <Tooltip open={isFacilitating ? undefined : false}>
@@ -214,7 +189,7 @@ const NewCheckInQuestion = (props: Props) => {
             </Tooltip>
           </div>
         )}
-      </QuestionBlock>
+      </div>
       {showAiIcebreaker && (
         <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
