@@ -14,7 +14,7 @@ const generateDiscussionPrompt = async (
     dataLoader.get('users').loadNonNull(facilitatorUserId),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
-  const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
+  const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return
   const [reflections, reflectionGroups] = await Promise.all([
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),

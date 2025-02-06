@@ -44,8 +44,7 @@ const FeatureNameGroup = styled('div')({
 const FEATURE_NAME_LOOKUP: Record<string, string> = {
   insights: 'Team Insights',
   publicTeams: 'Public Teams',
-  relatedDiscussions: 'Related Discussions',
-  standupAISummary: 'Standup AI Summary'
+  relatedDiscussions: 'Related Discussions'
 }
 
 interface Props {

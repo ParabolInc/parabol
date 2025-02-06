@@ -10,7 +10,7 @@ const generateWholeMeetingSentimentScore = async (
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   ])
   const team = await dataLoader.get('teams').loadNonNull(meeting.teamId)
-  const isAIAvailable = await canAccessAI(team, 'retrospective', dataLoader)
+  const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable || reflections.length === 0) return undefined
   const reflectionsWithSentimentScores = reflections.filter(
     ({sentimentScore}) => sentimentScore !== undefined

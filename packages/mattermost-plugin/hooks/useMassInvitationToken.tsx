@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
+import {Threshold} from 'parabol-client/types/constEnums'
 import {useCallback} from 'react'
-import {Threshold} from '../../client/types/constEnums'
 import {useMassInvitationTokenMutation} from '../__generated__/useMassInvitationTokenMutation.graphql'
 import {useMassInvitationTokenQuery} from '../__generated__/useMassInvitationTokenQuery.graphql'
 import {mutationResult} from '../utils/mutationResult'
