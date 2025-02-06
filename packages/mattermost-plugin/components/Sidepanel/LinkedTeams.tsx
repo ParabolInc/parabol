@@ -1,9 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 import {LinkedTeamsQuery} from '../../__generated__/LinkedTeamsQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
-import {openLinkTeamModal} from '../../reducers'
 import LoadingSpinner from '../LoadingSpinner'
 import TeamRow from './TeamRow'
 
@@ -33,23 +31,11 @@ const LinkedTeams = () => {
     (team) => !linkedTeamIds || linkedTeamIds.includes(team.id)
   )
 
-  const dispatch = useDispatch()
-
-  const handleLink = () => {
-    dispatch(openLinkTeamModal())
-  }
-
   const isLoading = false
   const error = false
 
   return (
     <div>
-      <div className='flex items-center justify-between'>
-      <div className='font-bold'>Linked Parabol Teams</div>
-      <button className='btn btn-primary' onClick={handleLink}>
-        Link Team
-      </button>
-      </div>
       {isLoading && <LoadingSpinner text='Loading...' />}
       {error && <div className='error-text'>Loading teams failed, try refreshing the page</div>}
       {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}

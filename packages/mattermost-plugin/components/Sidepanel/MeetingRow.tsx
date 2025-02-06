@@ -47,6 +47,7 @@ const MeetingRow = ({meetingRef}: Props) => {
       fragment MeetingRow_meeting on NewMeeting {
         id
         name
+        meetingType
         team {
           name
         }
