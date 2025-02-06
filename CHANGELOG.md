@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.24.2](https://github.com/ParabolInc/parabol/compare/v8.24.1...v8.24.2) (2025-02-06)
+
+
+### Fixed
+
+* update icebreaker styles ([#10723](https://github.com/ParabolInc/parabol/issues/10723)) ([31d398f](https://github.com/ParabolInc/parabol/commit/31d398fe00d18463242a86b9be36a0c4c51ada40))
+
 ## [8.24.1](https://github.com/ParabolInc/parabol/compare/v8.24.0...v8.24.1) (2025-02-06)
 
 
