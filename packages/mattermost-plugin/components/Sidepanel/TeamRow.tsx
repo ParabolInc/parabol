@@ -1,3 +1,4 @@
+import {Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 
 import {useFragment} from 'react-relay'
@@ -47,7 +48,9 @@ const TeamRow = ({teamRef}: Props) => {
 
   return (
     <div className='my-4 flex rounded-lg border border-slate-300'>
-      <div className='pt-4 pl-2 text-2xl text-slate-400'></div>
+      <div className='pt-4 pl-2 text-2xl text-slate-400'>
+        <Group fontSize='large' />
+      </div>
       <div className='flex grow flex-col items-start p-2'>
         <div className='flex w-full flex-col'>
           <div className='flex justify-between'>
