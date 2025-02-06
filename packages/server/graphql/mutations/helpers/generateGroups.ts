@@ -16,7 +16,7 @@ const generateGroups = async (
   if (reflections.length === 0) return
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  if (!(await canAccessAI(team, 'retrospective', dataLoader))) return
+  if (!(await canAccessAI(team, dataLoader))) return
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()
 

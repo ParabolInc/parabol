@@ -53,6 +53,21 @@ const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Va
   )
 }
 
+const login = (state: State) => async () => {
+  const {serverUrl, store} = state
+  const response = await fetch(
+    serverUrl + '/login',
+    Client4.getOptions({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  )
+  const body = await response.json()
+  store.dispatch(onLogin(body.authToken))
+}
+
 const relayFieldLogger: RelayFieldLogger = (event) => {
   if (event.kind === 'relay_resolver.error') {
     console.warn(`Resolver error encountered in ${event.owner}.${event.fieldPath}`)
@@ -67,6 +82,7 @@ export type ResolverContext = {
 
 export class Atmosphere extends Environment {
   state: State
+  login: () => Promise<void>
 
   constructor(serverUrl: string, reduxStore: Store<GlobalState, AnyAction>) {
     const state = {
@@ -88,21 +104,8 @@ export class Atmosphere extends Environment {
       relayFieldLogger
     })
     this.state = state
-  }
-
-  async login() {
-    const {serverUrl, store} = this.state
-    const response = await fetch(
-      serverUrl + '/login',
-      Client4.getOptions({
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-    )
-    const body = await response.json()
-    store.dispatch(onLogin(body.authToken))
+    // bind it here to avoid this == undefined errors
+    this.login = login(state)
   }
 }
 

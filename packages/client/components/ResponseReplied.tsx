@@ -46,7 +46,7 @@ const ResponseReplied = (props: Props) => {
     history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
-  const {editor, setLinkState, linkState} = useTipTapCommentEditor(comment.content, {
+  const {editor} = useTipTapCommentEditor(comment.content, {
     readOnly: true
   })
   if (!editor) return null
@@ -59,7 +59,7 @@ const ResponseReplied = (props: Props) => {
       action={<NotificationAction label={'See the discussion'} onClick={goThere} />}
     >
       <div className='my-1 rounded-sm bg-white p-2 text-sm leading-5 shadow-card'>
-        <TipTapEditor editor={editor} setLinkState={setLinkState} linkState={linkState} />
+        <TipTapEditor editor={editor} />
       </div>
     </NotificationTemplate>
   )

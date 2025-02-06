@@ -129,6 +129,11 @@ type TeamPromptMeeting implements NewMeeting {
   showConversionModal: Boolean!
 
   """
+  Is the OpenAI summary still being generated?
+  """
+  isLoadingSummary: Boolean!
+
+  """
   The OpenAI generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
   """
   summary: String

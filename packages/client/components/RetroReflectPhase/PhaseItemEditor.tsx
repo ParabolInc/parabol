@@ -17,6 +17,7 @@ import {cn} from '../../ui/cn'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
+import HTMLReflection from './HTMLReflection'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 import getBBox from './getBBox'
 
@@ -125,7 +126,7 @@ const PhaseItemEditor = (props: Props) => {
       setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
   })
-  const {editor, linkState, setLinkState} = useTipTapReflectionEditor(
+  const {editor} = useTipTapReflectionEditor(
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
@@ -201,8 +202,6 @@ const PhaseItemEditor = (props: Props) => {
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}
-          linkState={linkState}
-          setLinkState={setLinkState}
           onBlur={onBlur}
           onFocus={onFocus}
         />
@@ -221,17 +220,7 @@ const PhaseItemEditor = (props: Props) => {
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
-                <div
-                  className={cn('relative w-full overflow-auto text-sm leading-4 text-slate-700')}
-                >
-                  <div
-                    className={cn(
-                      'ProseMirror flex max-h-28 min-h-4 w-full flex-col items-start justify-center px-4 pt-3 leading-none',
-                      disableAnonymity ? 'pb-0' : 'pb-3'
-                    )}
-                    dangerouslySetInnerHTML={{__html: card.html}}
-                  ></div>
-                </div>
+                <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
                 {disableAnonymity && (
                   <ReflectionCardAuthor>
                     {viewerMeetingMember?.user.preferredName}

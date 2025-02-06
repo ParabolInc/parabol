@@ -1,6 +1,6 @@
 import {generateJSON} from '@tiptap/html'
-import {TaskTag} from 'parabol-server/postgres/types'
 import {serverTipTapExtensions} from '~/shared/tiptap/serverTipTapExtensions'
+import {TaskTag} from '../types'
 
 export const convertTipTapTaskContent = (text: string, tags?: TaskTag[]) => {
   let body = `<p>${text}</p>`

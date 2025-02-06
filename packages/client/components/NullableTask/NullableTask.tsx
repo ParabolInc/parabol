@@ -57,7 +57,7 @@ const NullableTask = (props: Props) => {
   const atmosphere = useAtmosphere()
   const isArchived = isTaskArchived(tags)
   const readOnly = isTempId(taskId) || isArchived || !!isDraggingOver || isIntegration
-  const {editor, linkState, setLinkState} = useTipTapTaskEditor(content, {
+  const {editor} = useTipTapTaskEditor(content, {
     atmosphere,
     teamId,
     readOnly
@@ -70,8 +70,6 @@ const NullableTask = (props: Props) => {
       area={area}
       className={className}
       editor={editor}
-      linkState={linkState}
-      setLinkState={setLinkState}
       isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}

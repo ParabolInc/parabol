@@ -1,7 +1,12 @@
-import {ReactNodeViewRenderer} from '@tiptap/react'
-import {EventEmitter} from 'eventemitter3'
+import {ReactNodeViewRenderer, type Editor} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
+
+declare module '@tiptap/core' {
+  interface EditorEvents {
+    enter: {editor: Editor}
+  }
+}
 
 export const ImageUpload = ImageUploadBase.extend<{editorWidth: number; editorHeight: number}>({
   addOptions() {
@@ -12,7 +17,6 @@ export const ImageUpload = ImageUploadBase.extend<{editorWidth: number; editorHe
   },
   addStorage(this) {
     return {
-      emitter: new EventEmitter(),
       editorWidth: this.options.editorWidth,
       editorHeight: this.options.editorHeight
     }
@@ -25,7 +29,7 @@ export const ImageUpload = ImageUploadBase.extend<{editorWidth: number; editorHe
         // and we can't communicate with that component via props or state
         // so we attach an event emitter on the editor, since that's shared
         if (editor.isActive('imageUpload')) {
-          this.storage.emitter.emit('enter')
+          editor.emit('enter', {editor})
           return true
         }
         return false

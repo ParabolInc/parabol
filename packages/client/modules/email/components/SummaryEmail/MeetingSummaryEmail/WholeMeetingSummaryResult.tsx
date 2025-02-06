@@ -81,22 +81,13 @@ const WholeMeetingSummaryResult = ({meetingRef}: Props) => {
     <>
       <tr>
         <td align='center' style={{paddingTop: 20}}>
-          <tr>
-            <td style={explainerStyle}>{explainerText}</td>
-          </tr>
-          <tr>
-            <td align='center' style={topicTitleStyle}>
-              {'🤖 Meeting Summary'}
-            </td>
-          </tr>
-          <tr>
-            <td
-              align='center'
-              style={textStyle}
-              className='link-style'
-              dangerouslySetInnerHTML={{__html: sanitizedSummary}}
-            />
-          </tr>
+          <div style={explainerStyle}>{explainerText}</div>
+          <div style={topicTitleStyle}>{'🤖 Meeting Summary'}</div>
+          <div
+            style={textStyle}
+            className='link-style'
+            dangerouslySetInnerHTML={{__html: sanitizedSummary}}
+          />
         </td>
       </tr>
       <EmailBorderBottom />

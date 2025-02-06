@@ -5,6 +5,68 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.24.2](https://github.com/ParabolInc/parabol/compare/v8.24.1...v8.24.2) (2025-02-06)
+
+
+### Fixed
+
+* update icebreaker styles ([#10723](https://github.com/ParabolInc/parabol/issues/10723)) ([31d398f](https://github.com/ParabolInc/parabol/commit/31d398fe00d18463242a86b9be36a0c4c51ada40))
+
+## [8.24.1](https://github.com/ParabolInc/parabol/compare/v8.24.0...v8.24.1) (2025-02-06)
+
+
+### Fixed
+
+* Don't scroll discussions on new reactjis ([#10806](https://github.com/ParabolInc/parabol/issues/10806)) ([bd0dd0b](https://github.com/ParabolInc/parabol/commit/bd0dd0bae8d7875f412a1fdc589e9ac20c769e2a))
+* Hook error during grouping reflections ([#10808](https://github.com/ParabolInc/parabol/issues/10808)) ([e67bf2b](https://github.com/ParabolInc/parabol/commit/e67bf2ba0e0bc2f0c7848eec89198741c0c07087))
+* TipTap link extension type error ([#10809](https://github.com/ParabolInc/parabol/issues/10809)) ([1490e39](https://github.com/ParabolInc/parabol/commit/1490e39167e12aa77431de147b85e4c3a4ce9e34))
+
+## [8.24.0](https://github.com/ParabolInc/parabol/compare/v8.23.8...v8.24.0) (2025-02-05)
+
+
+### Added
+
+* **Mattermost Plugin:** TipTap Editor for Task and Reflection ([#10796](https://github.com/ParabolInc/parabol/issues/10796)) ([9e4a14e](https://github.com/ParabolInc/parabol/commit/9e4a14e54726af7d156593128d9a682ad390a627))
+* release standups ai to all users  ([#10724](https://github.com/ParabolInc/parabol/issues/10724)) ([260daf3](https://github.com/ParabolInc/parabol/commit/260daf3141cf67809b03fe9a764bc06e6f3b0700))
+
+
+### Fixed
+
+* update the logic to match the definition of an active team with Data Sanctum ([#10790](https://github.com/ParabolInc/parabol/issues/10790)) ([9c1df05](https://github.com/ParabolInc/parabol/commit/9c1df054457e894cde5bbb24fc01dba3d27b2030))
+
+
+### Changed
+
+* add extra logging to gql executor timeouts ([#10795](https://github.com/ParabolInc/parabol/issues/10795)) ([7ff31b1](https://github.com/ParabolInc/parabol/commit/7ff31b156ba0ebb9c7308dea51a77c34ae7f748c))
+* Refactor tiptap events  ([#10800](https://github.com/ParabolInc/parabol/issues/10800)) ([4383430](https://github.com/ParabolInc/parabol/commit/4383430ac97238dfa9a58a5c042161908f370eff))
+
+## [8.23.8](https://github.com/ParabolInc/parabol/compare/v8.23.7...v8.23.8) (2025-02-04)
+
+
+### Fixed
+
+* Allow navigation in meetings with invalid facilitator stage ([#10791](https://github.com/ParabolInc/parabol/issues/10791)) ([968c4fd](https://github.com/ParabolInc/parabol/commit/968c4fd35eacecd71b4492810e55dd4ead68ec08))
+
+## [8.23.7](https://github.com/ParabolInc/parabol/compare/v8.23.6...v8.23.7) (2025-02-04)
+
+
+### Fixed
+
+* tailwind v4 fonts and animations ([#10787](https://github.com/ParabolInc/parabol/issues/10787)) ([576e536](https://github.com/ParabolInc/parabol/commit/576e536d498c20f3ee6142593ff85086c3d8fe5a))
+
+## [8.23.6](https://github.com/ParabolInc/parabol/compare/v8.23.5...v8.23.6) (2025-02-04)
+
+
+### Fixed
+
+* validate facilitatorStageId when updating poker scope ([#10785](https://github.com/ParabolInc/parabol/issues/10785)) ([d677ea2](https://github.com/ParabolInc/parabol/commit/d677ea223205afb5562e66a7e60dc8934f12fc12))
+
+
+### Changed
+
+* remove tailwinds preflight ([#10784](https://github.com/ParabolInc/parabol/issues/10784)) ([1c6ec42](https://github.com/ParabolInc/parabol/commit/1c6ec425fedf3bfdda9e1e4ab825980f996fb9bb))
+* upgrade tailwindcss to v4 ([#10772](https://github.com/ParabolInc/parabol/issues/10772)) ([7ea0212](https://github.com/ParabolInc/parabol/commit/7ea0212bb3969d63471e843853b9175cda2debf6))
+
 ## [8.23.5](https://github.com/ParabolInc/parabol/compare/v8.23.4...v8.23.5) (2025-01-31)
 
 

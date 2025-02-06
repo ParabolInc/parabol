@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
@@ -73,6 +74,8 @@ module.exports = (config) => {
     resolve: {
       alias: {
         '~': path.join(CLIENT_ROOT),
+        // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+        'react/jsx-runtime': require.resolve('react/jsx-runtime')
       },
       extensions: [".ts", ".tsx", ".js"],
     },
@@ -86,6 +89,22 @@ module.exports = (config) => {
           options: {
             presets: ["@babel/preset-react", "@babel/preset-typescript"],
           },
+        },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+              }
+            },
+            {
+              loader: 'postcss-loader',
+            },
+          ],
         },
       ],
     },
@@ -119,7 +138,12 @@ module.exports = (config) => {
           }
         },
         */
-      })
+      }),
+      new MiniCssExtractPlugin({
+        filename: '[name]_[contenthash].css',
+        // name refers to the chunk name, which would create 1 copy for each chunk referencing the css
+        chunkFilename: '[contenthash].css'
+      }),
     ],
     externals: {
       react: 'React',

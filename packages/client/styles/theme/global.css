@@ -9,6 +9,12 @@
 @config '../../../../tailwind.config.js';
 
 @theme {
+  /* Fonts */
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
   /* Palette */
   --color-*: initial;
   --color-transparent: transparent;
@@ -486,16 +492,18 @@
   }
 }
 
-.ProseMirror p {
-  margin-block-start: 4px;
-  margin-block-end: 4px;
-  line-height: 1rem;
-}
-
 hr.ProseMirror-selectednode {
   border-top: 1px solid #68cef8;
 }
 
 .ProseMirror hr {
   border-top: 1px solid var(--color-slate-400);
+}
+
+.ProseMirror p {
+  line-height: 1.25rem;
+}
+
+.text-2xl .ProseMirror p {
+  line-height: 2rem;
 }

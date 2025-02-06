@@ -24,7 +24,7 @@ const updateGroupTitle = async (input: Input) => {
     return
   }
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const hasAIAccess = await canAccessAI(team, 'retrospective', dataLoader)
+  const hasAIAccess = await canAccessAI(team, dataLoader)
   if (!hasAIAccess) {
     const smartTitle = getGroupSmartTitle(reflections)
     await updateSmartGroupTitle(reflectionGroupId, smartTitle)
