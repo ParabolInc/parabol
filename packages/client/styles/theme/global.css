@@ -296,3 +296,11 @@ hr.ProseMirror-selectednode {
 .ProseMirror hr {
   border-top: 1px solid theme('colors.slate.400');
 }
+
+.ProseMirror p {
+  line-height: 1.25rem;
+}
+
+.text-2xl .ProseMirror p {
+  line-height: 2rem;
+}
