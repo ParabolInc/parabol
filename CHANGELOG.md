@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.24.5](https://github.com/ParabolInc/parabol/compare/v8.24.4...v8.24.5) (2025-02-06)
+
+
+### Fixed
+
+* replace APP_VERSION with webpack global __APP_VERSION__ ([#10824](https://github.com/ParabolInc/parabol/issues/10824)) ([e478b10](https://github.com/ParabolInc/parabol/commit/e478b10426f51f190693cc95ba3955607f53cae7))
+
 ## [8.24.4](https://github.com/ParabolInc/parabol/compare/v8.24.3...v8.24.4) (2025-02-06)
 
 
