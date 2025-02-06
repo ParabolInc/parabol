@@ -75,7 +75,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.25.0",
-    "@datadog/datadog-ci": "^2.33.0",
+    "@datadog/datadog-ci": "^2.48.0",
     "@eslint/compat": "^1.1.1",
     "@graphql-codegen/add": "5.0.0",
     "@graphql-codegen/cli": "5.0.0",
@@ -136,6 +136,7 @@
   },
   "dependencies": {
     "@module-federation/enhanced": "^0.7.6",
+    "dd-trace": "^5.35.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "lodash.toarray": "^4.4.0",

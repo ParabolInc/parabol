@@ -61,7 +61,6 @@
     "@tiptap/extension-link": "^2.9.1",
     "@tiptap/starter-kit": "^2.9.1",
     "classnames": "^2.5.1",
-    "dd-trace": "^5.0.0",
     "franc-min": "^5.0.0",
     "mattermost-redux": "5.33.1",
     "parabol-client": "8.24.5",

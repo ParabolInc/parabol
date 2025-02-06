@@ -24,7 +24,6 @@
     "ts-node-dev": "^1.0.0-pre.44"
   },
   "dependencies": {
-    "dd-trace": "^5.0.0",
     "parabol-client": "8.24.5",
     "parabol-server": "8.24.5",
     "undici": "^5.26.2"
