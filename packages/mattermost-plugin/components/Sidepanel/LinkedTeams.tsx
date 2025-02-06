@@ -23,7 +23,7 @@ const LinkedTeams = () => {
       }
     `,
     {
-      channel: channel.id
+      channel: channel?.id ?? ''
     }
   )
   const {viewer, linkedTeamIds} = data

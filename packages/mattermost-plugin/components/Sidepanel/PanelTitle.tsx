@@ -1,8 +1,7 @@
-import {getCurrentChannel} from 'mattermost-redux/selectors/entities/channels'
 import {useSelector} from 'react-redux'
 import styled from 'styled-components'
 
-import {useConfig} from '../../hooks/useConfig'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {getAssetsUrl} from '../../selectors'
 
 const Panel = styled.div!`
@@ -19,16 +18,14 @@ const TitleLink = styled.div!`
 ` as any
 
 const PanelTitle = () => {
-  const channel = useSelector(getCurrentChannel)
-  const {display_name: channelName} = channel
+  const channel = useCurrentChannel()
+  const {name: channelName = null} = channel || {}
   const assetsPath = useSelector(getAssetsUrl)
 
   return (
     <Panel>
       <img width={24} height={24} src={`${assetsPath}/parabol.png`} />
-      <TitleLink>
-        Parabol{channelName && ` | ${channelName}`}
-      </TitleLink>
+      <TitleLink>Parabol{channelName && ` | ${channelName}`}</TitleLink>
     </Panel>
   )
 }

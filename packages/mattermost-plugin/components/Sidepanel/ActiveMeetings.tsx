@@ -25,7 +25,7 @@ const ActiveMeetings = () => {
       }
     `,
     {
-      channel: channel.id
+      channel: channel?.id ?? ''
     }
   )
   const {viewer, linkedTeamIds} = data

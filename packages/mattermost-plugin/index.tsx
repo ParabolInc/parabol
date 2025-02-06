@@ -56,6 +56,8 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
     () => store.dispatch(toggleRHSPlugin),
     'Open Parabol Panel'
   )
+  // TODO remove
+  store.dispatch(toggleRHSPlugin)
 
   registry.registerWebSocketEventHandler(`custom_${manifest.id}_start`, () => {
     store.dispatch(openStartActivityModal())

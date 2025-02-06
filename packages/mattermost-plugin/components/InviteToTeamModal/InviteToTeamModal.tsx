@@ -58,16 +58,15 @@ const InviteToTeamModal = () => {
   }
 
   const handleStart = async () => {
-    if (!selectedTeam) {
+    if (!selectedTeam || !channel) {
       return
     }
-    const {id: teamId, name: teamName} = selectedTeam
+    const {name: teamName} = selectedTeam
     const token = await getToken()
     if (!token) {
       return
     }
     const inviteUrl = `${parabolUrl}/invitation-link/${token}`
-    const teamUrl = `${parabolUrl}/team/${teamId}`
     const {username, nickname, first_name, last_name} = currentUser
     const userName = nickname || username || `${first_name} ${last_name}`
     const props = {

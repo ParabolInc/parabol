@@ -1,6 +1,6 @@
 import {useState} from 'react'
-import ReactSelect from 'react-select'
 import {useDispatch} from 'react-redux'
+import ReactSelect from 'react-select'
 import {openLinkTeamModal, openStartActivityModal} from '../../reducers'
 import ActiveMeetings from './ActiveMeetings'
 import LinkedTeams from './LinkedTeams'
@@ -21,7 +21,7 @@ const panels = {
 } as const
 
 const SidePanel = () => {
-  const [activePanel, setActivePanel] = useState<keyof typeof panels>('teams')
+  const [activePanel, setActivePanel] = useState<keyof typeof panels>('meetings')
   const dispatch = useDispatch()
 
   const handleClick = () => {
@@ -46,10 +46,7 @@ const SidePanel = () => {
             IndicatorSeparator: () => null
           }}
         />
-        <button
-          className='btn btn-primary'
-          onClick={handleClick}
-        >
+        <button className='btn btn-primary' onClick={handleClick}>
           {panels[activePanel]?.actionLabel}
         </button>
       </div>

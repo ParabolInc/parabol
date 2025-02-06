@@ -101,17 +101,19 @@ const CreateTaskModal = () => {
       }
     })
 
-    const message = `Task created in [${teamName}](www.example.com)`
-    Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
-      method: 'post',
-      body: JSON.stringify({
-        user_id: mmUser.id,
-        post: {
-          channel_id: channel.id,
-          message
-        }
-      } as Partial<Post>)
-    })
+    if (channel) {
+      const message = `Task created in [${teamName}](www.example.com)`
+      Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
+        method: 'post',
+        body: JSON.stringify({
+          user_id: mmUser.id,
+          post: {
+            channel_id: channel.id,
+            message
+          }
+        } as Partial<Post>)
+      })
+    }
 
     handleClose()
   })
