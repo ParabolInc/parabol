@@ -7,7 +7,7 @@ export const establishPrimaryEmbedder = async (redis: RedisInstance) => {
   const MAX_TIME_BETWEEN_WORKER_STARTUPS = ms('5s')
   try {
     const primaryWorkerLock = await redlock.acquire(
-      [`embedder_isPrimary_${process.env.npm_package_version}`],
+      [`embedder_isPrimary_${__APP_VERSION__}`],
       MAX_TIME_BETWEEN_WORKER_STARTUPS
     )
     return primaryWorkerLock

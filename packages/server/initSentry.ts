@@ -9,11 +9,10 @@ declare global {
   }
 }
 
-const APP_VERSION = process.env.npm_package_version
 Sentry.init({
   environment: 'server',
   dsn: process.env.SENTRY_DSN,
-  release: APP_VERSION,
+  release: __APP_VERSION__,
   ignoreErrors: [
     '429 Too Many Requests',
     /language \S+ is not supported/,
