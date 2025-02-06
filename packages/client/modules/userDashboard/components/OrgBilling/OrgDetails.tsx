@@ -12,7 +12,6 @@ import OrganizationDetails from '../Organization/OrganizationDetails'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
 import OrgFeatureFlags from './OrgFeatureFlags'
 import OrgFeatures from './OrgFeatures'
-import RemoveMultipleOrgUsersForm from './RemoveMultipleOrgUsersForm'
 
 type Props = {
   organizationRef: OrgDetails_organization$key
@@ -74,7 +73,6 @@ const OrgDetails = (props: Props) => {
 
       <OrgFeatures organizationRef={organization} />
       <OrgFeatureFlags organizationRef={organization} />
-      <RemoveMultipleOrgUsersForm orgId={orgId} />
       <OrgBillingDangerZone organization={organization} isWide />
     </Suspense>
   )
