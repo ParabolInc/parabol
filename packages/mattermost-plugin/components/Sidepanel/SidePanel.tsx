@@ -32,6 +32,8 @@ const SidePanel = () => {
     <div className='flex flex-col items-stretch overflow-y-auto px-2 py-4'>
       <div className='flex justify-between'>
         <ReactSelect
+          className='cursor-pointer'
+          isSearchable={false}
           value={{value: activePanel, label: panels[activePanel].label}}
           options={Object.entries(panels).map(([value, {label}]) => ({value, label})) as any}
           onChange={(newValue) => {
