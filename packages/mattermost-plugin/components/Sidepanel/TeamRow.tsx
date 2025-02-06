@@ -53,19 +53,9 @@ const TeamRow = ({teamRef}: Props) => {
       </div>
       <div className='flex grow flex-col items-start p-2'>
         <div className='flex w-full flex-col'>
-          <div className='flex justify-between'>
-            <a href={`${pluginServerRoute}/parabol/meet/${id}`} className='text-2xl font-bold'>
-              {name}
-            </a>
-            <MoreMenu
-              options={[
-                {
-                  label: 'Unlink',
-                  onClick: handleUnlink
-                }
-              ]}
-            />
-          </div>
+          <a href={`${pluginServerRoute}/parabol/meet/${id}`} className='text-2xl font-bold'>
+            {name}
+          </a>
           <div className='font-semibold text-slate-400'>
             {`${teamMembers.length} ${plural(teamMembers.length, 'member')}`}
           </div>
@@ -75,6 +65,16 @@ const TeamRow = ({teamRef}: Props) => {
             Invite
           </button>
         </div>
+      </div>
+      <div className='p-2'>
+        <MoreMenu
+          options={[
+            {
+              label: 'Unlink',
+              onClick: handleUnlink
+            }
+          ]}
+        />
       </div>
     </div>
   )
