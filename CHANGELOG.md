@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.24.4](https://github.com/ParabolInc/parabol/compare/v8.24.3...v8.24.4) (2025-02-06)
+
+
+### Changed
+
+* flush pending GQL executor jobs before graceful shutdown ([#10821](https://github.com/ParabolInc/parabol/issues/10821)) ([da3734f](https://github.com/ParabolInc/parabol/commit/da3734fb718477fbd36efc2533371dda07148de8))
+
 ## [8.24.3](https://github.com/ParabolInc/parabol/compare/v8.24.2...v8.24.3) (2025-02-06)
 
 
