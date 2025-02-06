@@ -1,12 +1,11 @@
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
 import {generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useState} from 'react'
 import Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
-import {LinkMenuState} from '../components/promptResponse/TipTapLinkMenu'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
@@ -26,12 +25,12 @@ export const useTipTapTaskEditor = (
 ) => {
   const {atmosphere, teamId, readOnly, onBlur} = options
   const [contentJSON, editorRef] = useTipTapEditorContent(content)
-  const [linkState, setLinkState] = useState<LinkMenuState>(null)
   editorRef.current = useEditor(
     {
       content: contentJSON,
       extensions: [
         StarterKit,
+        Underline,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -43,10 +42,7 @@ export const useTipTapTaskEditor = (
         ),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
-          openOnClick: false,
-          popover: {
-            setLinkState
-          }
+          openOnClick: false
         })
       ],
       editable: !readOnly,
@@ -55,5 +51,5 @@ export const useTipTapTaskEditor = (
     },
     [contentJSON, readOnly, onBlur]
   )
-  return {editor: editorRef.current, linkState, setLinkState}
+  return {editor: editorRef.current}
 }

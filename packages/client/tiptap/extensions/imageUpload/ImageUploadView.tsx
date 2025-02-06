@@ -52,9 +52,9 @@ export const ImageUploadView = (props: NodeViewProps) => {
   })
 
   useEffect(() => {
-    editor.storage.imageUpload.emitter.on('enter', openPopover)
+    editor.on('enter', openPopover)
     return () => {
-      editor.storage.imageUpload.emitter.off('enter', openPopover)
+      editor.off('enter', openPopover)
     }
   }, [])
   const triggerRef = useHideWhenTriggerHidden(setOpen)

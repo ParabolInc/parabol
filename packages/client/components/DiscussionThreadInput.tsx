@@ -130,7 +130,7 @@ const DiscussionThreadInput = (props: Props) => {
     if (submitting || !editor || editor.isEmpty) return
     addComment(JSON.stringify(editor.getJSON()))
   })
-  const {editor, setLinkState, linkState} = useTipTapCommentEditor(initialContent, {
+  const {editor} = useTipTapCommentEditor(initialContent, {
     readOnly: !allowComments,
     atmosphere,
     teamId,
@@ -216,8 +216,6 @@ const DiscussionThreadInput = (props: Props) => {
         <TipTapEditor
           className='flex max-h-80 min-h-0 grow overflow-auto px-0 leading-4'
           editor={editor}
-          linkState={linkState}
-          setLinkState={setLinkState}
         />
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
