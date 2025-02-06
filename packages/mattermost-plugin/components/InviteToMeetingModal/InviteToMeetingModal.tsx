@@ -47,9 +47,7 @@ const InviteToMeetingModal = () => {
     [linkedTeams]
   )
 
-  const [selectedMeeting, setSelectedMeeting] = useState<
-    (typeof activeMeetings)[number] | undefined
-  >(activeMeetings?.[0])
+  const [selectedMeeting, setSelectedMeeting] = useState<(typeof activeMeetings)[number]>()
 
   useEffect(() => {
     if (!selectedMeeting && activeMeetings && activeMeetings.length > 0) {

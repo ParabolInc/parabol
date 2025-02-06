@@ -1,52 +1,24 @@
 import graphql from 'babel-plugin-relay/macro'
-import styled from 'styled-components'
 
 import {useFragment} from 'react-relay'
 import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
-import {useConfig} from '../../hooks/useConfig'
+
+import {useSelector} from 'react-redux'
 import MoreMenu from '../Menu'
 
 import plural from 'parabol-client/utils/plural'
+import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
-
-const Card = styled.div!`
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-`
-
-const Col = styled.div!`
-  display: flex;
-  flex-direction: column;
-`
-
-const Row = styled.div!`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: start;
-  padding: 4px 0;
-`
-
-const Name = styled.div!`
-  font-size: 1.5rem;
-  font-weight: bold;
-`
-const MemberCount = styled.div!`
-  font-size: 1.5rem;
-`
+import {getPluginServerRoute} from '../../selectors'
 
 type Props = {
   teamRef: TeamRow_team$key
 }
 const TeamRow = ({teamRef}: Props) => {
-  const config = useConfig()
   const team = useFragment(
     graphql`
       fragment TeamRow_team on Team {
+        ...useInviteToTeam_team
         id
         name
         teamMembers {
@@ -58,7 +30,13 @@ const TeamRow = ({teamRef}: Props) => {
   )
 
   const {id, name, teamMembers} = team
+  const pluginServerRoute = useSelector(getPluginServerRoute)
   const unlinkTeam = useUnlinkTeam()
+  const invite = useInviteToTeam(team)
+
+  const handleInvite = () => {
+    invite?.()
+  }
 
   const handleUnlink = async () => {
     if (!id) {
@@ -68,29 +46,34 @@ const TeamRow = ({teamRef}: Props) => {
   }
 
   return (
-    <Card>
-      <Row>
-        <Col>
-          <Name>{name}</Name>
-          <MemberCount>{`${teamMembers.length} ${plural(teamMembers.length, 'member')}`}</MemberCount>
-        </Col>
-        <Col>
-          <MoreMenu
-            options={[
-              {
-                label: 'Unlink',
-                onClick: handleUnlink
-              }
-            ]}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <a href={`${config?.parabolUrl}/team/${id}`} target='_blank' rel='noreferrer'>
-          {'View in Parabol'}
-        </a>
-      </Row>
-    </Card>
+    <div className='my-4 flex rounded-lg border border-slate-300'>
+      <div className='pt-4 pl-2 text-2xl text-slate-400'></div>
+      <div className='flex grow flex-col items-start p-2'>
+        <div className='flex w-full flex-col'>
+          <div className='flex justify-between'>
+            <a href={`${pluginServerRoute}/parabol/meet/${id}`} className='text-2xl font-bold'>
+              {name}
+            </a>
+            <MoreMenu
+              options={[
+                {
+                  label: 'Unlink',
+                  onClick: handleUnlink
+                }
+              ]}
+            />
+          </div>
+          <div className='font-semibold text-slate-400'>
+            {`${teamMembers.length} ${plural(teamMembers.length, 'member')}`}
+          </div>
+        </div>
+        <div className='py-2'>
+          <button className='btn btn-sm btn-primary' onClick={handleInvite}>
+            Invite
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 

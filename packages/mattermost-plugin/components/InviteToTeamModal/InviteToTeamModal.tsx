@@ -1,19 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 
 import {closeInviteToTeamModal} from '../../reducers'
 
 import Select from '../Select'
 
-import {Client4} from 'mattermost-redux/client'
-import {getCurrentUser} from 'mattermost-redux/selectors/entities/common'
-import {Post} from 'mattermost-redux/types/posts'
-import {PALETTE} from '~/styles/paletteV3'
 import {InviteToTeamModalQuery} from '../../__generated__/InviteToTeamModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
-import useMassInvitationToken from '../../hooks/useMassInvitationToken'
+import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 
@@ -21,11 +17,9 @@ const InviteToTeamModal = () => {
   const data = useLazyLoadQuery<InviteToTeamModalQuery>(
     graphql`
       query InviteToTeamModalQuery {
-        config {
-          parabolUrl
-        }
         viewer {
           teams {
+            ...useInviteToTeam_team
             id
             name
           }
@@ -35,8 +29,7 @@ const InviteToTeamModal = () => {
     {}
   )
 
-  const {viewer, config} = data
-  const parabolUrl = config?.parabolUrl
+  const {viewer} = data
   const {teams} = viewer
 
   const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
@@ -48,9 +41,7 @@ const InviteToTeamModal = () => {
     }
   }, [teams, selectedTeam])
 
-  const getToken = useMassInvitationToken({teamId: selectedTeam?.id})
-
-  const currentUser = useSelector(getCurrentUser)
+  const invite = useInviteToTeam(selectedTeam)
 
   const dispatch = useDispatch()
   const handleClose = () => {
@@ -61,38 +52,7 @@ const InviteToTeamModal = () => {
     if (!selectedTeam || !channel) {
       return
     }
-    const {name: teamName} = selectedTeam
-    const token = await getToken()
-    if (!token) {
-      return
-    }
-    const inviteUrl = `${parabolUrl}/invitation-link/${token}`
-    const {username, nickname, first_name, last_name} = currentUser
-    const userName = nickname || username || `${first_name} ${last_name}`
-    const props = {
-      attachments: [
-        {
-          //title: `${userName} invited you to join a team in [Parabol](${teamUrl})`,
-          title: `You’re invited to join a team in Parabol.`,
-          fallback: `${userName} invited you to join a team ${teamName} in Parabol`,
-          color: PALETTE.GRAPE_500,
-          fields: [
-            {short: true, title: 'Team', value: teamName},
-            {
-              short: false,
-              value: `
-| [Join Team](${inviteUrl}) |
-|:--------------------:|
-||`
-            }
-          ]
-        }
-      ]
-    }
-    Client4.createPost({
-      channel_id: channel.id,
-      props
-    } as Partial<Post> as Post)
+    invite()
     handleClose()
   }
 

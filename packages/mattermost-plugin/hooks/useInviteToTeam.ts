@@ -5,30 +5,24 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useCallback} from 'react'
 import {useSelector} from 'react-redux'
 import {useFragment} from 'react-relay'
-import {useInviteToMeeting_meeting$key} from '../__generated__/useInviteToMeeting_meeting.graphql'
+import {useInviteToTeam_team$key} from '../__generated__/useInviteToTeam_team.graphql'
 import {getPluginServerRoute} from '../selectors'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'
 
-export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) => {
-  const meeting = useFragment(
+export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
+  const team = useFragment(
     graphql`
-      fragment useInviteToMeeting_meeting on NewMeeting {
+      fragment useInviteToTeam_team on Team {
         id
         name
-        meetingType
-        team {
-          id
-          name
-        }
       }
     `,
-    meetingRef
+    teamRef
   )
 
-  const {id: meetingId, team, name: meetingName, meetingType} = meeting || {}
   const {id: teamId, name: teamName} = team || {}
-  const getToken = useMassInvitationToken({teamId, meetingId})
+  const getToken = useMassInvitationToken({teamId})
   const pluginServerRoute = useSelector(getPluginServerRoute)
   const channel = useCurrentChannel()
 
@@ -45,24 +39,16 @@ export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) 
     const props = {
       attachments: [
         {
-          fallback: `Join the meeting ${meetingName} in Parabol`,
-          title: `You’re invited to join a ${meetingType} meeting in Parabol.`,
+          //title: `${userName} invited you to join a team in [Parabol](${teamUrl})`,
+          title: `You’re invited to join a team in Parabol.`,
+          fallback: `Join the team ${teamName} in Parabol`,
           color: PALETTE.GRAPE_500,
           fields: [
-            {
-              short: true,
-              title: 'Team',
-              value: teamName
-            },
-            {
-              short: true,
-              title: 'Meeting',
-              value: meetingName
-            },
+            {short: true, title: 'Team', value: teamName},
             {
               short: false,
               value: `
-| [Join Meeting](${inviteUrl}) |
+| [Join Team](${inviteUrl}) |
 |:--------------------:|
 ||`
             }
@@ -74,7 +60,7 @@ export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) 
       channel_id: channel.id,
       props
     } as Partial<Post> as Post)
-  }, [channel, getToken, meetingName, meetingType, pluginServerRoute, teamName])
+  }, [channel, getToken, teamName, pluginServerRoute])
 
   return invite
 }

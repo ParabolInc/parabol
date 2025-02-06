@@ -21,7 +21,7 @@ const panels = {
 } as const
 
 const SidePanel = () => {
-  const [activePanel, setActivePanel] = useState<keyof typeof panels>('meetings')
+  const [activePanel, setActivePanel] = useState<keyof typeof panels>('teams')
   const dispatch = useDispatch()
 
   const handleClick = () => {

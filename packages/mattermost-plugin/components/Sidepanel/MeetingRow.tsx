@@ -43,7 +43,7 @@ const MeetingRow = ({meetingRef}: Props) => {
 
   const invite = useInviteToMeeting(meeting)
 
-  const handleClick = () => {
+  const handleInvite = () => {
     invite?.()
   }
 
@@ -58,7 +58,7 @@ const MeetingRow = ({meetingRef}: Props) => {
           <div className='font-semibold text-slate-400'>{team?.name}</div>
         </div>
         <div className='py-2'>
-          <button className='btn btn-sm btn-primary' onClick={handleClick}>
+          <button className='btn btn-sm btn-primary' onClick={handleInvite}>
             Invite
           </button>
         </div>
