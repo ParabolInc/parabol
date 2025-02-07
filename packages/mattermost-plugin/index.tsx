@@ -5,6 +5,7 @@ import SidePanelRoot from './components/Sidepanel'
 import PanelTitle from './components/Sidepanel/PanelTitle'
 import manifest from './manifest'
 import rootReducer, {
+  connect,
   openCreateTaskModal,
   openInviteToMeetingModal,
   openInviteToTeamModal,
@@ -19,6 +20,7 @@ import AtmosphereProvider from './AtmosphereProvider'
 import AutoLogin from './components/AutoLogin'
 import ModalRoot from './components/ModalRoot'
 import './index.css'
+import commands from './public/mattermost-plugin-commands.json'
 
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
@@ -72,6 +74,8 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
   registry.registerWebSocketEventHandler(`custom_${manifest.id}_share`, () => {
     store.dispatch(openInviteToMeetingModal())
   })
+
+  store.dispatch(connect({commands}) as any)
 
   registry.registerPostDropdownMenuAction(
     <div>
