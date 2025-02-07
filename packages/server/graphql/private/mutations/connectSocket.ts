@@ -62,7 +62,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     `presence:${userId}`,
     JSON.stringify({lastSeenAtURL: null, socketInstanceId, socketId} as UserPresence)
   )
-
+  console.log('connectSocket pushed presence', socketInstanceId, socketId)
   // If this is the first socket, tell everyone they're online
   if (socketCount === 1) {
     const listeningUserIds = await getListeningUserIds(RedisCommand.ADD, tms, userId)

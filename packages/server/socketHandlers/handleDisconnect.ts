@@ -28,6 +28,7 @@ const handleDisconnect = async (connectionContext: ConnectionContext, options: O
   relayUnsubscribeAll(connectionContext)
   if (authToken.rol !== 'impersonate') {
     const userId = getUserId(authToken)
+    console.log('handleDisconnect calling publish', socketId)
     await publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
   }
   activeClients.delete(connectionContext.id)

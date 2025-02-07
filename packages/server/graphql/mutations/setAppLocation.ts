@@ -65,6 +65,7 @@ export default {
           return url?.includes(meetPrefix) ? url.slice(meetPrefix.length) : null
         })
 
+        console.log('setAtLocation', connectedSocketStr, JSON.stringify(updatedConnection))
         const [lastMeeting, nextMeeting] = await Promise.all([
           lastMeetingId ? dataLoader.get('newMeetings').load(lastMeetingId) : undefined,
           nextMeetingId ? dataLoader.get('newMeetings').load(nextMeetingId) : undefined,

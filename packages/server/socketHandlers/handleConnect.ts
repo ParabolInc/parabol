@@ -43,6 +43,7 @@ const handleConnect = async (connectionContext: ConnectionContext) => {
     connectionContext.ready()
     return null
   }
+  console.log('handleConnect calling publish', INSTANCE_ID, socketId)
   const result = await publishInternalGQL<{data: {connectSocket: {tms: string[]}}}>({
     authToken,
     ip,
