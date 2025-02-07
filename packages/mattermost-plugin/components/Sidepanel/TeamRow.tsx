@@ -40,9 +40,6 @@ const TeamRow = ({teamRef}: Props) => {
   }
 
   const handleUnlink = async () => {
-    if (!id) {
-      return
-    }
     await unlinkTeam(id)
   }
 

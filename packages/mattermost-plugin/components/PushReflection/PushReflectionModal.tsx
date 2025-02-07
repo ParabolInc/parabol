@@ -15,9 +15,10 @@ import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEdito
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import {closePushPostAsReflection} from '../../reducers'
+import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} from '../../reducers'
 import {getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
@@ -29,10 +30,12 @@ const PushReflectionModal = () => {
   const post = useSelector((state: GlobalState) => getPost(state, postId!))
   const postUrl = useSelector((state: GlobalState) => getPostURL(state, postId!))
   const mmUser = useCurrentUser()
+  const channel = useCurrentChannel()
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
-      query PushReflectionModalQuery {
+      query PushReflectionModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
           teams {
             id
@@ -60,16 +63,23 @@ const PushReflectionModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
-  const {viewer} = data
+  const {viewer, linkedTeamIds} = data
   const {teams} = viewer
+
+  const linkedTeams = useMemo(
+    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    [teams, linkedTeamIds]
+  )
   const retroMeetings = useMemo(
     () =>
-      teams
+      linkedTeams
         .flatMap(({activeMeetings}) => activeMeetings)
         .filter(({meetingType}) => meetingType === 'retrospective'),
-    [teams]
+    [linkedTeams]
   )
   const [selectedMeeting, setSelectedMeeting] = React.useState<(typeof retroMeetings)[number]>()
   const [selectedPrompt, setSelectedPrompt] = React.useState<{
@@ -207,6 +217,39 @@ const PushReflectionModal = () => {
 
   if (!postId) {
     return null
+  }
+
+  if (linkedTeams.length === 0) {
+    const handleLink = () => {
+      dispatch(openLinkTeamModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add Comment to Parabol Activity'
+        commitButtonLabel='Link team'
+        handleClose={handleClose}
+        handleCommit={handleLink}
+      >
+        <p>There are no Parabol teams linked to this channel yet.</p>
+      </Modal>
+    )
+  }
+  if (retroMeetings.length === 0) {
+    const handleStart = () => {
+      dispatch(openStartActivityModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add Comment to Parabol Activity'
+        commitButtonLabel='Start activity'
+        handleClose={handleClose}
+        handleCommit={handleStart}
+      >
+        <p>There are currently no open retrospective meetings in the linked Parabol teams.</p>
+      </Modal>
+    )
   }
 
   return (

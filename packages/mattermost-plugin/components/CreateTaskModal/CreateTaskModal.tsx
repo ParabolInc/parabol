@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
-import {closeCreateTaskModal} from '../../reducers'
+import {closeCreateTaskModal, openLinkTeamModal} from '../../reducers'
 
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
@@ -25,9 +25,13 @@ import Modal from '../Modal'
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
 const CreateTaskModal = () => {
+  const channel = useCurrentChannel()
+  const mmUser = useCurrentUser()
+
   const data = useLazyLoadQuery<CreateTaskModalQuery>(
     graphql`
-      query CreateTaskModalQuery {
+      query CreateTaskModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
           id
           teams {
@@ -42,11 +46,17 @@ const CreateTaskModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
 
-  const {viewer} = data
+  const {viewer, linkedTeamIds} = data
   const {id: userId, teams} = viewer
+  const linkedTeams = useMemo(
+    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    [teams, linkedTeamIds]
+  )
 
   const [createTask, createTaskLoading] = useMutation<CreateTaskModalMutation>(graphql`
     mutation CreateTaskModalMutation($newTask: CreateTaskInput!) {
@@ -71,9 +81,6 @@ const CreateTaskModal = () => {
   }, [teams, selectedTeam])
   const teamId = selectedTeam?.id
   const teamName = selectedTeam?.name
-
-  const channel = useCurrentChannel()
-  const mmUser = useCurrentUser()
 
   const dispatch = useDispatch()
   const handleClose = () => {
@@ -121,6 +128,23 @@ const CreateTaskModal = () => {
   const {editor} = useTipTapTaskEditor(convertTipTapTaskContent(''))
   if (!editor) {
     return null
+  }
+
+  if (linkedTeams.length === 0) {
+    const handleLink = () => {
+      dispatch(openLinkTeamModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add a Task'
+        commitButtonLabel='Link team'
+        handleClose={handleClose}
+        handleCommit={handleLink}
+      >
+        <p>There are no Parabol teams linked to this channel yet.</p>
+      </Modal>
+    )
   }
 
   return (
