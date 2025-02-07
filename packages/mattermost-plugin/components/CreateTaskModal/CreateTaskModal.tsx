@@ -1,13 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {Client4} from 'mattermost-redux/client'
+import {useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
-import {closeCreateTaskModal} from '../../reducers'
+import {closeCreateTaskModal, openLinkTeamModal} from '../../reducers'
 
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import {useCurrentUser} from '../../hooks/useCurrentUser'
 import Select from '../Select'
 import SimpleSelect from '../SimpleSelect'
 
+import {Post} from 'mattermost-redux/types/posts'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
 import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
@@ -21,9 +25,13 @@ import Modal from '../Modal'
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
 const CreateTaskModal = () => {
+  const channel = useCurrentChannel()
+  const mmUser = useCurrentUser()
+
   const data = useLazyLoadQuery<CreateTaskModalQuery>(
     graphql`
-      query CreateTaskModalQuery {
+      query CreateTaskModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
           id
           teams {
@@ -38,11 +46,17 @@ const CreateTaskModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
 
-  const {viewer} = data
+  const {viewer, linkedTeamIds} = data
   const {id: userId, teams} = viewer
+  const linkedTeams = useMemo(
+    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    [teams, linkedTeamIds]
+  )
 
   const [createTask, createTaskLoading] = useMutation<CreateTaskModalMutation>(graphql`
     mutation CreateTaskModalMutation($newTask: CreateTaskInput!) {
@@ -66,6 +80,7 @@ const CreateTaskModal = () => {
     }
   }, [teams, selectedTeam])
   const teamId = selectedTeam?.id
+  const teamName = selectedTeam?.name
 
   const dispatch = useDispatch()
   const handleClose = () => {
@@ -93,12 +108,43 @@ const CreateTaskModal = () => {
       }
     })
 
+    if (channel) {
+      const message = `Task created in [${teamName}](www.example.com)`
+      Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
+        method: 'post',
+        body: JSON.stringify({
+          user_id: mmUser.id,
+          post: {
+            channel_id: channel.id,
+            message
+          }
+        } as Partial<Post>)
+      })
+    }
+
     handleClose()
   })
 
   const {editor} = useTipTapTaskEditor(convertTipTapTaskContent(''))
   if (!editor) {
     return null
+  }
+
+  if (linkedTeams.length === 0) {
+    const handleLink = () => {
+      dispatch(openLinkTeamModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add a Task'
+        commitButtonLabel='Link team'
+        handleClose={handleClose}
+        handleCommit={handleLink}
+      >
+        <p>There are no Parabol teams linked to this channel yet.</p>
+      </Modal>
+    )
   }
 
   return (
