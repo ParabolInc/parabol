@@ -1,4 +1,3 @@
-//import classNames from 'classnames'
 import React from 'react'
 
 type Props = {
@@ -7,12 +6,7 @@ type Props = {
 }
 const LoadingSpinner = ({text, style}: Props) => {
   return (
-    <span
-      id='loadingSpinner'
-      //className={classNames('LoadingSpinner', {'with-text': Boolean(text)})}
-      style={style}
-      data-testid='loadingSpinner'
-    >
+    <span id='loadingSpinner' style={style} data-testid='loadingSpinner'>
       <span className='fa fa-spinner fa-fw fa-pulse spinner' />
       {text}
     </span>

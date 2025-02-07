@@ -133,12 +133,6 @@ const localSlice = createSlice({
 
     builder.addCase(removeTeamFromChannel.fulfilled, (state, action) => {
       const {channel, teamId} = action.payload
-      console.log('action.payload', action.payload)
-      console.log('state.linkedTeamIds', state.linkedTeamIds)
-      console.log(
-        'state.linkedTeamIds[channel]',
-        JSON.stringify(state.linkedTeamIds[channel], null, 2)
-      )
       const teamIds = state.linkedTeamIds[channel]?.teamIds ?? []
       state.linkedTeamIds[channel] = {
         loading: false,
