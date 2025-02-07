@@ -13,17 +13,16 @@ const SidePanelRoot = () => {
       {loggedIn ? (
         <SidePanel />
       ) : (
-        <div
-        >
-          <p
-            className='py-4'
-          >
-            You are not logged in to Parabol.<br />Please  <a href={`${pluginServerRoute}/parabol/signin`}>sign in</a> or  <a href={`${pluginServerRoute}/parabol/create-account`}>create an account</a> and retry.
+        <div>
+          <p className='py-4'>
+            You are not logged in to Parabol.
+            <br />
+            Please <a href={`${pluginServerRoute}/parabol/signin`}>sign in</a> or{' '}
+            <a href={`${pluginServerRoute}/parabol/create-account`}>create an account</a> and retry.
           </p>
-          <button
-
-            className='btn btn-primary'
-          onClick={atmosphere.login}>Retry</button>
+          <button className='btn btn-primary' onClick={atmosphere.login}>
+            Retry
+          </button>
         </div>
       )}
     </div>
