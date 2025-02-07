@@ -13,20 +13,22 @@ const addDiscussionTopics = async (meeting: RetrospectiveMeeting, dataLoader: Da
   if (!placeholderStage) return {discussPhaseStages: [], meetingId}
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const sortedReflectionGroups = mapGroupsToStages(reflectionGroups)
-  const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
-    const {id: reflectionGroupId} = reflectionGroup
-    const id = idx === 0 ? placeholderStage.id : generateUID()
-    return new DiscussStage({
-      id,
-      isNavigableByFacilitator: true,
-      isNavigable: true,
-      reflectionGroupId,
-      sortOrder: idx,
-      startAt: idx === 0 ? new Date() : undefined,
-      viewCount: idx === 0 ? 1 : 0,
-      durations: undefined
-    })
-  }) as [DiscussStage, ...DiscussStage[]]
+  const nextDiscussStages = sortedReflectionGroups
+    .filter((reflectionGroup) => !!reflectionGroup?.reflections?.length)
+    .map((reflectionGroup, idx) => {
+      const {id: reflectionGroupId} = reflectionGroup
+      const id = idx === 0 ? placeholderStage.id : generateUID()
+      return new DiscussStage({
+        id,
+        isNavigableByFacilitator: true,
+        isNavigable: true,
+        reflectionGroupId,
+        sortOrder: idx,
+        startAt: idx === 0 ? new Date() : undefined,
+        viewCount: idx === 0 ? 1 : 0,
+        durations: undefined
+      })
+    }) as [DiscussStage, ...DiscussStage[]]
   const firstDiscussStage = nextDiscussStages[0]
   if (!firstDiscussStage) return {discussPhaseStages: [], meetingId}
 
