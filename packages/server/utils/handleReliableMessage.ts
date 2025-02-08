@@ -21,6 +21,7 @@ const handleReliableMessage = (messageBuffer: Buffer, connectionContext: Connect
     if (message) {
       sendAndPushToReliableQueue(connectionContext, mid, message)
     } else {
+      console.log('reliable handleDisconnect', connectionContext.id)
       handleDisconnect(connectionContext)
     }
     return

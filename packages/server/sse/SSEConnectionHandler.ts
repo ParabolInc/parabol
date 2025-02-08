@@ -44,6 +44,7 @@ const SSEConnectionHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   if (res.done) return
   res.tryEnd(`retry: 1000\n`, 1e8)
   sendSSEMessage(res, connectionContext.id, 'id')
+  console.log('sendEncoded message for version SSE', connectionContext.id)
   sendEncodedMessage(connectionContext, {version: __APP_VERSION__, authToken: nextAuthToken})
   keepAlive(connectionContext)
 }, true)

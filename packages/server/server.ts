@@ -45,6 +45,7 @@ process.on('SIGTERM', async (signal) => {
     Object.values(activeClients.store).map(async (connectionContext) => {
       const disconnectIn = Math.floor(Math.random() * RECONNECT_WINDOW)
       await sleep(disconnectIn)
+      console.log('SIGTERM handleDisconnect', connectionContext.id)
       await handleDisconnect(connectionContext)
     })
   )
