@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.25.0](https://github.com/ParabolInc/parabol/compare/v8.24.5...v8.25.0) (2025-02-10)
+
+
+### Added
+
+* **Mattermost Plugin:** Cleanup sidepanel ([#10798](https://github.com/ParabolInc/parabol/issues/10798)) ([77eac0f](https://github.com/ParabolInc/parabol/commit/77eac0f4d5063cf9f4979a2cd18e45267b05929b))
+
+
+### Fixed
+
+* app version on dev server ([#10830](https://github.com/ParabolInc/parabol/issues/10830)) ([d100928](https://github.com/ParabolInc/parabol/commit/d100928f29432d91765797a22afeeb1a5985c1ad))
+* bump trebuchet-client ([#10839](https://github.com/ParabolInc/parabol/issues/10839)) ([f51b24d](https://github.com/ParabolInc/parabol/commit/f51b24dc838b6b47b42ba20ac71f2f7ad10b08e7))
+* remove hardcoded action.parabol.co from the application code ([#10834](https://github.com/ParabolInc/parabol/issues/10834)) ([77e63fe](https://github.com/ParabolInc/parabol/commit/77e63fe8130fabee1865bf9cdf8a1658420d2d4b))
+* update icebreaker styles ([#10835](https://github.com/ParabolInc/parabol/issues/10835)) ([f0737cc](https://github.com/ParabolInc/parabol/commit/f0737cccf2727d8aeb77faea79b0de22f60ee8f6))
+* use canonical image storage path helper func ([#10829](https://github.com/ParabolInc/parabol/issues/10829)) ([32f432f](https://github.com/ParabolInc/parabol/commit/32f432f6d2e614ef348e77019f40715482a1da6f))
+
+
+### Changed
+
+* **Mattermost Plugin:** Push command list from the client ([#10832](https://github.com/ParabolInc/parabol/issues/10832)) ([8e2b748](https://github.com/ParabolInc/parabol/commit/8e2b748517b2900e8ccdab60ebdb7ca99dc608da))
+
 ## [8.24.5](https://github.com/ParabolInc/parabol/compare/v8.24.4...v8.24.5) (2025-02-06)
 
 
