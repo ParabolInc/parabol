@@ -1,9 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-
-import {useDispatch} from 'react-redux'
-
-import {openStartActivityModal} from '../../reducers'
-
 import {useLazyLoadQuery} from 'react-relay'
 import {ActiveMeetingsQuery} from '../../__generated__/ActiveMeetingsQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
@@ -30,7 +25,7 @@ const ActiveMeetings = () => {
       }
     `,
     {
-      channel: channel.id
+      channel: channel?.id ?? ''
     }
   )
   const {viewer, linkedTeamIds} = data
@@ -40,16 +35,8 @@ const ActiveMeetings = () => {
   const isLoading = false
   const error = false
 
-  const dispatch = useDispatch()
-
-  const handleStartActivity = () => {
-    dispatch(openStartActivityModal())
-  }
-
   return (
     <div>
-      <h2>Active Meetings</h2>
-      <button onClick={handleStartActivity}>Start Activity</button>
       {isLoading && <LoadingSpinner text='Loading...' />}
       {error && <div className='error-text'>Loading meetings failed, try refreshing the page</div>}
       {linkedTeams?.map((team) =>

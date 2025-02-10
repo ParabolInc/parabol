@@ -164,7 +164,11 @@ const NewCheckInQuestion = (props: Props) => {
   return (
     <>
       <div className='flex flex-col items-center py-4'>
-        <EditorContent className='text-2xl' editor={editor} onBlur={updateQuestion} />
+        <EditorContent
+          className='text-2xl [&_.ProseMirror_p]:leading-normal'
+          editor={editor}
+          onBlur={updateQuestion}
+        />
         {isFacilitating && (
           <div className='flex gap-x-2'>
             <Tooltip open={isFacilitating ? undefined : false}>

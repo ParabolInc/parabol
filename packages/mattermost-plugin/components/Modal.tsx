@@ -27,7 +27,7 @@ const Modal = (props: ModalProps) => {
     >
       <M.Header closeButton={true}>
         <M.Title>
-          <img width={36} height={36} src={`${assetsPath}/parabol.png`} />
+          <img width={36} height={36} className='mr-3' src={`${assetsPath}/parabol.png`} />
           {title}
         </M.Title>
       </M.Header>

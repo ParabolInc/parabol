@@ -1,18 +1,7 @@
-import styled from 'styled-components'
-
 import {useSelector} from 'react-redux'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {getPluginServerRoute, isAuthorized} from '../../selectors'
-import ActiveMeetings from './ActiveMeetings'
-import LinkedTeams from './LinkedTeams'
-
-const Panel = styled.div!`
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 16px 8px;
-  overflow-y: auto;
-`
+import SidePanel from './SidePanel'
 
 const SidePanelRoot = () => {
   const atmosphere = useAtmosphere()
@@ -20,22 +9,23 @@ const SidePanelRoot = () => {
   const pluginServerRoute = useSelector(getPluginServerRoute)
 
   return (
-    <Panel>
+    <div className='flex flex-col items-stretch overflow-y-auto p-4'>
       {loggedIn ? (
-        <>
-          <LinkedTeams />
-          <ActiveMeetings />
-        </>
+        <SidePanel />
       ) : (
         <div>
-          <p>
-            You are not logged in to{' '}
-            <a href={`${pluginServerRoute}/parabol/create-account`}>Parabol</a>
+          <p className='py-4'>
+            You are not logged in to Parabol.
+            <br />
+            Please <a href={`${pluginServerRoute}/parabol/signin`}>sign in</a> or{' '}
+            <a href={`${pluginServerRoute}/parabol/create-account`}>create an account</a> and retry.
           </p>
-          <button onClick={atmosphere.login}>Login</button>
+          <button className='btn btn-primary' onClick={atmosphere.login}>
+            Retry
+          </button>
         </div>
       )}
-    </Panel>
+    </div>
   )
 }
 
