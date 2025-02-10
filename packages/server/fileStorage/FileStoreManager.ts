@@ -8,9 +8,18 @@ export default abstract class FileStoreManager {
   abstract prependPath(partialPath: string, assetDir?: FileAssetDir): string
   abstract getPublicFileLocation(fullPath: string): string
 
-  protected abstract putFile(file: ArrayBufferLike, fullPath: string): Promise<string>
-  protected abstract putUserFile(file: ArrayBufferLike, partialPath: string): Promise<string>
-  abstract putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string>
+  protected abstract putFile(
+    file: ArrayBufferLike | Buffer<ArrayBufferLike>,
+    fullPath: string
+  ): Promise<string>
+  protected abstract putUserFile(
+    file: ArrayBufferLike | Buffer<ArrayBufferLike>,
+    partialPath: string
+  ): Promise<string>
+  abstract putBuildFile(
+    file: ArrayBufferLike | Buffer<ArrayBufferLike>,
+    partialPath: string
+  ): Promise<string>
 
   abstract presignUrl(url: string): Promise<string>
 
@@ -21,7 +30,12 @@ export default abstract class FileStoreManager {
     const partialPath = `User/${userId}/assets/${filename}.${dotfreeExt}`
     return this.putUserFile(file, partialPath)
   }
-  async putUserAvatar(file: ArrayBufferLike, userId: string, ext: string, name?: string) {
+  async putUserAvatar(
+    file: ArrayBufferLike | Buffer<ArrayBufferLike>,
+    userId: string,
+    ext: string,
+    name?: string
+  ) {
     const filename = name ?? generateUID()
     // replace the first dot, if there is one, but not any other dots
     const dotfreeExt = ext.replace(/^\./, '')
