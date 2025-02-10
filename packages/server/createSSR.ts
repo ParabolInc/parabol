@@ -20,7 +20,7 @@ const createSSR = (res: HttpResponse, req: HttpRequest) => {
   const demoMatch = url.match(/\/retrospective-demo\/(reflect|vote|group)/)
 
   if (demoMatch) {
-    res.writeHeader('Link', '<https://action.parabol.co/retrospective-demo>; rel="canonical"')
+    res.writeHeader('Link', `<https://${process.env.HOST}/retrospective-demo>; rel="canonical"`)
   }
   res.writeHeader('content-type', 'text/html; charset=utf-8')
   // no need for eTag since file is < 1 MTU
