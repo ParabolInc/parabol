@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.25.1](https://github.com/ParabolInc/parabol/compare/v8.25.0...v8.25.1) (2025-02-10)
+
+
+### Fixed
+
+* no smart title, log socket server id ([#10841](https://github.com/ParabolInc/parabol/issues/10841)) ([aa36f5a](https://github.com/ParabolInc/parabol/commit/aa36f5a6c66a1f44105deb9e6aab0e9888be9468))
+
 ## [8.25.0](https://github.com/ParabolInc/parabol/compare/v8.24.5...v8.25.0) (2025-02-10)
 
 
