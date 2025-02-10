@@ -55,6 +55,10 @@ const RetroGroupPhase = (props: Props) => {
         id
         endedAt
         showSidebar
+        localStage {
+          isComplete
+          phaseType
+        }
         autogroupReflectionGroups {
           groupTitle
         }
@@ -78,9 +82,11 @@ const RetroGroupPhase = (props: Props) => {
     showSidebar,
     organization,
     autogroupReflectionGroups,
-    resetReflectionGroups
+    resetReflectionGroups,
+    localStage
   } = meeting
   const {useAI, tier} = organization
+  const isGroupPhaseActive = localStage?.phaseType === 'group' && !localStage?.isComplete
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
@@ -119,7 +125,7 @@ const RetroGroupPhase = (props: Props) => {
               (showSuggestGroups ? (
                 <ButtonWrapper>
                   <StyledButton
-                    disabled={!autogroupReflectionGroups?.length}
+                    disabled={!autogroupReflectionGroups?.length || !isGroupPhaseActive}
                     onClick={handleAutoGroupClick}
                   >
                     {'Suggest Groups ✨'}
@@ -135,7 +141,9 @@ const RetroGroupPhase = (props: Props) => {
                 </ButtonWrapper>
               ) : (
                 <ButtonWrapper>
-                  <StyledButton onClick={handleResetGroupsClick}>{'Reset Groups'}</StyledButton>
+                  <StyledButton disabled={!isGroupPhaseActive} onClick={handleResetGroupsClick}>
+                    {'Reset Groups'}
+                  </StyledButton>
                   <div
                     onMouseEnter={openTooltip}
                     onMouseLeave={closeTooltip}
