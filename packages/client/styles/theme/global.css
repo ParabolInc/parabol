@@ -288,7 +288,7 @@
   }
 
   body {
-    @apply m-0 p-0 font-sans text-[16px] leading-[normal] font-normal text-slate-700 antialiased;
+    @apply m-0 p-0 font-sans text-[16px] font-normal leading-[normal] text-slate-700 antialiased;
   }
 
   a {
@@ -432,14 +432,14 @@
     transition: border 160ms cubic-bezier(0.45, 0.05, 0.55, 0.95);
     &.ProseMirror-selectednode::after {
       content: '';
-      @apply pointer-events-none absolute inset-0 h-full w-full rounded-sm bg-[#2383e247] select-none;
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none rounded-sm bg-[#2383e247];
     }
   }
   .node-imageBlock {
     @apply relative;
     &.has-focus > div::after {
       content: '';
-      @apply pointer-events-none absolute inset-0 h-full w-full bg-[#2383e247] select-none;
+      @apply pointer-events-none absolute inset-0 h-full w-full select-none bg-[#2383e247];
     }
     & img {
       @apply overflow-hidden rounded-md;
@@ -492,18 +492,16 @@
   }
 }
 
+.ProseMirror p {
+  margin-block-start: 4px;
+  margin-block-end: 4px;
+  line-height: 1rem;
+}
+
 hr.ProseMirror-selectednode {
   border-top: 1px solid #68cef8;
 }
 
 .ProseMirror hr {
   border-top: 1px solid var(--color-slate-400);
-}
-
-.ProseMirror p {
-  line-height: 1.25rem;
-}
-
-.text-2xl .ProseMirror p {
-  line-height: 2rem;
 }

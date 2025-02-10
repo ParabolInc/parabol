@@ -4506,11 +4506,6 @@
     write-pkg "4.0.0"
     yargs "16.2.0"
 
-"@mattermost/compass-icons@0.1.47":
-  version "0.1.47"
-  resolved "https://registry.yarnpkg.com/@mattermost/compass-icons/-/compass-icons-0.1.47.tgz#6054557c81ead1d01f0d58edc3aa3667623c6b22"
-  integrity sha512-vI4j1m/B9qQu51g5YnMQBft8gDh/ZWp3JHBgZXJwb522uY2o6WjwOpCbFwdJxWnD2uq/N2D9wDNmdutJNddf+w==
-
 "@mattermost/types@6.7.0-0":
   version "6.7.0-0"
   resolved "https://registry.yarnpkg.com/@mattermost/types/-/types-6.7.0-0.tgz#596b879be92edd867dc5b93807656119e926c8a1"
@@ -10630,11 +10625,6 @@ cjs-module-lexer@^1.0.0, cjs-module-lexer@^1.2.2:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/cjs-module-lexer/-/cjs-module-lexer-1.4.1.tgz#707413784dbb3a72aa11c2f2b042a0bef4004170"
   integrity sha512-cuSVIHi9/9E/+821Qjdvngor+xpnlwnuwIyZOaLmHBVdXL+gP+I6QQB9VkO7RI77YIcTV+S1W9AreJ5eN63JBA==
-
-classnames@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.5.1.tgz#ba774c614be0f016da105c858e7159eae8e7687b"
-  integrity sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==
 
 clean-css@^4.0.12, clean-css@^4.2.3, clean-css@^5.2.2:
   version "5.3.3"

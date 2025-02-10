@@ -1,17 +1,24 @@
+import {Client4} from 'mattermost-redux/client'
+import {getPost} from 'mattermost-redux/selectors/entities/posts'
+import {GlobalState} from 'mattermost-redux/types/store'
+import React, {useEffect, useMemo} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {useLazyLoadQuery, useMutation} from 'react-relay'
+
 import {generateJSON, mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {getPost} from 'mattermost-redux/selectors/entities/posts'
-import {GlobalState} from 'mattermost-redux/types/store'
+
+import {Post} from 'mattermost-redux/types/posts'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
-import React, {useEffect, useMemo} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import {useLazyLoadQuery, useMutation} from 'react-relay'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import {useCurrentUser} from '../../hooks/useCurrentUser'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import {closePushPostAsReflection} from '../../reducers'
+import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} from '../../reducers'
 import {getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
@@ -22,10 +29,13 @@ const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
   const post = useSelector((state: GlobalState) => getPost(state, postId!))
   const postUrl = useSelector((state: GlobalState) => getPostURL(state, postId!))
+  const mmUser = useCurrentUser()
+  const channel = useCurrentChannel()
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
-      query PushReflectionModalQuery {
+      query PushReflectionModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
           teams {
             id
@@ -53,16 +63,23 @@ const PushReflectionModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
-  const {viewer} = data
+  const {viewer, linkedTeamIds} = data
   const {teams} = viewer
+
+  const linkedTeams = useMemo(
+    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    [teams, linkedTeamIds]
+  )
   const retroMeetings = useMemo(
     () =>
-      teams
+      linkedTeams
         .flatMap(({activeMeetings}) => activeMeetings)
         .filter(({meetingType}) => meetingType === 'retrospective'),
-    [teams]
+    [linkedTeams]
   )
   const [selectedMeeting, setSelectedMeeting] = React.useState<(typeof retroMeetings)[number]>()
   const [selectedPrompt, setSelectedPrompt] = React.useState<{
@@ -139,18 +156,55 @@ const PushReflectionModal = () => {
       console.log('missing data', selectedPrompt, selectedMeeting, post.message)
       return
     }
+    const {id: meetingId, name: meetingName} = selectedMeeting
+    const {id: promptId, question} = selectedPrompt
 
     const content = JSON.stringify(editor.getJSON())
 
     createReflection({
       variables: {
         input: {
-          meetingId: selectedMeeting.id,
-          promptId: selectedPrompt.id,
+          meetingId,
+          promptId,
           content,
           sortOrder: 0
         }
       }
+    })
+
+    const meetingUrl = `${window.location.origin}/meeting/${meetingId}`
+    const props = {
+      attachments: [
+        {
+          fallback: `Reflection added to meeting ${meetingName}`,
+          title: `Reflection added to meeting [${meetingName}](${meetingUrl})`,
+          color: PALETTE.GRAPE_500,
+          fields: [
+            {
+              short: true,
+              title: 'Meeting',
+              value: meetingName
+            },
+            {
+              short: true,
+              title: 'Question',
+              value: question
+            }
+          ]
+        }
+      ]
+    }
+
+    Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
+      method: 'post',
+      body: JSON.stringify({
+        user_id: mmUser.id,
+        post: {
+          channel_id: post.channel_id,
+          root_id: post.root_id || post.id,
+          props
+        }
+      } as Partial<Post>)
     })
 
     handleClose()
@@ -165,6 +219,39 @@ const PushReflectionModal = () => {
     return null
   }
 
+  if (linkedTeams.length === 0) {
+    const handleLink = () => {
+      dispatch(openLinkTeamModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add Comment to Parabol Activity'
+        commitButtonLabel='Link team'
+        handleClose={handleClose}
+        handleCommit={handleLink}
+      >
+        <p>There are no Parabol teams linked to this channel yet.</p>
+      </Modal>
+    )
+  }
+  if (retroMeetings.length === 0) {
+    const handleStart = () => {
+      dispatch(openStartActivityModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add Comment to Parabol Activity'
+        commitButtonLabel='Start activity'
+        handleClose={handleClose}
+        handleCommit={handleStart}
+      >
+        <p>There are currently no open retrospective meetings in the linked Parabol teams.</p>
+      </Modal>
+    )
+  }
+
   return (
     <Modal
       title='Add Comment to Parabol Activity'
@@ -172,12 +259,6 @@ const PushReflectionModal = () => {
       handleClose={handleClose}
       handleCommit={handlePush}
     >
-      <div>
-        <p>
-          Choose an open Retro activity and the Prompt where you want to send the Mattermost
-          comment. A reference link back to Mattermost will be inlcuded in the reflection.
-        </p>
-      </div>
       {post && (
         <div className='form-group'>
           <label className='control-label' htmlFor='comment'>

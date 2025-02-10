@@ -9,9 +9,12 @@ export const useLinkTeam = () => {
 
   const linkTeam = useCallback(
     async (teamId: string) => {
+      if (!currentChannel) {
+        return
+      }
       dispatch(addTeamToChannel({channel: currentChannel.id, teamId}))
     },
-    [currentChannel.id, dispatch]
+    [currentChannel?.id, dispatch]
   )
 
   return linkTeam
