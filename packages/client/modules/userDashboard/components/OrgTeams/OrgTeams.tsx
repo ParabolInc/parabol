@@ -26,10 +26,7 @@ const OrgTeams = (props: Props) => {
         allTeams {
           id
           name
-          activeMeetings {
-            id
-            createdAt
-          }
+          lastMetAt
           teamMembers {
             id
           }
@@ -74,12 +71,12 @@ const OrgTeams = (props: Props) => {
       return direction * (a.teamMembers.length - b.teamMembers.length)
     } else {
       // lastMetAt
-      const aLastMeeting = a.activeMeetings[0]?.createdAt
-      const bLastMeeting = b.activeMeetings[0]?.createdAt
-      if (!aLastMeeting && !bLastMeeting) return 0
-      if (!aLastMeeting) return -direction
-      if (!bLastMeeting) return direction
-      return direction * (new Date(aLastMeeting).getTime() - new Date(bLastMeeting).getTime())
+      const aLastMet = a.lastMetAt
+      const bLastMet = b.lastMetAt
+      if (!aLastMet && !bLastMet) return 0
+      if (!aLastMet) return -direction
+      if (!bLastMet) return direction
+      return direction * (new Date(aLastMet).getTime() - new Date(bLastMet).getTime())
     }
   })
 

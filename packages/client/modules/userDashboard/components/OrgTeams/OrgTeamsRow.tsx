@@ -21,15 +21,12 @@ const OrgTeamsRow = (props: Props) => {
           isLead
           preferredName
         }
-        activeMeetings {
-          id
-          createdAt
-        }
+        lastMetAt
       }
     `,
     teamRef
   )
-  const {id: teamId, teamMembers, name, activeMeetings} = team
+  const {id: teamId, teamMembers, name, lastMetAt} = team
   const teamMembersCount = teamMembers.length
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   const isLead = viewerTeamMember?.isLead
@@ -60,9 +57,7 @@ const OrgTeamsRow = (props: Props) => {
       </td>
       <td className='text-gray-600 p-3'>{teamMembersCount}</td>
       <td className='text-gray-600 p-3'>
-        {activeMeetings[0]?.createdAt
-          ? format(new Date(activeMeetings[0].createdAt), 'yyyy-MM-dd')
-          : 'Never'}
+        {lastMetAt ? format(new Date(lastMetAt), 'yyyy-MM-dd') : 'Never'}
       </td>
     </tr>
   )
