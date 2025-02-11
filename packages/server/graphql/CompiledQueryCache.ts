@@ -17,7 +17,6 @@ const compileQuery = tracedCompileQuery(tracer, {
     loginWithPassword: ['password'],
     resetPassword: ['token', 'newPassword'],
     signUpWithPassword: ['password', 'invitationToken'],
-    oldUpdateCreditCard: ['stripeToken'],
     verifyEmail: ['verificationToken']
   } as ExcludedArgs,
   hooks: {

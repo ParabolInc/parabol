@@ -883,21 +883,6 @@ type Mutation {
   ): UpdateCommentContentPayload
 
   """
-  Update an existing credit card on file
-  """
-  oldUpdateCreditCard(
-    """
-    the org requesting the changed billing
-    """
-    orgId: ID!
-
-    """
-    The token that came back from stripe
-    """
-    stripeToken: ID!
-  ): OldUpdateCreditCardPayload
-
-  """
   Update the scale used for a dimension in a template
   """
   updatePokerTemplateDimensionScale(

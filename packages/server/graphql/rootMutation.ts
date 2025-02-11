@@ -42,7 +42,6 @@ import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
-import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
 import payLater from './mutations/payLater'
 import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
@@ -170,7 +169,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
-      oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,
