@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
 import {useEffect, useMemo, useState} from 'react'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
 import {closeCreateTaskModal, openLinkTeamModal} from '../../reducers'
@@ -19,12 +19,14 @@ import type {TaskStatusEnum} from '../../__generated__/CreateTaskModalMutation.g
 import {CreateTaskModalMutation} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalQuery} from '../../__generated__/CreateTaskModalQuery.graphql'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
+import {getPluginServerRoute} from '../../selectors'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
 const CreateTaskModal = () => {
+  const pluginServerRoute = useSelector(getPluginServerRoute)
   const channel = useCurrentChannel()
   const mmUser = useCurrentUser()
 
@@ -109,7 +111,8 @@ const CreateTaskModal = () => {
     })
 
     if (channel) {
-      const message = `Task created in [${teamName}](www.example.com)`
+      const teamUrl = `${pluginServerRoute}/parabol/team/${teamId}`
+      const message = `Task created in [${teamName}](${teamUrl})`
       Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
         method: 'post',
         body: JSON.stringify({
