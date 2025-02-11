@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.25.3](https://github.com/ParabolInc/parabol/compare/v8.25.2...v8.25.3) (2025-02-11)
+
+
+### Fixed
+
+* log userId on missing user disconnect ([#10852](https://github.com/ParabolInc/parabol/issues/10852)) ([8a1f3a1](https://github.com/ParabolInc/parabol/commit/8a1f3a1a3470b619add96d7006f0d6ce1caa8c3c))
+* **Mattermost Plugin:** Update Parabol URLs ([#10850](https://github.com/ParabolInc/parabol/issues/10850)) ([e3199a9](https://github.com/ParabolInc/parabol/commit/e3199a9cd8c100c3984355835145feb5bcd6ee74))
+
+
+### Changed
+
+* bump typescript ([#10844](https://github.com/ParabolInc/parabol/issues/10844)) ([816f2c8](https://github.com/ParabolInc/parabol/commit/816f2c8df3980206b147dffce5b7840de7a4662a))
+
 ## [8.25.2](https://github.com/ParabolInc/parabol/compare/v8.25.1...v8.25.2) (2025-02-11)
 
 
