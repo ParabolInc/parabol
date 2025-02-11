@@ -30,7 +30,6 @@ const safeCreateRetrospective = async (
   ])
 
   const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
-  const {showConversionModal} = organization
 
   const meetingId = generateUID()
   const [phases, inserts] = await createNewMeetingPhases<RetroMeetingPhase>(
@@ -46,7 +45,6 @@ const safeCreateRetrospective = async (
     id: meetingId,
     meetingCount,
     phases,
-    showConversionModal,
     ...meetingSettings,
     name
   }) as RetrospectiveMeeting
