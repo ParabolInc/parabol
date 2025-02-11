@@ -36,9 +36,6 @@ const subscription = graphql`
       ArchiveOrganizationPayload {
         ...ArchiveOrganizationMutation_organization @relay(mask: false)
       }
-      PayLaterPayload {
-        ...PayLaterMutation_organization @relay(mask: false)
-      }
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
       }

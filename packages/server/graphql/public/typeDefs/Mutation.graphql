@@ -497,16 +497,6 @@ type Mutation {
   ): NavigateMeetingPayload!
 
   """
-  Increment the count of times the org has clicked pay later
-  """
-  payLater(
-    """
-    the org that has clicked pay later
-    """
-    meetingId: ID!
-  ): PayLaterPayload!
-
-  """
   Add or remove a task and its estimate phase from the meeting
   """
   persistJiraSearchQuery(
