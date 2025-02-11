@@ -173,7 +173,7 @@ const PushReflectionModal = () => {
       }
     })
 
-    const meetingUrl = `${pluginServerRoute}/parabol/meeting/${meetingId}`
+    const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
     const props = {
       attachments: [
         {
