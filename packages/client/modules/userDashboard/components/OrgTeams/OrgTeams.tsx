@@ -1,13 +1,11 @@
-import {ChevronRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {format} from 'date-fns'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
 import {OrgTeams_organization$key} from '../../../../__generated__/OrgTeams_organization.graphql'
 import AddTeamDialogRoot from '../../../../components/AddTeamDialogRoot'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
+import OrgTeamsRow from './OrgTeamsRow'
 import TeaserOrgTeamsRow from './TeaserOrgTeamsRow'
 
 type Props = {
@@ -28,16 +26,14 @@ const OrgTeams = (props: Props) => {
         allTeams {
           id
           name
-          teamMembers {
-            id
-            isSelf
-            isLead
-            preferredName
-          }
           activeMeetings {
             id
             createdAt
           }
+          teamMembers {
+            id
+          }
+          ...OrgTeamsRow_team
         }
         viewerTeams {
           id
@@ -142,42 +138,9 @@ const OrgTeams = (props: Props) => {
               </tr>
             </thead>
             <tbody>
-              {sortedTeams.map((team) => {
-                const viewerTeamMember = team.teamMembers.find((m) => m.isSelf)
-                const isLead = viewerTeamMember?.isLead
-                const isMember = !!viewerTeamMember && !isLead
-                return (
-                  <tr key={team.id} className='hover:bg-slate-50 border-b border-slate-300'>
-                    <td className='p-3'>
-                      <Link
-                        to={`teams/${team.id}`}
-                        className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'
-                      >
-                        <div className='flex flex-1 items-center'>
-                          {team.name}
-                          {isLead && (
-                            <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
-                              Team Lead
-                            </span>
-                          )}
-                          {isMember && (
-                            <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
-                              Member
-                            </span>
-                          )}
-                        </div>
-                        <ChevronRight className='ml-2 text-slate-600' />
-                      </Link>
-                    </td>
-                    <td className='text-gray-600 p-3'>{team.teamMembers.length}</td>
-                    <td className='text-gray-600 p-3'>
-                      {team.activeMeetings[0]?.createdAt
-                        ? format(new Date(team.activeMeetings[0].createdAt), 'yyyy-MM-dd')
-                        : 'Never'}
-                    </td>
-                  </tr>
-                )
-              })}
+              {sortedTeams.map((team) => (
+                <OrgTeamsRow key={team.id} teamRef={team} />
+              ))}
             </tbody>
           </table>
         </div>
