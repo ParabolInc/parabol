@@ -112,12 +112,12 @@ export default class GCSManager extends FileStoreManager {
     return this.accessToken
   }
 
-  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
+  protected async putUserFile(file: Buffer<ArrayBufferLike>, partialPath: string) {
     const fullPath = this.prependPath(partialPath)
     return this.putFile(file, fullPath)
   }
 
-  protected async putFile(file: ArrayBufferLike, fullPath: string) {
+  protected async putFile(file: Buffer<ArrayBufferLike>, fullPath: string) {
     const url = new URL(`https://storage.googleapis.com/upload/storage/v1/b/${this.bucket}/o`)
     url.searchParams.append('uploadType', 'media')
     url.searchParams.append('name', fullPath)
@@ -143,7 +143,7 @@ export default class GCSManager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
 
-  putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
+  putBuildFile(file: Buffer<ArrayBufferLike>, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
     return this.putFile(file, fullPath)
   }
