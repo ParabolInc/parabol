@@ -19,7 +19,7 @@ import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} from '../../reducers'
-import {getPostURL, pushPostAsReflection} from '../../selectors'
+import {getPluginServerRoute, getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
 
@@ -29,6 +29,7 @@ const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
   const post = useSelector((state: GlobalState) => getPost(state, postId!))
   const postUrl = useSelector((state: GlobalState) => getPostURL(state, postId!))
+  const pluginServerRoute = useSelector(getPluginServerRoute)
   const mmUser = useCurrentUser()
   const channel = useCurrentChannel()
 
@@ -172,7 +173,7 @@ const PushReflectionModal = () => {
       }
     })
 
-    const meetingUrl = `${window.location.origin}/meeting/${meetingId}`
+    const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
     const props = {
       attachments: [
         {
