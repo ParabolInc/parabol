@@ -131,7 +131,7 @@ export default class Atmosphere extends Environment {
     })
   }
 
-  fetchReliable = async (connectionId: string, data: ArrayBuffer) => {
+  fetchReliable = async (connectionId: string, data: Uint8Array<ArrayBufferLike>) => {
     return fetch('/sse-ping', {
       method: 'POST',
       headers: {

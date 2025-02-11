@@ -8,6 +8,7 @@ import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
 import {
+  OAuth2AuthorizeResponse,
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
@@ -257,18 +258,16 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
   private readonly auth: TeamMemberIntegrationAuth | null
 
-  async init(code: string, codeVerifier: string | null) {
+  async authorize(code: string, codeVerifier: string | null) {
     if (!codeVerifier) {
-      return {
-        error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
-      }
+      return new Error('Missing OAuth2 Verifier required for Azure DevOps authentication')
     }
     return this.fetchToken({
       grant_type: 'authorization_code',
       code: code,
       code_verifier: codeVerifier,
       redirect_uri: makeAppURL(appOrigin, 'auth/ado2')
-    })
+    }) as Promise<OAuth2AuthorizeResponse | Error>
   }
 
   private readonly provider: IntegrationProviderAzureDevOps | undefined

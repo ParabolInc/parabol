@@ -11,6 +11,8 @@ interface Options {
   authToken: AuthToken
 }
 
+const {SERVER_ID} = process.env
+
 const publishInternalGQL = async <NarrowResponse>(options: Options) => {
   const {socketId, query, ip, authToken, variables} = options
   try {
@@ -32,7 +34,7 @@ const publishInternalGQL = async <NarrowResponse>(options: Options) => {
           authToken: JSON.stringify(authToken),
           query: query || '',
           variables: JSON.stringify(variables),
-          socketServerId: socketId
+          socketServerId: SERVER_ID!
         }
       })
     } else {

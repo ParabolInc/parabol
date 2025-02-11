@@ -5,6 +5,8 @@ import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import sendToSentry from '../utils/sendToSentry'
 import {SubscribeRequest} from './subscribeGraphQL'
 
+const {SERVER_ID} = process.env
+
 export default class ResponseStream implements AsyncIterableIterator<ExecutionResult> {
   private sourceStream: SubscriptionIterator
   private req: SubscribeRequest
@@ -51,7 +53,7 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
           docId: docId || '',
           query: query || '',
           variables: JSON.stringify(variables),
-          socketServerId: socketId,
+          socketServerId: SERVER_ID!,
           executorServerId
         }
       })
