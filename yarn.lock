@@ -4523,10 +4523,10 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.4.0.tgz#388c29614cf72aa0dd9803c77c9c9d070bd3cd2d"
   integrity sha512-TnPI97WVAxo8SQcPy8aV3OF9/2WjXB5/+pRNVudIWR7Bhi5ZjtR/ur162So08GkvsvB914AXCW2sxFh1x6KhHA==
 
-"@mattkrick/trebuchet-client@3.0.3":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.3.tgz#7a396a90b4ba592f785eddff57b87f4b5a49b327"
-  integrity sha512-bCGUEkZqwD4XPdiJuQFa0czLJlxXMr6YqYJgVOAgzSLdf7ufLecclzGGdikVloAHG4la2MGHsnL4VY0CR7p7yA==
+"@mattkrick/trebuchet-client@3.0.4":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.4.tgz#28e1e60dc86ef06d16ffebc3cd0287ac4e18cd34"
+  integrity sha512-h7kmdreiMiCDkJqHW2UjSPXkMnM4En42yxXGdymKFl2V3DMlowGn5WXIdSPf/eq11knw0VDonlXkr5GBmUA8tw==
   dependencies:
     eventemitter3 "^5.0.1"
     tslib "^2.6.2"
