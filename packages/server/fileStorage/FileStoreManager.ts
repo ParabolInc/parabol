@@ -23,7 +23,7 @@ export default abstract class FileStoreManager {
 
   abstract presignUrl(url: string): Promise<string>
 
-  async putUserAsset(file: ArrayBufferLike, userId: string, ext: string, name?: string) {
+  async putUserAsset(file: Buffer<ArrayBufferLike>, userId: string, ext: string, name?: string) {
     const filename = name ?? generateUID()
     // replace the first dot, if there is one, but not any other dots
     const dotfreeExt = ext.replace(/^\./, '')
@@ -43,26 +43,31 @@ export default abstract class FileStoreManager {
     return this.putUserFile(file, partialPath)
   }
 
-  async putOrgAvatar(file: ArrayBufferLike, orgId: string, ext: string, name?: string) {
+  async putOrgAvatar(file: Buffer<ArrayBufferLike>, orgId: string, ext: string, name?: string) {
     const filename = name ?? generateUID()
     const dotfreeExt = ext.replace(/^\./, '')
     const partialPath = `Organization/${orgId}/picture/${filename}.${dotfreeExt}`
     return this.putUserFile(file, partialPath)
   }
 
-  async putOrgIdPMetadata(file: ArrayBufferLike, orgId: string) {
+  async putOrgIdPMetadata(file: Buffer<ArrayBufferLike>, orgId: string) {
     const partialPath = `Organization/${orgId}/idpMetadata.xml`
     return this.putUserFile(file, partialPath)
   }
 
-  async putTemplateIllustration(file: ArrayBufferLike, orgId: string, ext: string, name?: string) {
+  async putTemplateIllustration(
+    file: Buffer<ArrayBufferLike>,
+    orgId: string,
+    ext: string,
+    name?: string
+  ) {
     const filename = name ?? generateUID()
     const dotfreeExt = ext.replace(/^\./, '')
     const partialPath = `Organization/${orgId}/template/${filename}.${dotfreeExt}`
     return this.putUserFile(file, partialPath)
   }
 
-  async putDebugFile(file: ArrayBufferLike, nameWithExt: string) {
+  async putDebugFile(file: Buffer<ArrayBufferLike>, nameWithExt: string) {
     const partialPath = `__debug__/${nameWithExt}`
     return this.putUserFile(file, partialPath)
   }
