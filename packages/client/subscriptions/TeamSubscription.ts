@@ -185,9 +185,6 @@ const subscription = graphql`
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
-      OldUpgradeToTeamTierPayload {
-        ...OldUpgradeToTeamTierMutation_team @relay(mask: false)
-      }
     }
   }
 `

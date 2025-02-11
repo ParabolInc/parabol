@@ -1045,21 +1045,6 @@ type Mutation {
   ): UpdateTemplateScopePayload!
 
   """
-  Upgrade an account to the paid service
-  """
-  oldUpgradeToTeamTier(
-    """
-    the org requesting the upgrade
-    """
-    orgId: ID!
-
-    """
-    The token that came back from stripe
-    """
-    stripeToken: ID!
-  ): OldUpgradeToTeamTierPayload
-
-  """
   Cast your vote for a reflection group
   """
   voteForReflectionGroup(

@@ -31,7 +31,6 @@ type TeamSubscriptionPayload {
   OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
-  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplateSuccess: AddReflectTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess
