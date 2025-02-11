@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.25.2](https://github.com/ParabolInc/parabol/compare/v8.25.1...v8.25.2) (2025-02-11)
+
+
+### Fixed
+
+* Azure DevOps authorization ([#10847](https://github.com/ParabolInc/parabol/issues/10847)) ([a717fe8](https://github.com/ParabolInc/parabol/commit/a717fe843c3a5ea2b39257da1f676bee0ddcd22d))
+
 ## [8.25.1](https://github.com/ParabolInc/parabol/compare/v8.25.0...v8.25.1) (2025-02-10)
 
 
