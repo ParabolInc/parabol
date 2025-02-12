@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.25.4](https://github.com/ParabolInc/parabol/compare/v8.25.3...v8.25.4) (2025-02-12)
+
+
+### Fixed
+
+* delay cleaning user presence ([#10855](https://github.com/ParabolInc/parabol/issues/10855)) ([b208f89](https://github.com/ParabolInc/parabol/commit/b208f89557a852e3b259d4076e6b5007ca0f2bfc))
+
 ## [8.25.3](https://github.com/ParabolInc/parabol/compare/v8.25.2...v8.25.3) (2025-02-11)
 
 
