@@ -5,10 +5,20 @@ import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useCallback} from 'react'
 import {useSelector} from 'react-redux'
 import {useFragment} from 'react-relay'
-import {useInviteToMeeting_meeting$key} from '../__generated__/useInviteToMeeting_meeting.graphql'
+import {
+  MeetingTypeEnum,
+  useInviteToMeeting_meeting$key
+} from '../__generated__/useInviteToMeeting_meeting.graphql'
 import {getPluginServerRoute} from '../selectors'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'
+
+const MeetingTypeToReadable = {
+  action: 'Team Check-in',
+  poker: 'Sprint Poker',
+  retrospective: 'Retrospective',
+  teamPrompt: 'Standup'
+} satisfies Record<MeetingTypeEnum, string>
 
 export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) => {
   const meeting = useFragment(
@@ -42,11 +52,12 @@ export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) 
     }
 
     const inviteUrl = `${pluginServerRoute}/parabol/invitation-link/${token}`
+    const readableMeetingType = MeetingTypeToReadable[meetingType!]
     const props = {
       attachments: [
         {
           fallback: `Join the meeting ${meetingName} in Parabol`,
-          title: `You’re invited to join a ${meetingType} meeting in Parabol.`,
+          title: `You’re invited to join a ${readableMeetingType} meeting in Parabol.`,
           color: PALETTE.GRAPE_500,
           fields: [
             {

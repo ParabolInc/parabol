@@ -48,6 +48,30 @@ export const removeTeamFromChannel = createAsyncThunk(
   }
 )
 
+export type Command = {
+  trigger: string
+  description: string
+}
+
+export type ClientConfig = {
+  commands: Command[]
+}
+
+export const connect = createAsyncThunk('connect', async (config: ClientConfig, thunkApi) => {
+  const serverUrl = getPluginServerRoute(thunkApi.getState() as any)
+  const res = await fetch(
+    `${serverUrl}/connect`,
+    Client4.getOptions({
+      method: 'POST',
+      body: JSON.stringify(config)
+    })
+  )
+  if (!res.ok) {
+    throw new Error(`Failed to initialize commands: ${res.statusText}`)
+  }
+  return
+})
+
 const localSlice = createSlice({
   name: 'local',
   initialState: {

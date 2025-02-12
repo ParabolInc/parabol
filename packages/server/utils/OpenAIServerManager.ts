@@ -263,7 +263,7 @@ class OpenAIServerManager {
     userPrompt?: string | null
   ): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
-    const meetingURL = 'https://action.parabol.co/meet/[meetingId]'
+    const meetingURL = `https://${process.env.HOST}/meet/[meetingId]`
     const promptForMeetingData = `
 You are a Team Lead and want to use your meeting data to help write a report on your team's performance. You care about team productivity, morale, roadblocks, relationships, and progress against goals. Below is a list of retrospective meeting summaries (in YAML format) from the past several months.
 
@@ -376,7 +376,7 @@ Return the analysis as a JSON object with this structure:
 
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
-    const meetingURL = 'https://action.parabol.co/meet/'
+    const meetingURL = `https://${process.env.HOST}/meet`
     const defaultPrompt = `
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.

@@ -9,6 +9,8 @@ import sendToSentry from '../utils/sendToSentry'
 import subscribeGraphQL from './subscribeGraphQL'
 export type GraphQLMessageType = 'data' | 'complete' | 'error'
 
+const {SERVER_ID} = process.env
+
 const handleGraphQLTrebuchetRequest = async (
   data: OutgoingMessage,
   connectionContext: ConnectionContext
@@ -63,7 +65,7 @@ const handleGraphQLTrebuchetRequest = async (
             docId: docId || '',
             query: query || '',
             variables: JSON.stringify(variables),
-            socketServerId: socketId
+            socketServerId: SERVER_ID!
           }
         })
         return {
