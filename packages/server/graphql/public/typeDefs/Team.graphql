@@ -32,6 +32,11 @@ type Team implements Node {
   lastMeetingType: MeetingTypeEnum!
 
   """
+  The datetime of the team's most recent meeting (from either active or completed meetings)
+  """
+  lastMetAt: DateTime
+
+  """
   The HTML message to show if isPaid is false
   """
   lockMessageHTML: String
