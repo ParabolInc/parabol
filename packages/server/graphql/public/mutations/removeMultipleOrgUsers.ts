@@ -8,7 +8,6 @@ import {
 } from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import isValid from '../../isValid'
 import removeFromOrg from '../../mutations/helpers/removeFromOrg'
 import {MutationResolvers} from '../resolverTypes'
 const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = async (
@@ -60,16 +59,6 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
     )
   }
 
-  const data = {
-    orgId,
-    teamIds: [] as string[],
-    teamMemberIds: [] as string[],
-    taskIds: [] as string[],
-    userIds: [] as string[],
-    kickOutNotificationIds: [] as string[],
-    organizationUserIds: [] as string[]
-  }
-
   const userResults = await Promise.all(
     userIds.map(async (userId: string) => {
       const userData = await removeFromOrg(userId, orgId, viewerId, dataLoader)
@@ -77,61 +66,52 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
     })
   )
 
-  userResults.forEach(({userId, userData}) => {
-    data.taskIds.push(...userData.taskIds)
-    data.kickOutNotificationIds.push(...userData.kickOutNotificationIds)
-    data.teamIds.push(...userData.teamIds)
-    data.teamMemberIds.push(...userData.teamMemberIds)
-    data.userIds.push(userId)
-    data.organizationUserIds.push(userData.organizationUserId)
+  const data = {
+    orgId,
+    taskIds: [...new Set(userResults.flatMap(({userData}) => userData.taskIds))],
+    kickOutNotificationIds: [
+      ...new Set(userResults.flatMap(({userData}) => userData.kickOutNotificationIds))
+    ],
+    teamIds: [...new Set(userResults.flatMap(({userData}) => userData.teamIds))],
+    teamMemberIds: [...new Set(userResults.flatMap(({userData}) => userData.teamMemberIds))],
+    userIds: [...new Set(userResults.map(({userId}) => userId))],
+    organizationUserIds: [...new Set(userResults.map(({userData}) => userData.organizationUserId))]
+  }
+
+  publish(
+    SubscriptionChannel.ORGANIZATION,
+    orgId,
+    'RemoveMultipleOrgUsersSuccess',
+    data,
+    subOptions
+  )
+
+  data.teamIds.forEach((teamId) => {
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveMultipleOrgUsersSuccess', data, subOptions)
   })
 
-  await Promise.all(
-    userResults.map(async ({userId, userData}) => {
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: userData.tms})
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        userId,
-        'RemoveMultipleOrgUsersSuccess',
-        data,
-        subOptions
-      )
-      publish(
-        SubscriptionChannel.ORGANIZATION,
-        orgId,
-        'RemoveMultipleOrgUsersSuccess',
-        data,
-        subOptions
-      )
+  userResults.map(async ({userId, userData}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: userData.tms})
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      userId,
+      'RemoveMultipleOrgUsersSuccess',
+      data,
+      subOptions
+    )
+  })
 
-      userData.teamIds.forEach((teamId) => {
-        const teamData = {...data, teamFilterId: teamId}
-        publish(
-          SubscriptionChannel.TEAM,
-          teamId,
-          'RemoveMultipleOrgUsersSuccess',
-          teamData,
-          subOptions
-        )
-      })
-
-      const remainingTeamMembers = (
-        await dataLoader.get('teamMembersByTeamId').loadMany(userData.teamIds)
-      )
-        .filter(isValid)
-        .flat()
-      remainingTeamMembers.forEach((teamMember) => {
-        if (userData.teamMemberIds.includes(teamMember.id)) return
-        publish(
-          SubscriptionChannel.TASK,
-          teamMember.userId,
-          'RemoveMultipleOrgUsersSuccess',
-          data,
-          subOptions
-        )
-      })
-    })
-  )
+  data.teamMemberIds.map(async (teamMemberId) => {
+    const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    if (!teamMember) return
+    publish(
+      SubscriptionChannel.TASK,
+      teamMember.userId,
+      'RemoveMultipleOrgUsersSuccess',
+      data,
+      subOptions
+    )
+  })
 
   return data
 }
