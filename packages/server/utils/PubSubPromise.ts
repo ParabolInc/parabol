@@ -4,7 +4,6 @@ import GQLExecutorChannelId from '../../client/shared/gqlIds/GQLExecutorChannelI
 import type {GQLRequest} from '../types/GQLRequest'
 import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
-import {getUserId} from './authorization'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
@@ -64,7 +63,7 @@ export default class PubSubPromise {
         const {authToken, docId, query, variables} = request
         Logger.error('GQL executor took too long to respond', {
           tags: {
-            userId: getUserId(authToken),
+            userId: authToken?.sub ?? '',
             authToken: JSON.stringify(authToken),
             docId: docId || '',
             query: query?.slice(0, 50) ?? '',
