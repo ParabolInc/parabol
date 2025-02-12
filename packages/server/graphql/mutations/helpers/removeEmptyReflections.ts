@@ -5,19 +5,25 @@ import {AnyMeeting} from '../../../postgres/types/Meeting'
 const removeEmptyReflections = async (meeting: AnyMeeting, dataLoader: DataLoaderInstance) => {
   const pg = getKysely()
   const {id: meetingId} = meeting
-  const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+
+  const [reflections, reflectionGroups] = await Promise.all([
+    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
+  ])
+
   dataLoader.get('retroReflectionsByMeetingId').clear(meetingId)
   dataLoader.get('retroReflections').clearAll()
-  const emptyReflectionGroupIds = [] as string[]
-  const emptyReflectionIds = [] as string[]
+
+  const emptyReflectionIds: string[] = []
+  const emptyReflectionGroupIds: string[] = []
   reflections.forEach((reflection) => {
-    const text = reflection.plaintextContent
-    if (text.length === 0) {
-      emptyReflectionGroupIds.push(reflection.reflectionGroupId)
+    if (!reflection.plaintextContent.trim()) {
       emptyReflectionIds.push(reflection.id)
+      emptyReflectionGroupIds.push(reflection.reflectionGroupId)
     }
   })
-  if (emptyReflectionGroupIds.length > 0) {
+
+  if (emptyReflectionIds.length > 0) {
     await Promise.all([
       pg
         .updateTable('RetroReflection')
@@ -31,6 +37,23 @@ const removeEmptyReflections = async (meeting: AnyMeeting, dataLoader: DataLoade
         .execute()
     ])
   }
+
+  const inactiveReflections = new Set(emptyReflectionIds)
+  const groupsWithNoActiveReflections = reflectionGroups
+    .filter(
+      (group) =>
+        !reflections.some((r) => r.reflectionGroupId === group.id && !inactiveReflections.has(r.id))
+    )
+    .map((group) => group.id)
+
+  if (groupsWithNoActiveReflections.length > 0) {
+    await pg
+      .updateTable('RetroReflectionGroup')
+      .set({isActive: false})
+      .where('id', 'in', groupsWithNoActiveReflections)
+      .execute()
+  }
+
   return {emptyReflectionGroupIds}
 }
 

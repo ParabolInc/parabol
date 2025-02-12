@@ -25,20 +25,6 @@ const autogroup: MutationResolvers['autogroup'] = async (
     dataLoader.get('users').loadNonNull(viewerId)
   ])
 
-  const emptyGroupIds = reflectionGroups
-    .filter((group) => reflections.filter((r) => r.reflectionGroupId === group.id).length === 0)
-    .map((group) => group.id)
-
-  if (emptyGroupIds.length > 0) {
-    await pg
-      .updateTable('RetroReflectionGroup')
-      .set({isActive: false})
-      .where('id', 'in', emptyGroupIds)
-      .execute()
-
-    emptyGroupIds.forEach((id) => dataLoader.get('retroReflectionGroups').clear(id))
-  }
-
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
