@@ -1,20 +1,6 @@
 import {computeJaccardDistanceMatrix} from './computeJaccardDistanceMatrix'
 import getGroupMatrix from './getGroupMatrix'
 
-type Entity = {
-  lemma: string
-  name: string
-  salience: number
-}
-
-type GroupedReflectionRes = {
-  reflectionId: string
-  entities: Entity[]
-  oldReflectionGroupId: string
-  sortOrder: number
-  reflectionGroupId: string
-}
-
 export type GroupingOptions = {
   groupingThreshold: number
   maxGroupSize?: number
