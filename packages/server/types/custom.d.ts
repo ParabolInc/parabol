@@ -1,4 +1,4 @@
-import {GraphQLSchema} from 'graphql'
+import type {GraphQLSchema} from 'graphql'
 import type nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import '../../client/types/reactHTML4'
 import type AuthToken from '../database/types/AuthToken'
