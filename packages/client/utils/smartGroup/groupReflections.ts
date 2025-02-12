@@ -54,9 +54,7 @@ const groupReflections = <
     })
 
     return {
-      id: reflectionGroupId,
-      smartTitle: '',
-      title: ''
+      id: reflectionGroupId
     }
   })
 
