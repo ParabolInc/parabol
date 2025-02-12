@@ -2,10 +2,11 @@ import tracer from 'dd-trace'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
 import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
+import sleep from '../client/utils/sleep'
 import executeGraphQL from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
 import '../server/monkeyPatchFetch'
-import {GQLRequest} from '../server/types/custom'
+import type {GQLRequest} from '../server/types/GQLRequest'
 import {Logger} from '../server/utils/Logger'
 import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
@@ -46,6 +47,9 @@ const run = async () => {
       ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
       executorChannel
     )
+    // The executor has published SourceStream messages to webserver that include its executorServerId
+    // It expects the webserver call it back to make use of its cache. These should resovle within a couple seconds
+    await sleep(2000)
 
     setInterval(() => {
       if (Date.now() - start >= MAX_SHUTDOWN_TIME) {

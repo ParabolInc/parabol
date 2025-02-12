@@ -1,11 +1,8 @@
 import {ExecutionResult} from 'graphql'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
-import {getUserId} from '../utils/authorization'
 import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import sendToSentry from '../utils/sendToSentry'
 import {SubscribeRequest} from './subscribeGraphQL'
-
-const {SERVER_ID} = process.env
 
 export default class ResponseStream implements AsyncIterableIterator<ExecutionResult> {
   private sourceStream: SubscriptionIterator
@@ -44,19 +41,6 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
       }
       return {done: false, value: result}
     } catch (e) {
-      const error =
-        e instanceof Error ? e : new Error(`GQL executor failed to publish. docId: ${docId}`)
-      sendToSentry(error, {
-        userId: getUserId(authToken),
-        tags: {
-          authToken: JSON.stringify(authToken),
-          docId: docId || '',
-          query: query || '',
-          variables: JSON.stringify(variables),
-          socketServerId: SERVER_ID!,
-          executorServerId
-        }
-      })
       return this.next()
     }
   }
