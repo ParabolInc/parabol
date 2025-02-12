@@ -1,5 +1,5 @@
 import tracer from 'dd-trace'
-import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
+import uws, {SHARED_COMPRESSOR, WebSocket} from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
@@ -12,6 +12,13 @@ import './initSentry'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import {
+  decrementWebSocketConnections,
+  handleMetricsRequest,
+  incrementWebSocketConnections,
+  trackWebSocketOpen,
+  trackWsMessageReceived
+} from './metrics'
 import './monkeyPatchFetch'
 import selfHostedHandler from './selfHostedHandler'
 import handleClose from './socketHandlers/handleClose'
@@ -53,6 +60,9 @@ process.on('SIGTERM', async (signal) => {
 })
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
+const METRICS_PORT = Number(process.env.METRICS_PORT || 9100) // Default to 9100 if not specified
+
+// Main App
 uws
   .App()
   .get('/favicon.ico', PWAHandler)
@@ -76,10 +86,31 @@ uws
     idleTimeout: 0,
     maxPayloadLength: 5 * 2 ** 20,
     upgrade: handleUpgrade,
-    open: handleOpen,
-    message: handleMessage,
-    // today, we don't send folks enough data to worry about backpressure
-    close: handleClose
+    open: (ws: WebSocket<any>) => {
+      incrementWebSocketConnections()
+      trackWebSocketOpen(ws)
+      if (handleOpen) handleOpen(ws)
+    },
+    message: (ws: WebSocket<any>, message: ArrayBuffer, isBinary: boolean) => {
+      trackWsMessageReceived()
+      if (handleMessage) handleMessage(ws, message, isBinary)
+    },
+    close: (ws: WebSocket<any>) => {
+      decrementWebSocketConnections(ws)
+      handleClose(ws)
+    }
   })
   .any('/*', createSSR)
   .listen(PORT, listenHandler)
+
+// Metrics App
+uws
+  .App()
+  .get('/metrics', handleMetricsRequest)
+  .listen(METRICS_PORT, (listenSocket) => {
+    if (listenSocket) {
+      Logger.log(`Metrics server listening on port ${METRICS_PORT}`)
+    } else {
+      Logger.error('Failed to start metrics server')
+    }
+  })

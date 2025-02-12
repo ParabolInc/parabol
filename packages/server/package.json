@@ -128,6 +128,7 @@
     "oy-vey": "^0.12.1",
     "parabol-client": "8.25.4",
     "pg": "^8.5.1",
+    "prom-client": "^15.1.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "relay-runtime": "^14.1.0",
