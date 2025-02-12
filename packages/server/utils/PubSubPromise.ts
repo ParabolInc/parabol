@@ -1,6 +1,10 @@
+import type {ExecutionResult} from 'graphql'
 import ms from 'ms'
 import GQLExecutorChannelId from '../../client/shared/gqlIds/GQLExecutorChannelId'
+import type {GQLRequest} from '../types/custom'
+import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
+import {getUserId} from './authorization'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
@@ -21,7 +25,7 @@ interface BaseRequest {
   longRunning?: boolean
 }
 
-export default class PubSubPromise<Request extends BaseRequest, Response> {
+export default class PubSubPromise {
   jobs = {} as {[jobId: string]: Job}
   publisher = new RedisInstance('pubsubPromise_pub')
   subscriber = new RedisInstance('pubsubPromise_sub')
@@ -49,7 +53,7 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
     this.subscriber.subscribe(this.subChannel)
   }
 
-  publish = <NarrowResponse = Response>(request: Request) => {
+  publish = <NarrowResponse = ExecutionResult>(request: GQLRequest & BaseRequest) => {
     return new Promise<NarrowResponse>((resolve, reject) => {
       const nextJob = numToBase64(this.jobCounter++)
       const jobId = `${SERVER_ID}:${nextJob}`
@@ -57,6 +61,18 @@ export default class PubSubPromise<Request extends BaseRequest, Response> {
       const timeout = isAdHoc ? ADHOC_TIMEOUT : longRunning ? LONG_TIMEOUT : STANDARD_TIMEOUT
       const timeoutId = setTimeout(() => {
         delete this.jobs[jobId]
+        const {authToken, docId, query, variables} = request
+        Logger.error('GQL executor took too long to respond', {
+          tags: {
+            userId: getUserId(authToken),
+            authToken: JSON.stringify(authToken),
+            docId: docId || '',
+            query: query?.slice(0, 50) ?? '',
+            variables: JSON.stringify(variables),
+            socketServerId: SERVER_ID!,
+            executorServerId
+          }
+        })
         reject(new Error('TIMEOUT'))
       }, timeout)
       const previousJob = this.jobs[jobId]
