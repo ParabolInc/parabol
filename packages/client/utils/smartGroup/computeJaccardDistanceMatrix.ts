@@ -1,5 +1,4 @@
 /**
- * Example: computeJaccardDistanceMatrix(reflections)
  * For each pair of reflections, measure how many words they share
  * vs. how many unique words total. (Jaccard similarity = intersection/union).
  * We then use distance = 1 - similarity and feed that to clusterfck.
@@ -28,7 +27,7 @@ const jaccardDistance = (aTokens: string[], bTokens: string[]): number => {
   const setB = new Set(bTokens)
   const intersectionSize = [...setA].filter((x) => setB.has(x)).length
   const unionSize = new Set([...setA, ...setB]).size
-  if (unionSize === 0) return 0 // edge case, treat empty union as identical
+  if (unionSize === 0) return 0 // edge case, treat empty union as identical although reflections should always have text
   const similarity = intersectionSize / unionSize
   const distance = 1 - similarity
   return distance

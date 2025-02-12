@@ -14,7 +14,6 @@ const groupReflections = <
   groupingOptions: GroupingOptions
 ) => {
   const reflectionTexts = reflections.map((r) => r.plaintextContent || '')
-
   const distanceMatrix = computeJaccardDistanceMatrix(reflectionTexts)
 
   const {
