@@ -1,4 +1,4 @@
-import {DataLoaderInstance} from '../server/dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../server/dataloader/RootDataLoader'
 import type {DB} from '../server/postgres/types/pg'
 import {JobQueueError} from './JobQueueError'
 
