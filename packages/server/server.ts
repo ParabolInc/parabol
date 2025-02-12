@@ -60,7 +60,7 @@ process.on('SIGTERM', async (signal) => {
 })
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
-const METRICS_PORT = Number(process.env.METRICS_PORT || 9100) // Default to 9100 if not specified
+const METRICS_PORT = Number(process.env.METRICS_PORT || 9090) // Default to 9090
 
 // Main App
 uws
@@ -103,14 +103,16 @@ uws
   .any('/*', createSSR)
   .listen(PORT, listenHandler)
 
-// Metrics App
-uws
-  .App()
-  .get('/metrics', handleMetricsRequest)
-  .listen(METRICS_PORT, (listenSocket) => {
-    if (listenSocket) {
-      Logger.log(`Metrics server listening on port ${METRICS_PORT}`)
-    } else {
-      Logger.error('Failed to start metrics server')
-    }
-  })
+// Metrics App (only start if ENABLE_METRICS is 'true')
+if (process.env.ENABLE_METRICS === 'true') {
+  uws
+    .App()
+    .get('/metrics', handleMetricsRequest)
+    .listen(METRICS_PORT, (listenSocket) => {
+      if (listenSocket) {
+        Logger.log(`📊📊📊 Metrics server listening on port ${METRICS_PORT} 📊📊📊`)
+      } else {
+        Logger.error('Failed to start metrics server')
+      }
+    })
+}
