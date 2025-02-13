@@ -12,21 +12,9 @@ const addDiscussionTopics = async (meeting: RetrospectiveMeeting, dataLoader: Da
   const placeholderStage = discussPhase.stages[0]
   if (!placeholderStage) return {discussPhaseStages: [], meetingId}
 
-  const [reflectionGroups, reflections] = await Promise.all([
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
-  ])
+  const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
 
-  const groupReflectionCounts = reflections.reduce((counts: Record<string, number>, reflection) => {
-    counts[reflection.reflectionGroupId] = (counts[reflection.reflectionGroupId] || 0) + 1
-    return counts
-  }, {})
-
-  const activeGroups = reflectionGroups.filter(
-    (group) => (groupReflectionCounts[group.id] ?? 0) > 0
-  )
-
-  const sortedReflectionGroups = mapGroupsToStages(activeGroups)
+  const sortedReflectionGroups = mapGroupsToStages(reflectionGroups)
   const nextDiscussStages = sortedReflectionGroups.map((reflectionGroup, idx) => {
     const {id: reflectionGroupId} = reflectionGroup
     const id = idx === 0 ? placeholderStage.id : generateUID()
