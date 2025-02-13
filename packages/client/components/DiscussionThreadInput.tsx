@@ -206,7 +206,7 @@ const DiscussionThreadInput = (props: Props) => {
   if (!editor) return null
   return (
     <div
-      className='z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-disabled:opacity-50 data-[reply=true]:mt-2 data-[reply=true]:-ml-3 data-[reply=true]:rounded-t data-[reply=true]:shadow-discussion-thread'
+      className='z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-disabled:opacity-50 data-[reply=true]:mr-4 data-[reply=true]:mb-4 data-[reply=true]:rounded-t data-[reply=true]:shadow-discussion-thread'
       data-disabled={isDisabled}
       data-reply={isReply}
       ref={containerRef}

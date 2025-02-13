@@ -169,7 +169,7 @@ const ThreadedCommentBase = (props: Props) => {
   return (
     <ThreadedItemWrapper isReply={isReply}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
-      <div className='flex w-[calc(100%-56px)] flex-col pb-2'>
+      <div className='flex w-full flex-col pb-2'>
         <ThreadedCommentHeader
           comment={comment}
           editComment={editComment}
