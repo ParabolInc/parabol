@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {makeGroupTitleFromPlaintext} from '../../../../client/utils/smartGroup/getTitleFromComputedGroup'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -7,8 +6,13 @@ import {DataLoaderWorker} from '../../graphql'
 import updateSmartGroupTitle from './updateReflectionLocation/updateSmartGroupTitle'
 
 interface Reflection {
-  entities: any[]
   plaintextContent: string
+}
+
+const makeGroupTitleFromPlaintext = (plaintextContent?: string) => {
+  if (!plaintextContent) return ''
+  const MAX_CHARS = 30
+  return plaintextContent.trim().slice(0, MAX_CHARS).replace(/\n\n/g, ' ')
 }
 
 const generateAIGroupTitle = async (
