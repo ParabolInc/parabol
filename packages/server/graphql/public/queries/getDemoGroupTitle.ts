@@ -1,7 +1,7 @@
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {QueryResolvers} from '../resolverTypes'
 
-const demoOpenAI: QueryResolvers['demoOpenAI'] = async (_source, {reflections}) => {
+const getDemoGroupTitle: QueryResolvers['getDemoGroupTitle'] = async (_source, {reflections}) => {
   const manager = new OpenAIServerManager()
 
   try {
@@ -15,4 +15,4 @@ const demoOpenAI: QueryResolvers['demoOpenAI'] = async (_source, {reflections}) 
   }
 }
 
-export default demoOpenAI
+export default getDemoGroupTitle

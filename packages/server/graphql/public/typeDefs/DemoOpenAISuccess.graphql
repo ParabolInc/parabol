@@ -1,3 +1,0 @@
-type DemoOpenAISuccess {
-  title: String!
-}

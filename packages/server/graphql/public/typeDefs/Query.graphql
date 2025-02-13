@@ -34,12 +34,12 @@ type Query {
     """
     token: ID!
   ): VerifiedInvitationPayload!
-  demoOpenAI(
+  getDemoGroupTitle(
     """
     Get a reflection group title for the demo using AI
     """
     reflections: [String!]!
-  ): DemoOpenAIPayload!
+  ): GetDemoGroupTitlePayload!
   SAMLIdP(
     """
     the email associated with a SAML login. null if instance is SSO-only

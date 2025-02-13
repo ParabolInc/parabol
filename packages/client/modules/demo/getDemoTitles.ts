@@ -5,7 +5,7 @@ import Atmosphere from '../../Atmosphere'
 
 const query = graphql`
   query getDemoTitlesQuery($reflections: [String!]!) {
-    demoOpenAI(reflections: $reflections) {
+    getDemoGroupTitle(reflections: $reflections) {
       title
     }
   }
@@ -17,7 +17,7 @@ const getDemoTitles = async (reflections: string[]) => {
   const res = await fetchQuery<getDemoTitlesQuery>(remoteAtmosphere, query, {
     reflections
   }).toPromise()
-  return res?.demoOpenAI?.title ?? reflections[0] ?? null
+  return res?.getDemoGroupTitle?.title ?? reflections[0] ?? null
 }
 
 export default getDemoTitles

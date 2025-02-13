@@ -67,7 +67,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   Query: {
     '*': isAuthenticated,
-    demoOpenAI: rateLimit({perMinute: 100, perHour: 500}),
+    getDemoGroupTitle: rateLimit({perMinute: 100, perHour: 500}),
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
