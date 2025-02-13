@@ -40,7 +40,7 @@ const run = async () => {
     Logger.log(
       `Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
     )
-
+    await incomingStream.return()
     await publisher.xgroup(
       'DELCONSUMER',
       ServerChannel.GQL_EXECUTOR_STREAM,
