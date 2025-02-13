@@ -1,9 +1,7 @@
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {QueryResolvers} from '../resolverTypes'
 
-const demoOpenAI: QueryResolvers['demoOpenAI'] = async (_source, {reflections}, {dataLoader}) => {
-  console.log('in the mutatio...')
-  const operationId = dataLoader.share()
+const demoOpenAI: QueryResolvers['demoOpenAI'] = async (_source, {reflections}) => {
   const manager = new OpenAIServerManager()
 
   try {

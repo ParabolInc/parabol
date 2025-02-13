@@ -25,15 +25,13 @@ class DemoOpenAIManager {
         })
       })
       const {data} = await response.json()
+
       if (data?.demoOpenAI?.__typename === 'DemoOpenAISuccess') {
         return data.demoOpenAI.title
       } else {
-        // Optionally, log the error or fallback
-        console.error('Error from demoOpenAI mutation:', data?.demoOpenAI)
         return null
       }
     } catch (e) {
-      console.error('Error generating group title with OpenAI:', e)
       return null
     }
   }
