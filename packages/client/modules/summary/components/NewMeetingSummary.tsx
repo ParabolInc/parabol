@@ -2,12 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
-import DashTopBar from '../../../components/DashTopBar'
-import DashSidebar from '../../../components/Dashboard/DashSidebar'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
-import useSidebar from '../../../hooks/useSidebar'
 import useSnacksForNewMeetings from '../../../hooks/useSnacksForNewMeetings'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
@@ -67,41 +64,28 @@ const NewMeetingSummary = (props: Props) => {
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
-  const {isOpen, toggle} = useSidebar()
   const emailCSVUrl = isDemoRoute()
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`
 
   useSnacksForNewMeetings(activeMeetings as any)
   return (
-    <>
-      {!isDemoRoute() && (
-        <div className='hidden lg:block print:hidden'>
-          <DashTopBar queryRef={data} toggle={toggle} />
-        </div>
-      )}
-      <div className='flex h-full flex-1 overflow-auto bg-slate-200'>
-        {!isDemoRoute() && (
-          <div className='hidden lg:block print:hidden'>
-            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
-          </div>
-        )}
-        <div className='h-full w-full overflow-auto'>
-          <MeetingSummaryEmail
-            appOrigin={window.location.origin}
-            urlAction={urlAction}
-            isDemo={teamId === demoTeamId}
-            meeting={newMeeting}
-            referrer='meeting'
-            meetingUrl={meetingUrl}
-            teamDashUrl={teamDashUrl}
-            emailCSVUrl={emailCSVUrl}
-            corsOptions={APP_CORS_OPTIONS}
-          />
-        </div>
-        <MeetingLockedOverlay meetingRef={newMeeting} />
+    <div className='flex h-full flex-1 overflow-auto bg-slate-200'>
+      <div className='h-full w-full overflow-auto'>
+        <MeetingSummaryEmail
+          appOrigin={window.location.origin}
+          urlAction={urlAction}
+          isDemo={teamId === demoTeamId}
+          meeting={newMeeting}
+          referrer='meeting'
+          meetingUrl={meetingUrl}
+          teamDashUrl={teamDashUrl}
+          emailCSVUrl={emailCSVUrl}
+          corsOptions={APP_CORS_OPTIONS}
+        />
       </div>
-    </>
+      <MeetingLockedOverlay meetingRef={newMeeting} />
+    </div>
   )
 }
 
