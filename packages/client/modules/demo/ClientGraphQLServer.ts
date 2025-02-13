@@ -44,6 +44,7 @@ import initDB, {
   demoTeamId,
   demoViewerId
 } from './initDB'
+import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 
 export type DemoReflection = {
   __typename: string
@@ -604,13 +605,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         retroReflectionGroup: undefined as any
       } as DemoReflection
 
+      const smartTitle = getSimpleGroupTitle([{plaintextContent}])
+
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
-        commentors: null,
         id: reflectionGroupId,
         reflectionGroupId,
-        smartTitle: null,
-        title: null,
+        smartTitle,
+        title: smartTitle,
+        commentors: null,
         voteCount: 0,
         viewerVoteCount: 0,
         createdAt: now,
@@ -1098,18 +1101,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         })
         const reflectionContent = (reflection as DemoReflection).content
 
-        // Update title for new group
         this.updateReflectionGroupTitle(newReflectionGroup, [reflectionContent])
 
-        // Update title for old group if needed
-        // if (oldReflections.length > 0) {
-        //   const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
-        //   this.updateReflectionGroupTitle(
-        //     oldReflectionGroup,
-        //     oldReflections.map((r) => r.content),
-        //     titleIsUserDefined
-        //   )
-        // }
       } else if (
         (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
         dropTargetId

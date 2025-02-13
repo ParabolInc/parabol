@@ -1,5 +1,5 @@
+import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
 import getKysely from '../../../postgres/getKysely'
-import {getSimpleGroupTitle} from '../../../utils/getSimpleGroupTitle'
 import {DataLoaderWorker} from '../../graphql'
 import {RetroReflection} from '../../public/resolverTypes'
 import canAccessAI from './canAccessAI'

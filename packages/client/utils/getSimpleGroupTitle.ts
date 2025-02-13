@@ -1,3 +1,5 @@
+import {upperFirst} from './upperFirst'
+
 export const getSimpleGroupTitle = (reflections: {plaintextContent: string}[]) => {
   // For single reflection, use first few significant words
   const combinedText = reflections.map((r) => r.plaintextContent).join(' ')
@@ -10,5 +12,5 @@ export const getSimpleGroupTitle = (reflections: {plaintextContent: string}[]) =
     .join(' ')
     .toLowerCase()
 
-  return words.length > 0 ? words : 'New Group'
+  return words.length > 0 ? upperFirst(words) : 'New Group'
 }
