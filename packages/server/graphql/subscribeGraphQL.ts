@@ -124,6 +124,9 @@ const subscribeGraphQL = async (req: SubscribeRequest) => {
     const syn = !reliableSubscriptionPayloadBlackList.includes(fieldName)
     sendGQLMessage(connectionContext, opId, 'data', syn, {...restPayload, data: dehydratedData})
   }
+  // if the socket is disconnecting (client leaves, server shuts down, keepAlive fails) then don't resub or send complete
+  // sending a complete removes the subscription from the client & they won't resub
+  if (connectionContext.isDisconnecting) return
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
     // reinitialize the subscription

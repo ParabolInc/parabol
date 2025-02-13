@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "8.25.4",
+  "version": "8.26.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -70,7 +70,7 @@
     "@emotion/styled": "^10.0.27",
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@mattkrick/sanitize-svg": "0.4.0",
-    "@mattkrick/trebuchet-client": "3.0.4",
+    "@mattkrick/trebuchet-client": "3.0.5",
     "@mui/base": "^5.0.0-beta.68",
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
