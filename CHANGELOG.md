@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.26.0](https://github.com/ParabolInc/parabol/compare/v8.25.4...v8.26.0) (2025-02-13)
+
+
+### Added
+
+* **orgAdmin:** add sortable `memberCount` and `lastMetAt` columns in OrgTeams view ([#10846](https://github.com/ParabolInc/parabol/issues/10846)) ([c04bb94](https://github.com/ParabolInc/parabol/commit/c04bb94f9fde8b0efde2ac39de48bba33b65f660))
+
+
+### Fixed
+
+* client resub on server redeploy ([#10870](https://github.com/ParabolInc/parabol/issues/10870)) ([eda8d5b](https://github.com/ParabolInc/parabol/commit/eda8d5b42e6025b934c6d33d48bf60ad32add126))
+* put dashboard routes inside dashboard components ([#10871](https://github.com/ParabolInc/parabol/issues/10871)) ([63b6c0d](https://github.com/ParabolInc/parabol/commit/63b6c0ded08791d048c15ed8e829b4d91ffd8655))
+
 ## [8.25.4](https://github.com/ParabolInc/parabol/compare/v8.25.3...v8.25.4) (2025-02-12)
 
 
