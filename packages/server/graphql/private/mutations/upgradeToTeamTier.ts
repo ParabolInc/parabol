@@ -16,7 +16,6 @@ import {MutationResolvers} from '../resolverTypes'
 export type UpgradeToTeamTierSuccessSource = {
   orgId: string
   teamIds: string[]
-  meetingIds: string[]
 }
 
 const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
