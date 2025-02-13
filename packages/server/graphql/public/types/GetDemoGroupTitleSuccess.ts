@@ -5,7 +5,7 @@ export type GetDemoGroupTitleSuccessSource = {
 }
 
 const GetDemoGroupTitleSuccess: GetDemoGroupTitleSuccessResolvers = {
-  title: async ({title}, _args, {dataLoader}) => title
+  title: ({title}) => title
 }
 
 export default GetDemoGroupTitleSuccess
