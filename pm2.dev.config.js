@@ -91,15 +91,15 @@ module.exports = {
       name: 'Mattermost Relay Compiler',
       script: 'yarn workspace parabol-mattermost-plugin relay-compiler',
       watch: [
-        'packages/mattermost-plugin/**/*.ts*'
+        'packages/mattermost-plugin/**/*.[ts*,js*,css]'
       ],
       autorestart: false,
       instances: 1
     },
     {
       name: 'Mattermost Plugin Dev Server',
-      script: 'yarn workspace parabol-mattermost-plugin dev',
-      instances: 1
+      script: './scripts/hmrServer.js',
+      cwd: 'packages/mattermost-plugin'
     }
   ].map((app) => ({
     env_production: {

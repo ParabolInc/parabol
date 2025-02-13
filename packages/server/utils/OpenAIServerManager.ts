@@ -22,24 +22,26 @@ class OpenAIServerManager {
     })
   }
 
-  async getStandupSummary(plaintextResponses: string[], meetingPrompt: string) {
+  async getStandupSummary(
+    responses: Array<{content: string; user: string}>,
+    meetingPrompt: string
+  ) {
     if (!this.openAIApi) return null
-    // :TODO: (jmtaber129): Include info about who made each response in the prompt, so that the LLM
-    // can include that in the response, e.g. "James is working on AI Summaries" vs. "Someone is
-    // working on AI Summaries".
-    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". If there are multiple responses, the responses are delimited by the string "NEW_RESPONSE". Identify up to 5 themes found within the responses. For each theme, provide a 2 to 3 sentence summary. In the summaries, only include information specified in the responses. When referring to people in the output, do not assume their gender and default to using the pronouns "they" and "them".
+
+    const prompt = `Below is a list of responses submitted by team members to the question "${meetingPrompt}". Each response includes the team member's name. Identify up to 3 key themes found within the responses. For each theme, provide a single concise sentence that includes who is working on what. Use "they/them" pronouns when referring to people.
 
     Desired format:
-    - <theme title>: <theme summary>
-    - <theme title>: <theme summary>
-    - <theme title>: <theme summary>
+    - <theme>: <brief summary including names>
+    - <theme>: <brief summary including names>
+    - <theme>: <brief summary including names>
 
     Responses: """
-    ${plaintextResponses.join('\nNEW_RESPONSE\n')}
+    ${responses.map(({content, user}) => `${user}: ${content}`).join('\nNEW_RESPONSE\n')}
     """`
+
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'user',
@@ -47,42 +49,7 @@ class OpenAIServerManager {
           }
         ],
         temperature: 0.7,
-        max_tokens: 1000,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      })
-      return (response.choices[0]?.message?.content?.trim() as string) ?? null
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
-      sendToSentry(error)
-      return null
-    }
-  }
-
-  // TODO: remove this: https://github.com/ParabolInc/parabol/issues/10500
-  async getSummary(text: string | string[]) {
-    if (!this.openAIApi) return null
-    const textStr = Array.isArray(text) ? text.join('\n') : text
-    const prompt = `Below is newline delimited text from a discussion thread.
-    Summarize the text for the meeting facilitator in one or two sentences.
-    When referring to people in the summary, do not assume their gender and default to using the pronouns "they" and "them".
-    Aim for brevity and clarity. If your summary exceeds 50 characters, iterate until it fits while retaining the essence. Your final response should only include the shortened summary.
-
-    Text: """
-    ${textStr}
-    """`
-    try {
-      const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 80,
+        max_tokens: 500,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0
@@ -296,23 +263,57 @@ class OpenAIServerManager {
     userPrompt?: string | null
   ): Promise<InsightResponse | null> {
     if (!this.openAIApi) return null
-    const meetingURL = 'https://action.parabol.co/meet/'
+    const meetingURL = `https://${process.env.HOST}/meet/[meetingId]`
     const promptForMeetingData = `
-    You work at a start-up and you need to discover behavioral trends for a given team.
-    Below is a list of reflection topics in YAML format from meetings over recent months.
-    You should describe the situation in two sections with no more than 3 bullet points each.
-    The first section should describe the team's positive behavior in bullet points. One bullet point should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    The second section should pick out one or two examples of the team's negative behavior and you should cite a direct quote from the meeting, attributing it to the person who wrote it.
-    When citing the quote, include the meetingId in the format of https://action.parabol.co/meet/[meetingId].
-    Prioritize topics with more votes.
-    Be sure that each author is only mentioned once.
-    Your tone should be kind and straight forward. Use plain English. No yapping.
-    Return the output as a JSON object with the following structure:
-    {
-      "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
-      "challenges": ["bullet point 1", "bullet point 2"]
-    }
-    `
+You are a Team Lead and want to use your meeting data to help write a report on your team's performance. You care about team productivity, morale, roadblocks, relationships, and progress against goals. Below is a list of retrospective meeting summaries (in YAML format) from the past several months.
+
+**Task:**
+Analyze the provided meeting data and identify patterns in teamwork and collaboration. Focus on "wins" and "challenges" that appear in two or more different meetings, prioritizing trends that appear in the highest number of meetings. Reference those meetings by hyperlink. Prioritize trends that have received the most combined votes, if that information is available.
+
+**Output Format:**
+Return the analysis as a JSON object with this structure:
+{
+  "wins": ["bullet point 1", "bullet point 2", "bullet point 3"],
+  "challenges": ["bullet point 1", "bullet point 2", "bullet point 3"]
+}
+
+**Instructions:**
+1. **Wins (3 bullet points)**:
+   - Highlight positive trends or patterns observed across multiple meetings.
+   - Include at least one direct quote from one meeting, attributing it to its author.
+   - Link to the referenced meeting(s) using the format:
+     [<meeting title>](${meetingURL})
+   - Mention each author at most once across the entire output.
+   - Keep the tone kind, straightforward, and professional. Avoid jargon.
+
+2. **Challenges (3 bullet points)**:
+   - Highlight trends or patterns that indicate areas for improvement.
+   - Include at least one direct quote from one meeting, attributing it to its author.
+   - Suggest a concrete action or next step to improve the situation.
+   - Link to the referenced meeting(s) using the format:
+     [<meeting title>](${meetingURL})
+   - Mention each author at most once across the entire output.
+   - Keep the tone kind, straightforward, and professional. Avoid jargon.
+
+3. **References to Meetings**:
+   - Each bullet point in both "wins" and "challenges" should reference at least one meeting.
+   - Ensure that each cited trend is supported by data from at least two different meetings.
+
+4. **Key Focus Areas**:
+   Consider the following when choosing trends:
+   - What is the team's core work? Are desired outcomes clear, and how are they measured?
+   - Who utilizes the team's work, and what do they need?
+   - Does the team collaborate effectively with related teams?
+   - How does the team prioritize its work?
+   - What factors speed up or slow down progress?
+   - What habits, rules, or rituals help or hinder performance?
+
+5. **Translation**:
+   - If the source language of the meetings tends not to be English, identify the language and translate your output to this language
+
+6. **Final Answer**:
+   - Return only the JSON object.
+   - No extraneous text, explanations, or commentary outside the JSON object.`
 
     const promptForSummaries = `
     You work at a start-up and you need to discover behavioral trends for a given team.
@@ -321,7 +322,7 @@ class OpenAIServerManager {
     The first section should describe the team's positive behavior in bullet points.
     The second section should pick out one or two examples of the team's negative behavior.
     Cite direct quotes from the meeting, attributing them to the person who wrote it, if they're included in the summary.
-    Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
+    Include discussion links included in the summaries. They must be in the markdown format of [link](${meetingURL}/discuss/[discussionId]).
     Try to spot trends. If a topic comes up in several summaries, prioritize it.
     The most important topics are usually at the beginning of each summary, so prioritize them.
     Don't repeat the same points in both the wins and challenges.
@@ -375,7 +376,7 @@ class OpenAIServerManager {
 
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
-    const meetingURL = 'https://action.parabol.co/meet/'
+    const meetingURL = `https://${process.env.HOST}/meet`
     const defaultPrompt = `
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.

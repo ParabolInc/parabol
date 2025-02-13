@@ -139,11 +139,11 @@ export const ScheduleDialog = (props: Props) => {
   const subTitle = `Create a ${withRecurrence ? 'recurring meeting series' : 'meeting'}${gcal?.cloudProvider ? ' or add the meeting to your calendar.' : '.'}`
   return (
     <div className='space-y-4 overflow-auto p-4'>
-      <div className='text-lg font-semibold leading-none'>Schedule Your Meeting</div>
+      <div className='text-lg leading-none font-semibold'>Schedule Your Meeting</div>
       <div className='text-sm text-slate-800'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
-          className='form-input rounded border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-none focus:ring-1 focus:ring-slate-600'
+          className='form-input rounded-sm border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:ring-1 focus:ring-slate-600 focus:outline-hidden'
           type='text'
           name='title'
           placeholder={placeholder}
@@ -157,13 +157,13 @@ export const ScheduleDialog = (props: Props) => {
       {gcal?.cloudProvider &&
         (gcal?.auth && addedInvite ? (
           <Collapsible.Root
-            className='flex flex-col rounded border border-slate-500'
+            className='flex flex-col rounded-sm border border-slate-500'
             open={openGcalEvent}
             onOpenChange={setOpenGcalEvent}
           >
             <Collapsible.Trigger className='flex cursor-pointer items-center bg-transparent p-2'>
               <img src={gcalLogo} className='mr-2 h-6 w-6' />
-              <div className='grow text-left text-lg font-semibold leading-none'>
+              <div className='grow text-left text-lg leading-none font-semibold'>
                 {gcalInput.start.format('MMM D, h:mm A')} - {gcalInput.end.format('h:mm A')}
                 {gcalInput.invitees.length > 0 &&
                   `, ${gcalInput.invitees.length} ${plural(gcalInput.invitees.length, 'invitee')}`}
@@ -176,7 +176,7 @@ export const ScheduleDialog = (props: Props) => {
           </Collapsible.Root>
         ) : (
           <div>
-            <SecondaryButton className='h-11 pl-3 pr-4' onClick={onAddInvite}>
+            <SecondaryButton className='h-11 pr-4 pl-3' onClick={onAddInvite}>
               <img src={logo} className='mr-2' />
               {gcal?.auth ? 'Add Calendar Event' : 'Connect to Google Calendar'}
             </SecondaryButton>
@@ -184,13 +184,13 @@ export const ScheduleDialog = (props: Props) => {
         ))}
       {withRecurrence && (
         <Collapsible.Root
-          className='flex flex-col rounded border border-slate-500'
+          className='flex flex-col rounded-sm border border-slate-500'
           open={openRecurrence}
           onOpenChange={setOpenRecurrence}
         >
           <Collapsible.Trigger className='flex cursor-pointer items-center justify-between bg-transparent p-2'>
             <EventRepeat className='mr-2 text-slate-600' />
-            <div className='grow text-left text-lg font-semibold leading-none'>
+            <div className='grow text-left text-lg leading-none font-semibold'>
               {rrule
                 ? toHumanReadable(rrule, {useShortNames: true, shortDayNameAfter: 1})
                 : 'Does not restart'}

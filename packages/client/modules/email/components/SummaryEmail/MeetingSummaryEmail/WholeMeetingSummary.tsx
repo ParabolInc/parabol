@@ -1,5 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {WholeMeetingSummary_meeting$key} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
+import {
+  WholeMeetingSummary_meeting$data,
+  WholeMeetingSummary_meeting$key
+} from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'
 import {useFragment} from 'react-relay'
 import WholeMeetingSummaryLoading from './WholeMeetingSummaryLoading'
 import WholeMeetingSummaryResult from './WholeMeetingSummaryResult'
@@ -13,6 +16,17 @@ const hasAiApiKey = isServer
   ? !!process.env.OPEN_AI_API_KEY
   : !!window.__ACTION__ && !!window.__ACTION__.hasOpenAI
 
+const hasContent = (meeting: WholeMeetingSummary_meeting$data): boolean => {
+  if (meeting.__typename === 'RetrospectiveMeeting') {
+    const reflections = meeting.reflectionGroups?.flatMap((group) => group.reflections)
+    return Boolean(reflections?.length && reflections.length > 1)
+  }
+  if (meeting.__typename === 'TeamPromptMeeting') {
+    return Boolean(meeting.responses?.length)
+  }
+  return false
+}
+
 const WholeMeetingSummary = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
@@ -23,10 +37,10 @@ const WholeMeetingSummary = (props: Props) => {
         id
         summary
         organization {
-          hasStandupAISummaryFlag: featureFlag(featureName: "standupAISummary")
           useAI
         }
         ... on RetrospectiveMeeting {
+          isLoadingSummary
           reflectionGroups(sortBy: voteCount) {
             reflections {
               id
@@ -34,6 +48,7 @@ const WholeMeetingSummary = (props: Props) => {
           }
         }
         ... on TeamPromptMeeting {
+          isLoadingSummary
           responses {
             id
           }
@@ -42,29 +57,15 @@ const WholeMeetingSummary = (props: Props) => {
     `,
     meetingRef
   )
-  if (meeting.__typename === 'RetrospectiveMeeting') {
-    const {summary: wholeMeetingSummary, reflectionGroups, organization} = meeting
-    const reflections = reflectionGroups?.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
-    const hasMoreThanOneReflection = reflections?.length && reflections.length > 1
-    if (!hasMoreThanOneReflection || !organization.useAI || !hasAiApiKey) return null
-    if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
-    return <WholeMeetingSummaryResult meetingRef={meeting} />
-  } else if (meeting.__typename === 'TeamPromptMeeting') {
-    const {summary: wholeMeetingSummary, responses, organization} = meeting
-    const {hasStandupAISummaryFlag, useAI} = organization
-    if (
-      !hasStandupAISummaryFlag ||
-      !useAI ||
-      !hasAiApiKey ||
-      !responses ||
-      responses.length === 0
-    ) {
-      return null
-    }
-    if (!wholeMeetingSummary) return <WholeMeetingSummaryLoading />
-    return <WholeMeetingSummaryResult meetingRef={meeting} />
-  }
-  return null
+
+  const {organization} = meeting
+  const {useAI} = organization
+
+  if (!useAI || !hasAiApiKey || !hasContent(meeting)) return null
+
+  if (meeting.isLoadingSummary) return <WholeMeetingSummaryLoading />
+
+  return <WholeMeetingSummaryResult meetingRef={meeting} />
 }
 
 export default WholeMeetingSummary

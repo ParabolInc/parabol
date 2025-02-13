@@ -7,7 +7,7 @@
 import tracer from 'dd-trace'
 import {graphql} from 'graphql'
 import {FormattedExecutionResult} from 'graphql/execution/execute'
-import type {GQLRequest} from '../types/custom'
+import type {GQLRequest} from '../types/GQLRequest'
 import sendToSentry from '../utils/sendToSentry'
 import CompiledQueryCache from './CompiledQueryCache'
 import getDataLoader from './getDataLoader'

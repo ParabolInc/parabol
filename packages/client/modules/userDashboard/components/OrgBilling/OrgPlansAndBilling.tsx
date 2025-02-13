@@ -89,17 +89,16 @@ const OrgPlansAndBilling = (props: Props) => {
       </Suspense>
     )
   }
-
   return (
     <Suspense fallback={''}>
       <div className='pb-20'>
         <OrgPlansAndBillingHeading organizationRef={organization} />
         {billingTier === 'enterprise' && <OrgUsage organizationRef={organization} />}
+        {isBillingLeader && (billingTier === 'enterprise' || billingTier === 'team') && (
+          <OrgBillingInvoices queryRef={queryData} isWide />
+        )}
         {isBillingLeader && billingTier === 'team' && (
-          <>
-            <OrgBillingInvoices queryRef={queryData} isWide />
-            <OrgBillingCreditCardInfo organizationRef={organization} />
-          </>
+          <OrgBillingCreditCardInfo organizationRef={organization} />
         )}
         <BillingLeaders organizationRef={organization} />
         <OrgPlans

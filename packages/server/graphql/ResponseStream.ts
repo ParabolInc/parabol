@@ -1,6 +1,5 @@
 import {ExecutionResult} from 'graphql'
 import SubscriptionIterator from '../utils/SubscriptionIterator'
-import {getUserId} from '../utils/authorization'
 import getGraphQLExecutor from '../utils/getGraphQLExecutor'
 import sendToSentry from '../utils/sendToSentry'
 import {SubscribeRequest} from './subscribeGraphQL'
@@ -42,9 +41,6 @@ export default class ResponseStream implements AsyncIterableIterator<ExecutionRe
       }
       return {done: false, value: result}
     } catch (e) {
-      const error =
-        e instanceof Error ? e : new Error(`GQL executor failed to publish. docId: ${docId}`)
-      sendToSentry(error, {userId: getUserId(authToken)})
       return this.next()
     }
   }

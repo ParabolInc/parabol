@@ -21,6 +21,7 @@ import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateInteg
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
+import NotificationSettings from './NotificationSettings'
 
 interface Props {
   viewerRef: MattermostPanel_viewer$key
@@ -86,6 +87,7 @@ const MattermostPanel = (props: Props) => {
           integrations {
             mattermost {
               auth {
+                ...NotificationSettings_auth
                 provider {
                   id
                   webhookUrl
@@ -222,6 +224,7 @@ const MattermostPanel = (props: Props) => {
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
+      {auth && <NotificationSettings auth={auth} />}
     </MattermostPanelStyles>
   )
 }

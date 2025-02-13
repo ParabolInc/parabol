@@ -99,7 +99,10 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     ).filter(isValid)
     const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
     return commentCount
-  }
+  },
+
+  summary: ({summary}) => (summary === '<loading>' ? null : summary),
+  isLoadingSummary: ({summary}) => summary === '<loading>'
 }
 
 export default TeamPromptMeeting

@@ -4,6 +4,7 @@ import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import useLoadNextOnScrollBottom from '~/hooks/useLoadNextOnScrollBottom'
+import {TimelineGroup, compareTimelineLabels, getTimeGroup} from '~/utils/date/timelineGroups'
 import {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 import {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList_query.graphql'
 import TimelineEvent from './TimelineEvent'
@@ -43,6 +44,7 @@ const TimelineFeedList = (props: Props) => {
                 __typename
                 id
                 teamId
+                createdAt
                 organization {
                   id
                   viewerOrganizationUser {
@@ -106,6 +108,26 @@ const TimelineFeedList = (props: Props) => {
     }
   }, [timeline.edges])
 
+  const groupedFreeHistory = useMemo(() => {
+    const groups: TimelineGroup[] = []
+
+    freeHistory.forEach((edge) => {
+      const eventDate = new Date(edge.node.createdAt)
+      const label = getTimeGroup(eventDate)
+
+      let group = groups.find((g) => g.label === label)
+      if (!group) {
+        group = {events: [], label}
+        groups.push(group)
+      }
+      group.events.push(edge)
+    })
+
+    // Sort groups by label order (newer first)
+    groups.sort((a, b) => compareTimelineLabels(a.label, b.label))
+    return groups
+  }, [freeHistory])
+
   if (freeHistory.length === 0 && !lockedHistory?.length) {
     return (
       <div className='text-base'>
@@ -120,8 +142,19 @@ const TimelineFeedList = (props: Props) => {
 
   return (
     <ResultScroller>
-      {freeHistory.map(({node: timelineEvent}) => (
-        <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
+      {groupedFreeHistory.map(({label, events}) => (
+        <div key={label}>
+          <div className='my-2 flex items-center gap-4 py-4'>
+            <div className='h-[1px] flex-1 bg-slate-400' />
+            <div className='bg-slate-50 rounded-full border border-slate-200 px-3 py-1 text-sm font-medium text-slate-600'>
+              {label}
+            </div>
+            <div className='h-[1px] flex-1 bg-slate-400' />
+          </div>
+          {events.map(({node: timelineEvent}) => (
+            <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
+          ))}
+        </div>
       ))}
       {lockedHistory && (
         <>

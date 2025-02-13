@@ -17,7 +17,7 @@ type Input = {
 const updateGroupTitle = async (input: Input) => {
   const {reflections, reflectionGroupId, meetingId, teamId, dataLoader} = input
   const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const hasAIAccess = await canAccessAI(team, 'retrospective', dataLoader)
+  const hasAIAccess = await canAccessAI(team, dataLoader)
   if (reflections.length === 1 || !hasAIAccess) {
     const smartTitle = getSimpleGroupTitle(reflections)
     await updateSmartGroupTitle(reflectionGroupId, smartTitle)

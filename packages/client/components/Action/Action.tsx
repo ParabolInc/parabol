@@ -49,7 +49,7 @@ const Action = memo(() => {
             <Banner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
           )}
           <div
-            className='w-100 flex flex-col'
+            className='flex w-full flex-col'
             style={{
               height: isGlobalBannerEnabled ? `calc(100vh - ${GlobalBanner.HEIGHT}px)` : '100vh'
             }}

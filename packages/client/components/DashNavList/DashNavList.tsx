@@ -3,10 +3,10 @@ import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
-import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import sortByTier from '../../utils/sortByTier'
 import DashNavListTeams from './DashNavListTeams'
 
 const EmptyTeams = styled('div')({
@@ -43,22 +43,15 @@ const DashNavList = (props: Props) => {
     organizationsRef
   )
 
-  const TierEnumValues: TierEnum[] = ['enterprise', 'team', 'starter']
-
-  const sortedOrgs = organizations.toSorted((a, b) => {
-    const aTier = TierEnumValues.indexOf(a.tier)
-    const bTier = TierEnumValues.indexOf(b.tier)
-    return aTier < bTier ? -1 : aTier > bTier ? 1 : a.name.localeCompare(b.name)
-  })
-
+  const sortedOrgs = sortByTier(organizations)
   const teams = organizations.flatMap((org) => org.viewerTeams)
 
   return (
-    <div className='w-full p-3 pb-0 pt-4'>
+    <div className='w-full p-3 pt-4 pb-0'>
       {sortedOrgs.map((org) => (
         <div key={org.id} className='w-full pb-4'>
           <div className='mb-1 flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-            <span className='flex-1 pl-3 text-base font-semibold leading-6 text-slate-700'>
+            <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
               {org.name}
             </span>
             <Tooltip>

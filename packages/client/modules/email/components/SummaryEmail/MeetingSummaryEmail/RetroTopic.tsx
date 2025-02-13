@@ -47,22 +47,6 @@ const someCommentsLinkStyle = {
   textDecoration: 'none'
 }
 
-const topicTitleStyle = {
-  color: PALETTE.SLATE_700,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontWeight: 600,
-  lineHeight: '22px',
-  fontSize: 14,
-  padding: '8px 48px'
-}
-
-const textStyle = {
-  color: PALETTE.SLATE_700,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  padding: '0px 48px 8px 48px',
-  fontSize: 14
-}
-
 const noCommentLinkStyle = {
   ...someCommentsLinkStyle,
   color: PALETTE.SLATE_600
@@ -92,7 +76,6 @@ const RetroTopic = (props: Props) => {
         }
         discussion {
           commentCount
-          discussionSummary: summary
         }
       }
     `,
@@ -110,7 +93,7 @@ const RetroTopic = (props: Props) => {
 
   const {id: meetingId} = meeting
   const {reflectionGroup, discussion, id: stageId} = stage
-  const {commentCount, discussionSummary} = discussion
+  const {commentCount} = discussion
   const {reflections, title, voteCount} = reflectionGroup
   const imageSource = isEmail ? 'static' : 'local'
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
@@ -133,18 +116,6 @@ const RetroTopic = (props: Props) => {
           </AnchorIfEmail>
         </td>
       </tr>
-      {discussionSummary && (
-        <tr>
-          <td align='left' style={{lineHeight: '22px', fontSize: 14}}>
-            <tr>
-              <td style={topicTitleStyle}>{'🤖 Discussion Summary'}</td>
-            </tr>
-            <tr>
-              <td style={textStyle}>{discussionSummary}</td>
-            </tr>
-          </td>
-        </tr>
-      )}
       <tr>
         <td align='center' style={votesBlock}>
           <AnchorIfEmail href={to} isDemo={isDemo} isEmail={isEmail}>

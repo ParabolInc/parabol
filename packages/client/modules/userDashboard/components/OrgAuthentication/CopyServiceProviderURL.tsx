@@ -23,13 +23,13 @@ export const CopyServiceProviderURL = (props: Props) => {
 
   return (
     <>
-      <div className=' font-bold leading-7'>{label}</div>
+      <div className='leading-7 font-bold'>{label}</div>
       <CopyToClipboard text={url} title={title} tooltip={tooltip} onCopy={onCopy}>
         <div className='contents cursor-pointer'>
           <div className='break-all'>{url}</div>
           <Tooltip open={isOpen}>
             <TooltipTrigger asChild>
-              <ContentCopy className=' h-5 w-5 text-sky-500 hover:text-sky-700' />
+              <ContentCopy className='h-5 w-5 text-sky-500 hover:text-sky-700' />
             </TooltipTrigger>
             <TooltipContent>{tooltip}</TooltipContent>
           </Tooltip>

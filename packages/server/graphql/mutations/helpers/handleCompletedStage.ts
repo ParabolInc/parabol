@@ -1,7 +1,6 @@
 import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import DiscussStage from '../../../database/types/DiscussStage'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import getKysely from '../../../postgres/getKysely'
 import {AnyMeeting, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
@@ -10,7 +9,6 @@ import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
 import addRecallBot from './addRecallBot'
 import generateDiscussionPrompt from './generateDiscussionPrompt'
-import generateDiscussionSummary from './generateDiscussionSummary'
 import generateGroups from './generateGroups'
 import {publishToEmbedder} from './publishToEmbedder'
 import removeEmptyReflections from './removeEmptyReflections'
@@ -98,10 +96,6 @@ const handleCompletedRetrospectiveStage = async (
       addRecallBot(meetingId, videoMeetingURL)
     }
     return {[VOTE]: data}
-  } else if (stage.phaseType === 'discuss') {
-    const {discussionId} = stage as DiscussStage
-    // don't await for the OpenAI API response
-    generateDiscussionSummary(discussionId, meeting, dataLoader)
   }
   return {}
 }

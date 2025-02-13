@@ -47,35 +47,31 @@ export const TaskTagDropdown = forwardRef(
         return false
       }
     }))
-
+    if (items.length === 0) return null
     return (
-      <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-none [[data-placement="bottom-start"]_&]:animate-slideDown [[data-placement="top-start"]_&]:animate-slideUp'>
-        {items.length ? (
-          items.map((item, idx) => {
-            const isActive = idx === selectedIndex
-            return (
-              <div
-                ref={isActive ? activeRef : undefined}
-                data-highlighted={isActive}
-                className={
-                  'flex w-full flex-shrink-0 cursor-pointer items-center rounded-md px-2 py-1 text-sm leading-8 text-slate-700 outline-none hover:!bg-slate-200 hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
-                }
-                key={item.id}
-                onClick={() => selectItem(idx)}
-              >
-                <TypeAheadLabel
-                  label={item.id}
-                  query={query}
-                  className='min-w-20 font-bold'
-                  highlight
-                />
-                <span className='flex justify-start pl-3'>{item.label}</span>
-              </div>
-            )
-          })
-        ) : (
-          <div></div>
-        )}
+      <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
+        {items.map((item, idx) => {
+          const isActive = idx === selectedIndex
+          return (
+            <div
+              ref={isActive ? activeRef : undefined}
+              data-highlighted={isActive}
+              className={
+                'flex w-full shrink-0 cursor-pointer items-center rounded-md px-2 py-1 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+              }
+              key={item.id}
+              onClick={() => selectItem(idx)}
+            >
+              <TypeAheadLabel
+                label={item.id}
+                query={query}
+                className='min-w-20 font-bold'
+                highlight
+              />
+              <span className='flex justify-start pl-3'>{item.label}</span>
+            </div>
+          )
+        })}
       </div>
     )
   }

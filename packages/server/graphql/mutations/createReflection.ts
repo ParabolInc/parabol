@@ -54,10 +54,11 @@ export default {
     }
 
     // VALIDATION
-    const normalizedContent = convertToTipTap(content)
-    if (normalizedContent.length > 2000) {
+    if (content && content.length > 2000) {
       return {error: {message: 'Reflection content is too long'}}
     }
+
+    const normalizedContent = convertToTipTap(content)
 
     // RESOLUTION
     const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)

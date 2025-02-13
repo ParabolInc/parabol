@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {RefObject, useRef} from 'react'
@@ -6,12 +5,7 @@ import {useFragment} from 'react-relay'
 import {ReflectionStack_meeting$key} from '~/__generated__/ReflectionStack_meeting.graphql'
 import {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
-import {
-  Breakpoint,
-  ElementHeight,
-  ElementWidth,
-  ReflectionStackPerspective
-} from '../../types/constEnums'
+import {ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from './ExpandedReflectionStack'
 import ReflectionStackPlaceholder from './ReflectionStackPlaceholder'
@@ -25,39 +19,6 @@ interface Props {
   reflectionStack: readonly PhaseItemColumn_meeting$data['reflectionGroups'][0]['reflections'][0][]
   stackTopRef: RefObject<HTMLDivElement>
 }
-
-const CardStack = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flex: 1,
-  margin: '0 0 24px', // stacked cards + row gutter = 6 + 6 + 12 = 24
-  position: 'relative',
-  justifyContent: 'center',
-  [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
-    minHeight: ElementHeight.REFLECTION_CARD_MAX
-  }
-})
-
-const CenteredCardStack = styled('div')({
-  position: 'relative'
-})
-
-const ReflectionWrapper = styled('div')<{idx: number}>(({idx}): any => {
-  const multiple = Math.min(idx, 2)
-  const scaleX =
-    (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
-    ElementWidth.REFLECTION_CARD
-  const translateY = ReflectionStackPerspective.Y * multiple
-  return {
-    cursor: 'pointer',
-    position: idx === 0 ? 'relative' : 'absolute',
-    bottom: 0,
-    left: 0,
-    outline: 0,
-    transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-    zIndex: 3 - multiple
-  }
-})
 
 const ReflectionStack = (props: Props) => {
   const {phaseRef, idx, meeting: meetingRef, reflectionStack, stackTopRef, dataCy} = props
@@ -94,14 +55,28 @@ const ReflectionStack = (props: Props) => {
           closePortal={collapse}
         />
       )}
+
       <div>
-        <CardStack data-cy={dataCy} onClick={expand} ref={stackRef}>
-          <CenteredCardStack>
+        <div
+          data-cy={dataCy}
+          onClick={expand}
+          ref={stackRef}
+          className='relative mb-6 flex flex-1 items-start justify-start select-none single-reflection-column:min-h-[104px]'
+        >
+          <div className='relative'>
             {reflectionStack.map((reflection, idx) => {
+              const multiple = Math.min(idx, 2)
+              const scaleX =
+                (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
+                ElementWidth.REFLECTION_CARD
+              const translateY = ReflectionStackPerspective.Y * multiple
+              const transform = `translateY(${translateY}px) scaleX(${scaleX})`
+              const zIndex = 3 - multiple
               return (
-                <ReflectionWrapper
+                <div
+                  className='absolute bottom-0 left-0 cursor-pointer outline-0 first:relative'
+                  style={{transform, zIndex}}
                   key={reflection.id}
-                  idx={idx}
                   ref={idx === 0 ? stackTopRef : undefined}
                   data-cy={`${dataCy}-card-wrapper-${idx}`}
                 >
@@ -112,11 +87,11 @@ const ReflectionStack = (props: Props) => {
                     stackCount={reflectionStack.length}
                     isClipped={idx !== 0}
                   />
-                </ReflectionWrapper>
+                </div>
               )
             })}
-          </CenteredCardStack>
-        </CardStack>
+          </div>
+        </div>
       </div>
     </React.Fragment>
   )

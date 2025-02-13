@@ -64,7 +64,7 @@ type MeetingLookup = Record<string, string | Date>
 const meetingLookup: MeetingLookup = {}
 
 const processLines = (lines: string[]): string[] => {
-  const meetingURL = 'https://action.parabol.co/meet/'
+  const meetingURL = `https://${process.env.HOST}/meet/`
   return lines
     .map((line) => {
       if (line.includes(meetingURL)) {

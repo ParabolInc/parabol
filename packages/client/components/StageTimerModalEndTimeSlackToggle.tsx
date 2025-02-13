@@ -2,7 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
-import {StageTimerModalEndTimeSlackToggle_facilitator$key} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
+import {
+  SlackNotificationEventEnum,
+  StageTimerModalEndTimeSlackToggle_facilitator$key
+} from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
@@ -57,6 +60,19 @@ const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
   paddingBottom: 8
 })
 
+const isNotificationActive = (integration: {
+  auth: null | undefined | {isActive: boolean; events: readonly SlackNotificationEventEnum[]}
+}) => {
+  const {auth} = integration
+  if (!auth?.isActive) return false
+  const {events} = auth
+  if (!events) return false
+  return (
+    events.includes('MEETING_STAGE_TIME_LIMIT_START') ||
+    events.includes('MEETING_STAGE_TIME_LIMIT_END')
+  )
+}
+
 const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const {facilitator: facilitatorRef} = props
   const facilitator = useFragment(
@@ -67,11 +83,13 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
           mattermost {
             auth {
               isActive
+              events
             }
           }
           msTeams {
             auth {
               isActive
+              events
             }
           }
           slack {
@@ -97,8 +115,8 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitMutation, error, submitting} = mutationProps
-  const isMattermostActive = mattermost.auth?.isActive ?? false
-  const isMSTeamsActive = msTeams.auth?.isActive ?? false
+  const isMattermostActive = isNotificationActive(mattermost)
+  const isMSTeamsActive = isNotificationActive(msTeams)
   const noActiveIntegrations = !slack?.isActive && !isMattermostActive && !isMSTeamsActive
 
   const onClick = () => {

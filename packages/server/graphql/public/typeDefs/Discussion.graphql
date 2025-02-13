@@ -55,9 +55,4 @@ type Discussion {
     """
     after: String
   ): ThreadableConnection!
-
-  """
-  The AI generated summary of the discussion. Undefined if the user doesnt have access to the feature or the stage isn't completed
-  """
-  summary: String
 }

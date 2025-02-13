@@ -1,5 +1,5 @@
 import {JSONContent} from '@tiptap/core'
-import {TaskTag} from 'parabol-server/postgres/types'
+import {TaskTag} from '../types'
 
 const addTagToTask = (content: JSONContent, tag: TaskTag) => {
   content.content!.push({

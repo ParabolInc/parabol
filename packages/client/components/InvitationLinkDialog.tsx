@@ -4,6 +4,8 @@ import {useFragment} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import useMetaTagContent from '../hooks/useMetaTagContent'
 import useRouter from '../hooks/useRouter'
 import {LocalStorageKey} from '../types/constEnums'
 import InvitationLinkAuthentication from './InvitationLinkAuthentication'
@@ -40,6 +42,15 @@ const InvitationLinkDialog = (props: Props) => {
     return <TeamInvitationErrorNotFound isMassInvite />
   }
   const {errorType, teamName} = massInvitation
+  const pageTitle = teamName ? `${teamName} | Parabol` : 'Join | Parabol'
+  const pageName = teamName ? `Join ${teamName}` : 'Join Parabol'
+  const metaCopy = teamName
+    ? `Join ${teamName} on Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
+    : `Join Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
+  /* eslint-disable react-hooks/rules-of-hooks */
+  useDocumentTitle(pageTitle, pageName)
+  useMetaTagContent(metaCopy)
+
   switch (errorType) {
     case 'notFound':
       return <TeamInvitationErrorNotFound isMassInvite />

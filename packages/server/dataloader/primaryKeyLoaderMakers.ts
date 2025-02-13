@@ -156,3 +156,11 @@ export const tasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
 export const notifications = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectNotifications().where('id', 'in', ids).execute()
 })
+
+export const teamMemberIntegrationAuths = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .where('id', 'in', ids)
+    .execute()
+})

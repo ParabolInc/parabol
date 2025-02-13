@@ -54,9 +54,10 @@ graphql`
       }
     }
     meeting {
-      ...PokerMeeting_meeting
       ...useInitialSafeRoute_meeting
       ...useUpdatedSafeRoute_meeting
+      # Necessary to show the Next button if someone adds an issue and the facilitator is on the last one
+      ...MeetingControlBar_meeting
       gitlabSearchQuery {
         queryString
         selectedProjectsIds

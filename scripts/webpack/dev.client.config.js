@@ -6,6 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
+const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redirect')
 
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
@@ -49,27 +50,29 @@ module.exports = {
     hot: true,
     historyApiFallback: true,
     port: PORT,
-    proxy: [...[
-      'sse',
-      'sse-ping',
-      'jira-attachments',
-      'stripe',
-      'webhooks',
-      'graphql',
-      'intranet-graphql',
-      'self-hosted',
-      'mattermost',
-      // important terminating / so saml-redirect doesn't get targeted, too
-      'saml/'
-    ].map((name) => ({
-      context: [`/${name}`],
-      target: `http://localhost:${SOCKET_PORT}`
-    })),
-    {
-      context: '/components',
-      pathRewrite: { '^/components': '' },
-      target: `http://localhost:3002`
-    }]
+    proxy: [
+      ...[
+        'sse',
+        'sse-ping',
+        'jira-attachments',
+        'stripe',
+        'webhooks',
+        'graphql',
+        'intranet-graphql',
+        'self-hosted',
+        'mattermost',
+        // important terminating / so saml-redirect doesn't get targeted, too
+        'saml/'
+      ].map((name) => ({
+        context: [`/${name}`],
+        target: `http://localhost:${SOCKET_PORT}`
+      })),
+      {
+        context: '/components',
+        pathRewrite: {'^/components': ''},
+        target: `http://localhost:3002`
+      }
+    ]
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
@@ -128,13 +131,13 @@ module.exports = {
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         googleAnalytics: process.env.GA_TRACKING_ID,
-        mattermostDisabled:
-          !!process.env.MATTERMOST_SECRET || process.env.MATTERMOST_DISABLED === 'true',
+        mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
+        mattermostGlobal: !!process.env.MATTERMOST_SECRET,
         msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
         sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
-        oauth2Redirect: process.env.OAUTH2_REDIRECT,
+        oauth2Redirect: makeOAuth2Redirect(),
         hasOpenAI: !!process.env.OPEN_AI_API_KEY,
         prblIn: process.env.INVITATION_SHORTLINK,
         AUTH_INTERNAL_ENABLED: process.env.AUTH_INTERNAL_DISABLED !== 'true',
@@ -147,7 +150,13 @@ module.exports = {
         GLOBAL_BANNER_ENABLED: process.env.GLOBAL_BANNER_ENABLED === 'true',
         GLOBAL_BANNER_TEXT: process.env.GLOBAL_BANNER_TEXT,
         GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
-        GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR
+        GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR,
+        GIF_PROVIDER:
+          process.env.GIF_PROVIDER !== 'tenor'
+            ? process.env.GIF_PROVIDER
+            : process.env.TENOR_SECRET
+              ? 'tenor'
+              : ''
       })
     }),
     new ReactRefreshWebpackPlugin(),

@@ -5,9 +5,10 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
-import {SlackNotification, Team, TeamMemberIntegrationAuth} from '../../../../postgres/types'
+import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {NotificationSettings} from '../../../../postgres/types/pg'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
@@ -22,6 +23,9 @@ import {
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
+
+const MATTERMOST_URL = process.env.MATTERMOST_URL && new URL(process.env.MATTERMOST_URL)
+const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
 
 const notifyMattermost = async (
   event: SlackNotification['event'],
@@ -97,7 +101,6 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
 type MattermostNotificationAuth = {
   userId: string
   teamId: string
-  channel: string | null
   webhookUrl: string | null
   serverBaseUrl: string | null
   sharedSecret: string | null
@@ -352,49 +355,34 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
   }
 })
 
-async function getMattermost(dataLoader: DataLoaderWorker, teamId: string, userId: string) {
-  if (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL) {
+async function getMattermost(
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string,
+  event: NotificationSettings['event']
+) {
+  if (MATTERMOST_SECRET && MATTERMOST_URL) {
     return [
       MattermostNotificationHelper({
         userId,
         teamId,
-        serverBaseUrl: process.env.MATTERMOST_URL,
-        sharedSecret: process.env.MATTERMOST_SECRET,
-        channel: null,
+        serverBaseUrl: MATTERMOST_URL.toString(),
+        sharedSecret: MATTERMOST_SECRET,
         webhookUrl: null
       })
     ]
   }
 
   const auths = await dataLoader
-    .get('teamMemberIntegrationAuthsByTeamId')
-    .load({service: 'mattermost', teamId})
-
-  // filter the auths
-  // for webhook, keep only 1 as we don't know the channel
-  // if there are sharedSecret integrations, prefer these, but keep channels unique
-  const filteredAuths = auths.reduce((acc, auth) => {
-    if (auth.channel) {
-      if (!acc.some((a) => a.channel === auth.channel)) {
-        acc.push(auth)
-      }
-    }
-    return acc
-  }, [] as TeamMemberIntegrationAuth[])
-  if (filteredAuths.length === 0) {
-    const webhookAuth =
-      auths.find((auth) => auth.userId === userId) ?? auths.filter((auth) => !auth.channel)[0]
-    if (webhookAuth) {
-      filteredAuths.push(webhookAuth)
-    }
-  }
+    .get('teamMemberIntegrationAuthsByTeamIdAndEvent')
+    .load({service: 'mattermost', teamId, event})
 
   return Promise.all(
-    filteredAuths.map(async (auth) => {
+    auths.map(async (auth) => {
       const provider = (await dataLoader
         .get('integrationProviders')
         .loadNonNull(auth.providerId)) as IntegrationProviderMattermost
-      return MattermostNotificationHelper({...provider, teamId, userId, channel: auth.channel})
+      return MattermostNotificationHelper({...provider, teamId, userId})
     })
   )
 }

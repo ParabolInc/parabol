@@ -81,7 +81,7 @@ const UserAvatarInput = (props: Props) => {
       <div className='flex w-full justify-end'>
         <FlatButton
           onClick={handleClose}
-          className='mb-6 mr-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
+          className='mr-6 mb-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
         >
           {'Save'}
         </FlatButton>

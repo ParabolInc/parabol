@@ -1,12 +1,21 @@
-const { ModuleFederationPlugin } = require("webpack").container;
+const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
 const PROJECT_ROOT = getProjectRoot()
 const PLUGIN_ROOT = path.join(PROJECT_ROOT, 'packages', 'mattermost-plugin')
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const buildPath = path.join(PROJECT_ROOT, 'build')
+
+// strip everything till the last node_modules directory in path
+const normalizeName = (pathData) => {
+  const name = pathData.chunk.name || pathData.chunk.id
+  return name
+  .replace(/.*node_modules/g, "")
+  .trim().replace(/ +/g, "-")
+}
 
 const clientTransformRules = (pluginRoot) => {
   return [
@@ -59,12 +68,14 @@ module.exports = (config) => {
       path: buildPath,
       publicPath: "auto",
       filename: 'mattermost-plugin_[name]_[contenthash].js',
-      chunkFilename: 'mattermost-plugin_[name]_[contenthash].js',
-      assetModuleFilename: 'mattermost-plugin_[name]_[contenthash][ext]'
+      chunkFilename: (pathData) => (`mattermost-plugin_${normalizeName(pathData)}_[contenthash].js`),
+      assetModuleFilename: 'mattermost-plugin_asset_[name]_[contenthash][ext]'
     },
     resolve: {
       alias: {
         '~': path.join(CLIENT_ROOT),
+        // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+        'react/jsx-runtime': require.resolve('react/jsx-runtime')
       },
       extensions: [".ts", ".tsx", ".js"],
     },
@@ -78,6 +89,22 @@ module.exports = (config) => {
           options: {
             presets: ["@babel/preset-react", "@babel/preset-typescript"],
           },
+        },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+              }
+            },
+            {
+              loader: 'postcss-loader',
+            },
+          ],
         },
       ],
     },
@@ -95,7 +122,7 @@ module.exports = (config) => {
       ]
     },
     plugins: [
-      new ModuleFederationPlugin({
+      new webpack.container.ModuleFederationPlugin({
         name: "parabol",
         filename: "mattermost-plugin-entry.js",
         exposes: {
@@ -111,7 +138,12 @@ module.exports = (config) => {
           }
         },
         */
-      })
+      }),
+      new MiniCssExtractPlugin({
+        filename: '[name]_[contenthash].css',
+        // name refers to the chunk name, which would create 1 copy for each chunk referencing the css
+        chunkFilename: '[contenthash].css'
+      }),
     ],
     externals: {
       react: 'React',

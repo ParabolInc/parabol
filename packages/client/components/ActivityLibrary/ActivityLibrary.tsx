@@ -392,7 +392,7 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={clsx(
-                    'flex flex-shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
+                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,
@@ -436,7 +436,7 @@ export const ActivityLibrary = (props: Props) => {
                     subCategoryTemplates.length > 0 ? (
                       <Fragment key={subCategory}>
                         {subCategory && (
-                          <div className='ml-4 mt-8 text-xl font-bold text-slate-700'>
+                          <div className='mt-8 ml-4 text-xl font-bold text-slate-700'>
                             {subCategory}
                           </div>
                         )}
@@ -470,7 +470,7 @@ export const ActivityLibrary = (props: Props) => {
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation='vertical'
-          className='flex h-full w-2.5 touch-none select-none border-l border-l-transparent p-[1px] transition-colors'
+          className='flex h-full w-2.5 touch-none border-l border-l-transparent p-[1px] transition-colors select-none'
         >
           <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-slate-600`} />
         </ScrollArea.Scrollbar>

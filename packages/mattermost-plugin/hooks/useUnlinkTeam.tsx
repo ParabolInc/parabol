@@ -9,9 +9,13 @@ export const useUnlinkTeam = () => {
 
   const unlinkTeam = useCallback(
     async (teamId: string) => {
+      if (!currentChannel) {
+        console.log('No current channel')
+        return
+      }
       dispatch(removeTeamFromChannel({channel: currentChannel.id, teamId}))
     },
-    [currentChannel.id, dispatch]
+    [currentChannel?.id, dispatch]
   )
 
   return unlinkTeam

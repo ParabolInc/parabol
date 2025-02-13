@@ -8,7 +8,6 @@ import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graph
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
-import {LinkMenuState} from '../../../../components/promptResponse/TipTapLinkMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
@@ -23,8 +22,6 @@ const Wrapper = styled('div')({
 interface Props {
   area: AreaEnum
   editor: Editor
-  linkState: LinkMenuState
-  setLinkState: (linkState: LinkMenuState) => void
   className?: string
   isAgenda: boolean | undefined
   isDraggingOver: TaskStatusEnum | undefined
@@ -37,8 +34,6 @@ interface Props {
 const OutcomeCardContainer = memo((props: Props) => {
   const {
     editor,
-    linkState,
-    setLinkState,
     className,
     isDraggingOver,
     task: taskRef,
@@ -108,8 +103,6 @@ const OutcomeCardContainer = memo((props: Props) => {
       <OutcomeCard
         area={area}
         editor={editor}
-        linkState={linkState}
-        setLinkState={setLinkState}
         handleCardUpdate={handleCardUpdate}
         isTaskFocused={isTaskFocused()}
         isTaskHovered={isTaskHovered}

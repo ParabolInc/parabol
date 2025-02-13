@@ -110,7 +110,7 @@ const ThreadedCommentBase = (props: Props) => {
     editor?.setEditable(false)
   })
 
-  const {editor, setLinkState, linkState} = useTipTapCommentEditor(content, {
+  const {editor} = useTipTapCommentEditor(content, {
     readOnly: true,
     atmosphere,
     teamId,
@@ -179,12 +179,7 @@ const ThreadedCommentBase = (props: Props) => {
         />
         {isActive && (
           <div className='pr-4'>
-            <TipTapEditor
-              editor={editor}
-              setLinkState={setLinkState}
-              linkState={linkState}
-              onBlur={onSubmit}
-            />
+            <TipTapEditor editor={editor} onBlur={onSubmit} />
           </div>
         )}
         {isActive && (

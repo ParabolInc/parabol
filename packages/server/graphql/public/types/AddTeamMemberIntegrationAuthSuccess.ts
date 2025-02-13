@@ -9,7 +9,9 @@ export type AddTeamMemberIntegrationAuthSuccessSource = {
 
 const AddTeamMemberIntegrationAuthSuccess: AddTeamMemberIntegrationAuthSuccessResolvers = {
   integrationAuth: async ({service, teamId, userId}, _args, {dataLoader}) => {
-    return (await dataLoader.get('teamMemberIntegrationAuths').load({service, teamId, userId}))!
+    return (await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service, teamId, userId}))!
   },
   teamMember: ({teamId, userId}, _args, {dataLoader}) => {
     const teamMemberId = toTeamMemberId(teamId, userId)

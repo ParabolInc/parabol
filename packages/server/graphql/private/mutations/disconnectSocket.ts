@@ -22,7 +22,7 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
     redis.lrange(`presence:${userId}`, 0, -1)
   ])
   if (!user) {
-    throw new Error('User does not exist')
+    throw new Error(`User does not exist: ${userId}`)
   }
   const tms = user.tms ?? []
   const disconnectingSocket = userPresence.find(

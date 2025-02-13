@@ -1,17 +1,25 @@
-import {generateJSON, mergeAttributes} from '@tiptap/core'
-import BaseLink from '@tiptap/extension-link'
-import StarterKit from '@tiptap/starter-kit'
-import graphql from 'babel-plugin-relay/macro'
-import {marked} from 'marked'
+import {Client4} from 'mattermost-redux/client'
 import {getPost} from 'mattermost-redux/selectors/entities/posts'
 import {GlobalState} from 'mattermost-redux/types/store'
 import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
+
+import {generateJSON, mergeAttributes} from '@tiptap/core'
+import BaseLink from '@tiptap/extension-link'
+import StarterKit from '@tiptap/starter-kit'
+import graphql from 'babel-plugin-relay/macro'
+
+import {Post} from 'mattermost-redux/types/posts'
+import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
-import {closePushPostAsReflection} from '../../reducers'
-import {getPostURL, pushPostAsReflection} from '../../selectors'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import {useCurrentUser} from '../../hooks/useCurrentUser'
+import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
+import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} from '../../reducers'
+import {getPluginServerRoute, getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
 
@@ -21,10 +29,14 @@ const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
   const post = useSelector((state: GlobalState) => getPost(state, postId!))
   const postUrl = useSelector((state: GlobalState) => getPostURL(state, postId!))
+  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const mmUser = useCurrentUser()
+  const channel = useCurrentChannel()
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
-      query PushReflectionModalQuery {
+      query PushReflectionModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
           teams {
             id
@@ -52,16 +64,23 @@ const PushReflectionModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
-  const {viewer} = data
+  const {viewer, linkedTeamIds} = data
   const {teams} = viewer
+
+  const linkedTeams = useMemo(
+    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    [teams, linkedTeamIds]
+  )
   const retroMeetings = useMemo(
     () =>
-      teams
+      linkedTeams
         .flatMap(({activeMeetings}) => activeMeetings)
         .filter(({meetingType}) => meetingType === 'retrospective'),
-    [teams]
+    [linkedTeams]
   )
   const [selectedMeeting, setSelectedMeeting] = React.useState<(typeof retroMeetings)[number]>()
   const [selectedPrompt, setSelectedPrompt] = React.useState<{
@@ -70,17 +89,39 @@ const PushReflectionModal = () => {
     description: string
   }>()
 
-  const [comment, setComment] = React.useState('')
-  const formattedPost = useMemo(() => {
+  const htmlPost = useMemo(() => {
     if (!post) {
-      return null
+      return ''
     }
-    const quotedMessage = post.message
-      .split('\n')
-      .map((line) => `> ${line}`)
-      .join('\n')
-    return `${quotedMessage}\n\n[See comment in Mattermost](${postUrl})`
+    const quote = PostUtils.formatText(post.message)
+    return `
+    <p />
+    <blockquote>
+      ${quote}
+    </blockquote>
+    <a href=${postUrl}>See comment in Mattermost</a>
+    `
   }, [post])
+
+  const tipTapJson = useMemo(() => {
+    const json = generateJSON(htmlPost, [
+      StarterKit,
+      BaseLink.extend({
+        parseHTML() {
+          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+        },
+
+        renderHTML({HTMLAttributes}) {
+          return [
+            'a',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
+            0
+          ]
+        }
+      })
+    ])
+    return JSON.stringify(json)
+  }, [htmlPost])
 
   const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
     mutation PushReflectionModalMutation($input: CreateReflectionInput!) {
@@ -89,10 +130,6 @@ const PushReflectionModal = () => {
       }
     }
   `)
-
-  useEffect(() => {
-    setComment('')
-  }, [postId])
 
   useEffect(() => {
     if (!selectedMeeting && retroMeetings && retroMeetings.length > 0) {
@@ -116,47 +153,104 @@ const PushReflectionModal = () => {
   }
 
   const handlePush = async () => {
-    if (!selectedMeeting || !selectedPrompt || (!comment && !post.message)) {
-      console.log('missing data', selectedPrompt, selectedMeeting, comment, post.message)
+    if (!selectedMeeting || !selectedPrompt || !editor || editor.isEmpty) {
+      console.log('missing data', selectedPrompt, selectedMeeting, post.message)
       return
     }
+    const {id: meetingId, name: meetingName} = selectedMeeting
+    const {id: promptId, question} = selectedPrompt
 
-    const markdown = `${comment}\n\n${formattedPost}`
-    const html = await marked.parse(markdown)
-    const rawObject = generateJSON(html, [
-      StarterKit,
-      BaseLink.extend({
-        parseHTML() {
-          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
-        },
-
-        renderHTML({HTMLAttributes}) {
-          return [
-            'a',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
-            0
-          ]
-        }
-      })
-    ])
-    const content = JSON.stringify(rawObject)
+    const content = JSON.stringify(editor.getJSON())
 
     createReflection({
       variables: {
         input: {
-          meetingId: selectedMeeting.id,
-          promptId: selectedPrompt.id,
+          meetingId,
+          promptId,
           content,
           sortOrder: 0
         }
       }
     })
 
+    const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
+    const props = {
+      attachments: [
+        {
+          fallback: `Reflection added to meeting ${meetingName}`,
+          title: `Reflection added to meeting [${meetingName}](${meetingUrl})`,
+          color: PALETTE.GRAPE_500,
+          fields: [
+            {
+              short: true,
+              title: 'Meeting',
+              value: meetingName
+            },
+            {
+              short: true,
+              title: 'Question',
+              value: question
+            }
+          ]
+        }
+      ]
+    }
+
+    Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
+      method: 'post',
+      body: JSON.stringify({
+        user_id: mmUser.id,
+        post: {
+          channel_id: post.channel_id,
+          root_id: post.root_id || post.id,
+          props
+        }
+      } as Partial<Post>)
+    })
+
     handleClose()
+  }
+
+  const {editor} = useTipTapTaskEditor(tipTapJson)
+  if (!editor) {
+    return null
   }
 
   if (!postId) {
     return null
+  }
+
+  if (linkedTeams.length === 0) {
+    const handleLink = () => {
+      dispatch(openLinkTeamModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add Comment to Parabol Activity'
+        commitButtonLabel='Link team'
+        handleClose={handleClose}
+        handleCommit={handleLink}
+      >
+        <p>There are no Parabol teams linked to this channel yet.</p>
+      </Modal>
+    )
+  }
+  if (retroMeetings.length === 0) {
+    const handleStart = () => {
+      dispatch(openStartActivityModal())
+      handleClose()
+    }
+    return (
+      <Modal
+        title='Add Comment to Parabol Activity'
+        commitButtonLabel='Start activity'
+        handleClose={handleClose}
+        handleCommit={handleStart}
+      >
+        <p>There are currently no open retrospective meetings in the linked Parabol teams.</p>
+      </Modal>
+    )
   }
 
   return (
@@ -166,39 +260,17 @@ const PushReflectionModal = () => {
       handleClose={handleClose}
       handleCommit={handlePush}
     >
-      <div>
-        <p>
-          Choose an open Retro activity and the Prompt where you want to send the Mattermost
-          comment. A reference link back to Mattermost will be inlcuded in the reflection.
-        </p>
-      </div>
       {post && (
         <div className='form-group'>
           <label className='control-label' htmlFor='comment'>
             Add a Comment<span className='error-text'> *</span>
           </label>
-          <div
-            className='form-control'
-            style={{
-              resize: 'none',
-              height: 'auto'
-            }}
-          >
-            <textarea
-              style={{
-                border: 'none',
-                width: '100%'
-              }}
-              id='comment'
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder='Add your comment for the retro...'
-            />
-            <blockquote>
-              {PostUtils.messageHtmlToComponent(PostUtils.formatText(post.message))}
-            </blockquote>
-            <a>See comment in Mattermost</a>
-          </div>
+          <TipTapEditor
+            id='comment'
+            className='channel-switch-modal form-control h-auto min-h-32 p-2'
+            editor={editor}
+            placeholder='TT Add your comment for the retro...'
+          />
         </div>
       )}
       {data && (

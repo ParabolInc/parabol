@@ -2,6 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import {Insertable} from 'kysely'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../client/utils/constants'
+import findStageById from '../../../client/utils/meetings/findStageById'
 import EstimateStage from '../../database/types/EstimateStage'
 import getKysely from '../../postgres/getKysely'
 import {Discussion} from '../../postgres/types/pg'
@@ -9,6 +10,7 @@ import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import RedisLockQueue from '../../utils/RedisLockQueue'
 import {GQLContext} from '../graphql'
@@ -85,7 +87,10 @@ const updatePokerScope = {
       subtractiveUpdates.forEach((update) => {
         const {serviceTaskId} = update
         const stagesToRemove = stages.filter((stage) => stage.serviceTaskId === serviceTaskId)
-        const removingTatorStage = stagesToRemove.find((stage) => stage.id === facilitatorStageId)
+        // since meeting.facilitatorStageId is mutated below, we want to use the updated value here
+        const removingTatorStage = stagesToRemove.find(
+          (stage) => stage.id === meeting.facilitatorStageId
+        )
         if (removingTatorStage) {
           const nextStage = getNextFacilitatorStageAfterStageRemoved(
             facilitatorStageId,
@@ -156,6 +161,15 @@ const updatePokerScope = {
         return {error: {message: 'Story limit reached'}}
       }
 
+      const validatedFacilitatorStageRes = findStageById(phases, meeting.facilitatorStageId)
+      if (!validatedFacilitatorStageRes) {
+        Logger.error(
+          `updatePokerScope attempted to set a bad facilitatorStageId: ${meeting.facilitatorStageId} for meeting ${meeting.id}`
+        )
+        // set to the first stage of last phase
+        meeting.facilitatorStageId =
+          phases.at(-1)?.stages.at(0)?.id ?? phases.at(1)!.stages.at(0)!.id
+      }
       await pg
         .updateTable('NewMeeting')
         .set({

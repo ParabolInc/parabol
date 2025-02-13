@@ -17,6 +17,7 @@ declare module 'babel-plugin-relay/macro' {
 declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
 declare module 'tayden-clusterfck'
+declare module 'react/jsx-runtime'
 
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: string
@@ -32,6 +33,7 @@ interface Window {
     google: string
     googleAnalytics: string
     mattermostDisabled: boolean | undefined
+    mattermostGlobal: boolean | undefined
     msTeamsDisabled: boolean | undefined
     publicPath: string
     sentry: string
@@ -51,6 +53,7 @@ interface Window {
     GLOBAL_BANNER_TEXT: string
     GLOBAL_BANNER_BG_COLOR: string
     GLOBAL_BANNER_COLOR: string
+    GIF_PROVIDER: 'gifabol' | 'tenor' | ''
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}

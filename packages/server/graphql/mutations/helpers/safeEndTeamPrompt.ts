@@ -20,9 +20,7 @@ const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: Internal
   const pg = getKysely()
 
   const summary = await generateStandupMeetingSummary(meeting, dataLoader)
-  if (summary) {
-    await pg.updateTable('NewMeeting').set({summary}).where('id', '=', meeting.id).execute()
-  }
+  await pg.updateTable('NewMeeting').set({summary}).where('id', '=', meeting.id).execute()
 
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
@@ -61,7 +59,8 @@ const safeEndTeamPrompt = async ({
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement
+      engagement: insights.engagement,
+      summary: '<loading>' // set as "<loading>" while the AI summary is being generated
     })
     .where('id', '=', meetingId)
     .execute()

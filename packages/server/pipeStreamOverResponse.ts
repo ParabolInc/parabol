@@ -18,7 +18,7 @@ const pipeStreamOverResponse = (
       }
       const ab = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
       const lastOffset = res.getWriteOffset()
-      const [ok, done] = res.tryEnd(ab, totalSize)
+      const [ok, done] = res.tryEnd(ab as ArrayBuffer, totalSize)
       if (done) readStream.destroy()
       if (ok) return
       // backpressure found!
