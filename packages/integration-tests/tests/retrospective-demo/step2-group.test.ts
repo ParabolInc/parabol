@@ -116,20 +116,14 @@ test.describe('retrospective-demo / group page', () => {
     const documentingInNotionCard = page.locator('text=Documenting things in notion')
     await dragReflectionCard(decisionsInOneOnOnesCard, documentingInNotionCard)
 
-    // 1) Grab the auto-generated group name
-    const groupHeaderLocator = page.locator(
-      '[data-cy=group-column-Start] [data-cy*="Start-group-"] input'
-    )
-    const actualGroupName = await groupHeaderLocator.getAttribute('value')
-
-    // 2) Verify that the group’s auto-generated name actually shows up in the DOM
+    // Then it auto-generates a header
     await expect(
       page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="${actualGroupName}"]`
+        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things Notion"]`
       )
     ).toBeVisible()
 
-    // 3) Verify that both cards are in the same expanded group
+    // Then it shows all cards when clicking the group
     await decisionsInOneOnOnesCard.click()
     await expect(
       page.locator('#expandedReflectionGroup :text("Making decisions in one-on-one meetings")')
