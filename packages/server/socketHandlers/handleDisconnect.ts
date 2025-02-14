@@ -1,7 +1,6 @@
 import activeClients from '../activeClients'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import closeTransport from '../socketHelpers/closeTransport'
-import {Logger} from '../utils/Logger'
 import {getUserId} from '../utils/authorization'
 import publishInternalGQL from '../utils/publishInternalGQL'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
@@ -29,7 +28,6 @@ const handleDisconnect = async (connectionContext: ConnectionContext, options: O
   relayUnsubscribeAll(connectionContext)
   if (authToken.rol !== 'impersonate') {
     const userId = getUserId(authToken)
-    Logger.log(`handleDisconnect: ${socketId}`)
     await publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
   }
   activeClients.delete(connectionContext.id)
