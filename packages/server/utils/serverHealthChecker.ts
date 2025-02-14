@@ -69,6 +69,7 @@ class ServerHealthChecker {
             const {socketInstanceId, socketId} = presence
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
+            Logger.log(`serverHealthChecker: ${socketId}`)
             return publishInternalGQL({
               authToken,
               query: disconnectQuery,

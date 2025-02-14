@@ -110,7 +110,7 @@
     "html-minifier-terser": "^5.0.2",
     "http-message-signatures": "^1.0.4",
     "immutable": "3.8.2",
-    "ioredis": "^5.2.3",
+    "ioredis": "^5.5.0",
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
     "lodash.pick": "^4.4.0",
