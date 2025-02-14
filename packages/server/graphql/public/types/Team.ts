@@ -33,6 +33,20 @@ const Team: TeamResolvers = {
     const retroMeetings = meetings.filter((meeting) => meeting.meetingType === 'retrospective')
     return retroMeetings.length
   },
+  lastMetAt: async ({id: teamId}, _args, {dataLoader}) => {
+    const [completedMeetings, activeMeetings] = await Promise.all([
+      dataLoader.get('completedMeetingsByTeamId').load(teamId),
+      dataLoader.get('activeMeetingsByTeamId').load(teamId)
+    ])
+
+    const dates = [
+      ...completedMeetings.map((meeting) => new Date(meeting.endedAt || meeting.createdAt)),
+      ...activeMeetings.map((meeting) => new Date(meeting.createdAt))
+    ]
+
+    if (dates.length === 0) return null
+    return dates.reduce((latest, current) => (current > latest ? current : latest))
+  },
   insight: async ({id: teamId}, _args, {dataLoader}) => {
     const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
     if (!insight) return null

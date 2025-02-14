@@ -36,7 +36,6 @@ class ServerHealthChecker {
   }
 
   async getLivingServers() {
-    await this.joinPool()
     this.remoteSocketServers = []
     await this.publisher.publish('socketServerPing', INSTANCE_ID)
     await sleep(500)
@@ -45,7 +44,11 @@ class ServerHealthChecker {
     return socketServers
   }
 
-  async cleanUserPresence() {
+  async cleanUserPresence(waitForStartup: number) {
+    await this.joinPool()
+    // how long should we wait for all the socket servers to come online?
+    //
+    await sleep(waitForStartup)
     const socketServers = await this.getLivingServers()
     const authToken = new ServerAuthToken()
 
@@ -69,6 +72,7 @@ class ServerHealthChecker {
             const {socketInstanceId, socketId} = presence
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
+            Logger.log(`serverHealthChecker: ${socketId} is on dead instace ${socketInstanceId}`)
             return publishInternalGQL({
               authToken,
               query: disconnectQuery,

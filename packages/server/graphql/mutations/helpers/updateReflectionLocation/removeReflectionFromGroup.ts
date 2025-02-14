@@ -14,19 +14,23 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   ])
   dataLoader.get('retroReflectionGroupsByMeetingId').clear(meetingId)
   dataLoader.get('retroReflectionGroups').clearAll()
-  const oldReflectionGroup = meetingReflectionGroups.find((g) => g.id === oldReflectionGroupId)!
+  const oldReflectionGroup = meetingReflectionGroups.find((g) => g.id === oldReflectionGroupId)
   const reflectionGroupsInColumn = meetingReflectionGroups
     .filter((g) => g.promptId === promptId)
     .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
   let newSortOrder = 1e6
   const oldReflectionGroupIdx = reflectionGroupsInColumn.findIndex(
-    (group) => group.id === oldReflectionGroup.id
+    (group) => group.id === oldReflectionGroup?.id
   )
   const sortOrderAtBottom =
     (reflectionGroupsInColumn[reflectionGroupsInColumn.length - 1]?.sortOrder ?? 1e6) +
     1 +
     dndNoise()
-  if (oldReflectionGroupIdx === -1 || reflection.promptId !== oldReflectionGroup.promptId) {
+  if (
+    oldReflectionGroupIdx === -1 ||
+    !oldReflectionGroup ||
+    reflection.promptId !== oldReflectionGroup.promptId
+  ) {
     newSortOrder = sortOrderAtBottom
   } else if (oldReflectionGroupIdx === reflectionGroupsInColumn.length - 1) {
     newSortOrder = oldReflectionGroup.sortOrder + 1 + dndNoise()

@@ -10,7 +10,6 @@ import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import sendToSentry from '../utils/sendToSentry'
 import handleConnect from './handleConnect'
 
-const APP_VERSION = process.env.npm_package_version
 export type SocketUserData = {
   connectionContext: ConnectionContext
   authToken: AuthToken
@@ -51,7 +50,7 @@ const handleOpen: WebSocketBehavior<SocketUserData>['open'] = async (socket) => 
 
   // messages will start coming in before handleConnect completes & sit in the readyQueue
   const nextAuthToken = await handleConnect(connectionContext)
-  sendEncodedMessage(connectionContext, {version: APP_VERSION, authToken: nextAuthToken})
+  sendEncodedMessage(connectionContext, {version: __APP_VERSION__, authToken: nextAuthToken})
   keepAlive(connectionContext)
 }
 

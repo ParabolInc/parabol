@@ -16,7 +16,7 @@ tracer.init({
   service: `embedder`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false,
-  version: process.env.npm_package_version
+  version: __APP_VERSION__
 })
 // The embedder queue is in PG & gets hits non-stop, which dirties up the logs. Ignore the polling query before enabling pg
 // tracer.use('pg')

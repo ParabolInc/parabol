@@ -60,7 +60,8 @@ module.exports = {
   ],
   plugins: [
     new webpack.DefinePlugin({
-      __PRODUCTION__: false
+      __PRODUCTION__: false,
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
     }),
     new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
     new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/})

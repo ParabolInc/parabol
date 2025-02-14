@@ -2,19 +2,20 @@ import tracer from 'dd-trace'
 import {ServerChannel} from 'parabol-client/types/constEnums'
 import GQLExecutorChannelId from '../client/shared/gqlIds/GQLExecutorChannelId'
 import SocketServerChannelId from '../client/shared/gqlIds/SocketServerChannelId'
+import sleep from '../client/utils/sleep'
 import executeGraphQL from '../server/graphql/executeGraphQL'
 import '../server/initSentry'
 import '../server/monkeyPatchFetch'
-import {GQLRequest} from '../server/types/custom'
+import type {GQLRequest} from '../server/types/GQLRequest'
+import {Logger} from '../server/utils/Logger'
 import RedisInstance from '../server/utils/RedisInstance'
 import RedisStream from './RedisStream'
-import {Logger} from '../server/utils/Logger'
 
 tracer.init({
   service: `gql`,
   appsec: process.env.DD_APPSEC_ENABLED === 'true',
   plugins: false,
-  version: process.env.npm_package_version
+  version: __APP_VERSION__
 })
 tracer.use('ioredis').use('http').use('pg')
 
@@ -29,26 +30,57 @@ const run = async () => {
   const publisher = new RedisInstance('gql_pub')
   const subscriber = new RedisInstance('gql_sub')
   const executorChannel = GQLExecutorChannelId.join(SERVER_ID!)
+  let activeJobCount = 0
 
-  // on shutdown, remove consumer from the group
+  // on shutdown, remove consumer from the group wait for current jobs to complete
   process.on('SIGTERM', async (signal) => {
-    Logger.log(`Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`)
+    const MAX_SHUTDOWN_TIME = 40000
+    const SHUTDOWN_CHECK_INTERVAL = 1000
+    let start = Date.now()
+    Logger.log(
+      `Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
+    )
+    await incomingStream.return()
+    const pendingInfo = await publisher.xpending(
+      ServerChannel.GQL_EXECUTOR_STREAM,
+      ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
+      '-',
+      '+',
+      10,
+      executorChannel
+    )
+    if (pendingInfo.length > 0) {
+      Logger.log(`WARNING! GQL EXECUTOR HAS PENDING MESSAGES ON SHUTDOWN: ${pendingInfo.length}`)
+    }
     await publisher.xgroup(
       'DELCONSUMER',
       ServerChannel.GQL_EXECUTOR_STREAM,
       ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
       executorChannel
     )
-    Logger.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
-    process.exit()
+    // The executor has published SourceStream messages to webserver that include its executorServerId
+    // It expects the webserver call it back to make use of its cache. These should resovle within a couple seconds
+    await sleep(10000)
+
+    setInterval(() => {
+      if (Date.now() - start >= MAX_SHUTDOWN_TIME) {
+        Logger.log(`Server ID: ${SERVER_ID}. Graceful shutdown timed out, exiting.`)
+        process.exit()
+      } else if (activeJobCount <= 0) {
+        Logger.log(`Server ID: ${SERVER_ID}. Graceful shutdown complete, exiting.`)
+        process.exit()
+      }
+    }, SHUTDOWN_CHECK_INTERVAL)
   })
 
   // subscribe to direct messages
   const onMessage = async (_channel: string, message: string) => {
     const {jobId, socketServerId, request} = JSON.parse(message) as PubSubPromiseMessage
+    activeJobCount++
     const response = await executeGraphQL(request)
     const channel = SocketServerChannelId.join(socketServerId)
     publisher.publish(channel, JSON.stringify({response, jobId}))
+    activeJobCount--
   }
 
   subscriber.on('message', onMessage)

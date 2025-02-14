@@ -1,4 +1,4 @@
-import {DotsVerticalIcon} from '@mattermost/compass-icons/components'
+import {MoreVert} from '@mui/icons-material'
 import {IconButton, Menu, MenuItem} from '@mui/material'
 import React from 'react'
 
@@ -30,7 +30,7 @@ const MoreMenu = ({options}: Props) => {
         aria-haspopup='true'
         onClick={handleOpen}
       >
-        <DotsVerticalIcon />
+        <MoreVert />
       </IconButton>
       <Menu
         id='long-menu'

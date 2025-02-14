@@ -29,7 +29,7 @@ const LinkTeamModal = () => {
       }
     `,
     {
-      channel: channel.id
+      channel: channel?.id ?? ''
     }
   )
   const {viewer, linkedTeamIds} = data
@@ -58,7 +58,7 @@ const LinkTeamModal = () => {
     handleClose()
   }
 
-  if (!isVisible) {
+  if (!isVisible || !channel) {
     return null
   }
 

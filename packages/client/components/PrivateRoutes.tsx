@@ -4,12 +4,6 @@ import {Redirect, Route, Switch, useLocation} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
 
-const NewMeetingSummary = lazy(
-  () =>
-    import(
-      /* webpackChunkName: 'NewMeetingSummaryRoot' */ '../modules/summary/components/NewMeetingSummaryRoot'
-    )
-)
 const Graphql = lazy(
   () =>
     import(
@@ -46,10 +40,6 @@ const ReviewRequestToJoinOrgRoot = lazy(
   () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
 )
 
-const ShareTopicRouterRoot = lazy(
-  () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
-)
-
 const PrivateRoutes = () => {
   useAuthRoute()
   useNoIndex()
@@ -60,7 +50,7 @@ const PrivateRoutes = () => {
       <Switch location={state?.backgroundLocation || location}>
         <Route path='/activity-library' component={ActivityLibraryRoutes} />
         <Route
-          path='(/meetings|/me|/newteam|/team|/organization-join-request|/pages)'
+          path='(/meetings|/me|/new-summary|/newteam|/team|/organization-join-request|/pages)'
           component={DashboardRoot}
         />
         <Route path='/new-meeting'>
@@ -68,7 +58,6 @@ const PrivateRoutes = () => {
         </Route>
         <Route path='/meet/:meetingId' component={MeetingRoot} />
         <Route path='/meeting-series/:meetingId' component={MeetingSeriesRoot} />
-        <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
         <Route path='/admin/graphql' component={Graphql} />
         <Route path='/admin/impersonate' component={Impersonate} />
         <Route path='/invitation-required' component={ViewerNotOnTeamRoot} />
@@ -80,7 +69,6 @@ const PrivateRoutes = () => {
           path='/organization-join-request/:requestId'
           component={ReviewRequestToJoinOrgRoot}
         />
-        <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRouterRoot} />
       </Switch>
     </>
   )
