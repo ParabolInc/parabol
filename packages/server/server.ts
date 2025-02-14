@@ -25,7 +25,7 @@ import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
 import SAMLHandler from './utils/SAMLHandler'
 
-const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
+export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
   : 60_000 // ms
 
