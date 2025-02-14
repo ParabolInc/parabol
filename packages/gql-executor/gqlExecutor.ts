@@ -41,6 +41,17 @@ const run = async () => {
       `Server ID: ${SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown.`
     )
     await incomingStream.return()
+    const pendingInfo = await publisher.xpending(
+      ServerChannel.GQL_EXECUTOR_STREAM,
+      ServerChannel.GQL_EXECUTOR_CONSUMER_GROUP,
+      '-',
+      '+',
+      10,
+      executorChannel
+    )
+    if (pendingInfo.length > 0) {
+      Logger.log(`WARNING! GQL EXECUTOR HAS PENDING MESSAGES ON SHUTDOWN: ${pendingInfo.length}`)
+    }
     await publisher.xgroup(
       'DELCONSUMER',
       ServerChannel.GQL_EXECUTOR_STREAM,
@@ -49,7 +60,7 @@ const run = async () => {
     )
     // The executor has published SourceStream messages to webserver that include its executorServerId
     // It expects the webserver call it back to make use of its cache. These should resovle within a couple seconds
-    await sleep(2000)
+    await sleep(10000)
 
     setInterval(() => {
       if (Date.now() - start >= MAX_SHUTDOWN_TIME) {
