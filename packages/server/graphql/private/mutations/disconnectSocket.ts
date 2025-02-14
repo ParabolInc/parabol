@@ -31,7 +31,7 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   if (!disconnectingSocket) {
     // this happens a lot on server restart in dev mode
     if (!__PRODUCTION__) return {user}
-    throw new Error('Called disconnect without a valid socket')
+    throw new Error(`Called disconnect without a valid socket: ${socketId}`)
   }
   await redis.lrem(`presence:${userId}`, 0, disconnectingSocket)
 
