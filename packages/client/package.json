@@ -68,6 +68,7 @@
     "@emotion/core": "^10.0.27",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^10.0.27",
+    "@hocuspocus/provider": "^2.15.2",
     "@mattkrick/graphql-trebuchet-client": "^2.2.1",
     "@mattkrick/sanitize-svg": "0.4.0",
     "@mattkrick/trebuchet-client": "3.0.5",
@@ -92,6 +93,7 @@
     "@stripe/stripe-js": "^4.0.0",
     "@tiptap/core": "^2.9.1",
     "@tiptap/extension-character-count": "^2.9.1",
+    "@tiptap/extension-collaboration": "^2.11.5",
     "@tiptap/extension-focus": "^2.11.2",
     "@tiptap/extension-image": "^2.11.2",
     "@tiptap/extension-link": "^2.9.1",
@@ -157,6 +159,9 @@
     "tayden-clusterfck": "^0.7.0",
     "tippy.js": "^6.3.7",
     "tlds": "^1.192.0",
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.0",
+    "y-prosemirror": "^1.2.15",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.23"
   }
 }
