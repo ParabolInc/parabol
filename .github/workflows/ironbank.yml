@@ -71,5 +71,5 @@ jobs:
         env:
           CLOUDSDK_AUTH_ACCESS_TOKEN: "${{ steps.auth.outputs.access_token }}"
         with:
-          args: storage cp ${{ github.event.inputs.version_number }}.zip gs://ironbank-proving-ground/${{ github.event.inputs.version_number }}.zip
+          args: storage cp ${{ github.event.inputs.version_number }}.zip gs://parabol-ironbank-resources/${{ github.event.inputs.version_number }}.zip
           cli: gcloud
