@@ -4,20 +4,20 @@ import {getDemoTitlesQuery} from '~/__generated__/getDemoTitlesQuery.graphql'
 import Atmosphere from '../../Atmosphere'
 
 const query = graphql`
-  query getDemoTitlesQuery($reflections: [String!]!) {
-    getDemoGroupTitle(reflections: $reflections) {
+  query getDemoTitlesQuery($reflectionsContent: [String!]!) {
+    getDemoGroupTitle(reflectionsContent: $reflectionsContent) {
       title
     }
   }
 `
 
-const getDemoTitles = async (reflections: string[]) => {
-  if (!reflections || reflections.length === 0) return null
+const getDemoTitles = async (reflectionsContent: string[]) => {
+  if (!reflectionsContent || reflectionsContent.length === 0) return null
   const remoteAtmosphere = new Atmosphere()
   const res = await fetchQuery<getDemoTitlesQuery>(remoteAtmosphere, query, {
-    reflections
+    reflectionsContent
   }).toPromise()
-  return res?.getDemoGroupTitle?.title ?? reflections[0] ?? null
+  return res?.getDemoGroupTitle?.title ?? reflectionsContent[0] ?? null
 }
 
 export default getDemoTitles

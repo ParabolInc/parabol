@@ -192,7 +192,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
   private async updateReflectionGroupTitle(
     reflectionGroup: DemoReflectionGroup,
-    reflectionContents: string[],
+    reflectionsContent: string[],
     titleIsUserDefined = false
   ) {
     const loadingTitle = ''
@@ -202,7 +202,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
 
     try {
-      const aiTitle = await getDemoTitles(reflectionContents)
+      const aiTitle = await getDemoTitles(reflectionsContent)
       if (aiTitle && aiTitle !== loadingTitle) {
         reflectionGroup.smartTitle = aiTitle
         if (!titleIsUserDefined) {
@@ -773,13 +773,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (reflectionGroup) {
         const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
         if (!titleIsUserDefined) {
-          const reflectionContents = reflectionsInGroup.map((r) => r.content)
+          const reflectionsContent = reflectionsInGroup.map((r) => r.content)
           // Set loading state
           const loadingTitle = ''
           reflectionGroup.smartTitle = loadingTitle
           reflectionGroup.title = loadingTitle
 
-          getDemoTitles(reflectionContents)
+          getDemoTitles(reflectionsContent)
             .then((aiTitle) => {
               if (aiTitle && aiTitle !== loadingTitle) {
                 reflectionGroup.smartTitle = aiTitle
