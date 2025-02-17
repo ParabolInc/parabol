@@ -18,11 +18,18 @@ div[data-radix-popper-content-wrapper] {
 .truncate.flex {
   @apply flex;
 }
+.popover.fixed {
+  @apply fixed;
+}
 
+/* styling of the tiptap bubble menu */
 .tippy-box[role="dialog"] {
   @apply bg-white shadow-lg rounded-lg;
   button {
-    @apply m-1 w-16 items-center px-4 border-none rounded font-semibold outline-none hover:bg-slate-500 data-[highlighted=true]:bg-slate-500 bg-slate-300;
+    @apply w-12 items-center px-4 border-none rounded font-semibold outline-none hover:bg-slate-300 data-[highlighted=true]:bg-slate-300 bg-transparent text-black;
+  }
+  .tippy-content {
+    @apply p-0;
   }
 }
 

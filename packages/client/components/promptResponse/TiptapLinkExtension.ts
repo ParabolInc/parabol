@@ -1,6 +1,6 @@
 import {getMarkRange, getMarkType, mergeAttributes, type Editor} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
-import {Plugin} from '@tiptap/pm/state'
+import {EditorState, Plugin} from '@tiptap/pm/state'
 import {EditorView} from '@tiptap/pm/view'
 
 export type LinkMenuState = 'preview' | 'edit' | null
@@ -20,8 +20,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const getRangeForType = (editor: Editor, typeOrName: string) => {
-  const {state} = editor
+export const getRangeForType = (state: EditorState, typeOrName: string) => {
   const {selection, schema} = state
   const {$from} = selection
   const type = getMarkType(typeOrName, schema)
@@ -39,20 +38,19 @@ export const TiptapLinkExtension = BaseLink.extend({
       }
     }
   },
-  addCommands() {
+  addCommands(this) {
     return {
+      ...this.parent?.(),
       upsertLink:
         ({text, url}) =>
-        ({editor}) => {
-          const range = getRangeForType(editor, 'link')
+        ({chain, state}) => {
+          const range = getRangeForType(state, 'link')
           if (!range) {
-            const {state} = editor
             const {selection} = state
             const {from} = selection
             const nextTo = from + text.length
             // adding a new link
-            return editor
-              .chain()
+            return chain()
               .focus()
               .command(({tr}) => {
                 tr.insertText(text)
@@ -68,8 +66,7 @@ export const TiptapLinkExtension = BaseLink.extend({
           }
           const {from} = range
           const to = from + text.length
-          return editor
-            .chain()
+          return chain()
             .focus()
             .setTextSelection(range)
             .insertContent(text)
@@ -83,11 +80,10 @@ export const TiptapLinkExtension = BaseLink.extend({
         },
       removeLink:
         () =>
-        ({editor}) => {
-          const range = getRangeForType(editor, 'link')
+        ({state, chain}) => {
+          const range = getRangeForType(state, 'link')
           if (!range) return false
-          return editor
-            .chain()
+          return chain()
             .focus()
             .extendMarkRange('link')
             .unsetLink()
