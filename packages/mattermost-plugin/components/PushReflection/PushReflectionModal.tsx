@@ -207,6 +207,14 @@ const PushReflectionModal = () => {
         }
       } as Partial<Post>)
     })
+    /*
+    TODO update to this call once https://github.com/mattermost/mattermost/pull/30117 was released
+    Client4.createPostEphemeral(mmUser.id, {
+      channel_id: post.channel_id,
+      root_id: post.root_id || post.id,
+      props
+    })
+     */
 
     handleClose()
   }

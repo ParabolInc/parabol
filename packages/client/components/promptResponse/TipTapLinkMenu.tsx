@@ -1,15 +1,10 @@
+import * as Popover from '@radix-ui/react-popover'
 import type {EditorEvents} from '@tiptap/core'
-import {
-  BubbleMenu,
-  Editor,
-  getMarkRange,
-  getMarkType,
-  getTextBetween,
-  useEditorState
-} from '@tiptap/react'
+import {Editor, getTextBetween, useEditorState} from '@tiptap/react'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {TipTapLinkEditor} from './TipTapLinkEditor'
 import {TipTapLinkPreview} from './TipTapLinkPreview'
+import {getRangeForType, LinkMenuState} from './TiptapLinkExtension'
 
 const getContent = (editor: Editor, typeOrName: string) => {
   const range = getRangeForType(editor, typeOrName)
@@ -17,15 +12,6 @@ const getContent = (editor: Editor, typeOrName: string) => {
   return getTextBetween(editor.state.doc, range)
 }
 
-const getRangeForType = (editor: Editor, typeOrName: string) => {
-  const {state} = editor
-  const {selection, schema} = state
-  const {$from} = selection
-  const type = getMarkType(typeOrName, schema)
-  return getMarkRange($from, type)
-}
-
-export type LinkMenuState = 'preview' | 'edit' | null
 interface Props {
   editor: Editor
   useLinkEditor?: () => void
@@ -75,81 +61,64 @@ export const TipTapLinkMenu = (props: Props) => {
 
   const onSetLink = useCallback(
     ({text, url}: {text: string; url: string}) => {
-      const range = getRangeForType(editor, 'link')
-      if (!range) {
-        const {state} = editor
-        const {selection} = state
-        const {from} = selection
-        const nextTo = from + text.length
-        // adding a new link
-        editor
-          .chain()
-          .focus()
-          .command(({tr}) => {
-            tr.insertText(text)
-            return true
-          })
-          .setTextSelection({
-            from,
-            to: nextTo
-          })
-          .setLink({href: url, target: '_blank'})
-          .setTextSelection({from: nextTo, to: nextTo})
-          .run()
-        return
-      }
-      const {from} = range
-      const to = from + text.length
-      editor
-        .chain()
-        .focus()
-        .setTextSelection(range)
-        .insertContent(text)
-        .setTextSelection({
-          from,
-          to
-        })
-        .setLink({href: url, target: '_blank'})
-        .setTextSelection({from: to, to})
-        .run()
+      editor.commands.upsertLink({text, url})
       setLinkState(null)
     },
     [editor]
   )
   const onUnsetLink = useCallback(() => {
-    const range = getRangeForType(editor, 'link')
-    if (!range) return
-    editor
-      .chain()
-      .focus()
-      .extendMarkRange('link')
-      .unsetLink()
-      .setTextSelection({from: range.to, to: range.to})
-      .run()
+    editor.commands.removeLink()
     setLinkState(null)
   }, [editor])
-
+  const onOpenChange = (willOpen: boolean) => {
+    const isLinkActive = editor.isActive('link')
+    if (willOpen) {
+      setLinkState(isLinkActive ? 'preview' : 'edit')
+    } else {
+      // special case when switching from preview to edit radix-ui triggers onOpenChange(false)
+      if (!(oldLinkStateRef.current === 'preview' && linkState === 'edit')) {
+        setLinkState(null)
+      }
+      oldLinkStateRef.current = null
+    }
+  }
+  const transformRef = useRef<undefined | string>(undefined)
+  const getTransform = () => {
+    const coords = editor.view.coordsAtPos(editor.state.selection.from)
+    const {left, top} = coords
+    if (left !== 0 && top !== 0) {
+      transformRef.current = `translate(${coords.left}px,${coords.top + 20}px)`
+    }
+    return transformRef.current
+  }
   if (!linkState) return null
   return (
-    <BubbleMenu
-      editor={editor}
-      tippyOptions={{duration: 100, role: 'dialog'}}
-      shouldShow={() => true}
-    >
-      <div className='absolute top-0 left-0 z-10'>
-        {linkState === 'edit' && (
-          <TipTapLinkEditor
-            initialUrl={link}
-            initialText={text}
-            onSetLink={onSetLink}
-            useLinkEditor={useLinkEditor}
-          />
-        )}
-        {linkState === 'preview' && (
-          <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />
-        )}
-      </div>
-    </BubbleMenu>
+    <Popover.Root open onOpenChange={onOpenChange}>
+      <Popover.Trigger asChild />
+      <Popover.Portal>
+        <Popover.Content
+          asChild
+          onOpenAutoFocus={(e) => {
+            // necessary for link preview to prevent focusing the first button
+            e.preventDefault()
+          }}
+        >
+          <div className='absolute top-0 left-0 z-10' style={{transform: getTransform()}}>
+            {linkState === 'edit' && (
+              <TipTapLinkEditor
+                initialUrl={link}
+                initialText={text}
+                onSetLink={onSetLink}
+                useLinkEditor={useLinkEditor}
+              />
+            )}
+            {linkState === 'preview' && (
+              <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />
+            )}
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   )
 }
 
