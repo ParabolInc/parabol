@@ -213,6 +213,33 @@ export const RecurrenceSettings = (props: Props) => {
     }
   }
 
+  const getNextMeetingDate = (selectedDays: Day[]) => {
+    const today = dayjs();
+
+    const nextMeetingDates = selectedDays.map((day) => {
+      const nextDay = today.day(day.intVal+1);
+      if (nextDay.isBefore(today, 'day')) {
+        return nextDay.add(1, 'week');
+      }
+      return nextDay;
+    });
+
+    if (nextMeetingDates.length === 0) {
+      return today;
+    }
+
+    let nextMeetingDate = nextMeetingDates[0];
+    nextMeetingDates.forEach((date) => {
+      if (date.isBefore(nextMeetingDate)) {
+        nextMeetingDate = date;
+      }
+    });
+
+    return nextMeetingDate;
+  }
+
+  const nextMeetingDate = getNextMeetingDate(recurrenceDays);
+
   useEffect(() => {
     const rrule =
       recurrenceDays.length > 0 && !intervalError
@@ -252,7 +279,7 @@ export const RecurrenceSettings = (props: Props) => {
           <Description>
             The next meeting in this series will be called{' '}
             <span className='font-semibold'>
-              "{title} - {dayjs(new Date()).format('MMM DD')}"
+              "{title} - {nextMeetingDate!.format('MMM DD')}"
             </span>
           </Description>
         )}
