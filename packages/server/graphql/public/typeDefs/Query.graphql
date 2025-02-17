@@ -38,7 +38,7 @@ type Query {
     """
     Get a reflection group title for the demo using AI
     """
-    reflections: [String!]!
+    reflections: [RetroReflection!]!
   ): GetDemoGroupTitlePayload!
   SAMLIdP(
     """

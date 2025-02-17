@@ -1,11 +1,7 @@
 import {sql, type Kysely} from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
-  await db.schema
-    .alterTable('RetroReflection')
-    .dropColumn('entities')
-    .dropColumn('sentimentScore')
-    .execute()
+  await db.schema.alterTable('RetroReflection').dropColumn('entities').execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {

@@ -26,6 +26,7 @@ import {
 } from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
+import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
 import startStage_ from '../../utils/startStage_'
@@ -44,7 +45,6 @@ import initDB, {
   demoTeamId,
   demoViewerId
 } from './initDB'
-import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 
 export type DemoReflection = {
   __typename: string
@@ -218,7 +218,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (err) {
       console.error('Error generating AI title:', err)
     }
-  },
+  }
 
   startDemo() {
     this.startBot()
@@ -1037,19 +1037,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {startDraggingReflection: data}
     },
-    EndDraggingReflectionMutation: async (
+    EndDraggingReflectionMutation: (
       {
         reflectionId,
         dropTargetType,
         dropTargetId,
-        dragId,
-        title
+        dragId
       }: {
         reflectionId: string
         dropTargetType: any
         dropTargetId: string
         dragId: string
-        title?: string
       },
       userId: string
     ) => {
@@ -1092,7 +1090,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
         this.db.reflectionGroups.push(newReflectionGroup)
         this.db.discussions.push(new DemoDiscussion(newReflectionGroupId))
-        oldReflections.splice(oldReflections.findIndex((r) => r.id === reflection.id), 1)
+        oldReflections.splice(
+          oldReflections.findIndex((r) => r.id === reflection.id),
+          1
+        )
 
         Object.assign(reflection, {
           sortOrder: 0,
@@ -1102,7 +1103,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const reflectionContent = (reflection as DemoReflection).content
 
         this.updateReflectionGroupTitle(newReflectionGroup, [reflectionContent])
-
       } else if (
         (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
         dropTargetId
