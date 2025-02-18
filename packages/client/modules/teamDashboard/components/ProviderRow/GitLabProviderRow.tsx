@@ -51,7 +51,7 @@ const GitLabProviderRow = (props: Props) => {
   const {teamId, viewerRef} = props
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
-  const {submitting} = mutationProps
+  const {submitting, error} = mutationProps
   const openOAuth = (providerId: string, clientId: string, serverBaseUrl: string) => {
     GitLabClientManager.openOAuth(
       atmosphere,
@@ -111,6 +111,11 @@ const GitLabProviderRow = (props: Props) => {
                         ? 'Use GitLab Issues from within Parabol.'
                         : 'Connect to your own GitLab server.'}
                     </RowInfoCopy>
+                    {!!error?.message && (
+                      <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
+                        {error.message}
+                      </div>
+                    )}
                   </RowInfo>
                   <ProviderActions>
                     {!connected && (
