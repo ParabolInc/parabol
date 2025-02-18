@@ -5,6 +5,65 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.27.1](https://github.com/ParabolInc/parabol/compare/v8.27.0...v8.27.1) (2025-02-18)
+
+
+### Fixed
+
+* Show error message when failing to integrate with Azure DevOps ([#10888](https://github.com/ParabolInc/parabol/issues/10888)) ([f2d530d](https://github.com/ParabolInc/parabol/commit/f2d530d701563011096cabd81f03f64205061aac))
+
+## [8.27.0](https://github.com/ParabolInc/parabol/compare/v8.26.3...v8.27.0) (2025-02-18)
+
+
+### Added
+
+* **Mattermost Plugin:** TipTap link menu ([#10863](https://github.com/ParabolInc/parabol/issues/10863)) ([5593b75](https://github.com/ParabolInc/parabol/commit/5593b75b6b74a3b3fcd777925e1a09e1506ea239))
+
+
+### Fixed
+
+* empty discussion stages ([#10836](https://github.com/ParabolInc/parabol/issues/10836)) ([2b4d134](https://github.com/ParabolInc/parabol/commit/2b4d134f33316bc7ccb8cfb82ceefc7aafd720e3))
+* Failed to execute `removeChild` ([#10886](https://github.com/ParabolInc/parabol/issues/10886)) ([ddff9dd](https://github.com/ParabolInc/parabol/commit/ddff9ddae059edd0c5d18247561276eda75a4d7b))
+
+
+### Changed
+
+* update target GCS bucket for IB action ([#10882](https://github.com/ParabolInc/parabol/issues/10882)) ([3fb8e5c](https://github.com/ParabolInc/parabol/commit/3fb8e5ce5e561bda44d967639a85753fb2caf9c7))
+
+## [8.26.3](https://github.com/ParabolInc/parabol/compare/v8.26.2...v8.26.3) (2025-02-14)
+
+
+### Fixed
+
+* remove handleDisconnect logs ([#10879](https://github.com/ParabolInc/parabol/issues/10879)) ([922bf34](https://github.com/ParabolInc/parabol/commit/922bf345404ac65971fc14e188b60132523be14e))
+
+## [8.26.2](https://github.com/ParabolInc/parabol/compare/v8.26.1...v8.26.2) (2025-02-14)
+
+
+### Fixed
+
+* joinPool early and wait for old servers to shut down ([#10876](https://github.com/ParabolInc/parabol/issues/10876)) ([2f0259c](https://github.com/ParabolInc/parabol/commit/2f0259c43e51b944f3889d3ac51b6575cc883d4c))
+
+## [8.26.1](https://github.com/ParabolInc/parabol/compare/v8.26.0...v8.26.1) (2025-02-14)
+
+
+### Fixed
+
+* end xreadgroup gracefully on shutdown ([#10873](https://github.com/ParabolInc/parabol/issues/10873)) ([526d9b8](https://github.com/ParabolInc/parabol/commit/526d9b891702b375796478c1537990f262ad7ba1))
+
+## [8.26.0](https://github.com/ParabolInc/parabol/compare/v8.25.4...v8.26.0) (2025-02-13)
+
+
+### Added
+
+* **orgAdmin:** add sortable `memberCount` and `lastMetAt` columns in OrgTeams view ([#10846](https://github.com/ParabolInc/parabol/issues/10846)) ([c04bb94](https://github.com/ParabolInc/parabol/commit/c04bb94f9fde8b0efde2ac39de48bba33b65f660))
+
+
+### Fixed
+
+* client resub on server redeploy ([#10870](https://github.com/ParabolInc/parabol/issues/10870)) ([eda8d5b](https://github.com/ParabolInc/parabol/commit/eda8d5b42e6025b934c6d33d48bf60ad32add126))
+* put dashboard routes inside dashboard components ([#10871](https://github.com/ParabolInc/parabol/issues/10871)) ([63b6c0d](https://github.com/ParabolInc/parabol/commit/63b6c0ded08791d048c15ed8e829b4d91ffd8655))
+
 ## [8.25.4](https://github.com/ParabolInc/parabol/compare/v8.25.3...v8.25.4) (2025-02-12)
 
 

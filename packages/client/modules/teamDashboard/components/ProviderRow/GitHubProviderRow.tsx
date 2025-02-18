@@ -32,7 +32,7 @@ const GitHubProviderRow = (props: Props) => {
     `,
     viewerRef
   )
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
@@ -57,6 +57,7 @@ const GitHubProviderRow = (props: Props) => {
         providerName={Providers.GITHUB_NAME}
         providerDescription={Providers.GITHUB_DESC}
         providerLogo={<GitHubProviderLogo />}
+        error={error?.message}
       />
       {menuPortal(
         <GitHubConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />

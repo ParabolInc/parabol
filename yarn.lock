@@ -4523,10 +4523,10 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.4.0.tgz#388c29614cf72aa0dd9803c77c9c9d070bd3cd2d"
   integrity sha512-TnPI97WVAxo8SQcPy8aV3OF9/2WjXB5/+pRNVudIWR7Bhi5ZjtR/ur162So08GkvsvB914AXCW2sxFh1x6KhHA==
 
-"@mattkrick/trebuchet-client@3.0.4":
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.4.tgz#28e1e60dc86ef06d16ffebc3cd0287ac4e18cd34"
-  integrity sha512-h7kmdreiMiCDkJqHW2UjSPXkMnM4En42yxXGdymKFl2V3DMlowGn5WXIdSPf/eq11knw0VDonlXkr5GBmUA8tw==
+"@mattkrick/trebuchet-client@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-3.0.5.tgz#88da3f0cf1ebad933db16a5e7779de752dbe4f0e"
+  integrity sha512-txaEiJrV+GuTT05TbM4YRTDBoCT5YG7ZTDghXH5oXHTehzfL5sIcO2eDDxzuXvI45gQRwVwsC9CG3egdvtnn9g==
   dependencies:
     eventemitter3 "^5.0.1"
     tslib "^2.6.2"
@@ -14920,10 +14920,10 @@ io-ts@^2.2.20:
   resolved "https://registry.yarnpkg.com/io-ts/-/io-ts-2.2.21.tgz#4ef754176f7082a1099d04c7d5c4ea53267c530a"
   integrity sha512-zz2Z69v9ZIC3mMLYWIeoUcwWD6f+O7yP92FMVVaXEOSZH1jnVBmET/urd/uoarD1WGBY4rCj8TAyMPzsGNzMFQ==
 
-ioredis@^5.2.3:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-5.4.1.tgz#1c56b70b759f01465913887375ed809134296f40"
-  integrity sha512-2YZsvl7jopIa1gaePkeMtd9rAcSjOOjPtpcLlOeusyO+XH2SK5ZcT+UCrElPP+WVIInh2TzeI4XW9ENaSLVVHA==
+ioredis@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-5.5.0.tgz#ff2332e125ca2ac8e15472ddd14ecdffa6484a2a"
+  integrity sha512-7CutT89g23FfSa8MDoIFs2GYYa0PaNiW/OrT+nRyjRXHDZd17HmIgy+reOQ/yhh72NznNjGuS8kbCAcA4Ro4mw==
   dependencies:
     "@ioredis/commands" "^1.1.1"
     cluster-key-slot "^1.1.0"

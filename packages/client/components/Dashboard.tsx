@@ -21,6 +21,14 @@ import SwipeableDashSidebar from './SwipeableDashSidebar'
 const MeetingsDash = lazy(
   () => import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
 )
+
+const NewMeetingSummary = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'NewMeetingSummaryRoot' */ '../modules/summary/components/NewMeetingSummaryRoot'
+    )
+)
+
 const UserDashboard = lazy(
   () =>
     import(
@@ -36,6 +44,11 @@ const NewTeam = lazy(
       /* webpackChunkName: 'NewTeamRoot' */ '../modules/newTeam/containers/NewTeamForm/NewTeamRoot'
     )
 )
+
+const ShareTopicRouterRoot = lazy(
+  () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
+)
+
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
 }
@@ -156,6 +169,8 @@ const Dashboard = (props: Props) => {
             />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+            <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRouterRoot} />
+            <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
           </Switch>
         </DashMain>
       </DashPanel>

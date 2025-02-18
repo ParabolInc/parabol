@@ -1,13 +1,30 @@
-import {mergeAttributes, type Editor} from '@tiptap/core'
+import {getMarkRange, getMarkType, mergeAttributes, type Editor} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
-import {Plugin} from '@tiptap/pm/state'
+import {EditorState, Plugin} from '@tiptap/pm/state'
 import {EditorView} from '@tiptap/pm/view'
-import {LinkMenuState} from './TipTapLinkMenu'
+
+export type LinkMenuState = 'preview' | 'edit' | null
 
 declare module '@tiptap/core' {
   interface EditorEvents {
     linkStateChange: {editor: Editor; linkState: LinkMenuState}
   }
+
+  interface Commands<ReturnType> {
+    upsertLink: {
+      upsertLink: (link: {text: string; url: string}) => ReturnType
+    }
+    removeLink: {
+      removeLink: () => ReturnType
+    }
+  }
+}
+
+export const getRangeForType = (state: EditorState, typeOrName: string) => {
+  const {selection, schema} = state
+  const {$from} = selection
+  const type = getMarkType(typeOrName, schema)
+  return getMarkRange($from, type)
 }
 
 export const TiptapLinkExtension = BaseLink.extend({
@@ -19,6 +36,60 @@ export const TiptapLinkExtension = BaseLink.extend({
         this.editor.emit('linkStateChange', {editor: this.editor, linkState: 'edit'})
         return true
       }
+    }
+  },
+  addCommands(this) {
+    return {
+      ...this.parent?.(),
+      upsertLink:
+        ({text, url}) =>
+        ({chain, state}) => {
+          const range = getRangeForType(state, 'link')
+          if (!range) {
+            const {selection} = state
+            const {from} = selection
+            const nextTo = from + text.length
+            // adding a new link
+            return chain()
+              .focus()
+              .command(({tr}) => {
+                tr.insertText(text)
+                return true
+              })
+              .setTextSelection({
+                from,
+                to: nextTo
+              })
+              .setLink({href: url, target: '_blank'})
+              .setTextSelection({from: nextTo, to: nextTo})
+              .run()
+          }
+          const {from} = range
+          const to = from + text.length
+          return chain()
+            .focus()
+            .setTextSelection(range)
+            .insertContent(text)
+            .setTextSelection({
+              from,
+              to
+            })
+            .setLink({href: url, target: '_blank'})
+            .setTextSelection({from: to, to})
+            .run()
+        },
+      removeLink:
+        () =>
+        ({state, chain}) => {
+          const range = getRangeForType(state, 'link')
+          if (!range) return false
+          return chain()
+            .focus()
+            .extendMarkRange('link')
+            .unsetLink()
+            .setTextSelection({from: range.to, to: range.to})
+            .run()
+        }
     }
   },
   parseHTML() {
