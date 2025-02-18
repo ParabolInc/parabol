@@ -62,8 +62,8 @@ export const useTipTapPageEditor = (
     {
       content: '',
       extensions: [
-        StarterKit.configure({document: false, history: false}),
         CustomDocument,
+        StarterKit.configure({document: false, history: false}),
         Underline,
         TaskList,
         TaskItem.configure({
@@ -114,7 +114,8 @@ export const useTipTapPageEditor = (
     if (!pageId) return
     new TiptapCollabProvider({
       websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      name: `page.${pageId}`,
+      token: atmosphere.authToken,
+      name: `page:${pageId}`,
       document: doc
     })
   }, [])

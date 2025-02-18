@@ -9,7 +9,7 @@ export const Page = (_props: Props) => {
   const {params} = match
   const {pageId} = params
   const {editor} = useTipTapPageEditor(pageId, {})
-  if (!editor) return null
+  if (!editor) return <div>No editor</div>
   if (!pageId) return <div>No page ID provided in route</div>
   return (
     <div className='tems-center flex h-full w-full justify-center bg-slate-200 pt-2'>
