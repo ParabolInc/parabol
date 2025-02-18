@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.27.0](https://github.com/ParabolInc/parabol/compare/v8.26.3...v8.27.0) (2025-02-18)
+
+
+### Added
+
+* **Mattermost Plugin:** TipTap link menu ([#10863](https://github.com/ParabolInc/parabol/issues/10863)) ([5593b75](https://github.com/ParabolInc/parabol/commit/5593b75b6b74a3b3fcd777925e1a09e1506ea239))
+
+
+### Fixed
+
+* empty discussion stages ([#10836](https://github.com/ParabolInc/parabol/issues/10836)) ([2b4d134](https://github.com/ParabolInc/parabol/commit/2b4d134f33316bc7ccb8cfb82ceefc7aafd720e3))
+* Failed to execute `removeChild` ([#10886](https://github.com/ParabolInc/parabol/issues/10886)) ([ddff9dd](https://github.com/ParabolInc/parabol/commit/ddff9ddae059edd0c5d18247561276eda75a4d7b))
+
+
+### Changed
+
+* update target GCS bucket for IB action ([#10882](https://github.com/ParabolInc/parabol/issues/10882)) ([3fb8e5c](https://github.com/ParabolInc/parabol/commit/3fb8e5ce5e561bda44d967639a85753fb2caf9c7))
+
 ## [8.26.3](https://github.com/ParabolInc/parabol/compare/v8.26.2...v8.26.3) (2025-02-14)
 
 
