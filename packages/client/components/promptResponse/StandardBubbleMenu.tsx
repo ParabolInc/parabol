@@ -20,7 +20,11 @@ export const StandardBubbleMenu = (props: Props) => {
   // wrapping in div is necessary, https://github.com/ueberdosis/tiptap/issues/3784
   return (
     <div>
-      <BubbleMenu editor={editor} tippyOptions={{duration: 100}} shouldShow={shouldShowBubbleMenu}>
+      <BubbleMenu
+        editor={editor}
+        tippyOptions={{duration: 100, role: 'dialog'}}
+        shouldShow={shouldShowBubbleMenu}
+      >
         <div className='flex items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]'>
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}

@@ -1,10 +1,13 @@
-import * as Popover from '@radix-ui/react-popover'
 import type {EditorEvents} from '@tiptap/core'
 import {Editor, getTextBetween, useEditorState} from '@tiptap/react'
+import {
+  getRangeForType,
+  LinkMenuState
+} from 'parabol-client/components/promptResponse/TiptapLinkExtension'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {TipTapLinkEditor} from './TipTapLinkEditor'
-import {TipTapLinkPreview} from './TipTapLinkPreview'
-import {getRangeForType, LinkMenuState} from './TiptapLinkExtension'
+import {Popover} from 'react-bootstrap'
+import {TipTapLinkEditor} from './LinkEditor'
+import {TipTapLinkPreview} from './LinkPreview'
 
 const getContent = (editor: Editor, typeOrName: string) => {
   const range = getRangeForType(editor.state, typeOrName)
@@ -16,7 +19,7 @@ interface Props {
   editor: Editor
   useLinkEditor?: () => void
 }
-export const TipTapLinkMenu = (props: Props) => {
+export const LinkMenu = (props: Props) => {
   const {editor, useLinkEditor} = props
   const [linkState, _setLinkState] = useState<LinkMenuState>(null)
 
@@ -70,56 +73,42 @@ export const TipTapLinkMenu = (props: Props) => {
     editor.commands.removeLink()
     setLinkState(null)
   }, [editor])
-  const onOpenChange = (willOpen: boolean) => {
-    const isLinkActive = editor.isActive('link')
-    if (willOpen) {
-      setLinkState(isLinkActive ? 'preview' : 'edit')
-    } else {
-      // special case when switching from preview to edit radix-ui triggers onOpenChange(false)
-      if (!(oldLinkStateRef.current === 'preview' && linkState === 'edit')) {
-        setLinkState(null)
-      }
-      oldLinkStateRef.current = null
-    }
-  }
-  const transformRef = useRef<undefined | string>(undefined)
+
+  const transformRef = useRef<{left?: string; top?: string}>({})
   const getTransform = () => {
     const coords = editor.view.coordsAtPos(editor.state.selection.from)
+    const viewCoords = editor.view.dom.getBoundingClientRect()
     const {left, top} = coords
     if (left !== 0 && top !== 0) {
-      transformRef.current = `translate(${coords.left}px,${coords.top + 20}px)`
+      const left = coords.left - viewCoords.left
+      const top = coords.top
+      transformRef.current = {left: `${left}px`, top: `${top}px`}
     }
     return transformRef.current
   }
   if (!linkState) return null
   return (
-    <Popover.Root open onOpenChange={onOpenChange}>
-      <Popover.Trigger asChild />
-      <Popover.Portal>
-        <Popover.Content
-          asChild
-          onOpenAutoFocus={(e) => {
-            // necessary for link preview to prevent focusing the first button
-            e.preventDefault()
-          }}
-        >
-          <div className='absolute top-0 left-0 z-10' style={{transform: getTransform()}}>
-            {linkState === 'edit' && (
-              <TipTapLinkEditor
-                initialUrl={link}
-                initialText={text}
-                onSetLink={onSetLink}
-                useLinkEditor={useLinkEditor}
-              />
-            )}
-            {linkState === 'preview' && (
-              <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />
-            )}
-          </div>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <Popover
+      placement='bottom'
+      className='fixed p-0'
+      positionLeft={getTransform().left}
+      positionTop={getTransform().top}
+    >
+      <div>
+        {linkState === 'edit' && (
+          <TipTapLinkEditor
+            initialUrl={link}
+            initialText={text}
+            onSetLink={onSetLink}
+            useLinkEditor={useLinkEditor}
+          />
+        )}
+        {linkState === 'preview' && (
+          <TipTapLinkPreview url={link} onClear={onUnsetLink} onEdit={handleEdit} />
+        )}
+      </div>
+    </Popover>
   )
 }
 
-export default TipTapLinkMenu
+export default LinkMenu
