@@ -132,6 +132,7 @@
           "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",
+          "Page": "../../postgres/types/index#Page",
           "PokerMeeting": "../../postgres/types/Meeting#PokerMeeting",
           "PokerMeetingMember": "../../postgres/types/Meeting.d#PokerMeetingMember as PokerMeetingMemberDB",
           "PokerMeetingSettings": "../../postgres/types/index#PokerMeetingSettings as PokerMeetingSettingsDB",

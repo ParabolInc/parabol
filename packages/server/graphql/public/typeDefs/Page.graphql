@@ -1,0 +1,9 @@
+type Page {
+  id: String!
+  userId: ID!
+  # yDoc is binary and not part of GraphQL. It must be requested using the y.js protocol
+  title: String!
+  plaintextContent: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
