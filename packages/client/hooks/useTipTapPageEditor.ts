@@ -2,6 +2,7 @@ import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/p
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
+import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Document from '@tiptap/extension-document'
 import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
@@ -11,7 +12,7 @@ import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
 import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useEffect, useRef, useState} from 'react'
+import {useRef, useState} from 'react'
 import * as Y from 'yjs'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
@@ -51,7 +52,7 @@ export const useTipTapPageEditor = (
   const {teamId, placeholder} = options
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
-  const [doc] = useState(() => {
+  const [document] = useState(() => {
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
     // update the URL to match the title
@@ -78,6 +79,15 @@ export const useTipTapPageEditor = (
   })
   const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
+  // Connect to your Collaboration server
+  const provider = useState(() => {
+    if (!pageId) return
+    return new TiptapCollabProvider({
+      websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
+      name: `page:${pageId}`,
+      document
+    })
+  })
   const editor = useEditor(
     {
       content: '',
@@ -122,7 +132,14 @@ export const useTipTapPageEditor = (
           limit: 1900
         }),
         Collaboration.configure({
-          document: doc // Configure Y.Doc for collaboration
+          document
+        }),
+        CollaborationCursor.configure({
+          provider,
+          user: {
+            name: 'Cyndi Lauper',
+            color: '#f783ac'
+          }
         })
       ],
       autofocus: true,
@@ -130,15 +147,5 @@ export const useTipTapPageEditor = (
     },
     []
   )
-  // Connect to your Collaboration server
-  useEffect(() => {
-    if (!pageId) return
-    new TiptapCollabProvider({
-      websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      name: `page:${pageId}`,
-      document: doc
-    })
-  }, [])
-
   return {editor}
 }
