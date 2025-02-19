@@ -9,13 +9,14 @@ import Placeholder from '@tiptap/extension-placeholder'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
-import {useEditor} from '@tiptap/react'
+import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useEffect, useRef, useState} from 'react'
 import * as Y from 'yjs'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
-import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
+import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import {toSlug} from '../shared/toSlug'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
@@ -23,11 +24,7 @@ import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
-
-const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
-  return !!obj
-}
-// const CustomDocument =
+import useRouter from './useRouter'
 
 let socket: TiptapCollabProviderWebsocket
 const makeHocusPocusSocket = (authToken: string | null) => {
@@ -53,7 +50,32 @@ export const useTipTapPageEditor = (
 ) => {
   const {teamId, placeholder} = options
   const atmosphere = useAtmosphere()
-  const [doc] = useState(() => new Y.Doc())
+  const {history} = useRouter<{meetingId: string}>()
+  const [doc] = useState(() => {
+    const doc = new Y.Doc()
+    const frag = doc.getXmlFragment('default')
+    // update the URL to match the title
+    frag.observeDeep((events) => {
+      const docBlock = frag.get(0)
+      const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
+      for (const event of events) {
+        for (const delta of event.delta) {
+          if (delta.insert || delta.retain || delta.delete) {
+            if (event.target === headerBlock) {
+              const plaintext = generateText(
+                generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
+                serverTipTapExtensions
+              )
+              const slug = toSlug(plaintext)
+              const prefix = slug ? `${slug}-` : ''
+              history.replace(`/pages/${prefix}${pageId}`)
+            }
+          }
+        }
+      }
+    })
+    return doc
+  })
   const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
   const editor = useEditor(
@@ -102,7 +124,7 @@ export const useTipTapPageEditor = (
         Collaboration.configure({
           document: doc // Configure Y.Doc for collaboration
         })
-      ].filter(isValid),
+      ],
       autofocus: true,
       editable: true
     },

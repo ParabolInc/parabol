@@ -5,12 +5,14 @@ import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 interface Props {}
 
 export const Page = (_props: Props) => {
-  const {match} = useRouter<{orgName: string; pageId: number}>()
+  const {match} = useRouter<{orgName: string; pageSlug: string}>()
   const {params} = match
-  const {pageId} = params
+  const {pageSlug} = params
+  const pageIdIdx = pageSlug.lastIndexOf('-')
+  const pageId = Number(pageIdIdx === -1 ? pageSlug : pageSlug.slice(pageIdIdx + 1))
   const {editor} = useTipTapPageEditor(pageId, {})
   if (!editor) return <div>No editor</div>
-  if (!pageId) return <div>No page ID provided in route</div>
+  if (!pageSlug) return <div>No page ID provided in route</div>
   return (
     <div className='tems-center flex h-full w-full justify-center bg-slate-200 pt-2'>
       <div className='flex w-full max-w-[960px] justify-center bg-white pt-28'>
