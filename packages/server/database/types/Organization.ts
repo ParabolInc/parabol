@@ -13,7 +13,6 @@ interface Input {
   picture?: string
   tier?: TierEnum
   updatedAt?: Date
-  showConversionModal?: boolean
   payLaterClickCount?: number
   useAI?: boolean
 }
@@ -29,7 +28,6 @@ export default class Organization {
   periodEnd?: Date
   periodStart?: Date
   picture?: string
-  showConversionModal?: boolean
   stripeId?: string
   stripeSubscriptionId?: string | null
   upcomingInvoiceEmailSentAt?: Date
@@ -49,7 +47,6 @@ export default class Organization {
       updatedAt,
       creditCard,
       name,
-      showConversionModal,
       payLaterClickCount,
       picture,
       tier,
@@ -64,7 +61,6 @@ export default class Organization {
     this.name = name
     this.tier = tier ?? defaultTier
     this.picture = picture
-    this.showConversionModal = showConversionModal === null ? undefined : showConversionModal
     this.payLaterClickCount = payLaterClickCount || 0
     this.useAI = useAI ?? true
   }

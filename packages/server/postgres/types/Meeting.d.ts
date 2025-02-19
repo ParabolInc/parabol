@@ -29,7 +29,6 @@ type BaseNewMeeting = Pick<
   | 'summarySentAt'
   | 'teamId'
   | 'meetingType'
-  | 'showConversionModal'
   | 'meetingSeriesId'
   | 'scheduledEndTime'
   | 'summary'

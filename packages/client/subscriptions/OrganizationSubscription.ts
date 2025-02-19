@@ -36,17 +36,8 @@ const subscription = graphql`
       ArchiveOrganizationPayload {
         ...ArchiveOrganizationMutation_organization @relay(mask: false)
       }
-      PayLaterPayload {
-        ...PayLaterMutation_organization @relay(mask: false)
-      }
-      OldUpdateCreditCardPayload {
-        ...OldUpdateCreditCardMutation_organization @relay(mask: false)
-      }
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
-      }
-      OldUpgradeToTeamTierPayload {
-        ...OldUpgradeToTeamTierMutation_organization @relay(mask: false)
       }
       UpgradeToTeamTierSuccess {
         ...UpgradeToTeamTierFrag_organization @relay(mask: false)

@@ -103,11 +103,6 @@ type Organization {
   retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
 
   """
-  true if should show the org the conversion modal, else false
-  """
-  showConversionModal: Boolean!
-
-  """
   The customerId from stripe
   """
   stripeId: ID

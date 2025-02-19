@@ -299,7 +299,6 @@ const initDemoOrg = () => {
     hasSuggestGroupsFlag: false,
     hasZoomFlag: false,
     tierLimitExceededAt: null,
-    showConversionModal: false,
     useAI: true
     // viewerOrganizationUser
   } as const
@@ -517,7 +516,6 @@ const initNewMeeting = (
     meetingMember: viewerMeetingMember,
     name: 'Retro Meeting',
     organization,
-    showConversionModal: false,
     meetingMembers,
     nextAutoGroupThreshold: null,
     viewerMeetingMember,

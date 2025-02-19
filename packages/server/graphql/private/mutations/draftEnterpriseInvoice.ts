@@ -9,7 +9,6 @@ import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
 const getBillingLeaderUser = async (
@@ -146,11 +145,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
-  await Promise.all([
-    setUserTierForOrgId(orgId),
-    setTierForOrgUsers(orgId),
-    hideConversionModal(orgId, dataLoader)
-  ])
+  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
   analytics.organizationUpgraded(user, {
     orgId,
     domain: org.activeDomain || undefined,
