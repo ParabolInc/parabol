@@ -1,7 +1,6 @@
 import {mergeAttributes, type Editor} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import {Plugin} from '@tiptap/pm/state'
-import {EditorView} from '@tiptap/pm/view'
 import {LinkMenuState} from './TipTapLinkMenu'
 
 declare module '@tiptap/core' {
@@ -39,7 +38,7 @@ export const TiptapLinkExtension = BaseLink.extend({
       ...(this.parent?.() || []),
       new Plugin({
         props: {
-          handleKeyDown: (_view: EditorView, event: KeyboardEvent) => {
+          handleKeyDown: (_view, event) => {
             const {selection} = editor.state
             if (event.key === 'Escape' && selection.empty !== true) {
               editor.commands.focus(selection.to, {scrollIntoView: false})

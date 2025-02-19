@@ -70,7 +70,8 @@
     "fbjs": "^3.0.0",
     "parse-url": "^8.1.0",
     "recursive-readdir": "^2.2.3",
-    "axios": "^1.7.8"
+    "axios": "^1.7.8",
+    "prosemirror-model": "^1.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

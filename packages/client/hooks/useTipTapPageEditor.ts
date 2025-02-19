@@ -27,9 +27,7 @@ import useAtmosphere from './useAtmosphere'
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
 }
-const CustomDocument = Document.extend({
-  content: 'heading block*'
-})
+// const CustomDocument =
 
 let socket: TiptapCollabProviderWebsocket
 const makeHocusPocusSocket = (authToken: string | null) => {
@@ -62,7 +60,9 @@ export const useTipTapPageEditor = (
     {
       content: '',
       extensions: [
-        CustomDocument,
+        Document.extend({
+          content: 'heading block*'
+        }),
         StarterKit.configure({document: false, history: false}),
         Underline,
         TaskList,
@@ -101,8 +101,7 @@ export const useTipTapPageEditor = (
         }),
         Collaboration.configure({
           document: doc // Configure Y.Doc for collaboration
-        }),
-        CustomDocument
+        })
       ].filter(isValid),
       autofocus: true,
       editable: true
@@ -114,7 +113,6 @@ export const useTipTapPageEditor = (
     if (!pageId) return
     new TiptapCollabProvider({
       websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      token: atmosphere.authToken,
       name: `page:${pageId}`,
       document: doc
     })
