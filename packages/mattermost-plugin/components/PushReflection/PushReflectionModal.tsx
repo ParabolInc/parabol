@@ -11,7 +11,6 @@ import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 
 import {Post} from 'mattermost-redux/types/posts'
-import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
@@ -22,6 +21,7 @@ import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} fr
 import {getPluginServerRoute, getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
+import {TipTapEditor} from '../TipTap/Editor'
 
 const PostUtils = (window as any).PostUtils
 
@@ -207,6 +207,14 @@ const PushReflectionModal = () => {
         }
       } as Partial<Post>)
     })
+    /*
+    TODO update to this call once https://github.com/mattermost/mattermost/pull/30117 was released
+    Client4.createPostEphemeral(mmUser.id, {
+      channel_id: post.channel_id,
+      root_id: post.root_id || post.id,
+      props
+    })
+     */
 
     handleClose()
   }

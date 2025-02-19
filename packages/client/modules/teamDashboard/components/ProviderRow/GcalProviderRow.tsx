@@ -36,7 +36,7 @@ const GcalProviderRow = (props: Props) => {
   const {viewerRef, teamId} = props
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
-  const {submitting} = mutationProps
+  const {submitting, error} = mutationProps
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const viewer = useFragment(
@@ -74,6 +74,7 @@ const GcalProviderRow = (props: Props) => {
         providerName={Providers.GCAL_NAME}
         providerDescription={Providers.GCAL_DESC}
         providerLogo={<GcalProviderLogo />}
+        error={error?.message}
       />
       {menuPortal(
         <GcalConfigMenu menuProps={menuProps} mutationProps={mutationProps} teamId={teamId} />

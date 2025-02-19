@@ -52,7 +52,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
     viewerRef
   )
   const atmosphere = useAtmosphere()
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
@@ -78,6 +78,7 @@ const AzureDevOpsProviderRow = (props: Props) => {
         providerName={Providers.AZUREDEVOPS_NAME}
         providerDescription={Providers.AZUREDEVOPS_DESC}
         providerLogo={<AzureDevOpsProviderLogo />}
+        error={error?.message}
       />
       {menuPortal(
         <AzureDevOpsConfigMenu
