@@ -116,6 +116,7 @@ const Dashboard = (props: Props) => {
           ...MobileDashSidebar_viewer
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
+          ...useTipTapPageEditor_viewer
           overLimitCopy
           teams {
             activeMeetings {
@@ -172,7 +173,10 @@ const Dashboard = (props: Props) => {
             />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-            <Route path='/pages/:pageSlug' component={Page} />
+            <Route
+              path='/pages/:pageSlug'
+              render={(routeProps) => <Page {...routeProps} viewerRef={viewer} />}
+            />
             <Route path='/pages' component={MakePage} />
             <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRouterRoot} />
             <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />

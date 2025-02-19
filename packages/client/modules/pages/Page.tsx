@@ -1,16 +1,20 @@
+import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
 import useRouter from '../../hooks/useRouter'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 
-interface Props {}
+interface Props {
+  viewerRef: useTipTapPageEditor_viewer$key | null
+}
 
-export const Page = (_props: Props) => {
+export const Page = (props: Props) => {
+  const {viewerRef} = props
   const {match} = useRouter<{orgName: string; pageSlug: string}>()
   const {params} = match
   const {pageSlug} = params
   const pageIdIdx = pageSlug.lastIndexOf('-')
   const pageId = Number(pageIdIdx === -1 ? pageSlug : pageSlug.slice(pageIdIdx + 1))
-  const {editor} = useTipTapPageEditor(pageId, {})
+  const {editor} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
   if (!pageSlug) return <div>No page ID provided in route</div>
   return (

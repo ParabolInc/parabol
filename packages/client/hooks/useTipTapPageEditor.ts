@@ -12,10 +12,14 @@ import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
 import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useRef, useState} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
+import {readInlineData} from 'relay-runtime'
 import * as Y from 'yjs'
+import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
+import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
@@ -27,6 +31,7 @@ import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
+const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 let socket: TiptapCollabProviderWebsocket
 const makeHocusPocusSocket = (authToken: string | null) => {
   if (!socket) {
@@ -45,11 +50,20 @@ const makeHocusPocusSocket = (authToken: string | null) => {
 export const useTipTapPageEditor = (
   pageId: number,
   options: {
+    viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
-    placeholder?: string
   }
 ) => {
-  const {teamId, placeholder} = options
+  const {viewerRef, teamId} = options
+  const user = readInlineData(
+    graphql`
+      fragment useTipTapPageEditor_viewer on User @inline {
+        preferredName
+      }
+    `,
+    viewerRef
+  )
+  const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
   const [document] = useState(() => {
@@ -77,10 +91,8 @@ export const useTipTapPageEditor = (
     })
     return doc
   })
-  const placeholderRef = useRef(placeholder)
-  placeholderRef.current = placeholder
   // Connect to your Collaboration server
-  const provider = useState(() => {
+  const [provider] = useState(() => {
     if (!pageId) return
     return new TiptapCollabProvider({
       websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
@@ -115,9 +127,7 @@ export const useTipTapPageEditor = (
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
-          placeholder: () => {
-            return placeholderRef.current || 'New page'
-          }
+          placeholder: 'New page'
         }),
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
@@ -137,8 +147,8 @@ export const useTipTapPageEditor = (
         CollaborationCursor.configure({
           provider,
           user: {
-            name: 'Cyndi Lauper',
-            color: '#f783ac'
+            name: preferredName,
+            color: `#${themeBackgroundColors[colorIdx]}`
           }
         })
       ],

@@ -71,7 +71,8 @@
     "parse-url": "^8.1.0",
     "recursive-readdir": "^2.2.3",
     "axios": "^1.7.8",
-    "prosemirror-model": "^1.24.1"
+    "prosemirror-model": "^1.24.1",
+    "prosemirror-view": "^1.38.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
