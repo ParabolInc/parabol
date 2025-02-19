@@ -1,4 +1,5 @@
 import DataLoader from 'dataloader'
+import {Selectable, sql} from 'kysely'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
@@ -8,7 +9,7 @@ import getIntegrationProvidersByIds, {
 } from '../postgres/queries/getIntegrationProvidersByIds'
 import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../postgres/select'
 import {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
-import {NotificationSettings} from '../postgres/types/pg'
+import {TeamNotificationSettings} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader from './RootDataLoader'
 
@@ -164,9 +165,9 @@ export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
   })
 }
 
-export const teamMemberIntegrationAuthsByTeamIdAndEvent = (parent: RootDataLoader) => {
+export const teamMemberIntegrationAuthsByTeamIdAndService = (parent: RootDataLoader) => {
   return new DataLoader<
-    {teamId: string; service: IntegrationProviderServiceEnum; event: SlackNotification['event']},
+    {teamId: string; service: IntegrationProviderServiceEnum},
     TeamMemberIntegrationAuth[],
     string
   >(
@@ -174,13 +175,12 @@ export const teamMemberIntegrationAuthsByTeamIdAndEvent = (parent: RootDataLoade
       const pg = getKysely()
       const res = (await pg
         .selectFrom('TeamMemberIntegrationAuth')
-        .innerJoin('NotificationSettings', 'authId', 'TeamMemberIntegrationAuth.id')
         .selectAll()
         .where(({eb, refTuple, tuple}) =>
           eb(
-            refTuple('teamId', 'service', 'event'),
+            refTuple('teamId', 'service'),
             'in',
-            keys.map(({teamId, service, event}) => tuple(teamId, service, event))
+            keys.map(({teamId, service}) => tuple(teamId, service))
           )
         )
         .execute()) as unknown as TeamMemberIntegrationAuth[]
@@ -196,17 +196,33 @@ export const teamMemberIntegrationAuthsByTeamIdAndEvent = (parent: RootDataLoade
   )
 }
 
-export const notificationSettingsByAuthId = (parent: RootDataLoader) => {
-  return new DataLoader<number, NotificationSettings['event'][], string>(
+export const notificationSettingsByProviderIdAndTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {providerId: number; teamId: string},
+    Selectable<TeamNotificationSettings>['events'],
+    string
+  >(
     async (keys) => {
       const pg = getKysely()
       const res = await pg
-        .selectFrom('NotificationSettings')
+        .selectFrom('TeamNotificationSettings')
         .selectAll()
-        .where(({eb}) => eb('authId', 'in', keys))
+        // convert to text[] as kysely would otherwise not parse the array
+        .select(sql<TeamNotificationSettings['events']>`events::text[]`.as('events'))
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('providerId', 'teamId'),
+            'in',
+            keys.map(({providerId, teamId}) => tuple(providerId, teamId))
+          )
+        )
         .execute()
 
-      return keys.map((key) => res.filter(({authId}) => authId === key).map(({event}) => event))
+      return keys.map(
+        (key) =>
+          res.find(({providerId, teamId}) => providerId === key.providerId && teamId === key.teamId)
+            ?.events || []
+      )
     },
     {
       ...parent.dataLoaderOptions
