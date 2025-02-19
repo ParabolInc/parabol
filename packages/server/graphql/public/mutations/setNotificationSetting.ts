@@ -22,7 +22,7 @@ const setNotificationSetting: MutationResolvers['setNotificationSetting'] = asyn
   if (!auth) {
     return standardError(new Error('Integration auth not found'), {userId: viewerId})
   }
-  const {teamId, service} = auth
+  const {providerId, teamId, service} = auth
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
   }
@@ -35,18 +35,24 @@ const setNotificationSetting: MutationResolvers['setNotificationSetting'] = asyn
   // RESOLUTION
   if (isEnabled) {
     await pg
-      .insertInto('NotificationSettings')
-      .values({authId, event})
-      .onConflict((oc) => oc.doNothing())
+      .updateTable('TeamNotificationSettings')
+      .set(({fn, val}) => ({
+        events: fn('arr_append_uniq', ['events', val(event)])
+      }))
+      .where('providerId', '=', providerId)
+      .where('teamId', '=', teamId)
       .execute()
   } else {
     await pg
-      .deleteFrom('NotificationSettings')
-      .where('authId', '=', authId)
-      .where('event', '=', event)
+      .updateTable('TeamNotificationSettings')
+      .set(({fn, val}) => ({
+        events: fn('array_remove', ['events', val(event)])
+      }))
+      .where('providerId', '=', providerId)
+      .where('teamId', '=', teamId)
       .execute()
   }
-  const data = {authId}
+  const data = {authId, providerId, teamId}
   publish(SubscriptionChannel.TEAM, teamId, 'SetNotificationSettingSuccess', data, subOptions)
   return data
 }
