@@ -32,6 +32,10 @@ import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
+import {
+  removeMultipleOrgUsersTeamOnNext,
+  removeMultipleOrgUsersTeamUpdater
+} from '../mutations/RemoveMultipleOrgUsersMutation'
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
 import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
 import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
@@ -125,6 +129,9 @@ const subscription = graphql`
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_team @relay(mask: false)
       }
+      RemoveMultipleOrgUsersSuccess {
+        ...RemoveMultipleOrgUsersMutation_team @relay(mask: false)
+      }
       RemoveReflectTemplatePayload {
         ...RemoveReflectTemplateMutation_team @relay(mask: false)
       }
@@ -200,6 +207,7 @@ const onNextHandlers = {
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
+  RemoveMultipleOrgUsersSuccess: removeMultipleOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
 } as const
@@ -222,6 +230,7 @@ const updateHandlers = {
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
+  RemoveMultipleOrgUsersSuccess: removeMultipleOrgUsersTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
