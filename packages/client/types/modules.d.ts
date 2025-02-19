@@ -23,6 +23,7 @@ declare let __webpack_public_path__: string
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
 declare const __SOCKET_PORT__: string
+declare const __HOCUS_POCUS_PORT__: string
 interface Window {
   __ACTION__: {
     atlassian: string
