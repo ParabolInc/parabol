@@ -1,8 +1,0 @@
-type FlagConversionModalPayload {
-  error: StandardMutationError
-
-  """
-  the org with the limit added or removed
-  """
-  org: Organization
-}

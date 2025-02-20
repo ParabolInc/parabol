@@ -305,8 +305,6 @@ const User: ReqResolvers<'User'> = {
     return suggestedActions
   },
 
-  payLaterClickCount: ({payLaterClickCount}) => payLaterClickCount || 0,
-
   timeline: async (
     {id},
     {after, first, teamIds, eventTypes, archived},

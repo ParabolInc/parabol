@@ -42,9 +42,6 @@ import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
-import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
-import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
-import payLater from './mutations/payLater'
 import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
@@ -142,7 +139,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       movePokerTemplateDimension,
       moveTeamToOrg,
       navigateMeeting,
-      payLater,
       persistJiraSearchQuery,
       pushInvitation,
       promoteNewMeetingFacilitator,
@@ -171,7 +167,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
-      oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,
@@ -184,7 +179,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTaskDueDate,
       updateTeamName,
       updateTemplateScope,
-      oldUpgradeToTeamTier,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,

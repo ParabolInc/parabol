@@ -126,11 +126,6 @@ type User {
   suggestedActions: [SuggestedAction!]!
 
   """
-  the number of times the user clicked pay later
-  """
-  payLaterClickCount: Int!
-
-  """
   The timeline of important events for the viewer
   """
   timeline(

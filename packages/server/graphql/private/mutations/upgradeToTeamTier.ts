@@ -10,14 +10,12 @@ import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
-import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
 // included here to codegen has access to it
 export type UpgradeToTeamTierSuccessSource = {
   orgId: string
   teamIds: string[]
-  meetingIds: string[]
 }
 
 const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
@@ -95,9 +93,6 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
 
-  const activeMeetings = await hideConversionModal(orgId, dataLoader)
-  const meetingIds = activeMeetings.map(({id}) => id)
-
   await pg
     .updateTable('OrganizationUser')
     .set({role: 'BILLING_LEADER'})
@@ -116,7 +111,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     oldTier: 'starter',
     newTier: 'team'
   })
-  const data = {orgId, teamIds, meetingIds}
+  const data = {orgId, teamIds}
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'UpgradeToTeamTierSuccess', data, subOptions)
 
   return data

@@ -74,7 +74,6 @@ const NewMeeting: NewMeetingResolvers = {
     }
     return resolvedPhases
   },
-  showConversionModal: ({showConversionModal}) => !!showConversionModal,
   team: ({teamId}, _args, {dataLoader}) => dataLoader.get('teams').loadNonNull(teamId),
   viewerMeetingMember: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

@@ -9,7 +9,6 @@ interface Input {
   name: string
   phases: [RetroMeetingPhase, ...RetroMeetingPhase[]]
   facilitatorUserId: string
-  showConversionModal?: boolean | null
   templateId: string
   totalVotes: number
   maxVotesPerGroup: number
@@ -25,7 +24,6 @@ interface Input {
 
 export default class MeetingRetrospective extends Meeting {
   meetingType!: 'retrospective'
-  showConversionModal?: boolean | null
   autoGroupThreshold?: number | null
   nextAutoGroupThreshold?: number | null
   totalVotes: number
@@ -46,7 +44,6 @@ export default class MeetingRetrospective extends Meeting {
   constructor(input: Input) {
     const {
       id,
-      showConversionModal,
       teamId,
       meetingCount,
       name,
@@ -77,7 +74,6 @@ export default class MeetingRetrospective extends Meeting {
     })
     this.totalVotes = totalVotes
     this.maxVotesPerGroup = maxVotesPerGroup
-    this.showConversionModal = showConversionModal
     this.templateId = templateId
     this.disableAnonymity = disableAnonymity
     this.transcription = transcription

@@ -12,7 +12,6 @@ import {Breakpoint} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
-import DiscussPhaseSqueeze from './DiscussPhaseSqueeze'
 import {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadListEmptyTranscriptState from './DiscussionThreadListEmptyTranscriptState'
@@ -142,7 +141,6 @@ const RetroDiscussPhase = (props: Props) => {
     graphql`
       fragment RetroDiscussPhase_meeting on RetrospectiveMeeting {
         ...DiscussPhaseReflectionGrid_meeting
-        ...DiscussPhaseSqueeze_meeting
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
@@ -155,7 +153,6 @@ const RetroDiscussPhase = (props: Props) => {
           words
         }
         organization {
-          ...DiscussPhaseSqueeze_organization
           ...RetroDiscussionThreadHeader_organization
         }
         showSidebar
@@ -206,7 +203,6 @@ const RetroDiscussPhase = (props: Props) => {
   }
   return (
     <MeetingContent ref={callbackRef}>
-      <DiscussPhaseSqueeze meeting={meeting} organization={organization} />
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
