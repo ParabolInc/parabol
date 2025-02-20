@@ -12,6 +12,7 @@ import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
+import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
@@ -32,6 +33,21 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
     zIndex: ZIndex.REFLECTION_IN_FLIGHT
   })
 )
+
+const EnterHint = styled('div')<{visible: boolean}>(({visible}) => ({
+  color: PALETTE.SLATE_600,
+  fontSize: 14,
+  fontStyle: 'italic',
+  fontWeight: 400,
+  lineHeight: '20px',
+  paddingLeft: 16,
+  cursor: 'pointer',
+  visibility: visible ? undefined : 'hidden',
+  opacity: visible ? 1 : 0,
+  height: visible ? 28 : 0,
+  overflow: 'hidden',
+  transition: 'height 300ms, opacity 300ms'
+}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -145,6 +161,27 @@ const PhaseItemEditor = (props: Props) => {
     }
   }, [idleTimerIdRef])
 
+  const [isFocused, setIsFocused] = useState(false)
+  const [enterHint, setEnterHint] = useState('')
+  const hintTimerRef = useRef<number>()
+  // delay setting the enterHint slightly, so when someone presses on the inFocus hint, it doesn't
+  // change to the !inFocus one during the transition
+  useEffect(() => {
+    const visible = !isEditing && !editor?.isEmpty
+    if (visible) {
+      const newEnterHint = isFocused
+        ? 'Press enter to add'
+        : 'Forgot to press enter? Click here to add 👆'
+      hintTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 500)
+      return () => {
+        window.clearTimeout(hintTimerRef.current)
+      }
+    } else {
+      setEnterHint('')
+      return undefined
+    }
+  }, [isFocused, isEditing, editor?.isEmpty])
+
   const ensureNotEditing = () => {
     if (!isEditing) return
     window.clearTimeout(idleTimerIdRef.current)
@@ -173,10 +210,12 @@ const PhaseItemEditor = (props: Props) => {
     }, 5000)
   }
   const onFocus = () => {
+    setIsFocused(true)
     ensureEditing()
     return null
   }
   const onBlur = () => {
+    setIsFocused(false)
     ensureNotEditing()
   }
 
@@ -208,6 +247,9 @@ const PhaseItemEditor = (props: Props) => {
         {disableAnonymity && (
           <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
         )}
+        <EnterHint visible={!!enterHint} onClick={handleSubmit}>
+          {enterHint}
+        </EnterHint>
       </ReflectionCardRoot>
       {portal(
         <>
