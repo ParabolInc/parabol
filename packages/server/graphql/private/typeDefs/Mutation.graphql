@@ -452,6 +452,16 @@ type Mutation {
   ): UserLogInPayload!
 
   """
+  Log in with email from a trusted Mattermost
+  """
+  loginMattermost(
+    """
+    The email of the user
+    """
+    email: Email!
+  ): UserLogInPayload!
+
+  """
   Processes recurrence for meetings that should start and end.
   """
   processRecurrence: ProcessRecurrencePayload!
