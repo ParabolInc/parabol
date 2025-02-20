@@ -2,7 +2,12 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {
+  getUserId,
+  isTeamMember,
+  isUserBillingLeader,
+  isUserOrgAdmin
+} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -31,8 +36,14 @@ const removeReflectTemplate = {
     if (!template || !template.isActive) {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
-    if (!isTeamMember(authToken, template.teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+    const [isBillingLeader, isOrgAdmin] = await Promise.all([
+      isUserBillingLeader(viewerId, template.orgId, dataLoader),
+      isUserOrgAdmin(viewerId, template.orgId, dataLoader)
+    ])
+    if (!isTeamMember(authToken, template.teamId) && !isBillingLeader && !isOrgAdmin) {
+      return standardError(new Error('You are not authorized to remove this template'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
