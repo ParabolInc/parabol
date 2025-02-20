@@ -165,8 +165,6 @@ const PhaseItemEditor = (props: Props) => {
   const [enterHint, setEnterHint] = useState('')
   const hintTimerRef = useRef<number>()
   const hintCharacterCountRef = useRef(0)
-  // delay setting the enterHint slightly, so when someone presses on the inFocus hint, it doesn't
-  // change to the !inFocus one during the transition
   useEffect(() => {
     const visible = !isEditing && !editor?.isEmpty
     const characterCount = editor?.storage.characterCount.characters()
