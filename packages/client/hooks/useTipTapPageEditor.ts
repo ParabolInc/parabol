@@ -37,7 +37,7 @@ const makeHocusPocusSocket = (authToken: string | null) => {
   if (!socket) {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const host = __PRODUCTION__
-      ? window.location.host
+      ? `${window.location.host}/hocuspocus`
       : `${window.location.hostname}:${__HOCUS_POCUS_PORT__}`
     const baseUrl = `${wsProtocol}//${host}?token=${authToken}`
     socket = new TiptapCollabProviderWebsocket({
