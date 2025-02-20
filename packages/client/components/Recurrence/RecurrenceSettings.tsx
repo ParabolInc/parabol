@@ -178,13 +178,13 @@ export const RecurrenceSettings = (props: Props) => {
       ? rrule.options.byweekday.map((weekday) => ALL_DAYS.find((day) => day.intVal === weekday)!)
       : []
   )
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
   const [recurrenceStartTime, setRecurrenceStartTime] = React.useState<Dayjs>(
     rrule
       ? fromRRuleDateTime(rrule)
-      : dayjs().add(1, 'day').set('hour', 6).set('minute', 0).set('second', 0).set('millisecond', 0) // suggest 6:00 AM tomorrow
+      : dayjs.tz(dayjs().add(1, 'day').startOf('day').add(6, 'hour'), timeZone) // suggest 6:00 AM tomorrow
   )
 
-  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
   const {menuPortal, togglePortal, menuProps, originRef} = useMenu<HTMLDivElement>(
     MenuPosition.LOWER_LEFT,
     {
@@ -289,7 +289,7 @@ export const RecurrenceSettings = (props: Props) => {
         <Label>Each instance starts at</Label>
         <DropdownMenuToggle
           className='w-full text-sm'
-          defaultText={`${recurrenceStartTime.local().format('h:mm A')} (${timeZone})`}
+          defaultText={`${recurrenceStartTime.format('h:mm A')} (${timeZone})`}
           onClick={togglePortal}
           ref={originRef}
           size='small'
