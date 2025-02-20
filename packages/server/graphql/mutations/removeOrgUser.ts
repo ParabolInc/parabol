@@ -58,8 +58,7 @@ const removeOrgUser = {
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', data, subOptions)
     publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveOrgUserPayload', data, subOptions)
     teamIds.forEach((teamId) => {
-      const teamData = {...data, teamFilterId: teamId}
-      publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
+      publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', data, subOptions)
     })
 
     const remainingTeamMembers = (await dataLoader.get('teamMembersByTeamId').loadMany(teamIds))
