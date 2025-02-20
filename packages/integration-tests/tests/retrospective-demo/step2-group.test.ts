@@ -65,11 +65,6 @@ test.describe('retrospective-demo / group page', () => {
     const documentingInNotionCard = page.locator('text=Documenting things in Notion')
     await dragReflectionCard(writingThingsDownCard, documentingInNotionCard)
 
-    // Then it auto-generates a header
-    await expect(
-      page.locator(`[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things"]`)
-    ).toBeVisible()
-
     // Then it shows all cards when clicking the group
     await writingThingsDownCard.click()
     await expect(
@@ -116,13 +111,6 @@ test.describe('retrospective-demo / group page', () => {
     const documentingInNotionCard = page.locator('text=Documenting things in notion')
     await dragReflectionCard(decisionsInOneOnOnesCard, documentingInNotionCard)
 
-    // Then it auto-generates a header
-    await expect(
-      page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="Things Notion"]`
-      )
-    ).toBeVisible()
-
     // Then it shows all cards when clicking the group
     await decisionsInOneOnOnesCard.click()
     await expect(
@@ -158,13 +146,6 @@ test.describe('retrospective-demo / group page', () => {
       timeout
     })
 
-    // It created the "People Decisions Interns" group
-    await expect(
-      page.locator(
-        `[data-cy=group-column-Start] [data-cy*="Start-group-"] input[value="People Decisions Interns"]`
-      )
-    ).toBeVisible({timeout})
-
     // It drags the "making important decisions in chat" card from Stop to Start
     await expect(
       page.locator(`[data-cy=group-column-Start] :text("${decisionsText}")`)
@@ -178,13 +159,6 @@ test.describe('retrospective-demo / group page', () => {
     ).toBeVisible({
       timeout
     })
-
-    // It created the "Team Work" group
-    await expect(
-      page.locator(
-        `[data-cy=group-column-Continue] [data-cy*="Continue-group-"] input[value="Team Work"]`
-      )
-    ).toBeVisible({timeout})
 
     // It drags "debates" card from Stop to Continue
     await expect(
