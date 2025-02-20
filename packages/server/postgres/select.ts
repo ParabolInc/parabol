@@ -138,7 +138,6 @@ export const selectOrganizations = () =>
       'isActiveDomainTouched',
       'createdAt',
       'name',
-      'payLaterClickCount',
       'periodEnd',
       'periodStart',
       'picture',

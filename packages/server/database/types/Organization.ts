@@ -13,7 +13,6 @@ interface Input {
   picture?: string
   tier?: TierEnum
   updatedAt?: Date
-  payLaterClickCount?: number
   useAI?: boolean
 }
 
@@ -24,7 +23,6 @@ export default class Organization {
   creditCard?: CreditCard
   createdAt: Date
   name: string
-  payLaterClickCount: number
   periodEnd?: Date
   periodStart?: Date
   picture?: string
@@ -47,7 +45,6 @@ export default class Organization {
       updatedAt,
       creditCard,
       name,
-      payLaterClickCount,
       picture,
       tier,
       useAI
@@ -61,7 +58,6 @@ export default class Organization {
     this.name = name
     this.tier = tier ?? defaultTier
     this.picture = picture
-    this.payLaterClickCount = payLaterClickCount || 0
     this.useAI = useAI ?? true
   }
 }
