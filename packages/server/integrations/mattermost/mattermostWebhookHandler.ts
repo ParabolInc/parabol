@@ -4,20 +4,26 @@ import appOrigin from '../../appOrigin'
 import AuthToken from '../../database/types/AuthToken'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
-import getKysely from '../../postgres/getKysely'
-import encodeAuthToken from '../../utils/encodeAuthToken'
+import publishWebhookGQL from '../../utils/publishWebhookGQL'
 
 const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
 
+
 const login = async (email: string) => {
-  const pg = getKysely()
-  const user = await pg
-    .selectFrom('User')
-    .selectAll()
-    .where('email', '=', email)
-    .executeTakeFirstOrThrow()
-  const authToken = new AuthToken({sub: user.id, tms: user.tms})
-  return encodeAuthToken(authToken)
+  const query = `
+    mutation LoginMattermost($email: String!) {
+      loginMattermost(email: $email) {
+        error {
+          message
+        }
+        authToken
+      }
+    }
+  `
+
+  const loginResult = await publishWebhookGQL<any>(query, {email})
+  const {error, authToken} = loginResult?.data?.loginMattermost ?? {}
+  return authToken
 }
 
 const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
