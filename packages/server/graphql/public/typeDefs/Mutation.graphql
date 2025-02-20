@@ -119,6 +119,8 @@ type Mutation {
     notificationId: ID!
     status: NotificationStatusEnum!
   ): SetNotificationStatusPayload
+
+  createPage: CreatePagePayload!
   createTaskIntegration(
     """
     Which integration to push the task to
