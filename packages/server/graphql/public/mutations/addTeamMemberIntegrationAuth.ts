@@ -1,5 +1,6 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
+import {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import JiraServerOAuth1Manager, {
@@ -19,6 +20,20 @@ interface OAuth2Auth {
   refreshToken: string
   scopes: string
   expiresAt?: Date | null
+}
+
+const convertExpiresIn = (authResponse: OAuth2AuthorizeResponse | Error): OAuth2Auth | Error => {
+  if ('expiresIn' in authResponse && authResponse.expiresIn) {
+    const {expiresIn, ...metadata} = authResponse
+    const buffer = 30
+    const expiresAtTimestamp = new Date().getTime() + (expiresIn - buffer) * 1000
+    const expiresAt = new Date(expiresAtTimestamp)
+    return {
+      expiresAt,
+      ...metadata
+    }
+  }
+  return authResponse
 }
 
 const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationAuth'] = async (
@@ -70,18 +85,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       const {clientId, clientSecret, serverBaseUrl} = integrationProvider
       const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-      if ('expiresIn' in authRes) {
-        const {expiresIn, ...metadata} = authRes
-        const buffer = 30
-        const expiresAtTimestamp = new Date().getTime() + (expiresIn - buffer) * 1000
-        const expiresAt = new Date(expiresAtTimestamp)
-        tokenMetadata = {
-          expiresAt,
-          ...metadata
-        }
-      } else {
-        tokenMetadata = authRes
-      }
+      tokenMetadata = convertExpiresIn(authRes)
     }
     if (service === 'azureDevOps') {
       if (!oauthVerifier) {
@@ -93,24 +97,14 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
         null,
         integrationProvider as IntegrationProviderAzureDevOps
       )
-      tokenMetadata = (await manager.init(oauthCodeOrPat, oauthVerifier)) as OAuth2Auth | Error
+      const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
+      tokenMetadata = convertExpiresIn(authRes)
     }
     if (service === 'gcal') {
       const {clientId, clientSecret, serverBaseUrl} = integrationProvider
       const manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-
-      if ('expiresIn' in authRes) {
-        const {expiresIn, ...metadata} = authRes
-        const expiresAtTimestamp = new Date().getTime() + (expiresIn - 30) * 1000
-        const expiresAt = new Date(expiresAtTimestamp)
-        tokenMetadata = {
-          expiresAt,
-          ...metadata
-        }
-      } else {
-        tokenMetadata = authRes
-      }
+      tokenMetadata = convertExpiresIn(authRes)
     }
   }
   if (authStrategy === 'oauth1') {

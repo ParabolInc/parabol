@@ -5,6 +5,7 @@ import SidePanelRoot from './components/Sidepanel'
 import PanelTitle from './components/Sidepanel/PanelTitle'
 import manifest from './manifest'
 import rootReducer, {
+  connect,
   openCreateTaskModal,
   openInviteToMeetingModal,
   openInviteToTeamModal,
@@ -12,21 +13,29 @@ import rootReducer, {
   openStartActivityModal
 } from './reducers'
 import {getAssetsUrl, getPluginServerRoute} from './selectors'
-import {PluginRegistry} from './types/mattermost-webapp'
+import {ContextArgs, PluginRegistry} from './types/mattermost-webapp'
 
 import {createEnvironment} from './Atmosphere'
 import AtmosphereProvider from './AtmosphereProvider'
 import AutoLogin from './components/AutoLogin'
 import ModalRoot from './components/ModalRoot'
 import './index.css'
+import commands from './public/mattermost-plugin-commands.json'
 
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
   const environment = createEnvironment(serverUrl, store)
-  /*registry.registerSlashCommandWillBePostedHook((message: string) => {
-    return message
+  registry.registerSlashCommandWillBePostedHook(async (message: string, args: ContextArgs) => {
+    const [command, subcommand] = message.split(/\s+/)
+    if (command === '/parabol') {
+      if (subcommand === 'connect') {
+        store.dispatch(connect({commands}) as any)
+        console.log(`${manifest.id} Updating commands`)
+        return {}
+      }
+    }
+    return {message, args}
   })
-   */
 
   registry.registerReducer(rootReducer)
   registry.registerRootComponent(() => (
@@ -73,6 +82,8 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
     store.dispatch(openInviteToMeetingModal())
   })
 
+  store.dispatch(connect({commands}) as any)
+
   registry.registerPostDropdownMenuAction(
     <div>
       <span className='MenuItem__icon'>
@@ -83,5 +94,5 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
     (postId: string) => store.dispatch(openPushPostAsReflection(postId))
   )
 
-  console.log(`Initialized plugin ${manifest.id}`)
+  console.log(`${manifest.id} Initialized plugin`)
 }

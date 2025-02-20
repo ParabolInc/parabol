@@ -25,6 +25,7 @@ import {
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
+  Page as PagePG,
   TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
@@ -100,3 +101,4 @@ export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
 export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
+export type Page = Selectable<PagePG>

@@ -8,6 +8,7 @@ import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import intranetGraphQLHandler from './graphql/intranetGraphQLHandler'
+import './hocusPocus'
 import './initSentry'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
@@ -25,7 +26,7 @@ import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
 import SAMLHandler from './utils/SAMLHandler'
 
-const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
+export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
   : 60_000 // ms
 

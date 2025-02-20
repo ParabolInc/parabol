@@ -21,32 +21,37 @@ export default class RedisStream implements AsyncIterableIterator<string> {
     return this
   }
   async next(): Promise<IteratorResult<string>> {
-    const response = await this.redis.xreadgroup(
-      'GROUP',
-      this.consumerGroup,
-      this.consumer,
-      'COUNT',
-      1,
-      // block the redis connection indefinitely until a result is returned
-      'BLOCK',
-      0,
-      // no pending entries list (lost messages are not retried)
-      'NOACK',
-      'STREAMS',
-      this.stream,
-      // listen for messages never delivered to other consumers so far
-      '>'
-    )
-    // only happens if BLOCK is > 0
-    if (!response) return this.next()
-    const [_streamName, messages] = response[0] as unknown as XReadGroupRes
-    const [message] = messages
-    const [, value] = message
-    const [, data] = value
-    return {done: false, value: data}
+    try {
+      const response = await this.redis.xreadgroup(
+        'GROUP',
+        this.consumerGroup,
+        this.consumer,
+        'COUNT',
+        1,
+        // block the redis connection indefinitely until a result is returned
+        'BLOCK',
+        0,
+        // no pending entries list (lost messages are not retried)
+        'NOACK',
+        'STREAMS',
+        this.stream,
+        // listen for messages never delivered to other consumers so far
+        '>'
+      )
+      // only happens if BLOCK is > 0
+      if (!response) return this.next()
+      const [_streamName, messages] = response[0] as unknown as XReadGroupRes
+      const [message] = messages
+      const [, value] = message
+      const [, data] = value
+      return {done: false, value: data}
+    } catch (e) {
+      // when this.return() is called the blocking connection will throw
+      return this.throw(e)
+    }
   }
-  return() {
-    // disconnect is not graceful. Use quit if that's required
+  async return() {
+    // disconnect is not graceful. Necessary to end the blocking connection
     this.redis.disconnect()
     return Promise.resolve({done: true as const, value: undefined})
   }
