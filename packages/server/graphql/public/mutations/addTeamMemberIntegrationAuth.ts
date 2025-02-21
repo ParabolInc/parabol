@@ -149,15 +149,18 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     })
   }
 
-  await pg
-    .insertInto('NotificationSettings')
-    .columns(['authId', 'event'])
-    .values(() => ({
-      authId,
-      event: sql`unnest(enum_range(NULL::"SlackNotificationEventEnum"))`
-    }))
-    .onConflict((oc) => oc.doNothing())
-    .execute()
+  if (service === 'msTeams' || service === 'mattermost') {
+    await pg
+      .insertInto('TeamNotificationSettings')
+      .columns(['providerId', 'teamId', 'events'])
+      .values(() => ({
+        providerId: providerDbId,
+        teamId,
+        events: sql`enum_range(NULL::"SlackNotificationEventEnum")`
+      }))
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+  }
 
   updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
