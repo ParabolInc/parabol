@@ -118,7 +118,7 @@ const DiscussionThreadInput = (props: Props) => {
     })
   })
   const [initialContent] = useState(() => {
-    return replyingTo?.createdByUser && !!replyingTo?.threadParentId
+    return replyingTo?.createdByUser
       ? JSON.stringify(makeReplyTo(replyingTo.createdByUser))
       : convertTipTapTaskContent('')
   })
