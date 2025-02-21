@@ -7,8 +7,8 @@ import {InsightsBlockView} from '../imageUpload/InsightsBlockView'
 export interface InsightsBlockAttrs {
   teamIds: string[]
   meetingTypes: MeetingTypeEnum[]
-  startAt: Date
-  endAt: Date
+  startAt: string
+  endAt: string
   meetingIds: string[]
   title: string
 }
