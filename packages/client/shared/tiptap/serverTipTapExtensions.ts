@@ -9,6 +9,7 @@ import {LoomExtension} from '../../components/promptResponse/loomExtension'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
+import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
@@ -38,5 +39,6 @@ export const serverTipTapExtensions = [
     renderHTML({HTMLAttributes}) {
       return ['a', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}), 0]
     }
-  })
+  }),
+  InsightsBlockBase
 ]

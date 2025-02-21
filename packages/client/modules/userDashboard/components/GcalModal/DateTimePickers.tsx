@@ -5,7 +5,7 @@ import {Dayjs} from 'dayjs'
 import * as React from 'react'
 import {PALETTE} from '../../../../styles/paletteV3'
 
-const customStyles = {
+export const customStyles = {
   width: '100%',
   '& .MuiOutlinedInput-root': {
     '&:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline, &.focus-within .MuiOutlinedInput-notchedOutline':
