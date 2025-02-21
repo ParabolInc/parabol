@@ -164,7 +164,8 @@ module.exports = {
       __CLIENT__: true,
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT)
+      __SOCKET_PORT__: JSON.stringify(process.env.SOCKET_PORT),
+      __HOCUS_POCUS_PORT__: JSON.stringify(process.env.HOCUS_POCUS_PORT)
       // Environment variables go in the __ACTION__ object above, not here
       // This build may be deployed to many different environments
     })
