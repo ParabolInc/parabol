@@ -213,19 +213,19 @@ export const RecurrenceSettings = (props: Props) => {
     }
   }
 
-  const getNextMeetingDate = (selectedDays: Day[]) => {
+  const getNextMeetingDate = (selectedDays: Day[], selectedTime: Dayjs) => {
     const today = dayjs();
 
     const nextMeetingDates = selectedDays.map((day) => {
-      const nextDay = today.day(day.intVal+1);
+      let nextDay = today.day(day.intVal + 1);
       if (nextDay.isBefore(today, 'day')) {
-        return nextDay.add(1, 'week');
+        nextDay = nextDay.add(1, 'week');
       }
-      return nextDay;
+      return nextDay.set('hour', selectedTime.hour()).set('minute', selectedTime.minute());
     });
 
     if (nextMeetingDates.length === 0) {
-      return today;
+      return today.set('hour', selectedTime.hour()).set('minute', selectedTime.minute());
     }
 
     let nextMeetingDate = nextMeetingDates[0];
@@ -235,10 +235,17 @@ export const RecurrenceSettings = (props: Props) => {
       }
     });
 
-    return nextMeetingDate;
+    return nextMeetingDate!.set('hour', selectedTime.hour()).set('minute', selectedTime.minute());
   }
 
-  const nextMeetingDate = getNextMeetingDate(recurrenceDays);
+  const nextMeetingDate = getNextMeetingDate(recurrenceDays, recurrenceStartTime);
+
+  useEffect(() => {
+    if (recurrenceDays.length > 0) {
+      const nextDate = getNextMeetingDate(recurrenceDays, recurrenceStartTime);
+      setRecurrenceStartTime(nextDate);
+    }
+  }, [recurrenceDays]);
 
   useEffect(() => {
     const rrule =
