@@ -19,7 +19,6 @@
     isRemoved,
     reasonRemoved,
     rol,
-    payLaterClickCount
   )...)
 */
   INSERT INTO "User" (
@@ -41,7 +40,6 @@
     "isRemoved",
     "reasonRemoved",
     "rol",
-    "payLaterClickCount"
   ) VALUES :users
   ON CONFLICT (id) DO UPDATE SET
     "email" = EXCLUDED."email",
@@ -61,5 +59,4 @@
     "isRemoved" = EXCLUDED."isRemoved",
     "reasonRemoved" = EXCLUDED."reasonRemoved",
     "rol" = EXCLUDED."rol",
-    "payLaterClickCount" = EXCLUDED."payLaterClickCount"
   ;

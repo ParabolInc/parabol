@@ -499,16 +499,6 @@ type Mutation {
   ): NavigateMeetingPayload!
 
   """
-  Increment the count of times the org has clicked pay later
-  """
-  payLater(
-    """
-    the org that has clicked pay later
-    """
-    meetingId: ID!
-  ): PayLaterPayload!
-
-  """
   Add or remove a task and its estimate phase from the meeting
   """
   persistJiraSearchQuery(
@@ -885,21 +875,6 @@ type Mutation {
   ): UpdateCommentContentPayload
 
   """
-  Update an existing credit card on file
-  """
-  oldUpdateCreditCard(
-    """
-    the org requesting the changed billing
-    """
-    orgId: ID!
-
-    """
-    The token that came back from stripe
-    """
-    stripeToken: ID!
-  ): OldUpdateCreditCardPayload
-
-  """
   Update the scale used for a dimension in a template
   """
   updatePokerTemplateDimensionScale(
@@ -1045,21 +1020,6 @@ type Mutation {
     """
     scope: SharingScopeEnum!
   ): UpdateTemplateScopePayload!
-
-  """
-  Upgrade an account to the paid service
-  """
-  oldUpgradeToTeamTier(
-    """
-    the org requesting the upgrade
-    """
-    orgId: ID!
-
-    """
-    The token that came back from stripe
-    """
-    stripeToken: ID!
-  ): OldUpgradeToTeamTierPayload
 
   """
   Cast your vote for a reflection group

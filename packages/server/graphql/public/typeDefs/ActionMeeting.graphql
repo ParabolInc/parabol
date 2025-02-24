@@ -89,11 +89,6 @@ type ActionMeeting implements NewMeeting {
   scheduledEndTime: DateTime
 
   """
-  true if should show the org the conversion modal, else false
-  """
-  showConversionModal: Boolean!
-
-  """
   The OpenAI generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
   """
   summary: String

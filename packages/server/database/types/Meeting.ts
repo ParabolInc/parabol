@@ -12,7 +12,6 @@ interface Input {
   // Every meeting has at least one phase
   phases: [NewMeetingPhase, ...NewMeetingPhase[]]
   facilitatorUserId: string
-  showConversionModal?: boolean | null
   meetingSeriesId?: number | null
   scheduledEndTime?: Date | null
   summary?: string | null
@@ -39,7 +38,6 @@ export default abstract class Meeting {
   teamId: string
   meetingType: MeetingTypeEnum
   phases: GenericMeetingPhase[]
-  showConversionModal?: boolean | null
   meetingSeriesId?: number | null
   scheduledEndTime?: Date | null
   summary?: string | null
@@ -57,7 +55,6 @@ export default abstract class Meeting {
       meetingType,
       name,
       phases,
-      showConversionModal,
       meetingSeriesId,
       scheduledEndTime,
       summary,
@@ -73,7 +70,6 @@ export default abstract class Meeting {
     this.name = name ?? `${namePrefix[meetingType]} #${this.meetingNumber}`
     this.phases = phases
     this.teamId = teamId
-    this.showConversionModal = showConversionModal
     this.meetingSeriesId = meetingSeriesId
     this.scheduledEndTime = scheduledEndTime
     this.summary = summary
