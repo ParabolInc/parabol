@@ -1,6 +1,3 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
-import * as Checkbox from '@radix-ui/react-checkbox'
 import type {NodeViewProps} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
@@ -8,6 +5,7 @@ import {useEffect} from 'react'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import type {SpecificMeetingPickerQuery} from '../__generated__/SpecificMeetingPickerQuery.graphql'
 import type {InsightsBlockAttrs} from '../tiptap/extensions/imageBlock/InsightsBlock'
+import {Checkbox} from '../ui/Checkbox/Checkbox'
 import {MeetingTypeToReadable} from './MeetingTypePickerCombobox'
 const query = graphql`
   query SpecificMeetingPickerQuery(
@@ -79,27 +77,19 @@ export const SpecificMeetingPicker = (props: Props) => {
   const includeYear = new Date(after).getFullYear() !== new Date(before).getFullYear()
   const formatter = includeYear ? 'MMM D, YYYY' : 'MMM D'
   const allChecked = meetingIds.length === edges.length
-  const MultiIcon = allChecked ? CheckBoxIcon : IndeterminateCheckBoxIcon
   return (
     <div className='flex max-h-52 overflow-auto'>
       <table className='w-full border-collapse'>
         <thead className='sticky top-0 z-10 bg-slate-200'>
           <tr className='border-b-[1px] border-slate-400'>
             <th className='w-5 border-b-[1px] border-b-transparent pt-1 pr-1'>
-              <Checkbox.Root
+              <Checkbox
                 onClick={() => {
                   const nextMeetingIds = allChecked ? [] : edges.map(({node}) => node.id)
                   updateAttributes({meetingIds: nextMeetingIds})
                 }}
                 checked={allChecked ? true : meetingIds.length === 0 ? false : 'indeterminate'}
-                className={
-                  'flex size-4 appearance-none items-center justify-center rounded-xs border-slate-600 bg-white outline-none data-[state=unchecked]:border-2'
-                }
-              >
-                <Checkbox.Indicator asChild>
-                  <MultiIcon className='w-5 fill-sky-500' />
-                </Checkbox.Indicator>
-              </Checkbox.Root>
+              />
             </th>
             {columns.map((column) => {
               return (
@@ -130,16 +120,7 @@ export const SpecificMeetingPicker = (props: Props) => {
                 }}
               >
                 <td className='w-5 border-b-[1px] border-b-transparent pt-1'>
-                  <Checkbox.Root
-                    checked={checked}
-                    className={
-                      'flex size-4 appearance-none items-center justify-center rounded-xs border-slate-600 bg-white outline-none data-[state=unchecked]:border-2'
-                    }
-                  >
-                    <Checkbox.Indicator asChild>
-                      <CheckBoxIcon className='w-5 fill-sky-500' />
-                    </Checkbox.Indicator>
-                  </Checkbox.Root>
+                  <Checkbox checked={checked} />
                 </td>
                 <td className='border-r-[1px] border-slate-400 p-2'>{name}</td>
                 <td className='border-r-[1px] border-slate-400 p-2 last-of-type:border-r-0'>

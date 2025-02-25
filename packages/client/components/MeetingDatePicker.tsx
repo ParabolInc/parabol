@@ -26,22 +26,18 @@ export const MeetingDatePicker = (props: Props) => {
         </div>
       }
     >
-      <MenuContent>
-        <div className='z-10 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
-          <div className='py-2'>
-            <DayPicker
-              mode='range'
-              selected={{from: new Date(after), to: new Date(before)}}
-              disabled={{after: new Date()}}
-              onSelect={(newSelected) => {
-                updateAttributes({
-                  after: newSelected?.from?.toISOString(),
-                  before: newSelected?.to?.toISOString()
-                })
-              }}
-            />
-          </div>
-        </div>
+      <MenuContent align='end' sideOffset={4} className='max-h-80'>
+        <DayPicker
+          mode='range'
+          selected={{from: new Date(after), to: new Date(before)}}
+          disabled={{after: new Date()}}
+          onSelect={(newSelected) => {
+            updateAttributes({
+              after: newSelected?.from?.toISOString(),
+              before: newSelected?.to?.toISOString()
+            })
+          }}
+        />
       </MenuContent>
     </Menu>
   )
