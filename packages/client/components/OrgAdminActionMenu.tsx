@@ -95,11 +95,7 @@ export const OrgAdminActionMenu = (props: Props) => {
         )
       }
     >
-      <MenuContent
-        className='data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
-        align='end'
-        sideOffset={4}
-      >
+      <MenuContent align='end' sideOffset={4}>
         {isViewerOrgAdmin && !isOrgAdmin && (
           <MenuItem onClick={setRole('ORG_ADMIN')}>{'Promote to Org Admin'}</MenuItem>
         )}

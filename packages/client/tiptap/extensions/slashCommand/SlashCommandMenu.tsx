@@ -61,7 +61,7 @@ export const SlashCommandMenu = forwardRef(
 
     if (!items.length) return null
     return (
-      <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
+      <div className='z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
         {items.map((item) => (
           <Fragment key={item.group}>
             <div className='mx-1 px-3 py-1 text-xs font-semibold'>{item.group}</div>

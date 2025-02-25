@@ -67,7 +67,8 @@ export const useTipTapReflectionEditor = (
         SlashCommand.configure({
           'Heading 1': false,
           'Heading 2': false,
-          'To-do list': false
+          'To-do list': false,
+          Insights: false
         }),
         Focus,
         ImageUpload.configure({
