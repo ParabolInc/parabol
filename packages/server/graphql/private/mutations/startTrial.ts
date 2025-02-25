@@ -3,7 +3,6 @@ import getKysely from '../../../postgres/getKysely'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
 import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
-import hideConversionModal from '../../mutations/helpers/hideConversionModal'
 import {MutationResolvers} from '../resolverTypes'
 
 const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {dataLoader}) => {
@@ -36,8 +35,6 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
   organization.trialStartDate = now
 
   await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
-
-  await hideConversionModal(orgId, dataLoader)
 
   return {orgId}
 }

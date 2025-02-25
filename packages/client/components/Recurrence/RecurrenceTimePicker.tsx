@@ -15,6 +15,8 @@ const DEFAULT_MEETING_START_TIME_IDX = OPTIONS.findIndex((n) => n === ms('6h'))
 
 export const RecurrenceTimePicker = (props: Props) => {
   const {menuProps, onClick} = props
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
+
   return (
     <Menu
       {...menuProps}
@@ -22,7 +24,8 @@ export const RecurrenceTimePicker = (props: Props) => {
       defaultActiveIdx={DEFAULT_MEETING_START_TIME_IDX}
     >
       {OPTIONS.map((n, idx) => {
-        const proposedTime = dayjs().add(1, 'day').startOf('day').add(n, 'ms')
+        const proposedTime = dayjs.tz(dayjs().add(1, 'day').startOf('day').add(n, 'ms'), timeZone)
+
         return (
           <MenuItem
             key={idx}

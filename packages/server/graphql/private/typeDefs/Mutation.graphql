@@ -192,21 +192,6 @@ type Mutation {
   ): String
 
   """
-  add/remove a flag on an org asking them to pay
-  """
-  flagConversionModal(
-    """
-    true to turn the modal on, false to turn it off
-    """
-    active: Boolean!
-
-    """
-    the orgId to toggle the flag for
-    """
-    orgId: ID!
-  ): FlagConversionModalPayload
-
-  """
   hard deletes a user and all its associated objects
   """
   hardDeleteUser(

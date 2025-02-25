@@ -13,7 +13,6 @@ const contactKeys = {
   isRemoved: 'is_user_removed',
   id: 'parabol_id',
   meetingCount: 'sales_op_meeting_count',
-  payLaterClickCount: 'pay_later_click_count',
   preferredName: 'parabol_preferred_name',
   tier: 'highest_tier'
 } as const

@@ -4,9 +4,6 @@ type OrganizationSubscriptionPayload {
   AddOrgPayload: AddOrgPayload
   ArchiveOrganizationPayload: ArchiveOrganizationPayload
   DowngradeToStarterPayload: DowngradeToStarterPayload
-  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
-  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
-  PayLaterPayload: PayLaterPayload
   RemoveIntegrationProviderSuccess: RemoveIntegrationProviderSuccess
   RemoveOrgUserPayload: RemoveOrgUserPayload
   ToggleAIFeaturesSuccess: ToggleAIFeaturesSuccess
