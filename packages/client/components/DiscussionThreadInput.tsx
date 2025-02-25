@@ -117,8 +117,9 @@ const DiscussionThreadInput = (props: Props) => {
         ?.setValue(null, 'replyingTo')
     })
   })
+  const {viewerId} = atmosphere
   const [initialContent] = useState(() => {
-    return replyingTo?.createdByUser && !!replyingTo?.threadParentId
+    return replyingTo?.createdByUser && replyingTo.createdByUser.id !== viewerId
       ? JSON.stringify(makeReplyTo(replyingTo.createdByUser))
       : convertTipTapTaskContent('')
   })
