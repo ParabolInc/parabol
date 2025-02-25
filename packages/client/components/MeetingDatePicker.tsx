@@ -1,3 +1,4 @@
+import DateRangeIcon from '@mui/icons-material/DateRange'
 import type {NodeViewProps} from '@tiptap/core'
 import dayjs from 'dayjs'
 import {DayPicker} from 'react-day-picker'
@@ -12,8 +13,8 @@ interface Props {
 
 export const MeetingDatePicker = (props: Props) => {
   const {updateAttributes, attrs} = props
-  const {startAt, endAt} = attrs
-  const dateRangeLabel = `${dayjs(startAt).format('MMM D, YYYY')} - ${dayjs(endAt).format('MMM D, YYYY')}`
+  const {after, before} = attrs
+  const dateRangeLabel = `${dayjs(after).format('MMM D, YYYY')} - ${dayjs(before).format('MMM D, YYYY')}`
 
   return (
     <Menu
@@ -21,6 +22,7 @@ export const MeetingDatePicker = (props: Props) => {
       trigger={
         <div className='group flex cursor-pointer items-center justify-between rounded-md bg-white'>
           <div className='p-2 leading-4'>{dateRangeLabel}</div>
+          <DateRangeIcon className='text-slate-600' />
         </div>
       }
     >
@@ -29,12 +31,12 @@ export const MeetingDatePicker = (props: Props) => {
           <div className='py-2'>
             <DayPicker
               mode='range'
-              selected={{from: new Date(startAt), to: new Date(endAt)}}
+              selected={{from: new Date(after), to: new Date(before)}}
               disabled={{after: new Date()}}
               onSelect={(newSelected) => {
                 updateAttributes({
-                  startAt: newSelected?.from?.toISOString(),
-                  endAt: newSelected?.to?.toISOString()
+                  after: newSelected?.from?.toISOString(),
+                  before: newSelected?.to?.toISOString()
                 })
               }}
             />

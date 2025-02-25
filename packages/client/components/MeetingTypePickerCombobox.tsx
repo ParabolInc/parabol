@@ -13,7 +13,7 @@ interface Props {
   attrs: InsightsBlockAttrs
 }
 
-const MeetingTypeToReadable = {
+export const MeetingTypeToReadable = {
   action: 'Team Check-in',
   poker: 'Sprint Poker',
   retrospective: 'Retrospective',

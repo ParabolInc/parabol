@@ -7,8 +7,8 @@ import {InsightsBlockView} from '../imageUpload/InsightsBlockView'
 export interface InsightsBlockAttrs {
   teamIds: string[]
   meetingTypes: MeetingTypeEnum[]
-  startAt: string
-  endAt: string
+  after: string
+  before: string
   meetingIds: string[]
   title: string
 }
@@ -30,18 +30,18 @@ export const InsightsBlock = InsightsBlockBase.extend({
           'data-meeting-types': attributes.meetingTypes
         })
       },
-      startAt: {
+      after: {
         default: () => new Date(Date.now() - ms('12w')).toISOString(),
-        parseHTML: (element) => new Date(element.getAttribute('data-start-at') as string),
+        parseHTML: (element) => new Date(element.getAttribute('data-after') as string),
         renderHTML: (attributes: InsightsBlockAttrs) => ({
-          'data-start-at': attributes.startAt
+          'data-after': attributes.after
         })
       },
-      endAt: {
+      before: {
         default: () => new Date().toISOString(),
-        parseHTML: (element) => new Date(element.getAttribute('data-end-at') as string),
+        parseHTML: (element) => new Date(element.getAttribute('data-before') as string),
         renderHTML: (attributes: InsightsBlockAttrs) => ({
-          'data-end-at': attributes.endAt
+          'data-before': attributes.before
         })
       },
       meetingIds: {

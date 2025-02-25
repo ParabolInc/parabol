@@ -491,4 +491,25 @@ type User {
   The number of free custom poker templates remaining
   """
   freeCustomPokerTemplatesRemaining: Int!
+  """
+  AI-provided Insights
+  """
+  pageInsights(meetingIds: [ID!]!, prompt: String): String!
+
+  meetings(
+    """
+    The max number of meetings to return
+    """
+    first: Int!
+    teamIds: [ID!]!
+    meetingTypes: [MeetingTypeEnum!]!
+    """
+    The createdAt DateTime used as a cursor
+    """
+    after: DateTime
+    """
+    The createdAt DateTime used as an end cursor
+    """
+    before: DateTime!
+  ): MeetingConnection!
 }
