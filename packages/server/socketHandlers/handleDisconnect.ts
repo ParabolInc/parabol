@@ -1,6 +1,5 @@
 import activeClients from '../activeClients'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-import closeTransport from '../socketHelpers/closeTransport'
 import {getUserId} from '../utils/authorization'
 import publishInternalGQL from '../utils/publishInternalGQL'
 import relayUnsubscribeAll from '../utils/relayUnsubscribeAll'
@@ -31,7 +30,7 @@ const handleDisconnect = async (connectionContext: ConnectionContext, options: O
     await publishInternalGQL({authToken, ip, query: disconnectQuery, socketId, variables: {userId}})
   }
   activeClients.delete(connectionContext.id)
-  closeTransport(socket, exitCode, reason)
+  socket.closeTransport(exitCode, reason)
 }
 
 export default handleDisconnect

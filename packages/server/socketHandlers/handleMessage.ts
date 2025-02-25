@@ -45,6 +45,7 @@ const handleMessage: WebSocketBehavior<SocketUserData>['message'] = (websocket, 
     return
   }
 
+  console.log('GEORG handleMessage', parsedMessage, connectionContext)
   if (connectionContext.isReady) {
     handleParsedMessage(parsedMessage, connectionContext)
   } else {

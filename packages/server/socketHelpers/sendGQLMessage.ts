@@ -9,6 +9,7 @@ const sendGQLMessage = (
   syn: boolean,
   payload?: Record<string, any>
 ) => {
+  console.log('GEORG sendGQLMessage', opId, type, syn, payload)
   const message = {id: opId, type, ...(payload && {payload})}
   sendEncodedMessage(context, message, syn)
 }

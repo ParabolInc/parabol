@@ -35,7 +35,7 @@ const SSEConnectionHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
   const {sub: userId, iat} = authToken
   const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
   if (isBlacklistedJWT) {
-    closeTransport(res, 401, TrebuchetCloseReason.EXPIRED_SESSION)
+    closeTransport(connectionContext, 401, TrebuchetCloseReason.EXPIRED_SESSION)
     return
   }
 

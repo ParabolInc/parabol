@@ -1,9 +1,8 @@
 import {ExecutionResult} from 'graphql/execution/execute'
-import {HttpResponse, WebSocket} from 'uWebSockets.js'
 import AuthToken from '../database/types/AuthToken'
 import generateUID from '../generateUID'
-import {SocketUserData} from '../socketHandlers/handleOpen'
-import isHttpResponse from './isHttpResponse'
+import {Socket} from './transports/Socket'
+import {getSocketTransport, SocketTransportType} from './transports/getSocketTransport'
 
 export interface ConnectedSubs {
   [opId: string]: AsyncIterableIterator<ExecutionResult>
@@ -12,7 +11,7 @@ export interface ConnectedSubs {
 export type ReliableQueue = {[mid: number]: string}
 
 const MAX_MID = 2 ** 31 - 1
-class ConnectionContext<T = WebSocket<SocketUserData> | HttpResponse> {
+class ConnectionContext {
   authToken: AuthToken
   availableResubs: any[] = []
   cancelKeepAlive: NodeJS.Timeout | undefined = undefined
@@ -20,14 +19,15 @@ class ConnectionContext<T = WebSocket<SocketUserData> | HttpResponse> {
   id: string
   isAlive = true
   isDisconnecting?: true
-  socket: T
+  socket: Socket
   subs: ConnectedSubs = {}
   isReady = false
   readyQueue = [] as (() => void)[]
   reliableQueue = {} as ReliableQueue
   mid = -1
-  constructor(socket: T, authToken: AuthToken, ip: string) {
-    const prefix = isHttpResponse(socket) ? 'sse' : 'ws'
+  constructor(transport: SocketTransportType, authToken: AuthToken, ip: string) {
+    const socket = getSocketTransport(transport)
+    const {prefix} = socket
     this.authToken = authToken
     this.socket = socket
     this.ip = ip
