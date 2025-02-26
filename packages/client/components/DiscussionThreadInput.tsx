@@ -214,10 +214,7 @@ const DiscussionThreadInput = (props: Props) => {
     >
       <div className='flex items-center justify-center p-1'>
         <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
-        <TipTapEditor
-          className='flex max-h-80 min-h-0 grow overflow-auto px-0 leading-4'
-          editor={editor}
-        />
+        <TipTapEditor className='flex max-h-80 grow overflow-auto leading-4' editor={editor} />
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
       {isActionsContainerVisible && (

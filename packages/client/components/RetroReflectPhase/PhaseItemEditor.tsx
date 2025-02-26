@@ -198,7 +198,7 @@ const PhaseItemEditor = (props: Props) => {
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
         <TipTapEditor
           className={cn(
-            'flex max-h-28 min-h-0 overflow-auto px-4 pt-3',
+            'flex max-h-28 overflow-auto px-4 pt-3',
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}

@@ -20,7 +20,7 @@ export const Page = (props: Props) => {
   return (
     <div className='tems-center flex h-full w-full justify-center bg-slate-200 pt-2'>
       <div className='flex w-full max-w-[960px] justify-center bg-white pt-28'>
-        <TipTapEditor editor={editor} className='flex h-full w-full' />
+        <TipTapEditor editor={editor} className='flex h-full w-full px-6' />
       </div>
     </div>
   )

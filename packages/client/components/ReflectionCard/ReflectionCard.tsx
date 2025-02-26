@@ -36,7 +36,7 @@ import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
 
 const StyledReacjis = styled(ReactjiSection)({
-  padding: '0 14px 12px'
+  padding: '4px 16px 0'
 })
 
 const SpotlightIcon = styled(IconLabel)({
@@ -317,7 +317,7 @@ const ReflectionCard = (props: Props) => {
       onMouseLeave={() => setIsHovering(false)}
       showDragHintAnimation={showDragHintAnimation}
       ref={reflectionDivRef}
-      className='py-2'
+      className='py-3'
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
 
@@ -328,7 +328,7 @@ const ReflectionCard = (props: Props) => {
         <TipTapEditor
           className={cn(
             'flex min-h-4 w-full px-4',
-            isClipped ? 'max-h-8' : 'max-h-28',
+            phaseType === 'discuss' ? 'min-h-0' : isClipped ? 'max-h-6' : 'max-h-28',
             readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
           editor={editor}
