@@ -12,8 +12,8 @@ export const InsightsBlockView = (props: NodeViewProps) => {
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   return (
     <NodeViewWrapper>
-      <div className='m-0 p-0 text-slate-900'>
-        <div className='flex max-w-fit flex-col rounded-sm bg-slate-200 p-4'>
+      <div className='m-0 w-full p-0 text-slate-900'>
+        <div className='flex flex-col rounded-sm bg-slate-200 p-4'>
           <input
             className='bg-inherit p-4 text-lg ring-0 outline-0'
             onChange={(e) => {
@@ -21,7 +21,7 @@ export const InsightsBlockView = (props: NodeViewProps) => {
             }}
             value={title}
           />
-          <div className='grid grid-cols-[repeat(2,minmax(256px,1fr))] gap-4 p-4'>
+          <div className='grid grid-cols-[auto_1fr] gap-4 p-4'>
             {/* Row 1 */}
             <label className='self-center font-semibold'>Teams</label>
             <TeamPickerComboboxRoot updateAttributes={updateAttributes} attrs={attrs} />

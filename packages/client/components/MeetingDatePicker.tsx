@@ -5,6 +5,7 @@ import {DayPicker} from 'react-day-picker'
 import type {InsightsBlockAttrs} from '../tiptap/extensions/imageBlock/InsightsBlock'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuLabelTrigger} from '../ui/Menu/MenuLabelTrigger'
 
 interface Props {
   updateAttributes: NodeViewProps['updateAttributes']
@@ -18,12 +19,10 @@ export const MeetingDatePicker = (props: Props) => {
 
   return (
     <Menu
-      className='data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
       trigger={
-        <div className='group flex cursor-pointer items-center justify-between rounded-md bg-white'>
-          <div className='p-2 leading-4'>{dateRangeLabel}</div>
-          <DateRangeIcon className='text-slate-600' />
-        </div>
+        <MenuLabelTrigger icon={<DateRangeIcon className='text-slate-600' />}>
+          {dateRangeLabel}
+        </MenuLabelTrigger>
       }
     >
       <MenuContent align='end' sideOffset={4} className='max-h-80'>

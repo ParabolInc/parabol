@@ -51,22 +51,25 @@ export const SpecificMeetingPicker = (props: Props) => {
   const {viewer} = data
   const {meetings} = viewer
   const {edges} = meetings
+  const includeYear = new Date(after).getFullYear() !== new Date(before).getFullYear()
+  const formatter = includeYear ? 'MMM D, YYYY' : 'MMM D'
 
   useEffect(() => {
     const meetingIds = edges.map(({node}) => node.id)
     updateAttributes({meetingIds})
   }, [edges])
+
   const rows = edges.map((edge) => {
     const {node} = edge
     const {id, createdAt, meetingType, name, team} = node
     const {name: teamName} = team
     return {
       id,
-      createdAt,
+      date: dayjs(createdAt).format(formatter),
       meetingType: MeetingTypeToReadable[meetingType],
       name,
-      teamName
-      // isSelected: meetingIds.includes(id)
+      teamName,
+      checked: meetingIds.includes(id)
     }
   })
   const allColumns = ['Name', 'Date', 'Team', 'Type']
@@ -74,8 +77,6 @@ export const SpecificMeetingPicker = (props: Props) => {
   const ignoredTypeColumn = attrs.meetingTypes.length === 1 ? ['Type'] : []
   const ignoredColumns = ignoredTeamColumn.concat(ignoredTypeColumn)
   const columns = allColumns.filter((column) => !ignoredColumns.includes(column))
-  const includeYear = new Date(after).getFullYear() !== new Date(before).getFullYear()
-  const formatter = includeYear ? 'MMM D, YYYY' : 'MMM D'
   const allChecked = meetingIds.length === edges.length
   return (
     <div className='flex max-h-52 overflow-auto'>
@@ -106,9 +107,7 @@ export const SpecificMeetingPicker = (props: Props) => {
         </thead>
         <tbody>
           {rows.map((row) => {
-            const {createdAt, id, meetingType, name, teamName} = row
-            const date = dayjs(createdAt).format(formatter)
-            const checked = meetingIds.includes(id)
+            const {checked, date, id, meetingType, name, teamName} = row
             return (
               <tr
                 className='cursor-pointer border-slate-400 not-last-of-type:border-b-[1px]'
