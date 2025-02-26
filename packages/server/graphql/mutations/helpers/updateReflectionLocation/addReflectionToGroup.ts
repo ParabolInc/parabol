@@ -77,7 +77,6 @@ const addReflectionToGroup = async (
       reflectionGroup.smartTitle = smartTitle
       reflectionGroup.title = smartTitle
     } else if (!newGroupHasUserDefinedTitle) {
-      // Only update the title if it's not user-defined
       const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       await updateGroupTitle({
         reflections: nextReflections,
