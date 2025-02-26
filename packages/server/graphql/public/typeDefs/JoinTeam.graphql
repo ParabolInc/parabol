@@ -1,0 +1,33 @@
+extend type Mutation {
+  """
+  Join a public team directly without requiring an invitation
+  """
+  joinTeam(
+    """
+    The ID of the team to join
+    """
+    teamId: ID!
+  ): JoinTeamPayload!
+}
+
+"""
+Return value for joinTeam, which could be an error
+"""
+union JoinTeamPayload = ErrorPayload | JoinTeamSuccess
+
+type JoinTeamSuccess {
+  """
+  The ID of the team that was joined
+  """
+  teamId: ID!
+
+  """
+  The ID of the new team member
+  """
+  teamMemberId: ID!
+
+  """
+  A new auth token that includes the joined team
+  """
+  authToken: ID!
+}
