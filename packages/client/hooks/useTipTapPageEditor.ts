@@ -23,6 +23,7 @@ import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
+import {InsightsBlock} from '../tiptap/extensions/imageBlock/InsightsBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
@@ -150,7 +151,8 @@ export const useTipTapPageEditor = (
             name: preferredName,
             color: `#${themeBackgroundColors[colorIdx]}`
           }
-        })
+        }),
+        InsightsBlock
       ],
       autofocus: true,
       editable: true

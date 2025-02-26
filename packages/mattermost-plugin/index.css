@@ -1,6 +1,6 @@
 @layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
 @source "../client";
 
 /* make popper work together with bootstrap modals and existing z-indexes */
@@ -23,13 +23,12 @@ div[data-radix-popper-content-wrapper] {
 }
 
 /* styling of the tiptap bubble menu */
-.tippy-box[role="dialog"] {
-  @apply bg-white shadow-lg rounded-lg;
+.tippy-box[role='dialog'] {
+  @apply rounded-lg bg-white shadow-lg;
   button {
-    @apply w-12 items-center px-4 border-none rounded font-semibold outline-none hover:bg-slate-300 data-[highlighted=true]:bg-slate-300 bg-transparent text-black;
+    @apply w-12 items-center rounded border-none bg-transparent px-4 font-semibold text-black outline-none hover:bg-slate-300 data-highlighted:bg-slate-300;
   }
   .tippy-content {
     @apply p-0;
   }
 }
-
