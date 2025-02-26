@@ -19,58 +19,47 @@ import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddNotifications from './handlers/handleAddNotifications'
-import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
 import handleRemoveOrganization from './handlers/handleRemoveOrganization'
+import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleTasksForRemovedUsers from './handlers/handleTasksForRemovedUsers'
 graphql`
   fragment RemoveMultipleOrgUsersMutation_organization on RemoveMultipleOrgUsersSuccess {
-    organization {
-      id
-    }
-    users {
-      id
-    }
-    removedOrgMembers {
-      id
-    }
+    affectedOrganizationId
+    affectedOrganizationName
+    removedOrgMemberIds
+    removedUserIds
   }
 `
 
 graphql`
   fragment RemoveMultipleOrgUsersMutation_notification on RemoveMultipleOrgUsersSuccess {
-    organization {
-      id
-      name
-    }
+    affectedOrganizationId
+    affectedOrganizationName
     kickOutNotifications {
       id
       type
-      team {
-        id
-        name
-        activeMeetings {
-          id
-        }
-      }
       ...KickedOut_notification
     }
+    affectedTeamIds
+    affectedMeetingIds
   }
 `
 
 graphql`
   fragment RemoveMultipleOrgUsersMutation_team on RemoveMultipleOrgUsersSuccess {
-    teamMembers {
+    removedTeamMemberIds
+    removedUserIds
+    affectedTeamIds
+    affectedMeetings {
       id
-    }
-    users {
-      id
-    }
-    teams {
-      ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
-      activeMeetings {
+      facilitatorStageId
+      phases {
         id
+        stages {
+          id
+        }
       }
     }
   }
@@ -78,12 +67,10 @@ graphql`
 
 graphql`
   fragment RemoveMultipleOrgUsersMutation_task on RemoveMultipleOrgUsersSuccess {
-    updatedTasks {
+    affectedTasks {
       ...CompleteTaskFrag @relay(mask: false)
     }
-    users {
-      id
-    }
+    removedUserIds
   }
 `
 
@@ -108,16 +95,16 @@ const mutation = graphql`
 export const removeMultipleOrgUsersOrganizationUpdater: SharedUpdater<
   RemoveMultipleOrgUsersMutation_organization$data
 > = (payload, {atmosphere, store}) => {
+  const removedOrgMemberIds = payload.getValue('removedOrgMemberIds')
+  const affectedOrganizationId = payload.getValue('affectedOrganizationId')
+  const removedUserIds = payload.getValue('removedUserIds')
   const {viewerId} = atmosphere
-  const users = payload.getLinkedRecords('users')
-  const removedOrgMembers = payload.getLinkedRecords('removedOrgMembers')
-  const orgId = payload.getLinkedRecord('organization').getValue('id')
 
-  if (users.some((user) => user.getValue('id') === viewerId)) {
-    handleRemoveOrganization(orgId, store)
+  if (removedUserIds.some((removedUserId) => removedUserId === viewerId)) {
+    handleRemoveOrganization(affectedOrganizationId, store)
   } else {
-    removedOrgMembers.forEach((member) => {
-      handleRemoveOrgMembers(orgId, member.getValue('id'), store)
+    removedOrgMemberIds.forEach((removedOrgMemberId) => {
+      handleRemoveOrgMembers(affectedOrganizationId, removedOrgMemberId, store)
     })
   }
 }
@@ -132,25 +119,23 @@ export const removeMultipleOrgUsersNotificationUpdater: SharedUpdater<
 export const removeMultipleOrgUsersTeamUpdater: SharedUpdater<
   RemoveMultipleOrgUsersMutation_team$data
 > = (payload, {atmosphere, store}) => {
-  const users = payload.getLinkedRecords('users')
+  const removedUserIds = payload.getValue('removedUserIds')
   const {viewerId} = atmosphere
 
-  if (users.some((user) => user.getValue('id') === viewerId)) {
-    const teams = payload.getLinkedRecords('teams')
-    const teamIds = teams.map((team) => team.getValue('id'))
-    handleRemoveTeams(teamIds, store)
+  if (removedUserIds.some((removedUserId) => removedUserId === viewerId)) {
+    const affectedTeamIds = payload.getValue('affectedTeamIds')
+    handleRemoveTeams(affectedTeamIds, store)
   } else {
-    const teamMembers = payload.getLinkedRecords('teamMembers')
-    const teamMemberIds = teamMembers?.map((teamMember) => teamMember.getValue('id'))
-    handleRemoveTeamMembers(teamMemberIds, store)
+    const removedTeamMemberIds = payload.getValue('removedTeamMemberIds')
+    handleRemoveTeamMembers(removedTeamMemberIds, store)
   }
 }
 
 export const removeMultipleOrgUsersTaskUpdater: SharedUpdater<
   RemoveMultipleOrgUsersMutation_task$data
 > = (payload, {atmosphere, store}) => {
-  const tasks = payload.getLinkedRecords('updatedTasks')
-  const removedUserIds = payload.getLinkedRecords('users').map((user) => user.getValue('id'))
+  const tasks = payload.getLinkedRecords('affectedTasks')
+  const removedUserIds = payload.getValue('removedUserIds') as string[]
   const {viewerId} = atmosphere
   handleTasksForRemovedUsers(tasks, removedUserIds, viewerId, store)
 }
@@ -159,23 +144,19 @@ export const removeMultipleOrgUsersTeamOnNext: OnNextHandler<
   RemoveMultipleOrgUsersMutation_team$data
 > = (payload, context) => {
   const {atmosphere} = context
-  const {teams} = payload
-  if (!teams) return
-  teams.forEach((team) => {
-    const {activeMeetings} = team
-    activeMeetings.forEach((newMeeting) => {
-      const {id: meetingId, facilitatorStageId, phases} = newMeeting
-      commitLocalUpdate(atmosphere, (store) => {
-        const meetingProxy = store.get(meetingId)
-        if (!meetingProxy) return
-        const localStage = meetingProxy.getLinkedRecord('localStage')
-        if (!localStage) return
-        const viewerStageId = localStage.getValue('id') as string
-        const stageRes = findStageById(phases, viewerStageId)
-        if (!stageRes) {
-          setLocalStageAndPhase(store, meetingId, facilitatorStageId)
-        }
-      })
+  const {affectedMeetings} = payload
+  affectedMeetings.forEach((newMeeting) => {
+    const {id: meetingId, facilitatorStageId, phases} = newMeeting
+    commitLocalUpdate(atmosphere, (store) => {
+      const meetingProxy = store.get(meetingId)
+      if (!meetingProxy) return
+      const localStage = meetingProxy.getLinkedRecord('localStage')
+      if (!localStage) return
+      const viewerStageId = localStage.getValue('id') as string
+      const stageRes = findStageById(phases, viewerStageId)
+      if (!stageRes) {
+        setLocalStageAndPhase(store, meetingId, facilitatorStageId)
+      }
     })
   })
 }
@@ -189,9 +170,11 @@ export const removeMultipleOrgUsersOrganizationOnNext: OnNextHandler<
     history
   } = context
   const {pathname} = history.location
-  const {users, organization} = payload
-  const orgId = organization?.id ?? ''
-  if (users.some((user) => user.id === viewerId) && onExOrgRoute(pathname, orgId)) {
+  const {removedUserIds, affectedOrganizationId} = payload
+  if (
+    removedUserIds.some((removedUserId) => removedUserId === viewerId) &&
+    onExOrgRoute(pathname, affectedOrganizationId)
+  ) {
     history.push('/meetings')
   }
 }
@@ -201,28 +184,22 @@ export const removeMultipleOrgUsersNotificationOnNext: OnNextHandler<
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
-  const {organization, kickOutNotifications} = payload
-  if (!organization || !kickOutNotifications) return
-  const {name: orgName, id: orgId} = organization
-  const teams = kickOutNotifications.map((notification) => notification && notification.team)
+  const {affectedOrganizationId, affectedOrganizationName, affectedMeetingIds, affectedTeamIds} =
+    payload
+  if (!affectedOrganizationId || !affectedOrganizationName) return
   atmosphere.eventEmitter.emit('addSnackbar', {
-    key: `removedFromOrg:${orgId}`,
+    key: `removedFromOrg:${affectedOrganizationId}`,
     autoDismiss: 10,
-    message: `You have been removed from ${orgName} and all its teams`
+    message: `You have been removed from ${affectedOrganizationName} and all its teams`
   })
 
-  for (let ii = 0; ii < teams.length; ii++) {
-    const team = teams[ii]
-    if (!team) continue
-    const {activeMeetings, id: teamId} = team
-    const meetingIds = activeMeetings.map(({id}) => id)
-    if (
-      onTeamRoute(window.location.pathname, teamId) ||
-      onMeetingRoute(window.location.pathname, meetingIds)
-    ) {
-      history.push('/meetings')
-      return
-    }
+  if (onMeetingRoute(window.location.pathname, affectedMeetingIds)) {
+    history.push('/meetings')
+    return
+  }
+  if (affectedTeamIds.some((teamId) => onTeamRoute(window.location.pathname, teamId))) {
+    history.push('/meetings')
+    return
   }
 }
 

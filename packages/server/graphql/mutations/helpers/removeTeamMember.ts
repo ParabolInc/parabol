@@ -171,7 +171,8 @@ const removeTeamMember = async (
     user,
     notificationId,
     archivedTaskIds,
-    reassignedTaskIds: reassignedTasks.map(({id}) => id)
+    reassignedTaskIds: reassignedTasks.map(({id}) => id),
+    activeMeetingIds: meetingIds
   }
 }
 
