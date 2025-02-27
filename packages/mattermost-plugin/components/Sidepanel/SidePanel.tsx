@@ -1,6 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useDispatch} from 'react-redux'
+import {useSubscription} from 'react-relay'
 import ReactSelect from 'react-select'
+import {SidePanel_teamSubscription} from '../../__generated__/SidePanel_teamSubscription.graphql'
 import {openLinkTeamModal, openStartActivityModal} from '../../reducers'
 import ActiveMeetings from './ActiveMeetings'
 import LinkedTeams from './LinkedTeams'
@@ -21,6 +24,45 @@ const panels = {
 } as const
 
 const SidePanel = () => {
+  useSubscription<SidePanel_teamSubscription>({
+    subscription: graphql`
+      subscription SidePanel_teamSubscription {
+        teamSubscription {
+          fieldName
+          StartCheckInSuccess {
+            ...useStartMeeting_checkIn @relay(mask: false)
+          }
+          StartRetrospectiveSuccess {
+            ...useStartMeeting_retrospective @relay(mask: false)
+          }
+          StartSprintPokerSuccess {
+            ...useStartMeeting_sprintPoker @relay(mask: false)
+          }
+          StartTeamPromptSuccess {
+            ...useStartMeeting_teamPrompt @relay(mask: false)
+          }
+        }
+      }
+    `,
+    variables: {}
+    /*
+    probably not needed if the subscription requests enough data
+    onNext: (data) => {
+      if (!data?.teamSubscription) return
+      switch (data.teamSubscription.fieldName) {
+        case 'StartCheckInSuccess':
+          break
+        case 'StartRetrospectiveSuccess':
+          break
+        case 'StartSprintPokerSuccess':
+          break
+        case 'StartTeamPromptSuccess':
+          break
+      }
+    }
+    */
+  })
+
   const [activePanel, setActivePanel] = useState<keyof typeof panels>('teams')
   const dispatch = useDispatch()
 

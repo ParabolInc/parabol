@@ -9,6 +9,7 @@ import {isAuthenticated} from '../utils/authorization'
 import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import sendToSentry from '../utils/sendToSentry'
 import handleConnect from './handleConnect'
+import {WebSocket} from '../socketHelpers/transports/WebSocket'
 
 export type SocketUserData = {
   connectionContext: ConnectionContext
@@ -33,7 +34,7 @@ const handleOpen: WebSocketBehavior<SocketUserData>['open'] = async (socket) => 
 
   // add the connectionContext before an async call to make sure it's available in handleMessage
   const connectionContext = (socket.getUserData().connectionContext = new ConnectionContext(
-    socket,
+    new WebSocket(socket),
     authToken,
     ip
   ))

@@ -1,0 +1,4 @@
+"""
+Return object for linkNotificationChannel
+"""
+union LinkNotificationChannelPayload = ErrorPayload | LinkNotificationChannelSuccess
