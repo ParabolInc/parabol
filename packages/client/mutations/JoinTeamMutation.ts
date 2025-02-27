@@ -5,9 +5,23 @@ import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment JoinTeamMutation_team on JoinTeamSuccess {
-    teamId
-    teamMemberId
-    authToken
+    team {
+      ...DashNavListTeam
+      ...MeetingsDashActiveMeetings
+      id
+      name
+      isPaid
+      activeMeetings {
+        id
+      }
+      organization {
+        id
+        name
+        ...DashNavList_organization
+      }
+      ...DashNavListTeam
+      ...PublicTeamsFrag_team
+    }
   }
 `
 

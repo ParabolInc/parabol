@@ -71,4 +71,5 @@ type TeamSubscriptionPayload {
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   GenerateInsightSuccess: GenerateInsightSuccess
+  JoinTeamSuccess: JoinTeamSuccess
 }

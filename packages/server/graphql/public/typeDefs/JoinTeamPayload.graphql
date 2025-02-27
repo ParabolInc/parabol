@@ -1,0 +1,4 @@
+"""
+Return value for joinTeam, which could be an error
+"""
+union JoinTeamPayload = ErrorPayload | JoinTeamSuccess

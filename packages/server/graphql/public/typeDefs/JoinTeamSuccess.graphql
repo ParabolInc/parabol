@@ -1,0 +1,6 @@
+type JoinTeamSuccess {
+  """
+  The team that was joined
+  """
+  team: Team!
+}
