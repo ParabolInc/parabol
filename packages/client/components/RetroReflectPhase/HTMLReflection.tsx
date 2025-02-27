@@ -11,7 +11,7 @@ export const HTMLReflection = (props: Props) => {
     <div className={cn('relative w-full overflow-auto text-sm leading-5 text-slate-700')}>
       <div
         className={cn(
-          'ProseMirror flex max-h-28 min-h-6 w-full flex-col items-start justify-center px-4 pt-3 leading-5',
+          'ProseMirror flex max-h-41 min-h-6 w-full flex-col items-start justify-center px-4 pt-3 leading-5',
           disableAnonymity ? 'pb-0' : 'pb-3'
         )}
         dangerouslySetInnerHTML={{__html: html}}
