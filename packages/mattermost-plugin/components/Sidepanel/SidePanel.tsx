@@ -29,7 +29,7 @@ const SidePanel = () => {
   }
 
   return (
-    <div className='flex flex-col items-stretch overflow-y-auto px-2 py-4'>
+    <div className='flex h-full flex-col items-stretch overflow-y-auto px-2 py-4'>
       <div className='flex justify-between'>
         <ReactSelect
           className='cursor-pointer'
