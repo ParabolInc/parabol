@@ -5,6 +5,7 @@ import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitatio
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
+import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 import getIsUserIdApprovedByOrg from './helpers/getIsUserIdApprovedByOrg'
 
@@ -19,12 +20,12 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
 
   // VALIDATION
   if (!viewerId) {
-    return {error: {message: 'You must be logged in to join a team'}}
+    return standardError(new Error('You must be logged in to join a team'))
   }
 
   // Check if user is already on the team
   if (isTeamMember(authToken, teamId)) {
-    return {error: {message: 'You are already a member of this team'}}
+    return standardError(new Error('You are already a member of this team'))
   }
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
@@ -36,22 +37,15 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
     .load({ownerId: orgId, featureName: 'publicTeams'})
 
   if (!hasPublicTeamsFlag) {
-    return {error: {message: 'This team is not public'}}
+    return standardError(new Error('This team is not public'))
   }
 
-  // Check if user is approved by the organization
   const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader)
   if (approvalError instanceof Error) {
-    return {error: {message: approvalError.message}}
+    return standardError(approvalError)
   }
 
-  // RESOLUTION
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const {teamLeadUserIdWithNewActions, invitationNotificationIds} = await acceptTeamInvitationSafe(
-    team,
-    viewerId,
-    dataLoader
-  )
+  const {invitationNotificationIds} = await acceptTeamInvitationSafe(team, viewerId, dataLoader)
 
   const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
   // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest
@@ -74,17 +68,6 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
 
   // Send individualized message to the user
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JoinTeamPayload', data, subOptions)
-
-  // Give the team lead new suggested actions
-  if (teamLeadUserIdWithNewActions) {
-    publish(
-      SubscriptionChannel.NOTIFICATION,
-      teamLeadUserIdWithNewActions,
-      'JoinTeamPayload',
-      {...data, teamLeadId: teamLeadUserIdWithNewActions},
-      subOptions
-    )
-  }
 
   // analytics.teamJoined(viewer, teamId)
 
