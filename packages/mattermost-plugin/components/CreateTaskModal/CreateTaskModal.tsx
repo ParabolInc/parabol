@@ -57,7 +57,7 @@ const CreateTaskModal = () => {
   const {viewer, linkedTeamIds} = data
   const {id: userId, teams} = viewer
   const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    () => teams.filter(({id}) => linkedTeamIds?.includes(id)),
     [teams, linkedTeamIds]
   )
 
@@ -134,7 +134,7 @@ const CreateTaskModal = () => {
     return null
   }
 
-  if (linkedTeams.length === 0) {
+  if (!linkedTeams || linkedTeams.length === 0) {
     return <NoLinkedTeamsModal title='Add a Task' handleClose={handleClose} />
   }
 

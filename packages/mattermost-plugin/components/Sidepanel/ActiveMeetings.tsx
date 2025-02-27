@@ -45,7 +45,7 @@ const ActiveMeetings = () => {
     <div>
       {isLoading && <LoadingSpinner text='Loading...' />}
       {error && (
-        <div className='error-text p-4'>Loading meetings failed, try refreshing the page</div>
+        <div className='error-text p-2'>Loading meetings failed, try refreshing the page</div>
       )}
       {linkedTeams?.length === 0 && (
         <p className='self-center p-2 font-semibold'>There are no teams linked to this channel</p>
