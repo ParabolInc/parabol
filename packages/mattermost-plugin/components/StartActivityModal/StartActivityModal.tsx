@@ -11,20 +11,24 @@ import MeetingSettings from './MeetingSettings'
 
 import styled from 'styled-components'
 import {StartActivityModalQuery} from '../../__generated__/StartActivityModalQuery.graphql'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
+import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 
 const SettingsArea = styled.div!`
   min-height: 80px;
 `
 
 const StartActivityModal = () => {
+  const channel = useCurrentChannel()
   const data = useLazyLoadQuery<StartActivityModalQuery>(
     graphql`
-      query StartActivityModalQuery {
+      query StartActivityModalQuery($channel: ID!) {
         config {
           parabolUrl
         }
+        linkedTeamIds(channel: $channel)
         viewer {
           availableTemplates(first: 2000) {
             edges {
@@ -51,13 +55,16 @@ const StartActivityModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
 
-  const {config, viewer} = data
-  const {availableTemplates, teams} = viewer
+  const {config, viewer, linkedTeamIds} = data
+  const {availableTemplates} = viewer
+  const linkedTeams = viewer.teams.filter((team) => linkedTeamIds?.includes(team.id))
 
-  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
+  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
   const [selectedTemplate, setSelectedTemplate] =
     useState<NonNullable<typeof availableTemplates.edges>[number]['node']>()
 
@@ -75,10 +82,10 @@ const StartActivityModal = () => {
   )
 
   useEffect(() => {
-    if (!selectedTeam && teams && teams.length > 0) {
-      setSelectedTeam(teams[0])
+    if (!selectedTeam && linkedTeams && linkedTeams.length > 0) {
+      setSelectedTeam(linkedTeams[0])
     }
-  }, [teams, selectedTeam])
+  }, [linkedTeams, selectedTeam])
   useEffect(() => {
     if (!selectedTemplate && filteredTemplates && filteredTemplates.length > 0) {
       setSelectedTemplate(filteredTemplates[0])
@@ -106,6 +113,10 @@ const StartActivityModal = () => {
     handleClose()
   }
 
+  if (!linkedTeams || linkedTeams.length === 0) {
+    return <NoLinkedTeamsModal title='Start a Parabol Activity' handleClose={handleClose} />
+  }
+
   return (
     <Modal
       title='Start a Parabol Activity'
@@ -121,11 +132,11 @@ const StartActivityModal = () => {
           </a>
         </p>
       </div>
-      {teams && (
+      {linkedTeams && (
         <Select
           label='Choose Parabol Team'
           required={true}
-          options={teams ?? []}
+          options={linkedTeams}
           value={selectedTeam}
           onChange={setSelectedTeam}
         />

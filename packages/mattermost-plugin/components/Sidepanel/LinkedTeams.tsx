@@ -27,9 +27,7 @@ const LinkedTeams = () => {
     }
   )
   const {viewer, linkedTeamIds} = data
-  const linkedTeams = viewer.teams.filter(
-    (team) => !linkedTeamIds || linkedTeamIds.includes(team.id)
-  )
+  const linkedTeams = viewer.teams.filter((team) => linkedTeamIds?.includes(team.id))
 
   const isLoading = false
   const error = false
@@ -38,6 +36,9 @@ const LinkedTeams = () => {
     <div>
       {isLoading && <LoadingSpinner text='Loading...' />}
       {error && <div className='error-text'>Loading teams failed, try refreshing the page</div>}
+      {linkedTeams?.length === 0 && (
+        <p className='p-2 font-semibold'>There are no teams linked to this channel</p>
+      )}
       {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}
     </div>
   )

@@ -14,9 +14,11 @@ import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 
 const InviteToTeamModal = () => {
+  const channel = useCurrentChannel()
   const data = useLazyLoadQuery<InviteToTeamModalQuery>(
     graphql`
-      query InviteToTeamModalQuery {
+      query InviteToTeamModalQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
         viewer {
           teams {
             ...useInviteToTeam_team
@@ -26,20 +28,21 @@ const InviteToTeamModal = () => {
         }
       }
     `,
-    {}
+    {
+      channel: channel?.id ?? ''
+    }
   )
 
-  const {viewer} = data
-  const {teams} = viewer
+  const {viewer, linkedTeamIds} = data
+  const linkedTeams = viewer.teams.filter((team) => linkedTeamIds?.includes(team.id))
 
-  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
-  const channel = useCurrentChannel()
+  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
 
   useEffect(() => {
-    if (!selectedTeam && teams && teams.length > 0) {
-      setSelectedTeam(teams[0])
+    if (!selectedTeam && linkedTeams && linkedTeams.length > 0) {
+      setSelectedTeam(linkedTeams[0])
     }
-  }, [teams, selectedTeam])
+  }, [linkedTeams, selectedTeam])
 
   const invite = useInviteToTeam(selectedTeam)
 
@@ -63,11 +66,11 @@ const InviteToTeamModal = () => {
       handleCommit={handleStart}
       handleClose={handleClose}
     >
-      {teams ? (
+      {linkedTeams ? (
         <Select
           label='Parabol Team'
           required={true}
-          options={teams ?? []}
+          options={linkedTeams ?? []}
           value={selectedTeam}
           onChange={setSelectedTeam}
         />
