@@ -1,27 +1,9 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
-import {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
-import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
-import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
-import JiraServerOAuth1Manager, {
-  OAuth1Auth
-} from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import getKysely from '../../../postgres/getKysely'
-import {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
-import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import {MutationResolvers} from '../resolverTypes'
-import {link} from 'fs'
-
-interface OAuth2Auth {
-  accessToken: string
-  refreshToken: string
-  scopes: string
-  expiresAt?: Date | null
-}
 
 const linkNotificationChannel: MutationResolvers['linkNotificationChannel'] = async (
   _source,

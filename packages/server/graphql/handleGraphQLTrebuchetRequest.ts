@@ -29,7 +29,7 @@ const handleGraphQLTrebuchetRequest = async (
         payload: {errors: [{message: 'DocumentId not provided'}]}
       }
 
-    const isSubscription = __PRODUCTION__ ? docId![0] === 's' : query?.startsWith('subscription')
+    const isSubscription = docId?.[0] === 's' || (!__PRODUCTION__ && query?.startsWith('subscription'))
     if (isSubscription) {
       subscribeGraphQL({docId, query, opId: opId!, variables, connectionContext})
       return

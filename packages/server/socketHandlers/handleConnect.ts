@@ -50,11 +50,9 @@ const handleConnect = async (connectionContext: ConnectionContext) => {
     variables: {socketInstanceId: INSTANCE_ID},
     socketId
   })
-  console.log('GEORG handleConnect', result)
   if (!result) return null
   const {data} = result
   const tms = data?.connectSocket?.tms
-  console.log('GEORG handleConnect', tms)
   if (!tms) return null // should NEVER happen
   const freshToken = setFreshTokenIfNeeded(connectionContext, tms)
   connectionContext.ready()

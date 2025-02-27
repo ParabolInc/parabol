@@ -16,7 +16,7 @@ const sendEncodedMessage = (context: ConnectionContext, object: any, syn = false
     sendAndPushToReliableQueue(context, mid, message)
   } else {
     const message = JSON.stringify(object)
-    socket.sendEncodedMessage(message)
+    socket.sendEncodedMessage(message, context.id)
   }
 }
 

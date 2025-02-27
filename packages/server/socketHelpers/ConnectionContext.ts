@@ -2,7 +2,6 @@ import {ExecutionResult} from 'graphql/execution/execute'
 import AuthToken from '../database/types/AuthToken'
 import generateUID from '../generateUID'
 import {Socket} from './transports/Socket'
-import {getSocketTransport, SocketTransportType} from './transports/getSocketTransport'
 
 export interface ConnectedSubs {
   [opId: string]: AsyncIterableIterator<ExecutionResult>
@@ -25,8 +24,7 @@ class ConnectionContext {
   readyQueue = [] as (() => void)[]
   reliableQueue = {} as ReliableQueue
   mid = -1
-  constructor(transport: SocketTransportType, authToken: AuthToken, ip: string) {
-    const socket = getSocketTransport(transport)
+  constructor(socket: Socket, authToken: AuthToken, ip: string) {
     const {prefix} = socket
     this.authToken = authToken
     this.socket = socket

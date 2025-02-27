@@ -8,6 +8,38 @@ import {useStartMeetingSprintPokerMutation} from '../__generated__/useStartMeeti
 import {useStartMeetingTeamPromptMutation} from '../__generated__/useStartMeetingTeamPromptMutation.graphql'
 //import addNodeToArray from '../../client/utils/relay/addNodeToArray'
 
+graphql`
+  fragment useStartMeeting_retrospective on StartRetrospectiveSuccess {
+    meeting {
+      id
+    }
+  }
+`
+
+graphql`
+  fragment useStartMeeting_checkIn on StartCheckInSuccess {
+    meeting {
+      id
+    }
+  }
+`
+
+graphql`
+  fragment useStartMeeting_sprintPoker on StartSprintPokerSuccess {
+    meeting {
+      id
+    }
+  }
+`
+
+graphql`
+  fragment useStartMeeting_teamPrompt on StartTeamPromptSuccess {
+    meeting {
+      id
+    }
+  }
+`
+
 const useStartMeeting = () => {
   const [error, setError] = useState<Error | null>(null)
   const [startRetrospective, startRetrospectiveLoading] =
@@ -19,6 +51,7 @@ const useStartMeeting = () => {
           }
         }
         startRetrospective(teamId: $teamId) {
+          ...useStartMeeting_retrospective @relay(mask: false)
           ... on ErrorPayload {
             error {
               message
@@ -31,6 +64,7 @@ const useStartMeeting = () => {
   const [startCheckIn, startCheckInLoading] = useMutation<useStartMeetingCheckInMutation>(graphql`
     mutation useStartMeetingCheckInMutation($teamId: ID!) {
       startCheckIn(teamId: $teamId) {
+        ...useStartMeeting_checkIn @relay(mask: false)
         ... on ErrorPayload {
           error {
             message
@@ -54,14 +88,10 @@ const useStartMeeting = () => {
           }
         }
         startSprintPoker(teamId: $teamId) {
+          ...useStartMeeting_sprintPoker @relay(mask: false)
           ... on ErrorPayload {
             error {
               message
-            }
-          }
-          ... on StartSprintPokerSuccess {
-            meeting {
-              id
             }
           }
         }
@@ -72,14 +102,10 @@ const useStartMeeting = () => {
     graphql`
       mutation useStartMeetingTeamPromptMutation($teamId: ID!) {
         startTeamPrompt(teamId: $teamId) {
+          ...useStartMeeting_teamPrompt @relay(mask: false)
           ... on ErrorPayload {
             error {
               message
-            }
-          }
-          ... on StartTeamPromptSuccess {
-            meeting {
-              id
             }
           }
         }

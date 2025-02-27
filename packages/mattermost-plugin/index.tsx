@@ -25,6 +25,9 @@ import commands from './public/mattermost-plugin-commands.json'
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
   const environment = createEnvironment(serverUrl, store)
+  registry.registerWebSocketEventHandler(`custom_${manifest.id}_graphql`, (data) => {
+    environment.onMessage(data.data.payload)
+  })
   registry.registerSlashCommandWillBePostedHook(async (message: string, args: ContextArgs) => {
     const [command, subcommand] = message.split(/\s+/)
     if (command === '/parabol') {

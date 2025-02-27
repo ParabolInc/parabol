@@ -13,10 +13,11 @@ import checkBlacklistJWT from '../utils/checkBlacklistJWT'
 import getQueryToken from '../utils/getQueryToken'
 import uwsGetIP from '../utils/uwsGetIP'
 import sendSSEMessage from './sendSSEMessage'
+import {SSESocket} from '../socketHelpers/transports/SSESocket'
 
 const SSEConnectionHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getQueryToken(req)
-  const connectionContext = new ConnectionContext(res, authToken, uwsGetIP(res, req))
+  const connectionContext = new ConnectionContext(new SSESocket(res), authToken, uwsGetIP(res, req))
   res.onAborted(() => {
     handleDisconnect(connectionContext)
   })
