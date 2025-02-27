@@ -323,11 +323,11 @@ const ReflectionCard = (props: Props) => {
 
       <div
         ref={scrollRef}
-        className={cn('relative w-full overflow-auto text-sm leading-4 text-slate-700')}
+        className={cn('relative w-full overflow-auto text-sm leading-5 text-slate-700')}
       >
         <TipTapEditor
           className={cn(
-            'flex min-h-4 w-full px-4',
+            'flex min-h-6 w-full px-4',
             phaseType === 'discuss' ? 'min-h-0' : isClipped ? 'max-h-6' : 'max-h-28',
             readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
