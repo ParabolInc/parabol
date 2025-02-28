@@ -19,6 +19,7 @@ type TeamSubscriptionPayload {
   PromoteToTeamLeadPayload: PromoteToTeamLeadPayload
   RemoveAgendaItemPayload: RemoveAgendaItemPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
+  RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccess
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   RenameMeetingSuccess: RenameMeetingSuccess
   SelectTemplatePayload: SelectTemplatePayload

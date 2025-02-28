@@ -40,6 +40,11 @@ const removeFromOrg = async (
     return arr
   }, [])
 
+  const activeMeetingIds = perTeamRes.reduce((arr: string[], res) => {
+    res.activeMeetingIds && arr.push(...res.activeMeetingIds)
+    return arr
+  }, [])
+
   const [organizationUser, user] = await Promise.all([
     pg
       .updateTable('OrganizationUser')
@@ -88,7 +93,8 @@ const removeFromOrg = async (
     kickOutNotificationIds,
     teamIds,
     teamMemberIds,
-    organizationUserId: organizationUser.id
+    organizationUserId: organizationUser.id,
+    activeMeetingIds
   }
 }
 

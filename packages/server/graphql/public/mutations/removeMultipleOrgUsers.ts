@@ -8,7 +8,6 @@ import {
 } from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import isValid from '../../isValid'
 import removeFromOrg from '../../mutations/helpers/removeFromOrg'
 import {MutationResolvers} from '../resolverTypes'
 const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = async (
@@ -60,66 +59,80 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
     )
   }
 
+  const removedUserResults = await Promise.all(
+    userIds.map(async (removedUserId: string) => {
+      const removedUserData = await removeFromOrg(removedUserId, orgId, viewerId, dataLoader)
+      return {removedUserId, removedUserData}
+    })
+  )
+
   const data = {
-    orgId,
-    teamIds: [] as string[],
-    teamMemberIds: [] as string[],
-    taskIds: [] as string[],
-    userIds: [] as string[],
-    kickOutNotificationIds: [] as string[],
-    organizationUserIds: [] as string[]
+    removedUserIds: [...new Set(removedUserResults.map(({removedUserId}) => removedUserId))],
+    removedOrgMemberIds: [
+      ...new Set(removedUserResults.map(({removedUserData}) => removedUserData.organizationUserId))
+    ],
+    removedTeamMemberIds: [
+      ...new Set(removedUserResults.flatMap(({removedUserData}) => removedUserData.teamMemberIds))
+    ],
+    affectedOrganizationId: orgId,
+    affectedOrganizationName: organization.name,
+    affectedTeamIds: [
+      ...new Set(removedUserResults.flatMap(({removedUserData}) => removedUserData.teamIds))
+    ],
+    affectedTaskIds: [
+      ...new Set(removedUserResults.flatMap(({removedUserData}) => removedUserData.taskIds))
+    ],
+    affectedMeetingIds: [
+      ...new Set(
+        removedUserResults.flatMap(({removedUserData}) => removedUserData.activeMeetingIds)
+      )
+    ],
+    kickOutNotificationIds: [
+      ...new Set(
+        removedUserResults.flatMap(({removedUserData}) => removedUserData.kickOutNotificationIds)
+      )
+    ]
   }
 
-  const userResults = await Promise.all(
-    userIds.map(async (userId: string) => {
-      const userData = await removeFromOrg(userId, orgId, viewerId, dataLoader)
-      return {userId, userData}
+  removedUserResults.map(async ({removedUserId, removedUserData}) => {
+    publish(SubscriptionChannel.NOTIFICATION, removedUserId, 'AuthTokenPayload', {
+      tms: removedUserData.tms
     })
-  )
-
-  userResults.forEach(({userId, userData}) => {
-    data.taskIds.push(...userData.taskIds)
-    data.kickOutNotificationIds.push(...userData.kickOutNotificationIds)
-    data.teamIds.push(...userData.teamIds)
-    data.teamMemberIds.push(...userData.teamMemberIds)
-    data.userIds.push(userId)
-    data.organizationUserIds.push(userData.organizationUserId)
   })
 
-  await Promise.all(
-    userResults.map(async ({userId, userData}) => {
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: userData.tms})
-      publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUserPayload', userData, subOptions)
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        userId,
-        'RemoveOrgUserPayload',
-        userData,
-        subOptions
-      )
-
-      userData.teamIds.forEach((teamId) => {
-        const teamData = {...userData, teamFilterId: teamId}
-        publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUserPayload', teamData, subOptions)
-      })
-
-      const remainingTeamMembers = (
-        await dataLoader.get('teamMembersByTeamId').loadMany(userData.teamIds)
-      )
-        .filter(isValid)
-        .flat()
-      remainingTeamMembers.forEach((teamMember) => {
-        if (userData.teamMemberIds.includes(teamMember.id)) return
-        publish(
-          SubscriptionChannel.TASK,
-          teamMember.userId,
-          'RemoveOrgUserPayload',
-          data,
-          subOptions
-        )
-      })
-    })
+  publish(
+    SubscriptionChannel.ORGANIZATION,
+    orgId,
+    'RemoveMultipleOrgUsersSuccess',
+    data,
+    subOptions
   )
+
+  data.affectedTeamIds.forEach((teamId) => {
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveMultipleOrgUsersSuccess', data, subOptions)
+  })
+
+  removedUserResults.map(async ({removedUserId}) => {
+    publish(
+      SubscriptionChannel.NOTIFICATION,
+      removedUserId,
+      'RemoveMultipleOrgUsersSuccess',
+      data,
+      subOptions
+    )
+  })
+
+  data.removedTeamMemberIds.map(async (removedTeamMemberId) => {
+    const teamMember = await dataLoader.get('teamMembers').load(removedTeamMemberId)
+    if (!teamMember) return
+    publish(
+      SubscriptionChannel.TASK,
+      teamMember.userId,
+      'RemoveMultipleOrgUsersSuccess',
+      data,
+      subOptions
+    )
+  })
 
   return data
 }
