@@ -27,12 +27,15 @@ export async function up(db: Kysely<any>): Promise<void> {
     .columns(['providerId', 'teamId', 'events'])
     .expression((eb) =>
       eb
-        .selectFrom('NotificationSettings')
-        .innerJoin('TeamMemberIntegrationAuth as auth', 'authId', 'auth.id')
-        .select(['providerId', 'auth.teamId', sql`array_agg(event)`])
+        .selectFrom('TeamMemberIntegrationAuth as auth')
+        .leftJoin('NotificationSettings as settings', 'auth.id', 'settings.authId')
+        .select(['auth.providerId', 'auth.teamId', sql`array_remove(array_agg(event), NULL)`])
         // There was a bug which might have added settings for other providers like gcal
         .where((eb) => eb.or([eb('service', '=', 'mattermost'), eb('service', '=', 'msTeams')]))
-        .groupBy(['providerId', 'auth.teamId'])
+        .groupBy(['auth.providerId', 'auth.teamId'])
+    )
+    .onConflict((oc) =>
+      oc.constraint('TeamNotificationSettings_providerId_teamId_channelId_key').doNothing()
     )
     .execute()
 
