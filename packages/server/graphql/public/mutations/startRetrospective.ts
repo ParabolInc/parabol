@@ -47,10 +47,18 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     videoMeetingURL
   } = meetingSettings as typeof meetingSettings & {meetingType: 'retrospective'}
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
+  const startTime=new Date(
+    rrule!.dtstart.year,
+    rrule!.dtstart.month - 1,
+    rrule!.dtstart.day,
+    rrule!.dtstart.hour,
+    rrule!.dtstart.minute,
+    rrule!.dtstart.second
+  );
   const meetingName = !name
     ? `Retro #${meetingCount + 1}`
     : rrule
-      ? createMeetingSeriesTitle(name, new Date(), 'UTC')
+      ? createMeetingSeriesTitle(name, startTime, rrule.tzid)
       : name
   const meetingSeriesName = name || meetingName
 
