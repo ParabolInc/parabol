@@ -27,7 +27,7 @@ const TeamToggleButton = styled(CardButton)({
   color: PALETTE.SLATE_600,
   display: 'block',
   fontSize: 12,
-  fontWeight: 400,
+  fontWeight: 600,
   height: 24,
   lineHeight: '24px',
   marginLeft: -8,

@@ -24,7 +24,7 @@ const Footer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   maxWidth: '100%',
-  padding: `12px ${Card.PADDING} ${Card.PADDING}`
+  padding: `8px ${Card.PADDING} ${Card.PADDING}`
 })
 
 const ButtonGroup = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({
@@ -119,7 +119,6 @@ const TaskFooter = (props: Props) => {
             <TaskFooterUserAssignee
               area={area}
               canAssign={canAssignUser}
-              cardIsActive={cardIsActive}
               task={task}
               useTaskChild={useTaskChild}
             />
