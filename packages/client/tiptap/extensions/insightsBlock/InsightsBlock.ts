@@ -74,8 +74,7 @@ export const InsightsBlock = InsightsBlockBase.extend({
         () =>
         ({commands}) => {
           return commands.insertContent({
-            type: 'insightsBlock',
-            attrs: {editing: true}
+            type: 'insightsBlock'
           })
         }
     }
