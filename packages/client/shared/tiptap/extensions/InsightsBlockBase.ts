@@ -16,6 +16,7 @@ export const InsightsBlockBase = Node.create({
   defining: true,
 
   group: 'block',
+  content: 'block*',
 
   draggable: true,
 

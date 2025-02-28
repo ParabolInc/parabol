@@ -1,6 +1,6 @@
 import type {NodeViewProps} from '@tiptap/core'
 import type {MeetingTypeEnum} from '../__generated__/ExportToCSVQuery.graphql'
-import type {InsightsBlockAttrs} from '../tiptap/extensions/imageBlock/InsightsBlock'
+import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'

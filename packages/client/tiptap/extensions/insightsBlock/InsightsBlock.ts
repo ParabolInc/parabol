@@ -2,9 +2,10 @@ import {ReactNodeViewRenderer} from '@tiptap/react'
 import ms from 'ms'
 import type {MeetingTypeEnum} from '../../../__generated__/ExportToCSVQuery.graphql'
 import {InsightsBlockBase} from '../../../shared/tiptap/extensions/InsightsBlockBase'
-import {InsightsBlockView} from '../imageUpload/InsightsBlockView'
+import {InsightsBlockView} from './InsightsBlockView'
 
 export interface InsightsBlockAttrs {
+  editing: boolean
   teamIds: string[]
   meetingTypes: MeetingTypeEnum[]
   after: string
@@ -16,6 +17,13 @@ export interface InsightsBlockAttrs {
 export const InsightsBlock = InsightsBlockBase.extend({
   addAttributes() {
     return {
+      editing: {
+        default: true,
+        parseHTML: (element) => element.getAttribute('editing'),
+        renderHTML: (attributes) => ({
+          editing: attributes.editing
+        })
+      },
       teamIds: {
         default: [],
         parseHTML: (element) => element.getAttribute('data-team-ids')!.split(','),
@@ -65,7 +73,10 @@ export const InsightsBlock = InsightsBlockBase.extend({
       setInsights:
         () =>
         ({commands}) => {
-          return commands.insertContent({type: 'insightsBlock', text: 'Dirty title'})
+          return commands.insertContent({
+            type: 'insightsBlock',
+            attrs: {editing: true}
+          })
         }
     }
   },
