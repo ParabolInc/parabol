@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {makeGroupTitleFromPlaintext} from '../../../../client/utils/smartGroup/getTitleFromComputedGroup'
+import {getSimpleGroupTitle} from '../../../../client/utils/getSimpleGroupTitle'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -7,7 +7,6 @@ import {DataLoaderWorker} from '../../graphql'
 import updateSmartGroupTitle from './updateReflectionLocation/updateSmartGroupTitle'
 
 interface Reflection {
-  entities: any[]
   plaintextContent: string
 }
 
@@ -19,7 +18,7 @@ const generateAIGroupTitle = async (
 ) => {
   const manager = new OpenAIServerManager()
   const aiTitle = await manager.generateGroupTitle(reflections)
-  const newTitle = aiTitle ?? makeGroupTitleFromPlaintext(reflections[0]?.plaintextContent)
+  const newTitle = aiTitle ?? getSimpleGroupTitle(reflections)
   if (!newTitle) standardError(new Error('Failed to generate AI title'))
   await updateSmartGroupTitle(reflectionGroupId, newTitle)
   dataLoader.get('retroReflectionGroups').clear(reflectionGroupId)

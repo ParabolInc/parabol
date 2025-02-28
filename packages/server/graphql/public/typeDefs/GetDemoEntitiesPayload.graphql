@@ -1,4 +1,0 @@
-type GetDemoEntitiesPayload {
-  error: StandardMutationError
-  entities: [GoogleAnalyzedEntity!]
-}

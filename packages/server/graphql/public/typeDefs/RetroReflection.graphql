@@ -48,11 +48,6 @@ type RetroReflection implements Reactable {
   content: String!
 
   """
-  The entities (i.e. nouns) parsed from the content and their respective salience
-  """
-  entities: [GoogleAnalyzedEntity!]!
-
-  """
   The foreign key to link a reflection to its meeting
   """
   meetingId: ID!
