@@ -1,5 +1,6 @@
 import yaml from 'js-yaml'
 import {sql} from 'kysely'
+import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -7,7 +8,7 @@ import standardError from '../../../../utils/standardError'
 import {DataLoaderWorker} from '../../../graphql'
 import {RetrospectiveMeeting} from '../../resolverTypes'
 
-const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
+export const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderInstance) => {
   const pg = getKysely()
   const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
   const discussion = await pg

@@ -489,7 +489,11 @@ type User {
   """
   AI-provided Insights
   """
-  pageInsights(meetingIds: [ID!]!, prompt: String): String!
+  pageInsights(
+    meetingIds: [ID!]!
+    prompt: String
+    responseFormat: ContentFormatEnum = markdown
+  ): String!
 
   meetings(
     """

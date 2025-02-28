@@ -1,5 +1,7 @@
 import base64url from 'base64url'
+import yaml from 'js-yaml'
 import {sql} from 'kysely'
+import {marked} from 'marked'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
@@ -7,6 +9,7 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
@@ -21,6 +24,8 @@ import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
+import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
@@ -843,7 +848,79 @@ const User: ReqResolvers<'User'> = {
     return getFeatureTier({tier, trialStartDate})
   },
   billingTier: ({tier}) => tier,
-  pageInsights: () => 'WIP'
+  pageInsights: async ({tier}, {meetingIds, prompt, responseFormat}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    if (meetingIds.length > 500) {
+      throw new Error('Too many meetings to summarize. Max 500')
+    }
+    if (tier === 'starter') throw new Error('Cannot use insights on the free tier')
+    const meetings = (await dataLoader.get('newMeetings').loadMany(meetingIds)).filter(isValid)
+    const teamIds = [...new Set(meetings.map(({teamId}) => teamId))]
+    const teamMemberIds = teamIds.map((teamId) => TeamMemberId.join(teamId, viewerId))
+    const teamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds)).filter(
+      isValid
+    )
+    if (teamMembers.length < teamIds.length) {
+      throw new Error('You must be a member of the team for each requested meetingId')
+    }
+    const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+    const dataByTeam = await Promise.all(
+      teams.map(async (team) => {
+        const {id: teamId, name: teamName} = team
+        const teamMeetings = meetings.filter((meeting) => meeting.teamId === teamId)
+        const inputs = await Promise.all(
+          teamMeetings.map((meeting) => makeMeetingInsightInput(meeting, dataLoader))
+        )
+        const validInputs = inputs.filter(isValid)
+        if (validInputs.length === 0) return null
+        return {
+          teamName,
+          meetings: validInputs
+        }
+      })
+    )
+    const yamlData = yaml.dump(dataByTeam, {
+      noCompatMode: true
+    })
+
+    const openAI = new OpenAIServerManager()
+    const defaultPrompt = `
+You are an expert in agile retrospectives and project management. I will provide you with YAML data containing meeting discussions, work completed, and agile stories with points.
+
+Analyze this data and provide key insights on:
+- The most significant **wins** in terms of completed work, team collaboration, or project improvements.
+- The biggest **challenges** faced by the team.
+- Any **trends** in the conversations (e.g., recurring blockers, common frustrations, or successful strategies).
+- Suggestions for improving efficiency based on the data.
+
+Use a structured response format with **Wins**, **Challenges**, and **Recommendations**.
+`
+
+    const systemContent = prompt || defaultPrompt
+    const rawInsight = await openAI.chatCompletion({
+      model: 'gpt-4-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: systemContent
+        },
+        {
+          role: 'user',
+          content: `Here is the data:\n\n${yamlData}`
+        }
+      ],
+      temperature: 0.7,
+      frequency_penalty: 0,
+      presence_penalty: 0
+    })
+    if (!rawInsight) throw new Error('Could not fetch insights from provider')
+    if (responseFormat === 'markdown') return rawInsight
+    const htmlInsight = await marked(rawInsight, {
+      gfm: true,
+      breaks: true
+    })
+    return htmlInsight
+  }
 }
 
 export default User

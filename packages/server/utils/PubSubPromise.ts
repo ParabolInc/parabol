@@ -7,7 +7,8 @@ import RedisInstance from './RedisInstance'
 import numToBase64 from './numToBase64'
 import sendToSentry from './sendToSentry'
 
-const STANDARD_TIMEOUT = ms('10s')
+// OpenAI calls like pageInsights can take a LONG time
+const STANDARD_TIMEOUT = ms('30s')
 const LONG_TIMEOUT = ms('60s')
 const ADHOC_TIMEOUT = ms('10m')
 

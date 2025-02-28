@@ -1,6 +1,5 @@
 import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
-import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Document from '@tiptap/extension-document'
@@ -23,8 +22,8 @@ import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
-import {InsightsBlock} from '../tiptap/extensions/imageBlock/InsightsBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
+import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -138,10 +137,6 @@ export const useTipTapPageEditor = (
           openOnClick: false
         }),
         SearchAndReplace.configure(),
-        CharacterCount.configure({
-          // this is a rough estimate because we store the JSON content as a string, not plaintext
-          limit: 1900
-        }),
         Collaboration.configure({
           document
         }),
