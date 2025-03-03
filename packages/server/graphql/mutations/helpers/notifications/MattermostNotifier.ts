@@ -8,12 +8,13 @@ import {IntegrationProviderMattermost} from '../../../../postgres/queries/getInt
 import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {NotificationSettings} from '../../../../postgres/types/pg'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
+import isValid from '../../../isValid'
+import {SlackNotificationEventEnum} from '../../../public/resolverTypes'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
@@ -359,7 +360,7 @@ async function getMattermost(
   dataLoader: DataLoaderWorker,
   teamId: string,
   userId: string,
-  event: NotificationSettings['event']
+  event: SlackNotificationEventEnum
 ) {
   if (MATTERMOST_SECRET && MATTERMOST_URL) {
     return [
@@ -374,17 +375,29 @@ async function getMattermost(
   }
 
   const auths = await dataLoader
-    .get('teamMemberIntegrationAuthsByTeamIdAndEvent')
-    .load({service: 'mattermost', teamId, event})
+    .get('teamMemberIntegrationAuthsByTeamIdAndService')
+    .load({service: 'mattermost', teamId})
 
-  return Promise.all(
-    auths.map(async (auth) => {
-      const provider = (await dataLoader
-        .get('integrationProviders')
-        .loadNonNull(auth.providerId)) as IntegrationProviderMattermost
-      return MattermostNotificationHelper({...provider, teamId, userId})
-    })
-  )
+  const providers = (
+    await Promise.all(
+      auths.map(async (auth) => {
+        const {providerId} = auth
+        const [provider, settings] = await Promise.all([
+          dataLoader
+            .get('integrationProviders')
+            .loadNonNull(providerId) as Promise<IntegrationProviderMattermost>,
+          dataLoader.get('teamNotificationSettingsByProviderIdAndTeamId').load({providerId, teamId})
+        ])
+        const activeSettings = settings.find(({channelId}) => channelId === null)
+        if (activeSettings?.events.includes(event)) {
+          return provider
+        }
+        return null
+      })
+    )
+  ).filter(isValid)
+
+  return providers.map((provider) => MattermostNotificationHelper({...provider, teamId, userId}))
 }
 
 export const MattermostNotifier = createNotifier(getMattermost)

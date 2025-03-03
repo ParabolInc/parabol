@@ -152,8 +152,8 @@ const subscription = graphql`
       SetMeetingSettingsPayload {
         ...SetMeetingSettingsMutation_team @relay(mask: false)
       }
-      SetNotificationSettingSuccess {
-        ...SetNotificationSettingMutation_auth @relay(mask: false)
+      SetTeamNotificationSettingSuccess {
+        ...SetTeamNotificationSettingMutation_settings @relay(mask: false)
       }
       StartCheckInSuccess {
         ...StartCheckInMutation_team @relay(mask: false)
@@ -170,7 +170,6 @@ const subscription = graphql`
       UpdateAgendaItemPayload {
         ...UpdateAgendaItemMutation_team @relay(mask: false)
       }
-
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_team @relay(mask: false)
       }

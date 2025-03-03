@@ -1,8 +1,18 @@
+import {DataLoaderWorker} from '../../graphql'
 import {MsTeamsIntegrationResolvers} from '../resolverTypes'
 
 export type MSTeamsIntegrationSource = {
   teamId: string
   userId: string
+}
+
+const loadActiveProvider = async (teamId: string, dataLoader: DataLoaderWorker) => {
+  const auths = await dataLoader
+    .get('teamMemberIntegrationAuthsByTeamIdAndService')
+    .load({teamId, service: 'mattermost'})
+  if (!auths || auths.length !== 1) return null
+  const {providerId} = auths[0]!
+  return await dataLoader.get('integrationProviders').loadNonNull(providerId)
 }
 
 const MSTeamsIntegration: MsTeamsIntegrationResolvers = {
@@ -18,6 +28,27 @@ const MSTeamsIntegration: MsTeamsIntegrationResolvers = {
     return dataLoader
       .get('sharedIntegrationProviders')
       .load({service: 'msTeams', orgIds: [orgId], teamIds: [teamId]})
+  },
+
+  isActive: async ({teamId}, _args, {dataLoader}) => {
+    const auths = await dataLoader
+      .get('teamMemberIntegrationAuthsByTeamIdAndService')
+      .load({teamId, service: 'mattermost'})
+    return auths && auths.length > 1
+  },
+
+  activeProvider: async ({teamId}, _args, {dataLoader}) => {
+    return loadActiveProvider(teamId, dataLoader)
+  },
+
+  teamNotificationSettings: async ({teamId}, {channel}, {dataLoader}) => {
+    const activeProvider = await loadActiveProvider(teamId, dataLoader)
+    if (!activeProvider) return null
+    const {id} = activeProvider
+    const settings = await dataLoader
+      .get('teamNotificationSettingsByProviderIdAndTeamId')
+      .load({providerId: id, teamId})
+    return settings.find(({channelId}) => (!channelId && !channel) || channelId === channel) || null
   }
 }
 
