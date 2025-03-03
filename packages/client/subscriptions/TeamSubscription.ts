@@ -32,11 +32,11 @@ import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
-import {
-  removeMultipleOrgUsersTeamOnNext,
-  removeMultipleOrgUsersTeamUpdater
-} from '../mutations/RemoveMultipleOrgUsersMutation'
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
+import {
+  removeOrgUsersTeamOnNext,
+  removeOrgUsersTeamUpdater
+} from '../mutations/RemoveOrgUsersMutation'
 import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
 import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
 import {
@@ -129,8 +129,8 @@ const subscription = graphql`
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_team @relay(mask: false)
       }
-      RemoveMultipleOrgUsersSuccess {
-        ...RemoveMultipleOrgUsersMutation_team @relay(mask: false)
+      RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_team @relay(mask: false)
       }
       RemoveReflectTemplatePayload {
         ...RemoveReflectTemplateMutation_team @relay(mask: false)
@@ -201,7 +201,7 @@ const onNextHandlers = {
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
-  RemoveMultipleOrgUsersSuccess: removeMultipleOrgUsersTeamOnNext,
+  RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
 } as const
@@ -224,7 +224,7 @@ const updateHandlers = {
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
-  RemoveMultipleOrgUsersSuccess: removeMultipleOrgUsersTeamUpdater,
+  RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater

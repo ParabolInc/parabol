@@ -147,7 +147,7 @@
           "RemoveAgendaItemPayload": "./types/RemoveAgendaItemPayload#RemoveAgendaItemPayloadSource",
           "RemoveApprovedOrganizationDomainsSuccess": "./types/RemoveApprovedOrganizationDomainsSuccess#RemoveApprovedOrganizationDomainsSuccessSource",
           "RemoveIntegrationSearchQuerySuccess": "./types/RemoveIntegrationSearchQuerySuccess#RemoveIntegrationSearchQuerySuccessSource",
-          "RemoveMultipleOrgUsersSuccess": "./types/RemoveMultipleOrgUsersSuccess#RemoveMultipleOrgUsersSuccessSource",
+          "RemoveOrgUsersSuccess": "./types/RemoveOrgUsersSuccess#RemoveOrgUsersSuccessSource",
           "RemovePokerTemplatePayload": "./types/RemovePokerTemplatePayload#RemovePokerTemplatePayloadSource",
           "RemoveReflectTemplatePromptPayload": "./types/RemoveReflectTemplatePromptPayload#RemoveReflectTemplatePromptPayloadSource",
           "RemoveTeamMemberIntegrationAuthSuccess": "./types/RemoveTeamMemberIntegrationAuthPayload#RemoveTeamMemberIntegrationAuthSuccessSource",
