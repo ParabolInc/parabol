@@ -498,7 +498,7 @@
   margin-block-start: 4px;
   margin-block-end: 4px;
   /* Line height: for now most editable surfaces are 14/20 */
-  line-height: 1.4285714286em;
+  line-height: 1.4285714286;
 }
 
 .ProseMirror p:first-of-type {
