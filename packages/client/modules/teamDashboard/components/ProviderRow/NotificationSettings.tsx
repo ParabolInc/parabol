@@ -8,7 +8,7 @@ import StyledError from '../../../../components/StyledError'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import UpdateTeamNotificationSettingMutation from '../../../../mutations/UpdateTeamNotificationSettingMutation'
+import SetTeamNotificationSettingMutation from '../../../../mutations/SetTeamNotificationSettingMutation'
 import {MeetingLabels} from '../../../../types/constEnums'
 
 const EVENTS = [
@@ -54,7 +54,7 @@ const NotificationSettings = (props: Props) => {
       return
     }
     submitMutation()
-    UpdateTeamNotificationSettingMutation(
+    SetTeamNotificationSettingMutation(
       atmosphere,
       {
         id: settings.id,

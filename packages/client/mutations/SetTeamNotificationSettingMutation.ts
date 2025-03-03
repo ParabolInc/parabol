@@ -2,12 +2,12 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {
   SlackNotificationEventEnum,
-  UpdateTeamNotificationSettingMutation as TUpdateTeamNotificationMutation
-} from '../__generated__/UpdateTeamNotificationSettingMutation.graphql'
+  SetTeamNotificationSettingMutation as TSetTeamNotificationSettingMutation
+} from '../__generated__/SetTeamNotificationSettingMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
 graphql`
-  fragment UpdateTeamNotificationSettingMutation_settings on UpdateTeamNotificationSettingSuccess {
+  fragment SetTeamNotificationSettingMutation_settings on SetTeamNotificationSettingSuccess {
     teamNotificationSettings {
       id
       events
@@ -16,28 +16,28 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation UpdateTeamNotificationSettingMutation(
+  mutation SetTeamNotificationSettingMutation(
     $id: ID!
     $event: SlackNotificationEventEnum!
     $isEnabled: Boolean!
   ) {
-    updateTeamNotificationSetting(id: $id, event: $event, isEnabled: $isEnabled) {
+    setTeamNotificationSetting(id: $id, event: $event, isEnabled: $isEnabled) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ...UpdateTeamNotificationSettingMutation_settings @relay(mask: false)
+      ...SetTeamNotificationSettingMutation_settings @relay(mask: false)
     }
   }
 `
 
-const UpdateTeamNotificationMutation: StandardMutation<TUpdateTeamNotificationMutation> = (
+const SetTeamNotificationMutation: StandardMutation<TSetTeamNotificationSettingMutation> = (
   atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<TUpdateTeamNotificationMutation>(atmosphere, {
+  return commitMutation<TSetTeamNotificationSettingMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
@@ -56,4 +56,4 @@ const UpdateTeamNotificationMutation: StandardMutation<TUpdateTeamNotificationMu
   })
 }
 
-export default UpdateTeamNotificationMutation
+export default SetTeamNotificationMutation

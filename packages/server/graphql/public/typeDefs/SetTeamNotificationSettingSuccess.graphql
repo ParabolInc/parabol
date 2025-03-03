@@ -1,4 +1,4 @@
-type UpdateTeamNotificationSettingSuccess {
+type SetTeamNotificationSettingSuccess {
   """
   The updated settings
   """

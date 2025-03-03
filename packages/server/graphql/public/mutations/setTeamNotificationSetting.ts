@@ -6,7 +6,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
-const updateTeamNotificationSetting: MutationResolvers['updateTeamNotificationSetting'] = async (
+const setTeamNotificationSetting: MutationResolvers['setTeamNotificationSetting'] = async (
   _source,
   {id: gqlId, event, isEnabled},
   {authToken, dataLoader, socketId: mutatorId}
@@ -55,4 +55,4 @@ const updateTeamNotificationSetting: MutationResolvers['updateTeamNotificationSe
   return data
 }
 
-export default updateTeamNotificationSetting
+export default setTeamNotificationSetting

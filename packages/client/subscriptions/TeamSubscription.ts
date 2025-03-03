@@ -152,6 +152,9 @@ const subscription = graphql`
       SetMeetingSettingsPayload {
         ...SetMeetingSettingsMutation_team @relay(mask: false)
       }
+      SetTeamNotificationSettingSuccess {
+        ...SetTeamNotificationSettingMutation_settings @relay(mask: false)
+      }
       StartCheckInSuccess {
         ...StartCheckInMutation_team @relay(mask: false)
       }
@@ -172,9 +175,6 @@ const subscription = graphql`
       }
       UpdateTeamNamePayload {
         ...UpdateTeamNameMutation_team @relay(mask: false)
-      }
-      UpdateTeamNotificationSettingSuccess {
-        ...UpdateTeamNotificationSettingMutation_settings @relay(mask: false)
       }
       UpdateTemplateCategorySuccess {
         ...UpdateTemplateCategoryMutation_team @relay(mask: false)

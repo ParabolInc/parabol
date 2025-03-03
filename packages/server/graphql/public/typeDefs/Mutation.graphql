@@ -804,7 +804,7 @@ type Mutation {
   """
   Update the notification settings for a provider and team
   """
-  updateTeamNotificationSetting(
+  setTeamNotificationSetting(
     """
     The unique id for the setting
     """
@@ -815,7 +815,7 @@ type Mutation {
     """
     event: SlackNotificationEventEnum!
     isEnabled: Boolean!
-  ): UpdateTeamNotificationSettingPayload!
+  ): SetTeamNotificationSettingPayload!
 
   """
   Broadcast that the viewer started dragging a reflection
