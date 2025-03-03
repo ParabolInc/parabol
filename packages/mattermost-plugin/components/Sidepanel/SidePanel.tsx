@@ -1,6 +1,10 @@
-import {useState} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {useEffect, useState} from 'react'
 import {useDispatch} from 'react-redux'
+import {useLazyLoadQuery} from 'react-relay'
 import ReactSelect from 'react-select'
+import {SidePanelQuery} from '../../__generated__/SidePanelQuery.graphql'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {openLinkTeamModal, openStartActivityModal} from '../../reducers'
 import ActiveMeetings from './ActiveMeetings'
 import LinkedTeams from './LinkedTeams'
@@ -21,7 +25,26 @@ const panels = {
 } as const
 
 const SidePanel = () => {
-  const [activePanel, setActivePanel] = useState<keyof typeof panels>('teams')
+  const channel = useCurrentChannel()
+  const data = useLazyLoadQuery<SidePanelQuery>(
+    graphql`
+      query SidePanelQuery($channel: ID!) {
+        linkedTeamIds(channel: $channel)
+      }
+    `,
+    {
+      channel: channel?.id ?? ''
+    }
+  )
+  const {linkedTeamIds} = data
+
+  const [activePanel, setActivePanel] = useState<keyof typeof panels>('meetings')
+  useEffect(() => {
+    if (linkedTeamIds && linkedTeamIds.length === 0) {
+      setActivePanel('teams')
+    }
+  }, [linkedTeamIds])
+
   const dispatch = useDispatch()
 
   const handleClick = () => {
@@ -29,7 +52,7 @@ const SidePanel = () => {
   }
 
   return (
-    <div className='flex flex-col items-stretch overflow-y-auto px-2 py-4'>
+    <div className='flex h-full flex-col items-stretch overflow-y-auto px-2 py-4'>
       <div className='flex justify-between'>
         <ReactSelect
           className='cursor-pointer'

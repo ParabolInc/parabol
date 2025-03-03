@@ -70,13 +70,21 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
   })
 
   if (oldReflections.length > 0) {
-    await updateGroupTitle({
-      reflections: oldReflections,
-      reflectionGroupId: oldReflectionGroupId,
-      meetingId,
-      teamId: meeting.teamId,
-      dataLoader
-    })
+    const oldReflectionGroup = await dataLoader
+      .get('retroReflectionGroups')
+      .loadNonNull(oldReflectionGroupId)
+    const titleIsUserDefined =
+      oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflectionGroup.title !== ''
+
+    if (!titleIsUserDefined) {
+      await updateGroupTitle({
+        reflections: oldReflections,
+        reflectionGroupId: oldReflectionGroupId,
+        meetingId,
+        teamId: meeting.teamId,
+        dataLoader
+      })
+    }
   } else {
     await pg
       .updateTable('RetroReflectionGroup')

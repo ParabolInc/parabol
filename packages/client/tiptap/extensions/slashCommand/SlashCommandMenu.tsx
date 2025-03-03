@@ -61,7 +61,7 @@ export const SlashCommandMenu = forwardRef(
 
     if (!items.length) return null
     return (
-      <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
+      <div className='z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
         {items.map((item) => (
           <Fragment key={item.group}>
             <div className='mx-1 px-3 py-1 text-xs font-semibold'>{item.group}</div>
@@ -69,7 +69,7 @@ export const SlashCommandMenu = forwardRef(
               <div className='mx-1 flex' key={command.title}>
                 <div
                   ref={command === activeItem ? activeRef : undefined}
-                  data-highlighted={command === activeItem}
+                  data-highlighted={command === activeItem ? '' : undefined}
                   className={
                     'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
                   }

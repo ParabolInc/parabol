@@ -78,7 +78,7 @@ export function linkedTeamIds(
 
   return {
     read: () => {
-      return current?.teamIds ?? null
+      return current?.teamIds ?? suspenseSentinel()
     },
     subscribe: (callback: () => void) => {
       return store.subscribe(() => {

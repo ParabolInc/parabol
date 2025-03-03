@@ -52,7 +52,11 @@ const MeetingRow = ({meetingRef}: Props) => {
       <div className='pt-4 pl-2 text-2xl text-slate-400'>{meetingTypeToIcon[meetingType]}</div>
       <div className='flex flex-col items-start p-2'>
         <div className='flex flex-col'>
-          <a href={`${pluginServerRoute}/parabol/meet/${id}`} className='text-2xl font-bold'>
+          <a
+            href={`${pluginServerRoute}/parabol/meet/${id}`}
+            target='_blank'
+            className='text-2xl font-bold'
+          >
             {name}
           </a>
           <div className='font-semibold text-slate-400'>{team?.name}</div>

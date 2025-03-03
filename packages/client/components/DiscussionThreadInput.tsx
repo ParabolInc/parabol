@@ -117,8 +117,9 @@ const DiscussionThreadInput = (props: Props) => {
         ?.setValue(null, 'replyingTo')
     })
   })
+  const {viewerId} = atmosphere
   const [initialContent] = useState(() => {
-    return replyingTo?.createdByUser && !!replyingTo?.threadParentId
+    return replyingTo?.createdByUser && replyingTo.createdByUser.id !== viewerId
       ? JSON.stringify(makeReplyTo(replyingTo.createdByUser))
       : convertTipTapTaskContent('')
   })
@@ -207,7 +208,7 @@ const DiscussionThreadInput = (props: Props) => {
   return (
     <div
       className='z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-disabled:opacity-50 data-[reply=true]:mt-2 data-[reply=true]:-ml-3 data-[reply=true]:rounded-t data-[reply=true]:shadow-discussion-thread'
-      data-disabled={isDisabled}
+      data-disabled={isDisabled ? '' : undefined}
       data-reply={isReply}
       ref={containerRef}
     >

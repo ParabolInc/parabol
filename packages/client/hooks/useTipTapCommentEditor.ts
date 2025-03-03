@@ -72,8 +72,7 @@ export const useTipTapCommentEditor = (
             }
           })
       ].filter(isValid),
-      editable: !readOnly,
-      autofocus: true
+      editable: !readOnly
     },
     [readOnly]
   )
