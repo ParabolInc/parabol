@@ -82,6 +82,13 @@ const PhaseItemEditor = (props: Props) => {
         disableAnonymity
         viewerMeetingMember {
           user {
+            timeline(first: 2, eventTypes: [retroComplete]) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
             preferredName
           }
         }
@@ -161,12 +168,13 @@ const PhaseItemEditor = (props: Props) => {
     }
   }, [idleTimerIdRef])
 
+  const knowsHowToEnter = (viewerMeetingMember?.user?.timeline?.edges?.length ?? 0) > 1
   const [isFocused, setIsFocused] = useState(false)
   const [enterHint, setEnterHint] = useState('')
   const hintTimerRef = useRef<number>()
   const hintCharacterCountRef = useRef(0)
   useEffect(() => {
-    const visible = !isEditing && !editor?.isEmpty
+    const showHint = !knowsHowToEnter && !isEditing && !editor?.isEmpty
     const characterCount = editor?.storage.characterCount.characters()
 
     if (characterCount !== hintCharacterCountRef.current) {
@@ -174,11 +182,11 @@ const PhaseItemEditor = (props: Props) => {
       setEnterHint('')
     }
 
-    if (visible) {
+    if (showHint) {
       const newEnterHint = isFocused
         ? 'Press enter to add'
         : 'Forgot to press enter? Click here to add 👆'
-      hintTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 2000)
+      hintTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 1000)
       return () => {
         window.clearTimeout(hintTimerRef.current)
       }
