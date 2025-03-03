@@ -15,6 +15,7 @@ type NotificationSubscriptionPayload {
   InviteToTeamPayload: InviteToTeamPayload
   MeetingStageTimeLimitPayload: MeetingStageTimeLimitPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
+  RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccess
   StripeFailPaymentPayload: StripeFailPaymentPayload
   PersistJiraSearchQuerySuccess: PersistJiraSearchQuerySuccess
   User: User

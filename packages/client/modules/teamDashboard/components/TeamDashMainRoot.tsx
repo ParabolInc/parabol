@@ -1,4 +1,4 @@
-import {Suspense} from 'react'
+import {Suspense, useEffect} from 'react'
 import setPreferredTeamId from '~/utils/relay/setPreferredTeamId'
 import teamDashMainQuery, {
   TeamDashMainQuery
@@ -13,7 +13,11 @@ const TeamDashMainRoot = () => {
   const {params} = match
   const {teamId} = params
   const atmosphere = useAtmosphere()
-  setPreferredTeamId(atmosphere, teamId)
+
+  useEffect(() => {
+    setPreferredTeamId(atmosphere, teamId)
+  }, [atmosphere, teamId])
+
   const queryRef = useQueryLoaderNow<TeamDashMainQuery>(teamDashMainQuery, {teamId})
   return <Suspense fallback={''}>{queryRef && <TeamDashMain queryRef={queryRef} />}</Suspense>
 }

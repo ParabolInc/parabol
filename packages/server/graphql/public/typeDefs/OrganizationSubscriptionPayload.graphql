@@ -6,6 +6,7 @@ type OrganizationSubscriptionPayload {
   DowngradeToStarterPayload: DowngradeToStarterPayload
   RemoveIntegrationProviderSuccess: RemoveIntegrationProviderSuccess
   RemoveOrgUserPayload: RemoveOrgUserPayload
+  RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccess
   ToggleAIFeaturesSuccess: ToggleAIFeaturesSuccess
   SetOrgUserRoleSuccess: SetOrgUserRoleSuccess
   UpdateCreditCardPayload: UpdateCreditCardPayload

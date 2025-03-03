@@ -4,39 +4,29 @@ import isValid from '../../isValid'
 import {RemoveMultipleOrgUsersSuccessResolvers} from '../resolverTypes'
 
 export type RemoveMultipleOrgUsersSuccessSource = {
-  orgId: string
-  teamIds: string[]
-  teamMemberIds: string[]
-  taskIds: string[]
-  userIds: string[]
+  removedUserIds: string[]
+  removedOrgMemberIds: string[]
+  removedTeamMemberIds: string[]
+  affectedOrganizationId: string
+  affectedOrganizationName: string
+  affectedTeamIds: string[]
+  affectedTaskIds: string[]
+  affectedMeetingIds: string[]
   kickOutNotificationIds: string[]
-  organizationUserIds: string[]
 }
 
 const RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccessResolvers = {
-  organization: async ({orgId}, _args, {dataLoader}) => {
-    return await dataLoader.get('organizations').loadNonNull(orgId)
+  affectedTasks: async ({affectedTaskIds}, _args, {dataLoader}) => {
+    return (await dataLoader.get('tasks').loadMany(affectedTaskIds)).filter(isValid)
   },
-  teams: async ({teamIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-  },
-  teamMembers: async ({teamMemberIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('teamMembers').loadMany(teamMemberIds)).filter(isValid)
-  },
-  updatedTasks: async ({taskIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
-  },
-  users: async ({userIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
+  affectedMeetings: async ({affectedMeetingIds}, _args, {dataLoader}) => {
+    return (await dataLoader.get('newMeetings').loadMany(affectedMeetingIds)).filter(isValid)
   },
   kickOutNotifications: async ({kickOutNotificationIds}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     return (await dataLoader.get('notifications').loadMany(kickOutNotificationIds))
       .filter(isValid)
       .filter(({userId}) => userId === viewerId) as KickedOutNotification[]
-  },
-  removedOrgMembers: async ({organizationUserIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('organizationUsers').loadMany(organizationUserIds)).filter(isValid)
   }
 }
 
