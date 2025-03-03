@@ -382,13 +382,14 @@ async function getMattermost(
     await Promise.all(
       auths.map(async (auth) => {
         const {providerId} = auth
-        const [provider, events] = await Promise.all([
+        const [provider, settings] = await Promise.all([
           dataLoader
             .get('integrationProviders')
             .loadNonNull(providerId) as Promise<IntegrationProviderMattermost>,
-          dataLoader.get('notificationSettingsByProviderIdAndTeamId').load({providerId, teamId})
+          dataLoader.get('teamNotificationSettingsByProviderIdAndTeamId').load({providerId, teamId})
         ])
-        if (events.includes(event)) {
+        const activeSettings = settings.find(({channelId}) => channelId === null)
+        if (activeSettings?.events.includes(event)) {
           return provider
         }
         return null

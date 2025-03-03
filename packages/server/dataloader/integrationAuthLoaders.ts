@@ -11,7 +11,7 @@ import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../post
 import {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
 import {TeamNotificationSettings} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
-import RootDataLoader from './RootDataLoader'
+import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 
 interface TeamMemberIntegrationAuthServiceTeamUserKey {
   service: IntegrationProviderServiceEnum
@@ -196,10 +196,14 @@ export const teamMemberIntegrationAuthsByTeamIdAndService = (parent: RootDataLoa
   )
 }
 
-export const notificationSettingsByProviderIdAndTeamId = (parent: RootDataLoader) => {
+export const teamNotificationSettingsByProviderIdAndTeamId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('teamNotificationSettings')
   return new DataLoader<
     {providerId: number; teamId: string},
-    Selectable<TeamNotificationSettings>['events'],
+    Selectable<TeamNotificationSettings>[],
     string
   >(
     async (keys) => {
@@ -218,14 +222,13 @@ export const notificationSettingsByProviderIdAndTeamId = (parent: RootDataLoader
         )
         .execute()
 
-      return keys.map(
-        (key) =>
-          res.find(({providerId, teamId}) => providerId === key.providerId && teamId === key.teamId)
-            ?.events || []
+      return keys.map((key) =>
+        res.filter(({providerId, teamId}) => providerId === key.providerId && teamId === key.teamId)
       )
     },
     {
-      ...parent.dataLoaderOptions
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: ({providerId, teamId}) => `${providerId}-${teamId}`
     }
   )
 }

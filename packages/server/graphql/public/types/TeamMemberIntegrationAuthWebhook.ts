@@ -8,9 +8,6 @@ const TeamMemberIntegrationAuthWebhook: TeamMemberIntegrationAuthWebhookResolver
   providerId: ({providerId}) => IntegrationProviderId.join(providerId),
   provider: async ({providerId}, _args, {dataLoader}) => {
     return dataLoader.get('integrationProviders').loadNonNull(providerId)
-  },
-  events: async ({teamId, providerId}, _args, {dataLoader}) => {
-    return dataLoader.get('notificationSettingsByProviderIdAndTeamId').load({providerId, teamId})
   }
 }
 

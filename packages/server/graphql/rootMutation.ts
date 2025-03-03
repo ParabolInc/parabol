@@ -2,7 +2,6 @@ import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
-import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
@@ -192,7 +191,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll,
-      addIntegrationProvider,
       removeIntegrationProvider,
       updateAzureDevOpsDimensionField
     }) as any

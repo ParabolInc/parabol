@@ -22,7 +22,6 @@ type TeamSubscriptionPayload {
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   RenameMeetingSuccess: RenameMeetingSuccess
   SelectTemplatePayload: SelectTemplatePayload
-  SetNotificationSettingSuccess: SetNotificationSettingSuccess
   StartCheckInSuccess: StartCheckInSuccess
   StartRetrospectiveSuccess: StartRetrospectiveSuccess
   StartSprintPokerSuccess: StartSprintPokerSuccess
@@ -30,6 +29,7 @@ type TeamSubscriptionPayload {
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
+  UpdateTeamNotificationSettingSuccess: UpdateTeamNotificationSettingSuccess
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplateSuccess: AddReflectTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess
