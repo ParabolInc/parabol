@@ -120,6 +120,7 @@ const BottomControlBarTips = (props: Props) => {
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
         ...VoteHelpMenu_meeting
+        ...ReflectHelpMenu_settings
         id
         meetingType
         localPhase {
