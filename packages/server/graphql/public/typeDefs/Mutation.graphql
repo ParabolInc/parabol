@@ -1414,6 +1414,23 @@ type Mutation {
     redirectUri: URL
   ): AddTeamMemberIntegrationAuthPayload!
 
+  linkNotificationChannel(
+    """
+    The ID of the auth to link the channel to
+    """
+    providerId: ID!
+
+    """
+    The team to link the channel to
+    """
+    teamId: ID!
+
+    """
+    The channel to link
+    """
+    channelId: ID!
+  ): LinkNotificationChannelPayload!
+
   """
   Add the transcription bot to the Zoom meeting
   """
