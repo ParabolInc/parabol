@@ -1,25 +1,14 @@
-import {createVerifier, httpbis} from 'http-message-signatures'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import appOrigin from '../../appOrigin'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
 import publishWebhookGQL from '../../utils/publishWebhookGQL'
-import ConnectionContext from '../../socketHelpers/ConnectionContext'
-import uwsGetIP from '../../utils/uwsGetIP'
-import checkBlacklistJWT from '../../utils/checkBlacklistJWT'
-import activeClients from '../../activeClients'
-import handleConnect from '../../socketHandlers/handleConnect'
-import getVerifiedAuthToken from '../../utils/getVerifiedAuthToken'
-import encodeAuthToken from '../../utils/encodeAuthToken'
-import {MMSocket} from '../../socketHelpers/transports/MMSocket'
+import sendToSentry from '../../utils/sendToSentry'
 
-const MATTERMOST_SECRET = process.env.MATTERMOST_SECRET
-
-
-const login = async (email: string) => {
+const login = async (variables: {request: string; body: string}) => {
   const query = `
-    mutation LoginMattermost($email: String!) {
-      loginMattermost(email: $email) {
+    mutation LoginMattermost($request: String!, $body: String!) {
+      loginMattermost(request: $request, body: $body) {
         error {
           message
         }
@@ -28,20 +17,18 @@ const login = async (email: string) => {
     }
   `
 
-  const loginResult = await publishWebhookGQL<any>(query, {email})
-  const {authToken} = loginResult?.data?.loginMattermost ?? {}
-  return authToken as string
+  const loginResult = await publishWebhookGQL<{
+    data: {
+      loginMattermost: {
+        error: {message: string} | null
+        authToken: string | null
+      }
+    }
+  }>(query, variables)
+  return loginResult?.data?.loginMattermost ?? {authToken: null, error: {message: 'Unknown error'}}
 }
 
 const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  if (!MATTERMOST_SECRET) {
-    res.writeStatus('404').end()
-    return
-  }
-
-  const ip = uwsGetIP(res, req)
-  const connectionId = req.getHeader('x-correlation-id')
-
   const headers = {
     'content-type': req.getHeader('content-type'),
     'content-digest': req.getHeader('content-digest'),
@@ -50,59 +37,37 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     'signature-input': req.getHeader('signature-input')
   }
 
-  const verified = await httpbis.verifyMessage(
-    {
-      async keyLookup(_: any) {
-        // TODO When we support multiple Parabol - Mattermost connections, we should look up the key from IntegrationProvider
-        // const keyId = params.keyid;
-        return {
-          id: '',
-          algs: ['hmac-sha256'],
-          verify: createVerifier(MATTERMOST_SECRET, 'hmac-sha256')
-        }
-      }
-    },
-    {
-      method: req.getMethod(),
-      url: appOrigin + req.getUrl(),
-      headers
-    }
-  )
-  if (!verified) {
-    res.writeStatus('401').end()
-    return
-  }
-
-  const body = await parseBody<{email: string}>({
-    res
+  const request = JSON.stringify({
+    method: req.getMethod(),
+    url: appOrigin + req.getUrl(),
+    headers
   })
 
-  const {email} = body ?? {}
-  if (!email) {
-    res.writeStatus('401').end()
+  const body = await parseBody<string>({
+    res,
+    parser: (buffer) => buffer.toString()
+  })
+
+  if (!body) {
+    res.writeStatus('400').end('Bad Request')
     return
   }
 
-  const authToken = getVerifiedAuthToken(await login(email))
+  const {authToken, error} = await login({
+    request,
+    body
+  })
 
-  const connectionContext = new ConnectionContext(new MMSocket(connectionId), authToken, ip)
-  // TODO: Find a nicer solution to this. This is the easiest to multiplex the webhook in the MM-Plugin.
-  // If we don't use the client provided connectionId, the plugin would need to keep state to correlate userIDs with connectionIds.
-  // This might be superseeded once we establish the Parabol userId <-> Mattermost userId mapping on Parabol side.
-  connectionContext.id = connectionId
-  const {sub: userId, iat} = authToken
-  const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-  if (isBlacklistedJWT) {
+  if (error) {
+    sendToSentry(new Error(error.message))
+    res.writeStatus('500').end(error.message)
     return
   }
 
-  activeClients.set(connectionContext)
-  const nextAuthToken = await handleConnect(connectionContext)
- 
   res
     .writeStatus('200')
     .writeHeader('Content-Type', 'application/json')
-    .end(JSON.stringify({authToken: nextAuthToken ?? encodeAuthToken(authToken)}))
+    .end(JSON.stringify({authToken}))
 })
 
 export default mattermostWebhookHandler

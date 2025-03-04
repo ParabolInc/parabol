@@ -192,21 +192,6 @@ type Mutation {
   ): String
 
   """
-  add/remove a flag on an org asking them to pay
-  """
-  flagConversionModal(
-    """
-    true to turn the modal on, false to turn it off
-    """
-    active: Boolean!
-
-    """
-    the orgId to toggle the flag for
-    """
-    orgId: ID!
-  ): FlagConversionModalPayload
-
-  """
   hard deletes a user and all its associated objects
   """
   hardDeleteUser(
@@ -456,9 +441,27 @@ type Mutation {
   """
   loginMattermost(
     """
-    The email of the user
+    JSON stringified headers of the request
+    ```
+    {
+      "headers": {
+        "content-type": "application/json",
+        "content-digest": "digest",
+        "content-length": 123,
+        "signature": "signature",
+        "signature-input": "signatureInput"
+      },
+      "method": "POST",
+      "url": "https://action.parabol.co/mattermost",
+    }
+    ```
     """
-    email: Email!
+    request: String!
+
+    """
+    Original body from the request
+    """
+    body: String!
   ): UserLogInPayload!
 
   """
