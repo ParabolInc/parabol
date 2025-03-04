@@ -21,10 +21,12 @@ graphql`
   fragment MSTeamsProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
     msTeams {
       auth {
-        ...NotificationSettings_auth
         provider {
           id
         }
+      }
+      teamNotificationSettings {
+        ...NotificationSettings_settings
       }
     }
   }
