@@ -1,9 +1,9 @@
 import {KickedOutNotification} from '../../../postgres/types/Notification'
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
-import {RemoveMultipleOrgUsersSuccessResolvers} from '../resolverTypes'
+import {RemoveOrgUsersSuccessResolvers} from '../resolverTypes'
 
-export type RemoveMultipleOrgUsersSuccessSource = {
+export type RemoveOrgUsersSuccessSource = {
   removedUserIds: string[]
   removedOrgMemberIds: string[]
   removedTeamMemberIds: string[]
@@ -15,7 +15,7 @@ export type RemoveMultipleOrgUsersSuccessSource = {
   kickOutNotificationIds: string[]
 }
 
-const RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccessResolvers = {
+const RemoveOrgUsersSuccess: RemoveOrgUsersSuccessResolvers = {
   affectedTasks: async ({affectedTaskIds}, _args, {dataLoader}) => {
     return (await dataLoader.get('tasks').loadMany(affectedTaskIds)).filter(isValid)
   },
@@ -30,4 +30,4 @@ const RemoveMultipleOrgUsersSuccess: RemoveMultipleOrgUsersSuccessResolvers = {
   }
 }
 
-export default RemoveMultipleOrgUsersSuccess
+export default RemoveOrgUsersSuccess

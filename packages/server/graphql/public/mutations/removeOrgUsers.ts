@@ -10,7 +10,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import removeFromOrg from '../../mutations/helpers/removeFromOrg'
 import {MutationResolvers} from '../resolverTypes'
-const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = async (
+const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
   _source,
   {userIds, orgId},
   {authToken, dataLoader, socketId: mutatorId}
@@ -100,23 +100,17 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
     })
   })
 
-  publish(
-    SubscriptionChannel.ORGANIZATION,
-    orgId,
-    'RemoveMultipleOrgUsersSuccess',
-    data,
-    subOptions
-  )
+  publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUsersSuccess', data, subOptions)
 
   data.affectedTeamIds.forEach((teamId) => {
-    publish(SubscriptionChannel.TEAM, teamId, 'RemoveMultipleOrgUsersSuccess', data, subOptions)
+    publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUsersSuccess', data, subOptions)
   })
 
   removedUserResults.map(async ({removedUserId}) => {
     publish(
       SubscriptionChannel.NOTIFICATION,
       removedUserId,
-      'RemoveMultipleOrgUsersSuccess',
+      'RemoveOrgUsersSuccess',
       data,
       subOptions
     )
@@ -125,16 +119,10 @@ const removeMultipleOrgUsers: MutationResolvers['removeMultipleOrgUsers'] = asyn
   data.removedTeamMemberIds.map(async (removedTeamMemberId) => {
     const teamMember = await dataLoader.get('teamMembers').load(removedTeamMemberId)
     if (!teamMember) return
-    publish(
-      SubscriptionChannel.TASK,
-      teamMember.userId,
-      'RemoveMultipleOrgUsersSuccess',
-      data,
-      subOptions
-    )
+    publish(SubscriptionChannel.TASK, teamMember.userId, 'RemoveOrgUsersSuccess', data, subOptions)
   })
 
   return data
 }
 
-export default removeMultipleOrgUsers
+export default removeOrgUsers
