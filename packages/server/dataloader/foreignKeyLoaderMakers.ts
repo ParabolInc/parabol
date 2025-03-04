@@ -320,3 +320,12 @@ export const tasksByMeetingId = foreignKeyLoaderMaker('tasks', 'meetingId', asyn
     .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
 })
+
+export const tasksByIntegrationHash = foreignKeyLoaderMaker(
+  'tasks',
+  'integrationHash',
+  async (integrationHashes) => {
+    // waraning! contains private tasks
+    return selectTasks().where('integrationHash', 'in', integrationHashes).execute()
+  }
+)

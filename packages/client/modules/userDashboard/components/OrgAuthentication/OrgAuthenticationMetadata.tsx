@@ -73,7 +73,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
       orgAuthenticationMetadataQuery,
       {metadataURL, domain}
     )
-    if (!res) {
+    if (!res || res instanceof Error) {
       onError(new Error('Could not reach server. Please try again'))
       optimisticPopup?.close()
       return

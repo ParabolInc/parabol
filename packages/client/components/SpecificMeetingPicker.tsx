@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import {useEffect} from 'react'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import type {SpecificMeetingPickerQuery} from '../__generated__/SpecificMeetingPickerQuery.graphql'
-import type {InsightsBlockAttrs} from '../tiptap/extensions/imageBlock/InsightsBlock'
+import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Checkbox} from '../ui/Checkbox/Checkbox'
 import {MeetingTypeToReadable} from './MeetingTypePickerCombobox'
 const query = graphql`
@@ -53,7 +53,6 @@ export const SpecificMeetingPicker = (props: Props) => {
   const {edges} = meetings
   const includeYear = new Date(after).getFullYear() !== new Date(before).getFullYear()
   const formatter = includeYear ? 'MMM D, YYYY' : 'MMM D'
-
   useEffect(() => {
     const meetingIds = edges.map(({node}) => node.id)
     updateAttributes({meetingIds})
@@ -95,6 +94,7 @@ export const SpecificMeetingPicker = (props: Props) => {
             {columns.map((column) => {
               return (
                 <th
+                  key={column}
                   className={
                     'border-slate-400 p-2 text-left font-bold not-last-of-type:border-r-[1px]'
                   }
@@ -110,6 +110,7 @@ export const SpecificMeetingPicker = (props: Props) => {
             const {checked, date, id, meetingType, name, teamName} = row
             return (
               <tr
+                key={id}
                 className='cursor-pointer border-slate-400 not-last-of-type:border-b-[1px]'
                 onClick={() => {
                   const nextMeetingIds = checked

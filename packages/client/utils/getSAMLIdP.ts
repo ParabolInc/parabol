@@ -12,7 +12,8 @@ const getSAMLIdP = async (atmosphere: Atmosphere, variables: getSAMLIdPQuery['va
   const res = await atmosphere.fetchQuery<getSAMLIdPQuery>(query, variables, {
     fetchPolicy: 'network-only'
   })
-  return res?.SAMLIdP ?? null
+  const safeRes = res instanceof Error ? undefined : res
+  return safeRes?.SAMLIdP ?? null
 }
 
 export default getSAMLIdP

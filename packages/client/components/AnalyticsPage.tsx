@@ -117,7 +117,7 @@ const AnalyticsPage = () => {
       const {viewerId} = atmosphere
       if (viewerId) {
         const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-        if (!res) return
+        if (!res || res instanceof Error) return
         const {viewer} = res
         const {id, isPatient0} = viewer
         ReactGA.set({
@@ -148,7 +148,7 @@ const AnalyticsPage = () => {
     }
     const cacheEmail = async () => {
       const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
-      if (!res) return
+      if (!res || res instanceof Error) return
       const {viewer} = res
       const {email} = viewer
       if (!email) return

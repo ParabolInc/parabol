@@ -30,6 +30,7 @@ import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {invoices} from '../fields/invoices'
+import {pageInsights} from '../fields/pageInsights'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {ReqResolvers} from './ReqResolvers'
 
@@ -843,7 +844,7 @@ const User: ReqResolvers<'User'> = {
     return getFeatureTier({tier, trialStartDate})
   },
   billingTier: ({tier}) => tier,
-  pageInsights: () => 'WIP'
+  pageInsights
 }
 
 export default User

@@ -1,4 +1,3 @@
-import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {DataLoaderWorker} from '../../graphql'
@@ -13,7 +12,7 @@ const generateStandupMeetingSummary = async (
   const isAIAvailable = await canAccessAI(team, dataLoader)
   if (!isAIAvailable) return null
 
-  const responses = await getTeamPromptResponsesByMeetingId(meeting.id)
+  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meeting.id)
 
   const userIds = responses.map((response) => response.userId)
   const users = (await dataLoader.get('users').loadMany(userIds)).filter(isValid)
