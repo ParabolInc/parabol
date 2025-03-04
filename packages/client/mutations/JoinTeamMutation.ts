@@ -21,6 +21,11 @@ graphql`
       }
       ...DashNavListTeam
       ...PublicTeamsFrag_team
+      teamMembers {
+        id
+        preferredName
+        userId
+      }
     }
   }
 `

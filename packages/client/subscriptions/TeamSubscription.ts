@@ -183,6 +183,9 @@ const subscription = graphql`
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
+      JoinTeamSuccess {
+        ...JoinTeamMutation_team @relay(mask: false)
+      }
     }
   }
 `

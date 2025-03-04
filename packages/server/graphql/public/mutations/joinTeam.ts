@@ -18,20 +18,18 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
-  // VALIDATION
   if (!viewerId) {
     return standardError(new Error('You must be logged in to join a team'))
   }
 
-  // Check if user is already on the team
   if (isTeamMember(authToken, teamId)) {
     return standardError(new Error('You are already a member of this team'))
   }
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
-  // Check if the organization has public teams enabled
   const hasPublicTeamsFlag = await dataLoader
     .get('featureFlagByOwnerId')
     .load({ownerId: orgId, featureName: 'publicTeams'})
@@ -53,26 +51,23 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
   const teamMemberId = `${teamId}::${viewerId}`
 
   const data = {
-    teamId,
-    teamMemberId,
-    invitationNotificationIds
+    teamId
   }
+  console.log('🚀 ~ data:', data)
 
   const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
 
   // Send the new team member a welcome & a new token
+  // publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {id: encodedAuthToken})
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
   // Tell the rest of the team about the new team member
-  publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamPayload', data, subOptions)
-
-  // Send individualized message to the user
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JoinTeamPayload', data, subOptions)
-
-  // analytics.teamJoined(viewer, teamId)
+  publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)
 
   return {
-    teamId,
+    team: {
+      id: teamId
+    },
     teamMemberId,
     authToken: encodedAuthToken
   }
