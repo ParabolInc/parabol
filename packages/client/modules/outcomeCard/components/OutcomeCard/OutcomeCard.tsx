@@ -181,6 +181,7 @@ const OutcomeCard = memo((props: Props) => {
             onFocus={() => addTaskChild('root')}
           >
             <TipTapEditor
+              className='px-4'
               editor={editor}
               useLinkEditor={() => useTaskChild('editor-link-changer')}
               onBlur={onFocusChange(false)}

@@ -250,7 +250,7 @@ const PhaseItemEditor = (props: Props) => {
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
         <TipTapEditor
           className={cn(
-            'flex max-h-28 min-h-0 overflow-auto px-4 pt-3',
+            'flex max-h-41 min-h-6 overflow-auto px-4 pt-3',
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}
@@ -258,7 +258,9 @@ const PhaseItemEditor = (props: Props) => {
           onFocus={onFocus}
         />
         {disableAnonymity && (
-          <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
+          <div className='pb-3'>
+            <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
+          </div>
         )}
         <EnterHint visible={!!enterHint} onClick={handleSubmit}>
           {enterHint}
@@ -275,11 +277,15 @@ const PhaseItemEditor = (props: Props) => {
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
-                <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
+                <div className='py-[2px]'>
+                  <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
+                </div>
                 {disableAnonymity && (
-                  <ReflectionCardAuthor>
-                    {viewerMeetingMember?.user.preferredName}
-                  </ReflectionCardAuthor>
+                  <div className='pb-3'>
+                    <ReflectionCardAuthor>
+                      {viewerMeetingMember?.user.preferredName}
+                    </ReflectionCardAuthor>
+                  </div>
                 )}
               </CardInFlightStyles>
             )

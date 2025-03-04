@@ -108,7 +108,9 @@ const ThreadedTaskBase = (props: Props) => {
             <ThreadedReplyButton onReply={onReply} />
           </HeaderActions>
         </ThreadedItemHeaderDescription>
-        <StyledNullableTask area='meeting' task={task} />
+        <div className='py-2'>
+          <StyledNullableTask area='meeting' task={task} />
+        </div>
         {repliesList}
         {replyingTo?.id === task.id && (
           <DiscussionThreadInput

@@ -1,5 +1,5 @@
 export const ResponseCardDimensions = {
-  MIN_CARD_HEIGHT: 100,
+  MIN_CARD_HEIGHT: 92,
   GAP: 32,
   MIN_RESPONSE_WIDTH: 320
 }
