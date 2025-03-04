@@ -21,6 +21,7 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
+import {UniqueID} from '../tiptap/extensions/docWithID/UniqueID'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
@@ -107,6 +108,7 @@ export const useTipTapPageEditor = (
         Document.extend({
           content: 'heading block*'
         }),
+        UniqueID.configure({types: ['insightsBlock']}),
         StarterKit.configure({document: false, history: false}),
         Underline,
         TaskList,

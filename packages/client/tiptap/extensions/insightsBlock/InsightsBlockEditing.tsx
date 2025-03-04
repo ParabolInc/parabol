@@ -1,4 +1,4 @@
-import {NodePos, type NodeViewProps} from '@tiptap/react'
+import {type NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {InsightsBlockEditingQuery} from '../../../__generated__/InsightsBlockEditingQuery.graphql'
 import {MeetingDatePicker} from '../../../components/MeetingDatePicker'
@@ -21,7 +21,7 @@ const queryNode = graphql`
 export const InsightsBlockEditing = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {after, before, meetingTypes, teamIds, meetingIds} = attrs
+  const {id, after, before, meetingTypes, teamIds, meetingIds} = attrs
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -31,21 +31,26 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
     if (disabled) return
     submitMutation()
     const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {meetingIds})
-    if (!res) {
+    onCompleted()
+    if (res instanceof Error) {
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'insightsBlockGenError',
-        message: 'Error generating insights',
+        message: res.message || 'Error generating insights',
         autoDismiss: 5
       })
       return
     }
     const {viewer} = res
     const {pageInsights} = viewer
-    onCompleted()
-    const nodePos = new NodePos(editor.view.state.selection.$anchor, editor)
-    const insightNode = nodePos.closest('insightsBlock')
-    if (!insightNode) return
-    insightNode.content = pageInsights
+
+    const insightsNode = editor.$node('insightsBlock', {id})!
+    editor.commands.insertContentAt(
+      {
+        from: insightsNode.from,
+        to: insightsNode.to - 1
+      },
+      pageInsights
+    )
     updateAttributes({editing: false})
   }
   return (

@@ -8,9 +8,7 @@ export const InsightsBlockResult = (props: Props) => {
   const {updateAttributes} = props
   return (
     <>
-      <div contentEditable className='outline-hidden'>
-        <NodeViewContent className='content' />
-      </div>
+      <NodeViewContent className='outline-hidden' contentEditable />
       <div className='flex justify-end p-4'>
         <Button
           variant='secondary'

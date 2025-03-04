@@ -12,6 +12,7 @@ export interface InsightsBlockAttrs {
   before: string
   meetingIds: string[]
   title: string
+  id: string
 }
 
 export const InsightsBlock = InsightsBlockBase.extend({
@@ -72,10 +73,14 @@ export const InsightsBlock = InsightsBlockBase.extend({
     return {
       setInsights:
         () =>
-        ({commands}) => {
-          return commands.insertContent({
-            type: 'insightsBlock'
-          })
+        ({editor, commands}) => {
+          const {to} = editor.state.selection
+          const size = editor.state.doc.content.size
+          const content = [{type: 'insightsBlock'}]
+          if (size - to <= 1) {
+            content.push({type: 'paragraph'})
+          }
+          return commands.insertContent(content)
         }
     }
   },

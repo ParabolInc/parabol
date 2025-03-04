@@ -26,8 +26,7 @@ class OpenAIServerManager {
   async chatCompletion(body: ChatCompletionCreateParamsNonStreaming) {
     if (!this.openAIApi) return null
     try {
-      const response = await this.openAIApi.chat.completions.create(body)
-      return (response.choices[0]?.message?.content?.trim() as string) ?? null
+      return await this.openAIApi.chat.completions.create(body)
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
       sendToSentry(error)
