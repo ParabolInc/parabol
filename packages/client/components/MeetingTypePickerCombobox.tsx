@@ -1,6 +1,6 @@
 import type {NodeViewProps} from '@tiptap/core'
 import type {MeetingTypeEnum} from '../__generated__/ExportToCSVQuery.graphql'
-import type {InsightsBlockAttrs} from '../tiptap/extensions/imageBlock/InsightsBlock'
+import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'
@@ -32,21 +32,24 @@ export const MeetingTypePickerCombobox = (props: Props) => {
   return (
     <Menu trigger={<MenuLabelTrigger>{label}</MenuLabelTrigger>}>
       <MenuContent align='end' sideOffset={4}>
-        {Object.entries(MeetingTypeToReadable).map((entry) => {
-          const [meetingType, label] = entry as [MeetingTypeEnum, string]
-          const checked = meetingTypes.includes(meetingType)
-          return (
-            <MenuItemCheckbox
-              key={meetingType}
-              checked={checked}
-              onClick={() => {
-                toggleSelectedType(meetingType)
-              }}
-            >
-              {label}
-            </MenuItemCheckbox>
-          )
-        })}
+        {Object.entries(MeetingTypeToReadable)
+          // Hide Check-in meetings since I didn't build the summarization transform for them
+          .filter((entry) => entry[0] !== 'action')
+          .map((entry) => {
+            const [meetingType, label] = entry as [MeetingTypeEnum, string]
+            const checked = meetingTypes.includes(meetingType)
+            return (
+              <MenuItemCheckbox
+                key={meetingType}
+                checked={checked}
+                onClick={() => {
+                  toggleSelectedType(meetingType)
+                }}
+              >
+                {label}
+              </MenuItemCheckbox>
+            )
+          })}
       </MenuContent>
     </Menu>
   )

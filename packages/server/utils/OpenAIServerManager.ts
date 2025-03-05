@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import type {ChatCompletionCreateParamsNonStreaming} from 'openai/resources'
 import {ModifyType} from '../graphql/public/resolverTypes'
 import {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
@@ -22,6 +23,16 @@ class OpenAIServerManager {
     })
   }
 
+  async chatCompletion(body: ChatCompletionCreateParamsNonStreaming) {
+    if (!this.openAIApi) return null
+    try {
+      return await this.openAIApi.chat.completions.create(body)
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
   async getStandupSummary(
     responses: Array<{content: string; user: string}>,
     meetingPrompt: string

@@ -1,0 +1,7 @@
+"""
+The format of the string response
+"""
+enum ContentFormatEnum {
+  html
+  markdown
+}
