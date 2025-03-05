@@ -4,7 +4,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
-import {closeCreateTaskModal, openLinkTeamModal} from '../../reducers'
+import {closeCreateTaskModal} from '../../reducers'
 
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
@@ -22,6 +22,7 @@ import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {getPluginServerRoute} from '../../selectors'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
+import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
@@ -56,7 +57,7 @@ const CreateTaskModal = () => {
   const {viewer, linkedTeamIds} = data
   const {id: userId, teams} = viewer
   const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
+    () => teams.filter(({id}) => linkedTeamIds?.includes(id)),
     [teams, linkedTeamIds]
   )
 
@@ -133,21 +134,8 @@ const CreateTaskModal = () => {
     return null
   }
 
-  if (linkedTeams.length === 0) {
-    const handleLink = () => {
-      dispatch(openLinkTeamModal())
-      handleClose()
-    }
-    return (
-      <Modal
-        title='Add a Task'
-        commitButtonLabel='Link team'
-        handleClose={handleClose}
-        handleCommit={handleLink}
-      >
-        <p>There are no Parabol teams linked to this channel yet.</p>
-      </Modal>
-    )
+  if (!linkedTeams || linkedTeams.length === 0) {
+    return <NoLinkedTeamsModal title='Add a Task' handleClose={handleClose} />
   }
 
   return (

@@ -1,6 +1,5 @@
 import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
-import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Document from '@tiptap/extension-document'
@@ -22,8 +21,10 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
+import {UniqueID} from '../tiptap/extensions/docWithID/UniqueID'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
+import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -107,6 +108,7 @@ export const useTipTapPageEditor = (
         Document.extend({
           content: 'heading block*'
         }),
+        UniqueID.configure({types: ['insightsBlock']}),
         StarterKit.configure({document: false, history: false}),
         Underline,
         TaskList,
@@ -137,10 +139,6 @@ export const useTipTapPageEditor = (
           openOnClick: false
         }),
         SearchAndReplace.configure(),
-        CharacterCount.configure({
-          // this is a rough estimate because we store the JSON content as a string, not plaintext
-          limit: 1900
-        }),
         Collaboration.configure({
           document
         }),
@@ -150,7 +148,8 @@ export const useTipTapPageEditor = (
             name: preferredName,
             color: `#${themeBackgroundColors[colorIdx]}`
           }
-        })
+        }),
+        InsightsBlock
       ],
       autofocus: true,
       editable: true

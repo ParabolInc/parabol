@@ -618,7 +618,7 @@ type Mutation {
   """
   Remove multiple users from an org
   """
-  removeMultipleOrgUsers(
+  removeOrgUsers(
     """
     The list of user IDs to remove
     """
@@ -628,7 +628,7 @@ type Mutation {
     The org that does not want them anymore
     """
     orgId: ID!
-  ): RemoveMultipleOrgUsersPayload!
+  ): RemoveOrgUsersPayload!
 
   """
   Remove a poker meeting template
@@ -802,20 +802,20 @@ type Mutation {
   ): SetSlackNotificationPayload!
 
   """
-  Set the notification settings for a provider and team
+  Update the notification settings for a provider and team
   """
-  setNotificationSetting(
+  setTeamNotificationSetting(
     """
-    ID of the TeamMemberIntegrationAuth for which to set the notification setting
+    The unique id for the setting
     """
-    authId: ID!
+    id: ID!
 
     """
     Event type to modify
     """
     event: SlackNotificationEventEnum!
     isEnabled: Boolean!
-  ): SetNotificationSettingPayload!
+  ): SetTeamNotificationSettingPayload!
 
   """
   Broadcast that the viewer started dragging a reflection

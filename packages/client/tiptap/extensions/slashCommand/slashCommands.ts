@@ -5,6 +5,7 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule'
 import ImageIcon from '@mui/icons-material/Image'
+import InsightsIcon from '@mui/icons-material/Insights'
 import TextFieldsIcon from '@mui/icons-material/TextFields'
 import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
@@ -112,6 +113,20 @@ export const slashCommands = [
         searchTerms: ['horizontal rule', 'hr', 'divider', 'rule'],
         icon: HorizontalRuleIcon,
         action: (editor: Editor) => editor.chain().focus().setHorizontalRule().run()
+      }
+    ]
+  },
+  {
+    group: 'AI',
+    commands: [
+      {
+        title: 'Insights',
+        description: 'Generate insights from past activities',
+        searchTerms: ['insights', 'meetings', 'reports', 'summary', 'summaries'],
+        icon: InsightsIcon,
+        action: (editor: Editor) => {
+          return editor.chain().focus().setInsights().run()
+        }
       }
     ]
   },

@@ -5,6 +5,15 @@ import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import LoadingSpinner from '../LoadingSpinner'
 import MeetingRow from './MeetingRow'
 
+graphql`
+  fragment ActiveMeetings_team on Team {
+    id
+    activeMeetings {
+      ...MeetingRow_meeting
+    }
+  }
+`
+
 const ActiveMeetings = () => {
   const channel = useCurrentChannel()
   const data = useLazyLoadQuery<ActiveMeetingsQuery>(
@@ -16,16 +25,19 @@ const ActiveMeetings = () => {
         linkedTeamIds(channel: $channel)
         viewer {
           teams {
-            id
-            activeMeetings {
-              ...MeetingRow_meeting
-            }
+            ...ActiveMeetings_team @relay(mask: false)
           }
         }
       }
     `,
     {
       channel: channel?.id ?? ''
+    },
+    {
+      networkCacheConfig: {
+        force: true,
+        poll: 15000
+      }
     }
   )
   const {viewer, linkedTeamIds} = data
@@ -38,7 +50,12 @@ const ActiveMeetings = () => {
   return (
     <div>
       {isLoading && <LoadingSpinner text='Loading...' />}
-      {error && <div className='error-text'>Loading meetings failed, try refreshing the page</div>}
+      {error && (
+        <div className='error-text p-2'>Loading meetings failed, try refreshing the page</div>
+      )}
+      {linkedTeams?.length === 0 && (
+        <p className='self-center p-2 font-semibold'>There are no teams linked to this channel</p>
+      )}
       {linkedTeams?.map((team) =>
         team.activeMeetings.map((meeting) => <MeetingRow meetingRef={meeting} />)
       )}

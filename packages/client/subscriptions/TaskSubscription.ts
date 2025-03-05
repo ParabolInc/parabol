@@ -11,6 +11,7 @@ import {createTaskTaskUpdater} from '../mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from '../mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from '../mutations/EditTaskMutation'
 import {removeOrgUserTaskUpdater} from '../mutations/RemoveOrgUserMutation'
+import {removeOrgUsersTaskUpdater} from '../mutations/RemoveOrgUsersMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
@@ -40,6 +41,9 @@ const subscription = graphql`
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_task @relay(mask: false)
       }
+      RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_task @relay(mask: false)
+      }
       UpdateTaskPayload {
         ...UpdateTaskMutation_task @relay(mask: false)
       }
@@ -60,6 +64,7 @@ const updateHandlers = {
   DeleteTaskPayload: deleteTaskTaskUpdater,
   EditTaskPayload: editTaskTaskUpdater,
   RemoveOrgUserPayload: removeOrgUserTaskUpdater,
+  RemoveOrgUsersSuccess: removeOrgUsersTaskUpdater,
   UpdateTaskPayload: updateTaskTaskUpdater
 } as const
 

@@ -12,6 +12,7 @@ import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
+import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 
 const InviteToMeetingModal = () => {
   const channel = useCurrentChannel()
@@ -68,6 +69,10 @@ const InviteToMeetingModal = () => {
     }
     invite?.()
     handleClose()
+  }
+
+  if (!linkedTeams || linkedTeams.length === 0) {
+    return <NoLinkedTeamsModal title='Invite Channel to Join Activity' handleClose={handleClose} />
   }
 
   return (

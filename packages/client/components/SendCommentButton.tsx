@@ -23,7 +23,7 @@ const SendCommentButton = (props: Props) => {
   return (
     <>
       <button
-        data-disabled={commentSubmitState === 'idle'}
+        data-disabled={commentSubmitState === 'idle' ? '' : undefined}
         className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-sky-500 transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 data-disabled:bg-slate-200'
         onClick={onSubmit}
         onMouseEnter={openTooltip}
@@ -32,7 +32,7 @@ const SendCommentButton = (props: Props) => {
         ref={tipRef}
       >
         <ArrowUpward
-          data-disabled={commentSubmitState === 'idle'}
+          data-disabled={commentSubmitState === 'idle' ? '' : undefined}
           className='m-1 h-5 w-5 text-white transition-colors data-disabled:text-slate-500'
         />
       </button>
