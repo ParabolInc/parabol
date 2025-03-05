@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {JoinTeamMutation as TJoinTeamMutation} from '../__generated__/JoinTeamMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import {OnNextHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment JoinTeamMutation_team on JoinTeamSuccess {
@@ -21,11 +21,11 @@ graphql`
       }
       ...DashNavListTeam
       ...PublicTeamsFrag_team
-      teamMembers {
-        id
-        preferredName
-        userId
-      }
+    }
+    teamMember {
+      id
+      preferredName
+      userId
     }
   }
 `
@@ -42,6 +42,24 @@ const mutation = graphql`
     }
   }
 `
+
+export const joinTeamTeamOnNext: OnNextHandler<any> = (payload, {atmosphere}) => {
+  const {team, teamMember} = payload
+  if (!team || !teamMember) return
+
+  const {viewerId} = atmosphere
+  const {name: teamName} = team
+  const {preferredName, userId} = teamMember
+
+  // Only show notification to other team members, not the person who joined
+  if (userId !== viewerId) {
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: `joinTeam:${team.id}:${userId}`,
+      autoDismiss: 5,
+      message: `${preferredName} just joined team ${teamName}`
+    })
+  }
+}
 
 const JoinTeamMutation: StandardMutation<TJoinTeamMutation> = (
   atmosphere,

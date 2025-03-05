@@ -29,6 +29,7 @@ import {
   endSprintPokerTeamUpdater
 } from '../mutations/EndSprintPokerMutation'
 import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
+import {joinTeamTeamOnNext, joinTeamTeamUpdater} from '../mutations/JoinTeamMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -199,7 +200,8 @@ const onNextHandlers = {
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
-  PushInvitationPayload: pushInvitationTeamOnNext
+  PushInvitationPayload: pushInvitationTeamOnNext,
+  JoinTeamSuccess: joinTeamTeamOnNext
 } as const
 
 const updateHandlers = {
@@ -222,7 +224,8 @@ const updateHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
-  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
+  RemoveTeamMemberPayload: removeTeamMemberTeamUpdater,
+  JoinTeamSuccess: joinTeamTeamUpdater
 } as const
 
 const TeamSubscription = (

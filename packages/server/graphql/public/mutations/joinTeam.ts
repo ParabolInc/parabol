@@ -1,9 +1,8 @@
-// packages/server/graphql/public/mutations/joinTeam.ts
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
-import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -43,33 +42,29 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
     return standardError(approvalError)
   }
 
-  const {invitationNotificationIds} = await acceptTeamInvitationSafe(team, viewerId, dataLoader)
+  await acceptTeamInvitationSafe(team, viewerId, dataLoader)
 
   const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
   // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest
   authToken.tms = tms
-  const teamMemberId = `${teamId}::${viewerId}`
+  const teamMemberId = TeamMemberId.join(teamId, viewerId)
 
   const data = {
-    teamId
+    teamId,
+    teamMemberId
   }
-  console.log('🚀 ~ data:', data)
-
-  const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
 
   // Send the new team member a welcome & a new token
-  // publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {id: encodedAuthToken})
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
 
   // Tell the rest of the team about the new team member
   publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)
 
+  analytics.joinedTeam(viewer, teamId)
+
   return {
-    team: {
-      id: teamId
-    },
-    teamMemberId,
-    authToken: encodedAuthToken
+    teamId,
+    teamMemberId
   }
 }
 
