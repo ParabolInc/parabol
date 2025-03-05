@@ -1,3 +1,4 @@
+import {isNotNull} from '../../../../client/utils/predicates'
 import {DataLoaderWorker} from '../../graphql'
 import {MattermostIntegrationResolvers} from '../resolverTypes'
 
@@ -7,6 +8,13 @@ export type MattermostIntegrationSource = {
 }
 
 const loadActiveProvider = async (teamId: string, dataLoader: DataLoaderWorker) => {
+  const [mattermostProvider] = await dataLoader
+    .get('sharedIntegrationProviders')
+    .load({service: 'mattermost', orgIds: [], teamIds: []})
+  if (mattermostProvider && mattermostProvider.authStrategy !== 'sharedSecret') {
+    return mattermostProvider
+  }
+
   const auths = await dataLoader
     .get('teamMemberIntegrationAuthsByTeamIdAndService')
     .load({teamId, service: 'mattermost'})
@@ -50,6 +58,20 @@ const MattermostIntegration: MattermostIntegrationResolvers = {
       .get('teamNotificationSettingsByProviderIdAndTeamId')
       .load({providerId: id, teamId})
     return settings.find(({channelId}) => (!channelId && !channel) || channelId === channel) || null
+  },
+
+  linkedChannels: async ({teamId}, _args, {dataLoader}) => {
+    const [mattermostProvider] = await dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service: 'mattermost', orgIds: [], teamIds: []})
+    if (!mattermostProvider || mattermostProvider.authStrategy !== 'sharedSecret') {
+      return []
+    }
+    const {id: providerId} = mattermostProvider
+    const settings = await dataLoader
+      .get('teamNotificationSettingsByProviderIdAndTeamId')
+      .load({providerId, teamId})
+    return settings.map(({channelId}) => channelId).filter(isNotNull)
   }
 }
 

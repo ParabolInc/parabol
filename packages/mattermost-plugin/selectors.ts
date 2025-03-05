@@ -80,7 +80,4 @@ export const isLinkTeamModalVisible = (state: GlobalState) =>
 export const pushPostAsReflection = (state: GlobalState) =>
   getPluginState(state).pushPostAsReflection
 
-export const linkedTeamIds = (state: GlobalState, channel: string) =>
-  getPluginState(state).linkedTeamIds[channel]
-
 //e

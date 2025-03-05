@@ -26,4 +26,9 @@ type MattermostIntegration {
   Team notification settings for this provider.
   """
   teamNotificationSettings(channel: ID): TeamNotificationSettings
+
+  """
+  All linked channels for the global Mattermost integration
+  """
+  linkedChannels: [ID!]!
 }

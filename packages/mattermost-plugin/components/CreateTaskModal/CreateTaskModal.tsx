@@ -33,14 +33,21 @@ const CreateTaskModal = () => {
 
   const data = useLazyLoadQuery<CreateTaskModalQuery>(
     graphql`
-      query CreateTaskModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query CreateTaskModalQuery {
         viewer {
           id
           teams {
             id
             name
             orgId
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             teamMembers {
               id
               email
@@ -49,17 +56,20 @@ const CreateTaskModal = () => {
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
 
-  const {viewer, linkedTeamIds} = data
+  const {viewer} = data
   const {id: userId, teams} = viewer
-  const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds?.includes(id)),
-    [teams, linkedTeamIds]
-  )
+
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
   const [createTask, createTaskLoading] = useMutation<CreateTaskModalMutation>(graphql`
     mutation CreateTaskModalMutation($newTask: CreateTaskInput!) {

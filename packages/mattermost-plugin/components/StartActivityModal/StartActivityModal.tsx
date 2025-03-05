@@ -24,11 +24,10 @@ const StartActivityModal = () => {
   const channel = useCurrentChannel()
   const data = useLazyLoadQuery<StartActivityModalQuery>(
     graphql`
-      query StartActivityModalQuery($channel: ID!) {
+      query StartActivityModalQuery {
         config {
           parabolUrl
         }
-        linkedTeamIds(channel: $channel)
         viewer {
           availableTemplates(first: 2000) {
             edges {
@@ -47,6 +46,14 @@ const StartActivityModal = () => {
             id
             name
             orgId
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             teamMembers {
               id
               email
@@ -55,14 +62,20 @@ const StartActivityModal = () => {
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
 
-  const {config, viewer, linkedTeamIds} = data
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
+
+  const {config, viewer} = data
   const {availableTemplates} = viewer
-  const linkedTeams = viewer.teams.filter((team) => linkedTeamIds?.includes(team.id))
 
   const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
   const [selectedTemplate, setSelectedTemplate] =

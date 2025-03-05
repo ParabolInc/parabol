@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 import ReactSelect from 'react-select'
@@ -28,22 +28,39 @@ const SidePanel = () => {
   const channel = useCurrentChannel()
   const data = useLazyLoadQuery<SidePanelQuery>(
     graphql`
-      query SidePanelQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query SidePanelQuery {
+        viewer {
+          teams {
+            id
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
+          }
+        }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {linkedTeamIds} = data
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
   const [activePanel, setActivePanel] = useState<keyof typeof panels>('meetings')
   useEffect(() => {
-    if (linkedTeamIds && linkedTeamIds.length === 0) {
+    if (linkedTeams && linkedTeams.length === 0) {
       setActivePanel('teams')
     }
-  }, [linkedTeamIds])
+  }, [linkedTeams])
 
   const dispatch = useDispatch()
 
