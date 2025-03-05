@@ -125,18 +125,7 @@ export const slashCommands = [
         searchTerms: ['insights', 'meetings', 'reports', 'summary', 'summaries'],
         icon: InsightsIcon,
         action: (editor: Editor) => {
-          const {to} = editor.state.selection
-          const size = editor.state.doc.content.size
-          let command = editor
-            .chain()
-            .focus()
-            .setInsights()
-            .setTextSelection(to + 1)
-          if (size - to <= 1) {
-            // if we're at the end of the doc, add an extra paragraph to make it easier to click below
-            command = command.insertContent('<p></p>').setTextSelection(to + 1)
-          }
-          return command.scrollIntoView().run()
+          return editor.chain().focus().setInsights().run()
         }
       }
     ]

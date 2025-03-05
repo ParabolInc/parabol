@@ -1,4 +1,4 @@
-type RemoveMultipleOrgUsersSuccess {
+type RemoveOrgUsersSuccess {
   """
   The ids of the users removed from the organization
   """

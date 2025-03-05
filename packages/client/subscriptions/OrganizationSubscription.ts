@@ -12,13 +12,13 @@ import {
 import Atmosphere from '../Atmosphere'
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
-  removeMultipleOrgUsersOrganizationOnNext,
-  removeMultipleOrgUsersOrganizationUpdater
-} from '../mutations/RemoveMultipleOrgUsersMutation'
-import {
   removeOrgUserOrganizationOnNext,
   removeOrgUserOrganizationUpdater
 } from '../mutations/RemoveOrgUserMutation'
+import {
+  removeOrgUsersOrganizationOnNext,
+  removeOrgUsersOrganizationUpdater
+} from '../mutations/RemoveOrgUsersMutation'
 import {
   setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater
@@ -52,8 +52,8 @@ const subscription = graphql`
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_organization @relay(mask: false)
       }
-      RemoveMultipleOrgUsersSuccess {
-        ...RemoveMultipleOrgUsersMutation_organization @relay(mask: false)
+      RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_organization @relay(mask: false)
       }
       SetOrgUserRoleSuccess {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
@@ -71,7 +71,7 @@ const subscription = graphql`
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
-  RemoveMultipleOrgUsersSuccess: removeMultipleOrgUsersOrganizationOnNext,
+  RemoveOrgUsersSuccess: removeOrgUsersOrganizationOnNext,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
@@ -79,7 +79,7 @@ const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
-  RemoveMultipleOrgUsersSuccess: removeMultipleOrgUsersOrganizationUpdater,
+  RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const

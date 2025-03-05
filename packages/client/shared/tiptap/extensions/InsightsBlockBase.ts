@@ -1,13 +1,5 @@
 import {Node} from '@tiptap/react'
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    insightsBlock: {
-      setInsights: () => ReturnType
-    }
-  }
-}
-
 export const InsightsBlockBase = Node.create({
   name: 'insightsBlock',
 
@@ -16,6 +8,8 @@ export const InsightsBlockBase = Node.create({
   defining: true,
 
   group: 'block',
+
+  content: 'block*',
 
   draggable: true,
 

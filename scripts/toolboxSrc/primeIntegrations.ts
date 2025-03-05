@@ -29,10 +29,21 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       serverBaseUrl: 'https://www.googleapis.com/calendar/v3',
       clientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET
+    },
+    {
+      service: 'mattermost',
+      authStrategy: 'sharedSecret',
+      scope: 'global',
+      serverBaseUrl: process.env.MATTERMOST_URL,
+      sharedSecret: process.env.MATTERMOST_SECRET
     }
   ] as const
 
-  const validProviders = providers.filter(({clientId, clientSecret, serverBaseUrl}) => clientId && clientSecret && serverBaseUrl)
+  const validProviders = providers.filter(({authStrategy, clientId, clientSecret, serverBaseUrl, sharedSecret}) => 
+    (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl)
+    || (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
+  )
+
   await Promise.all(
     validProviders.map((provider) => {
       return upsertIntegrationProvider(provider)

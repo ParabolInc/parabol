@@ -44,22 +44,14 @@ const AvatarButton = styled(BaseButton)({
   }
 })
 
-const Avatar = styled('div')<{cardIsActive: boolean; isAssigned: boolean}>(
-  ({cardIsActive, isAssigned}) => ({
-    backgroundColor: isAssigned ? 'transparent' : PALETTE.SLATE_600,
-    color: isAssigned ? 'transparent' : undefined,
-    border: '1px solid transparent',
-    borderColor: cardIsActive ? PALETTE.SLATE_500 : undefined,
-    borderRadius: '100%',
-    height: 28,
-    marginLeft: -2,
-    marginRight: 4,
-    padding: 1,
-    position: 'relative',
-    top: -2,
-    width: 28
-  })
-)
+const Avatar = styled('div')<{isAssigned: boolean}>(({isAssigned}) => ({
+  backgroundColor: isAssigned ? 'transparent' : PALETTE.SLATE_600,
+  color: isAssigned ? 'transparent' : undefined,
+  borderRadius: '100%',
+  height: 24,
+  marginRight: 6,
+  width: 24
+}))
 
 const AvatarImage = styled('img')({
   borderRadius: '100%',
@@ -72,6 +64,7 @@ const AvatarLabel = styled('div')({
   ...label,
   color: PALETTE.SLATE_600,
   flex: 1,
+  fontWeight: 600,
   minWidth: 0,
   overflowWrap: 'break-word'
 })
@@ -100,7 +93,6 @@ const StyledIcon = styled('div')({
 interface Props {
   area: string
   canAssign: boolean
-  cardIsActive: boolean
   task: TaskFooterUserAssignee_task$key
   useTaskChild: UseTaskChild
 }
@@ -113,7 +105,7 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
-  const {area, canAssign, cardIsActive, task: taskRef, useTaskChild} = props
+  const {area, canAssign, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment TaskFooterUserAssignee_task on Task {
@@ -153,7 +145,7 @@ const TaskFooterUserAssignee = (props: Props) => {
           onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
           ref={originRef}
         >
-          <Avatar cardIsActive={cardIsActive} isAssigned={!!user}>
+          <Avatar isAssigned={!!user}>
             {user ? (
               <AvatarImage alt={preferredName} src={userImage} />
             ) : (

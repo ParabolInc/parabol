@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {RecordProxy} from 'relay-runtime'
-import {RemoveMultipleOrgUsersMutation as TRemoveMultipleOrgUsersMutation} from '~/__generated__/RemoveMultipleOrgUsersMutation.graphql'
-import {RemoveMultipleOrgUsersMutation_organization$data} from '~/__generated__/RemoveMultipleOrgUsersMutation_organization.graphql'
-import {RemoveMultipleOrgUsersMutation_notification$data} from '../__generated__/RemoveMultipleOrgUsersMutation_notification.graphql'
-import {RemoveMultipleOrgUsersMutation_task$data} from '../__generated__/RemoveMultipleOrgUsersMutation_task.graphql'
-import {RemoveMultipleOrgUsersMutation_team$data} from '../__generated__/RemoveMultipleOrgUsersMutation_team.graphql'
+import {RemoveOrgUsersMutation as TRemoveOrgUsersMutation} from '~/__generated__/RemoveOrgUsersMutation.graphql'
+import {RemoveOrgUsersMutation_organization$data} from '~/__generated__/RemoveOrgUsersMutation_organization.graphql'
+import {RemoveOrgUsersMutation_notification$data} from '../__generated__/RemoveOrgUsersMutation_notification.graphql'
+import {RemoveOrgUsersMutation_task$data} from '../__generated__/RemoveOrgUsersMutation_task.graphql'
+import {RemoveOrgUsersMutation_team$data} from '../__generated__/RemoveOrgUsersMutation_team.graphql'
 import {
   HistoryLocalHandler,
   OnNextHandler,
@@ -25,7 +25,7 @@ import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleTasksForRemovedUsers from './handlers/handleTasksForRemovedUsers'
 graphql`
-  fragment RemoveMultipleOrgUsersMutation_organization on RemoveMultipleOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_organization on RemoveOrgUsersSuccess {
     affectedOrganizationId
     affectedOrganizationName
     removedOrgMemberIds
@@ -34,7 +34,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveMultipleOrgUsersMutation_notification on RemoveMultipleOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_notification on RemoveOrgUsersSuccess {
     affectedOrganizationId
     affectedOrganizationName
     kickOutNotifications {
@@ -48,7 +48,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveMultipleOrgUsersMutation_team on RemoveMultipleOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_team on RemoveOrgUsersSuccess {
     removedTeamMemberIds
     removedUserIds
     affectedTeamIds
@@ -66,7 +66,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveMultipleOrgUsersMutation_task on RemoveMultipleOrgUsersSuccess {
+  fragment RemoveOrgUsersMutation_task on RemoveOrgUsersSuccess {
     affectedTasks {
       ...CompleteTaskFrag @relay(mask: false)
     }
@@ -75,25 +75,25 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation RemoveMultipleOrgUsersMutation($userIds: [ID!]!, $orgId: ID!) {
-    removeMultipleOrgUsers(userIds: $userIds, orgId: $orgId) {
+  mutation RemoveOrgUsersMutation($userIds: [ID!]!, $orgId: ID!) {
+    removeOrgUsers(userIds: $userIds, orgId: $orgId) {
       ... on ErrorPayload {
         error {
           message
         }
       }
-      ... on RemoveMultipleOrgUsersSuccess {
-        ...RemoveMultipleOrgUsersMutation_organization @relay(mask: false)
-        ...RemoveMultipleOrgUsersMutation_team @relay(mask: false)
-        ...RemoveMultipleOrgUsersMutation_task @relay(mask: false)
-        ...RemoveMultipleOrgUsersMutation_notification @relay(mask: false)
+      ... on RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_organization @relay(mask: false)
+        ...RemoveOrgUsersMutation_team @relay(mask: false)
+        ...RemoveOrgUsersMutation_task @relay(mask: false)
+        ...RemoveOrgUsersMutation_notification @relay(mask: false)
       }
     }
   }
 `
 
-export const removeMultipleOrgUsersOrganizationUpdater: SharedUpdater<
-  RemoveMultipleOrgUsersMutation_organization$data
+export const removeOrgUsersOrganizationUpdater: SharedUpdater<
+  RemoveOrgUsersMutation_organization$data
 > = (payload, {atmosphere, store}) => {
   const removedOrgMemberIds = payload.getValue('removedOrgMemberIds')
   const affectedOrganizationId = payload.getValue('affectedOrganizationId')
@@ -109,16 +109,17 @@ export const removeMultipleOrgUsersOrganizationUpdater: SharedUpdater<
   }
 }
 
-export const removeMultipleOrgUsersNotificationUpdater: SharedUpdater<
-  RemoveMultipleOrgUsersMutation_notification$data
+export const removeOrgUsersNotificationUpdater: SharedUpdater<
+  RemoveOrgUsersMutation_notification$data
 > = (payload, {store}) => {
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
   handleAddNotifications(kickOutNotifications, store)
 }
 
-export const removeMultipleOrgUsersTeamUpdater: SharedUpdater<
-  RemoveMultipleOrgUsersMutation_team$data
-> = (payload, {atmosphere, store}) => {
+export const removeOrgUsersTeamUpdater: SharedUpdater<RemoveOrgUsersMutation_team$data> = (
+  payload,
+  {atmosphere, store}
+) => {
   const removedUserIds = payload.getValue('removedUserIds')
   const {viewerId} = atmosphere
 
@@ -131,18 +132,20 @@ export const removeMultipleOrgUsersTeamUpdater: SharedUpdater<
   }
 }
 
-export const removeMultipleOrgUsersTaskUpdater: SharedUpdater<
-  RemoveMultipleOrgUsersMutation_task$data
-> = (payload, {atmosphere, store}) => {
+export const removeOrgUsersTaskUpdater: SharedUpdater<RemoveOrgUsersMutation_task$data> = (
+  payload,
+  {atmosphere, store}
+) => {
   const tasks = payload.getLinkedRecords('affectedTasks')
   const removedUserIds = payload.getValue('removedUserIds') as string[]
   const {viewerId} = atmosphere
   handleTasksForRemovedUsers(tasks, removedUserIds, viewerId, store)
 }
 
-export const removeMultipleOrgUsersTeamOnNext: OnNextHandler<
-  RemoveMultipleOrgUsersMutation_team$data
-> = (payload, context) => {
+export const removeOrgUsersTeamOnNext: OnNextHandler<RemoveOrgUsersMutation_team$data> = (
+  payload,
+  context
+) => {
   const {atmosphere} = context
   const {affectedMeetings} = payload
   affectedMeetings.forEach((newMeeting) => {
@@ -161,8 +164,8 @@ export const removeMultipleOrgUsersTeamOnNext: OnNextHandler<
   })
 }
 
-export const removeMultipleOrgUsersOrganizationOnNext: OnNextHandler<
-  RemoveMultipleOrgUsersMutation_organization$data,
+export const removeOrgUsersOrganizationOnNext: OnNextHandler<
+  RemoveOrgUsersMutation_organization$data,
   OnNextHistoryContext
 > = (payload, context) => {
   const {
@@ -179,8 +182,8 @@ export const removeMultipleOrgUsersOrganizationOnNext: OnNextHandler<
   }
 }
 
-export const removeMultipleOrgUsersNotificationOnNext: OnNextHandler<
-  RemoveMultipleOrgUsersMutation_notification$data,
+export const removeOrgUsersNotificationOnNext: OnNextHandler<
+  RemoveOrgUsersMutation_notification$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
@@ -203,54 +206,53 @@ export const removeMultipleOrgUsersNotificationOnNext: OnNextHandler<
   }
 }
 
-const RemoveMultipleOrgUsersMutation: StandardMutation<
-  TRemoveMultipleOrgUsersMutation,
-  HistoryLocalHandler
-> = (atmosphere, variables, {history, onError, onCompleted}) => {
-  return commitMutation<TRemoveMultipleOrgUsersMutation>(atmosphere, {
+const RemoveOrgUsersMutation: StandardMutation<TRemoveOrgUsersMutation, HistoryLocalHandler> = (
+  atmosphere,
+  variables,
+  {history, onError, onCompleted}
+) => {
+  return commitMutation<TRemoveOrgUsersMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('removeMultipleOrgUsers')
+      const payload = store.getRootField('removeOrgUsers')
       if (!payload) return
       if (payload.getValue('error')) return
-      const success = payload.getLinkedRecord('RemoveMultipleOrgUsersSuccess')
+      const success = payload.getLinkedRecord('RemoveOrgUsersSuccess')
       if (!success) return
 
-      const organizationSuccess =
-        success as RecordProxy<RemoveMultipleOrgUsersMutation_organization$data>
-      const teamSuccess = success as RecordProxy<RemoveMultipleOrgUsersMutation_team$data>
-      const taskSuccess = success as RecordProxy<RemoveMultipleOrgUsersMutation_task$data>
-      const notificationSuccess =
-        success as RecordProxy<RemoveMultipleOrgUsersMutation_notification$data>
+      const organizationSuccess = success as RecordProxy<RemoveOrgUsersMutation_organization$data>
+      const teamSuccess = success as RecordProxy<RemoveOrgUsersMutation_team$data>
+      const taskSuccess = success as RecordProxy<RemoveOrgUsersMutation_task$data>
+      const notificationSuccess = success as RecordProxy<RemoveOrgUsersMutation_notification$data>
 
-      removeMultipleOrgUsersOrganizationUpdater(organizationSuccess, {atmosphere, store})
-      removeMultipleOrgUsersTeamUpdater(teamSuccess, {atmosphere, store})
-      removeMultipleOrgUsersTaskUpdater(taskSuccess, {atmosphere, store})
-      removeMultipleOrgUsersNotificationUpdater(notificationSuccess, {atmosphere, store})
+      removeOrgUsersOrganizationUpdater(organizationSuccess, {atmosphere, store})
+      removeOrgUsersTeamUpdater(teamSuccess, {atmosphere, store})
+      removeOrgUsersTaskUpdater(taskSuccess, {atmosphere, store})
+      removeOrgUsersNotificationUpdater(notificationSuccess, {atmosphere, store})
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      const payload = res.removeMultipleOrgUsers
+      const payload = res.removeOrgUsers
       if (!payload || !('success' in payload)) return
       const {success} = payload
       if (!success) return
 
-      const organizationSuccess = success as RemoveMultipleOrgUsersMutation_organization$data
-      const teamSuccess = success as RemoveMultipleOrgUsersMutation_team$data
-      const notificationSuccess = success as RemoveMultipleOrgUsersMutation_notification$data
+      const organizationSuccess = success as RemoveOrgUsersMutation_organization$data
+      const teamSuccess = success as RemoveOrgUsersMutation_team$data
+      const notificationSuccess = success as RemoveOrgUsersMutation_notification$data
 
-      removeMultipleOrgUsersOrganizationOnNext(organizationSuccess, {
+      removeOrgUsersOrganizationOnNext(organizationSuccess, {
         history,
         atmosphere
       })
-      removeMultipleOrgUsersTeamOnNext(teamSuccess, {atmosphere})
-      removeMultipleOrgUsersNotificationOnNext(notificationSuccess, {atmosphere, history})
+      removeOrgUsersTeamOnNext(teamSuccess, {atmosphere})
+      removeOrgUsersNotificationOnNext(notificationSuccess, {atmosphere, history})
     },
     onError
   })
 }
 
-export default RemoveMultipleOrgUsersMutation
+export default RemoveOrgUsersMutation

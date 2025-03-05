@@ -32,6 +32,12 @@ const ActiveMeetings = () => {
     `,
     {
       channel: channel?.id ?? ''
+    },
+    {
+      networkCacheConfig: {
+        force: true,
+        poll: 15000
+      }
     }
   )
   const {viewer, linkedTeamIds} = data

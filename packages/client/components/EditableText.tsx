@@ -70,8 +70,14 @@ const TextArea = styled(TextAreaAutoSize)({
 })
 
 const Form = styled('form')({
+  border: 0,
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  fontSize: 'inherit',
+  fontWeight: 'inherit',
+  lineHeight: 'inherit',
+  margin: 0,
+  padding: 0
 })
 
 interface Props {

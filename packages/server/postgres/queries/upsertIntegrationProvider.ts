@@ -14,6 +14,7 @@ interface IUpsertIntegrationProviderInput {
   tenantId?: string | null
   clientSecret?: string
   serverBaseUrl?: string
+  sharedSecret?: string
   webhookUrl?: string
   teamId: string | null
   orgId: string | null
