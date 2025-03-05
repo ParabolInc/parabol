@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {JoinTeamMutation as TJoinTeamMutation} from '../__generated__/JoinTeamMutation.graphql'
+import {JoinTeamMutation_team$data} from '../__generated__/JoinTeamMutation_team.graphql'
 import {OnNextHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
@@ -43,15 +44,15 @@ const mutation = graphql`
   }
 `
 
-export const joinTeamTeamOnNext: OnNextHandler<any> = (payload, {atmosphere}) => {
+export const joinTeamTeamOnNext: OnNextHandler<JoinTeamMutation_team$data> = (
+  payload,
+  {atmosphere}
+) => {
   const {team, teamMember} = payload
-  if (!team || !teamMember) return
-
   const {viewerId} = atmosphere
   const {name: teamName} = team
   const {preferredName, userId} = teamMember
 
-  // Only show notification to other team members, not the person who joined
   if (userId !== viewerId) {
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: `joinTeam:${team.id}:${userId}`,
