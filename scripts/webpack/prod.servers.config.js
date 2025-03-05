@@ -99,7 +99,10 @@ module.exports = (config) => {
         // hardcode architecture so uWebSockets.js dynamic require becomes deterministic at build time & requires 1 binary
         'process.platform': JSON.stringify(process.platform),
         'process.arch': JSON.stringify(process.arch),
-        'process.versions.modules': JSON.stringify(process.versions.modules)
+        'process.versions.modules': JSON.stringify(process.versions.modules),
+        // GraphQL packages use these for safety checks in dev https://www.graphql-js.org/docs/going-to-production/
+        'globalThis.process': JSON.stringify(true),
+        'process.env.NODE_ENV': JSON.stringify('production')
       }),
       // if we need canvas for SSR we can just install it to our own package.json
       new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
