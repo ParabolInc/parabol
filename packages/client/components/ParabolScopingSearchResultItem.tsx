@@ -140,7 +140,11 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           addTaskChild('root')
         }}
       >
-        <TipTapEditor editor={editor} useLinkEditor={() => useTaskChild('editor-link-changer')} />
+        <TipTapEditor
+          className='px-4'
+          editor={editor}
+          useLinkEditor={() => useTaskChild('editor-link-changer')}
+        />
       </Task>
     </Item>
   )
