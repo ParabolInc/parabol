@@ -14,7 +14,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   const orgIds = featureFlags.map((flag) => flag.orgId)
-  await db.updateTable('Team').set({isPublic: true}).where('orgId', 'in', orgIds).execute()
+  if (orgIds.length > 0) {
+    await db.updateTable('Team').set({isPublic: true}).where('orgId', 'in', orgIds).execute()
+  }
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
