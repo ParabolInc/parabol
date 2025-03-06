@@ -205,4 +205,9 @@ type Team implements Node {
   The number of retro meetings the team has had
   """
   retroMeetingsCount: Int!
+
+  """
+  Whether the team is visible to everyone in the org and anyone can join it without an invitation
+  """
+  isPublic: Boolean!
 }
