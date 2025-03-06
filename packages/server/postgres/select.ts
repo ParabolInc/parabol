@@ -100,6 +100,7 @@ export const selectTeams = () =>
       'qualAIMeetingsCount',
       'tier',
       'trialStartDate',
+      'isPublic',
       'updatedAt'
     ])
     .select(({fn}) => [
