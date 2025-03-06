@@ -11,7 +11,7 @@ const loadActiveProvider = async (teamId: string, dataLoader: DataLoaderWorker) 
   const [mattermostProvider] = await dataLoader
     .get('sharedIntegrationProviders')
     .load({service: 'mattermost', orgIds: [], teamIds: []})
-  if (mattermostProvider && mattermostProvider.authStrategy !== 'sharedSecret') {
+  if (mattermostProvider && mattermostProvider.authStrategy === 'sharedSecret') {
     return mattermostProvider
   }
 
