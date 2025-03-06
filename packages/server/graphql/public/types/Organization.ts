@@ -85,12 +85,10 @@ const Organization: OrganizationResolvers = {
       .sort((a, b) => a.name.localeCompare(b.name))
   },
 
-  publicTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
-    const [allTeamsOnOrg, hasPublicTeamsFlag] = await Promise.all([
-      dataLoader.get('teamsByOrgIds').load(orgId),
-      dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'publicTeams'})
-    ])
-    if (!isSuperUser(authToken) && !hasPublicTeamsFlag) return []
+  publicTeams: async ({id: orgId, hasPublicTeams}, _args, {dataLoader, authToken}) => {
+    if (!isSuperUser(authToken) && !hasPublicTeams) return []
+
+    const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
     const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))
     return publicTeams
   },

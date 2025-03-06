@@ -9,6 +9,7 @@ graphql`
     team {
       id
       name
+      isPaid
       organization {
         id
         name
