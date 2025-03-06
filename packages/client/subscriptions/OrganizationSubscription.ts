@@ -12,10 +12,6 @@ import {
 import Atmosphere from '../Atmosphere'
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
-  removeOrgUserOrganizationOnNext,
-  removeOrgUserOrganizationUpdater
-} from '../mutations/RemoveOrgUserMutation'
-import {
   removeOrgUsersOrganizationOnNext,
   removeOrgUsersOrganizationUpdater
 } from '../mutations/RemoveOrgUsersMutation'
@@ -49,9 +45,6 @@ const subscription = graphql`
       RemoveIntegrationProviderSuccess {
         ...RemoveIntegrationProviderMutation_organization @relay(mask: false)
       }
-      RemoveOrgUserPayload {
-        ...RemoveOrgUserMutation_organization @relay(mask: false)
-      }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_organization @relay(mask: false)
       }
@@ -70,7 +63,6 @@ const subscription = graphql`
 
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersOrganizationOnNext,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
 } as const
@@ -78,7 +70,6 @@ const onNextHandlers = {
 const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
-  RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater

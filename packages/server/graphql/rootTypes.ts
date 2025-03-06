@@ -1,4 +1,5 @@
 import JiraDimensionField from './types/JiraDimensionField'
+import OrganizationUser from './types/OrganizationUser'
 import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
@@ -17,6 +18,7 @@ const rootTypes = [
   TimelineEventPokerComplete,
   JiraDimensionField,
   RenamePokerTemplatePayload,
-  UserTiersCount
+  UserTiersCount,
+  OrganizationUser
 ]
 export default rootTypes
