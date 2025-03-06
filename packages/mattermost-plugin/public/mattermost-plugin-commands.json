@@ -14,5 +14,9 @@
   {
     "trigger": "share",
     "description": "Shares a Parabol activity so channel members can join"
+  },
+  {
+    "trigger": "notifications",
+    "description": "Configure Parabol notifications for this channel"
   }
 ]

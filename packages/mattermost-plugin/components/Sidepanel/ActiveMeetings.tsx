@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import {ActiveMeetingsQuery} from '../../__generated__/ActiveMeetingsQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
@@ -18,21 +19,26 @@ const ActiveMeetings = () => {
   const channel = useCurrentChannel()
   const data = useLazyLoadQuery<ActiveMeetingsQuery>(
     graphql`
-      query ActiveMeetingsQuery($channel: ID!) {
+      query ActiveMeetingsQuery {
         config {
           parabolUrl
         }
-        linkedTeamIds(channel: $channel)
         viewer {
           teams {
             ...ActiveMeetings_team @relay(mask: false)
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
           }
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    },
+    {},
     {
       networkCacheConfig: {
         force: true,
@@ -40,10 +46,16 @@ const ActiveMeetings = () => {
       }
     }
   )
-  const {viewer, linkedTeamIds} = data
-  const linkedTeams = viewer.teams.filter(
-    (team) => !linkedTeamIds || linkedTeamIds.includes(team.id)
-  )
+
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
+
   const isLoading = false
   const error = false
 
