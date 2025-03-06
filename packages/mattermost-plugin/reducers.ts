@@ -36,6 +36,7 @@ const localSlice = createSlice({
     isInviteToMeetingModalVisible: false,
     pushPostAsReflection: null as string | null,
     isLinkTeamModalVisible: false,
+    configureNotificationsTeam: null as string | null,
     linkedTeamIds: {} as Record<string, {loading: boolean; teamIds: string[]}>
   },
   reducers: {
@@ -80,6 +81,12 @@ const localSlice = createSlice({
     },
     closeLinkTeamModal: (state) => {
       state.isLinkTeamModalVisible = false
+    },
+    openConfigureNotificationsModal: (state, action: PayloadAction<string>) => {
+      state.configureNotificationsTeam = action.payload
+    },
+    closeConfigureNotificationsModal: (state) => {
+      state.configureNotificationsTeam = null
     }
   }
 })
@@ -98,7 +105,9 @@ export const {
   openPushPostAsReflection,
   closePushPostAsReflection,
   openLinkTeamModal,
-  closeLinkTeamModal
+  closeLinkTeamModal,
+  openConfigureNotificationsModal,
+  closeConfigureNotificationsModal
 } = localSlice.actions
 
 export type PluginState = ReturnType<typeof localSlice.reducer>

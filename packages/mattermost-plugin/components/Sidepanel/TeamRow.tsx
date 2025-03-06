@@ -4,12 +4,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
 
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import MoreMenu from '../Menu'
 
 import plural from 'parabol-client/utils/plural'
 import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
+import {openConfigureNotificationsModal} from '../../reducers'
 import {getPluginServerRoute} from '../../selectors'
 
 type Props = {
@@ -34,6 +35,7 @@ const TeamRow = ({teamRef}: Props) => {
   const pluginServerRoute = useSelector(getPluginServerRoute)
   const unlinkTeam = useUnlinkTeam()
   const invite = useInviteToTeam(team)
+  const dispatch = useDispatch()
 
   const handleInvite = () => {
     invite?.()
@@ -41,6 +43,10 @@ const TeamRow = ({teamRef}: Props) => {
 
   const handleUnlink = async () => {
     await unlinkTeam(id)
+  }
+
+  const handleConfigureNotifications = () => {
+    dispatch(openConfigureNotificationsModal(id))
   }
 
   return (
@@ -73,6 +79,10 @@ const TeamRow = ({teamRef}: Props) => {
             {
               label: 'Unlink',
               onClick: handleUnlink
+            },
+            {
+              label: 'Configure Notifications',
+              onClick: handleConfigureNotifications
             }
           ]}
         />
