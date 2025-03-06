@@ -78,7 +78,7 @@ export const SpecificMeetingPicker = (props: Props) => {
   const columns = allColumns.filter((column) => !ignoredColumns.includes(column))
   const allChecked = meetingIds.length === edges.length
   return (
-    <div className='flex max-h-52 overflow-auto'>
+    <div className='flex max-h-52 overflow-auto' contentEditable={false}>
       <table className='w-full border-collapse'>
         <thead className='sticky top-0 z-10 bg-slate-200'>
           <tr className='border-b-[1px] border-slate-400'>

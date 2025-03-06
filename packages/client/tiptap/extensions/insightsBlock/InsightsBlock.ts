@@ -14,6 +14,7 @@ export interface InsightsBlockAttrs {
   meetingIds: string[]
   title: string
   id: string
+  hash: string
 }
 
 declare module '@tiptap/core' {
@@ -74,6 +75,13 @@ export const InsightsBlock = InsightsBlockBase.extend({
         parseHTML: (element) => element.getAttribute('data-title'),
         renderHTML: (attributes) => ({
           'data-title': attributes.title
+        })
+      },
+      hash: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-hash'),
+        renderHTML: (attributes) => ({
+          'data-hash': attributes.hash
         })
       }
     }
