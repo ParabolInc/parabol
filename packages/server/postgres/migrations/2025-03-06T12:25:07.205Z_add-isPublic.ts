@@ -10,7 +10,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .selectFrom('FeatureFlag')
     .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
     .where('FeatureFlag.featureName', '=', 'publicTeams')
-    .where('FeatureFlagOwner.orgId', 'is not', null)
     .select('FeatureFlagOwner.orgId')
     .execute()
 
