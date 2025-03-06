@@ -15,7 +15,7 @@ import {
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
-import {selectNotifications, selectTasks} from '../../../postgres/select'
+import {selectNewMeetings, selectNotifications, selectTasks} from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
@@ -30,6 +30,7 @@ import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {invoices} from '../fields/invoices'
+import {pageInsights} from '../fields/pageInsights'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {ReqResolvers} from './ReqResolvers'
 
@@ -153,6 +154,39 @@ const User: ReqResolvers<'User'> = {
       }
     }
     return meeting
+  },
+  meetings: async (
+    _source,
+    {after, first, teamIds, meetingTypes, before},
+    {authToken, dataLoader}
+  ) => {
+    const viewerId = getUserId(authToken)
+    let validTeamIds = teamIds
+    if (authToken.rol !== 'su') {
+      const teamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+      const allTeamIds = teamMembers.map(({teamId}) => teamId)
+      validTeamIds = teamIds.filter((teamId) => allTeamIds.includes(teamId))
+    }
+    if (validTeamIds.length < 1)
+      throw new Error('Must provide at least 1 teamId the viewer is a member of')
+    if (meetingTypes.length < 1) throw new Error('Must provide at least 1 meetingType')
+
+    const nodes = await selectNewMeetings()
+      .where('teamId', 'in', validTeamIds)
+      .where('meetingType', 'in', meetingTypes)
+      .$if(!!after, (qb) => qb.where('createdAt', '>=', after!))
+      .$if(!!before, (qb) => qb.where('createdAt', '<=', before!))
+      .limit(first + 1)
+      .execute()
+    return {
+      edges: nodes.map((node) => ({node, cursor: node.createdAt})).slice(0, first),
+      pageInfo: {
+        hasNextPage: nodes.length > first,
+        hasPreviousPage: false,
+        startCursor: nodes.at(0)?.createdAt ?? null,
+        endCursor: nodes.at(-1)?.createdAt ?? null
+      }
+    }
   },
   notifications: async (_source, {first, after, types}, {authToken}) => {
     const userId = getUserId(authToken)
@@ -809,7 +843,8 @@ const User: ReqResolvers<'User'> = {
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },
-  billingTier: ({tier}) => tier
+  billingTier: ({tier}) => tier,
+  pageInsights
 }
 
 export default User

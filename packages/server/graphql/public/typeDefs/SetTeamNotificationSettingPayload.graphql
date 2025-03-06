@@ -1,0 +1,4 @@
+"""
+Return for setTeamNotificationSetting mutation
+"""
+union SetTeamNotificationSettingPayload = ErrorPayload | SetTeamNotificationSettingSuccess

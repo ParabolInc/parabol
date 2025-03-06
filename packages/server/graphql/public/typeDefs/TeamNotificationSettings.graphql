@@ -1,0 +1,19 @@
+"""
+Notification settings for a team. All team members
+"""
+type TeamNotificationSettings {
+  id: ID!
+  teamId: ID!
+  providerId: ID!
+
+  """
+  The channel in the integration to wich these settings apply.
+  Null for the default channel.
+  """
+  channel: ID
+
+  """
+  The events that trigger a notification
+  """
+  events: [SlackNotificationEventEnum!]!
+}

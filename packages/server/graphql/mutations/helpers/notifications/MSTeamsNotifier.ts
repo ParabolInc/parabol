@@ -7,11 +7,12 @@ import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../.
 import {SlackNotification, Team} from '../../../../postgres/types'
 import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {NotificationSettings} from '../../../../postgres/types/pg'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import sendToSentry from '../../../../utils/sendToSentry'
 import {DataLoaderWorker} from '../../../graphql'
+import isValid from '../../../isValid'
+import {SlackNotificationEventEnum} from '../../../public/resolverTypes'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 import getSummaryText from './getSummaryText'
@@ -338,22 +339,39 @@ async function getMSTeams(
   dataLoader: DataLoaderWorker,
   teamId: string,
   userId: string,
-  event: NotificationSettings['event']
+  event: SlackNotificationEventEnum
 ) {
   const [auths, user] = await Promise.all([
     dataLoader
-      .get('teamMemberIntegrationAuthsByTeamIdAndEvent')
-      .load({service: 'msTeams', teamId, event}),
+      .get('teamMemberIntegrationAuthsByTeamIdAndService')
+      .load({service: 'msTeams', teamId}),
     dataLoader.get('users').loadNonNull(userId)
   ])
-  return Promise.all(
-    auths.map(async (auth) => {
-      const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
-      return MSTeamsNotificationHelper({
-        ...(provider as IntegrationProviderMSTeams),
-        userId,
-        email: user.email
+
+  const providers = (
+    await Promise.all(
+      auths.map(async (auth) => {
+        const {providerId} = auth
+        const [provider, settings] = await Promise.all([
+          dataLoader
+            .get('integrationProviders')
+            .loadNonNull(providerId) as Promise<IntegrationProviderMSTeams>,
+          dataLoader.get('teamNotificationSettingsByProviderIdAndTeamId').load({providerId, teamId})
+        ])
+        const activeSettings = settings.find(({channelId}) => channelId === null)
+        if (activeSettings?.events.includes(event)) {
+          return provider
+        }
+        return null
       })
+    )
+  ).filter(isValid)
+
+  return providers.map((provider) =>
+    MSTeamsNotificationHelper({
+      ...(provider as IntegrationProviderMSTeams),
+      userId,
+      email: user.email
     })
   )
 }

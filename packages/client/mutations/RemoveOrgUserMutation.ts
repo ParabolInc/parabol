@@ -20,10 +20,9 @@ import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
 import handleRemoveOrganization from './handlers/handleRemoveOrganization'
-import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
-import handleUpsertTasks from './handlers/handleUpsertTasks'
+import handleTasksForRemovedUsers from './handlers/handleTasksForRemovedUsers'
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -148,13 +147,8 @@ export const removeOrgUserTaskUpdater: SharedUpdater<RemoveOrgUserMutation_task$
   const removedUserId = payload.getLinkedRecord('user').getValue('id')
   const tasks = payload.getLinkedRecords('updatedTasks')
   if (!tasks) return
-
-  if (removedUserId === atmosphere.viewerId) {
-    const taskIds = tasks.map((task) => task.getValue('id'))
-    handleRemoveTasks(taskIds, store)
-  } else {
-    handleUpsertTasks(tasks, store)
-  }
+  const {viewerId} = atmosphere
+  handleTasksForRemovedUsers(tasks, [removedUserId], viewerId, store)
 }
 
 export const removeOrgUserTeamOnNext: OnNextHandler<RemoveOrgUserMutation_team$data> = (

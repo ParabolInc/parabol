@@ -6,7 +6,7 @@ import {getAssetsUrl} from '../selectors'
 export type ModalProps = {
   title: string
   commitButtonLabel: string
-  handleCommit: () => void
+  handleCommit?: () => void
   handleClose: () => void
   children?: React.ReactNode
 }
@@ -33,12 +33,22 @@ const Modal = (props: ModalProps) => {
       </M.Header>
       <M.Body>{children}</M.Body>
       <M.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handleCommit}>
-          {commitButtonLabel}
-        </button>
+        {handleCommit ? (
+          <>
+            <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
+              Cancel
+            </button>
+            <button className='btn btn-primary save-button' onClick={handleCommit}>
+              {commitButtonLabel}
+            </button>
+          </>
+        ) : (
+          <>
+            <button className='btn btn-primary svae-button' onClick={handleClose}>
+              {commitButtonLabel}
+            </button>
+          </>
+        )}
       </M.Footer>
     </M>
   )

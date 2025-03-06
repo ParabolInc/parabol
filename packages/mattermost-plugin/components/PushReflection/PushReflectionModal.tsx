@@ -35,11 +35,18 @@ const PushReflectionModal = () => {
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
-      query PushReflectionModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query PushReflectionModalQuery {
         viewer {
           teams {
             id
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             activeMeetings {
               id
               name
@@ -64,17 +71,17 @@ const PushReflectionModal = () => {
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {viewer, linkedTeamIds} = data
-  const {teams} = viewer
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
-  const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
-    [teams, linkedTeamIds]
-  )
   const retroMeetings = useMemo(
     () =>
       linkedTeams

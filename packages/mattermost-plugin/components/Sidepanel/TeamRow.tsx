@@ -4,12 +4,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
 
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import MoreMenu from '../Menu'
 
 import plural from 'parabol-client/utils/plural'
 import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
+import {openConfigureNotificationsModal} from '../../reducers'
 import {getPluginServerRoute} from '../../selectors'
 
 type Props = {
@@ -34,6 +35,7 @@ const TeamRow = ({teamRef}: Props) => {
   const pluginServerRoute = useSelector(getPluginServerRoute)
   const unlinkTeam = useUnlinkTeam()
   const invite = useInviteToTeam(team)
+  const dispatch = useDispatch()
 
   const handleInvite = () => {
     invite?.()
@@ -43,6 +45,10 @@ const TeamRow = ({teamRef}: Props) => {
     await unlinkTeam(id)
   }
 
+  const handleConfigureNotifications = () => {
+    dispatch(openConfigureNotificationsModal(id))
+  }
+
   return (
     <div className='my-4 flex rounded-lg border border-slate-300'>
       <div className='pt-4 pl-2 text-2xl text-slate-400'>
@@ -50,7 +56,11 @@ const TeamRow = ({teamRef}: Props) => {
       </div>
       <div className='flex grow flex-col items-start p-2'>
         <div className='flex w-full flex-col'>
-          <a href={`${pluginServerRoute}/parabol/meet/${id}`} className='text-2xl font-bold'>
+          <a
+            href={`${pluginServerRoute}/parabol/team/${id}`}
+            target='_blank'
+            className='text-2xl font-bold'
+          >
             {name}
           </a>
           <div className='font-semibold text-slate-400'>
@@ -69,6 +79,10 @@ const TeamRow = ({teamRef}: Props) => {
             {
               label: 'Unlink',
               onClick: handleUnlink
+            },
+            {
+              label: 'Configure Notifications',
+              onClick: handleConfigureNotifications
             }
           ]}
         />

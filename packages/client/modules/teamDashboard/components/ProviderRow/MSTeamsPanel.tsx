@@ -73,11 +73,13 @@ const MSTeamsPanel = (props: Props) => {
           integrations {
             msTeams {
               auth {
-                ...NotificationSettings_auth
                 provider {
                   id
                   webhookUrl
                 }
+              }
+              teamNotificationSettings {
+                ...NotificationSettings_settings
               }
             }
           }
@@ -89,7 +91,7 @@ const MSTeamsPanel = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {msTeams} = integrations
-  const {auth} = msTeams
+  const {teamNotificationSettings, auth} = msTeams
   const activeProvider = auth?.provider
   const atmosphere = useAtmosphere()
 
@@ -209,7 +211,7 @@ const MSTeamsPanel = (props: Props) => {
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
-      {auth && <NotificationSettings auth={auth} />}
+      {teamNotificationSettings && <NotificationSettings settings={teamNotificationSettings} />}
     </MSTeamsPanelStyles>
   )
 }

@@ -1,0 +1,14 @@
+"""
+A connection to list of meetings
+"""
+type MeetingConnection {
+  """
+  Page info with cursors as strings
+  """
+  pageInfo: PageInfoDateCursor!
+
+  """
+  A list of edges.
+  """
+  edges: [MeetingEdge!]!
+}

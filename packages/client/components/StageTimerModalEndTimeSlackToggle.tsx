@@ -61,11 +61,12 @@ const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
 })
 
 const isNotificationActive = (integration: {
-  auth: null | undefined | {isActive: boolean; events: readonly SlackNotificationEventEnum[]}
+  isActive: boolean
+  teamNotificationSettings: {events: readonly SlackNotificationEventEnum[]} | null | undefined
 }) => {
-  const {auth} = integration
-  if (!auth?.isActive) return false
-  const {events} = auth
+  const {isActive, teamNotificationSettings} = integration
+  if (!isActive || !teamNotificationSettings) return false
+  const {events} = teamNotificationSettings
   if (!events) return false
   return (
     events.includes('MEETING_STAGE_TIME_LIMIT_START') ||
@@ -81,14 +82,16 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
         teamId
         integrations {
           mattermost {
-            auth {
-              isActive
+            isActive
+            teamNotificationSettings {
+              id
               events
             }
           }
           msTeams {
-            auth {
-              isActive
+            isActive
+            teamNotificationSettings {
+              id
               events
             }
           }

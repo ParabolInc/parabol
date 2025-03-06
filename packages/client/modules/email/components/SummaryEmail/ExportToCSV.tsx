@@ -340,7 +340,7 @@ const ExportToCSV = (props: Props) => {
     submitMutation()
     const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
     onCompleted()
-    if (!data) return
+    if (!data || data instanceof Error) return
     const {viewer} = data
     const {meeting: newMeeting} = viewer
     if (!newMeeting) return
