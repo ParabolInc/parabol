@@ -111,19 +111,24 @@ const StartActivityModal = () => {
     dispatch(closeStartActivityModal())
   }
 
-  const [startMeeting, {isLoading: isStartActivityLoading}] = useStartMeeting()
+  const [startMeeting, {isLoading}] = useStartMeeting()
+  const [error, setError] = useState<string>()
 
   const handleStart = async () => {
     if (!selectedTeam || !selectedTemplate) {
       return
     }
-    if (isStartActivityLoading) {
+    if (isLoading) {
       return
     }
 
-    startMeeting(selectedTeam.id, selectedTemplate.type, selectedTemplate.id)
-
-    handleClose()
+    setError(undefined)
+    try {
+      await startMeeting(selectedTeam.id, selectedTemplate.type, selectedTemplate.id)
+      handleClose()
+    } catch (error) {
+      setError('Failed to start activity')
+    }
   }
 
   if (!linkedTeams || linkedTeams.length === 0) {
@@ -136,6 +141,8 @@ const StartActivityModal = () => {
       commitButtonLabel='Start Activity'
       handleClose={handleClose}
       handleCommit={handleStart}
+      error={error}
+      isLoading={isLoading}
     >
       <div>
         <p>

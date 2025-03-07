@@ -1,7 +1,7 @@
 import {ChangeHistory, GroupWork, History} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import CardsSVG from 'parabol-client/components/CardsSVG'
-import {ReactNode} from 'react'
+import {ReactNode, useState} from 'react'
 
 import {useSelector} from 'react-redux'
 import {useFragment} from 'react-relay'
@@ -42,6 +42,7 @@ const MeetingRow = ({meetingRef}: Props) => {
   const pluginServerRoute = useSelector(getPluginServerRoute)
 
   const invite = useInviteToMeeting(meeting)
+  const [error] = useState<string | null>()
 
   const handleInvite = () => {
     invite?.()
@@ -61,10 +62,11 @@ const MeetingRow = ({meetingRef}: Props) => {
           </a>
           <div className='font-semibold text-slate-400'>{team?.name}</div>
         </div>
-        <div className='py-2'>
+        <div className='flex items-center justify-between py-2'>
           <button className='btn btn-sm btn-primary' onClick={handleInvite}>
             Invite
           </button>
+          {error && <div className='error-text flex-grow pl-4'>{error}</div>}
         </div>
       </div>
     </div>

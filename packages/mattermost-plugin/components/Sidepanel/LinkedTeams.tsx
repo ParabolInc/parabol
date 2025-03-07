@@ -5,7 +5,6 @@ import {useLazyLoadQuery} from 'react-relay'
 import {LinkedTeamsQuery} from '../../__generated__/LinkedTeamsQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {openLinkTeamModal} from '../../reducers'
-import LoadingSpinner from '../LoadingSpinner'
 import TeamRow from './TeamRow'
 
 const LinkedTeams = () => {
@@ -48,9 +47,6 @@ const LinkedTeams = () => {
     dispatch(openLinkTeamModal())
   }
 
-  const isLoading = false
-  const error = false
-
   return (
     <>
       <div className='flex items-center justify-between py-3 text-2xl font-semibold'>
@@ -59,8 +55,6 @@ const LinkedTeams = () => {
           Link Team
         </button>
       </div>
-      {isLoading && <LoadingSpinner text='Loading...' />}
-      {error && <div className='error-text p-2'>Loading teams failed, try refreshing the page</div>}
       {linkedTeams?.length === 0 && (
         <p className='p-2 font-semibold'>There are no teams linked to this channel</p>
       )}

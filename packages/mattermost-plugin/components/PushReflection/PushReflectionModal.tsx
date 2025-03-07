@@ -130,13 +130,14 @@ const PushReflectionModal = () => {
     return JSON.stringify(json)
   }, [htmlPost])
 
-  const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
+  const [createReflection, isLoading] = useMutation<PushReflectionModalMutation>(graphql`
     mutation PushReflectionModalMutation($input: CreateReflectionInput!) {
       createReflection(input: $input) {
         reflectionId
       }
     }
   `)
+  const [error, setError] = React.useState<string>()
 
   useEffect(() => {
     if (!selectedMeeting && retroMeetings && retroMeetings.length > 0) {
@@ -161,24 +162,42 @@ const PushReflectionModal = () => {
 
   const handlePush = async () => {
     if (!selectedMeeting || !selectedPrompt || !editor || editor.isEmpty) {
-      console.log('missing data', selectedPrompt, selectedMeeting, post.message)
+      setError('Please fill out all required fields')
       return
     }
+    setError(undefined)
+
     const {id: meetingId, name: meetingName} = selectedMeeting
     const {id: promptId, question} = selectedPrompt
 
     const content = JSON.stringify(editor.getJSON())
 
-    createReflection({
-      variables: {
-        input: {
-          meetingId,
-          promptId,
-          content,
-          sortOrder: 0
-        }
-      }
-    })
+    try {
+      await new Promise((resolve, reject) =>
+        createReflection({
+          variables: {
+            input: {
+              meetingId,
+              promptId,
+              content,
+              sortOrder: 0
+            }
+          },
+          onCompleted: (data) => {
+            if (!data.createReflection) {
+              reject('Failed to create reflection')
+              return
+            }
+            resolve(data)
+          },
+          onError: reject
+        })
+      )
+    } catch (error) {
+      setError('Failed to create reflection')
+      setTimeout(() => setError(undefined), 5000)
+      return
+    }
 
     const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
     const props = {
@@ -274,6 +293,8 @@ const PushReflectionModal = () => {
       commitButtonLabel='Add Comment'
       handleClose={handleClose}
       handleCommit={handlePush}
+      error={error}
+      isLoading={isLoading}
     >
       {post && (
         <div className='form-group'>

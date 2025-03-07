@@ -46,6 +46,7 @@ const LinkTeamModal = () => {
     )
   }, [data, channel])
   const linkTeam = useLinkTeam()
+  const [error, setError] = React.useState<string>()
 
   const [selectedTeam, setSelectedTeam] = React.useState<(typeof data.viewer.teams)[number]>()
 
@@ -65,8 +66,14 @@ const LinkTeamModal = () => {
     if (!selectedTeam) {
       return
     }
-    await linkTeam(selectedTeam.id)
-    handleClose()
+    setError(undefined)
+    try {
+      await linkTeam(selectedTeam.id)
+      handleClose()
+    } catch (error) {
+      console.error('Link team failed', error)
+      setError('Failed to link team')
+    }
   }
 
   if (!isVisible || !channel) {
@@ -79,6 +86,7 @@ const LinkTeamModal = () => {
       commitButtonLabel='Link Team'
       handleClose={handleClose}
       handleCommit={handleLink}
+      error={error}
     >
       {unlinkedTeams && unlinkedTeams.length > 0 ? (
         <>

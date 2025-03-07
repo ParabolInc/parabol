@@ -35,25 +35,34 @@ export const useLinkTeam = () => {
       if (isLoading) {
         return
       }
-      return mutation({
-        variables: {
-          teamId,
-          channelId: currentChannel.id
-        },
-        updater: (store) => {
-          const payload = store.getRootField('linkMattermostChannel')
-          if (!payload) return
-          const teamId = payload.getValue('teamId') as string
-          const linkedChannels = payload.getValue('linkedChannels')
-          const team = store.get(teamId)
-          if (!team || !linkedChannels) return
-          team
-            .getLinkedRecord('viewerTeamMember')
-            ?.getLinkedRecord('integrations')
-            ?.getLinkedRecord('mattermost')
-            ?.setValue(linkedChannels, 'linkedChannels')
-        }
-      })
+      return new Promise((resolve, reject) =>
+        mutation({
+          variables: {
+            teamId,
+            channelId: currentChannel.id
+          },
+          updater: (store) => {
+            const payload = store.getRootField('linkMattermostChannel')
+            if (!payload) return
+            const teamId = payload.getValue('teamId') as string
+            const linkedChannels = payload.getValue('linkedChannels')
+            const team = store.get(teamId)
+            if (!team || !linkedChannels) return
+            team
+              .getLinkedRecord('viewerTeamMember')
+              ?.getLinkedRecord('integrations')
+              ?.getLinkedRecord('mattermost')
+              ?.setValue(linkedChannels, 'linkedChannels')
+          },
+          onCompleted: (data) => {
+            if (data.linkMattermostChannel?.error) {
+              reject(data.linkMattermostChannel.error.message)
+            }
+            resolve(data)
+          },
+          onError: (error) => reject(error)
+        })
+      )
     },
     [currentChannel, mutation, isLoading]
   )
