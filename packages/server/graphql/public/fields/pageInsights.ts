@@ -68,7 +68,7 @@ Analyze this data and provide key insights on:
 - Any **trends** in the conversations (e.g., recurring blockers, common frustrations, or successful strategies).
 - Suggestions for improving efficiency based on the data.
 
-Use a structured response format with **Wins**, **Challenges**, and **Recommendations**. No yapping.
+Use a structured response format with **Wins**, **Challenges**, and **Recommendations**. No yapping. No introductory sentence. No horizontal rules to separate the sections. Use markdown formatting.
 `
 
   const systemContent = prompt || defaultPrompt
@@ -86,7 +86,6 @@ Use a structured response format with **Wins**, **Challenges**, and **Recommenda
       }
     ]
   })
-  console.log('got response', rawInsightResponse)
   const rawInsight = rawInsightResponse?.choices[0]?.message?.content
   if (!rawInsight) throw new Error('Could not fetch insights from provider')
   const tokenCost = rawInsightResponse?.usage?.total_tokens ?? 10_000
@@ -98,5 +97,7 @@ Use a structured response format with **Wins**, **Challenges**, and **Recommenda
     gfm: true,
     breaks: true
   })
+  console.log(rawInsight)
+  console.log(htmlInsight)
   return htmlInsight
 }

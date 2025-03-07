@@ -1,4 +1,4 @@
 """
-Return object for AddTeamMemberIntegrationAuthPayload
+Return object for addTeamMemberIntegrationAuth
 """
 union AddTeamMemberIntegrationAuthPayload = ErrorPayload | AddTeamMemberIntegrationAuthSuccess

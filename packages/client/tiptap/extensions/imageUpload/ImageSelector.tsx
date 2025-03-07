@@ -47,7 +47,7 @@ export const ImageSelector = (props: Props) => {
   }
   return (
     <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md bg-slate-100 p-2'>
-      <Tabs activeIdx={activeIdx}>
+      <Tabs activeIdx={activeIdx} className='max-w-sm'>
         {tabs
           .filter((tab) => tab.isVisible)
           .map((tab, idx) => (

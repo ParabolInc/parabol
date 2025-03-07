@@ -1415,6 +1415,37 @@ type Mutation {
   ): AddTeamMemberIntegrationAuthPayload!
 
   """
+  This mutation is specific to the mattermost global integration provider.
+  It will create a new TeamNotificationSettings object for the team and channel
+  """
+  linkMattermostChannel(
+    """
+    The team to link the channel to
+    """
+    teamId: ID!
+
+    """
+    The channel to link
+    """
+    channelId: ID!
+  ): LinkMattermostChannelPayload!
+
+  """
+  Remove a previously linked channel from the team
+  """
+  unlinkMattermostChannel(
+    """
+    The team to unlink the channel from
+    """
+    teamId: ID!
+
+    """
+    The channel to unlink
+    """
+    channelId: ID!
+  ): UnlinkMattermostChannelPayload!
+
+  """
   Add the transcription bot to the Zoom meeting
   """
   addTranscriptionBot(meetingId: ID!, videoMeetingURL: String!): AddTranscriptionBotPayload!

@@ -9,7 +9,7 @@ const SidePanelRoot = () => {
   const pluginServerRoute = useSelector(getPluginServerRoute)
 
   return (
-    <div className='flex h-full flex-col items-stretch overflow-y-auto p-4'>
+    <div className='flex h-full flex-col items-stretch p-4'>
       {loggedIn ? (
         <SidePanel />
       ) : (

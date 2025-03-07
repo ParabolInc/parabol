@@ -1,0 +1,9 @@
+type LinkMattermostChannelSuccess {
+  teamId: ID!
+  linkedChannels: [ID!]!
+
+  """
+  The notification settings that were added
+  """
+  teamNotificationSettings: TeamNotificationSettings!
+}
