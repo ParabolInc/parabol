@@ -29,6 +29,7 @@ import {
   endSprintPokerTeamUpdater
 } from '../mutations/EndSprintPokerMutation'
 import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
+import {joinTeamTeamOnNext} from '../mutations/JoinTeamMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -189,6 +190,9 @@ const subscription = graphql`
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
+      JoinTeamSuccess {
+        ...JoinTeamMutation_team @relay(mask: false)
+      }
     }
   }
 `
@@ -203,7 +207,8 @@ const onNextHandlers = {
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
-  PushInvitationPayload: pushInvitationTeamOnNext
+  PushInvitationPayload: pushInvitationTeamOnNext,
+  JoinTeamSuccess: joinTeamTeamOnNext
 } as const
 
 const updateHandlers = {
