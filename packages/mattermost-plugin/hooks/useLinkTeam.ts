@@ -67,5 +67,5 @@ export const useLinkTeam = () => {
     [currentChannel, mutation, isLoading]
   )
 
-  return linkTeam
+  return [linkTeam, isLoading] as const
 }

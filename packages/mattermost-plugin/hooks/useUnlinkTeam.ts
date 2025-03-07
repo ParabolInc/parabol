@@ -67,5 +67,5 @@ export const useUnlinkTeam = () => {
     [currentChannel, mutation, isLoading]
   )
 
-  return unlinkTeam
+  return [unlinkTeam, isLoading] as const
 }

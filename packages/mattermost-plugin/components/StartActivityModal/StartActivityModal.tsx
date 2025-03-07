@@ -127,6 +127,7 @@ const StartActivityModal = () => {
       await startMeeting(selectedTeam.id, selectedTemplate.type, selectedTemplate.id)
       handleClose()
     } catch (error) {
+      console.error('Start activity failed', error)
       setError('Failed to start activity')
     }
   }

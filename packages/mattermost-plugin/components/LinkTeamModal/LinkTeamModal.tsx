@@ -45,7 +45,7 @@ const LinkTeamModal = () => {
         !team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
     )
   }, [data, channel])
-  const linkTeam = useLinkTeam()
+  const [linkTeam, isLoading] = useLinkTeam()
   const [error, setError] = React.useState<string>()
 
   const [selectedTeam, setSelectedTeam] = React.useState<(typeof data.viewer.teams)[number]>()
@@ -87,6 +87,7 @@ const LinkTeamModal = () => {
       handleClose={handleClose}
       handleCommit={handleLink}
       error={error}
+      isLoading={isLoading}
     >
       {unlinkedTeams && unlinkedTeams.length > 0 ? (
         <>

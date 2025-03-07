@@ -111,6 +111,7 @@ const CreateTaskModal = () => {
 
     const content = editor.getJSON()
 
+    setError(undefined)
     try {
       await new Promise((resolve, reject) =>
         createTask({
@@ -133,8 +134,8 @@ const CreateTaskModal = () => {
         })
       )
     } catch (error) {
+      console.error('Failed to create task', error)
       setError('Failed to create task')
-      setTimeout(() => setError(undefined), 5000)
     }
 
     if (channel) {

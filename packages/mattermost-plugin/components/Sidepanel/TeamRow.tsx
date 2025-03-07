@@ -34,8 +34,8 @@ const TeamRow = ({teamRef}: Props) => {
 
   const {id, name, teamMembers} = team
   const pluginServerRoute = useSelector(getPluginServerRoute)
-  const unlinkTeam = useUnlinkTeam()
-  const [error, setError] = useState<string | null>()
+  const [unlinkTeam] = useUnlinkTeam()
+  const [error, setError] = useState<string>()
   const invite = useInviteToTeam(team)
   const dispatch = useDispatch()
 
@@ -44,12 +44,12 @@ const TeamRow = ({teamRef}: Props) => {
   }
 
   const handleUnlink = async () => {
-    setError(null)
+    setError(undefined)
     try {
       await unlinkTeam(id)
     } catch (error) {
       setError('Failed to unlink team')
-      setTimeout(() => setError(null), 5000)
+      setTimeout(() => setError(undefined), 5000)
     }
   }
 

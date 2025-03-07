@@ -194,8 +194,8 @@ const PushReflectionModal = () => {
         })
       )
     } catch (error) {
+      console.error('Failed to create reflection', error)
       setError('Failed to create reflection')
-      setTimeout(() => setError(undefined), 5000)
       return
     }
 
