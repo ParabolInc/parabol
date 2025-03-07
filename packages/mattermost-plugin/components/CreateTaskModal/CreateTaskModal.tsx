@@ -122,7 +122,7 @@ const CreateTaskModal = () => {
     })
 
     if (channel) {
-      const teamUrl = `${pluginServerRoute}/parabol/team/${teamId}`
+      const teamUrl = `${pluginServerRoute}/parabol/team/${teamId}/tasks`
       const message = `Task created in [${teamName}](${teamUrl})`
       Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
         method: 'post',
