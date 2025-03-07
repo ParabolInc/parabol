@@ -8,6 +8,7 @@ import {TeamPickerComboboxRoot} from '../../../components/TeamPickerComboboxRoot
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import {Button} from '../../../ui/Button/Button'
+import {quickHash} from '../../../utils/quickHash'
 import type {InsightsBlockAttrs} from './InsightsBlock'
 
 const queryNode = graphql`
@@ -21,7 +22,7 @@ const queryNode = graphql`
 export const InsightsBlockEditing = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {id, after, before, meetingTypes, teamIds, meetingIds} = attrs
+  const {id, after, before, meetingTypes, teamIds, meetingIds, hash, title} = attrs
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -29,6 +30,11 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
 
   const generateInsights = async () => {
     if (disabled) return
+    const resultsHash = await quickHash(meetingIds)
+    if (resultsHash === hash) {
+      updateAttributes({editing: false})
+      return
+    }
     submitMutation()
     const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {meetingIds})
     onCompleted()
@@ -42,19 +48,25 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
     }
     const {viewer} = res
     const {pageInsights} = viewer
-
     const insightsNode = editor.$node('insightsBlock', {id})!
     editor.commands.insertContentAt(
       {
         from: insightsNode.from,
         to: insightsNode.to - 1
       },
-      pageInsights
+      `<h1>${title}</h1>` + pageInsights
     )
-    updateAttributes({editing: false})
+    updateAttributes({editing: false, hash: resultsHash})
   }
   return (
     <>
+      <input
+        className='bg-inherit p-4 text-lg ring-0 outline-0'
+        onChange={(e) => {
+          updateAttributes({title: e.target.value})
+        }}
+        value={title}
+      />
       <div className='grid grid-cols-[auto_1fr] gap-4 p-4'>
         {/* Row 1 */}
         <label className='self-center font-semibold'>Teams</label>
@@ -69,7 +81,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       {canQueryMeetings && (
         <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
       )}
-      <div className='flex justify-end p-4'>
+      <div className='flex justify-end p-4 select-none'>
         <Button
           variant='secondary'
           shape='pill'
