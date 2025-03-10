@@ -109,6 +109,9 @@ const subscription = graphql`
       EndTeamPromptSuccess {
         ...EndTeamPromptMutation_team @relay(mask: false)
       }
+      JoinTeamSuccess {
+        ...JoinTeamMutation_team @relay(mask: false)
+      }
       MoveReflectTemplatePromptPayload {
         ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       }
@@ -190,9 +193,6 @@ const subscription = graphql`
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
-      JoinTeamSuccess {
-        ...JoinTeamMutation_team @relay(mask: false)
-      }
     }
   }
 `
@@ -204,11 +204,11 @@ const onNextHandlers = {
   EndCheckInSuccess: endCheckInTeamOnNext,
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
+  JoinTeamSuccess: joinTeamTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
-  PushInvitationPayload: pushInvitationTeamOnNext,
-  JoinTeamSuccess: joinTeamTeamOnNext
+  PushInvitationPayload: pushInvitationTeamOnNext
 } as const
 
 const updateHandlers = {
