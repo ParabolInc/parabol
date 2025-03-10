@@ -39,6 +39,8 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
     .where('id', '=', teamId)
     .execute()
 
+  team.isPublic = !team.isPublic
+
   const data = {teamId}
 
   return data

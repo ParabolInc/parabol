@@ -5,20 +5,23 @@ import {TeamPrivacyToggle_team$key} from '~/__generated__/TeamPrivacyToggle_team
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useRouter from '../../../../hooks/useRouter'
 import ToggleTeamPrivacyMutation from '../../../../mutations/ToggleTeamPrivacyMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {TierLabel} from '../../../../types/constEnums'
 
 const StyledRow = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   width: '100%'
 })
 
 const ToggleBlock = styled('div')({
   display: 'flex',
   alignItems: 'center',
-  marginLeft: 16
+  marginLeft: 24,
+  flexShrink: 0
 })
 
 const PrivacyLabel = styled('div')({
@@ -28,10 +31,27 @@ const PrivacyLabel = styled('div')({
   marginRight: 8
 })
 
-const Description = styled('div')({
+const TextBlock = styled('div')({
   fontSize: 14,
   color: PALETTE.SLATE_700,
-  maxWidth: '70%'
+  maxWidth: '80%'
+})
+
+const Description = styled('div')({
+  fontSize: 14,
+  color: PALETTE.SLATE_700
+})
+
+const WarningText = styled('div')({
+  fontSize: 13,
+  color: PALETTE.SLATE_600,
+  marginTop: 8
+})
+
+const UpgradeLink = styled('a')({
+  color: PALETTE.SKY_500,
+  textDecoration: 'underline',
+  cursor: 'pointer'
 })
 
 interface Props {
@@ -47,38 +67,66 @@ const TeamPrivacyToggle = (props: Props) => {
         isPublic
         name
         tier
-        organization {
-          hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
-        }
+        billingTier
+        orgId
       }
     `,
     teamRef
   )
 
-  const {id: teamId, isPublic, name: teamName, organization} = team
-  const {hasPublicTeamsFlag} = organization
+  const {history} = useRouter()
+  const {id: teamId, isPublic, name: teamName, billingTier, orgId} = team
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
+  const isStarterTier = billingTier === 'starter'
 
-  // This would be implemented with a real mutation
   const toggleTeamPrivacy = () => {
+    // If team is public and on starter tier, they can't make it private
+    if (isPublic && isStarterTier) return
+
     if (submitting) return
     submitMutation()
-    ToggleTeamPrivacyMutation(atmosphere, {teamId, isPublic: !isPublic}, {onError, onCompleted})
+    ToggleTeamPrivacyMutation(atmosphere, {teamId}, {onError, onCompleted})
   }
 
-  if (!hasPublicTeamsFlag) return null
+  const handleUpgradeClick = () => {
+    history.push(`/me/organizations/${orgId}`)
+  }
 
   return (
     <StyledRow>
-      <Description>
-        {isPublic
-          ? `${teamName} is currently public. Anyone in your organization can find and join this team.`
-          : `${teamName} is currently private. Only invited members can join this team.`}
-      </Description>
+      <TextBlock>
+        <Description>
+          {isPublic
+            ? `${teamName} is currently public. Anyone in your organization can find and join this team.`
+            : `${teamName} is currently private. Only invited members can join this team.`}
+        </Description>
+
+        {isStarterTier && (
+          <WarningText>
+            {isPublic ? (
+              <>
+                To make this team private, you need to{' '}
+                <UpgradeLink onClick={handleUpgradeClick}>
+                  upgrade to {TierLabel.TEAM} Plan
+                </UpgradeLink>
+                .
+              </>
+            ) : (
+              <>
+                <b>Note</b>: Making this team public cannot be undone on the starter plan.
+              </>
+            )}
+          </WarningText>
+        )}
+      </TextBlock>
       <ToggleBlock>
         <PrivacyLabel>Public</PrivacyLabel>
-        <Toggle active={isPublic} disabled={submitting} onClick={toggleTeamPrivacy} />
+        <Toggle
+          active={isPublic}
+          disabled={submitting || (isPublic && isStarterTier)}
+          onClick={toggleTeamPrivacy}
+        />
       </ToggleBlock>
     </StyledRow>
   )
