@@ -1,0 +1,4 @@
+"""
+Return value for toggleTeamPrivacy, which could be an error
+"""
+union ToggleTeamPrivacyPayload = ErrorPayload | ToggleTeamPrivacySuccess

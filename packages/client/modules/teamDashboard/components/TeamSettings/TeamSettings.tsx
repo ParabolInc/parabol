@@ -10,6 +10,7 @@ import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
+import TeamPrivacyToggle from './TeamPrivacyToggle'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -42,6 +43,7 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         ...ArchiveTeam_team
+        ...TeamPrivacyToggle_team
         isViewerLead
         id
         name
@@ -94,11 +96,18 @@ const TeamSettings = (props: Props) => {
           </Panel>
         )}
         {viewerIsLead || viewerIsOrgAdmin ? (
-          <Panel label='Danger Zone'>
-            <PanelRow>
-              <ArchiveTeam team={team!} />
-            </PanelRow>
-          </Panel>
+          <>
+            <Panel label='Team Privacy'>
+              <PanelRow>
+                <TeamPrivacyToggle teamRef={team!} />
+              </PanelRow>
+            </Panel>
+            <Panel label='Danger Zone'>
+              <PanelRow>
+                <ArchiveTeam team={team!} />
+              </PanelRow>
+            </Panel>
+          </>
         ) : (
           <Panel className='mt-8'>
             <StyledRow>
