@@ -5,6 +5,7 @@ import {TeamPrivacyToggle_team$key} from '~/__generated__/TeamPrivacyToggle_team
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleTeamPrivacyMutation from '../../../../mutations/ToggleTeamPrivacyMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const StyledRow = styled('div')({
@@ -45,6 +46,7 @@ const TeamPrivacyToggle = (props: Props) => {
         id
         isPublic
         name
+        tier
         organization {
           hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         }
@@ -62,7 +64,7 @@ const TeamPrivacyToggle = (props: Props) => {
   const toggleTeamPrivacy = () => {
     if (submitting) return
     submitMutation()
-    // ToggleTeamPrivacyMutation(atmosphere, {teamId, isPublic: !isPublic}, {onError, onCompleted})
+    ToggleTeamPrivacyMutation(atmosphere, {teamId, isPublic: !isPublic}, {onError, onCompleted})
   }
 
   if (!hasPublicTeamsFlag) return null

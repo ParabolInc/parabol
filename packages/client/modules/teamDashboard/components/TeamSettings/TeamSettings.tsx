@@ -10,7 +10,7 @@ import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
-import TeamPrivacyToggle from './TeamPrivacy'
+import TeamPrivacyToggle from './TeamPrivacyToggle'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',

@@ -202,6 +202,7 @@
           "ToggleFavoriteTemplateSuccess": "./types/ToggleFavoriteTemplateSuccess#ToggleFavoriteTemplateSuccessSource",
           "ToggleFeatureFlagSuccess": "./types/ToggleFeatureFlagSuccess#ToggleFeatureFlagSuccessSource",
           "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess#ToggleSummaryEmailSuccessSource",
+          "ToggleTeamPrivacySuccess": "./types/ToggleTeamPrivacySuccess#ToggleTeamPrivacySuccessSource",
           "UpdateAgendaItemPayload": "./types/UpdateAgendaItemPayload#UpdateAgendaItemPayloadSource",
           "UpdateAutoJoinSuccess": "./types/UpdateAutoJoinSuccess#UpdateAutoJoinSuccessSource",
           "UpdateCommentContentSuccess": "./types/UpdateCommentContentSuccess#UpdateCommentContentSuccessSource",
