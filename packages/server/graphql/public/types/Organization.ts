@@ -86,12 +86,10 @@ const Organization: OrganizationResolvers = {
   },
 
   publicTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
-    const [allTeamsOnOrg, hasPublicTeamsFlag] = await Promise.all([
-      dataLoader.get('teamsByOrgIds').load(orgId),
-      dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'publicTeams'})
-    ])
-    if (!isSuperUser(authToken) && !hasPublicTeamsFlag) return []
-    const publicTeams = allTeamsOnOrg.filter((team) => !isTeamMember(authToken, team.id))
+    const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
+    const publicTeams = allTeamsOnOrg.filter(
+      (team) => (team.isPublic || isSuperUser(authToken)) && !isTeamMember(authToken, team.id)
+    )
     return publicTeams
   },
 

@@ -25,7 +25,14 @@ export default async function createTeamAndLeader(
   const {id: teamId, orgId} = newTeam
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, trialStartDate} = organization
-  const verifiedTeam = new Team({...newTeam, createdBy: userId, tier, trialStartDate})
+
+  const verifiedTeam = new Team({
+    ...newTeam,
+    createdBy: userId,
+    tier,
+    trialStartDate,
+    isPublic: true
+  })
 
   const timelineEvent = new TimelineEventCreatedTeam({
     createdAt: new Date(Date.now() + 5),
