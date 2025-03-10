@@ -32,15 +32,17 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
   }
 
   // Validation
-  if (userIds.includes(viewerId)) {
-    return standardError(new Error('Cannot remove yourself'), {userId: viewerId})
-  }
-  if (
-    !(await isUserBillingLeader(viewerId, orgId, dataLoader)) &&
-    !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
-    !isSuperUser(authToken)
-  ) {
-    return standardError(new Error('Must be the organization leader'), {userId: viewerId})
+  const otherUserIds = userIds.filter((userId) => userId !== viewerId)
+  if (otherUserIds.length > 0) {
+    if (
+      !(await isUserBillingLeader(viewerId, orgId, dataLoader)) &&
+      !(await isUserOrgAdmin(viewerId, orgId, dataLoader)) &&
+      !isSuperUser(authToken)
+    ) {
+      return standardError(new Error('Must be the organization leader to remove other users'), {
+        userId: viewerId
+      })
+    }
   }
 
   const organization = await dataLoader.get('organizations').load(orgId)

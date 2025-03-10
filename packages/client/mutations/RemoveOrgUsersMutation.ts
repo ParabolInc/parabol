@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
+import {ConnectionHandler} from 'relay-runtime'
 import {RemoveOrgUsersMutation as TRemoveOrgUsersMutation} from '~/__generated__/RemoveOrgUsersMutation.graphql'
 import {RemoveOrgUsersMutation_organization$data} from '~/__generated__/RemoveOrgUsersMutation_organization.graphql'
 import {RemoveOrgUsersMutation_notification$data} from '../__generated__/RemoveOrgUsersMutation_notification.graphql'
@@ -17,6 +17,7 @@ import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
+import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveOrganization from './handlers/handleRemoveOrganization'
@@ -44,6 +45,7 @@ graphql`
     }
     affectedTeamIds
     affectedMeetingIds
+    removedUserIds
   }
 `
 
@@ -82,12 +84,10 @@ const mutation = graphql`
           message
         }
       }
-      ... on RemoveOrgUsersSuccess {
-        ...RemoveOrgUsersMutation_organization @relay(mask: false)
-        ...RemoveOrgUsersMutation_team @relay(mask: false)
-        ...RemoveOrgUsersMutation_task @relay(mask: false)
-        ...RemoveOrgUsersMutation_notification @relay(mask: false)
-      }
+      ...RemoveOrgUsersMutation_organization @relay(mask: false)
+      ...RemoveOrgUsersMutation_team @relay(mask: false)
+      ...RemoveOrgUsersMutation_task @relay(mask: false)
+      ...RemoveOrgUsersMutation_notification @relay(mask: false)
     }
   }
 `
@@ -103,8 +103,17 @@ export const removeOrgUsersOrganizationUpdater: SharedUpdater<
   if (removedUserIds.some((removedUserId) => removedUserId === viewerId)) {
     handleRemoveOrganization(affectedOrganizationId, store)
   } else {
+    const viewer = store.getRoot().getLinkedRecord('viewer')
+    const organization = viewer?.getLinkedRecord('organization', {orgId: affectedOrganizationId})
+    const orgMembersConn =
+      organization &&
+      ConnectionHandler.getConnection(organization, 'OrgMembers_organizationUsers', {
+        orgId: affectedOrganizationId,
+        userIds: removedUserIds
+      })
     removedOrgMemberIds.forEach((removedOrgMemberId) => {
       handleRemoveOrgMembers(affectedOrganizationId, removedOrgMemberId, store)
+      safeRemoveNodeFromConn(removedOrgMemberId, orgMembersConn)
     })
   }
 }
@@ -187,22 +196,30 @@ export const removeOrgUsersNotificationOnNext: OnNextHandler<
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
-  const {affectedOrganizationId, affectedOrganizationName, affectedMeetingIds, affectedTeamIds} =
-    payload
+  const {
+    affectedOrganizationId,
+    affectedOrganizationName,
+    affectedMeetingIds,
+    affectedTeamIds,
+    removedUserIds
+  } = payload
   if (!affectedOrganizationId || !affectedOrganizationName) return
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    key: `removedFromOrg:${affectedOrganizationId}`,
-    autoDismiss: 10,
-    message: `You have been removed from ${affectedOrganizationName} and all its teams`
-  })
+  const {viewerId} = atmosphere
+  if (removedUserIds.some((removedUserId) => removedUserId === viewerId)) {
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: `removedFromOrg:${affectedOrganizationId}`,
+      autoDismiss: 10,
+      message: `You have been removed from ${affectedOrganizationName} and all its teams`
+    })
 
-  if (onMeetingRoute(window.location.pathname, affectedMeetingIds)) {
-    history.push('/meetings')
-    return
-  }
-  if (affectedTeamIds.some((teamId) => onTeamRoute(window.location.pathname, teamId))) {
-    history.push('/meetings')
-    return
+    if (onMeetingRoute(window.location.pathname, affectedMeetingIds)) {
+      history.push('/meetings')
+      return
+    }
+    if (affectedTeamIds.some((teamId) => onTeamRoute(window.location.pathname, teamId))) {
+      history.push('/meetings')
+      return
+    }
   }
 }
 
@@ -218,38 +235,25 @@ const RemoveOrgUsersMutation: StandardMutation<TRemoveOrgUsersMutation, HistoryL
       const payload = store.getRootField('removeOrgUsers')
       if (!payload) return
       if (payload.getValue('error')) return
-      const success = payload.getLinkedRecord('RemoveOrgUsersSuccess')
-      if (!success) return
 
-      const organizationSuccess = success as RecordProxy<RemoveOrgUsersMutation_organization$data>
-      const teamSuccess = success as RecordProxy<RemoveOrgUsersMutation_team$data>
-      const taskSuccess = success as RecordProxy<RemoveOrgUsersMutation_task$data>
-      const notificationSuccess = success as RecordProxy<RemoveOrgUsersMutation_notification$data>
-
-      removeOrgUsersOrganizationUpdater(organizationSuccess, {atmosphere, store})
-      removeOrgUsersTeamUpdater(teamSuccess, {atmosphere, store})
-      removeOrgUsersTaskUpdater(taskSuccess, {atmosphere, store})
-      removeOrgUsersNotificationUpdater(notificationSuccess, {atmosphere, store})
+      removeOrgUsersOrganizationUpdater(payload as any, {atmosphere, store})
+      removeOrgUsersTeamUpdater(payload as any, {atmosphere, store})
+      removeOrgUsersTaskUpdater(payload as any, {atmosphere, store})
+      removeOrgUsersNotificationUpdater(payload as any, {atmosphere, store})
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
       const payload = res.removeOrgUsers
-      if (!payload || !('success' in payload)) return
-      const {success} = payload
-      if (!success) return
+      if (!payload || payload.error) return
 
-      const organizationSuccess = success as RemoveOrgUsersMutation_organization$data
-      const teamSuccess = success as RemoveOrgUsersMutation_team$data
-      const notificationSuccess = success as RemoveOrgUsersMutation_notification$data
-
-      removeOrgUsersOrganizationOnNext(organizationSuccess, {
+      removeOrgUsersOrganizationOnNext(payload as any, {
         history,
         atmosphere
       })
-      removeOrgUsersTeamOnNext(teamSuccess, {atmosphere})
-      removeOrgUsersNotificationOnNext(notificationSuccess, {atmosphere, history})
+      removeOrgUsersTeamOnNext(payload as any, {atmosphere})
+      removeOrgUsersNotificationOnNext(payload as any, {atmosphere, history})
     },
     onError
   })

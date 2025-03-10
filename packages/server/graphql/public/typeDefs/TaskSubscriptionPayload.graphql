@@ -5,7 +5,6 @@ type TaskSubscriptionPayload {
   CreateTaskPayload: CreateTaskPayload
   DeleteTaskPayload: DeleteTaskPayload
   EditTaskPayload: EditTaskPayload
-  RemoveOrgUserPayload: RemoveOrgUserPayload
   RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   UpdateTaskPayload: UpdateTaskPayload
