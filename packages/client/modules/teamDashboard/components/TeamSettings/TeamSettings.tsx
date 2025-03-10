@@ -104,7 +104,7 @@ const TeamSettings = (props: Props) => {
             <StyledRow>
               <div>
                 This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
-                Team Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
+                Team Leads can <b>delete a team</b>.<br />
                 The <b>Team Lead</b> for {teamName} is{' '}
                 <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
                   {contact.preferredName}
