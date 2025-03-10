@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {TeamPrivacyToggle_team$key} from '~/__generated__/TeamPrivacyToggle_team.graphql'
@@ -7,52 +6,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import ToggleTeamPrivacyMutation from '../../../../mutations/ToggleTeamPrivacyMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {TierLabel} from '../../../../types/constEnums'
-
-const StyledRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  width: '100%'
-})
-
-const ToggleBlock = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  marginLeft: 24,
-  flexShrink: 0
-})
-
-const PrivacyLabel = styled('div')({
-  fontWeight: 600,
-  fontSize: 14,
-  color: PALETTE.SLATE_700,
-  marginRight: 8
-})
-
-const TextBlock = styled('div')({
-  fontSize: 14,
-  color: PALETTE.SLATE_700,
-  maxWidth: '80%'
-})
-
-const Description = styled('div')({
-  fontSize: 14,
-  color: PALETTE.SLATE_700
-})
-
-const WarningText = styled('div')({
-  fontSize: 13,
-  color: PALETTE.SLATE_600,
-  marginTop: 8
-})
-
-const UpgradeLink = styled('a')({
-  color: PALETTE.SKY_500,
-  textDecoration: 'underline',
-  cursor: 'pointer'
-})
 
 interface Props {
   teamRef: TeamPrivacyToggle_team$key
@@ -67,7 +21,6 @@ const TeamPrivacyToggle = (props: Props) => {
         isPublic
         name
         tier
-        billingTier
         orgId
       }
     `,
@@ -75,10 +28,10 @@ const TeamPrivacyToggle = (props: Props) => {
   )
 
   const {history} = useRouter()
-  const {id: teamId, isPublic, name: teamName, billingTier, orgId} = team
+  const {id: teamId, isPublic, name: teamName, tier, orgId} = team
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
-  const isStarterTier = billingTier === 'starter'
+  const isStarterTier = tier === 'starter'
 
   const toggleTeamPrivacy = () => {
     // If team is public and on starter tier, they can't make it private
@@ -94,22 +47,22 @@ const TeamPrivacyToggle = (props: Props) => {
   }
 
   return (
-    <StyledRow>
-      <TextBlock>
-        <Description>
+    <div className='flex w-full items-start justify-between'>
+      <div className='max-w-[80%] text-sm text-slate-700'>
+        <div className='text-sm text-slate-700'>
           {isPublic
             ? `${teamName} is currently public. Anyone in your organization can find and join this team.`
             : `${teamName} is currently private. Only invited members can join this team.`}
-        </Description>
+        </div>
 
         {isStarterTier && (
-          <WarningText>
+          <div className='mt-2 text-xs text-slate-600'>
             {isPublic ? (
               <>
                 To make this team private, you need to{' '}
-                <UpgradeLink onClick={handleUpgradeClick}>
+                <a className='cursor-pointer text-sky-500 underline' onClick={handleUpgradeClick}>
                   upgrade to {TierLabel.TEAM} Plan
-                </UpgradeLink>
+                </a>
                 .
               </>
             ) : (
@@ -117,18 +70,18 @@ const TeamPrivacyToggle = (props: Props) => {
                 <b>Note</b>: Making this team public cannot be undone on the starter plan.
               </>
             )}
-          </WarningText>
+          </div>
         )}
-      </TextBlock>
-      <ToggleBlock>
-        <PrivacyLabel>Public</PrivacyLabel>
+      </div>
+      <div className='ml-6 flex flex-shrink-0 items-center'>
+        <div className='mr-2 text-sm font-semibold text-slate-700'>Public</div>
         <Toggle
           active={isPublic}
           disabled={submitting || (isPublic && isStarterTier)}
           onClick={toggleTeamPrivacy}
         />
-      </ToggleBlock>
-    </StyledRow>
+      </div>
+    </div>
   )
 }
 
