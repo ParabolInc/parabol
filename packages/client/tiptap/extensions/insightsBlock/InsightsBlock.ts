@@ -1,6 +1,7 @@
 import {TextSelection} from '@tiptap/pm/state'
 import {ReactNodeViewRenderer} from '@tiptap/react'
 import ms from 'ms'
+import type {MarkdownNodeSpec} from 'tiptap-markdown'
 import type {MeetingTypeEnum} from '../../../__generated__/ExportToCSVQuery.graphql'
 import {InsightsBlockBase} from '../../../shared/tiptap/extensions/InsightsBlockBase'
 import {InsightsBlockView} from './InsightsBlockView'
@@ -25,49 +26,62 @@ declare module '@tiptap/core' {
     }
   }
 }
-export const InsightsBlock = InsightsBlockBase.extend({
+export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: MarkdownNodeSpec}>({
+  addStorage() {
+    return {
+      markdown: {
+        serialize(state, node) {
+          state.renderContent(node)
+        }
+      }
+    }
+  },
   addAttributes() {
     return {
       editing: {
-        default: true,
-        parseHTML: (element) => element.getAttribute('editing'),
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-editing'),
         renderHTML: (attributes) => ({
-          editing: attributes.editing
+          'data-editing': attributes.editing ? '' : undefined
         })
       },
       teamIds: {
         default: [],
-        parseHTML: (element) => element.getAttribute('data-team-ids')!.split(','),
+        parseHTML: (element) => {
+          return element.getAttribute('data-team-ids')?.split(',') ?? []
+        },
         renderHTML: (attributes) => ({
           'data-team-ids': attributes.teamIds.join(',')
         })
       },
       meetingTypes: {
         default: ['retrospective'],
-        parseHTML: (element) => element.getAttribute('data-meeting-types'),
+        parseHTML: (element) => element.getAttribute('data-meeting-types')?.split(',') ?? [],
         renderHTML: (attributes) => ({
-          'data-meeting-types': attributes.meetingTypes
+          'data-meeting-types': attributes.meetingTypes.join(',')
         })
       },
       after: {
         default: () => new Date(Date.now() - ms('12w')).toISOString(),
-        parseHTML: (element) => new Date(element.getAttribute('data-after') as string),
+        parseHTML: (element) =>
+          new Date(element.getAttribute('data-after') as string).toISOString(),
         renderHTML: (attributes: InsightsBlockAttrs) => ({
           'data-after': attributes.after
         })
       },
       before: {
         default: () => new Date().toISOString(),
-        parseHTML: (element) => new Date(element.getAttribute('data-before') as string),
+        parseHTML: (element) =>
+          new Date(element.getAttribute('data-before') as string).toISOString(),
         renderHTML: (attributes: InsightsBlockAttrs) => ({
           'data-before': attributes.before
         })
       },
       meetingIds: {
         default: [],
-        parseHTML: (element) => element.getAttribute('data-meeting-ids'),
+        parseHTML: (element) => element.getAttribute('data-meeting-ids')?.split(',') ?? [],
         renderHTML: (attributes) => ({
-          'data-meeting-ids': attributes.meetingIds
+          'data-meeting-ids': attributes.meetingIds.join(',')
         })
       },
       title: {
