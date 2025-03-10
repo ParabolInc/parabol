@@ -99,7 +99,7 @@ const TeamSettings = (props: Props) => {
           <>
             <Panel label='Team Privacy'>
               <PanelRow>
-                <TeamPrivacyToggle teamRef={team} />
+                <TeamPrivacyToggle teamRef={team!} />
               </PanelRow>
             </Panel>
             <Panel label='Danger Zone'>
