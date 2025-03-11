@@ -21,10 +21,6 @@ import {
   inviteToTeamNotificationUpdater
 } from '../mutations/InviteToTeamMutation'
 import {
-  removeOrgUserNotificationOnNext,
-  removeOrgUserNotificationUpdater
-} from '../mutations/RemoveOrgUserMutation'
-import {
   removeOrgUsersNotificationOnNext,
   removeOrgUsersNotificationUpdater
 } from '../mutations/RemoveOrgUsersMutation'
@@ -115,9 +111,6 @@ const subscription = graphql`
       }
       InviteToTeamPayload {
         ...InviteToTeamMutation_notification @relay(mask: false)
-      }
-      RemoveOrgUserPayload {
-        ...RemoveOrgUserMutation_notification @relay(mask: false)
       }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_notification @relay(mask: false)
@@ -290,7 +283,6 @@ const updateHandlers = {
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
   InviteToTeamPayload: inviteToTeamNotificationUpdater,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
-  RemoveOrgUserPayload: removeOrgUserNotificationUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationUpdater,
   StripeFailPaymentPayload: stripeFailPaymentNotificationUpdater,
   ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater
@@ -300,7 +292,6 @@ const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
-  RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,

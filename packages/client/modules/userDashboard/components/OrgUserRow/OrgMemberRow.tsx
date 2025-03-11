@@ -108,8 +108,16 @@ const UserActions: React.FC<UserActionsProps> = ({
   const {
     user: {id: userId}
   } = organizationUser
-  const {togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
-  const {togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
+  const {
+    togglePortal: toggleLeave,
+    modalPortal: leaveModal,
+    closePortal: closeLeaveModal
+  } = useModal()
+  const {
+    togglePortal: toggleRemove,
+    modalPortal: removeModal,
+    closePortal: closeRemoveModal
+  } = useModal()
   return (
     <RowActions>
       <ActionsBlock>
@@ -119,9 +127,14 @@ const UserActions: React.FC<UserActionsProps> = ({
           toggleLeave={toggleLeave}
           toggleRemove={toggleRemove}
         />
-        {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+        {leaveModal(<LeaveOrgModal orgId={orgId} closePortal={closeLeaveModal} />)}
         {removeModal(
-          <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
+          <RemoveFromOrgModal
+            orgId={orgId}
+            userId={userId}
+            preferredName={preferredName}
+            closePortal={closeRemoveModal}
+          />
         )}
       </ActionsBlock>
     </RowActions>
