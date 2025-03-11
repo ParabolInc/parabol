@@ -21,7 +21,6 @@ interface Input {
   pseudoId?: string | null
   sendSummaryEmail?: boolean
   tier?: TierEnum
-  tms?: string[]
 }
 
 export default class User {
@@ -43,12 +42,10 @@ export default class User {
   pseudoId?: string
   sendSummaryEmail?: boolean
   tier: TierEnum
-  tms: string[]
   reasonRemoved?: string
   rol?: AuthTokenRole.SUPER_USER
   constructor(input: Input) {
     const {
-      tms,
       email,
       id,
       createdAt,
@@ -67,7 +64,6 @@ export default class User {
     } = input
     const now = new Date()
     this.id = id ?? `local|${generateUID()}`
-    this.tms = tms || []
     this.email = email
     this.createdAt = createdAt || now
     this.picture = picture
