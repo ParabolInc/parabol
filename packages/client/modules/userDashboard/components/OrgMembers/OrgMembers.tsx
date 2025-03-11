@@ -10,8 +10,10 @@ import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import User from '../../../../../server/database/types/User'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
+import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 
 interface Props {
   queryRef: PreloadedQuery<OrgMembersQuery>
@@ -33,6 +35,7 @@ const OrgMembers = (props: Props) => {
         viewer {
           organization(orgId: $orgId) {
             ...OrgMemberRow_organization
+            id
             name
             isBillingLeader
             organizationUsers(first: $first, after: $after)
@@ -44,6 +47,7 @@ const OrgMembers = (props: Props) => {
                   inactive
                   role
                   user {
+                    id
                     preferredName
                     email
                     lastSeenAt
@@ -78,6 +82,12 @@ const OrgMembers = (props: Props) => {
   const [sortBy, setSortBy] = useState<keyof User>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [searchInput, setSearchInput] = useState('')
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
+  const {
+    togglePortal: toggleBulkRemove,
+    modalPortal: bulkRemoveModal,
+    closePortal: closeBulkRemoveModal
+  } = useModal()
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
@@ -120,9 +130,36 @@ const OrgMembers = (props: Props) => {
     }
   }
 
+  const handleSelectAll = useCallback(() => {
+    if (selectedUserIds.length === finalOrgUsers.length) {
+      setSelectedUserIds([])
+    } else {
+      setSelectedUserIds(finalOrgUsers.map(({user}) => user.id))
+    }
+  }, [finalOrgUsers, selectedUserIds.length])
+
+  const handleSelectUser = useCallback((userId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedUserIds((prev) => [...prev, userId])
+    } else {
+      setSelectedUserIds((prev) => prev.filter((id) => id !== userId))
+    }
+  }, [])
+
+  const isAllSelected = useMemo(
+    () => finalOrgUsers.length > 0 && selectedUserIds.length === finalOrgUsers.length,
+    [finalOrgUsers.length, selectedUserIds.length]
+  )
+
   const exportToCSV = async () => {
-    const rows = organizationUsers.edges.map((orgUser, idx) => {
-      const {node} = orgUser
+    const usersToExport =
+      selectedUserIds.length > 0
+        ? organizationUsers.edges
+            .map(({node}) => node)
+            .filter(({user}) => selectedUserIds.includes(user.id))
+        : organizationUsers.edges.map(({node}) => node)
+
+    const rows = usersToExport.map((node, idx) => {
       const formattedLastSeenAt = node.user.lastSeenAt
         ? format(new Date(node.user.lastSeenAt), 'yyyy-MM-dd')
         : 'Never'
@@ -139,14 +176,12 @@ const OrgMembers = (props: Props) => {
     const csv = parser.parse(rows)
     const date = new Date()
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
-    // note: using encodeUri does NOT work on the # symbol & breaks
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
     link.setAttribute('download', `Parabol_${orgName}_${numDate}.csv`)
-    document.body.appendChild(link) // Required for FF
+    document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
   }
@@ -175,10 +210,31 @@ const OrgMembers = (props: Props) => {
       </div>
 
       <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
-        <div className='bg-slate-100 px-4 py-2'>
-          <div className='flex w-full justify-between'>
+        <div className='flex h-10 items-center bg-slate-100 px-4'>
+          <div className='flex w-full items-center justify-between'>
             <div className='flex items-center font-bold'>
               {organizationUsers.edges.length} total
+              {selectedUserIds.length > 0 && (
+                <span className='text-blue-600 ml-2'>({selectedUserIds.length} selected)</span>
+              )}
+            </div>
+            <div className='flex space-x-2'>
+              {selectedUserIds.length > 0 && isBillingLeader && (
+                <>
+                  <button
+                    onClick={exportToCSV}
+                    className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                  >
+                    Export Selected to CSV
+                  </button>
+                  <button
+                    onClick={toggleBulkRemove}
+                    className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                  >
+                    Remove Selected
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -186,8 +242,18 @@ const OrgMembers = (props: Props) => {
           <table className='w-full table-fixed border-collapse md:table-auto'>
             <thead>
               <tr className='border-b border-slate-300'>
+                <th className='w-[5%] p-3 text-left'>
+                  <div className='flex items-center justify-center'>
+                    <input
+                      type='checkbox'
+                      checked={isAllSelected}
+                      onChange={handleSelectAll}
+                      className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
+                    />
+                  </div>
+                </th>
                 <th
-                  className='w-[70%] cursor-pointer p-3 text-left font-semibold'
+                  className='w-[65%] cursor-pointer p-3 text-left font-semibold'
                   onClick={() => handleSort('preferredName')}
                 >
                   User
@@ -211,12 +277,22 @@ const OrgMembers = (props: Props) => {
                   orgAdminCount={orgAdminCount}
                   organizationUser={organizationUser}
                   organization={organization}
+                  isSelected={selectedUserIds.includes(organizationUser.user.id)}
+                  onSelectUser={handleSelectUser}
                 />
               ))}
             </tbody>
           </table>
         </div>
       </div>
+      {bulkRemoveModal(
+        <RemoveFromOrgModal
+          orgId={organization.id}
+          userIds={selectedUserIds}
+          closePortal={closeBulkRemoveModal}
+          onSuccess={() => setSelectedUserIds([])}
+        />
+      )}
     </div>
   )
 }

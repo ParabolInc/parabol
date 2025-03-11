@@ -112,7 +112,7 @@ const BillingLeader = (props: Props) => {
       {removeModal(
         <RemoveFromOrgModal
           orgId={orgId}
-          userId={userId}
+          userIds={[userId]}
           preferredName={preferredName}
           closePortal={closeRemoveModal}
         />

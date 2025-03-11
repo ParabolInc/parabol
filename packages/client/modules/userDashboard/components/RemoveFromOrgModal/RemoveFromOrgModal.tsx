@@ -15,42 +15,62 @@ const StyledButton = styled(PrimaryButton)({
 
 interface Props {
   orgId: string
-  userId: string
-  preferredName: string
+  userId?: string
+  userIds?: string[]
+  preferredName?: string
   closePortal: () => void
+  onSuccess?: () => void
 }
 
 const StyledDialogContainer = styled(DialogContainer)({
-  width: '400'
+  width: '400px'
 })
 
 const RemoveFromOrgModal = (props: Props) => {
-  const {orgId, preferredName, userId, closePortal} = props
+  const {orgId, preferredName, userId, userIds, closePortal, onSuccess} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+
+  // Determine if we're in single or bulk mode
+  const isSingleUser = !!userId && !!preferredName
+  const actualUserIds = isSingleUser ? [userId!] : userIds || []
+  const count = actualUserIds.length
+
   const handleClick = () => {
     submitMutation()
     RemoveOrgUsersMutation(
       atmosphere,
-      {orgId, userIds: [userId]},
+      {orgId, userIds: actualUserIds},
       {
         history,
         onError,
         onCompleted: () => {
           onCompleted()
           closePortal()
+          onSuccess?.()
         }
       }
     )
   }
+
   return (
     <StyledDialogContainer>
       <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
-        {`This will remove ${preferredName} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`}
+        {isSingleUser
+          ? `This will remove ${preferredName} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`
+          : `This will remove ${count} member${count === 1 ? '' : 's'} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
-          <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
+          <IconLabel
+            icon='arrow_forward'
+            iconAfter
+            label={
+              isSingleUser
+                ? `Remove ${preferredName}`
+                : `Remove ${count} member${count === 1 ? '' : 's'}`
+            }
+          />
         </StyledButton>
       </DialogContent>
     </StyledDialogContainer>

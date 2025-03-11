@@ -35,6 +35,8 @@ interface Props {
   orgAdminCount: number
   organizationUser: OrgMemberRow_organizationUser$key
   organization: OrgMemberRow_organization$key
+  isSelected?: boolean
+  onSelectUser?: (userId: string, isSelected: boolean) => void
 }
 
 const LeaveOrgModal = lazyPreload(
@@ -131,7 +133,7 @@ const UserActions: React.FC<UserActionsProps> = ({
         {removeModal(
           <RemoveFromOrgModal
             orgId={orgId}
-            userId={userId}
+            userIds={[userId]}
             preferredName={preferredName}
             closePortal={closeRemoveModal}
           />
@@ -142,7 +144,12 @@ const UserActions: React.FC<UserActionsProps> = ({
 }
 
 const OrgMemberRow = (props: Props) => {
-  const {organizationUser: organizationUserRef, organization: organizationRef} = props
+  const {
+    organizationUser: organizationUserRef,
+    organization: organizationRef,
+    isSelected = false,
+    onSelectUser
+  } = props
 
   const organization = useFragment(
     graphql`
@@ -157,6 +164,7 @@ const OrgMemberRow = (props: Props) => {
   const organizationUser = useFragment(
     graphql`
       fragment OrgMemberRow_organizationUser on OrganizationUser {
+        id
         user {
           id
           email
@@ -181,8 +189,22 @@ const OrgMemberRow = (props: Props) => {
   const isOrgAdmin = role === 'ORG_ADMIN'
   const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSelectUser?.(organizationUser.user.id, e.target.checked)
+  }
+
   return (
     <tr className='border-b border-slate-300 last:border-b-0'>
+      <td className='px-2 py-3 align-middle'>
+        <div className='flex items-center justify-center'>
+          <input
+            type='checkbox'
+            checked={isSelected}
+            onChange={handleCheckboxChange}
+            className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
+          />
+        </div>
+      </td>
       <td className='w-1/2 px-2 py-3 align-middle'>
         <div className='flex w-full items-center overflow-hidden'>
           <UserAvatar picture={picture} />
