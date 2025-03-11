@@ -1,4 +1,4 @@
-import {Node} from '@tiptap/react'
+import {mergeAttributes, Node} from '@tiptap/react'
 
 export const InsightsBlockBase = Node.create({
   name: 'insightsBlock',
@@ -25,7 +25,7 @@ export const InsightsBlockBase = Node.create({
     ]
   },
 
-  renderHTML() {
-    return ['div', {'data-type': this.name}]
+  renderHTML({HTMLAttributes}) {
+    return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name}), 0]
   }
 })
