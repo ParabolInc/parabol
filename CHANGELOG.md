@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.34.0](https://github.com/ParabolInc/parabol/compare/v8.33.1...v8.34.0) (2025-03-11)
+
+
+### Added
+
+* **pages:** drag handles, copy/paste markdown ([#10977](https://github.com/ParabolInc/parabol/issues/10977)) ([7d034d8](https://github.com/ParabolInc/parabol/commit/7d034d87f21b94615fc86236e1b5c68986ef3e52))
+
+
+### Changed
+
+* **postgresql:** upgrade pgvector to 0.8.0 ([#10976](https://github.com/ParabolInc/parabol/issues/10976)) ([e0170e0](https://github.com/ParabolInc/parabol/commit/e0170e0135b7446be2b1b6d77ceab42a398989ee))
+* update copy that says only team leads can upgrade ([#10970](https://github.com/ParabolInc/parabol/issues/10970)) ([957cba8](https://github.com/ParabolInc/parabol/commit/957cba8880140b628ed0288e44ef779eb89ff54f))
+
 ## [8.33.1](https://github.com/ParabolInc/parabol/compare/v8.33.0...v8.33.1) (2025-03-10)
 
 
