@@ -66,7 +66,6 @@ describe('isTeamActive', () => {
           lastSeenAt: new Date(),
           createdAt: new Date(),
           updatedAt: new Date(),
-          tms: [mockTeamId]
         },
         {
           id: mockUserId2,
@@ -77,7 +76,6 @@ describe('isTeamActive', () => {
           lastSeenAt: new Date(),
           createdAt: new Date(),
           updatedAt: new Date(),
-          tms: [mockTeamId]
         }
       ])
       .execute()

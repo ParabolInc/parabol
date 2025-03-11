@@ -301,9 +301,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...user,
-          userOnTeam: {
-            ...user
-          },
           assigneeTeamMember: this.db.teamMembers.find(
             (teamMember) => teamMember.userId === userId
           ),
@@ -390,9 +387,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {
         viewer: {
           ...this.db.users[0],
-          userOnTeam: {
-            ...this.db.users[0]
-          }
         }
       }
     },

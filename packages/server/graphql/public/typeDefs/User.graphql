@@ -360,18 +360,12 @@ type User {
   """
   all the teams the user is a part of that the viewer can see
   """
-  tms: [ID!]!
+  teamIds: [ID!]!
 
   """
   The timestamp the user was last updated
   """
   updatedAt: DateTime
-  userOnTeam(
-    """
-    The other user
-    """
-    userId: ID!
-  ): User
 
   """
   The assumed company this organizaiton belongs to

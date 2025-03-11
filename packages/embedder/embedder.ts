@@ -26,7 +26,7 @@ const run = async () => {
   if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
   const NUM_WORKERS = parseInt(process.env.AI_EMBEDDER_WORKERS!)
   if (!(NUM_WORKERS > 0)) {
-    Logger.log('env.AI_EMBEDDER_WORKERS is < 0. Embedder will not run.')
+    Logger.log('env.AI_EMBEDDER_WORKERS is < 1. Embedder will not run.')
     return
   }
 
