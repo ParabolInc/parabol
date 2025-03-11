@@ -75,10 +75,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       return standardError(e)
     }
     const message = typeof e === 'string' ? e : 'parseLoginResponse failed'
-    return standardError(new Error(message))
+    return standardError(new Error(message), {extras: {body}})
   }
   if (!loginResponse) {
-    return {error: {message: 'Error with query from identity provider'}}
+    return standardError(new Error('Error with query from identity provider'), {extras: {body}})
   }
 
   const {extract} = loginResponse
@@ -93,13 +93,12 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
-    return {
-      error: {
-        message: `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(
-          attributes
-        ).join(', ')}`
-      }
-    }
+    return standardError(
+      new Error(
+        `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(attributes).join(', ')}`
+      ),
+      {extras: {body}}
+    )
   }
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}
