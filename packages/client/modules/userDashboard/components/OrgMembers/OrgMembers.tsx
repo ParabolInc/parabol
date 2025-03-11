@@ -13,6 +13,7 @@ import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
+import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../utils/constants'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 
@@ -240,26 +241,34 @@ const OrgMembers = (props: Props) => {
             <div className='flex items-center font-bold'>
               {organizationUsers.edges.length} total
               {selectedUserIds.length > 0 && (
-                <span className='text-blue-600 ml-2'>({selectedUserIds.length} selected)</span>
+                <span className='ml-2 text-sky-600'>({selectedUserIds.length} selected)</span>
               )}
             </div>
             <div className='flex space-x-2'>
-              {selectedUserIds.length > 0 && isOrgAdmin && (
-                <>
-                  <button
-                    onClick={exportToCSV}
-                    className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
-                  >
-                    Export Selected to CSV
-                  </button>
-                  <button
-                    onClick={toggleBulkRemove}
-                    className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
-                  >
-                    Remove Selected
-                  </button>
-                </>
-              )}
+              {selectedUserIds.length > 0 &&
+                selectedUserIds.length > BATCH_ORG_USER_REMOVAL_LIMIT && (
+                  <span className='text-xs font-bold text-tomato-600'>
+                    Oops! You can select up to {BATCH_ORG_USER_REMOVAL_LIMIT} users at a time.
+                  </span>
+                )}
+              {selectedUserIds.length > 0 &&
+                selectedUserIds.length <= BATCH_ORG_USER_REMOVAL_LIMIT &&
+                isOrgAdmin && (
+                  <>
+                    <button
+                      onClick={exportToCSV}
+                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                    >
+                      Export Selected to CSV
+                    </button>
+                    <button
+                      onClick={toggleBulkRemove}
+                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                    >
+                      Remove Selected
+                    </button>
+                  </>
+                )}
             </div>
           </div>
         </div>
@@ -274,7 +283,7 @@ const OrgMembers = (props: Props) => {
                         type='checkbox'
                         checked={isAllSelected}
                         onChange={handleSelectAll}
-                        className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
+                        className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
                       />
                     )}
                   </div>
