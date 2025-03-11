@@ -38,6 +38,7 @@ const OrgMembers = (props: Props) => {
             id
             name
             isBillingLeader
+            isOrgAdmin
             organizationUsers(first: $first, after: $after)
               @connection(key: "OrgMembers_organizationUsers") {
               edges {
@@ -69,7 +70,7 @@ const OrgMembers = (props: Props) => {
   const {data} = paginationRes
   const {viewer} = data
   const organization = viewer.organization!
-  const {organizationUsers, name: orgName, isBillingLeader} = organization
+  const {organizationUsers, name: orgName, isBillingLeader, isOrgAdmin} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
     (count, {node}) =>
       ['BILLING_LEADER', 'ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count,
@@ -219,7 +220,7 @@ const OrgMembers = (props: Props) => {
               )}
             </div>
             <div className='flex space-x-2'>
-              {selectedUserIds.length > 0 && isBillingLeader && (
+              {selectedUserIds.length > 0 && isOrgAdmin && (
                 <>
                   <button
                     onClick={exportToCSV}
@@ -244,12 +245,14 @@ const OrgMembers = (props: Props) => {
               <tr className='border-b border-slate-300'>
                 <th className='w-[5%] p-3 text-left'>
                   <div className='flex items-center justify-center'>
-                    <input
-                      type='checkbox'
-                      checked={isAllSelected}
-                      onChange={handleSelectAll}
-                      className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
-                    />
+                    {isOrgAdmin && (
+                      <input
+                        type='checkbox'
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
+                      />
+                    )}
                   </div>
                 </th>
                 <th

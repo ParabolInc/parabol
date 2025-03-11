@@ -155,6 +155,7 @@ const OrgMemberRow = (props: Props) => {
     graphql`
       fragment OrgMemberRow_organization on Organization {
         id
+        isOrgAdmin
         ...OrgAdminActionMenu_organization
       }
     `,
@@ -187,6 +188,7 @@ const OrgMemberRow = (props: Props) => {
 
   const isBillingLeader = role === 'BILLING_LEADER'
   const isOrgAdmin = role === 'ORG_ADMIN'
+  const {isOrgAdmin: isViewerOrgAdmin} = organization
   const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,12 +199,14 @@ const OrgMemberRow = (props: Props) => {
     <tr className='border-b border-slate-300 last:border-b-0'>
       <td className='px-2 py-3 align-middle'>
         <div className='flex items-center justify-center'>
-          <input
-            type='checkbox'
-            checked={isSelected}
-            onChange={handleCheckboxChange}
-            className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
-          />
+          {isViewerOrgAdmin && (
+            <input
+              type='checkbox'
+              checked={isSelected}
+              onChange={handleCheckboxChange}
+              className='text-blue-600 focus:ring-blue-500 h-4 w-4 rounded border-slate-300'
+            />
+          )}
         </div>
       </td>
       <td className='w-1/2 px-2 py-3 align-middle'>
