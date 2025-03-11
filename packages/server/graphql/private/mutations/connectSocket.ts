@@ -38,11 +38,15 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   const userId = getUserId(authToken)
 
   // RESOLUTION
-  const user = await dataLoader.get('users').load(userId)
+  const [user, teamMembers] = await Promise.all([
+    dataLoader.get('users').load(userId),
+    dataLoader.get('teamMembersByUserId').load(userId)
+  ])
   if (!user) {
     throw new Error('User does not exist')
   }
-  const {inactive, lastSeenAt, tms} = user
+  const {inactive, lastSeenAt} = user
+  const tms = teamMembers.map(({teamId}) => teamId)
 
   // no need to wait for this, it's just for billing
   if (inactive) {

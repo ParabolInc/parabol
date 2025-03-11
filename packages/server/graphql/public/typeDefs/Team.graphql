@@ -52,11 +52,6 @@ type Team implements Node {
   ): MassInvitation!
 
   """
-  true if the underlying org has a validUntil date greater than now. if false, subs do not work
-  """
-  isPaid: Boolean
-
-  """
   The name of the team
   """
   name: String!

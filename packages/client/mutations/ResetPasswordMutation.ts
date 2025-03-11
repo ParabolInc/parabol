@@ -12,7 +12,7 @@ const mutation = graphql`
       }
       authToken
       user {
-        tms
+        teamIds
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }

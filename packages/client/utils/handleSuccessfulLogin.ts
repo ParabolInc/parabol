@@ -10,7 +10,7 @@ graphql`
     authToken
     isNewUser
     user {
-      tms
+      teamIds
       isPatient0
       ...UserAnalyticsFrag @relay(mask: false)
     }
