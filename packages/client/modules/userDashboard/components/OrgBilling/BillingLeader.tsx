@@ -110,12 +110,7 @@ const BillingLeader = (props: Props) => {
       </RowActions>
       {leaveModal(<LeaveOrgModal orgId={orgId} closePortal={closeLeaveModal} />)}
       {removeModal(
-        <RemoveFromOrgModal
-          orgId={orgId}
-          userIds={[userId]}
-          preferredName={preferredName}
-          closePortal={closeRemoveModal}
-        />
+        <RemoveFromOrgModal orgId={orgId} userIds={[userId]} closePortal={closeRemoveModal} />
       )}
     </StyledRow>
   )

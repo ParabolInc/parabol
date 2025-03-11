@@ -8,6 +8,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
+import plural from '../../../../utils/plural'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
@@ -15,9 +16,7 @@ const StyledButton = styled(PrimaryButton)({
 
 interface Props {
   orgId: string
-  userId?: string
-  userIds?: string[]
-  preferredName?: string
+  userIds: string[]
   closePortal: () => void
   onSuccess?: () => void
 }
@@ -27,21 +26,18 @@ const StyledDialogContainer = styled(DialogContainer)({
 })
 
 const RemoveFromOrgModal = (props: Props) => {
-  const {orgId, preferredName, userId, userIds, closePortal, onSuccess} = props
+  const {orgId, userIds, closePortal, onSuccess} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
 
-  // Determine if we're in single or bulk mode
-  const isSingleUser = !!userId && !!preferredName
-  const actualUserIds = isSingleUser ? [userId!] : userIds || []
-  const count = actualUserIds.length
+  const count = userIds.length
 
   const handleClick = () => {
     submitMutation()
     RemoveOrgUsersMutation(
       atmosphere,
-      {orgId, userIds: actualUserIds},
+      {orgId, userIds},
       {
         history,
         onError,
@@ -58,18 +54,12 @@ const RemoveFromOrgModal = (props: Props) => {
     <StyledDialogContainer>
       <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
-        {isSingleUser
-          ? `This will remove ${preferredName} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`
-          : `This will remove ${count} member${count === 1 ? '' : 's'} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`}
+        {`This will remove ${count} ${plural(count, 'member')} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`}
         <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
           <IconLabel
             icon='arrow_forward'
             iconAfter
-            label={
-              isSingleUser
-                ? `Remove ${preferredName}`
-                : `Remove ${count} member${count === 1 ? '' : 's'}`
-            }
+            label={`Remove ${count} ${plural(count, 'member')}`}
           />
         </StyledButton>
       </DialogContent>

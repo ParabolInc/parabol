@@ -58,7 +58,7 @@ interface UserAvatarProps {
   picture?: string
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
+const UserAvatar = ({picture}: UserAvatarProps) => (
   <div className='mr-4 hidden md:block'>
     {picture ? (
       <Avatar picture={picture} className='h-11 w-11' />
@@ -76,13 +76,7 @@ interface UserInfoProps {
   inactive: boolean | null | undefined
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({
-  preferredName,
-  email,
-  isBillingLeader,
-  isOrgAdmin,
-  inactive
-}) => (
+const UserInfo = ({preferredName, email, isBillingLeader, isOrgAdmin, inactive}: UserInfoProps) => (
   <RowInfo className='pl-0'>
     <RowInfoHeader>
       <RowInfoHeading>{preferredName}</RowInfoHeading>
@@ -99,14 +93,9 @@ const UserInfo: React.FC<UserInfoProps> = ({
 interface UserActionsProps {
   organization: OrgMemberRow_organization$data
   organizationUser: OrgMemberRow_organizationUser$data
-  preferredName: string
 }
 
-const UserActions: React.FC<UserActionsProps> = ({
-  organizationUser,
-  organization,
-  preferredName
-}) => {
+const UserActions = ({organizationUser, organization}: UserActionsProps) => {
   const {id: orgId} = organization
   const {
     user: {id: userId}
@@ -121,6 +110,7 @@ const UserActions: React.FC<UserActionsProps> = ({
     modalPortal: removeModal,
     closePortal: closeRemoveModal
   } = useModal()
+
   return (
     <RowActions>
       <ActionsBlock>
@@ -132,12 +122,7 @@ const UserActions: React.FC<UserActionsProps> = ({
         />
         {leaveModal(<LeaveOrgModal orgId={orgId} closePortal={closeLeaveModal} />)}
         {removeModal(
-          <RemoveFromOrgModal
-            orgId={orgId}
-            userIds={[userId]}
-            preferredName={preferredName}
-            closePortal={closeRemoveModal}
-          />
+          <RemoveFromOrgModal orgId={orgId} userIds={[userId]} closePortal={closeRemoveModal} />
         )}
       </ActionsBlock>
     </RowActions>
@@ -232,11 +217,7 @@ const OrgMemberRow = (props: Props) => {
         <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
       </td>
       <td className='w-1/5 px-2 py-3 align-middle'>
-        <UserActions
-          organizationUser={organizationUser}
-          organization={organization}
-          preferredName={preferredName}
-        />
+        <UserActions organizationUser={organizationUser} organization={organization} />
       </td>
     </tr>
   )
