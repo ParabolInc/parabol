@@ -90,6 +90,7 @@ Use a structured response format with **Wins**, **Challenges**, and **Recommenda
   if (!rawInsight) throw new Error('Could not fetch insights from provider')
   const tokenCost = rawInsightResponse?.usage?.total_tokens ?? 10_000
   console.log({tokenCost})
+  console.log(rawInsight)
   await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
 
   if (responseFormat === 'markdown') return rawInsight

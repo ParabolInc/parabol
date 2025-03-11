@@ -2,7 +2,7 @@
   "name": "integration-tests",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "8.33.1",
+  "version": "8.34.1",
   "description": "",
   "main": "index.js",
   "scripts": {
