@@ -30,14 +30,16 @@ interface Props {
 }
 
 export const InsightsBlockPrompt = (props: Props) => {
-  const {queryRef, updateAttributes} = props
+  const {attrs, queryRef, updateAttributes} = props
   const data = usePreloadedQuery<InsightsBlockPromptQuery>(query, queryRef)
   const {viewer} = data
   const {aiPrompts} = viewer
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const {prompt} = attrs
+  const defaultValue = prompt || aiPrompts[0]?.content || ''
   return (
     <div>
-      <h3 className='p-4'>What do you want to know?</h3>
+      <h3 className='pt-2'>What do you want to know?</h3>
       <div className='relative w-full'>
         <div className='absolute top-0 right-0'>
           <Menu
@@ -55,7 +57,6 @@ export const InsightsBlockPrompt = (props: Props) => {
                     key={id}
                     onClick={() => {
                       textAreaRef.current!.value = content
-                      updateAttributes({promptId: id})
                     }}
                     className='w-80 flex-col items-start justify-start'
                   >
@@ -71,6 +72,7 @@ export const InsightsBlockPrompt = (props: Props) => {
           </Menu>
         </div>
         <textarea
+          defaultValue={defaultValue}
           autoComplete='on'
           autoCorrect='on'
           spellCheck={true}
@@ -79,7 +81,10 @@ export const InsightsBlockPrompt = (props: Props) => {
           ref={textAreaRef}
           rows={13}
           cols={30}
-          className='max-h-96 min-h-14 w-full resize-y rounded-md pr-6'
+          onChange={(e) => {
+            updateAttributes({prompt: e.target.value})
+          }}
+          className='max-h-96 min-h-14 w-full resize-y rounded-md pr-6 outline-hidden focus:ring-2'
         ></textarea>
       </div>
     </div>

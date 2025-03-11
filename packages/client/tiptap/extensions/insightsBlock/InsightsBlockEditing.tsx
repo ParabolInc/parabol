@@ -23,7 +23,7 @@ const queryNode = graphql`
 export const InsightsBlockEditing = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {id, after, before, meetingTypes, teamIds, meetingIds, hash, title} = attrs
+  const {id, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -31,13 +31,16 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
 
   const generateInsights = async () => {
     if (disabled) return
-    const resultsHash = await quickHash(meetingIds)
+    const resultsHash = await quickHash([...meetingIds, prompt])
     if (resultsHash === hash) {
       updateAttributes({editing: false})
       return
     }
     submitMutation()
-    const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {meetingIds})
+    const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {
+      meetingIds,
+      prompt
+    })
     onCompleted()
     if (res instanceof Error) {
       atmosphere.eventEmitter.emit('addSnackbar', {
@@ -68,7 +71,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         }}
         value={title}
       />
-      <div className='grid grid-cols-[auto_1fr] gap-4 p-4'>
+      <div className='grid grid-cols-[auto_1fr] gap-4 py-4'>
         {/* Row 1 */}
         <label className='self-center font-semibold'>Teams</label>
         <TeamPickerComboboxRoot updateAttributes={updateAttributes} attrs={attrs} />
