@@ -26,8 +26,7 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
                 // Important: get HTML from schema so we get attributes
                 const fragment = Fragment.from(nodePos.node)
                 const htmlText = getHTMLFromFragment(fragment, editor.schema)
-                const markdownText =
-                  '\n\n' + editor.storage.markdown.serializer.serialize(nodePos.node)
+                const markdownText = editor.storage.markdown.serializer.serialize(nodePos.node)
                 await navigator.clipboard.write([
                   new ClipboardItem({
                     'text/plain': new Blob([markdownText], {type: 'text/plain'}),

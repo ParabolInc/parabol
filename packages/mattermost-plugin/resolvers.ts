@@ -2,8 +2,6 @@ import {Client4} from 'mattermost-redux/client'
 import {Options} from 'mattermost-redux/types/client4'
 import {LiveState, suspenseSentinel} from 'relay-runtime'
 import {ResolverContext} from './Atmosphere'
-import {fetchLinkedTeamIds} from './reducers'
-import {linkedTeamIds as selectLinkedTeamIds} from './selectors'
 
 const fetchOnce = <T>(url: string, options: Options): LiveState<T | null> => {
   const letsGo = async () => {
@@ -61,33 +59,4 @@ export function config(_args: any, context: ResolverContext): LiveState<ConfigSo
  */
 export function parabolUrl(config: ConfigSource): string {
   return config.parabolUrl
-}
-
-/**
- * @RelayResolver Query.linkedTeamIds(channel: ID!): [ID!]
- * @live
- */
-export function linkedTeamIds(
-  {channel}: {channel: string},
-  context: ResolverContext
-): LiveState<string[] | null> {
-  const {store} = context
-
-  store.dispatch(fetchLinkedTeamIds(channel) as any)
-  let current = selectLinkedTeamIds(store.getState(), channel)
-
-  return {
-    read: () => {
-      return current?.teamIds ?? suspenseSentinel()
-    },
-    subscribe: (callback: () => void) => {
-      return store.subscribe(() => {
-        const newValue = selectLinkedTeamIds(store.getState(), channel)
-        if (newValue !== current) {
-          current = newValue
-          callback()
-        }
-      })
-    }
-  }
 }

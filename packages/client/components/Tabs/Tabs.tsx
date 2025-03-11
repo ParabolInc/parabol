@@ -25,7 +25,6 @@ const InkBar = styled('div')({
 const TabsAndBar = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: '24rem',
   position: 'relative',
   width: '100%'
 })

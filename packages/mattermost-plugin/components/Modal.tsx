@@ -2,17 +2,20 @@ import {Modal as M} from 'react-bootstrap'
 import {useSelector} from 'react-redux'
 
 import {getAssetsUrl} from '../selectors'
+import LoadingSpinner from './LoadingSpinner'
 
 export type ModalProps = {
   title: string
   commitButtonLabel: string
-  handleCommit: () => void
+  handleCommit?: () => void
   handleClose: () => void
   children?: React.ReactNode
+  error?: string
+  isLoading?: boolean
 }
 
 const Modal = (props: ModalProps) => {
-  const {title, commitButtonLabel, handleCommit, handleClose, children} = props
+  const {title, commitButtonLabel, handleCommit, handleClose, children, error, isLoading} = props
 
   const assetsPath = useSelector(getAssetsUrl)
 
@@ -33,12 +36,28 @@ const Modal = (props: ModalProps) => {
       </M.Header>
       <M.Body>{children}</M.Body>
       <M.Footer>
-        <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
-          Cancel
-        </button>
-        <button className='btn btn-primary save-button' onClick={handleCommit}>
-          {commitButtonLabel}
-        </button>
+        {error && <div className='error-text flex-grow'>{error}</div>}
+        {isLoading && <LoadingSpinner className='flex-grow' text='Loading...' />}
+        {handleCommit ? (
+          <>
+            <button className='btn btn-tertiary cancel-button' onClick={handleClose}>
+              Cancel
+            </button>
+            <button
+              className='btn btn-primary save-button'
+              disabled={isLoading}
+              onClick={handleCommit}
+            >
+              {commitButtonLabel}
+            </button>
+          </>
+        ) : (
+          <>
+            <button className='btn btn-primary svae-button' onClick={handleClose}>
+              {commitButtonLabel}
+            </button>
+          </>
+        )}
       </M.Footer>
     </M>
   )

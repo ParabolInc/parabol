@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.33.1](https://github.com/ParabolInc/parabol/compare/v8.33.0...v8.33.1) (2025-03-10)
+
+
+### Fixed
+
+* getIsEmailApprovedByOrg was overly permissive ([#10971](https://github.com/ParabolInc/parabol/issues/10971)) ([2d25bc0](https://github.com/ParabolInc/parabol/commit/2d25bc0e53f22fcbeb0875e84ec85128e6592c04))
+
+## [8.33.0](https://github.com/ParabolInc/parabol/compare/v8.32.0...v8.33.0) (2025-03-07)
+
+
+### Added
+
+* copy insights to markdown ([#10963](https://github.com/ParabolInc/parabol/issues/10963)) ([be3b3d1](https://github.com/ParabolInc/parabol/commit/be3b3d140a5c35f20cf88205d429edcaff185cdb))
+* **Mattermost Plugin:** Configure notifications ([#10905](https://github.com/ParabolInc/parabol/issues/10905)) ([623f472](https://github.com/ParabolInc/parabol/commit/623f472187e1e95a30c8625700790e29bfaa0690))
+
+
+### Changed
+
+* **Mattermost Plugin:** Error and loading states ([#10967](https://github.com/ParabolInc/parabol/issues/10967)) ([537f5de](https://github.com/ParabolInc/parabol/commit/537f5def6d4779746097c15bcced4488e1deaa0c))
+* **Mattermost Plugin:** Sidepanel styling ([#10964](https://github.com/ParabolInc/parabol/issues/10964)) ([b340c33](https://github.com/ParabolInc/parabol/commit/b340c33691b371c621066405a1551f3e76e98bf6))
+* **Mattermost Plugin:** Update notify API ([#10960](https://github.com/ParabolInc/parabol/issues/10960)) ([c711382](https://github.com/ParabolInc/parabol/commit/c711382dabe436de343276cb887ec146642328ca))
+
 ## [8.32.0](https://github.com/ParabolInc/parabol/compare/v8.31.0...v8.32.0) (2025-03-05)
 
 

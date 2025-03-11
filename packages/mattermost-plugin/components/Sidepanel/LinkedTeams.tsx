@@ -1,46 +1,67 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
+import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 import {LinkedTeamsQuery} from '../../__generated__/LinkedTeamsQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
-import LoadingSpinner from '../LoadingSpinner'
+import {openLinkTeamModal} from '../../reducers'
 import TeamRow from './TeamRow'
 
 const LinkedTeams = () => {
   const channel = useCurrentChannel()
+  const dispatch = useDispatch()
   const data = useLazyLoadQuery<LinkedTeamsQuery>(
     graphql`
-      query LinkedTeamsQuery($channel: ID!) {
+      query LinkedTeamsQuery {
         config {
           parabolUrl
         }
-        linkedTeamIds(channel: $channel)
         viewer {
           teams {
             id
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             ...TeamRow_team
           }
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {viewer, linkedTeamIds} = data
-  const linkedTeams = viewer.teams.filter((team) => linkedTeamIds?.includes(team.id))
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
-  const isLoading = false
-  const error = false
+  const handleLink = () => {
+    dispatch(openLinkTeamModal())
+  }
 
   return (
-    <div>
-      {isLoading && <LoadingSpinner text='Loading...' />}
-      {error && <div className='error-text p-2'>Loading teams failed, try refreshing the page</div>}
+    <>
+      <div className='flex items-center justify-between py-3 text-2xl font-semibold'>
+        Linked Teams
+        <button className='btn btn-primary' onClick={handleLink}>
+          Link Team
+        </button>
+      </div>
       {linkedTeams?.length === 0 && (
         <p className='p-2 font-semibold'>There are no teams linked to this channel</p>
       )}
-      {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}
-    </div>
+      <div className='flex flex-col overflow-y-scroll'>
+        {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}
+      </div>
+    </>
   )
 }
 

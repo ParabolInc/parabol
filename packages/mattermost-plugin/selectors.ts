@@ -77,10 +77,13 @@ export const isInviteToMeetingModalVisible = (state: GlobalState) =>
 export const isLinkTeamModalVisible = (state: GlobalState) =>
   getPluginState(state).isLinkTeamModalVisible
 
+export const isConfigureNotificationsModalVisible = (state: GlobalState) =>
+  getPluginState(state).configureNotificationsTeam !== null
+
+export const configureNotificationsModalTeam = (state: GlobalState) =>
+  getPluginState(state).configureNotificationsTeam || null
+
 export const pushPostAsReflection = (state: GlobalState) =>
   getPluginState(state).pushPostAsReflection
-
-export const linkedTeamIds = (state: GlobalState, channel: string) =>
-  getPluginState(state).linkedTeamIds[channel]
 
 //e

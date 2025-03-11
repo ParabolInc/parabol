@@ -98,5 +98,7 @@ Use a structured response format with **Wins**, **Challenges**, and **Recommenda
     gfm: true,
     breaks: true
   })
+  console.log(rawInsight)
+  console.log(htmlInsight)
   return htmlInsight
 }

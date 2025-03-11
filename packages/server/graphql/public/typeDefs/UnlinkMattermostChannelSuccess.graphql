@@ -1,0 +1,8 @@
+type UnlinkMattermostChannelSuccess {
+  teamId: ID!
+  linkedChannels: [ID!]!
+  """
+  The id of the team notification settings that were removed
+  """
+  teamNotificationSettingsId: ID!
+}

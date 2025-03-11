@@ -1,15 +1,18 @@
+import {cn} from 'parabol-client/ui/cn'
 import React from 'react'
 
 type Props = {
   text?: React.ReactNode
-  style?: React.CSSProperties
+  className?: string
 }
-const LoadingSpinner = ({text, style}: Props) => {
+const LoadingSpinner = ({text, className}: Props) => {
   return (
-    <span id='loadingSpinner' style={style} data-testid='loadingSpinner'>
-      <span className='fa fa-spinner fa-fw fa-pulse spinner' />
+    <div className={cn('flex items-center', className)}>
+      <div>
+        <span className='fa fa-spinner fa-fw fa-pulse spinner' />
+      </div>
       {text}
-    </span>
+    </div>
   )
 }
 

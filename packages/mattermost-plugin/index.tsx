@@ -6,6 +6,7 @@ import PanelTitle from './components/Sidepanel/PanelTitle'
 import manifest from './manifest'
 import rootReducer, {
   connect,
+  openConfigureNotificationsModal,
   openCreateTaskModal,
   openInviteToMeetingModal,
   openInviteToTeamModal,
@@ -80,6 +81,10 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
 
   registry.registerWebSocketEventHandler(`custom_${manifest.id}_share`, () => {
     store.dispatch(openInviteToMeetingModal())
+  })
+
+  registry.registerWebSocketEventHandler(`custom_${manifest.id}_notifications`, () => {
+    store.dispatch(openConfigureNotificationsModal(''))
   })
 
   store.dispatch(connect({commands}) as any)

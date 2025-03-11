@@ -16,7 +16,7 @@ services:
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
   postgres:
-    image: pgvector/pgvector:0.7.0-pg16
+    image: pgvector/pgvector:0.8.0-pg16
     restart: unless-stopped
     env_file: ../../../.env
     ports:
