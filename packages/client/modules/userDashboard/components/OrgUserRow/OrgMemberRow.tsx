@@ -20,6 +20,7 @@ import RowInfoLink from '../../../../components/Row/RowInfoLink'
 import BaseTag from '../../../../components/Tag/BaseTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useModal from '../../../../hooks/useModal'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
@@ -150,6 +151,8 @@ const OrgMemberRow = (props: Props) => {
     isSelected = false,
     onSelectUser
   } = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
 
   const organization = useFragment(
     graphql`
@@ -182,7 +185,7 @@ const OrgMemberRow = (props: Props) => {
   )
 
   const {
-    user: {email, inactive, picture, preferredName, lastSeenAt},
+    user: {email, inactive, picture, preferredName, lastSeenAt, id: userId},
     role
   } = organizationUser
 
@@ -190,6 +193,8 @@ const OrgMemberRow = (props: Props) => {
   const isOrgAdmin = role === 'ORG_ADMIN'
   const {isOrgAdmin: isViewerOrgAdmin} = organization
   const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
+  const isSelf = viewerId === userId
+  const canBeSelected = isViewerOrgAdmin && !isSelf && !isBillingLeader && !isOrgAdmin
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSelectUser?.(organizationUser.user.id, e.target.checked)
@@ -199,7 +204,7 @@ const OrgMemberRow = (props: Props) => {
     <tr className='border-b border-slate-300 last:border-b-0'>
       <td className='px-2 py-3 align-middle'>
         <div className='flex items-center justify-center'>
-          {isViewerOrgAdmin && (
+          {canBeSelected && (
             <input
               type='checkbox'
               checked={isSelected}

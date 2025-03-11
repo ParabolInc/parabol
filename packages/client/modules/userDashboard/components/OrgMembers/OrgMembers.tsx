@@ -10,6 +10,7 @@ import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import User from '../../../../../server/database/types/User'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
@@ -21,6 +22,8 @@ interface Props {
 
 const OrgMembers = (props: Props) => {
   const {queryRef} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const query = usePreloadedQuery<OrgMembersQuery>(
     graphql`
       query OrgMembersQuery($orgId: ID!, $first: Int!, $after: String) {
@@ -131,13 +134,27 @@ const OrgMembers = (props: Props) => {
     }
   }
 
+  const selectableUserIds = useMemo(() => {
+    return finalOrgUsers
+      .filter((organizationUser) => {
+        const userId = organizationUser.user.id
+        const role = organizationUser.role
+        const isSelf = viewerId === userId
+        const isBillingLeader = role === 'BILLING_LEADER'
+        const isOrgAdmin = role === 'ORG_ADMIN'
+
+        return !isSelf && !isBillingLeader && !isOrgAdmin
+      })
+      .map((user) => user.user.id)
+  }, [finalOrgUsers, viewerId])
+
   const handleSelectAll = useCallback(() => {
-    if (selectedUserIds.length === finalOrgUsers.length) {
+    if (selectedUserIds.length === selectableUserIds.length) {
       setSelectedUserIds([])
     } else {
-      setSelectedUserIds(finalOrgUsers.map(({user}) => user.id))
+      setSelectedUserIds(selectableUserIds)
     }
-  }, [finalOrgUsers, selectedUserIds.length])
+  }, [selectableUserIds, selectedUserIds.length])
 
   const handleSelectUser = useCallback((userId: string, isSelected: boolean) => {
     if (isSelected) {
@@ -148,8 +165,11 @@ const OrgMembers = (props: Props) => {
   }, [])
 
   const isAllSelected = useMemo(
-    () => finalOrgUsers.length > 0 && selectedUserIds.length === finalOrgUsers.length,
-    [finalOrgUsers.length, selectedUserIds.length]
+    () =>
+      selectableUserIds.length > 0 &&
+      selectedUserIds.length === selectableUserIds.length &&
+      selectableUserIds.every((id) => selectedUserIds.includes(id)),
+    [selectableUserIds, selectedUserIds]
   )
 
   const exportToCSV = async () => {
@@ -186,6 +206,10 @@ const OrgMembers = (props: Props) => {
     link.click()
     document.body.removeChild(link)
   }
+
+  const hasSelectableUsers = useMemo(() => {
+    return selectableUserIds.length > 0
+  }, [selectableUserIds])
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -245,7 +269,7 @@ const OrgMembers = (props: Props) => {
               <tr className='border-b border-slate-300'>
                 <th className='w-[5%] p-3 text-left'>
                   <div className='flex items-center justify-center'>
-                    {isOrgAdmin && (
+                    {isOrgAdmin && hasSelectableUsers && (
                       <input
                         type='checkbox'
                         checked={isAllSelected}
