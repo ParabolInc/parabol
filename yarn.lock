@@ -18285,10 +18285,10 @@ node-gyp@^8.4.1, node-gyp@^9.0.0:
     tar "^6.1.2"
     which "^2.0.2"
 
-node-html-markdown-cloudflare@^1.3.0:
+node-html-markdown@^1.3.0:
   version "1.3.0"
-  resolved "https://registry.yarnpkg.com/node-html-markdown-cloudflare/-/node-html-markdown-cloudflare-1.3.0.tgz#95c260d141cf41211f89498cf510a64dbb9d4589"
-  integrity sha512-jJSply2eFaBCwpBgNgJaFmzFaIDZ4vzmEfmAW8Tq08Qz/k1QTXMDi15fhKS8fY+vX4G+e/huk5FPfNweAJdmKg==
+  resolved "https://registry.yarnpkg.com/node-html-markdown/-/node-html-markdown-1.3.0.tgz#ef0b19a3bbfc0f1a880abb9ff2a0c9aa6bbff2a9"
+  integrity sha512-OeFi3QwC/cPjvVKZ114tzzu+YoR+v9UXW5RwSXGUqGb0qCl0DvP406tzdL7SFn8pZrMyzXoisfG2zcuF9+zw4g==
   dependencies:
     node-html-parser "^6.1.1"
 

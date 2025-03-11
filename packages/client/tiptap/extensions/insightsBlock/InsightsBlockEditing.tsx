@@ -14,7 +14,7 @@ import type {InsightsBlockAttrs} from './InsightsBlock'
 const queryNode = graphql`
   query InsightsBlockEditingQuery($meetingIds: [ID!]!) {
     viewer {
-      pageInsights(meetingIds: $meetingIds, responseFormat: html)
+      pageInsights(meetingIds: $meetingIds)
     }
   }
 `
@@ -54,7 +54,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         from: insightsNode.from,
         to: insightsNode.to - 1
       },
-      `<h1>${title}</h1>` + pageInsights
+      `# ${title}\n` + pageInsights
     )
     updateAttributes({editing: false, hash: resultsHash})
   }

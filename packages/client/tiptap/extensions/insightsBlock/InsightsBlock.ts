@@ -39,26 +39,30 @@ export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: Markdown
   addAttributes() {
     return {
       editing: {
-        default: '',
-        parseHTML: (element) => element.getAttribute('data-editing'),
-        renderHTML: (attributes) => ({
-          'data-editing': attributes.editing ? '' : undefined
-        })
+        default: true,
+        parseHTML: (element) => {
+          return element.getAttribute('data-editing') === '' ? true : false
+        },
+        renderHTML: (attributes) => {
+          return {
+            'data-editing': attributes.editing ? '' : undefined
+          }
+        }
       },
       teamIds: {
         default: [],
         parseHTML: (element) => {
           return element.getAttribute('data-team-ids')?.split(',') ?? []
         },
-        renderHTML: (attributes) => ({
-          'data-team-ids': attributes.teamIds.join(',')
+        renderHTML: ({teamIds}) => ({
+          'data-team-ids': teamIds.length ? teamIds.join(',') : undefined
         })
       },
       meetingTypes: {
         default: ['retrospective'],
         parseHTML: (element) => element.getAttribute('data-meeting-types')?.split(',') ?? [],
-        renderHTML: (attributes) => ({
-          'data-meeting-types': attributes.meetingTypes.join(',')
+        renderHTML: ({meetingTypes}) => ({
+          'data-meeting-types': meetingTypes.length ? meetingTypes.join(',') : undefined
         })
       },
       after: {
@@ -80,8 +84,8 @@ export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: Markdown
       meetingIds: {
         default: [],
         parseHTML: (element) => element.getAttribute('data-meeting-ids')?.split(',') ?? [],
-        renderHTML: (attributes) => ({
-          'data-meeting-ids': attributes.meetingIds.join(',')
+        renderHTML: ({meetingIds}) => ({
+          'data-meeting-ids': meetingIds.length ? meetingIds.join(',') : undefined
         })
       },
       title: {

@@ -53,10 +53,6 @@ export const SpecificMeetingPicker = (props: Props) => {
   const {edges} = meetings
   const includeYear = new Date(after).getFullYear() !== new Date(before).getFullYear()
   const formatter = includeYear ? 'MMM D, YYYY' : 'MMM D'
-  useEffect(() => {
-    const meetingIds = edges.map(({node}) => node.id)
-    updateAttributes({meetingIds})
-  }, [edges])
 
   const rows = edges.map((edge) => {
     const {node} = edge
@@ -77,6 +73,12 @@ export const SpecificMeetingPicker = (props: Props) => {
   const ignoredColumns = ignoredTeamColumn.concat(ignoredTypeColumn)
   const columns = allColumns.filter((column) => !ignoredColumns.includes(column))
   const allChecked = meetingIds.length === edges.length
+  useEffect(() => {
+    if (meetingIds.length === 0) {
+      // if no meetings are selected, when the list changes, select them all
+      updateAttributes({meetingIds: edges.map(({node}) => node.id)})
+    }
+  }, [edges])
   return (
     <div className='flex max-h-52 overflow-auto' contentEditable={false}>
       <table className='w-full border-collapse'>
