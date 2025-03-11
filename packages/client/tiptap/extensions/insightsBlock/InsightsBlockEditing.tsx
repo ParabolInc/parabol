@@ -10,11 +10,12 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import {Button} from '../../../ui/Button/Button'
 import {quickHash} from '../../../utils/quickHash'
 import type {InsightsBlockAttrs} from './InsightsBlock'
+import {InsightsBlockPromptRoot} from './InsightsBlockPromptRoot'
 
 const queryNode = graphql`
-  query InsightsBlockEditingQuery($meetingIds: [ID!]!) {
+  query InsightsBlockEditingQuery($meetingIds: [ID!]!, $prompt: String!) {
     viewer {
-      pageInsights(meetingIds: $meetingIds)
+      pageInsights(meetingIds: $meetingIds, prompt: $prompt)
     }
   }
 `
@@ -81,6 +82,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       {canQueryMeetings && (
         <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
       )}
+      <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
       <div className='flex justify-end p-4 select-none'>
         <Button
           variant='secondary'

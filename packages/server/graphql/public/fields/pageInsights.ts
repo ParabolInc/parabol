@@ -59,30 +59,49 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   })
 
   const openAI = new OpenAIServerManager()
-  const defaultPrompt = `
-You are an expert in agile retrospectives and project management. I will provide you with YAML data containing meeting discussions, work completed, and agile stories with points.
-
-Analyze this data and provide key insights on:
-- The most significant **wins** in terms of completed work, team collaboration, or project improvements.
-- The biggest **challenges** faced by the team.
-- Any **trends** in the conversations (e.g., recurring blockers, common frustrations, or successful strategies).
-- Suggestions for improving efficiency based on the data.
-
-Use a structured response format with **Wins**, **Challenges**, and **Recommendations**. No yapping. No introductory sentence. No horizontal rules to separate the sections. Use markdown formatting.
-`
-
-  const systemContent = prompt || defaultPrompt
+  const existingPrompt = await pg
+    .selectFrom('AIPrompt')
+    .select('id')
+    .where('userId', '=', viewerId)
+    .where('content', '=', prompt)
+    .limit(1)
+    .executeTakeFirst()
+  if (existingPrompt) {
+    const {id: promptId} = existingPrompt
+    await pg
+      .updateTable('AIPrompt')
+      .set({
+        lastUsedAt: sql`CURRENT_TIMESTAMP`
+      })
+      .where('id', '=', promptId)
+      .execute()
+  } else {
+    await pg
+      .insertInto('AIPrompt')
+      .values({
+        userId: viewerId,
+        content: prompt
+      })
+      .execute()
+  }
   console.log('sending now')
   const rawInsightResponse = await openAI.chatCompletion({
     model: 'o3-mini',
     messages: [
       {
         role: 'system',
-        content: systemContent
+        content: `Below I will provide you with a user-defined prompt and data containing meeting discussions, work completed, and agile stories with points, all in YAML format.
+First, ask yourself if the prompt below pertains to the themes of agile retrospectives or project management.
+If not, respond with "Invalid prompt".
+Your response should be in markdown format. Do not use horizontal rules to separate sections.`
       },
       {
         role: 'user',
-        content: `Here is the data:\n\n${yamlData}`
+        content: prompt
+      },
+      {
+        role: 'user',
+        content: `Here is the meeting data:\n\n${yamlData}`
       }
     ]
   })

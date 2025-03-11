@@ -73,6 +73,7 @@
           "AzureDevOpsIntegration": ".types/AzureDevOpsIntegration#AzureDevOpsIntegrationSource",
           "AzureDevOpsRemoteProject": "./types/AzureDevOpsRemoteProject#AzureDevOpsRemoteProjectSource",
           "AzureDevOpsWorkItem": "../../dataloader/azureDevOpsLoaders#AzureDevOpsWorkItem",
+          "AIPrompt": "../../postgres/types/index#AIPrompt",
           "BatchArchiveTasksSuccess": "./types/BatchArchiveTasksSuccess#BatchArchiveTasksSuccessSource",
           "Comment": "../../postgres/types/index#Comment as CommentDB",
           "Company": "./types/Company#CompanySource",

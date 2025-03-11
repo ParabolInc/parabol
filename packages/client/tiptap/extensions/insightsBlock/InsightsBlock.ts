@@ -101,6 +101,13 @@ export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: Markdown
         renderHTML: (attributes) => ({
           'data-hash': attributes.hash
         })
+      },
+      promptId: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-prompt-id'),
+        renderHTML: (attributes) => ({
+          'data-prompt-id': attributes.promptId
+        })
       }
     }
   },
