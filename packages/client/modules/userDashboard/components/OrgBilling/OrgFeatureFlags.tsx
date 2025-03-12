@@ -39,13 +39,8 @@ const FeatureNameGroup = styled('div')({
   }
 })
 
-// TODO: create a migration that updates featureName to be a readable string
-// then update the references throughout the app and remove this
-const FEATURE_NAME_LOOKUP: Record<string, string> = {
-  insights: 'Team Insights',
-  publicTeams: 'Public Teams',
-  relatedDiscussions: 'Related Discussions'
-}
+// add feature flag name here
+const FEATURE_NAME_LOOKUP: Record<string, string> = {}
 
 interface Props {
   organizationRef: OrgFeatureFlags_organization$key
@@ -82,7 +77,7 @@ const OrgFeatureFlags = (props: Props) => {
     })
   }
 
-  if (!isOrgAdmin) return null
+  if (!isOrgAdmin || organization.orgFeatureFlags.length === 0) return null
   return (
     <StyledPanel isWide label='Organization Feature Flags'>
       <PanelRow>
