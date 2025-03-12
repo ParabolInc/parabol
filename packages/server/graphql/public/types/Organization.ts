@@ -87,7 +87,38 @@ const Organization: OrganizationResolvers = {
     const publicTeams = allTeamsOnOrg.filter(
       (team) => (team.isPublic || isSuperUser(authToken)) && !isTeamMember(authToken, team.id)
     )
-    return publicTeams
+
+    const teamsWithMeetingData = await Promise.all(
+      publicTeams.map(async (team) => {
+        const [completedMeetings, activeMeetings] = await Promise.all([
+          dataLoader.get('completedMeetingsByTeamId').load(team.id),
+          dataLoader.get('activeMeetingsByTeamId').load(team.id)
+        ])
+
+        const allMeetingDates = [
+          ...completedMeetings.map((meeting) => new Date(meeting.endedAt || meeting.createdAt)),
+          ...activeMeetings.map((meeting) => new Date(meeting.createdAt))
+        ]
+
+        const lastMetAt =
+          allMeetingDates.length > 0
+            ? new Date(Math.max(...allMeetingDates.map((date) => date.getTime())))
+            : null
+
+        return {
+          ...team,
+          lastMetAt
+        }
+      })
+    )
+
+    // Show teams who met most recently first
+    return teamsWithMeetingData.sort((a, b) => {
+      if (!a.lastMetAt && !b.lastMetAt) return 0
+      if (!a.lastMetAt) return 1
+      if (!b.lastMetAt) return -1
+      return b.lastMetAt.getTime() - a.lastMetAt.getTime()
+    })
   },
 
   viewerOrganizationUser: async ({id: orgId}, _args, {dataLoader, authToken}) => {
