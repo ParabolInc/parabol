@@ -22,7 +22,6 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         tier
-        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         allTeams {
           id
           name
@@ -50,8 +49,8 @@ const OrgTeams = (props: Props) => {
   const [sortBy, setSortBy] = useState<SortField>('lastMetAt')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
-  const {allTeams, tier, viewerTeams, allTeamsCount, hasPublicTeamsFlag} = organization
-  const showAllTeams = allTeams.length === allTeamsCount || hasPublicTeamsFlag
+  const {allTeams, tier, viewerTeams, allTeamsCount} = organization
+  const showAllTeams = allTeams.length === allTeamsCount
   const viewerTeamCount = viewerTeams.length
 
   const handleSort = (field: SortField) => {
