@@ -32,7 +32,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
             }}
           >
             <Icon
-              data-highlighted={align === name}
+              data-highlighted={align === name ? '' : undefined}
               className='cursor-pointer rounded-sm p-1 data-highlighted:cursor-default data-highlighted:bg-slate-600/80'
             />
           </button>

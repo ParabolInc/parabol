@@ -1,15 +1,34 @@
 @layer theme, base, components, utilities;
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
 @source "../client";
 
-.form-control.h-auto {
-  @apply h-auto;
-}
-
+/* make popper work together with bootstrap modals and existing z-indexes */
 div[data-radix-popper-content-wrapper] {
   @apply z-1500;
   > div {
     @apply z-1500;
+  }
+}
+
+/* hacks to overwrite some of Mattermosts styles for specific use cases of ours */
+.form-control.h-auto {
+  @apply h-auto;
+}
+.truncate.flex {
+  @apply flex;
+}
+.popover.fixed {
+  @apply fixed;
+}
+
+/* styling of the tiptap bubble menu */
+.tippy-box[role='dialog'] {
+  @apply rounded-lg bg-white shadow-lg;
+  button {
+    @apply w-12 items-center rounded border-none bg-transparent px-4 font-semibold text-black outline-none hover:bg-slate-300 data-highlighted:bg-slate-300;
+  }
+  .tippy-content {
+    @apply p-0;
   }
 }

@@ -11,7 +11,6 @@ import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 
 import {Post} from 'mattermost-redux/types/posts'
-import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
@@ -22,6 +21,7 @@ import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} fr
 import {getPluginServerRoute, getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
+import {TipTapEditor} from '../TipTap/Editor'
 
 const PostUtils = (window as any).PostUtils
 
@@ -35,11 +35,18 @@ const PushReflectionModal = () => {
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
-      query PushReflectionModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query PushReflectionModalQuery {
         viewer {
           teams {
             id
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             activeMeetings {
               id
               name
@@ -64,17 +71,17 @@ const PushReflectionModal = () => {
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {viewer, linkedTeamIds} = data
-  const {teams} = viewer
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
-  const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
-    [teams, linkedTeamIds]
-  )
   const retroMeetings = useMemo(
     () =>
       linkedTeams
@@ -123,13 +130,14 @@ const PushReflectionModal = () => {
     return JSON.stringify(json)
   }, [htmlPost])
 
-  const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
+  const [createReflection, isLoading] = useMutation<PushReflectionModalMutation>(graphql`
     mutation PushReflectionModalMutation($input: CreateReflectionInput!) {
       createReflection(input: $input) {
         reflectionId
       }
     }
   `)
+  const [error, setError] = React.useState<string>()
 
   useEffect(() => {
     if (!selectedMeeting && retroMeetings && retroMeetings.length > 0) {
@@ -154,24 +162,42 @@ const PushReflectionModal = () => {
 
   const handlePush = async () => {
     if (!selectedMeeting || !selectedPrompt || !editor || editor.isEmpty) {
-      console.log('missing data', selectedPrompt, selectedMeeting, post.message)
+      setError('Please fill out all required fields')
       return
     }
+    setError(undefined)
+
     const {id: meetingId, name: meetingName} = selectedMeeting
     const {id: promptId, question} = selectedPrompt
 
     const content = JSON.stringify(editor.getJSON())
 
-    createReflection({
-      variables: {
-        input: {
-          meetingId,
-          promptId,
-          content,
-          sortOrder: 0
-        }
-      }
-    })
+    try {
+      await new Promise((resolve, reject) =>
+        createReflection({
+          variables: {
+            input: {
+              meetingId,
+              promptId,
+              content,
+              sortOrder: 0
+            }
+          },
+          onCompleted: (data) => {
+            if (!data.createReflection) {
+              reject('Failed to create reflection')
+              return
+            }
+            resolve(data)
+          },
+          onError: reject
+        })
+      )
+    } catch (error) {
+      console.error('Failed to create reflection', error)
+      setError('Failed to create reflection')
+      return
+    }
 
     const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
     const props = {
@@ -207,6 +233,14 @@ const PushReflectionModal = () => {
         }
       } as Partial<Post>)
     })
+    /*
+    TODO update to this call once https://github.com/mattermost/mattermost/pull/30117 was released
+    Client4.createPostEphemeral(mmUser.id, {
+      channel_id: post.channel_id,
+      root_id: post.root_id || post.id,
+      props
+    })
+     */
 
     handleClose()
   }
@@ -259,6 +293,8 @@ const PushReflectionModal = () => {
       commitButtonLabel='Add Comment'
       handleClose={handleClose}
       handleCommit={handlePush}
+      error={error}
+      isLoading={isLoading}
     >
       {post && (
         <div className='form-group'>

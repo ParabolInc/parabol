@@ -87,11 +87,13 @@ const MattermostPanel = (props: Props) => {
           integrations {
             mattermost {
               auth {
-                ...NotificationSettings_auth
                 provider {
                   id
                   webhookUrl
                 }
+              }
+              teamNotificationSettings {
+                ...NotificationSettings_settings
               }
             }
           }
@@ -103,7 +105,7 @@ const MattermostPanel = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations
-  const {auth} = mattermost
+  const {teamNotificationSettings, auth} = mattermost
   const activeProvider = auth?.provider
   const atmosphere = useAtmosphere()
 
@@ -224,7 +226,7 @@ const MattermostPanel = (props: Props) => {
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
-      {auth && <NotificationSettings auth={auth} />}
+      {teamNotificationSettings && <NotificationSettings settings={teamNotificationSettings} />}
     </MattermostPanelStyles>
   )
 }

@@ -16,6 +16,10 @@ import {
   removeOrgUserOrganizationUpdater
 } from '../mutations/RemoveOrgUserMutation'
 import {
+  removeOrgUsersOrganizationOnNext,
+  removeOrgUsersOrganizationUpdater
+} from '../mutations/RemoveOrgUsersMutation'
+import {
   setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater
 } from '../mutations/SetOrgUserRoleMutation'
@@ -36,17 +40,8 @@ const subscription = graphql`
       ArchiveOrganizationPayload {
         ...ArchiveOrganizationMutation_organization @relay(mask: false)
       }
-      PayLaterPayload {
-        ...PayLaterMutation_organization @relay(mask: false)
-      }
-      OldUpdateCreditCardPayload {
-        ...OldUpdateCreditCardMutation_organization @relay(mask: false)
-      }
       UpdateOrgPayload {
         ...UpdateOrgMutation_organization @relay(mask: false)
-      }
-      OldUpgradeToTeamTierPayload {
-        ...OldUpgradeToTeamTierMutation_organization @relay(mask: false)
       }
       UpgradeToTeamTierSuccess {
         ...UpgradeToTeamTierFrag_organization @relay(mask: false)
@@ -56,6 +51,9 @@ const subscription = graphql`
       }
       RemoveOrgUserPayload {
         ...RemoveOrgUserMutation_organization @relay(mask: false)
+      }
+      RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_organization @relay(mask: false)
       }
       SetOrgUserRoleSuccess {
         ...SetOrgUserRoleMutation_organization @relay(mask: false)
@@ -73,6 +71,7 @@ const subscription = graphql`
 const onNextHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationOnNext,
   RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
+  RemoveOrgUsersSuccess: removeOrgUsersOrganizationOnNext,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationOnNext
 } as const
 
@@ -80,6 +79,7 @@ const updateHandlers = {
   AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   RemoveOrgUserPayload: removeOrgUserOrganizationUpdater,
+  RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const

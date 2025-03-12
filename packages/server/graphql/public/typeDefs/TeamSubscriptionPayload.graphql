@@ -19,19 +19,18 @@ type TeamSubscriptionPayload {
   PromoteToTeamLeadPayload: PromoteToTeamLeadPayload
   RemoveAgendaItemPayload: RemoveAgendaItemPayload
   RemoveOrgUserPayload: RemoveOrgUserPayload
+  RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   RenameMeetingSuccess: RenameMeetingSuccess
   SelectTemplatePayload: SelectTemplatePayload
-  SetNotificationSettingSuccess: SetNotificationSettingSuccess
+  SetTeamNotificationSettingSuccess: SetTeamNotificationSettingSuccess
   StartCheckInSuccess: StartCheckInSuccess
   StartRetrospectiveSuccess: StartRetrospectiveSuccess
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload
-  OldUpdateCreditCardPayload: OldUpdateCreditCardPayload
   UpdateCreditCardPayload: UpdateCreditCardPayload
   UpdateTeamNamePayload: UpdateTeamNamePayload
-  OldUpgradeToTeamTierPayload: OldUpgradeToTeamTierPayload
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
   AddReflectTemplateSuccess: AddReflectTemplateSuccess
   AddPokerTemplateSuccess: AddPokerTemplateSuccess

@@ -119,6 +119,8 @@ type Mutation {
     notificationId: ID!
     status: NotificationStatusEnum!
   ): SetNotificationStatusPayload
+
+  createPage: CreatePagePayload!
   createTaskIntegration(
     """
     Which integration to push the task to
@@ -497,16 +499,6 @@ type Mutation {
   ): NavigateMeetingPayload!
 
   """
-  Increment the count of times the org has clicked pay later
-  """
-  payLater(
-    """
-    the org that has clicked pay later
-    """
-    meetingId: ID!
-  ): PayLaterPayload!
-
-  """
   Add or remove a task and its estimate phase from the meeting
   """
   persistJiraSearchQuery(
@@ -626,7 +618,7 @@ type Mutation {
   """
   Remove multiple users from an org
   """
-  removeMultipleOrgUsers(
+  removeOrgUsers(
     """
     The list of user IDs to remove
     """
@@ -636,7 +628,7 @@ type Mutation {
     The org that does not want them anymore
     """
     orgId: ID!
-  ): RemoveMultipleOrgUsersPayload!
+  ): RemoveOrgUsersPayload!
 
   """
   Remove a poker meeting template
@@ -810,20 +802,20 @@ type Mutation {
   ): SetSlackNotificationPayload!
 
   """
-  Set the notification settings for a provider and team
+  Update the notification settings for a provider and team
   """
-  setNotificationSetting(
+  setTeamNotificationSetting(
     """
-    ID of the TeamMemberIntegrationAuth for which to set the notification setting
+    The unique id for the setting
     """
-    authId: ID!
+    id: ID!
 
     """
     Event type to modify
     """
     event: SlackNotificationEventEnum!
     isEnabled: Boolean!
-  ): SetNotificationSettingPayload!
+  ): SetTeamNotificationSettingPayload!
 
   """
   Broadcast that the viewer started dragging a reflection
@@ -881,21 +873,6 @@ type Mutation {
     content: String!
     meetingId: ID!
   ): UpdateCommentContentPayload
-
-  """
-  Update an existing credit card on file
-  """
-  oldUpdateCreditCard(
-    """
-    the org requesting the changed billing
-    """
-    orgId: ID!
-
-    """
-    The token that came back from stripe
-    """
-    stripeToken: ID!
-  ): OldUpdateCreditCardPayload
 
   """
   Update the scale used for a dimension in a template
@@ -1043,21 +1020,6 @@ type Mutation {
     """
     scope: SharingScopeEnum!
   ): UpdateTemplateScopePayload!
-
-  """
-  Upgrade an account to the paid service
-  """
-  oldUpgradeToTeamTier(
-    """
-    the org requesting the upgrade
-    """
-    orgId: ID!
-
-    """
-    The token that came back from stripe
-    """
-    stripeToken: ID!
-  ): OldUpgradeToTeamTierPayload
 
   """
   Cast your vote for a reflection group
@@ -1451,6 +1413,37 @@ type Mutation {
     """
     redirectUri: URL
   ): AddTeamMemberIntegrationAuthPayload!
+
+  """
+  This mutation is specific to the mattermost global integration provider.
+  It will create a new TeamNotificationSettings object for the team and channel
+  """
+  linkMattermostChannel(
+    """
+    The team to link the channel to
+    """
+    teamId: ID!
+
+    """
+    The channel to link
+    """
+    channelId: ID!
+  ): LinkMattermostChannelPayload!
+
+  """
+  Remove a previously linked channel from the team
+  """
+  unlinkMattermostChannel(
+    """
+    The team to unlink the channel from
+    """
+    teamId: ID!
+
+    """
+    The channel to unlink
+    """
+    channelId: ID!
+  ): UnlinkMattermostChannelPayload!
 
   """
   Add the transcription bot to the Zoom meeting

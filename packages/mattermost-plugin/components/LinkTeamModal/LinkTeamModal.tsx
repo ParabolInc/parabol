@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect} from 'react'
+import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 
 import {useLazyLoadQuery} from 'react-relay'
@@ -18,23 +18,35 @@ const LinkTeamModal = () => {
   const config = useConfig()
   const data = useLazyLoadQuery<LinkTeamModalQuery>(
     graphql`
-      query LinkTeamModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query LinkTeamModalQuery {
         viewer {
           teams {
             id
             name
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
           }
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {viewer, linkedTeamIds} = data
-  const unlinkedTeams = viewer.teams.filter((team) => !linkedTeamIds?.includes(team.id))
-  const linkTeam = useLinkTeam()
+  const unlinkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        !team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
+  const [linkTeam, isLoading] = useLinkTeam()
+  const [error, setError] = React.useState<string>()
 
   const [selectedTeam, setSelectedTeam] = React.useState<(typeof data.viewer.teams)[number]>()
 
@@ -54,8 +66,14 @@ const LinkTeamModal = () => {
     if (!selectedTeam) {
       return
     }
-    await linkTeam(selectedTeam.id)
-    handleClose()
+    setError(undefined)
+    try {
+      await linkTeam(selectedTeam.id)
+      handleClose()
+    } catch (error) {
+      console.error('Link team failed', error)
+      setError('Failed to link team')
+    }
   }
 
   if (!isVisible || !channel) {
@@ -68,6 +86,8 @@ const LinkTeamModal = () => {
       commitButtonLabel='Link Team'
       handleClose={handleClose}
       handleCommit={handleLink}
+      error={error}
+      isLoading={isLoading}
     >
       {unlinkedTeams && unlinkedTeams.length > 0 ? (
         <>

@@ -2,7 +2,6 @@ import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
-import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
@@ -42,9 +41,6 @@ import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
 import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
 import moveTeamToOrg from './mutations/moveTeamToOrg'
 import navigateMeeting from './mutations/navigateMeeting'
-import oldUpdateCreditCard from './mutations/oldUpdateCreditCard'
-import oldUpgradeToTeamTier from './mutations/oldUpgradeToTeamTier'
-import payLater from './mutations/payLater'
 import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
 import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
@@ -142,7 +138,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       movePokerTemplateDimension,
       moveTeamToOrg,
       navigateMeeting,
-      payLater,
       persistJiraSearchQuery,
       pushInvitation,
       promoteNewMeetingFacilitator,
@@ -171,7 +166,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       startDraggingReflection,
       startSprintPoker,
       setTaskHighlight,
-      oldUpdateCreditCard,
       updatePokerTemplateDimensionScale,
       updatePokerTemplateScaleValue,
       updateNewCheckInQuestion,
@@ -184,7 +178,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTaskDueDate,
       updateTeamName,
       updateTemplateScope,
-      oldUpgradeToTeamTier,
       voteForReflectionGroup,
       voteForPokerStory,
       pokerRevealVotes,
@@ -198,7 +191,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll,
-      addIntegrationProvider,
       removeIntegrationProvider,
       updateAzureDevOpsDimensionField
     }) as any

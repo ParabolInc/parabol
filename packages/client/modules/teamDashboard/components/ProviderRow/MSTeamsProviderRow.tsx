@@ -21,10 +21,12 @@ graphql`
   fragment MSTeamsProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
     msTeams {
       auth {
-        ...NotificationSettings_auth
         provider {
           id
         }
+      }
+      teamNotificationSettings {
+        ...NotificationSettings_settings
       }
     }
   }
@@ -46,7 +48,7 @@ const MSTeamsProviderRow = (props: Props) => {
   )
   const [isConnectClicked, setConnectClicked] = useState(false)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
   const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
@@ -68,6 +70,7 @@ const MSTeamsProviderRow = (props: Props) => {
         providerLogo={<MSTeamsProviderLogo />}
         connectButtonText={!isConnectClicked ? 'Connect' : 'Cancel'}
         connectButtonIcon={!isConnectClicked ? <AddIcon /> : <CloseIcon />}
+        error={error?.message}
       >
         {(auth || isConnectClicked) && <MSTeamsPanel teamId={teamId} viewerRef={viewer} />}
       </ProviderRow>

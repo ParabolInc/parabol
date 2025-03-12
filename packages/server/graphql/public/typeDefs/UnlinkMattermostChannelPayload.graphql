@@ -1,0 +1,4 @@
+"""
+Return object for unlinkMattermostChannel
+"""
+union UnlinkMattermostChannelPayload = ErrorPayload | UnlinkMattermostChannelSuccess

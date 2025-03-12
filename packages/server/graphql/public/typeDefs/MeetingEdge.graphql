@@ -1,0 +1,10 @@
+"""
+An edge in a connection.
+"""
+type MeetingEdge {
+  """
+  The item at the end of the edge
+  """
+  node: NewMeeting!
+  cursor: DateTime!
+}
