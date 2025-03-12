@@ -85,6 +85,7 @@
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",
           "File": "./types/File#TFile",
+          "GetDemoGroupTitleSuccess": "./types/GetDemoGroupTitleSuccess#GetDemoGroupTitleSuccessSource",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",

@@ -6,7 +6,9 @@ import Atmosphere from '../../Atmosphere'
 const query = graphql`
   query getDemoTitlesQuery($reflectionsContent: [String!]!) {
     getDemoGroupTitle(reflectionsContent: $reflectionsContent) {
-      title
+      ... on GetDemoGroupTitleSuccess {
+        title
+      }
     }
   }
 `

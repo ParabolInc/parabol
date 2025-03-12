@@ -1,3 +1,4 @@
-type GetDemoGroupTitlePayload {
-  title: String
-}
+"""
+Return value for getDemoGroupTitle, which could be an error
+"""
+union GetDemoGroupTitlePayload = ErrorPayload | GetDemoGroupTitleSuccess

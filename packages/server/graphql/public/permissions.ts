@@ -1,4 +1,4 @@
-import {allow, and, not, or} from 'graphql-shield'
+import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/dist/types'
 import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
@@ -67,7 +67,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   Query: {
     '*': isAuthenticated,
-    getDemoGroupTitle: allow,
+    getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
   },
   Organization: {
