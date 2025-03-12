@@ -39,9 +39,6 @@ const FeatureNameGroup = styled('div')({
   }
 })
 
-// add feature flag name here
-const FEATURE_NAME_LOOKUP: Record<string, string> = {}
-
 interface Props {
   organizationRef: OrgFeatureFlags_organization$key
 }
@@ -84,7 +81,7 @@ const OrgFeatureFlags = (props: Props) => {
         {organization.orgFeatureFlags.map((feature) => (
           <FeatureRow key={feature.featureName}>
             <FeatureNameGroup>
-              <span>{FEATURE_NAME_LOOKUP[feature.featureName] || feature.featureName}</span>
+              <span>{feature.featureName}</span>
               <Tooltip>
                 <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
                   <InfoIcon className='h-4 w-4 text-slate-600' />
