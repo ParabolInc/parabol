@@ -12,8 +12,8 @@ const CreateImposterTokenPayload: CreateImposterTokenPayloadResolvers = {
   authToken: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null
     const {userId} = source
-    const user = await dataLoader.get('users').loadNonNull(userId)
-    const {tms} = user
+    const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+    const tms = teamMembers.map(({teamId}) => teamId)
     return encodeAuthToken(new AuthToken({sub: userId, tms, rol: 'impersonate'}))
   },
   user: async (source, _args, {dataLoader}) => {
