@@ -108,7 +108,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     if (!isSingleTenantSSO) {
       // don't blindly trust the IdP unless there is only 1
       return standardError(new Error(`${email} does not belong to ${domains.join(', ')}`), {
-        extras: {body}
+        extras: {attributes}
       })
     }
   }
