@@ -386,7 +386,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     useAllIntegrationsQuery: () => {
       return {
         viewer: {
-          ...this.db.users[0],
+          ...this.db.users[0]
         }
       }
     },
