@@ -1,6 +1,7 @@
 import {type NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {InsightsBlockEditingQuery} from '../../../__generated__/InsightsBlockEditingQuery.graphql'
+import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 import {MeetingDatePicker} from '../../../components/MeetingDatePicker'
 import {MeetingTypePickerCombobox} from '../../../components/MeetingTypePickerCombobox'
 import {SpecificMeetingPickerRoot} from '../../../components/SpecificMeetingPickerRoot'
@@ -10,11 +11,12 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import {Button} from '../../../ui/Button/Button'
 import {quickHash} from '../../../utils/quickHash'
 import type {InsightsBlockAttrs} from './InsightsBlock'
+import {InsightsBlockPromptRoot} from './InsightsBlockPromptRoot'
 
 const queryNode = graphql`
-  query InsightsBlockEditingQuery($meetingIds: [ID!]!) {
+  query InsightsBlockEditingQuery($meetingIds: [ID!]!, $prompt: String!) {
     viewer {
-      pageInsights(meetingIds: $meetingIds)
+      pageInsights(meetingIds: $meetingIds, prompt: $prompt)
     }
   }
 `
@@ -22,7 +24,7 @@ const queryNode = graphql`
 export const InsightsBlockEditing = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {id, after, before, meetingTypes, teamIds, meetingIds, hash, title} = attrs
+  const {id, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -30,13 +32,16 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
 
   const generateInsights = async () => {
     if (disabled) return
-    const resultsHash = await quickHash(meetingIds)
+    const resultsHash = await quickHash([...meetingIds, prompt])
     if (resultsHash === hash) {
       updateAttributes({editing: false})
       return
     }
     submitMutation()
-    const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {meetingIds})
+    const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {
+      meetingIds,
+      prompt
+    })
     onCompleted()
     if (res instanceof Error) {
       atmosphere.eventEmitter.emit('addSnackbar', {
@@ -67,7 +72,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         }}
         value={title}
       />
-      <div className='grid grid-cols-[auto_1fr] gap-4 p-4'>
+      <div className='grid grid-cols-[auto_1fr] gap-4 py-4'>
         {/* Row 1 */}
         <label className='self-center font-semibold'>Teams</label>
         <TeamPickerComboboxRoot updateAttributes={updateAttributes} attrs={attrs} />
@@ -81,6 +86,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       {canQueryMeetings && (
         <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
       )}
+      <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
       <div className='flex justify-end p-4 select-none'>
         <Button
           variant='secondary'
@@ -90,6 +96,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
           disabled={disabled}
         >
           Generate Insights
+          {submitting ? <Ellipsis /> : undefined}
         </Button>
       </div>
     </>
