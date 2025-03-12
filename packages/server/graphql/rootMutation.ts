@@ -53,7 +53,6 @@ import pushInvitation from './mutations/pushInvitation'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeIntegrationProvider from './mutations/removeIntegrationProvider'
-import removeOrgUser from './mutations/removeOrgUser'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
@@ -145,7 +144,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       pokerTemplateDimensionUpdateDescription,
       removeAtlassianAuth,
       removeGitHubAuth,
-      removeOrgUser,
       removeReflectTemplate,
       removePokerTemplateDimension,
       renameMeeting,

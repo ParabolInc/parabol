@@ -601,21 +601,6 @@ type Mutation {
   ): RemoveGitHubAuthPayload!
 
   """
-  Remove a user from an org
-  """
-  removeOrgUser(
-    """
-    the user to remove
-    """
-    userId: ID!
-
-    """
-    the org that does not want them anymore
-    """
-    orgId: ID!
-  ): RemoveOrgUserPayload
-
-  """
   Remove multiple users from an org
   """
   removeOrgUsers(

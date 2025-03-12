@@ -1,14 +1,13 @@
 import {generateText} from '@tiptap/core'
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import getGroupSmartTitle from 'parabol-client/utils/smartGroup/getGroupSmartTitle'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import ReflectionGroup from '../../database/types/ReflectionGroup'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
-import {toGoogleAnalyzedEntity} from '../../postgres/helpers/toGoogleAnalyzedEntity'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId} from '../../utils/authorization'
 import {convertToTipTap} from '../../utils/convertToTipTap'
@@ -17,9 +16,6 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
-import {getFeatureTier} from '../types/helpers/getFeatureTier'
-import getReflectionEntities from './helpers/getReflectionEntities'
-import getReflectionSentimentScore from './helpers/getReflectionSentimentScore'
 
 export default {
   type: CreateReflectionPayload,
@@ -48,13 +44,11 @@ export default {
     if (!reflectPrompt) {
       return standardError(new Error('Category not found'), {userId: viewerId})
     }
-    const {question} = reflectPrompt
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
     if (isPhaseComplete('group', phases)) {
       return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
@@ -69,12 +63,6 @@ export default {
     // RESOLUTION
     const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
 
-    const [entities, sentimentScore] = await Promise.all([
-      getReflectionEntities(plaintextContent),
-      getFeatureTier(team) !== 'starter'
-        ? getReflectionSentimentScore(question, plaintextContent)
-        : undefined
-    ])
     const reflectionGroupId = generateUID()
 
     const reflection = {
@@ -82,14 +70,12 @@ export default {
       creatorId: viewerId,
       content: JSON.stringify(normalizedContent),
       plaintextContent,
-      entities,
-      sentimentScore,
       meetingId,
       promptId,
       reflectionGroupId
     }
 
-    const smartTitle = getGroupSmartTitle([reflection])
+    const smartTitle = getSimpleGroupTitle([reflection])
     const reflectionGroup = new ReflectionGroup({
       id: reflectionGroupId,
       smartTitle,
@@ -102,7 +88,7 @@ export default {
     await pg
       .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
       .insertInto('RetroReflection')
-      .values({...reflection, entities: toGoogleAnalyzedEntity(entities)})
+      .values(reflection)
       .execute()
 
     const groupPhase = phases.find((phase) => phase.phaseType === 'group')!
@@ -127,6 +113,7 @@ export default {
       unlockedStageIds
     }
     publish(SubscriptionChannel.MEETING, meetingId, 'CreateReflectionPayload', data, subOptions)
+
     return data
   }
 }
