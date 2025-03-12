@@ -17,6 +17,7 @@ import findStageById from '../utils/meetings/findStageById'
 import onExOrgRoute from '../utils/onExOrgRoute'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
+import plural from '../utils/plural'
 import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import {setLocalStageAndPhase} from '../utils/relay/updateLocalStage'
 import handleAddNotifications from './handlers/handleAddNotifications'
@@ -25,6 +26,7 @@ import handleRemoveOrgMembers from './handlers/handleRemoveOrgMembers'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleTasksForRemovedUsers from './handlers/handleTasksForRemovedUsers'
+
 graphql`
   fragment RemoveOrgUsersMutation_organization on RemoveOrgUsersSuccess {
     affectedOrganizationId
@@ -220,6 +222,13 @@ export const removeOrgUsersNotificationOnNext: OnNextHandler<
       history.push('/meetings')
       return
     }
+  } else {
+    const removedUserCount = removedUserIds.length
+    atmosphere.eventEmitter.emit('addSnackbar', {
+      key: `removedFromOrg:${affectedOrganizationId}`,
+      autoDismiss: 10,
+      message: `${removedUserCount} ${plural(removedUserCount, 'member')} have been removed from ${affectedOrganizationName}`
+    })
   }
 }
 
