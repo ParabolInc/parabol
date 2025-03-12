@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.35.0](https://github.com/ParabolInc/parabol/compare/v8.34.3...v8.35.0) (2025-03-12)
+
+
+### Added
+
+* **pages:** custom prompts ([#10985](https://github.com/ParabolInc/parabol/issues/10985)) ([92a2b40](https://github.com/ParabolInc/parabol/commit/92a2b403696d9705852cf1ac813e017128f0baae))
+
+
+### Changed
+
+* remove google language manager ([#10639](https://github.com/ParabolInc/parabol/issues/10639)) ([1b04e56](https://github.com/ParabolInc/parabol/commit/1b04e56668048ab02829fbee6509e3bbb2ce2f44))
+
 ## [8.34.3](https://github.com/ParabolInc/parabol/compare/v8.34.2...v8.34.3) (2025-03-12)
 
 

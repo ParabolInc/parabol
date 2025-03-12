@@ -16,6 +16,7 @@ export interface InsightsBlockAttrs {
   title: string
   id: string
   hash: string
+  prompt: string
 }
 
 declare module '@tiptap/core' {
@@ -100,6 +101,13 @@ export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: Markdown
         parseHTML: (element) => element.getAttribute('data-hash'),
         renderHTML: (attributes) => ({
           'data-hash': attributes.hash
+        })
+      },
+      prompt: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-prompt'),
+        renderHTML: (attributes) => ({
+          'data-prompt': attributes.prompt
         })
       }
     }
