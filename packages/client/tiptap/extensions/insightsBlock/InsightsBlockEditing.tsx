@@ -1,6 +1,7 @@
 import {type NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {InsightsBlockEditingQuery} from '../../../__generated__/InsightsBlockEditingQuery.graphql'
+import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 import {MeetingDatePicker} from '../../../components/MeetingDatePicker'
 import {MeetingTypePickerCombobox} from '../../../components/MeetingTypePickerCombobox'
 import {SpecificMeetingPickerRoot} from '../../../components/SpecificMeetingPickerRoot'
@@ -95,6 +96,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
           disabled={disabled}
         >
           Generate Insights
+          {submitting ? <Ellipsis /> : undefined}
         </Button>
       </div>
     </>

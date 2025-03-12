@@ -18,6 +18,7 @@ const query = graphql`
         content
         isUserDefined
         lastUsedAt
+        title
       }
     }
   }
@@ -44,30 +45,39 @@ export const InsightsBlockPrompt = (props: Props) => {
         <div className='absolute top-0 right-0'>
           <Menu
             trigger={
-              <button className='bg-inherit p-1'>
+              <button className='bg-inherit p-1 outline-none'>
                 <HistoryIcon className='cursor-pointer' />
               </button>
             }
           >
             <MenuContent align='end' sideOffset={4}>
-              {aiPrompts.map((prompt) => {
-                const {id, lastUsedAt, content} = prompt
-                return (
-                  <MenuItem
-                    key={id}
-                    onClick={() => {
-                      textAreaRef.current!.value = content
-                    }}
-                    className='w-80 flex-col items-start justify-start'
-                  >
-                    <div className='w-72 overflow-hidden text-ellipsis whitespace-nowrap'>
-                      {content.slice(0, 80)}
-                    </div>
-                    <div className='text-xs font-bold text-slate-600'>{`Last used: ${dayjs(lastUsedAt).format('ddd MMM D')}`}</div>
-                    {}
-                  </MenuItem>
-                )
-              })}
+              {aiPrompts
+                .toSorted((a, b) => {
+                  if (a.isUserDefined !== b.isUserDefined) return a.isUserDefined ? -1 : 1
+                  return a.lastUsedAt > b.lastUsedAt ? -1 : 1
+                })
+                .map((prompt) => {
+                  const {id, lastUsedAt, content, title, isUserDefined} = prompt
+                  const subtitle = isUserDefined
+                    ? dayjs(lastUsedAt).format('ddd MMM D')
+                    : 'Provided by Parabol'
+                  return (
+                    <MenuItem
+                      key={id}
+                      onClick={() => {
+                        textAreaRef.current!.value = content
+                        updateAttributes({prompt: content})
+                      }}
+                      className='w-80 flex-col items-start justify-start'
+                    >
+                      <div className='w-72 overflow-hidden text-ellipsis whitespace-nowrap'>
+                        {title}
+                      </div>
+                      <div className='text-xs font-bold text-slate-600'>{subtitle}</div>
+                      {}
+                    </MenuItem>
+                  )
+                })}
             </MenuContent>
           </Menu>
         </div>

@@ -8,6 +8,10 @@ type AIPrompt {
   id: ID!
   userId: ID!
   """
+  the AI-generated title of the content
+  """
+  title: String!
+  """
   Plaintext of the content sent to the LLM. Does not include a preamble that includes formatting rules or type of data to expect
   """
   content: String!
