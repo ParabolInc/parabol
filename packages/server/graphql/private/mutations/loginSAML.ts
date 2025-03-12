@@ -86,6 +86,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedAttributes = Object.fromEntries(
     Object.entries(attributes).map(([key, value]) => {
       const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
+      // This happens if the IdP sends duplicate claims
+      if (Array.isArray(value)) {
+        return [normalizedKey, Array.from(new Set(value.map(String))).toString()]
+      }
       return [normalizedKey, String(value)]
     })
   )
