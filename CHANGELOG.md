@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.34.2](https://github.com/ParabolInc/parabol/compare/v8.34.1...v8.34.2) (2025-03-12)
+
+
+### Changed
+
+* deprecate `RemoveOrgUser` in favor of `RemoveOrgUsers` ([#10951](https://github.com/ParabolInc/parabol/issues/10951)) ([8157a08](https://github.com/ParabolInc/parabol/commit/8157a081680e6ae35c029213a876ed6658d63c06))
+* Log attributes if the emails don't match ([#10986](https://github.com/ParabolInc/parabol/issues/10986)) ([6e9c7ab](https://github.com/ParabolInc/parabol/commit/6e9c7abb704a2ab258c183002b064fcbcb1df9ce))
+
 ## [8.34.1](https://github.com/ParabolInc/parabol/compare/v8.34.0...v8.34.1) (2025-03-11)
 
 
