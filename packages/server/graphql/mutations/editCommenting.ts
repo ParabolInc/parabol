@@ -18,11 +18,19 @@ export default {
     },
     discussionId: {
       type: new GraphQLNonNull(GraphQLID)
+    },
+    isAnonymous: {
+      type: GraphQLBoolean,
+      description: 'True if the comment is anonymous, which means the user name should not be shown'
     }
   },
   resolve: async (
     _source: unknown,
-    {isCommenting, discussionId}: {isCommenting: boolean; discussionId: string},
+    {
+      isCommenting,
+      discussionId,
+      isAnonymous
+    }: {isCommenting: boolean; discussionId: string; isAnonymous?: boolean},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const viewerId = getUserId(authToken)
@@ -45,11 +53,18 @@ export default {
     // RESOLUTION
     const redis = getRedis()
     const key = `commenting:${discussionId}`
+
+    // Use a different key for anonymous commentors to distinguish them
+    const anonymousKey = `commenting:anonymous:${discussionId}`
+
     if (isCommenting) {
+      // If anonymous, store in the anonymous list instead
+      const commentingKey = isAnonymous ? anonymousKey : key
+
       const [numAddedRes] = (await redis
         .multi()
-        .sadd(key, viewerId)
-        .pexpire(key, ms('5m'))
+        .sadd(commentingKey, viewerId)
+        .pexpire(commentingKey, ms('5m'))
         .exec()) as [RedisPipelineResponse<number>, RedisPipelineResponse<number>]
       const numAdded = numAddedRes![1]
       if (numAdded !== 1) {
@@ -57,7 +72,9 @@ export default {
         return {error: {message: 'Already commenting'}}
       }
     } else {
+      // When user stops typing, remove from both regular and anonymous lists
       const numRemoved = await redis.srem(key, viewerId)
+      await redis.srem(anonymousKey, viewerId)
       if (numRemoved !== 1) {
         return {error: {message: 'Not commenting'}}
       }
