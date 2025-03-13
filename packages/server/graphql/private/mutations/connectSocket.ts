@@ -38,7 +38,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   const userId = getUserId(authToken)
 
   // RESOLUTION
-  const user = await dataLoader.get('users').load(userId)
+  const user = await dataLoader.get('usersWithTms').load(userId)
   if (!user) {
     throw new Error('User does not exist')
   }

@@ -585,11 +585,12 @@ const User: ReqResolvers<'User'> = {
 
   teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const user = (await dataLoader.get('users').load(userId))!
+    const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+    const userTeamIds = teamMembers.map(({teamId}) => teamId)
     const activeTeamIds =
       viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        ? userTeamIds
+        : userTeamIds.filter((teamId: string) => authToken.tms.includes(teamId))
     const teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
@@ -608,23 +609,15 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
 
-  tms: ({id: userId, tms}, _args, {authToken}) => {
+  teamIds: async ({id: userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
+    const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+    const teamIds = teamMembers.map(({teamId}) => teamId)
     return viewerId === userId
-      ? tms
-      : tms.filter((teamId: string) => authToken.tms.includes(teamId))
+      ? teamIds
+      : teamIds.filter((teamId) => authToken.tms.includes(teamId))
   },
 
-  userOnTeam: async (_source, {userId}, {authToken, dataLoader}) => {
-    const userOnTeam = await dataLoader.get('users').load(userId)
-    if (!userOnTeam) {
-      return null
-    }
-    // const teams = new Set(userOnTeam)
-    const {tms} = userOnTeam
-    if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
-    return userOnTeam
-  },
   activity: async (_source, {activityId}, {dataLoader}) => {
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
     return activity || null

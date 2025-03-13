@@ -20,12 +20,17 @@ const removeFromOrg = async (
     dataLoader.get('teamsByOrgIds').load(orgId),
     dataLoader.get('teamMembersByUserId').load(userId)
   ])
-  const teamIds = orgTeams.map((team) => team.id)
-  const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
-  const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
+  const removedTeamIds = orgTeams.map((team) => team.id)
+  const removedTeamMembers = allTeamMembers.filter((teamMember) =>
+    removedTeamIds.includes(teamMember.teamId)
+  )
+  const removedTeamMemberIds = removedTeamMembers.map((teamMember) => teamMember.id)
+  const tms = allTeamMembers
+    .filter(({teamId}) => !removedTeamIds.includes(teamId))
+    .map(({teamId}) => teamId)
 
   const perTeamRes = await Promise.all(
-    teamMemberIds.map((teamMemberId) => {
+    removedTeamMemberIds.map((teamMemberId) => {
       return removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     })
   )
@@ -88,11 +93,11 @@ const removeFromOrg = async (
   }
   await setUserTierForUserIds([userId])
   return {
-    tms: user?.tms ?? [],
+    tms,
     taskIds,
     kickOutNotificationIds,
-    teamIds,
-    teamMemberIds,
+    teamIds: removedTeamIds,
+    teamMemberIds: removedTeamMemberIds,
     organizationUserId: organizationUser.id,
     activeMeetingIds
   }

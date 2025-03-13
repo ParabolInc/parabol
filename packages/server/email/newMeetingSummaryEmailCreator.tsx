@@ -18,8 +18,10 @@ const newMeetingSummaryEmailCreator = async (props: Props) => {
   const dataLoaderId = dataLoader.share()
 
   const newMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const facilitator = await dataLoader.get('users').loadNonNull(newMeeting.facilitatorUserId!)
-  const {tms} = facilitator
+  const teamMembers = await dataLoader
+    .get('teamMembersByUserId')
+    .load(newMeeting.facilitatorUserId!)
+  const tms = teamMembers.map(({teamId}) => teamId)
   const authToken = new AuthToken({sub: newMeeting.facilitatorUserId!, tms, rol: 'impersonate'})
   const environment = new ServerEnvironment(authToken, dataLoaderId)
 

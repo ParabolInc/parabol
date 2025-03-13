@@ -100,7 +100,7 @@ const SIGNUP_WITH_PASSWORD_MUTATION = `
       }
       authToken
       user {
-        tms
+        teamIds
         id
         email
         picture
