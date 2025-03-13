@@ -78,6 +78,7 @@
     "@dicebear/core": "^8.0.1",
     "@dicebear/initials": "^8.0.1",
     "@emoji-mart/data": "^1.2.1",
+    "@google-cloud/storage": "^7.15.2",
     "@graphql-tools/schema": "^9.0.16",
     "@hocuspocus/extension-database": "^2.15.2",
     "@hocuspocus/extension-redis": "^2.15.2",
