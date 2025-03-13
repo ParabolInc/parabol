@@ -446,74 +446,74 @@
       @apply overflow-hidden rounded-md;
     }
   }
-}
+  .search-result {
+    background-color: rgba(255, 217, 0, 0.5);
+  }
 
-.ProseMirror .search-result {
-  background-color: rgba(255, 217, 0, 0.5);
-}
+  [data-type='mention'] {
+    background-color: var(--color-gold-100);
+    border-radius: 2;
+    font-weight: 600;
+  }
 
-.ProseMirror :is(ul, ol) {
-  list-style-position: outside;
-  padding-inline-start: 16px;
-  margin-block-start: 4px;
-  margin-block-end: 4px;
-}
+  [data-type='taskTag'] {
+    font-weight: 600;
+  }
 
-.ProseMirror :is(ol) {
-  margin-inline-start: 2px;
-}
+  :is(ul, ol) {
+    list-style-position: outside;
+    padding-inline-start: 16px;
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+  }
 
-.ProseMirror p.is-empty.has-focus:not(li *)::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: hsl(from var(--color-slate-700) h s l / 0.5);
-  pointer-events: none;
-  height: 0;
-}
+  :is(ol) {
+    margin-inline-start: 2px;
+  }
 
-.ProseMirror [data-type='mention'] {
-  background-color: var(--color-gold-100);
-  border-radius: 2;
-  font-weight: 600;
-}
+  /* For pages, only show placeholder on focused empty p lines */
+  p.is-empty.has-focus:not(li *)::before,
+  /* For everything else placeholder shows when empty */
+  p.is-empty:not(.page-editor)::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: hsl(from var(--color-slate-700) h s l / 0.5);
+    pointer-events: none;
+    height: 0;
+  }
 
-.ProseMirror [data-type='taskTag'] {
-  font-weight: 600;
+  p.is-empty a {
+    text-decoration: underline;
+    color: var(--color-slate-700);
+    :hover {
+      cursor: pointer;
+    }
+  }
+  p {
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+    /* Line height: for now most editable surfaces are 14/20 */
+    line-height: 1.4285714286;
+  }
+
+  p:first-of-type {
+    margin-block-start: 0;
+  }
+  p:last-of-type {
+    margin-block-end: 0;
+  }
+
+  hr.ProseMirror-selectednode {
+    border-top: 1px solid #68cef8;
+  }
+
+  hr {
+    border-top: 1px solid var(--color-slate-400);
+  }
 }
 
 .ProseMirror-focused:focus {
   outline: none;
-}
-
-.ProseMirror a {
-  text-decoration: underline;
-  color: var(--color-slate-700);
-  :hover {
-    cursor: pointer;
-  }
-}
-
-.ProseMirror p {
-  margin-block-start: 4px;
-  margin-block-end: 4px;
-  /* Line height: for now most editable surfaces are 14/20 */
-  line-height: 1.4285714286;
-}
-
-.ProseMirror p:first-of-type {
-  margin-block-start: 0;
-}
-
-.ProseMirror p:last-of-type {
-  margin-block-end: 0;
-}
-
-hr.ProseMirror-selectednode {
-  border-top: 1px solid #68cef8;
-}
-
-.ProseMirror hr {
-  border-top: 1px solid var(--color-slate-400);
 }
 
 /* Give a remote user a caret */
