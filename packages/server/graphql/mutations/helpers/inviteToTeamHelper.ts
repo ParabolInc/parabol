@@ -79,9 +79,10 @@ const inviteToTeamHelper = async (
     return standardError(new Error('No valid emails'), {userId: viewerId})
   }
 
-  const [users, team, inviter] = await Promise.all([
+  const [existingUsers, team, teamMembers, inviter] = await Promise.all([
     getUsersByEmails(validInvitees),
     dataLoader.get('teams').load(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
     dataLoader.get('users').load(viewerId)
   ])
   if (!inviter) {
@@ -97,8 +98,10 @@ const inviteToTeamHelper = async (
   const uniqueInvitees = Array.from(new Set(validInvitees))
   // filter out emails already on team
   const newInvitees = uniqueInvitees.filter((email) => {
-    const user = users.find((user) => user.email === email)
-    return !(user && user.tms && user.tms.includes(teamId))
+    const user = existingUsers.find((user) => user.email === email)
+    if (!user) return true
+    const alreadyOnTeam = teamMembers.some((teamMember) => teamMember.userId === user.id)
+    return !alreadyOnTeam
   })
 
   // filter out invitees that aren't approved by the org
@@ -141,7 +144,7 @@ const inviteToTeamHelper = async (
   // insert notification records
   const notificationsToInsert = teamInvitationsToInsert
     .map((invitation) => {
-      const user = users.find((user) => user.email === invitation.email)
+      const user = existingUsers.find((user) => user.email === invitation.email)
       if (!user) return null
       return {
         id: generateUID(),
@@ -168,7 +171,7 @@ const inviteToTeamHelper = async (
   const options = {searchParams}
   const emailResults = await Promise.all(
     teamInvitationsToInsert.map((invitation) => {
-      const user = users.find((user) => user.email === invitation.email)
+      const user = existingUsers.find((user) => user.email === invitation.email)
       const {html, subject, body} = teamInviteEmailCreator({
         appOrigin,
         inviteLink: makeAppURL(appOrigin, `team-invitation/${invitation.token}`, options),
@@ -194,7 +197,7 @@ const inviteToTeamHelper = async (
     })
   )
 
-  const parabolUserEmails = users.map(({email}) => email)
+  const parabolUserEmails = existingUsers.map(({email}) => email)
   const inviteTo = meetingId ? 'meeting' : 'team'
   const now = new Date()
   const tenSecondsAgo = new Date(now.getTime() - 10 * 1000)
