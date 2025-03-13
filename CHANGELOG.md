@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.35.1](https://github.com/ParabolInc/parabol/compare/v8.35.0...v8.35.1) (2025-03-13)
+
+
+### Fixed
+
+* drag handles and scrollbar on specific meeting table ([#11000](https://github.com/ParabolInc/parabol/issues/11000)) ([621673c](https://github.com/ParabolInc/parabol/commit/621673c2a2bcad0745e8890d9163bf9d6d23aa4a))
+* placeholder regression in tiptap ([#11007](https://github.com/ParabolInc/parabol/issues/11007)) ([b78eea8](https://github.com/ParabolInc/parabol/commit/b78eea8e8bdce1e5ec5361548969ad71d9ab02cf))
+* several people are not editing, thank you ([#11008](https://github.com/ParabolInc/parabol/issues/11008)) ([9506d34](https://github.com/ParabolInc/parabol/commit/9506d347865bddf69259ca99cf29b3c5ad08193f))
+
 ## [8.35.0](https://github.com/ParabolInc/parabol/compare/v8.34.3...v8.35.0) (2025-03-12)
 
 
