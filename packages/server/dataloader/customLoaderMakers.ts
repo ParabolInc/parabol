@@ -35,6 +35,7 @@ import {
   Task,
   Team
 } from '../postgres/types'
+import IUser from '../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import {TeamMeetingTemplate} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
@@ -133,6 +134,29 @@ export const meetingTaskEstimates = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.meetingId}:${key.taskId}`
+    }
+  )
+}
+
+type UserWithTms = IUser & {tms: string[]}
+
+export const usersWithTms = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn(['users', 'teamMembers'])
+  return new DataLoader<string, UserWithTms, string>(
+    async (userIds) => {
+      const pg = getKysely()
+      const users = await pg
+        .selectFrom('User')
+        .innerJoin('TeamMember', 'TeamMember.userId', 'User.id')
+        .selectAll('User')
+        .select(({fn}) => fn.agg('array_agg', ['TeamMember.teamId']).distinct().as('tms'))
+        .where('id', 'in', userIds)
+        .groupBy('User.id')
+        .execute()
+      return normalizeResults(userIds, users as unknown as UserWithTms[])
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
