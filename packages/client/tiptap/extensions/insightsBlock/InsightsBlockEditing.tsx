@@ -53,7 +53,11 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
     }
     const {viewer} = res
     const {pageInsights} = viewer
-    const insightsNode = editor.$node('insightsBlock', {id})!
+    const insightsNode = editor.$node('insightsBlock', {id})
+    if (!insightsNode) {
+      console.error('Insights block node removed before insights were generated')
+      return
+    }
     editor.commands.insertContentAt(
       {
         from: insightsNode.from,

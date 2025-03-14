@@ -40,7 +40,7 @@ export const InsightsBlockPrompt = (props: Props) => {
   const defaultValue = prompt || aiPrompts[0]?.content || ''
   return (
     <div>
-      <h3 className='pt-2'>What do you want to know?</h3>
+      <h3 className='pointer-events-none pt-2'>What do you want to know?</h3>
       <div className='relative w-full'>
         <div className='absolute top-0 right-0'>
           <Menu
