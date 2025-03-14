@@ -10,8 +10,12 @@ import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import User from '../../../../../server/database/types/User'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
+import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../utils/constants'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
+import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 
 interface Props {
   queryRef: PreloadedQuery<OrgMembersQuery>
@@ -19,6 +23,8 @@ interface Props {
 
 const OrgMembers = (props: Props) => {
   const {queryRef} = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const query = usePreloadedQuery<OrgMembersQuery>(
     graphql`
       query OrgMembersQuery($orgId: ID!, $first: Int!, $after: String) {
@@ -33,8 +39,10 @@ const OrgMembers = (props: Props) => {
         viewer {
           organization(orgId: $orgId) {
             ...OrgMemberRow_organization
+            id
             name
             isBillingLeader
+            isOrgAdmin
             organizationUsers(first: $first, after: $after)
               @connection(key: "OrgMembers_organizationUsers") {
               edges {
@@ -44,6 +52,7 @@ const OrgMembers = (props: Props) => {
                   inactive
                   role
                   user {
+                    id
                     preferredName
                     email
                     lastSeenAt
@@ -65,7 +74,7 @@ const OrgMembers = (props: Props) => {
   const {data} = paginationRes
   const {viewer} = data
   const organization = viewer.organization!
-  const {organizationUsers, name: orgName, isBillingLeader} = organization
+  const {organizationUsers, name: orgName, isBillingLeader, isOrgAdmin} = organization
   const billingLeaderCount = organizationUsers.edges.reduce(
     (count, {node}) =>
       ['BILLING_LEADER', 'ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count,
@@ -78,6 +87,12 @@ const OrgMembers = (props: Props) => {
   const [sortBy, setSortBy] = useState<keyof User>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [searchInput, setSearchInput] = useState('')
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
+  const {
+    togglePortal: toggleBulkRemove,
+    modalPortal: bulkRemoveModal,
+    closePortal: closeBulkRemoveModal
+  } = useModal()
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
@@ -120,9 +135,53 @@ const OrgMembers = (props: Props) => {
     }
   }
 
+  const selectableUserIds = useMemo(() => {
+    return finalOrgUsers
+      .filter((organizationUser) => {
+        const userId = organizationUser.user.id
+        const role = organizationUser.role
+        const isSelf = viewerId === userId
+        const isBillingLeader = role === 'BILLING_LEADER'
+        const isOrgAdmin = role === 'ORG_ADMIN'
+
+        return !isSelf && !isBillingLeader && !isOrgAdmin
+      })
+      .map((user) => user.user.id)
+  }, [finalOrgUsers, viewerId])
+
+  const handleSelectAll = useCallback(() => {
+    if (selectedUserIds.length === selectableUserIds.length) {
+      setSelectedUserIds([])
+    } else {
+      setSelectedUserIds(selectableUserIds)
+    }
+  }, [selectableUserIds, selectedUserIds.length])
+
+  const handleSelectUser = useCallback((userId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedUserIds((prev) => [...prev, userId])
+    } else {
+      setSelectedUserIds((prev) => prev.filter((id) => id !== userId))
+    }
+  }, [])
+
+  const isAllSelected = useMemo(
+    () =>
+      selectableUserIds.length > 0 &&
+      selectedUserIds.length === selectableUserIds.length &&
+      selectableUserIds.every((id) => selectedUserIds.includes(id)),
+    [selectableUserIds, selectedUserIds]
+  )
+
   const exportToCSV = async () => {
-    const rows = organizationUsers.edges.map((orgUser, idx) => {
-      const {node} = orgUser
+    const usersToExport =
+      selectedUserIds.length > 0
+        ? organizationUsers.edges
+            .map(({node}) => node)
+            .filter(({user}) => selectedUserIds.includes(user.id))
+        : organizationUsers.edges.map(({node}) => node)
+
+    const rows = usersToExport.map((node, idx) => {
       const formattedLastSeenAt = node.user.lastSeenAt
         ? format(new Date(node.user.lastSeenAt), 'yyyy-MM-dd')
         : 'Never'
@@ -139,17 +198,19 @@ const OrgMembers = (props: Props) => {
     const csv = parser.parse(rows)
     const date = new Date()
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
-    // note: using encodeUri does NOT work on the # symbol & breaks
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
     link.setAttribute('download', `Parabol_${orgName}_${numDate}.csv`)
-    document.body.appendChild(link) // Required for FF
+    document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
   }
+
+  const hasSelectableUsers = useMemo(() => {
+    return selectableUserIds.length > 0
+  }, [selectableUserIds])
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -175,10 +236,39 @@ const OrgMembers = (props: Props) => {
       </div>
 
       <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
-        <div className='bg-slate-100 px-4 py-2'>
-          <div className='flex w-full justify-between'>
+        <div className='flex h-10 items-center bg-slate-100 px-4'>
+          <div className='flex w-full items-center justify-between'>
             <div className='flex items-center font-bold'>
               {organizationUsers.edges.length} total
+              {selectedUserIds.length > 0 && (
+                <span className='ml-2 text-sky-600'>({selectedUserIds.length} selected)</span>
+              )}
+            </div>
+            <div className='flex space-x-2'>
+              {selectedUserIds.length > 0 &&
+                selectedUserIds.length > BATCH_ORG_USER_REMOVAL_LIMIT && (
+                  <span className='text-xs font-bold text-tomato-600'>
+                    Oops! You can select up to {BATCH_ORG_USER_REMOVAL_LIMIT} users at a time.
+                  </span>
+                )}
+              {selectedUserIds.length > 0 &&
+                selectedUserIds.length <= BATCH_ORG_USER_REMOVAL_LIMIT &&
+                isOrgAdmin && (
+                  <>
+                    <button
+                      onClick={exportToCSV}
+                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                    >
+                      Export Selected to CSV
+                    </button>
+                    <button
+                      onClick={toggleBulkRemove}
+                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                    >
+                      Remove Selected
+                    </button>
+                  </>
+                )}
             </div>
           </div>
         </div>
@@ -186,8 +276,20 @@ const OrgMembers = (props: Props) => {
           <table className='w-full table-fixed border-collapse md:table-auto'>
             <thead>
               <tr className='border-b border-slate-300'>
+                <th className='w-[5%] p-3 text-left'>
+                  <div className='flex items-center justify-center'>
+                    {isOrgAdmin && hasSelectableUsers && (
+                      <input
+                        type='checkbox'
+                        checked={isAllSelected}
+                        onChange={handleSelectAll}
+                        className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
+                      />
+                    )}
+                  </div>
+                </th>
                 <th
-                  className='w-[70%] cursor-pointer p-3 text-left font-semibold'
+                  className='w-[65%] cursor-pointer p-3 text-left font-semibold'
                   onClick={() => handleSort('preferredName')}
                 >
                   User
@@ -211,12 +313,22 @@ const OrgMembers = (props: Props) => {
                   orgAdminCount={orgAdminCount}
                   organizationUser={organizationUser}
                   organization={organization}
+                  isSelected={selectedUserIds.includes(organizationUser.user.id)}
+                  onSelectUser={handleSelectUser}
                 />
               ))}
             </tbody>
           </table>
         </div>
       </div>
+      {bulkRemoveModal(
+        <RemoveFromOrgModal
+          orgId={organization.id}
+          userIds={selectedUserIds}
+          closePortal={closeBulkRemoveModal}
+          onSuccess={() => setSelectedUserIds([])}
+        />
+      )}
     </div>
   )
 }

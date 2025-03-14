@@ -20,6 +20,7 @@ import RowInfoLink from '../../../../components/Row/RowInfoLink'
 import BaseTag from '../../../../components/Tag/BaseTag'
 import InactiveTag from '../../../../components/Tag/InactiveTag'
 import RoleTag from '../../../../components/Tag/RoleTag'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useModal from '../../../../hooks/useModal'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
@@ -35,6 +36,8 @@ interface Props {
   orgAdminCount: number
   organizationUser: OrgMemberRow_organizationUser$key
   organization: OrgMemberRow_organization$key
+  isSelected?: boolean
+  onSelectUser?: (userId: string, isSelected: boolean) => void
 }
 
 const LeaveOrgModal = lazyPreload(
@@ -55,7 +58,7 @@ interface UserAvatarProps {
   picture?: string
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({picture}) => (
+const UserAvatar = ({picture}: UserAvatarProps) => (
   <div className='mr-4 hidden md:block'>
     {picture ? (
       <Avatar picture={picture} className='h-11 w-11' />
@@ -73,13 +76,7 @@ interface UserInfoProps {
   inactive: boolean | null | undefined
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({
-  preferredName,
-  email,
-  isBillingLeader,
-  isOrgAdmin,
-  inactive
-}) => (
+const UserInfo = ({preferredName, email, isBillingLeader, isOrgAdmin, inactive}: UserInfoProps) => (
   <RowInfo className='pl-0'>
     <RowInfoHeader>
       <RowInfoHeading>{preferredName}</RowInfoHeading>
@@ -96,14 +93,9 @@ const UserInfo: React.FC<UserInfoProps> = ({
 interface UserActionsProps {
   organization: OrgMemberRow_organization$data
   organizationUser: OrgMemberRow_organizationUser$data
-  preferredName: string
 }
 
-const UserActions: React.FC<UserActionsProps> = ({
-  organizationUser,
-  organization,
-  preferredName
-}) => {
+const UserActions = ({organizationUser, organization}: UserActionsProps) => {
   const {id: orgId} = organization
   const {
     user: {id: userId}
@@ -118,6 +110,7 @@ const UserActions: React.FC<UserActionsProps> = ({
     modalPortal: removeModal,
     closePortal: closeRemoveModal
   } = useModal()
+
   return (
     <RowActions>
       <ActionsBlock>
@@ -129,12 +122,7 @@ const UserActions: React.FC<UserActionsProps> = ({
         />
         {leaveModal(<LeaveOrgModal orgId={orgId} closePortal={closeLeaveModal} />)}
         {removeModal(
-          <RemoveFromOrgModal
-            orgId={orgId}
-            userId={userId}
-            preferredName={preferredName}
-            closePortal={closeRemoveModal}
-          />
+          <RemoveFromOrgModal orgId={orgId} userIds={[userId]} closePortal={closeRemoveModal} />
         )}
       </ActionsBlock>
     </RowActions>
@@ -142,12 +130,20 @@ const UserActions: React.FC<UserActionsProps> = ({
 }
 
 const OrgMemberRow = (props: Props) => {
-  const {organizationUser: organizationUserRef, organization: organizationRef} = props
+  const {
+    organizationUser: organizationUserRef,
+    organization: organizationRef,
+    isSelected = false,
+    onSelectUser
+  } = props
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
 
   const organization = useFragment(
     graphql`
       fragment OrgMemberRow_organization on Organization {
         id
+        isOrgAdmin
         ...OrgAdminActionMenu_organization
       }
     `,
@@ -157,6 +153,7 @@ const OrgMemberRow = (props: Props) => {
   const organizationUser = useFragment(
     graphql`
       fragment OrgMemberRow_organizationUser on OrganizationUser {
+        id
         user {
           id
           email
@@ -173,16 +170,35 @@ const OrgMemberRow = (props: Props) => {
   )
 
   const {
-    user: {email, inactive, picture, preferredName, lastSeenAt},
+    user: {email, inactive, picture, preferredName, lastSeenAt, id: userId},
     role
   } = organizationUser
 
   const isBillingLeader = role === 'BILLING_LEADER'
   const isOrgAdmin = role === 'ORG_ADMIN'
+  const {isOrgAdmin: isViewerOrgAdmin} = organization
   const formattedLastSeenAt = lastSeenAt ? format(new Date(lastSeenAt), 'yyyy-MM-dd') : 'Never'
+  const isSelf = viewerId === userId
+  const canBeSelected = isViewerOrgAdmin && !isSelf && !isBillingLeader && !isOrgAdmin
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSelectUser?.(organizationUser.user.id, e.target.checked)
+  }
 
   return (
     <tr className='border-b border-slate-300 last:border-b-0'>
+      <td className='px-2 py-3 align-middle'>
+        <div className='flex items-center justify-center'>
+          {canBeSelected && (
+            <input
+              type='checkbox'
+              checked={isSelected}
+              onChange={handleCheckboxChange}
+              className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
+            />
+          )}
+        </div>
+      </td>
       <td className='w-1/2 px-2 py-3 align-middle'>
         <div className='flex w-full items-center overflow-hidden'>
           <UserAvatar picture={picture} />
@@ -201,11 +217,7 @@ const OrgMemberRow = (props: Props) => {
         <RowInfo className='pl-0'>{formattedLastSeenAt}</RowInfo>
       </td>
       <td className='w-1/5 px-2 py-3 align-middle'>
-        <UserActions
-          organizationUser={organizationUser}
-          organization={organization}
-          preferredName={preferredName}
-        />
+        <UserActions organizationUser={organizationUser} organization={organization} />
       </td>
     </tr>
   )
