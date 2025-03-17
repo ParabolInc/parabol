@@ -18,7 +18,7 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
 
   // RESOLUTION
   const [user, userPresence] = await Promise.all([
-    dataLoader.get('users').load(userId),
+    dataLoader.get('usersWithTms').load(userId),
     redis.lrange(`presence:${userId}`, 0, -1)
   ])
   if (!user) {
