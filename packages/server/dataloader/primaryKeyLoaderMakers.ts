@@ -4,7 +4,6 @@ import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinReque
 import getMeetingSeriesByIds from '../postgres/queries/getMeetingSeriesByIds'
 import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByIds'
 import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
-import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
   selectComments,
@@ -28,12 +27,16 @@ import {
   selectTemplateDimension,
   selectTemplateScale,
   selectTemplateScaleRef,
-  selectTimelineEvent
+  selectTimelineEvent,
+  selectUsers,
 } from '../postgres/select'
 import {TeamNotificationSettings} from '../postgres/types/pg'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
+import {User} from '../postgres/types/User'
 
-export const users = primaryKeyLoaderMaker(getUsersByIds)
+export const users = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectUsers().where('User.id', 'in', ids).execute() as Promise<unknown> as Promise<User[]>
+})
 
 export const teams = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTeams().where('id', 'in', ids).execute()

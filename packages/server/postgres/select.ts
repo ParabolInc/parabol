@@ -1,11 +1,13 @@
 import type {JSONContent} from '@tiptap/core'
 import {NotNull, sql, type SelectQueryBuilder} from 'kysely'
+import {jsonArrayFrom} from 'kysely/helpers/postgres'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {JiraDimensionField, ReactjiDB, TaskTag} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import {AnyNotification} from './types/Notification'
 import {AnyTaskIntegration} from './types/TaskIntegration'
+import {JsonObject} from './types/pg'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
@@ -304,3 +306,19 @@ export const selectTasks = () =>
 
 export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()
+
+export const selectUsers = () =>
+  getKysely().selectFrom('User')
+    .selectAll()
+    .select((eb) => [
+      jsonArrayFrom(
+        eb.selectFrom('TeamMember')
+          .select('teamId')
+          .where('userId', '=', 'User.id')
+          .distinct()
+      ).as('tms')
+    ])
+    .$narrowType<{
+      identities: JsonObject[]
+    }>()
+
