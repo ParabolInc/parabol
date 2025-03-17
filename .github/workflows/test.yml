@@ -130,6 +130,11 @@ jobs:
           path: packages/integration-tests/test-results/
           retention-days: 7
 
+      - name: Run new down migrations
+        run: |
+          LAST_BASE_MIGRATION=$(git ls-tree --name-only ${{ github.base_ref }} packages/server/postgres/migrations/ | tail -n1)
+          yarn kysely migrate:down $LAST_BASE_MIGRATION
+
       - name: Report Status
         if: ${{ failure() && github.ref_name == 'master' }}
         uses: ravsamhq/notify-slack-action@v2
