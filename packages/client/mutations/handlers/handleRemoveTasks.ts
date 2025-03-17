@@ -2,7 +2,7 @@ import {RecordSourceSelectorProxy} from 'relay-runtime'
 import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
 import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import {parseQueryParams} from '~/utils/useQueryParameterParser'
-import IUser from '../../../server/database/types/User'
+import {User} from '../../../server/postgres/types/User'
 import {Task as ITask} from '../../../server/postgres/types/index.d'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
@@ -13,7 +13,7 @@ import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
-  const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
+  const viewer = store.getRoot().getLinkedRecord<User>('viewer')
   const task = store.get<ITask>(taskId)
   if (!task) return
   const teamId = task.getValue('teamId')

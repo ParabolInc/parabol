@@ -1,5 +1,4 @@
 import * as clusterfck from 'tayden-clusterfck'
-import {GroupingOptions} from './groupReflections'
 
 /*
  * Use hierarchical agglomerative clustering to group the reflections by theme
@@ -19,6 +18,12 @@ import {GroupingOptions} from './groupReflections'
 const MAX_GROUP_SIZE = 5
 const MIN_REDUCTION_PERCENT = 0.01
 const MAX_REDUCTION_PERCENT = 0.8
+
+export type GroupingOptions = {
+  groupingThreshold: number
+  maxGroupSize?: number
+  maxReductionPercent?: number
+}
 
 type Tree = {
   value: number[]

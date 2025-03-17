@@ -1,7 +1,7 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import IUser from '../../../postgres/types/IUser'
+import {User} from '../../../postgres/types/User'
 import {analytics} from '../../../utils/analytics/analytics'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
@@ -84,7 +84,7 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   }
 
   // RESOLUTION
-  let user: IUser | undefined
+  let user: User | undefined
   try {
     user = await getBillingLeaderUser(email, orgId, dataLoader)
   } catch (e) {

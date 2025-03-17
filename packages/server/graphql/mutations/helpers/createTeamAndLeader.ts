@@ -5,7 +5,7 @@ import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreat
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import IUser from '../../../postgres/types/IUser'
+import {User} from '../../../postgres/types/User'
 
 interface ValidNewTeam {
   id: string
@@ -16,7 +16,7 @@ interface ValidNewTeam {
 
 // used for addorg, addTeam
 export default async function createTeamAndLeader(
-  user: IUser,
+  user: User,
   newTeam: ValidNewTeam,
   dataLoader: DataLoaderInstance
 ) {

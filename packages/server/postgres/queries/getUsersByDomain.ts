@@ -1,10 +1,9 @@
-import getPg from '../getPg'
-import IUser from '../types/IUser'
-import {getUsersByDomainQuery} from './generated/getUsersByDomainQuery'
+import {selectUsers} from '../select'
+import {User} from '../types/User'
 
-const getUsersByDomain = async (domain: string): Promise<IUser[]> => {
-  const users = await getUsersByDomainQuery.run({domain}, getPg())
-  return users as unknown as IUser[]
+const getUsersByDomain = async (domain: string): Promise<User[]> => {
+  const users = await selectUsers().where('domain', '=', domain).execute()
+  return users as unknown[] as User[]
 }
 
 export default getUsersByDomain

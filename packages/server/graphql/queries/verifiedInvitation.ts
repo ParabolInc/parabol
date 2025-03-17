@@ -5,7 +5,7 @@ import util from 'util'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
-import IUser from '../../postgres/types/IUser'
+import {User} from '../../postgres/types/User'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 import {GQLContext} from '../graphql'
@@ -14,7 +14,7 @@ import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 
 const resolveMx = util.promisify(dns.resolveMx)
 
-const getIsGoogleProvider = async (user: IUser | null, email: string) => {
+const getIsGoogleProvider = async (user: User | null, email: string) => {
   const identities = user?.identities
   if (identities) {
     return !!identities.find((identity) => identity.type === AuthIdentityTypeEnum.GOOGLE)

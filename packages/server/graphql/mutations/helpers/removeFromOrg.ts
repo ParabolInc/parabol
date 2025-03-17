@@ -25,9 +25,6 @@ const removeFromOrg = async (
     removedTeamIds.includes(teamMember.teamId)
   )
   const removedTeamMemberIds = removedTeamMembers.map((teamMember) => teamMember.id)
-  const tms = allTeamMembers
-    .filter(({teamId}) => !removedTeamIds.includes(teamId))
-    .map(({teamId}) => teamId)
 
   const perTeamRes = await Promise.all(
     removedTeamMemberIds.map((teamMemberId) => {
@@ -62,6 +59,7 @@ const removeFromOrg = async (
     dataLoader.get('users').loadNonNull(userId)
   ])
   dataLoader.clearAll('organizationUsers')
+  const {tms} = user
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
   if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {

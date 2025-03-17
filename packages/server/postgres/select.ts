@@ -308,17 +308,14 @@ export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()
 
 export const selectUsers = () =>
-  getKysely().selectFrom('User')
+  getKysely()
+    .selectFrom('User')
     .selectAll()
     .select((eb) => [
       jsonArrayFrom(
-        eb.selectFrom('TeamMember')
-          .select('teamId')
-          .where('userId', '=', 'User.id')
-          .distinct()
+        eb.selectFrom('TeamMember').select('teamId').where('userId', '=', 'User.id').distinct()
       ).as('tms')
     ])
     .$narrowType<{
       identities: JsonObject[]
     }>()
-

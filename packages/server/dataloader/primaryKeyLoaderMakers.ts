@@ -28,14 +28,16 @@ import {
   selectTemplateScale,
   selectTemplateScaleRef,
   selectTimelineEvent,
-  selectUsers,
+  selectUsers
 } from '../postgres/select'
 import {TeamNotificationSettings} from '../postgres/types/pg'
-import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 import {User} from '../postgres/types/User'
+import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
 export const users = primaryKeyLoaderMaker((ids: readonly string[]) => {
-  return selectUsers().where('User.id', 'in', ids).execute() as Promise<unknown> as Promise<User[]>
+  return selectUsers().where('User.id', 'in', ids).execute() as Promise<unknown[]> as Promise<
+    User[]
+  >
 })
 
 export const teams = primaryKeyLoaderMaker((ids: readonly string[]) => {

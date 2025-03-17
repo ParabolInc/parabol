@@ -1,14 +1,13 @@
 import {MaybeReadonly} from '../../../client/types/generics'
-import getPg from '../getPg'
-import IUser from '../types/IUser'
-import {getUsersByIdsQuery} from './generated/getUsersByIdsQuery'
+import {selectUsers} from '../select'
+import {User} from '../types/User'
 
-export const getUsersByIds = async (userIds: MaybeReadonly<string[]>): Promise<IUser[]> => {
-  const users = await getUsersByIdsQuery.run({ids: userIds}, getPg())
-  return users as unknown as IUser[]
+export const getUsersByIds = async (userIds: MaybeReadonly<string[]>): Promise<User[]> => {
+  const users = await selectUsers().where('id', 'in', userIds).execute()
+  return users as unknown[] as User[]
 }
 
-export const getUserById = async (id: string): Promise<IUser | null> => {
+export const getUserById = async (id: string): Promise<User | null> => {
   const users = await getUsersByIds([id])
   return users[0] ?? null
 }
