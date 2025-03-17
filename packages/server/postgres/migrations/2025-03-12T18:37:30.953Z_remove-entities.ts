@@ -7,6 +7,6 @@ export async function up(db: Kysely<any>): Promise<void> {
 export async function down(db: Kysely<any>): Promise<void> {
   await sql`
     ALTER TABLE "RetroReflection"
-    ADD COLUMN "entities" public."GoogleAnalyzedEntity"[] DEFAULT ARRAY[]::public."GoogleAnalyzedEntity"[] NOT NULL,
+    ADD COLUMN "entities" public."GoogleAnalyzedEntity"[] DEFAULT ARRAY[]::public."GoogleAnalyzedEntity"[] NOT NULL;
   `.execute(db)
 }
