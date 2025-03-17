@@ -4,10 +4,8 @@
 yarn postcheckout
 
 DELETED_POSTGRES_MIGRATIONS=$(git diff $1 $2 --name-only --diff-filter=D -- packages/server/postgres/migrations/)
-LAST_COMMON_MIGRATION=$(git ls-tree --name-only $2 -- packages/server/postgres/migrations/ | tail -n1)
+LAST_COMMON_MIGRATION=$(git ls-tree --name-only $2 -- packages/server/postgres/migrations/ | tail -n1 | xargs basename -s .ts)
 if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
-    LAST_COMMON_MIGRATION_FILE=${LAST_COMMON_MIGRATION##*/}
-    LAST_COMMON_MIGRATION_NAME=${LAST_COMMON_MIGRATION_FILE%.ts}
     CURRENT_BRANCH=$(git branch --show-current)
     NUM_POSTGRES_MIGRATIONS=$(echo $DELETED_POSTGRES_MIGRATIONS | wc -w)
     echo "WARNING: You're leaving behind the following migrations not present on the current branch:"
@@ -20,7 +18,7 @@ if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
     echo
     echo "  git checkout ${1} &&"
     if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
-        echo "  yarn kysely migrate:down ${LAST_COMMON_MIGRATION_NAME} &&"
+        echo "  yarn kysely migrate:down ${LAST_COMMON_MIGRATION} &&"
     fi
     echo "  git checkout ${CURRENT_BRANCH:-$2}"
     echo

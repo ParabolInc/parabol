@@ -133,7 +133,7 @@ jobs:
       - name: Run new down migrations
         run: |
           git fetch --depth=1 origin master
-          LAST_BASE_MIGRATION=$(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | tail -n1)
+          LAST_BASE_MIGRATION=$(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | tail -n1 | xargs basename -s .ts)
           yarn kysely migrate:down $LAST_BASE_MIGRATION
 
       - name: Report Status
