@@ -50,7 +50,7 @@ const OrgTeams = (props: Props) => {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
   const {allTeams, tier, viewerTeams, allTeamsCount} = organization
-  const showAllTeams = allTeams.length === allTeamsCount
+  const showingAllTeams = allTeams.length === allTeamsCount
   const viewerTeamCount = viewerTeams.length
 
   const handleSort = (field: SortField) => {
@@ -102,7 +102,7 @@ const OrgTeams = (props: Props) => {
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
               {allTeamsCount} {' total '}
-              {!showAllTeams ? `(${allTeamsCount - viewerTeamCount} hidden)` : null}
+              {!showingAllTeams ? `(${allTeamsCount - viewerTeamCount} hidden)` : null}
             </div>
           </div>
         </div>
@@ -141,7 +141,7 @@ const OrgTeams = (props: Props) => {
           </table>
         </div>
 
-        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showAllTeams && (
+        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showingAllTeams && (
           <TeaserOrgTeamsRow
             hiddenTeamCount={allTeamsCount - viewerTeamCount}
             orgId={organization.id}
