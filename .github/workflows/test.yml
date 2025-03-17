@@ -33,6 +33,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        sparse-checkout: 
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -132,7 +133,8 @@ jobs:
 
       - name: Run new down migrations
         run: |
-          LAST_BASE_MIGRATION=$(git ls-tree --name-only ${{ github.base_ref }} packages/server/postgres/migrations/ | tail -n1)
+          git fetch --depth=1 origin master
+          LAST_BASE_MIGRATION=$(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | tail -n1)
           yarn kysely migrate:down $LAST_BASE_MIGRATION
 
       - name: Report Status
