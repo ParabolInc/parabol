@@ -33,7 +33,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        sparse-checkout: 
 
       - name: Setup Node
         uses: actions/setup-node@v3
