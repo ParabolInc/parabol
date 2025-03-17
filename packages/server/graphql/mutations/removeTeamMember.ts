@@ -51,11 +51,8 @@ export default {
     if (!user) {
       return standardError(new Error('Could not remove given team member'), {userId})
     }
-    const [remainingTeamMembers, userTeamMembers] = await Promise.all([
-      dataLoader.get('teamMembersByTeamId').load(teamId),
-      dataLoader.get('teamMembersByUserId').load(userId)
-    ])
-    const tms = userTeamMembers.map(({teamId}) => teamId)
+    const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const {tms} = user
     publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
     const data = {

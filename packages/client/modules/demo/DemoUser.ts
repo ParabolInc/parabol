@@ -17,7 +17,7 @@ export default class DemoUser {
   rasterPicture: string
   picture: string
   preferredName: string
-  teamIds = [RetroDemo.TEAM_ID]
+  tms = [RetroDemo.TEAM_ID]
   constructor(preferredName: string, email: string, picture: string, idx: number) {
     this.id = idx === 0 ? demoViewerId : `bot${idx}`
     this.preferredName = preferredName

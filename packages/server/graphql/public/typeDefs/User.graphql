@@ -360,7 +360,7 @@ type User {
   """
   all the teams the user is a part of that the viewer can see
   """
-  teamIds: [ID!]!
+  tms: [ID!]!
 
   """
   The timestamp the user was last updated

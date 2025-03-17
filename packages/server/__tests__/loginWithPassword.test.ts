@@ -16,13 +16,13 @@ test('Login after signup', async () => {
           }
           authToken
           user {
+            tms
             id
             email
             picture
             preferredName
             createdAt
             lastSeenAt
-            teamIds
           }
         }
         acceptTeamInvitation(invitationToken: $invitationToken) {

@@ -10,7 +10,6 @@ import {getUserId, isSuperUser, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import isValid from '../isValid'
 
 export default {
   type: new GraphQLNonNull(
@@ -83,13 +82,9 @@ export default {
     }
     publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
 
-    const teamMemberss = await dataLoader
-      .get('teamMembersByUserId')
-      .loadMany(users.filter(isValid).map(({id}) => id))
-    teamMemberss.filter(isValid).forEach((teamMembers) => {
-      const tms = teamMembers.map(({teamId}) => teamId)
-      const id = teamMembers[0]?.userId
-      if (!id) return
+    users.forEach((user) => {
+      if (!user) return
+      const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
     })
 

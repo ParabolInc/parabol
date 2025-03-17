@@ -98,7 +98,7 @@ const UserTasksHeader = (props: Props) => {
             user {
               id
               preferredName
-              teamIds
+              tms
             }
           }
         }
@@ -144,7 +144,7 @@ const UserTasksHeader = (props: Props) => {
     const dedupedUsers = [] as {
       id: string
       preferredName: string
-      teamIds: ReadonlyArray<string>
+      tms: ReadonlyArray<string>
     }[]
     users.forEach((user) => {
       const userKey = user.id
@@ -157,7 +157,7 @@ const UserTasksHeader = (props: Props) => {
       ? dedupedUsers.find(({id: userId}) => userIds.includes(userId))
       : undefined
     return teamFilter && teamMemberFilter
-      ? teamMemberFilter.teamIds.includes(teamFilter.id)
+      ? teamMemberFilter.tms.includes(teamFilter.id)
         ? teamMemberFilter.preferredName
         : FilterLabels.ALL_TEAM_MEMBERS
       : (teamMemberFilter?.preferredName ?? FilterLabels.ALL_TEAM_MEMBERS)
