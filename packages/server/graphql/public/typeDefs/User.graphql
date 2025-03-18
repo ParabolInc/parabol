@@ -491,10 +491,14 @@ type User {
   """
   pageInsights(
     meetingIds: [ID!]!
-    prompt: String
+    prompt: String!
     responseFormat: ContentFormatEnum = markdown
   ): String!
 
+  """
+  Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared
+  """
+  aiPrompts: [AIPrompt!]!
   meetings(
     """
     The max number of meetings to return

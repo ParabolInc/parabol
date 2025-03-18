@@ -1,0 +1,27 @@
+"""
+A historical prompt used for an LLM
+"""
+type AIPrompt {
+  """
+  The promptId
+  """
+  id: ID!
+  userId: ID!
+  """
+  the AI-generated title of the content
+  """
+  title: String!
+  """
+  Plaintext of the content sent to the LLM. Does not include a preamble that includes formatting rules or type of data to expect
+  """
+  content: String!
+  createdAt: DateTime!
+  """
+  The time the prompt was last used
+  """
+  lastUsedAt: DateTime!
+  """
+  true if the prompt is owned by the user
+  """
+  isUserDefined: Boolean!
+}

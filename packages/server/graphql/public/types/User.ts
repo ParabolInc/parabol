@@ -29,6 +29,7 @@ import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
+import {aiPrompts} from '../fields/aiPrompts'
 import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -844,7 +845,8 @@ const User: ReqResolvers<'User'> = {
     return getFeatureTier({tier, trialStartDate})
   },
   billingTier: ({tier}) => tier,
-  pageInsights
+  pageInsights,
+  aiPrompts
 }
 
 export default User

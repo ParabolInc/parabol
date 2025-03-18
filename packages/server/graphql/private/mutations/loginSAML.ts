@@ -75,10 +75,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       return standardError(e)
     }
     const message = typeof e === 'string' ? e : 'parseLoginResponse failed'
-    return standardError(new Error(message))
+    return standardError(new Error(message), {extras: {body}})
   }
   if (!loginResponse) {
-    return {error: {message: 'Error with query from identity provider'}}
+    return standardError(new Error('Error with query from identity provider'), {extras: {body}})
   }
 
   const {extract} = loginResponse
@@ -86,6 +86,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedAttributes = Object.fromEntries(
     Object.entries(attributes).map(([key, value]) => {
       const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
+      // This happens if the IdP sends duplicate claims
+      if (Array.isArray(value)) {
+        return [normalizedKey, Array.from(new Set(value.map(String))).toString()]
+      }
       return [normalizedKey, String(value)]
     })
   )
@@ -93,13 +97,12 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const preferredName = displayname || name
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
-    return {
-      error: {
-        message: `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(
-          attributes
-        ).join(', ')}`
-      }
-    }
+    return standardError(
+      new Error(
+        `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(attributes).join(', ')}`
+      ),
+      {extras: {attributes}}
+    )
   }
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}
@@ -108,7 +111,9 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   if (!ssoDomain || !domains.includes(ssoDomain)) {
     if (!isSingleTenantSSO) {
       // don't blindly trust the IdP unless there is only 1
-      return {error: {message: `${email} does not belong to ${domains.join(', ')}`}}
+      return standardError(new Error(`${email} does not belong to ${domains.join(', ')}`), {
+        extras: {attributes}
+      })
     }
   }
 

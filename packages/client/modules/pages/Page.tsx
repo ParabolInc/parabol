@@ -19,8 +19,8 @@ export const Page = (props: Props) => {
   if (!pageSlug) return <div>No page ID provided in route</div>
   return (
     <div className='tems-center flex w-full justify-center bg-slate-200 pt-2'>
-      <div className='flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28'>
-        <TipTapEditor editor={editor} className='flex w-full px-6' />
+      <div className='flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-4'>
+        <TipTapEditor editor={editor} className='page-editor flex w-full px-6' />
       </div>
     </div>
   )

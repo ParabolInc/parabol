@@ -33,7 +33,6 @@ import {joinTeamTeamOnNext} from '../mutations/JoinTeamMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
-import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
 import {
   removeOrgUsersTeamOnNext,
   removeOrgUsersTeamUpdater
@@ -130,9 +129,6 @@ const subscription = graphql`
       RemoveAgendaItemPayload {
         ...RemoveAgendaItemMutation_team @relay(mask: false)
       }
-      RemoveOrgUserPayload {
-        ...RemoveOrgUserMutation_team @relay(mask: false)
-      }
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_team @relay(mask: false)
       }
@@ -205,7 +201,6 @@ const onNextHandlers = {
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
   JoinTeamSuccess: joinTeamTeamOnNext,
-  RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext
@@ -228,7 +223,6 @@ const updateHandlers = {
   EndTeamPromptSuccess: endTeamPromptTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
-  RemoveOrgUserPayload: removeOrgUserTeamUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,

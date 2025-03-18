@@ -14,6 +14,9 @@ import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {readInlineData} from 'relay-runtime'
+import AutoJoiner from 'tiptap-extension-auto-joiner'
+import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
+import {Markdown} from 'tiptap-markdown'
 import * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
@@ -115,11 +118,7 @@ export const useTipTapPageEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false
-        }),
+        SlashCommand.configure({}),
         Focus,
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
@@ -129,7 +128,14 @@ export const useTipTapPageEditor = (
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
-          placeholder: 'New page'
+          includeChildren: true,
+          placeholder: ({node, pos}) => {
+            if (node.type.name === 'heading') {
+              if (pos === 0) return 'New Page'
+              return `Heading ${node.attrs.level}`
+            }
+            return "Press '/' for commands"
+          }
         }),
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
@@ -149,7 +155,14 @@ export const useTipTapPageEditor = (
             color: `#${themeBackgroundColors[colorIdx]}`
           }
         }),
-        InsightsBlock
+        InsightsBlock,
+        GlobalDragHandle,
+        AutoJoiner,
+        Markdown.configure({
+          html: true,
+          transformPastedText: true,
+          transformCopiedText: true
+        })
       ],
       autofocus: true,
       editable: true
