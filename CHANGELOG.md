@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.36.0](https://github.com/ParabolInc/parabol/compare/v8.35.2...v8.36.0) (2025-03-18)
+
+
+### Added
+
+* add gitlab to demo ([#11023](https://github.com/ParabolInc/parabol/issues/11023)) ([b2aa5f8](https://github.com/ParabolInc/parabol/commit/b2aa5f82c6bf176c00591ea191109bffb5b114f9))
+* can join public teams without invite ([#10952](https://github.com/ParabolInc/parabol/issues/10952)) ([7a98cf3](https://github.com/ParabolInc/parabol/commit/7a98cf3e02a1bd4e6ca21d30d45deccbfb55ecc9))
+* newly created teams are public by default ([#10961](https://github.com/ParabolInc/parabol/issues/10961)) ([d41ed25](https://github.com/ParabolInc/parabol/commit/d41ed25d8f6111c994836d5bdbcf1aea8e06e0ab))
+
+
+### Fixed
+
+* GQL retries consuming the stream on failover ([#11025](https://github.com/ParabolInc/parabol/issues/11025)) ([a564def](https://github.com/ParabolInc/parabol/commit/a564def5ad9ed1f3578fad0e9e713e47966eab6d))
+
 ## [8.35.2](https://github.com/ParabolInc/parabol/compare/v8.35.1...v8.35.2) (2025-03-18)
 
 
