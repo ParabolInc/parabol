@@ -52,11 +52,6 @@ type Team implements Node {
   ): MassInvitation!
 
   """
-  true if the underlying org has a validUntil date greater than now. if false, subs do not work
-  """
-  isPaid: Boolean
-
-  """
   The name of the team
   """
   name: String!
@@ -188,8 +183,6 @@ type Team implements Node {
   true if the viewer is an admin for the team's org, else false
   """
   isOrgAdmin: Boolean!
-  tier: TierEnum!
-  billingTier: TierEnum!
 
   """
   The team member that is the viewer
