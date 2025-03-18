@@ -68,14 +68,6 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   }
 
   const updatedUserRes = await pg
-    .with('TeamMembersUpdate', (qc) =>
-      qc
-        .updateTable('TeamMember')
-        .set({
-          email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`
-        })
-        .where('userId', 'in', userIdsToUpdate)
-    )
     .updateTable('User')
     .set({
       email: sql`CONCAT(LEFT(email, POSITION('@' in email)), ${normalizedNewDomain}::VARCHAR)`

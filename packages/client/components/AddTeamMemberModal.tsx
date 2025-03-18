@@ -128,7 +128,10 @@ const AddTeamMemberModal = (props: Props) => {
   const teamMembers = useFragment(
     graphql`
       fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
-        email
+        user {
+          id
+          email
+        }
       }
     `,
     teamMembersRef
@@ -148,7 +151,7 @@ const AddTeamMemberModal = (props: Props) => {
     const allInvitees = parsedInvitees
       ? (parsedInvitees.map((invitee: any) => invitee.address) as string[])
       : []
-    const teamEmailSet = new Set(teamMembers.map(({email}) => email))
+    const teamEmailSet = new Set(teamMembers.map(({user}) => user.email))
     const uniqueInvitees = Array.from(new Set(allInvitees))
     if (invalidEmailExists) {
       const lastValidEmail = uniqueInvitees[uniqueInvitees.length - 1]

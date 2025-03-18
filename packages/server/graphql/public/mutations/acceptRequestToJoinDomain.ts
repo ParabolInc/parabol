@@ -83,7 +83,7 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     return standardError(new Error('User not found'))
   }
 
-  const {id: userId, picture, preferredName, email} = user
+  const {id: userId} = user
 
   for (const validTeam of validTeams) {
     const {id: teamId, orgId} = validTeam
@@ -101,9 +101,6 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
           id: TeamMemberId.join(teamId, userId),
           teamId,
           userId,
-          picture,
-          preferredName,
-          email,
           openDrawer: 'manageTeam'
         })
         .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
