@@ -108,8 +108,6 @@ export const FAILED = 'FAILED'
 /* character limits */
 export const TASK_MAX_CHARS = 51200
 
-export const BATCH_ORG_USER_REMOVAL_LIMIT = 100
-
 /* Task tags */
 export const tags = [
   {

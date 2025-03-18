@@ -9,11 +9,11 @@ import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQue
 import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import User from '../../../../../server/database/types/User'
+import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../../server/postgres/constants'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
-import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../utils/constants'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 

@@ -227,7 +227,7 @@ export const removeOrgUsersNotificationOnNext: OnNextHandler<
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: `removedFromOrg:${affectedOrganizationId}`,
       autoDismiss: 10,
-      message: `${removedUserCount} ${plural(removedUserCount, 'member')} have been removed from ${affectedOrganizationName}`
+      message: `${removedUserCount} ${plural(removedUserCount, 'member')} ${removedUserCount === 1 ? 'has' : 'have'} been removed from ${affectedOrganizationName}`
     })
   }
 }
