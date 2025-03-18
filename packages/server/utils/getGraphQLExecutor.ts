@@ -1,5 +1,5 @@
-import {ServerChannel} from 'parabol-client/types/constEnums'
 import SocketServerChannelId from 'parabol-client/shared/gqlIds/SocketServerChannelId'
+import {ServerChannel} from 'parabol-client/types/constEnums'
 import PubSubPromise from './PubSubPromise'
 
 let pubsub: PubSubPromise
