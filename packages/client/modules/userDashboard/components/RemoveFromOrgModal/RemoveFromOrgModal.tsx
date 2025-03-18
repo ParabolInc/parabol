@@ -49,6 +49,30 @@ const RemoveFromOrgModal = (props: Props) => {
 
   const users = useFragment(organizationUsersFragment, organizationUsers)
 
+  // Track non-removable users and their reasons
+  const nonRemovableUsers = users
+    .filter((organizationUser) => {
+      const isSelf = organizationUser.user.id === viewerId
+      const isBillingLeader = organizationUser.role === 'BILLING_LEADER'
+      const isOrgAdmin = organizationUser.role === 'ORG_ADMIN'
+      return isSelf || isBillingLeader || isOrgAdmin
+    })
+    .map((organizationUser) => {
+      const isSelf = organizationUser.user.id === viewerId
+      const isBillingLeader = organizationUser.role === 'BILLING_LEADER'
+      const isOrgAdmin = organizationUser.role === 'ORG_ADMIN'
+
+      let reason = ''
+      if (isSelf) reason = 'Yourself'
+      else if (isOrgAdmin) reason = 'Organization Admin'
+      else if (isBillingLeader) reason = 'Billing Leader'
+
+      return {
+        user: organizationUser.user,
+        reason
+      }
+    })
+
   // Filter out non-removable users
   const removableUserIds = users
     .filter((organizationUser) => {
@@ -92,12 +116,31 @@ const RemoveFromOrgModal = (props: Props) => {
             {`This will remove ${removableCount} ${plural(removableCount, 'member')} from all teams within the organization. Any outstanding tasks will be given to the respective team leads.`}
           </div>
         )}
+
         {skippedCount > 0 && (
-          <div className='mt-2 text-sm text-slate-600'>
-            {`Note: ${skippedCount} ${plural(skippedCount, 'user')} ${skippedCount === 1 ? 'has' : 'have'} been skipped because ${skippedCount === 1 ? 'they are' : 'they are either'} yourself, an organization admin, or a billing leader.`}
+          <div className='mt-4'>
+            <div className='mb-2 text-sm font-medium text-slate-700'>
+              {`The following ${plural(skippedCount, 'user')} will not be removed:`}
+            </div>
+            <div className='max-h-60 overflow-auto rounded border border-slate-600'>
+              <div className='flex items-center justify-between border-b border-slate-400 bg-slate-100 px-3 py-2 text-sm font-semibold'>
+                <div>Name</div>
+                <div>Reason</div>
+              </div>
+              {nonRemovableUsers.map((item) => (
+                <div
+                  key={item.user.id}
+                  className='flex items-center justify-between border-b border-slate-400 px-3 py-2 last:border-0'
+                >
+                  <div className='font-medium'>{item.user.preferredName}</div>
+                  <div className='text-sm text-slate-600'>{item.reason}</div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
-        {removableCount > 0 && (
+
+        {removableCount > 0 ? (
           <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
             <IconLabel
               icon='arrow_forward'
@@ -105,13 +148,8 @@ const RemoveFromOrgModal = (props: Props) => {
               label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
             />
           </StyledButton>
-        )}
-        {removableCount === 0 && (
-          <div>
-            <div className='mt-2 text-sm text-slate-600'>
-              None of the selected users can be removed as they are either yourself, organization
-              admins, or billing leaders.
-            </div>
+        ) : (
+          <div className='mt-4'>
             <StyledButton size='medium' onClick={closePortal}>
               <IconLabel icon='close' label='Close' />
             </StyledButton>
