@@ -1,4 +1,4 @@
-import type {AuthToken} from '../../client/types/AuthToken'
+import type {AuthToken} from 'parabol-client/types/AuthToken'
 
 export interface GQLRequest {
   authToken: AuthToken

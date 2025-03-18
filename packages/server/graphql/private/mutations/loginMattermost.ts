@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import {createVerifier, httpbis} from 'http-message-signatures'
 import AuthToken from '../../../database/types/AuthToken'
-import getKysely from '../../../postgres/getKysely'
+import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -73,8 +73,7 @@ const loginMattermost: MutationResolvers['loginMattermost'] = async (
     return {error: {message: 'Missing email'}}
   }
 
-  const pg = getKysely()
-  const user = await pg.selectFrom('User').selectAll().where('email', '=', email).executeTakeFirst()
+  const user = await getUserByEmail(email)
   if (!user) {
     return {error: {message: 'Unknown user'}}
   }

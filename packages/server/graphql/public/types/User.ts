@@ -615,16 +615,6 @@ const User: ReqResolvers<'User'> = {
       : tms.filter((teamId: string) => authToken.tms.includes(teamId))
   },
 
-  userOnTeam: async (_source, {userId}, {authToken, dataLoader}) => {
-    const userOnTeam = await dataLoader.get('users').load(userId)
-    if (!userOnTeam) {
-      return null
-    }
-    // const teams = new Set(userOnTeam)
-    const {tms} = userOnTeam
-    if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
-    return userOnTeam
-  },
   activity: async (_source, {activityId}, {dataLoader}) => {
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
     return activity || null

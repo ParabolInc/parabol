@@ -1,6 +1,6 @@
 import {Team, TeamPromptResponse} from '../../../../postgres/types'
-import User from '../../../../postgres/types/IUser'
 import {AnyMeeting} from '../../../../postgres/types/Meeting'
+import {User} from '../../../../postgres/types/User'
 export type NotifyResponse =
   | 'success'
   | {

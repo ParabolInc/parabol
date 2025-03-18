@@ -1,13 +1,13 @@
-import getPg from '../getPg'
-import IUser from '../types/IUser'
-import {getUsersByEmailsQuery} from './generated/getUsersByEmailsQuery'
+import {selectUsers} from '../selectUsers'
+import {User} from '../types/User'
 
-export const getUsersByEmails = async (emails: string[]): Promise<IUser[]> => {
-  const users = await getUsersByEmailsQuery.run({emails}, getPg())
-  return users as unknown as IUser[]
+export const getUsersByEmails = async (emails: string[]): Promise<User[]> => {
+  return selectUsers().where('User.email', 'in', emails).execute() as Promise<unknown[]> as Promise<
+    User[]
+  >
 }
 
-export const getUserByEmail = async (email: string): Promise<IUser | null> => {
+export const getUserByEmail = async (email: string): Promise<User | null> => {
   const users = await getUsersByEmails([email])
   return users[0] ?? null
 }

@@ -5,8 +5,8 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {SlackNotification, Team} from '../../../../postgres/types'
-import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {User} from '../../../../postgres/types/User'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import sendToSentry from '../../../../utils/sendToSentry'
@@ -20,7 +20,7 @@ import getSummaryText from './getSummaryText'
 const notifyMSTeams = async (
   event: SlackNotification['event'],
   webhookUrl: string,
-  user: IUser,
+  user: User,
   teamId: string,
   textOrAttachmentsArray: string | unknown[]
 ) => {

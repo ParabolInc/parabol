@@ -57,6 +57,7 @@ beforeAll(async () => {
   await createPGTables(
     'Organization',
     'User',
+    'TeamMember',
     'FreemailDomain',
     'SAML',
     'SAMLDomain',

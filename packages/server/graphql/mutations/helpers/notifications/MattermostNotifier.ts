@@ -6,8 +6,8 @@ import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
 import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
 import {SlackNotification, Team} from '../../../../postgres/types'
-import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import {User} from '../../../../postgres/types/User'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
@@ -33,7 +33,7 @@ const notifyMattermost = async (
     sharedSecret: string | null
     channelId: string | null
   },
-  user: IUser,
+  user: User,
   teamId: string,
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string

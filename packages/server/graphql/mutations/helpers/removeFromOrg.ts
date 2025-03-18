@@ -20,12 +20,14 @@ const removeFromOrg = async (
     dataLoader.get('teamsByOrgIds').load(orgId),
     dataLoader.get('teamMembersByUserId').load(userId)
   ])
-  const teamIds = orgTeams.map((team) => team.id)
-  const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
-  const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
+  const removedTeamIds = orgTeams.map((team) => team.id)
+  const removedTeamMembers = allTeamMembers.filter((teamMember) =>
+    removedTeamIds.includes(teamMember.teamId)
+  )
+  const removedTeamMemberIds = removedTeamMembers.map((teamMember) => teamMember.id)
 
   const perTeamRes = await Promise.all(
-    teamMemberIds.map((teamMemberId) => {
+    removedTeamMemberIds.map((teamMemberId) => {
       return removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     })
   )
@@ -57,6 +59,7 @@ const removeFromOrg = async (
     dataLoader.get('users').loadNonNull(userId)
   ])
   dataLoader.clearAll('organizationUsers')
+  const {tms} = user
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
   if (role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(role)) {
@@ -88,11 +91,11 @@ const removeFromOrg = async (
   }
   await setUserTierForUserIds([userId])
   return {
-    tms: user?.tms ?? [],
+    tms,
     taskIds,
     kickOutNotificationIds,
-    teamIds,
-    teamMemberIds,
+    teamIds: removedTeamIds,
+    teamMemberIds: removedTeamMemberIds,
     organizationUserId: organizationUser.id,
     activeMeetingIds
   }

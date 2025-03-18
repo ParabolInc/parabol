@@ -366,12 +366,6 @@ type User {
   The timestamp the user was last updated
   """
   updatedAt: DateTime
-  userOnTeam(
-    """
-    The other user
-    """
-    userId: ID!
-  ): User
 
   """
   The assumed company this organizaiton belongs to

@@ -1,11 +1,11 @@
 import getMailManager from '../../email/getMailManager'
 import teamLimitsEmailCreator from '../../email/teamLimitsEmailCreator'
-import IUser from '../../postgres/types/IUser'
+import {User} from '../../postgres/types/User'
 
 export type TeamLimitsEmailType = 'locked' | 'sevenDayWarning' | 'thirtyDayWarning'
 
 type Props = {
-  user: IUser
+  user: User
   orgId: string
   orgName: string
   emailType: TeamLimitsEmailType

@@ -1,4 +1,3 @@
-import {sql} from 'kysely'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {MeetingSettingsThreshold} from '../../../../client/types/constEnums'
 import Team from '../../../database/types/Team'
@@ -6,7 +5,7 @@ import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreat
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import IUser from '../../../postgres/types/IUser'
+import {User} from '../../../postgres/types/User'
 
 interface ValidNewTeam {
   id: string
@@ -17,7 +16,7 @@ interface ValidNewTeam {
 
 // used for addorg, addTeam
 export default async function createTeamAndLeader(
-  user: IUser,
+  user: User,
   newTeam: ValidNewTeam,
   dataLoader: DataLoaderInstance
 ) {
@@ -52,12 +51,6 @@ export default async function createTeamAndLeader(
   await Promise.all([
     pg
       .with('TeamInsert', (qc) => qc.insertInto('Team').values(verifiedTeam))
-      .with('UserUpdate', (qc) =>
-        qc
-          .updateTable('User')
-          .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
-          .where('id', '=', userId)
-      )
       .with('TeamMemberInsert', (qc) =>
         qc.insertInto('TeamMember').values({
           id: TeamMemberId.join(teamId, userId),
