@@ -1,8 +1,5 @@
-import IntegrationProviderOAuth1 from './types/IntegrationProviderOAuth1'
-import IntegrationProviderOAuth2 from './types/IntegrationProviderOAuth2'
-import IntegrationProviderSharedSecret from './types/IntegrationProviderSharedSecret'
-import IntegrationProviderWebhook from './types/IntegrationProviderWebhook'
 import JiraDimensionField from './types/JiraDimensionField'
+import OrganizationUser from './types/OrganizationUser'
 import RenamePokerTemplatePayload from './types/RenamePokerTemplatePayload'
 import SetMeetingSettingsPayload from './types/SetMeetingSettingsPayload'
 import TimelineEventCompletedActionMeeting from './types/TimelineEventCompletedActionMeeting'
@@ -13,10 +10,6 @@ import TimelineEventTeamCreated from './types/TimelineEventTeamCreated'
 import UserTiersCount from './types/UserTiersCount'
 
 const rootTypes = [
-  IntegrationProviderOAuth1,
-  IntegrationProviderOAuth2,
-  IntegrationProviderSharedSecret,
-  IntegrationProviderWebhook,
   SetMeetingSettingsPayload,
   TimelineEventTeamCreated,
   TimelineEventJoinedParabol,
@@ -25,6 +18,7 @@ const rootTypes = [
   TimelineEventPokerComplete,
   JiraDimensionField,
   RenamePokerTemplatePayload,
-  UserTiersCount
+  UserTiersCount,
+  OrganizationUser
 ]
 export default rootTypes

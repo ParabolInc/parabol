@@ -208,16 +208,13 @@ const DiscussionThreadInput = (props: Props) => {
   return (
     <div
       className='z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-disabled:opacity-50 data-[reply=true]:mt-2 data-[reply=true]:-ml-3 data-[reply=true]:rounded-t data-[reply=true]:shadow-discussion-thread'
-      data-disabled={isDisabled}
+      data-disabled={isDisabled ? '' : undefined}
       data-reply={isReply}
       ref={containerRef}
     >
       <div className='flex items-center justify-center p-1'>
         <Avatar picture={avatar} onClick={toggleAnonymous} className='m-2 h-8 w-8 transition-all' />
-        <TipTapEditor
-          className='flex max-h-80 min-h-0 grow overflow-auto px-0 leading-4'
-          editor={editor}
-        />
+        <TipTapEditor className='flex max-h-80 grow overflow-auto leading-4' editor={editor} />
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
       {isActionsContainerVisible && (

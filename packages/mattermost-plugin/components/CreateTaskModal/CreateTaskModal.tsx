@@ -4,7 +4,7 @@ import {useEffect, useMemo, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
-import {closeCreateTaskModal, openLinkTeamModal} from '../../reducers'
+import {closeCreateTaskModal} from '../../reducers'
 
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
@@ -22,6 +22,7 @@ import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {getPluginServerRoute} from '../../selectors'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
+import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
@@ -32,14 +33,21 @@ const CreateTaskModal = () => {
 
   const data = useLazyLoadQuery<CreateTaskModalQuery>(
     graphql`
-      query CreateTaskModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query CreateTaskModalQuery {
         viewer {
           id
           teams {
             id
             name
             orgId
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             teamMembers {
               id
               email
@@ -48,19 +56,22 @@ const CreateTaskModal = () => {
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
 
-  const {viewer, linkedTeamIds} = data
+  const {viewer} = data
   const {id: userId, teams} = viewer
-  const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
-    [teams, linkedTeamIds]
-  )
 
-  const [createTask, createTaskLoading] = useMutation<CreateTaskModalMutation>(graphql`
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
+
+  const [createTask, isLoading] = useMutation<CreateTaskModalMutation>(graphql`
     mutation CreateTaskModalMutation($newTask: CreateTaskInput!) {
       createTask(newTask: $newTask) {
         task {
@@ -72,6 +83,7 @@ const CreateTaskModal = () => {
       }
     }
   `)
+  const [error, setError] = useState<string>()
 
   const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
   const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>('active')
@@ -93,25 +105,41 @@ const CreateTaskModal = () => {
     if (!teamId || !selectedStatus || !editor || editor.isEmpty) {
       return
     }
-    if (createTaskLoading) {
+    if (isLoading) {
       return
     }
 
     const content = editor.getJSON()
 
-    createTask({
-      variables: {
-        newTask: {
-          content: JSON.stringify(content),
-          status: selectedStatus,
-          userId,
-          teamId
-        }
-      }
-    })
+    setError(undefined)
+    try {
+      await new Promise((resolve, reject) =>
+        createTask({
+          variables: {
+            newTask: {
+              content: JSON.stringify(content),
+              status: selectedStatus,
+              userId,
+              teamId
+            }
+          },
+          onCompleted: (data) => {
+            if (data.createTask.error) {
+              reject(data.createTask.error.message)
+            } else {
+              resolve(data.createTask.task?.id)
+            }
+          },
+          onError: reject
+        })
+      )
+    } catch (error) {
+      console.error('Failed to create task', error)
+      setError('Failed to create task')
+    }
 
     if (channel) {
-      const teamUrl = `${pluginServerRoute}/parabol/team/${teamId}`
+      const teamUrl = `${pluginServerRoute}/parabol/team/${teamId}/tasks`
       const message = `Task created in [${teamName}](${teamUrl})`
       Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
         method: 'post',
@@ -133,21 +161,8 @@ const CreateTaskModal = () => {
     return null
   }
 
-  if (linkedTeams.length === 0) {
-    const handleLink = () => {
-      dispatch(openLinkTeamModal())
-      handleClose()
-    }
-    return (
-      <Modal
-        title='Add a Task'
-        commitButtonLabel='Link team'
-        handleClose={handleClose}
-        handleCommit={handleLink}
-      >
-        <p>There are no Parabol teams linked to this channel yet.</p>
-      </Modal>
-    )
+  if (!linkedTeams || linkedTeams.length === 0) {
+    return <NoLinkedTeamsModal title='Add a Task' handleClose={handleClose} />
   }
 
   return (
@@ -156,6 +171,8 @@ const CreateTaskModal = () => {
       commitButtonLabel='Add Task'
       handleClose={handleClose}
       handleCommit={handleSubmit}
+      error={error}
+      isLoading={isLoading}
     >
       <div className='absolute top-0 left-0 z-10 z-1050' />
       <div className='form-group'>

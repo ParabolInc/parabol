@@ -5,6 +5,154 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.35.2](https://github.com/ParabolInc/parabol/compare/v8.35.1...v8.35.2) (2025-03-18)
+
+
+### Fixed
+
+* link css ([#11011](https://github.com/ParabolInc/parabol/issues/11011)) ([15185aa](https://github.com/ParabolInc/parabol/commit/15185aa4b4eff350ca67a4a14dadf5b94b303595))
+* Syntax error in down migration ([#11013](https://github.com/ParabolInc/parabol/issues/11013)) ([95e19ea](https://github.com/ParabolInc/parabol/commit/95e19ea9892da5fdef63de40d3d46de68f946c9e))
+
+
+### Changed
+
+* check down migrations are valid ([#11014](https://github.com/ParabolInc/parabol/issues/11014)) ([3c06358](https://github.com/ParabolInc/parabol/commit/3c06358544079c1ac75ec59ef89fcf86c975be12))
+* **deps:** bump axios from 1.8.1 to 1.8.2 ([#10969](https://github.com/ParabolInc/parabol/issues/10969)) ([d4b668f](https://github.com/ParabolInc/parabol/commit/d4b668f159ca58a8a41f4428395b25ef1ab5eb6e))
+* **deps:** bump tj-actions/changed-files from 41 to 46 in /.github/workflows ([#11019](https://github.com/ParabolInc/parabol/issues/11019)) ([cf20151](https://github.com/ParabolInc/parabol/commit/cf201513dccecd91454bfc5203bb43445fbee027))
+* **deps:** bump xml-crypto from 3.2.0 to 3.2.1 ([#11010](https://github.com/ParabolInc/parabol/issues/11010)) ([cd257eb](https://github.com/ParabolInc/parabol/commit/cd257eb541d4a04fef72ccbea6eeb1d3aba8cbdb))
+* Security upgrade dompurify from 2.5.8 to 3.2.4 ([#10883](https://github.com/ParabolInc/parabol/issues/10883)) ([7ea51a0](https://github.com/ParabolInc/parabol/commit/7ea51a0df821d7ed35959f6a02aa11245d52c295))
+
+## [8.35.1](https://github.com/ParabolInc/parabol/compare/v8.35.0...v8.35.1) (2025-03-13)
+
+
+### Fixed
+
+* drag handles and scrollbar on specific meeting table ([#11000](https://github.com/ParabolInc/parabol/issues/11000)) ([621673c](https://github.com/ParabolInc/parabol/commit/621673c2a2bcad0745e8890d9163bf9d6d23aa4a))
+* placeholder regression in tiptap ([#11007](https://github.com/ParabolInc/parabol/issues/11007)) ([b78eea8](https://github.com/ParabolInc/parabol/commit/b78eea8e8bdce1e5ec5361548969ad71d9ab02cf))
+* several people are not editing, thank you ([#11008](https://github.com/ParabolInc/parabol/issues/11008)) ([9506d34](https://github.com/ParabolInc/parabol/commit/9506d347865bddf69259ca99cf29b3c5ad08193f))
+
+## [8.35.0](https://github.com/ParabolInc/parabol/compare/v8.34.3...v8.35.0) (2025-03-12)
+
+
+### Added
+
+* **pages:** custom prompts ([#10985](https://github.com/ParabolInc/parabol/issues/10985)) ([92a2b40](https://github.com/ParabolInc/parabol/commit/92a2b403696d9705852cf1ac813e017128f0baae))
+
+
+### Changed
+
+* remove google language manager ([#10639](https://github.com/ParabolInc/parabol/issues/10639)) ([1b04e56](https://github.com/ParabolInc/parabol/commit/1b04e56668048ab02829fbee6509e3bbb2ce2f44))
+
+## [8.34.3](https://github.com/ParabolInc/parabol/compare/v8.34.2...v8.34.3) (2025-03-12)
+
+
+### Fixed
+
+* Handle duplicate SAML attributes ([#10988](https://github.com/ParabolInc/parabol/issues/10988)) ([cf47813](https://github.com/ParabolInc/parabol/commit/cf4781346f9a1f2f85a3f690ae3f30f3c4c028bc))
+
+## [8.34.2](https://github.com/ParabolInc/parabol/compare/v8.34.1...v8.34.2) (2025-03-12)
+
+
+### Changed
+
+* deprecate `RemoveOrgUser` in favor of `RemoveOrgUsers` ([#10951](https://github.com/ParabolInc/parabol/issues/10951)) ([8157a08](https://github.com/ParabolInc/parabol/commit/8157a081680e6ae35c029213a876ed6658d63c06))
+* Log attributes if the emails don't match ([#10986](https://github.com/ParabolInc/parabol/issues/10986)) ([6e9c7ab](https://github.com/ParabolInc/parabol/commit/6e9c7abb704a2ab258c183002b064fcbcb1df9ce))
+
+## [8.34.1](https://github.com/ParabolInc/parabol/compare/v8.34.0...v8.34.1) (2025-03-11)
+
+
+### Changed
+
+* Add logging for SAML login errors ([#10981](https://github.com/ParabolInc/parabol/issues/10981)) ([bc31ba4](https://github.com/ParabolInc/parabol/commit/bc31ba483d2f78938ee8667817a7d83dd9672aa5))
+* change settings tooltip copy ([#10979](https://github.com/ParabolInc/parabol/issues/10979)) ([61caf63](https://github.com/ParabolInc/parabol/commit/61caf63daa1e7e85c402b017227caf82ecba3428))
+
+## [8.34.0](https://github.com/ParabolInc/parabol/compare/v8.33.1...v8.34.0) (2025-03-11)
+
+
+### Added
+
+* **pages:** drag handles, copy/paste markdown ([#10977](https://github.com/ParabolInc/parabol/issues/10977)) ([7d034d8](https://github.com/ParabolInc/parabol/commit/7d034d87f21b94615fc86236e1b5c68986ef3e52))
+
+
+### Changed
+
+* **postgresql:** upgrade pgvector to 0.8.0 ([#10976](https://github.com/ParabolInc/parabol/issues/10976)) ([e0170e0](https://github.com/ParabolInc/parabol/commit/e0170e0135b7446be2b1b6d77ceab42a398989ee))
+* update copy that says only team leads can upgrade ([#10970](https://github.com/ParabolInc/parabol/issues/10970)) ([957cba8](https://github.com/ParabolInc/parabol/commit/957cba8880140b628ed0288e44ef779eb89ff54f))
+
+## [8.33.1](https://github.com/ParabolInc/parabol/compare/v8.33.0...v8.33.1) (2025-03-10)
+
+
+### Fixed
+
+* getIsEmailApprovedByOrg was overly permissive ([#10971](https://github.com/ParabolInc/parabol/issues/10971)) ([2d25bc0](https://github.com/ParabolInc/parabol/commit/2d25bc0e53f22fcbeb0875e84ec85128e6592c04))
+
+## [8.33.0](https://github.com/ParabolInc/parabol/compare/v8.32.0...v8.33.0) (2025-03-07)
+
+
+### Added
+
+* copy insights to markdown ([#10963](https://github.com/ParabolInc/parabol/issues/10963)) ([be3b3d1](https://github.com/ParabolInc/parabol/commit/be3b3d140a5c35f20cf88205d429edcaff185cdb))
+* **Mattermost Plugin:** Configure notifications ([#10905](https://github.com/ParabolInc/parabol/issues/10905)) ([623f472](https://github.com/ParabolInc/parabol/commit/623f472187e1e95a30c8625700790e29bfaa0690))
+
+
+### Changed
+
+* **Mattermost Plugin:** Error and loading states ([#10967](https://github.com/ParabolInc/parabol/issues/10967)) ([537f5de](https://github.com/ParabolInc/parabol/commit/537f5def6d4779746097c15bcced4488e1deaa0c))
+* **Mattermost Plugin:** Sidepanel styling ([#10964](https://github.com/ParabolInc/parabol/issues/10964)) ([b340c33](https://github.com/ParabolInc/parabol/commit/b340c33691b371c621066405a1551f3e76e98bf6))
+* **Mattermost Plugin:** Update notify API ([#10960](https://github.com/ParabolInc/parabol/issues/10960)) ([c711382](https://github.com/ParabolInc/parabol/commit/c711382dabe436de343276cb887ec146642328ca))
+
+## [8.32.0](https://github.com/ParabolInc/parabol/compare/v8.31.0...v8.32.0) (2025-03-05)
+
+
+### Added
+
+* insights backend ([#10936](https://github.com/ParabolInc/parabol/issues/10936)) ([5fb8756](https://github.com/ParabolInc/parabol/commit/5fb875629d3600cf1399379aa9b710acbb88ebae))
+* **templates:** allow org admins to access team templates ([#10946](https://github.com/ParabolInc/parabol/issues/10946)) ([7ce67c7](https://github.com/ParabolInc/parabol/commit/7ce67c70b28c58f9df4955ba71dc04840a2b3113))
+
+
+### Fixed
+
+* line height, padding for editor instances ([#10931](https://github.com/ParabolInc/parabol/issues/10931)) ([182eca9](https://github.com/ParabolInc/parabol/commit/182eca952794d46c7bc5632f3fe551d1ebe46919))
+
+
+### Changed
+
+* Add loginMattermost private mutation ([#10943](https://github.com/ParabolInc/parabol/issues/10943)) ([b45578c](https://github.com/ParabolInc/parabol/commit/b45578cd05a87cf82e5ab6feb8659498b5af7b8c))
+* **Mattermost Plugin:** Poll active meetings ([#10950](https://github.com/ParabolInc/parabol/issues/10950)) ([8912e23](https://github.com/ParabolInc/parabol/commit/8912e237916c683ef6c5cbe67f0e1e482209a265))
+* rename removeMultipleOrgUsers to removeOrgUsers ([#10947](https://github.com/ParabolInc/parabol/issues/10947)) ([17085b8](https://github.com/ParabolInc/parabol/commit/17085b8b4b862e0713c2d32b2c66a0ed9bc3bdee))
+
+## [8.31.0](https://github.com/ParabolInc/parabol/compare/v8.30.0...v8.31.0) (2025-03-04)
+
+
+### Added
+
+* add client-side RemoveMultipleOrgUsersMutation ([#10805](https://github.com/ParabolInc/parabol/issues/10805)) ([167ce2b](https://github.com/ParabolInc/parabol/commit/167ce2b304b3664a09affa3a97d7b1ed32b81e11))
+
+
+### Changed
+
+* Add "Press Enter" hint in reflect phase ([#10909](https://github.com/ParabolInc/parabol/issues/10909)) ([d82db10](https://github.com/ParabolInc/parabol/commit/d82db10945429e4bb2d9641729aadabef082ffc0))
+* **Notifications:** Refactor notification settings to be per team ([#10899](https://github.com/ParabolInc/parabol/issues/10899)) ([49dc95a](https://github.com/ParabolInc/parabol/commit/49dc95a2403984818b3752dab15e67ec7d2bcea7))
+
+## [8.30.0](https://github.com/ParabolInc/parabol/compare/v8.29.0...v8.30.0) (2025-02-28)
+
+
+### Added
+
+* insights block ([#10911](https://github.com/ParabolInc/parabol/issues/10911)) ([e9ad424](https://github.com/ParabolInc/parabol/commit/e9ad4240d8d19fff17fc52d5cc8a301acf8f712c))
+
+
+### Fixed
+
+* issues when replying to comments ([#10912](https://github.com/ParabolInc/parabol/issues/10912)) ([e4f293a](https://github.com/ParabolInc/parabol/commit/e4f293aa084304a54930dc255f4bf83ba15c9411))
+* no ai title for custom groups ([#10929](https://github.com/ParabolInc/parabol/issues/10929)) ([4f066a0](https://github.com/ParabolInc/parabol/commit/4f066a0ac1189d45a9ad7e1f60ce23805bfd4d79))
+
+
+### Changed
+
+* **Mattermost Plugin:** Default to linked teams on new channels ([#10937](https://github.com/ParabolInc/parabol/issues/10937)) ([9bd83af](https://github.com/ParabolInc/parabol/commit/9bd83af5b2438d0fcbe3982f5cc49cf9773fcc87))
+* Minor Mattermost Plugin fixes ([#10933](https://github.com/ParabolInc/parabol/issues/10933)) ([1f16c7c](https://github.com/ParabolInc/parabol/commit/1f16c7c27fd5341805474b2deaf39e373d0ed915))
+
 ## [8.29.0](https://github.com/ParabolInc/parabol/compare/v8.28.1...v8.29.0) (2025-02-25)
 
 

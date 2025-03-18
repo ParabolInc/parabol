@@ -1,4 +1,4 @@
-import * as DOMPurify from 'dompurify'
+import DOMPurify from 'dompurify'
 import {twMerge} from 'tailwind-merge'
 import getSafeRegex from '~/utils/getSafeRegex'
 

@@ -13,8 +13,12 @@ import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
 
 const {SERVER_ID, HOCUS_POCUS_PORT} = process.env
+const port = Number(HOCUS_POCUS_PORT)
+if (isNaN(port) || port < 0 || port > 65536) {
+  throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
+}
 const server = Server.configure({
-  port: Number(HOCUS_POCUS_PORT),
+  port,
   quiet: true,
   async onListen(data) {
     Logger.log(`\n🔮🔮🔮 Server ID: ${SERVER_ID}. Ready for Hocus Pocus: Port ${data.port} 🔮🔮🔮`)
@@ -65,7 +69,7 @@ const server = Server.configure({
         const docText = generateText(doc, serverTipTapExtensions)
         const delimiter = '\n\n'
         const titleBreakIdx = docText.indexOf(delimiter)
-        const title = docText.slice(0, titleBreakIdx)
+        const title = docText.slice(0, titleBreakIdx).slice(0, 255)
         const plaintextContent = docText.slice(titleBreakIdx + delimiter.length)
         const [_entityName, entityId] = documentName.split(':')
         const dbId = feistelCipher.decrypt(Number(entityId))

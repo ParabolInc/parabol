@@ -2,7 +2,6 @@ import {GraphQLObjectType} from 'graphql'
 import {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
-import addIntegrationProvider from './mutations/addIntegrationProvider'
 import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
@@ -54,7 +53,6 @@ import pushInvitation from './mutations/pushInvitation'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeIntegrationProvider from './mutations/removeIntegrationProvider'
-import removeOrgUser from './mutations/removeOrgUser'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
@@ -146,7 +144,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       pokerTemplateDimensionUpdateDescription,
       removeAtlassianAuth,
       removeGitHubAuth,
-      removeOrgUser,
       removeReflectTemplate,
       removePokerTemplateDimension,
       renameMeeting,
@@ -192,7 +189,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       toggleTeamDrawer,
       updateGitHubDimensionField,
       createPoll,
-      addIntegrationProvider,
       removeIntegrationProvider,
       updateAzureDevOpsDimensionField
     }) as any

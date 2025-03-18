@@ -34,7 +34,7 @@ export const tiptapMentionConfig = (
     decorationClass: 'mention',
     items: async ({query}) => {
       const res = await atmosphere.fetchQuery<tiptapMentionConfigQuery>(queryNode, {teamId})
-      if (!res) return []
+      if (!res || res instanceof Error) return []
       const {viewer} = res
       const {team} = viewer
       const {teamMembers} = team!

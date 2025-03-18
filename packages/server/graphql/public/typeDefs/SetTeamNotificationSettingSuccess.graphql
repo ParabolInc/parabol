@@ -1,0 +1,6 @@
+type SetTeamNotificationSettingSuccess {
+  """
+  The updated settings
+  """
+  teamNotificationSettings: TeamNotificationSettings!
+}

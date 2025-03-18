@@ -35,11 +35,18 @@ const PushReflectionModal = () => {
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
-      query PushReflectionModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query PushReflectionModalQuery {
         viewer {
           teams {
             id
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
             activeMeetings {
               id
               name
@@ -64,17 +71,17 @@ const PushReflectionModal = () => {
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {viewer, linkedTeamIds} = data
-  const {teams} = viewer
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
-  const linkedTeams = useMemo(
-    () => teams.filter(({id}) => linkedTeamIds && linkedTeamIds.includes(id)),
-    [teams, linkedTeamIds]
-  )
   const retroMeetings = useMemo(
     () =>
       linkedTeams
@@ -123,13 +130,14 @@ const PushReflectionModal = () => {
     return JSON.stringify(json)
   }, [htmlPost])
 
-  const [createReflection] = useMutation<PushReflectionModalMutation>(graphql`
+  const [createReflection, isLoading] = useMutation<PushReflectionModalMutation>(graphql`
     mutation PushReflectionModalMutation($input: CreateReflectionInput!) {
       createReflection(input: $input) {
         reflectionId
       }
     }
   `)
+  const [error, setError] = React.useState<string>()
 
   useEffect(() => {
     if (!selectedMeeting && retroMeetings && retroMeetings.length > 0) {
@@ -154,24 +162,42 @@ const PushReflectionModal = () => {
 
   const handlePush = async () => {
     if (!selectedMeeting || !selectedPrompt || !editor || editor.isEmpty) {
-      console.log('missing data', selectedPrompt, selectedMeeting, post.message)
+      setError('Please fill out all required fields')
       return
     }
+    setError(undefined)
+
     const {id: meetingId, name: meetingName} = selectedMeeting
     const {id: promptId, question} = selectedPrompt
 
     const content = JSON.stringify(editor.getJSON())
 
-    createReflection({
-      variables: {
-        input: {
-          meetingId,
-          promptId,
-          content,
-          sortOrder: 0
-        }
-      }
-    })
+    try {
+      await new Promise((resolve, reject) =>
+        createReflection({
+          variables: {
+            input: {
+              meetingId,
+              promptId,
+              content,
+              sortOrder: 0
+            }
+          },
+          onCompleted: (data) => {
+            if (!data.createReflection) {
+              reject('Failed to create reflection')
+              return
+            }
+            resolve(data)
+          },
+          onError: reject
+        })
+      )
+    } catch (error) {
+      console.error('Failed to create reflection', error)
+      setError('Failed to create reflection')
+      return
+    }
 
     const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
     const props = {
@@ -267,6 +293,8 @@ const PushReflectionModal = () => {
       commitButtonLabel='Add Comment'
       handleClose={handleClose}
       handleCommit={handlePush}
+      error={error}
+      isLoading={isLoading}
     >
       {post && (
         <div className='form-group'>

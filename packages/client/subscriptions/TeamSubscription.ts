@@ -33,7 +33,10 @@ import {joinTeamTeamOnNext} from '../mutations/JoinTeamMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
-import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from '../mutations/RemoveOrgUserMutation'
+import {
+  removeOrgUsersTeamOnNext,
+  removeOrgUsersTeamUpdater
+} from '../mutations/RemoveOrgUsersMutation'
 import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTemplateMutation'
 import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
 import {
@@ -105,6 +108,9 @@ const subscription = graphql`
       EndTeamPromptSuccess {
         ...EndTeamPromptMutation_team @relay(mask: false)
       }
+      JoinTeamSuccess {
+        ...JoinTeamMutation_team @relay(mask: false)
+      }
       MoveReflectTemplatePromptPayload {
         ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       }
@@ -123,8 +129,8 @@ const subscription = graphql`
       RemoveAgendaItemPayload {
         ...RemoveAgendaItemMutation_team @relay(mask: false)
       }
-      RemoveOrgUserPayload {
-        ...RemoveOrgUserMutation_team @relay(mask: false)
+      RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_team @relay(mask: false)
       }
       RemoveReflectTemplatePayload {
         ...RemoveReflectTemplateMutation_team @relay(mask: false)
@@ -153,8 +159,8 @@ const subscription = graphql`
       SetMeetingSettingsPayload {
         ...SetMeetingSettingsMutation_team @relay(mask: false)
       }
-      SetNotificationSettingSuccess {
-        ...SetNotificationSettingMutation_auth @relay(mask: false)
+      SetTeamNotificationSettingSuccess {
+        ...SetTeamNotificationSettingMutation_settings @relay(mask: false)
       }
       StartCheckInSuccess {
         ...StartCheckInMutation_team @relay(mask: false)
@@ -171,7 +177,6 @@ const subscription = graphql`
       UpdateAgendaItemPayload {
         ...UpdateAgendaItemMutation_team @relay(mask: false)
       }
-
       UpdateCreditCardPayload {
         ...UpdateCreditCardMutation_team @relay(mask: false)
       }
@@ -184,9 +189,6 @@ const subscription = graphql`
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
-      JoinTeamSuccess {
-        ...JoinTeamMutation_team @relay(mask: false)
-      }
     }
   }
 `
@@ -198,10 +200,10 @@ const onNextHandlers = {
   EndCheckInSuccess: endCheckInTeamOnNext,
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
-  RemoveOrgUserPayload: removeOrgUserTeamOnNext,
+  JoinTeamSuccess: joinTeamTeamOnNext,
+  RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
-  PushInvitationPayload: pushInvitationTeamOnNext,
-  JoinTeamSuccess: joinTeamTeamOnNext
+  PushInvitationPayload: pushInvitationTeamOnNext
 } as const
 
 const updateHandlers = {
@@ -221,7 +223,7 @@ const updateHandlers = {
   EndTeamPromptSuccess: endTeamPromptTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
-  RemoveOrgUserPayload: removeOrgUserTeamUpdater,
+  RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,
   RemoveReflectTemplatePayload: removeReflectTemplateTeamUpdater,
   RemoveReflectTemplatePromptPayload: removeReflectTemplatePromptTeamUpdater,
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater

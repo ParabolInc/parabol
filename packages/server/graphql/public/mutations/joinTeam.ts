@@ -6,7 +6,6 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
-import getIsUserIdApprovedByOrg from './helpers/getIsUserIdApprovedByOrg'
 
 const joinTeam: MutationResolvers['joinTeam'] = async (
   _source,
@@ -25,17 +24,21 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
     return standardError(new Error('You are already a member of this team'))
   }
 
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const [team, viewer] = await Promise.all([
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('users').loadNonNull(viewerId)
+  ])
   const {orgId} = team
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   if (!team.isPublic) {
     return standardError(new Error('This team is not public'))
   }
 
-  const approvalError = await getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader)
-  if (approvalError instanceof Error) {
-    return standardError(approvalError)
+  const organizationUser = await dataLoader
+    .get('organizationUsersByUserIdOrgId')
+    .load({userId: viewerId, orgId})
+  if (!organizationUser) {
+    return standardError(new Error('Viewer does not belong to organization'))
   }
 
   await acceptTeamInvitationSafe(team, viewerId, dataLoader)

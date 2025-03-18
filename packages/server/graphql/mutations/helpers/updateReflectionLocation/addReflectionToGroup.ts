@@ -61,6 +61,8 @@ const addReflectionToGroup = async (
     const oldGroupHasSingleReflectionCustomTitle =
       oldReflectionGroup.title !== oldReflectionGroup.smartTitle && oldReflections.length === 0
     const newGroupHasSmartTitle = reflectionGroup.title === reflectionGroup.smartTitle
+    const newGroupHasUserDefinedTitle =
+      reflectionGroup.title !== reflectionGroup.smartTitle && reflectionGroup.title !== ''
 
     if (oldGroupHasSingleReflectionCustomTitle && newGroupHasSmartTitle) {
       // Edge case of dragging a single card with a custom group name on a group with smart name
@@ -74,7 +76,7 @@ const addReflectionToGroup = async (
       await updateSmartGroupTitle(reflectionGroupId, smartTitle)
       reflectionGroup.smartTitle = smartTitle
       reflectionGroup.title = smartTitle
-    } else {
+    } else if (!newGroupHasUserDefinedTitle) {
       const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
       await updateGroupTitle({
         reflections: nextReflections,

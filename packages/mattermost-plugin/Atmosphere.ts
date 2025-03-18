@@ -23,34 +23,40 @@ type State = {
 }
 
 const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Variables) => {
-  const {serverUrl, store} = state
-  const authToken = getAuthToken(store.getState())
-  const response = fetch(
-    serverUrl + '/graphql',
-    Client4.getOptions({
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        'x-application-authorization': authToken ? `Bearer ${authToken}` : ''
-      },
-      body: JSON.stringify({
-        type: 'start',
-        payload: {
-          documentId: params.id,
-          query: params.text,
-          variables
-        }
+  return Observable.create((sink) => {
+    const {serverUrl, store} = state
+    const authToken = getAuthToken(store.getState())
+    const response = fetch(
+      serverUrl + '/graphql',
+      Client4.getOptions({
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'x-application-authorization': authToken ? `Bearer ${authToken}` : ''
+        },
+        body: JSON.stringify({
+          type: 'start',
+          payload: {
+            documentId: params.id,
+            query: params.text,
+            variables
+          }
+        })
       })
-    })
-  )
+    )
 
-  return Observable.from(
-    response.then(async (data) => {
-      const json = await data.json()
-      return json.payload
-    })
-  )
+    response
+      .then(async (data) => {
+        const json = await data.json()
+        sink.next(json.payload)
+        sink.complete()
+      })
+      .catch((error) => {
+        sink.error(error)
+        sink.complete()
+      })
+  })
 }
 
 const login = (state: State) => async () => {

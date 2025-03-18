@@ -4,11 +4,6 @@ module.exports = {
   important: 'body',
   content: ['./packages/client/**/!(*node_modules*)/**/*.{ts,tsx,js,jsx,html}', './template.html'],
   theme: {
-    data: {
-      highlighted: 'highlighted=true',
-      // for elements where disabled doesn't exist, e.g. divs
-      disabled: 'disabled=true'
-    },
     extend: {
       padding: {
         'row-gutter': '16px'

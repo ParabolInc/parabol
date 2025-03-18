@@ -1,0 +1,47 @@
+type RemoveOrgUsersSuccess {
+  """
+  The ids of the users removed from the organization
+  """
+  removedUserIds: [String!]!
+
+  """
+  The ids for the organization members that got removed
+  """
+  removedOrgMemberIds: [String!]!
+
+  """
+  The ids of the team members removed
+  """
+  removedTeamMemberIds: [String!]!
+
+  """
+  Basic info about the organization the users were removed from
+  """
+  affectedOrganizationId: ID!
+  affectedOrganizationName: String!
+
+  """
+  The ids of the teams the users were removed from
+  """
+  affectedTeamIds: [String!]!
+
+  """
+  The tasks that were archived or reassigned
+  """
+  affectedTasks: [Task!]!
+
+  """
+  The ids for the active meetings that users might have been in
+  """
+  affectedMeetingIds: [String!]!
+
+  """
+  The meetings that got affected by the removal
+  """
+  affectedMeetings: [NewMeeting!]!
+
+  """
+  The notifications for each team the users were kicked out of
+  """
+  kickOutNotifications: [NotifyKickedOut!]!
+}

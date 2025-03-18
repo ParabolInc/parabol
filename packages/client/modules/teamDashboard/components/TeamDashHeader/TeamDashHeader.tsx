@@ -179,7 +179,7 @@ const TeamDashHeader = (props: Props) => {
               {({css}) => (
                 <NavLink
                   className={css(secondLink)}
-                  title={'Settings & Integrations'}
+                  title={'Team Settings'}
                   to={`/team/${teamId}/settings/`}
                 >
                   {'Settings'}

@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {
-  NotificationSettings_auth$key,
+  NotificationSettings_settings$key,
   SlackNotificationEventEnum
-} from '../../../../__generated__/NotificationSettings_auth.graphql'
+} from '../../../../__generated__/NotificationSettings_settings.graphql'
 import StyledError from '../../../../components/StyledError'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import SetNotificationSettingMutation from '../../../../mutations/SetNotificationSettingMutation'
+import SetTeamNotificationSettingMutation from '../../../../mutations/SetTeamNotificationSettingMutation'
 import {MeetingLabels} from '../../../../types/constEnums'
 
 const EVENTS = [
@@ -31,21 +31,21 @@ const labelLookup = {
 } as Record<SlackNotificationEventEnum, string>
 
 interface Props {
-  auth: NotificationSettings_auth$key
+  settings: NotificationSettings_settings$key
 }
 
 const NotificationSettings = (props: Props) => {
-  const {auth: authRef} = props
-  const auth = useFragment(
+  const {settings: settingsRef} = props
+  const settings = useFragment(
     graphql`
-      fragment NotificationSettings_auth on TeamMemberIntegrationAuthWebhook {
+      fragment NotificationSettings_settings on TeamNotificationSettings {
         id
         events
       }
     `,
-    authRef
+    settingsRef
   )
-  const {events} = auth
+  const {events} = settings
 
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
@@ -54,10 +54,10 @@ const NotificationSettings = (props: Props) => {
       return
     }
     submitMutation()
-    SetNotificationSettingMutation(
+    SetTeamNotificationSettingMutation(
       atmosphere,
       {
-        authId: auth.id,
+        id: settings.id,
         event,
         isEnabled
       },
