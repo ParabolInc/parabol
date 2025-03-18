@@ -14,7 +14,6 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema.alterTable('User')
     .dropColumn('tier')
     .dropColumn('trialStartDate')
-    .dropColumn('tms')
     .execute()
   await db.schema.alterTable('OrganizationUser')
     .dropColumn('tier')
@@ -54,13 +53,11 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.alterTable('User')
     .addColumn('tier', sql`"TierEnum"`, (col) => col.defaultTo('starter').notNull())
     .addColumn('trialStartDate', sql`timestamp with time zone`)
-    .addColumn('tms', sql`character varying(100)[]`, (col) => col.defaultTo('{}').notNull())
     .execute()
   await db.updateTable('User')
     .set((eb) => ({
       tier: eb.fn.coalesce(eb.selectFrom('OrganizationUser').select((se) => se.fn.max('tier').as('tier')).whereRef('OrganizationUser.userId', '=', 'id'), eb.val('starter')),
       trialStartDate: eb.selectFrom('OrganizationUser').select((se) => se.fn.min('trialStartDate').as('trialStartDate')).whereRef('OrganizationUser.userId', '=', 'id'),
-      tms: eb.fn.coalesce(eb.selectFrom('TeamMember').select((se) => se.fn.agg('array_agg', ['teamId']).as('tms')).whereRef('TeamMember.userId', '=', 'id'), eb.val('{}'))
     }))
     .execute()
 
