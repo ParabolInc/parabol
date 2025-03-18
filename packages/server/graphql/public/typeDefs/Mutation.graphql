@@ -1172,6 +1172,16 @@ type Mutation {
   ): ToggleAIFeaturesPayload!
 
   """
+  Toggle whether the team privacy settings
+  """
+  toggleTeamPrivacy(
+    """
+    The id of the team being toggled
+    """
+    teamId: ID!
+  ): ToggleTeamPrivacyPayload!
+
+  """
   Update how a parabol dimension maps to a GitHub label
   """
   updateGitHubDimensionField(

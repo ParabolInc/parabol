@@ -8,6 +8,10 @@ graphql`
     organization {
       tier
       billingTier
+      viewerTeams {
+        isPaid
+        tier
+      }
     }
   }
 `
