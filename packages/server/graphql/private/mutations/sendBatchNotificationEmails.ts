@@ -32,26 +32,19 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
   // :TODO: (jmtaber129): Filter out "stage timer" notifications if the meeting has already
   // progressed to the next stage.
 
-  const notifications = (await Promise.all(userNotificationCount.map(async (value) => {
-    const [user, teamMembers] = await Promise.all([
-      dataLoader.get('users').load(value.userId),
-      dataLoader.get('teamMembersByUserId').load(value.userId),
-    ])
-
-    if (!user) return null
-    return {
-      user,
-      tms: teamMembers?.map(({teamId}) => teamId) ?? [],
-      notificationCount: Number(value.notificationCount),
-    }
-  }))).filter(isValid)
+  const userNotificationMap = new Map(
+    userNotificationCount.map((value) => [value.userId, Number(value.notificationCount)])
+  )
+  const users = (await dataLoader.get('users').loadMany([...userNotificationMap.keys()])).filter(
+    isValid
+  )
 
   // :TODO: (jmtaber129): Filter out users whose only notification is a team invitation
 
   await Promise.all(
-    notifications.map(async (notification) => {
-      const {user, tms, notificationCount} = notification
-      const {email, preferredName} = user
+    users.map(async (user) => {
+      const {email, tms, preferredName} = user
+      const notificationCount = userNotificationMap.get(user.id)!
 
       const authToken = new AuthToken({sub: user.id, tms, rol: 'impersonate'})
       const environment = new ServerEnvironment(authToken, dataLoader.share())
@@ -70,7 +63,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
       })
     })
   )
-  return notifications.map(({user}) => user.email)
+  return users.map(({email}) => email)
 }
 
 export default sendBatchNotificationEmails

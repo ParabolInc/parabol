@@ -39,13 +39,13 @@ const signUpVerified = async (email: string) => {
           authToken
           user {
             id
+            tms
             organizations {
               id
             }
             teams {
               id
             }
-            teamIds
           }
         }
       }
@@ -155,7 +155,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
   const newEmail = `${faker.internet.userName()}@${domain}`.toLowerCase()
   const {user: newUser} = await signUpVerified(newEmail)
 
-  expect(newUser.teamIds).toEqual(expect.arrayContaining(teamIds))
+  expect(newUser.tms).toEqual(expect.arrayContaining(teamIds))
   expect(newUser.organizations).toMatchObject([
     {
       id: orgId

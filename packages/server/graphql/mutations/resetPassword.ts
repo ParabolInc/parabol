@@ -58,7 +58,7 @@ const resetPassword = {
       if (!user) {
         return standardError(new Error(`User ${email} does not exist for password reset`))
       }
-      const {id: userId, identities, rol} = user
+      const {id: userId, identities, tms, rol} = user
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
@@ -74,12 +74,10 @@ const resetPassword = {
       // MUTATIVE
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
-      const [teamMembers] = await Promise.all([
-        context.dataLoader.get('teamMembersByUserId').load(userId),
+      await Promise.all([
         updateUser({identities}, userId),
         pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
       ])
-      const tms = teamMembers?.map(({teamId}) => teamId) ?? []
       context.authToken = new AuthToken({sub: userId, tms, rol})
       await blacklistJWT(userId, context.authToken.iat, context.socketId)
       return {
