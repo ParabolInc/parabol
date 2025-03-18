@@ -1,4 +1,5 @@
 import RedisInstance from 'parabol-server/utils/RedisInstance'
+import sleep from '../client/utils/sleep'
 
 type MessageValue = [prop: string, stringifiedData: string]
 type Message = [messageId: string, value: MessageValue]
@@ -9,6 +10,7 @@ export default class RedisStream implements AsyncIterableIterator<string> {
   // xreadgroup blocks until a response is received, so this needs its own connection
   private redis: RedisInstance
   private consumer: string
+  private exiting = false
 
   constructor(stream: string, consumerGroup: string, consumer: string) {
     this.stream = stream
@@ -47,10 +49,14 @@ export default class RedisStream implements AsyncIterableIterator<string> {
       return {done: false, value: data}
     } catch (e) {
       // when this.return() is called the blocking connection will throw
-      return this.throw(e)
+      if (this.exiting) return this.throw(e)
+      // the blocking connecting will also throw during a failover
+      await sleep(1000)
+      return this.next()
     }
   }
   async return() {
+    this.exiting = true
     // disconnect is not graceful. Necessary to end the blocking connection
     this.redis.disconnect()
     return Promise.resolve({done: true as const, value: undefined})
