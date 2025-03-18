@@ -9,7 +9,7 @@ const TEST_DB = 'getIsEmailApprovedByOrgTest'
 beforeAll(async () => {
   const pg = getKysely(TEST_DB)
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
-  await createPGTables('User', 'Organization', 'OrganizationApprovedDomain')
+  await createPGTables('User', 'TeamMember', 'Organization', 'OrganizationApprovedDomain')
 
   const user = {
     id: 'testUserId',

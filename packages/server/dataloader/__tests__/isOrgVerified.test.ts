@@ -54,7 +54,14 @@ const addOrg = async (activeDomain: string | null, members: TestOrganizationUser
 beforeAll(async () => {
   const pg = getKysely(TEST_DB)
   await pg.schema.createSchema(TEST_DB).ifNotExists().execute()
-  await createPGTables('Organization', 'User', 'SAML', 'SAMLDomain', 'OrganizationUser')
+  await createPGTables(
+    'Organization',
+    'User',
+    'TeamMember',
+    'SAML',
+    'SAMLDomain',
+    'OrganizationUser'
+  )
 })
 
 afterEach(async () => {
