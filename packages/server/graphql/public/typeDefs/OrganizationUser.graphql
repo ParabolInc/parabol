@@ -47,6 +47,4 @@ type OrganizationUser {
   """
   user: User!
   suggestedTier: TierEnum
-  tier: TierEnum
-  billingTier: TierEnum
 }
