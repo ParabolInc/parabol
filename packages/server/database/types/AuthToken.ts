@@ -1,5 +1,5 @@
 import {Threshold} from 'parabol-client/types/constEnums'
-import makeAppURL from '../../../client/utils/makeAppURL'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
 import {toEpochSeconds} from '../../utils/epochTime'
 

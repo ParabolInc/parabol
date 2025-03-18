@@ -1,5 +1,11 @@
 import {computeJaccardDistanceMatrix} from './computeJaccardDistanceMatrix'
-import getGroupMatrix, {GroupingOptions} from './getGroupMatrix'
+import getGroupMatrix from './getGroupMatrix'
+
+export type GroupingOptions = {
+  groupingThreshold: number
+  maxGroupSize?: number
+  maxReductionPercent?: number
+}
 
 const groupReflections = <
   T extends {id: string; reflectionGroupId: string; plaintextContent: string}

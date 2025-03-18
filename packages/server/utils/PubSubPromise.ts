@@ -1,6 +1,6 @@
 import type {ExecutionResult} from 'graphql'
 import ms from 'ms'
-import GQLExecutorChannelId from '../../client/shared/gqlIds/GQLExecutorChannelId'
+import GQLExecutorChannelId from 'parabol-client/shared/gqlIds/GQLExecutorChannelId'
 import type {GQLRequest} from '../types/GQLRequest'
 import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
