@@ -30,11 +30,7 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
   ])
   const {orgId} = team
 
-  const hasPublicTeamsFlag = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: orgId, featureName: 'publicTeams'})
-
-  if (!hasPublicTeamsFlag) {
+  if (!team.isPublic) {
     return standardError(new Error('This team is not public'))
   }
 

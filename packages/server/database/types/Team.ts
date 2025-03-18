@@ -18,6 +18,7 @@ interface Input {
   qualAIMeetingsCount?: number
   isOnboardTeam?: boolean
   updatedAt?: Date
+  isPublic?: boolean
 }
 
 export default class Team {
@@ -36,6 +37,7 @@ export default class Team {
   isOnboardTeam: boolean
   qualAIMeetingsCount: number
   updatedAt: Date
+  isPublic: boolean
   constructor(input: Input) {
     const {
       autoJoin,
@@ -51,7 +53,8 @@ export default class Team {
       tier,
       trialStartDate,
       qualAIMeetingsCount,
-      updatedAt
+      updatedAt,
+      isPublic
     } = input
     this.autoJoin = autoJoin ?? false
     this.name = name.trim().slice(0, TEAM_NAME_LIMIT)
@@ -67,5 +70,6 @@ export default class Team {
     this.isOnboardTeam = isOnboardTeam ?? false
     this.isPaid = isPaid ?? true
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
+    this.isPublic = isPublic ?? false
   }
 }
