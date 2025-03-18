@@ -1,4 +1,4 @@
-import {selectUsers} from '../select'
+import {selectUsers} from '../selectUsers'
 import {User} from '../types/User'
 
 const getUsersByDomain = async (domain: string): Promise<User[]> => {

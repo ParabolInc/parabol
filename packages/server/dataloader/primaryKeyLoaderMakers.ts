@@ -27,9 +27,9 @@ import {
   selectTemplateDimension,
   selectTemplateScale,
   selectTemplateScaleRef,
-  selectTimelineEvent,
-  selectUsers
+  selectTimelineEvent
 } from '../postgres/select'
+import {selectUsers} from '../postgres/selectUsers'
 import {TeamNotificationSettings} from '../postgres/types/pg'
 import {User} from '../postgres/types/User'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'

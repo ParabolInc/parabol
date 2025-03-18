@@ -1,5 +1,5 @@
 import {MaybeReadonly} from '../../../client/types/generics'
-import {selectUsers} from '../select'
+import {selectUsers} from '../selectUsers'
 import {User} from '../types/User'
 
 export const getUsersByIds = async (userIds: MaybeReadonly<string[]>): Promise<User[]> => {

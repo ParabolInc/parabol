@@ -16,7 +16,6 @@ import groupReflections from '../../../../client/utils/smartGroup/groupReflectio
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings, selectNotifications, selectTasks} from '../../../postgres/select'
-import {User as IUser} from '../../../postgres/types/User'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
@@ -37,8 +36,6 @@ import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import {ReqResolvers} from './ReqResolvers'
 
 declare const __PRODUCTION__: string
-
-export type UserSource = IUser
 
 const MODEL = 'Embeddings_ember_1'
 const EMBED_URL = (() => {
