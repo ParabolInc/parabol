@@ -81,7 +81,7 @@ const TeamPrivacyToggle = (props: Props) => {
                 <>
                   To make this team private, you need to{' '}
                   <a className='cursor-pointer text-sky-500 underline' onClick={handleUpgradeClick}>
-                    upgrade to {TierLabel.TEAM} Plan
+                    upgrade to {TierLabel.TEAM} or ${TierLabel.ENTERPRISE} Plan
                   </a>
                   .
                 </>

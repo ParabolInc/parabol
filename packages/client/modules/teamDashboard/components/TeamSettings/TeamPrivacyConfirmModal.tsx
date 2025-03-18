@@ -29,7 +29,10 @@ const TeamPrivacyConfirmModal = (props: Props) => {
             <li>
               This action <b>cannot be undone</b> on the Starter Plan
             </li>
-            <li>You would need to upgrade to the {TierLabel.TEAM} Plan to make it private again</li>
+            <li>
+              You would need to upgrade to the {TierLabel.TEAM} or {TierLabel.ENTERPRISE} Plan to
+              make it private again
+            </li>
           </ul>
           <p className='mt-2'>Are you sure you want to continue?</p>
         </div>
