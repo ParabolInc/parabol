@@ -500,7 +500,7 @@
     height: 0;
   }
 
-  p.is-empty a {
+  a {
     text-decoration: underline;
     color: var(--color-slate-700);
     :hover {
