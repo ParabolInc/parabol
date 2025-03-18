@@ -190,13 +190,15 @@ const OrgMembers = (props: Props) => {
     const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date()
+    // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
+    // note: using encodeUri does NOT work on the # symbol & breaks
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
     link.setAttribute('download', `Parabol_${orgName}_${numDate}.csv`)
-    document.body.appendChild(link)
+    document.body.appendChild(link) // Required for FF
     link.click()
     document.body.removeChild(link)
   }
