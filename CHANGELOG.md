@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.35.2](https://github.com/ParabolInc/parabol/compare/v8.35.1...v8.35.2) (2025-03-18)
+
+
+### Fixed
+
+* link css ([#11011](https://github.com/ParabolInc/parabol/issues/11011)) ([15185aa](https://github.com/ParabolInc/parabol/commit/15185aa4b4eff350ca67a4a14dadf5b94b303595))
+* Syntax error in down migration ([#11013](https://github.com/ParabolInc/parabol/issues/11013)) ([95e19ea](https://github.com/ParabolInc/parabol/commit/95e19ea9892da5fdef63de40d3d46de68f946c9e))
+
+
+### Changed
+
+* check down migrations are valid ([#11014](https://github.com/ParabolInc/parabol/issues/11014)) ([3c06358](https://github.com/ParabolInc/parabol/commit/3c06358544079c1ac75ec59ef89fcf86c975be12))
+* **deps:** bump axios from 1.8.1 to 1.8.2 ([#10969](https://github.com/ParabolInc/parabol/issues/10969)) ([d4b668f](https://github.com/ParabolInc/parabol/commit/d4b668f159ca58a8a41f4428395b25ef1ab5eb6e))
+* **deps:** bump tj-actions/changed-files from 41 to 46 in /.github/workflows ([#11019](https://github.com/ParabolInc/parabol/issues/11019)) ([cf20151](https://github.com/ParabolInc/parabol/commit/cf201513dccecd91454bfc5203bb43445fbee027))
+* **deps:** bump xml-crypto from 3.2.0 to 3.2.1 ([#11010](https://github.com/ParabolInc/parabol/issues/11010)) ([cd257eb](https://github.com/ParabolInc/parabol/commit/cd257eb541d4a04fef72ccbea6eeb1d3aba8cbdb))
+* Security upgrade dompurify from 2.5.8 to 3.2.4 ([#10883](https://github.com/ParabolInc/parabol/issues/10883)) ([7ea51a0](https://github.com/ParabolInc/parabol/commit/7ea51a0df821d7ed35959f6a02aa11245d52c295))
+
 ## [8.35.1](https://github.com/ParabolInc/parabol/compare/v8.35.0...v8.35.1) (2025-03-13)
 
 
