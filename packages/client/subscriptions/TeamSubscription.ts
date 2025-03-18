@@ -29,6 +29,7 @@ import {
   endSprintPokerTeamUpdater
 } from '../mutations/EndSprintPokerMutation'
 import {endTeamPromptTeamUpdater} from '../mutations/EndTeamPromptMutation'
+import {joinTeamTeamOnNext} from '../mutations/JoinTeamMutation'
 import {moveReflectTemplatePromptTeamUpdater} from '../mutations/MoveReflectTemplatePromptMutation'
 import {pushInvitationTeamOnNext} from '../mutations/PushInvitationMutation'
 import {removeAgendaItemUpdater} from '../mutations/RemoveAgendaItemMutation'
@@ -106,6 +107,9 @@ const subscription = graphql`
       }
       EndTeamPromptSuccess {
         ...EndTeamPromptMutation_team @relay(mask: false)
+      }
+      JoinTeamSuccess {
+        ...JoinTeamMutation_team @relay(mask: false)
       }
       MoveReflectTemplatePromptPayload {
         ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -196,6 +200,7 @@ const onNextHandlers = {
   EndCheckInSuccess: endCheckInTeamOnNext,
   EndRetrospectiveSuccess: endRetrospectiveTeamOnNext,
   EndSprintPokerSuccess: endSprintPokerTeamOnNext,
+  JoinTeamSuccess: joinTeamTeamOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersTeamOnNext,
   RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
   PushInvitationPayload: pushInvitationTeamOnNext

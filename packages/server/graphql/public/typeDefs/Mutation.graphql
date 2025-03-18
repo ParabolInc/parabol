@@ -1079,6 +1079,16 @@ type Mutation {
   joinMeeting(meetingId: ID!): JoinMeetingPayload!
 
   """
+  Join a public Team directly without requiring an invitation
+  """
+  joinTeam(
+    """
+    The ID of the team to join
+    """
+    teamId: ID!
+  ): JoinTeamPayload!
+
+  """
   Set whether the user is spectating poker meeting
   """
   setPokerSpectate(
