@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.36.1](https://github.com/ParabolInc/parabol/compare/v8.36.0...v8.36.1) (2025-03-19)
+
+
+### Changed
+
+* company query allows super user to query all companies ([#11030](https://github.com/ParabolInc/parabol/issues/11030)) ([43da0b5](https://github.com/ParabolInc/parabol/commit/43da0b5b2398633b0a939d115c02ba6b13cb8d39))
+* Fixes for down migration checks ([#11027](https://github.com/ParabolInc/parabol/issues/11027)) ([2510262](https://github.com/ParabolInc/parabol/commit/2510262b9d6750f52688db2628a4dfbaf8630029))
+
 ## [8.36.0](https://github.com/ParabolInc/parabol/compare/v8.35.2...v8.36.0) (2025-03-18)
 
 
