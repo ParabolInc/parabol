@@ -1,7 +1,7 @@
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {TeamMember} from '../../../postgres/types'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -27,9 +27,12 @@ const getSuggestedTierOrganizations = async (
   ).filter(isValid)
   // If suggestedTier === enterprise, that means the user is allowed to see across
   // all organizations, even the ones they are not a member of!
-  const isViewerAllowedToSeeAll = allOrganizationUsers.some(
-    ({suggestedTier, tier}) => suggestedTier === 'enterprise' || tier === 'enterprise'
-  )
+  // Super users are also allowed to see all organizations
+  const isViewerAllowedToSeeAll =
+    isSuperUser(authToken) ||
+    allOrganizationUsers.some(
+      ({suggestedTier, tier}) => suggestedTier === 'enterprise' || tier === 'enterprise'
+    )
   if (isViewerAllowedToSeeAll) return organizations
   // Pro-qualified or unqualified users can only see orgs that they are apart of
   const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)
