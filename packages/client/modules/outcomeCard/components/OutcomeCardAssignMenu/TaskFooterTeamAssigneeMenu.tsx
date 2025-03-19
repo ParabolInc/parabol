@@ -54,7 +54,6 @@ const gqlQuery = graphql`
         name
         teamMembers(sortBy: "preferredName") {
           userId
-          preferredName
         }
       }
     }

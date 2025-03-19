@@ -24,11 +24,12 @@ graphql`
       id
       isLead
       isNotRemoved
-      picture
-      preferredName
       teamId
       userId
       user {
+        id
+        picture
+        preferredName
         isConnected
       }
     }
@@ -149,7 +150,8 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<
   const {viewerId} = atmosphere
   if (!team || !teamMember) return
   const {name: teamName} = team
-  const {id: teamMemberId, preferredName} = teamMember
+  const {id: teamMemberId, user} = teamMember
+  const {preferredName} = user
   const {teamId, userId} = fromTeamMemberId(teamMemberId)
   atmosphere.eventEmitter.emit(
     'removeSnackbar',

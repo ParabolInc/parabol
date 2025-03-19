@@ -37,7 +37,9 @@ const ActionMeetingFirstCall = (props: Props) => {
         endedAt
         facilitatorUserId
         facilitator {
-          preferredName
+          user {
+            preferredName
+          }
         }
         phases {
           phaseType
@@ -52,7 +54,7 @@ const ActionMeetingFirstCall = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {endedAt, facilitator, facilitatorUserId, phases, showSidebar} = meeting
-  const {preferredName} = facilitator
+  const {preferredName} = facilitator.user
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const phaseName = phaseLabelLookup[AGENDA_ITEMS]
   const agendaItemPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!

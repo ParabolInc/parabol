@@ -66,10 +66,10 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
 
   const teamIds = teamMembers.map(({teamId}) => teamId)
   teamIds.forEach((teamId) => {
-    const data = {userId, teamIds: [teamId]}
+    const data = {userId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateUserProfilePayload', data, subOptions)
   })
-  return {userId, teamIds}
+  return {userId}
 }
 
 export default updateUserProfile

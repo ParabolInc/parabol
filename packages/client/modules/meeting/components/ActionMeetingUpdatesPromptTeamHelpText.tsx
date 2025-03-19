@@ -23,10 +23,8 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
     graphql`
       fragment ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember on ActionMeetingMember {
         user {
-          isConnected
-        }
-        teamMember {
           preferredName
+          isConnected
         }
       }
     `,
@@ -36,9 +34,8 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   const handleAgendaControl = () => {
     atmosphere.eventEmitter.emit('focusAgendaInput')
   }
-  const {teamMember, user} = currentMeetingMember
-  const {isConnected} = user
-  const {preferredName} = teamMember
+  const {user} = currentMeetingMember
+  const {isConnected, preferredName} = user
   return (
     <span>
       <span>{isConnected === false ? '(' : `(${preferredName} is sharing. `}</span>

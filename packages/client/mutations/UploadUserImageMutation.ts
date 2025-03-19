@@ -10,11 +10,9 @@ const mutation = graphql`
       error {
         message
       }
-      teamMembers {
+      user {
+        id
         picture
-        user {
-          picture
-        }
       }
     }
   }
