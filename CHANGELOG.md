@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.37.0](https://github.com/ParabolInc/parabol/compare/v8.36.1...v8.37.0) (2025-03-19)
+
+
+### Added
+
+* **orgAdmin:** UI for mass org user removal ([#10984](https://github.com/ParabolInc/parabol/issues/10984)) ([a95616f](https://github.com/ParabolInc/parabol/commit/a95616fe8ac7d194db01d4b47199f592b6846331))
+
 ## [8.36.1](https://github.com/ParabolInc/parabol/compare/v8.36.0...v8.36.1) (2025-03-19)
 
 
