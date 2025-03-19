@@ -49,39 +49,31 @@ const RemoveFromOrgModal = (props: Props) => {
 
   const users = useFragment(organizationUsersFragment, organizationUsers)
 
-  // Track non-removable users and their reasons
-  const nonRemovableUsers = users
-    .filter((organizationUser) => {
-      const isSelf = organizationUser.user.id === viewerId
-      const isBillingLeader = organizationUser.role === 'BILLING_LEADER'
-      const isOrgAdmin = organizationUser.role === 'ORG_ADMIN'
-      return isSelf || isBillingLeader || isOrgAdmin
-    })
-    .map((organizationUser) => {
-      const isSelf = organizationUser.user.id === viewerId
-      const isBillingLeader = organizationUser.role === 'BILLING_LEADER'
-      const isOrgAdmin = organizationUser.role === 'ORG_ADMIN'
+  // Map users with their removal status and reason
+  const usersWithRemovalStatus = users.map((organizationUser) => {
+    const isSelf = organizationUser.user.id === viewerId
+    const isBillingLeader = organizationUser.role === 'BILLING_LEADER'
+    const isOrgAdmin = organizationUser.role === 'ORG_ADMIN'
 
-      let reason = ''
-      if (isSelf) reason = 'Yourself'
-      else if (isOrgAdmin) reason = 'Organization Admin'
-      else if (isBillingLeader) reason = 'Billing Leader'
+    let reason = ''
+    if (isSelf) reason = 'Yourself'
+    else if (isOrgAdmin) reason = 'Organization Admin'
+    else if (isBillingLeader) reason = 'Billing Leader'
 
-      return {
-        user: organizationUser.user,
-        reason
-      }
-    })
+    return {
+      user: organizationUser.user,
+      reason,
+      isRemovable: !reason
+    }
+  })
 
   // Filter out non-removable users
-  const removableUserIds = users
-    .filter((organizationUser) => {
-      const isSelf = organizationUser.user.id === viewerId
-      const isBillingLeader = organizationUser.role === 'BILLING_LEADER'
-      const isOrgAdmin = organizationUser.role === 'ORG_ADMIN'
-      return !isSelf && !isBillingLeader && !isOrgAdmin
-    })
-    .map((organizationUser) => organizationUser.user.id)
+  const nonRemovableUsers = usersWithRemovalStatus.filter((user) => !user.isRemovable)
+
+  // Get removable user IDs
+  const removableUserIds = usersWithRemovalStatus
+    .filter((user) => user.isRemovable)
+    .map((user) => user.user.id)
 
   const skippedCount = userIds.length - removableUserIds.length
   const removableCount = removableUserIds.length
