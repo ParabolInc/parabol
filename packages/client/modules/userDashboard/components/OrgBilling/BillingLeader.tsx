@@ -46,6 +46,7 @@ const BillingLeader = (props: Props) => {
     graphql`
       fragment BillingLeader_orgUser on OrganizationUser {
         ...OrgAdminActionMenu_organizationUser
+        ...RemoveFromOrgModal_organizationUsers
         role
         user {
           id
@@ -112,8 +113,8 @@ const BillingLeader = (props: Props) => {
       {removeModal(
         <RemoveFromOrgModal
           orgId={orgId}
-          userId={userId}
-          preferredName={preferredName}
+          userIds={[userId]}
+          organizationUsers={[billingLeader]}
           closePortal={closeRemoveModal}
         />
       )}

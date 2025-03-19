@@ -130,6 +130,7 @@ export type AnalyticsEvent =
   | 'Invite Accepted'
   | 'Sent Invite Accepted'
   | 'Notification Email Sent'
+  | 'Team Joined'
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgrade Attempted'
@@ -499,6 +500,12 @@ class Analytics {
       inviteeId: user.id,
       isNewUser,
       acceptAt
+    })
+  }
+
+  joinedTeam = (user: AnalyticsUser, teamId: string) => {
+    this.track(user, 'Team Joined', {
+      teamId
     })
   }
 

@@ -502,10 +502,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const doc = JSON.parse(content)
       const {title, bodyContent} = splitTipTapContent(doc)
       const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
+      const now = new Date().toJSON()
 
       if (integrationProviderService === 'github') {
         Object.assign(task, {
-          updatedAt: new Date().toJSON(),
+          updatedAt: now,
           integration: {
             __typename: '_xGitHubIssue',
             id: `${taskId}:GitHub`,
@@ -527,7 +528,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const issueKey = this.getTempId(`${key}-`)
 
         Object.assign(task, {
-          updatedAt: new Date().toJSON(),
+          updatedAt: now,
           integrationHash: integrationRepoId,
           integration: {
             __typename: 'JiraIssue',
@@ -546,6 +547,27 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
               avatar,
               cloudId
             }
+          }
+        })
+      }
+
+      if (integrationProviderService === 'gitlab') {
+        const fullPath = integrationRepoId
+        const iid = this.getTempId('')
+        const webPath = `/${fullPath}/-/issues/${iid}`
+
+        Object.assign(task, {
+          updatedAt: now,
+          integrationHash: integrationRepoId,
+          integration: {
+            __typename: '_xGitLabIssue',
+            id: `gitlab:${taskId}`,
+            iid,
+            title,
+            description: bodyHTML,
+            webPath,
+            webUrl: 'https://www.parabol.co/integrations/',
+            state: 'opened'
           }
         })
       }
