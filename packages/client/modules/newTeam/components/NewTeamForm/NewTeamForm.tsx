@@ -12,6 +12,7 @@ import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
 import StyledError from '../../../../components/StyledError'
+import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -20,6 +21,9 @@ import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Threshold} from '../../../../types/constEnums'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import linkify from '../../../../utils/linkify'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
@@ -126,6 +130,7 @@ const NewTeamForm = (props: Props) => {
     `,
     organizationsRef
   )
+  const [isPublic, setIsPublic] = useState(true)
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
   const [rawInvitees, setRawInvitees] = useState('')
@@ -145,7 +150,7 @@ const NewTeamForm = (props: Props) => {
     return new Legitity(orgName)
       .trim()
       .required('Your new org needs a name!')
-      .min(2, 'C’mon, you call that an organization?')
+      .min(2, `C'mon, you call that an organization?`)
       .max(100, 'Maybe just the legal name?')
       .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
   }
@@ -193,7 +198,9 @@ const NewTeamForm = (props: Props) => {
       const {error: orgErr, value: orgName} = validateField('orgName')
       if (orgErr) return
       const newTeam = {
-        name: teamName
+        name: teamName,
+        orgId,
+        isPublic
       }
       const variables = {newTeam, orgName, invitees}
       submitMutation()
@@ -201,7 +208,8 @@ const NewTeamForm = (props: Props) => {
     } else {
       const newTeam = {
         name: teamName,
-        orgId
+        orgId,
+        isPublic
       }
       submitMutation()
       AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, history})
@@ -276,7 +284,7 @@ const NewTeamForm = (props: Props) => {
       </Header>
       <StyledPanel>
         <FormInner>
-          <NewTeamFormBlock>
+          <NewTeamFormBlock className='w-full'>
             <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
           </NewTeamFormBlock>
           <NewTeamFormBlock>
@@ -320,6 +328,42 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </WarningMsg>
           )}
+          <div className='mt-12 flex items-center'>
+            <div className='flex flex-1 items-start'>
+              <div>
+                <div className='flex items-center'>
+                  <div className='text-sm font-semibold text-slate-700'>Team Privacy</div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className='ml-2 flex cursor-pointer items-center text-slate-600'>
+                        <span>ⓘ</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className='space-y-2'>
+                        <div>
+                          <b>Public teams:</b> Anyone in the organization can find and join the team
+                        </div>
+                        <div>
+                          <b>Private teams:</b> Only invited members can access the team. Team is
+                          hidden from other organization members
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className='mt-1 text-xs text-slate-600'>
+                  {isPublic
+                    ? 'Anyone in the organization can join this team'
+                    : 'Only invited members can access this team'}
+                </div>
+              </div>
+            </div>
+            <div className='flex items-center'>
+              <div className='mr-2 text-sm font-semibold text-slate-700'>Public</div>
+              <Toggle active={isPublic} onClick={() => setIsPublic(!isPublic)} />
+            </div>
+          </div>
           <p className='mt-8 mb-3 text-xs leading-4'>
             {'Invite others to your new team. Invites expire in 30 days.'}
           </p>
