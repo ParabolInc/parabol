@@ -128,7 +128,7 @@ const Facilitator = (props: Props) => {
     .map(({user}) => user.id)
   const {user} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
-  const {picture, preferredName, isConnected = false} = user ?? {}
+  const {picture = '', preferredName = '', isConnected = false} = user ?? {}
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {
