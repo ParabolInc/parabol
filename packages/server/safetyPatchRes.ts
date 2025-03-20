@@ -29,7 +29,9 @@ const safetyPatchRes = (res: HttpResponse) => {
       if (res.status) res._writeStatus(res.status)
       res.headers.forEach((header: Header) => {
         res._writeHeader(...header)
+        // reset them so tryEnd doesn't write them again
       })
+      res.headers = []
       return thunk()
     })
   }
@@ -65,7 +67,10 @@ const safetyPatchRes = (res: HttpResponse) => {
       Logger.warn(`uWS: Called tryEnd after done`)
     }
     if (res.done || res.aborted) return [true, true]
-    return flush(() => res._tryEnd(fullBodyOrChunk, totalSize))
+    return flush(() => {
+      const [one, two] = res._tryEnd(fullBodyOrChunk, totalSize)
+      return [one, two]
+    })
   }
 
   res._write = res.write

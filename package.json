@@ -72,7 +72,8 @@
     "recursive-readdir": "^2.2.3",
     "axios": "^1.7.8",
     "prosemirror-model": "^1.24.1",
-    "prosemirror-view": "^1.38.0"
+    "prosemirror-view": "^1.38.0",
+    "graphql": "17.0.0-alpha.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -103,7 +104,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
-    "graphql": "16.9.0",
+    "graphql": "17.0.0-alpha.8",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
     "jscodeshift": "^0.14.0",
@@ -141,6 +142,7 @@
     "@module-federation/enhanced": "^0.7.6",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
+    "graphiql": "^3.8.3",
     "lodash.toarray": "^4.4.0",
     "pg": "^8.13.0"
   }

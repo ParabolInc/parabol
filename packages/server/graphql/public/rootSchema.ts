@@ -5,7 +5,13 @@
  *  - GitHub and GitLab schemas
  */
 import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
-import {GraphQLObjectType, GraphQLSchema} from 'graphql'
+import {
+  GraphQLDeferDirective,
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLStreamDirective,
+  specifiedDirectives
+} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../../utils/githubSchema.graphql'
@@ -27,7 +33,8 @@ const legacyTypeDefs = new GraphQLSchema({
   mutation,
   // defining a placeholder subscription because there's a bug in nest-graphql-schema that prefixes to _xGitHubSubscription if missing
   subscription: new GraphQLObjectType({name: 'Subscription', fields: {}}),
-  types: rootTypes
+  types: rootTypes,
+  directives: [...specifiedDirectives, GraphQLDeferDirective, GraphQLStreamDirective]
 })
 
 const importAllStrings = (context: __WebpackModuleApi.RequireContext) => {

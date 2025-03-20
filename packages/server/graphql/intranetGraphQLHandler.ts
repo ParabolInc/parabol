@@ -11,6 +11,15 @@ interface IntranetPayload {
   variables: Record<string, unknown>
   isPrivate?: boolean
 }
+
+function splitString(input, maxLength = 1000000) {
+  let result = []
+  for (let i = 0; i < input.length; i += maxLength) {
+    result.push(input.slice(i, i + maxLength))
+  }
+  return result
+}
+
 const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const authToken = getReqAuth(req)
   const ip = uwsGetIP(res, req)
@@ -29,19 +38,40 @@ const intranetHttpGraphQLHandler = uWSAsyncHandler(async (res: HttpResponse, req
     return
   }
   const {query, variables, isPrivate} = body as any as IntranetPayload
-  try {
-    const result = await getGraphQLExecutor().publish({
+  res.writeHeader('content-type', 'application/json, multipart/mixed; boundary="-"')
+  getGraphQLExecutor().publish(
+    {
       authToken,
       ip,
       query,
       variables,
       isPrivate,
       isAdHoc: true
-    })
-    res.writeHeader('content-type', 'application/json').end(JSON.stringify(result))
-  } catch (e) {
-    res.writeStatus('502').end()
-  }
-})
+    },
+    (result) => {
+      const {hasNext} = result
+      const content = JSON.stringify(result)
+      const chunk = Buffer.from(content, 'utf8')
+      // console.log(content)
+      // console.log(content.length, chunk.length)
+      const data = [
+        '',
+        '---',
+        'Content-Type: application/json; charset=utf-8',
+        'Content-Length: ' + String(chunk.length),
+        '',
+        chunk,
+        ''
+      ].join('\r\n')
+      // const chunks = splitString(data)
+      // chunks.forEach((chunk) => res.tryEnd(chunk, 1e10))
+      if (!hasNext) {
+        res.end(data + '\r\n-----\r\n')
+      } else {
+        res.tryEnd(data, 1e12)
+      }
+    }
+  )
+}, true)
 
 export default intranetHttpGraphQLHandler
