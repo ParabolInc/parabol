@@ -328,11 +328,11 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </WarningMsg>
           )}
-          <div className='mt-12 flex items-center'>
+          <div className='mt-8 flex items-center'>
             <div className='flex flex-1 items-start'>
               <div>
                 <div className='flex items-center'>
-                  <div className='text-sm font-semibold text-slate-700'>Team Privacy</div>
+                  <div className='text-sm font-medium text-slate-700'>Team Privacy</div>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className='ml-2 flex cursor-pointer items-center text-slate-600'>
@@ -360,7 +360,7 @@ const NewTeamForm = (props: Props) => {
               </div>
             </div>
             <div className='flex items-center'>
-              <div className='mr-2 text-sm font-semibold text-slate-700'>Public</div>
+              <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
               <Toggle active={isPublic} onClick={() => setIsPublic(!isPublic)} />
             </div>
           </div>
