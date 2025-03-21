@@ -8,7 +8,6 @@ import {
 
 const NewTeamInput = new GraphQLInputObjectType({
   name: 'NewTeamInput',
-  description: 'The input object for creating a new team',
   fields: () => ({
     name: {
       type: new GraphQLNonNull(GraphQLString),
@@ -20,8 +19,7 @@ const NewTeamInput = new GraphQLInputObjectType({
     },
     isPublic: {
       type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'Whether the team is public (can be found and joined) or private (invite-only)',
-      defaultValue: true
+      description: 'Whether the team is public (can be found and joined) or private (invite-only)'
     }
   })
 })
@@ -29,7 +27,7 @@ const NewTeamInput = new GraphQLInputObjectType({
 export type NewTeamInputType = {
   name: string
   orgId: string
-  isPublic?: boolean
+  isPublic: boolean
 }
 
 export default NewTeamInput
