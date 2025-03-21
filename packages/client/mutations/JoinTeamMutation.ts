@@ -18,8 +18,10 @@ graphql`
     }
     teamMember {
       id
-      preferredName
-      userId
+      user {
+        id
+        preferredName
+      }
     }
   }
 `
@@ -44,7 +46,8 @@ export const joinTeamTeamOnNext: OnNextHandler<JoinTeamMutation_team$data> = (
   const {team, teamMember} = payload
   const {viewerId} = atmosphere
   const {name: teamName} = team
-  const {preferredName, userId} = teamMember
+  const {user} = teamMember
+  const {id: userId, preferredName} = user
 
   if (userId !== viewerId) {
     atmosphere.eventEmitter.emit('addSnackbar', {

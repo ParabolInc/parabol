@@ -28,7 +28,6 @@ const ManageTeamList = (props: Props) => {
         isOrgAdmin
         teamMembers(sortBy: "preferredName") {
           id
-          preferredName
           ...ManageTeamMember_teamMember
         }
       }

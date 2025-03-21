@@ -95,7 +95,9 @@ const GcalModal = (props: Props) => {
       fragment GcalModal_team on Team {
         name
         teamMembers {
-          email
+          user {
+            email
+          }
           isSelf
         }
       }
@@ -103,7 +105,7 @@ const GcalModal = (props: Props) => {
     teamRef
   )
   const {teamMembers, name: teamName} = team ?? {}
-  const teamMemberEmails = teamMembers?.filter(({isSelf}) => !isSelf).map(({email}) => email)
+  const teamMemberEmails = teamMembers?.filter(({isSelf}) => !isSelf).map(({user}) => user.email)
   const hasTeamMemberEmails = teamMemberEmails?.length > 0
 
   const {fields, onChange} = useForm({

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {NewMeetingAvatar_teamMember$key} from '../../../../__generated__/NewMeetingAvatar_teamMember.graphql'
+import {NewMeetingAvatar_user$key} from '../../../../__generated__/NewMeetingAvatar_user.graphql'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
@@ -43,23 +43,24 @@ const AvatarBlock = styled('div')<{status: TransitionStatus}>(({status}) => ({
 interface Props {
   onTransitionEnd: () => void
   status: TransitionStatus
-  teamMemberRef: NewMeetingAvatar_teamMember$key
+  userRef: NewMeetingAvatar_user$key
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {onTransitionEnd, status, teamMemberRef} = props
+  const {onTransitionEnd, status, userRef} = props
 
-  const teamMember = useFragment(
+  const user = useFragment(
     graphql`
-      fragment NewMeetingAvatar_teamMember on TeamMember {
+      fragment NewMeetingAvatar_user on User {
+        id
         picture
         preferredName
       }
     `,
-    teamMemberRef
+    userRef
   )
 
-  const {preferredName, picture} = teamMember
+  const {preferredName, picture} = user
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )

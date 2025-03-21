@@ -25,6 +25,7 @@ describe('isTeamActive', () => {
   })
 
   afterAll(async () => {
+    await pg.schema.dropSchema(TEST_DB).cascade().execute()
     await pg.destroy()
     console.log('isTeamActive destroy')
   })
@@ -92,9 +93,6 @@ describe('isTeamActive', () => {
           teamId: mockTeamId,
           userId: member.userId,
           isNotRemoved: member.isNotRemoved,
-          email: `test${member.userId}@test.com`,
-          picture: '',
-          preferredName: `Test User ${member.userId}`,
           createdAt: new Date(),
           updatedAt: new Date()
         }))

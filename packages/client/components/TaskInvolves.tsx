@@ -75,8 +75,10 @@ const TaskInvolves = (props: Props) => {
         ...NotificationTemplate_notification
         id
         changeAuthor {
-          picture
-          preferredName
+          user {
+            picture
+            preferredName
+          }
         }
         involvement
         status
@@ -100,7 +102,8 @@ const TaskInvolves = (props: Props) => {
   )
   const {id: notificationId, task, team, involvement, changeAuthor} = notification
   const {content, status, tags, user} = task || deletedTask
-  const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthor
+  const {user: changeAuthorUser} = changeAuthor
+  const {picture: changeAuthorPicture, preferredName: changeAuthorName} = changeAuthorUser
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()

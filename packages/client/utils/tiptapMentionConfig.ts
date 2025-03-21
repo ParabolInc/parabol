@@ -15,8 +15,11 @@ const queryNode = graphql`
         teamMembers {
           id
           userId
-          picture
-          preferredName
+          user {
+            id
+            picture
+            preferredName
+          }
         }
       }
     }
@@ -41,7 +44,7 @@ export const tiptapMentionConfig = (
       return (
         teamMembers
           .map((teamMember) => {
-            const score = query ? stringScore(teamMember.preferredName, query) : 1
+            const score = query ? stringScore(teamMember.user.preferredName, query) : 1
             return {
               teamMember,
               score
