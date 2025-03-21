@@ -69,13 +69,12 @@ const NewMeetingCheckIn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {endedAt, showSidebar, localStage, phases} = meeting
   const {id: localStageId} = localStage
-  const teamMember = localStage.teamMember!
-  const {user} = teamMember
+  const user = localStage.teamMember?.user
   const nextStageRes = findStageAfterId(phases, localStageId)
   // in case the checkin is the last phase of the meeting
   if (!nextStageRes) return null
   const {viewerId} = atmosphere
-  const isViewerMeetingSection = user.id === viewerId
+  const isViewerMeetingSection = user?.id === viewerId
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -87,7 +86,7 @@ const NewMeetingCheckIn = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user} />
+          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user!} />
           <CheckIn>
             {isViewerMeetingSection && (
               <Hint>
