@@ -21,7 +21,7 @@ export default async function createTeamAndLeader(
   newTeam: ValidNewTeam,
   dataLoader: DataLoaderInstance
 ) {
-  const {id: userId, picture, preferredName, email} = user
+  const {id: userId} = user
   const {id: teamId, orgId} = newTeam
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, trialStartDate} = organization
@@ -63,9 +63,6 @@ export default async function createTeamAndLeader(
           id: TeamMemberId.join(teamId, userId),
           teamId,
           userId,
-          picture,
-          preferredName,
-          email,
           isLead: true,
           openDrawer: 'manageTeam'
         })

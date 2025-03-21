@@ -11,8 +11,10 @@ graphql`
       facilitator {
         # https://github.com/ParabolInc/parabol/issues/2984
         ...StageTimerModalEndTimeSlackToggle_facilitator
-        userId
-        preferredName
+        user {
+          id
+          preferredName
+        }
       }
     }
     oldFacilitator {
@@ -45,8 +47,9 @@ export const promoteNewMeetingFacilitatorMeetingOnNext: OnNextHandler<
   if (!oldFacilitator || !meeting) return
   const {isConnected, preferredName: oldFacilitatorName} = oldFacilitator
   const {
-    facilitator: {preferredName: newFacilitatorName, userId: newFacilitatorUserId}
+    facilitator: {user: facilitatorUser}
   } = meeting
+  const {preferredName: newFacilitatorName, id: newFacilitatorUserId} = facilitatorUser
   const isSelf = newFacilitatorUserId === viewerId
   const prefix = isConnected ? '' : `${oldFacilitatorName} disconnected! `
   const intro = isSelf ? 'You are' : `${newFacilitatorName} is`

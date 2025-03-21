@@ -28,7 +28,7 @@ const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
   const ext = path.extname(url).slice(1)
   const contentType = mime.types[ext] ?? 'application/octet-stream'
 
-  res.writeHeader('content-type', contentType)
+  res.cork(() => res.writeHeader('content-type', contentType))
   const readStream = fs.createReadStream(url)
   pipeStreamOverResponse(res, readStream, size)
 }

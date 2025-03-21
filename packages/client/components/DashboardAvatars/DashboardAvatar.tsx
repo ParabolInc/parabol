@@ -28,22 +28,22 @@ const DashboardAvatar = (props: Props) => {
         ...PromoteTeamMemberModal_teamMember
         ...RemoveTeamMemberModal_teamMember
         id
-        picture
         teamId
-        preferredName
         user {
+          picture
+          preferredName
           isConnected
         }
       }
     `,
     teamMemberRef
   )
-  const {id: teamMemberId, picture, teamId, preferredName} = teamMember
+  const {id: teamMemberId, teamId} = teamMember
   const {user} = teamMember
   if (!user) {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
   }
-  const {isConnected} = user
+  const {isConnected, preferredName, picture} = user
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(

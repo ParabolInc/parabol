@@ -28,7 +28,9 @@ const TeamDashTeamMemberMenu = (props: Props) => {
         }
         teamMembers(sortBy: "preferredName") {
           id
-          preferredName
+          user {
+            preferredName
+          }
         }
       }
     `,
@@ -43,7 +45,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
     query,
     filteredItems: matchedTeamMembers,
     onQueryChange
-  } = useSearchFilter(teamMembers, (teamMember) => teamMember.preferredName)
+  } = useSearchFilter(teamMembers, ({user}) => user.preferredName)
 
   return (
     <Menu
@@ -71,7 +73,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       {matchedTeamMembers.map((teamMember) => (
         <MenuItem
           key={`teamMemberFilter${teamMember.id}`}
-          label={teamMember.preferredName}
+          label={teamMember.user.preferredName}
           onClick={() => filterTeamMember(atmosphere, teamId, teamMember.id)}
         />
       ))}

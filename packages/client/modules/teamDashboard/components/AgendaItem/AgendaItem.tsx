@@ -119,7 +119,9 @@ const AgendaItem = (props: Props) => {
         content
         pinned
         teamMember {
-          picture
+          user {
+            picture
+          }
         }
       }
     `,
@@ -156,7 +158,8 @@ const AgendaItem = (props: Props) => {
   const facilitatorUserId = meeting?.facilitatorUserId
   const facilitatorStageId = meeting?.facilitatorStageId
   const phases = meeting?.phases ?? null
-  const {picture} = teamMember
+  const {user} = teamMember
+  const {picture} = user
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const ref = useRef<HTMLDivElement>(null)

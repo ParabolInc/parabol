@@ -163,8 +163,6 @@ const TeamArchive = (props: Props) => {
         }
         teamMembers(sortBy: "preferredName") {
           id
-          picture
-          preferredName
         }
       }
     `,

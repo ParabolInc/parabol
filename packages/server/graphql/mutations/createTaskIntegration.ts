@@ -67,32 +67,35 @@ export default {
       )
     }
 
-    const [viewerTaskManager, assigneeTaskManager, team, teamMembers] = await Promise.all([
-      TaskIntegrationManagerFactory.initManager(
-        dataLoader,
-        integrationProviderService,
-        {
-          teamId: teamId,
-          userId: viewerId
-        },
-        context,
-        info
-      ),
-      userId
-        ? TaskIntegrationManagerFactory.initManager(
-            dataLoader,
-            integrationProviderService,
-            {
-              teamId: teamId,
-              userId
-            },
-            context,
-            info
-          )
-        : null,
-      dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('teamMembersByTeamId').load(teamId)
-    ])
+    const [viewerTaskManager, assigneeTaskManager, team, teamMembers, viewer, assigneeUser] =
+      await Promise.all([
+        TaskIntegrationManagerFactory.initManager(
+          dataLoader,
+          integrationProviderService,
+          {
+            teamId: teamId,
+            userId: viewerId
+          },
+          context,
+          info
+        ),
+        userId
+          ? TaskIntegrationManagerFactory.initManager(
+              dataLoader,
+              integrationProviderService,
+              {
+                teamId: teamId,
+                userId
+              },
+              context,
+              info
+            )
+          : null,
+        dataLoader.get('teams').loadNonNull(teamId),
+        dataLoader.get('teamMembersByTeamId').load(teamId),
+        dataLoader.get('users').loadNonNull(viewerId),
+        userId ? dataLoader.get('users').load(viewerId) : null
+      ])
 
     const taskIntegrationManager = viewerTaskManager ?? assigneeTaskManager
     const accessUserId = viewerTaskManager ? viewerId : assigneeTaskManager ? userId : null
@@ -118,9 +121,8 @@ export default {
       })
     }
 
-    const {preferredName: viewerName} = teamMember
-    const {preferredName: assigneeName = ''} =
-      (userId && teamMembers.find((user) => user.userId === userId)) || {}
+    const {preferredName: viewerName} = viewer
+    const {preferredName: assigneeName = ''} = assigneeUser || {}
 
     const teamDashboardUrl = makeAppURL(appOrigin, `team/${teamId}`)
     const createTaskResponse = await taskIntegrationManager.createTask({

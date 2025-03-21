@@ -116,9 +116,11 @@ const TeamPromptResponseCard = (props: Props) => {
           }
         }
         teamMember {
-          userId
-          picture
-          preferredName
+          user {
+            id
+            picture
+            preferredName
+          }
         }
         discussion {
           thread(first: 1000) @connection(key: "DiscussionThread_thread") {
@@ -164,7 +166,8 @@ const TeamPromptResponseCard = (props: Props) => {
   const {viewerId} = atmosphere
 
   const {id: stageId, teamMember, meetingId, meeting, discussion, response, teamId} = responseStage
-  const {picture, preferredName, userId} = teamMember
+  const {user} = teamMember
+  const {id: userId, picture, preferredName} = user
 
   const contentJSON: JSONContent | null = useMemo(
     () => (response ? JSON.parse(response.content) : null),

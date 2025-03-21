@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {NewMeetingCheckInGreeting_checkInGreeting$key} from '../../../__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
-import {NewMeetingCheckInGreeting_teamMember$key} from '../../../__generated__/NewMeetingCheckInGreeting_teamMember.graphql'
+import {NewMeetingCheckInGreeting_user$key} from '../../../__generated__/NewMeetingCheckInGreeting_user.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
 
@@ -21,18 +21,18 @@ const GreetingSpan = styled('span')({
 })
 
 interface Props {
-  teamMember: NewMeetingCheckInGreeting_teamMember$key
-  checkInGreeting: NewMeetingCheckInGreeting_checkInGreeting$key
+  userRef: NewMeetingCheckInGreeting_user$key
+  checkInGreetingRef: NewMeetingCheckInGreeting_checkInGreeting$key
 }
 const NewMeetingCheckInGreeting = (props: Props) => {
-  const {teamMember: teamMemberRef, checkInGreeting: checkInGreetingRef} = props
-  const teamMember = useFragment(
+  const {userRef, checkInGreetingRef} = props
+  const user = useFragment(
     graphql`
-      fragment NewMeetingCheckInGreeting_teamMember on TeamMember {
+      fragment NewMeetingCheckInGreeting_user on User {
         preferredName
       }
     `,
-    teamMemberRef
+    userRef
   )
   const checkInGreeting = useFragment(
     graphql`
@@ -44,7 +44,7 @@ const NewMeetingCheckInGreeting = (props: Props) => {
     checkInGreetingRef
   )
   const {content, language} = checkInGreeting
-  const {preferredName} = teamMember
+  const {preferredName} = user
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip(
     MenuPosition.UPPER_CENTER,
     {delay: 0}

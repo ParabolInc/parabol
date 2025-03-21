@@ -48,10 +48,6 @@ const CreateTaskModal = () => {
                 }
               }
             }
-            teamMembers {
-              id
-              email
-            }
           }
         }
       }

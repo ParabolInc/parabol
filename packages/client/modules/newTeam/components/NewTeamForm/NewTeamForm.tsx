@@ -106,7 +106,9 @@ const NewTeamForm = (props: Props) => {
   graphql`
     fragment NewTeamForm_teams on Team @relay(plural: true) {
       teamMembers {
-        email
+        user {
+          email
+        }
         isSelf
       }
     }
@@ -136,7 +138,7 @@ const NewTeamForm = (props: Props) => {
   const disableFields = !!lockedSelectedOrg && !isNewOrg
   const selectedOrg = organizations.find((org) => org.id === orgId)
   const selectedOrgTeamMemberEmails = selectedOrg?.allTeams.flatMap(({teamMembers}) =>
-    teamMembers.filter(({isSelf}) => !isSelf).map(({email}) => email)
+    teamMembers.filter(({isSelf}) => !isSelf).map(({user}) => user.email)
   )
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
   const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)

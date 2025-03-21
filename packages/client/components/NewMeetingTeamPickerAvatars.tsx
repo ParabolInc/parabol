@@ -33,7 +33,9 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
       fragment NewMeetingTeamPickerAvatars_team on Team {
         teamMembers {
           id
-          picture
+          user {
+            picture
+          }
           isLead
           isSelf
         }
@@ -63,7 +65,8 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
   return (
     <Container count={randomAvatars.length}>
       {randomAvatars.map((teamMember) => {
-        const {picture} = teamMember
+        const {user} = teamMember
+        const {picture} = user
         return (
           <ErrorBoundary key={`pickerAvatar${teamMember.id}`}>
             <AvatarWrapper count={randomAvatars.length}>

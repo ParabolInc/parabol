@@ -32,24 +32,29 @@ const PromoteTeamMemberModal = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment PromoteTeamMemberModal_teamMember on TeamMember {
-        userId
         teamId
-        preferredName
+        user {
+          id
+          preferredName
+        }
         isSelf
         team {
           isOrgAdmin
           teamLead {
             isSelf
-            preferredName
+            user {
+              preferredName
+            }
           }
         }
       }
     `,
     teamMemberRef
   )
-  const {preferredName, teamId, userId, team, isSelf} = teamMember
+  const {teamId, user, team, isSelf} = teamMember
+  const {id: userId, preferredName} = user
   const {isOrgAdmin, teamLead} = team ?? {}
-  const oldLeadName = teamLead?.preferredName ?? ''
+  const oldLeadName = teamLead?.user.preferredName ?? ''
   const isOldLeadSelf = teamLead?.isSelf
   const handleClick = () => {
     submitMutation()
