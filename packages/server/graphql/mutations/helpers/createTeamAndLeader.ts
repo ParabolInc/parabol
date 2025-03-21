@@ -23,9 +23,11 @@ export default async function createTeamAndLeader(
   dataLoader: DataLoaderInstance
 ) {
   const {id: userId, picture, preferredName, email} = user
-  const {id: teamId, orgId, isPublic} = newTeam
+  const {id: teamId, orgId, isPublic: requestedIsPublic} = newTeam
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, trialStartDate} = organization
+
+  const isPublic = tier === 'starter' ? true : requestedIsPublic
 
   const verifiedTeam = new Team({
     ...newTeam,
