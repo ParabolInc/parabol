@@ -1,5 +1,6 @@
 import type {Editor} from '@tiptap/core'
 import {useEffect, useRef, useState} from 'react'
+import {commitLocalUpdate} from 'react-relay'
 import EditCommentingMutation from '../mutations/EditCommentingMutation'
 import useAtmosphere from './useAtmosphere'
 
@@ -36,11 +37,25 @@ export const useTipTapTypingStatus = (editor: Editor | null, discussionId: strin
 
   useEffect(() => {
     if (isTyping === null) return
+
+    // Get the isAnonymousComment flag from the local store
+    let isAnonymousComment = false
+    commitLocalUpdate(atmosphere, (store) => {
+      const discussion = store
+        .getRoot()
+        .getLinkedRecord('viewer')
+        ?.getLinkedRecord('discussion', {id: discussionId})
+      if (discussion) {
+        isAnonymousComment = !!discussion.getValue('isAnonymousComment')
+      }
+    })
+
     EditCommentingMutation(
       atmosphere,
       {
         isCommenting: isTyping,
-        discussionId
+        discussionId,
+        isAnonymous: isAnonymousComment
       },
       {}
     )
