@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {ChangeEvent, FormEvent, useState} from 'react'
@@ -122,6 +123,7 @@ const NewTeamForm = (props: Props) => {
         id
         lockedAt
         name
+        tier
         allTeams {
           name
           ...NewTeamForm_teams @relay(mask: false)
@@ -145,6 +147,8 @@ const NewTeamForm = (props: Props) => {
   )
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
   const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)
+  const isStarterTier = selectedOrg?.tier === 'starter'
+  const disablePrivacyToggle = (!isNewOrg && isStarterTier) || isNewOrg
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
@@ -336,7 +340,7 @@ const NewTeamForm = (props: Props) => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className='ml-2 flex cursor-pointer items-center text-slate-600'>
-                        <span>ⓘ</span>
+                        <InfoIcon fontSize='small' />
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -352,16 +356,40 @@ const NewTeamForm = (props: Props) => {
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <div className='mt-1 text-xs text-slate-600'>
-                  {isPublic
-                    ? 'Anyone in the organization can join this team'
-                    : 'Only invited members can access this team'}
+                <div className='mt-1 w-full max-w-[90%] text-xs text-slate-600'>
+                  {isPublic ? (
+                    disablePrivacyToggle ? (
+                      isNewOrg ? (
+                        <>
+                          New organizations start with public teams. You can upgrade after creating
+                          your organization to make teams private.
+                        </>
+                      ) : (
+                        <>
+                          Anyone in the organization can join this team. To make this team private,
+                          you need to <StyledLink onClick={goToBilling}>upgrade</StyledLink>.
+                        </>
+                      )
+                    ) : (
+                      <span className='whitespace-nowrap'>
+                        Anyone in the organization can join this team
+                      </span>
+                    )
+                  ) : (
+                    <span className='whitespace-nowrap'>
+                      Only invited members can access this team
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
             <div className='flex items-center'>
               <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
-              <Toggle active={isPublic} onClick={() => setIsPublic(!isPublic)} />
+              <Toggle
+                active={isPublic}
+                disabled={disablePrivacyToggle}
+                onClick={() => setIsPublic(!isPublic)}
+              />
             </div>
           </div>
           <p className='mt-8 mb-3 text-xs leading-4'>
