@@ -1,5 +1,5 @@
 import tracer from 'dd-trace'
-import uws, {SHARED_COMPRESSOR} from 'uWebSockets.js'
+import uws, {SHARED_COMPRESSOR, WebSocket} from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
@@ -13,12 +13,13 @@ import './initSentry'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import {metricsHandler} from './metrics/metricsHandler'
 import './monkeyPatchFetch'
 import selfHostedHandler from './selfHostedHandler'
 import handleClose from './socketHandlers/handleClose'
-import handleDisconnect from './socketHandlers/handleDisconnect'
+import {handleDisconnect} from './socketHandlers/handleDisconnect'
 import handleMessage from './socketHandlers/handleMessage'
-import handleOpen from './socketHandlers/handleOpen'
+import handleOpen, {SocketUserData} from './socketHandlers/handleOpen'
 import handleUpgrade from './socketHandlers/handleUpgrade'
 import SSEConnectionHandler from './sse/SSEConnectionHandler'
 import SSEPingHandler from './sse/SSEPingHandler'
@@ -46,7 +47,10 @@ process.on('SIGTERM', async (signal) => {
     Object.values(activeClients.store).map(async (connectionContext) => {
       const disconnectIn = Math.floor(Math.random() * RECONNECT_WINDOW)
       await sleep(disconnectIn)
-      await handleDisconnect(connectionContext)
+      const socket = connectionContext.socket
+      if ('send' in socket && 'ping' in socket) {
+        await handleDisconnect(socket as WebSocket<SocketUserData>)
+      }
     })
   )
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
@@ -66,6 +70,7 @@ uws
   .get('/sse-ping', SSEPingHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
+  .get('/metrics', metricsHandler)
   .post('/sse-ping', SSEPingHandler)
   .post('/stripe', stripeWebhookHandler)
   .post('/mattermost', mattermostWebhookHandler)
@@ -79,7 +84,6 @@ uws
     upgrade: handleUpgrade,
     open: handleOpen,
     message: handleMessage,
-    // today, we don't send folks enough data to worry about backpressure
     close: handleClose
   })
   .any('/*', createSSR)

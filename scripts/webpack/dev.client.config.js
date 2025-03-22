@@ -61,6 +61,7 @@ module.exports = {
         'intranet-graphql',
         'self-hosted',
         'mattermost',
+        'metrics',
         // important terminating / so saml-redirect doesn't get targeted, too
         'saml/'
       ].map((name) => ({

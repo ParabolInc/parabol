@@ -1,69 +1,82 @@
 import {OutgoingMessage} from '@mattkrick/graphql-trebuchet-client'
 import {WebSocketBehavior} from 'uWebSockets.js'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
+import {wsErrors, wsMessages, wsMessageSize} from '../metrics/metricsHandler'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import keepAlive from '../socketHelpers/keepAlive'
-import sendGQLMessage from '../socketHelpers/sendGQLMessage'
 import handleReliableMessage from '../utils/handleReliableMessage'
+import {Logger} from '../utils/Logger'
 import sendToSentry from '../utils/sendToSentry'
 import {SocketUserData} from './handleOpen'
+
+const PONG = 0x9
+
+// Get the port from environment variables
+const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
 
 const handleParsedMessage = async (
   parsedMessage: OutgoingMessage,
   connectionContext: ConnectionContext
 ) => {
-  const parsedMessages = Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]
-  parsedMessages.forEach(async (msg) => {
-    const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
-    // only reply if an opId was included. no opId = no sink on client = ignored
-    if (response?.id) {
-      const {type, id: opId, payload} = response
-      sendGQLMessage(connectionContext, opId, type, false, payload)
+  const {type} = parsedMessage
+
+  // Track message metrics if enabled
+  if (process.env.ENABLE_METRICS === 'true') {
+    wsMessages.inc({type: type as string, port: PORT.toString()})
+    // Track message size
+    const messageSize = JSON.stringify(parsedMessage).length
+    wsMessageSize.observe({type: type as string, port: PORT.toString()}, messageSize)
+  }
+
+  try {
+    switch (type) {
+      case 'start':
+        await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext)
+        break
+      case 'stop':
+        await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext)
+        break
+      default:
+        Logger.log(`Unknown message type: ${type}`)
     }
-  })
+  } catch (error) {
+    Logger.error('Error handling message:', error)
+    if (process.env.ENABLE_METRICS === 'true') {
+      wsErrors.inc({type: 'message_error', port: PORT.toString()})
+    }
+    if (error instanceof Error) {
+      sendToSentry(error)
+    }
+  }
 }
 
-const PONG = 65
-const isPong = (messageBuffer: Buffer) => messageBuffer.length === 1 && messageBuffer[0] === PONG
+const handleMessage: WebSocketBehavior<SocketUserData>['message'] = (ws, message, isBinary) => {
+  const userData = ws.getUserData()
+  const {connectionContext} = userData
+  if (!connectionContext) return
 
-const handleMessage: WebSocketBehavior<SocketUserData>['message'] = (websocket, message) => {
-  const {connectionContext} = websocket.getUserData()
-  const messageBuffer = Buffer.from(message)
-  if (isPong(messageBuffer)) {
-    keepAlive(connectionContext)
-    return
-  }
-  if (messageBuffer.length === 4) {
-    handleReliableMessage(messageBuffer, connectionContext)
-    return
-  }
-  let parsedMessage: OutgoingMessage
   try {
-    parsedMessage = JSON.parse(Buffer.from(message).toString())
-  } catch (e) {
-    // ignore the message
-    return
-  }
+    if (isBinary) {
+      const messageBuffer = Buffer.from(message)
+      if (messageBuffer.length === 1 && messageBuffer[0] === PONG) {
+        keepAlive(connectionContext)
+        return
+      }
+      handleReliableMessage(messageBuffer, connectionContext)
+      return
+    }
 
-  if (connectionContext.isReady) {
+    const parsedMessage = JSON.parse(message.toString())
     handleParsedMessage(parsedMessage, connectionContext)
-  } else {
-    connectionContext.readyQueue.push(() => {
-      handleParsedMessage(parsedMessage, connectionContext)
-    })
+  } catch (error) {
+    Logger.error('Error in handleMessage:', error)
+    if (process.env.ENABLE_METRICS === 'true') {
+      wsErrors.inc({type: 'message_error', port: PORT.toString()})
+    }
+    if (error instanceof Error) {
+      sendToSentry(error)
+    }
   }
 }
 
-const safeHandleMessage: WebSocketBehavior<SocketUserData>['message'] = (
-  websocket,
-  message,
-  isBinary
-) => {
-  try {
-    handleMessage(websocket, message, isBinary)
-  } catch (e) {
-    const error = e instanceof Error ? e : new Error('handleMessage failed')
-    sendToSentry(error)
-  }
-}
-export default safeHandleMessage
+export default handleMessage
