@@ -35,12 +35,10 @@ const ReflectHelpMenu = forwardRef((_props: Props, ref: any) => {
       <HelpMenuCopy>
         As a group, reflect on how work’s going for a specific project or timeframe.
       </HelpMenuCopy>
-      {!disableAnonymity && (
-        <HelpMenuCopy>
-          During this phase nobody can see your reflections. After this phase reflections will be
-          visible, but remain anonymous.
-        </HelpMenuCopy>
-      )}
+      <HelpMenuCopy>
+      During this phase nobody can see your reflections. After this phase reflections will be visible
+      {!disableAnonymity && ', but remain anonymous'}.
+      </HelpMenuCopy>
       <HelpMenuLink copy='Learn More' href={`${ExternalLinks.GETTING_STARTED_RETROS}#reflect`} />
     </HelpMenuContent>
   )
