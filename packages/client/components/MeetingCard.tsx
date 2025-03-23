@@ -317,7 +317,7 @@ const MeetingCard = (props: Props) => {
           <MeetingInfo>
             <TopLine>
               <Link to={meetingLink}>
-                <Name>{isRecurring ? meetingSeries.title : name}</Name>
+                <Name>{name}</Name>
               </Link>
               <Options ref={originRef} onClick={togglePortal}>
                 <IconLabel ref={tooltipRef} icon='more_vert' />
