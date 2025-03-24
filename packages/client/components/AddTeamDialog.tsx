@@ -58,7 +58,6 @@ const AddTeamDialog = (props: Props) => {
   const [selectedUsers, setSelectedUsers] = useState<Option[]>([])
   const [isPublic, setIsPublic] = useState(true)
   const [teamName, setTeamName] = useState('')
-  const [teamNameManuallyEdited, setTeamNameManuallyEdited] = useState(false)
 
   if (!organization) return null
   const isStarterTier = organization.tier === 'starter'
@@ -73,21 +72,11 @@ const AddTeamDialog = (props: Props) => {
     history.push(`/me/organizations/${organization.id}`)
   }
 
-  const MAX_TEAM_NAME_LENGTH = 50
-  const generateTeamName = (newUsers: Option[]) => {
-    return newUsers
-      .map((user) => (user.id ? user.label : user.email.split('@')[0]))
-      .join(', ')
-      .substring(0, MAX_TEAM_NAME_LENGTH)
-  }
-
   const onSelectedUsersChange = (newUsers: Option[]) => {
+    const prevLength = selectedUsers.length
     setSelectedUsers(newUsers)
-    if (!teamNameManuallyEdited) {
-      setTeamName(generateTeamName(newUsers))
-    }
 
-    if (newUsers.length && newUsers.length > selectedUsers.length) {
+    if (newUsers.length && newUsers.length > prevLength) {
       SendClientSideEvent(atmosphere, 'Teammate Selected', {
         selectionLocation: 'addTeamUserPicker'
       })
@@ -150,9 +139,6 @@ const AddTeamDialog = (props: Props) => {
           <label className={labelStyles}>Team name</label>
           <Input
             onChange={(e) => {
-              if (!teamNameManuallyEdited) {
-                setTeamNameManuallyEdited(true)
-              }
               setTeamName(e.target.value)
             }}
             value={teamName}
