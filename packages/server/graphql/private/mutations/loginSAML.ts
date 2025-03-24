@@ -2,6 +2,8 @@ import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
+import {InvoiceItemType} from '../../../../client/types/constEnums'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
@@ -47,7 +49,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
-  const {isInvited, metadataURL: newMetadataURL} = relayState
+  const {metadataURL: newMetadataURL, isInvited} = relayState
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
@@ -57,7 +59,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
         message: `Ask customer service to enable SSO for ${normalizedName}.`
       }
     }
-  const {domains, metadata: existingMetadata} = doc
+  const {domains, metadata: existingMetadata, orgId} = doc
   const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
   if (newMetadata instanceof Error) {
     return standardError(newMetadata)
@@ -151,7 +153,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     tier: 'enterprise'
   })
 
-  const authToken = await bootstrapNewUser(tempUser, !isInvited, dataLoader)
+  // treat SSO users with an associated orgId as non-organic so they don't get their personal org
+  const isOrganic = !orgId && !isInvited
+  const authToken = await bootstrapNewUser(tempUser, isOrganic, dataLoader)
+  // join existing org if any is tied to the SSO domain
+  if (orgId) {
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+  }
   return {
     userId,
     authToken: encodeAuthToken(authToken),
