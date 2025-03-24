@@ -119,6 +119,8 @@ const BottomControlBarTips = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
+        ...VoteHelpMenu_meeting
+        ...ReflectHelpMenu_settings
         id
         meetingType
         localPhase {
@@ -174,7 +176,7 @@ const BottomControlBarTips = (props: Props) => {
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
-          <MenuContent meetingType={meetingType} stageRef={localStage} />
+          <MenuContent meetingType={meetingType} stageRef={localStage} meetingRef={meeting} />
         </TallMenu>
       )}
     </BottomNavControl>
