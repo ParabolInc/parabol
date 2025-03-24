@@ -22,7 +22,6 @@ const UserColumnsContainer = (props: Props) => {
           id
           teamMembers(sortBy: "preferredName") {
             userId
-            preferredName
           }
           ...TaskColumns_teams
         }

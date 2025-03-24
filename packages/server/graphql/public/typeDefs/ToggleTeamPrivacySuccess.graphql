@@ -1,0 +1,6 @@
+type ToggleTeamPrivacySuccess {
+  """
+  The team with the updated privacy setting
+  """
+  team: Team!
+}

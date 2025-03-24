@@ -100,6 +100,7 @@ export const selectTeams = () =>
       'qualAIMeetingsCount',
       'tier',
       'trialStartDate',
+      'isPublic',
       'updatedAt'
     ])
     .select(({fn}) => [
@@ -123,10 +124,7 @@ export const selectRetroReflections = () =>
       'sortOrder',
       'updatedAt'
     ])
-    .select(({fn}) => [
-      fn<{lemma: string; salience: number; name: string}[]>('to_json', ['entities']).as('entities'),
-      fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')
-    ])
+    .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
 
 export type CreditCard = {brand: string; expiry: string; last4: number}
 export const selectOrganizations = () =>

@@ -1,12 +1,4 @@
-import {Node} from '@tiptap/react'
-
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    insightsBlock: {
-      setInsights: () => ReturnType
-    }
-  }
-}
+import {mergeAttributes, Node} from '@tiptap/react'
 
 export const InsightsBlockBase = Node.create({
   name: 'insightsBlock',
@@ -16,6 +8,8 @@ export const InsightsBlockBase = Node.create({
   defining: true,
 
   group: 'block',
+
+  content: 'block*',
 
   draggable: true,
 
@@ -31,7 +25,7 @@ export const InsightsBlockBase = Node.create({
     ]
   },
 
-  renderHTML() {
-    return ['div', {'data-type': this.name}]
+  renderHTML({HTMLAttributes}) {
+    return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name}), 0]
   }
 })

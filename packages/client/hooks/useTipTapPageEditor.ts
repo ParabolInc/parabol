@@ -1,6 +1,5 @@
 import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
-import CharacterCount from '@tiptap/extension-character-count'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Document from '@tiptap/extension-document'
@@ -15,6 +14,9 @@ import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {readInlineData} from 'relay-runtime'
+import AutoJoiner from 'tiptap-extension-auto-joiner'
+import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
+import {Markdown} from 'tiptap-markdown'
 import * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
@@ -22,9 +24,10 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
+import {UniqueID} from '../tiptap/extensions/docWithID/UniqueID'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
-import {InsightsBlock} from '../tiptap/extensions/imageBlock/InsightsBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
+import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -108,17 +111,14 @@ export const useTipTapPageEditor = (
         Document.extend({
           content: 'heading block*'
         }),
+        UniqueID.configure({types: ['insightsBlock']}),
         StarterKit.configure({document: false, history: false}),
         Underline,
         TaskList,
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false
-        }),
+        SlashCommand.configure({}),
         Focus,
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
@@ -128,7 +128,14 @@ export const useTipTapPageEditor = (
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
-          placeholder: 'New page'
+          includeChildren: true,
+          placeholder: ({node, pos}) => {
+            if (node.type.name === 'heading') {
+              if (pos === 0) return 'New Page'
+              return `Heading ${node.attrs.level}`
+            }
+            return "Press '/' for commands"
+          }
         }),
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
@@ -138,10 +145,6 @@ export const useTipTapPageEditor = (
           openOnClick: false
         }),
         SearchAndReplace.configure(),
-        CharacterCount.configure({
-          // this is a rough estimate because we store the JSON content as a string, not plaintext
-          limit: 1900
-        }),
         Collaboration.configure({
           document
         }),
@@ -152,7 +155,14 @@ export const useTipTapPageEditor = (
             color: `#${themeBackgroundColors[colorIdx]}`
           }
         }),
-        InsightsBlock
+        InsightsBlock,
+        GlobalDragHandle,
+        AutoJoiner,
+        Markdown.configure({
+          html: true,
+          transformPastedText: true,
+          transformCopiedText: true
+        })
       ],
       autofocus: true,
       editable: true

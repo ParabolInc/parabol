@@ -18,7 +18,7 @@ const migratePG = async () => {
   const context = (require as any).context(
     '../../packages/server/postgres/migrations',
     false,
-    /.ts$/
+    /\.ts$/
   )
   const collector: Record<string, any> = {}
   context.keys().forEach((relativePath: any) => {

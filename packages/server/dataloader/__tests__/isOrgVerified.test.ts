@@ -62,7 +62,9 @@ afterEach(async () => {
 })
 
 afterAll(async () => {
-  await getKysely().destroy()
+  const pg = getKysely()
+  await pg.schema.dropSchema(TEST_DB).cascade().execute()
+  await pg.destroy()
   console.log('org verified destroy')
 })
 

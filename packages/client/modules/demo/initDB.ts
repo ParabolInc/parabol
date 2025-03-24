@@ -111,6 +111,7 @@ class DemoJiraRemoteProject {
     this.service = 'jira'
   }
 }
+const GitLabDemoKey = 'parabol/parabol-demo'
 export const GitHubDemoKey = 'ParabolInc/ParabolDemo'
 export const GitHubProjectKeyLookup = {
   [GitHubDemoKey]: {
@@ -259,7 +260,8 @@ const initDemoTeamMember = (
       hasMore: false,
       items: [
         new DemoJiraRemoteProject(JiraDemoProjectId),
-        makeRepoIntegrationGitHub(GitHubDemoKey)
+        makeRepoIntegrationGitHub(GitHubDemoKey),
+        makeRepoIntegrationGitLab(GitLabDemoKey)
       ]
     },
     prevUsedRepoIntegrations: {
@@ -599,3 +601,14 @@ const initDB = (botScript: ReturnType<typeof initBotScript>) => {
 
 export type RetroDemoDB = ReturnType<typeof initDB>
 export default initDB
+
+const makeRepoIntegrationGitLab = (fullPath: string) => {
+  return {
+    __typename: '_xGitLabProject',
+    id: fullPath,
+    service: 'gitlab',
+    fullPath,
+    name: fullPath.split('/')[1],
+    description: 'Parabol GitLab Demo Project'
+  }
+}

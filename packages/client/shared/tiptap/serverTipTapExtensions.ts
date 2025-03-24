@@ -6,6 +6,7 @@ import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
+import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
@@ -40,5 +41,6 @@ export const serverTipTapExtensions = [
       return ['a', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}), 0]
     }
   }),
-  InsightsBlockBase
+  InsightsBlockBase,
+  UniqueID
 ]

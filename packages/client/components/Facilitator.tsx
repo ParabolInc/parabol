@@ -112,9 +112,9 @@ const Facilitator = (props: Props) => {
           }
         }
         facilitator {
-          picture
-          preferredName
           user {
+            picture
+            preferredName
             isConnected
           }
         }
@@ -126,9 +126,9 @@ const Facilitator = (props: Props) => {
   const connectedMemberIds = meetingMembers
     .filter(({user}) => user.isConnected)
     .map(({user}) => user.id)
-  const {user, picture, preferredName} = facilitator
+  const {user} = facilitator
   // https://sentry.io/share/issue/efef01c3e7934ab981ed5c80ef2d64c8/
-  const isConnected = user?.isConnected ?? false
+  const {picture = '', preferredName = '', isConnected = false} = user ?? {}
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {

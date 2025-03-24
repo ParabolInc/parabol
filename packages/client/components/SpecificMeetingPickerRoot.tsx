@@ -3,7 +3,7 @@ import {Suspense} from 'react'
 import type {SpecificMeetingPickerQuery} from '../__generated__/SpecificMeetingPickerQuery.graphql'
 import query from '../__generated__/TeamPickerComboboxQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import type {InsightsBlockAttrs} from '../tiptap/extensions/imageBlock/InsightsBlock'
+import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Loader} from '../utils/relay/renderLoader'
 import {SpecificMeetingPicker} from './SpecificMeetingPicker'
 

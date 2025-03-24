@@ -129,7 +129,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
               <Close />
             </div>
           </div>
-          <Tabs activeIdx={activeIdx}>
+          <Tabs activeIdx={activeIdx} className='max-w-sm'>
             {baseTabs.map((tab, idx) => (
               <Tab
                 key={tab.label}

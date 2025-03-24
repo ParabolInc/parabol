@@ -1,8 +1,9 @@
+import {Forum, Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
-import {useDispatch} from 'react-redux'
+import Tab from 'parabol-client/components/Tab/Tab'
+import {Suspense, useEffect, useMemo, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
-import ReactSelect from 'react-select'
+import Tabs from '~/components/Tabs/Tabs'
 import {SidePanelQuery} from '../../__generated__/SidePanelQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {openLinkTeamModal, openStartActivityModal} from '../../reducers'
@@ -11,13 +12,15 @@ import LinkedTeams from './LinkedTeams'
 
 const panels = {
   teams: {
-    label: 'Linked Parabol Teams',
+    label: 'Teams',
+    icon: <Group />,
     panel: LinkedTeams,
     action: openLinkTeamModal,
     actionLabel: 'Link Team'
   },
   meetings: {
-    label: 'Active Meetings',
+    label: 'Activies',
+    icon: <Forum />,
     panel: ActiveMeetings,
     action: openStartActivityModal,
     actionLabel: 'Start Activity'
@@ -28,54 +31,61 @@ const SidePanel = () => {
   const channel = useCurrentChannel()
   const data = useLazyLoadQuery<SidePanelQuery>(
     graphql`
-      query SidePanelQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query SidePanelQuery {
+        viewer {
+          teams {
+            id
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
+          }
+        }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
-  const {linkedTeamIds} = data
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
   const [activePanel, setActivePanel] = useState<keyof typeof panels>('meetings')
   useEffect(() => {
-    if (linkedTeamIds && linkedTeamIds.length === 0) {
+    if (linkedTeams && linkedTeams.length === 0) {
       setActivePanel('teams')
     }
-  }, [linkedTeamIds])
-
-  const dispatch = useDispatch()
-
-  const handleClick = () => {
-    dispatch(panels[activePanel]?.action())
-  }
+  }, [linkedTeams])
 
   return (
-    <div className='flex h-full flex-col items-stretch overflow-y-auto px-2 py-4'>
-      <div className='flex justify-between'>
-        <ReactSelect
-          className='cursor-pointer'
-          isSearchable={false}
-          value={{value: activePanel, label: panels[activePanel].label}}
-          options={Object.entries(panels).map(([value, {label}]) => ({value, label})) as any}
-          onChange={(newValue) => {
-            newValue && setActivePanel(newValue.value)
-          }}
-          components={{
-            Control: ({children, innerRef, innerProps}) => (
-              <div ref={innerRef} {...innerProps} className='flex font-bold'>
-                {children}
+    <div className='flex h-full flex-col items-stretch overflow-hidden px-2'>
+      <Tabs
+        activeIdx={Object.keys(panels).indexOf(activePanel)}
+        className='w-full max-w-none border-b border-slate-300'
+      >
+        {Object.entries(panels).map(([key, {icon, label}]) => (
+          <Tab
+            key={key}
+            label={
+              <div className='flex items-center'>
+                {icon}
+                <div className='px-1'>{label}</div>
               </div>
-            ),
-            IndicatorSeparator: () => null
-          }}
-        />
-        <button className='btn btn-primary' onClick={handleClick}>
-          {panels[activePanel]?.actionLabel}
-        </button>
-      </div>
-      {panels[activePanel]?.panel()}
+            }
+            className='p-2'
+            onClick={() => setActivePanel(key as any)}
+          />
+        ))}
+      </Tabs>
+      <Suspense fallback={null}>{panels[activePanel]?.panel()}</Suspense>
     </div>
   )
 }

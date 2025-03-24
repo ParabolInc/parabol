@@ -1,15 +1,17 @@
 import {Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 
 import {useFragment} from 'react-relay'
 import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
 
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import MoreMenu from '../Menu'
 
 import plural from 'parabol-client/utils/plural'
 import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
+import {openConfigureNotificationsModal} from '../../reducers'
 import {getPluginServerRoute} from '../../selectors'
 
 type Props = {
@@ -32,15 +34,27 @@ const TeamRow = ({teamRef}: Props) => {
 
   const {id, name, teamMembers} = team
   const pluginServerRoute = useSelector(getPluginServerRoute)
-  const unlinkTeam = useUnlinkTeam()
+  const [unlinkTeam] = useUnlinkTeam()
+  const [error, setError] = useState<string>()
   const invite = useInviteToTeam(team)
+  const dispatch = useDispatch()
 
   const handleInvite = () => {
     invite?.()
   }
 
   const handleUnlink = async () => {
-    await unlinkTeam(id)
+    setError(undefined)
+    try {
+      await unlinkTeam(id)
+    } catch (error) {
+      setError('Failed to unlink team')
+      setTimeout(() => setError(undefined), 5000)
+    }
+  }
+
+  const handleConfigureNotifications = () => {
+    dispatch(openConfigureNotificationsModal(id))
   }
 
   return (
@@ -61,10 +75,11 @@ const TeamRow = ({teamRef}: Props) => {
             {`${teamMembers.length} ${plural(teamMembers.length, 'member')}`}
           </div>
         </div>
-        <div className='py-2'>
+        <div className='flex items-center justify-between py-2'>
           <button className='btn btn-sm btn-primary' onClick={handleInvite}>
             Invite
           </button>
+          {error && <div className='error-text flex-grow pl-4'>{error}</div>}
         </div>
       </div>
       <div className='p-2'>
@@ -73,6 +88,10 @@ const TeamRow = ({teamRef}: Props) => {
             {
               label: 'Unlink',
               onClick: handleUnlink
+            },
+            {
+              label: 'Configure Notifications',
+              onClick: handleConfigureNotifications
             }
           ]}
         />

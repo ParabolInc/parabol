@@ -437,6 +437,34 @@ type Mutation {
   ): UserLogInPayload!
 
   """
+  Log in with email from a trusted Mattermost
+  """
+  loginMattermost(
+    """
+    JSON stringified headers of the request
+    ```
+    {
+      "headers": {
+        "content-type": "application/json",
+        "content-digest": "digest",
+        "content-length": 123,
+        "signature": "signature",
+        "signature-input": "signatureInput"
+      },
+      "method": "POST",
+      "url": "https://action.parabol.co/mattermost",
+    }
+    ```
+    """
+    request: String!
+
+    """
+    Original body from the request
+    """
+    body: String!
+  ): UserLogInPayload!
+
+  """
   Processes recurrence for meetings that should start and end.
   """
   processRecurrence: ProcessRecurrencePayload!

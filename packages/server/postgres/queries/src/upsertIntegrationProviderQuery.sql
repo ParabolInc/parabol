@@ -13,6 +13,7 @@ INSERT INTO
     "consumerSecret",
     "serverBaseUrl",
     "webhookUrl",
+    "sharedSecret",
     "teamId",
     "orgId"
   )
@@ -28,6 +29,7 @@ VALUES
     :consumerSecret,
     :serverBaseUrl,
     :webhookUrl,
+    :sharedSecret,
     :teamId,
     :orgId
   )
@@ -42,6 +44,7 @@ ON CONFLICT ("orgId", "teamId", "service", "authStrategy") DO UPDATE SET
   "consumerSecret" = EXCLUDED."consumerSecret",
   "serverBaseUrl" = EXCLUDED."serverBaseUrl",
   "webhookUrl" = EXCLUDED."webhookUrl",
+  "sharedSecret" = EXCLUDED."sharedSecret",
   "updatedAt" = CURRENT_TIMESTAMP,
   "isActive" = TRUE
 

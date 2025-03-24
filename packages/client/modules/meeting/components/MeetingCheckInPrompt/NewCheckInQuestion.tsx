@@ -38,12 +38,12 @@ const CogIcon = styled('div')({
 })
 
 interface Props {
-  meeting: NewCheckInQuestion_meeting$key
+  meetingRef: NewCheckInQuestion_meeting$key
 }
 
 const NewCheckInQuestion = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {meeting: meetingRef} = props
+  const {meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment NewCheckInQuestion_meeting on NewMeeting {

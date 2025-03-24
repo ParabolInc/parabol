@@ -21,9 +21,9 @@ import {
   inviteToTeamNotificationUpdater
 } from '../mutations/InviteToTeamMutation'
 import {
-  removeOrgUserNotificationOnNext,
-  removeOrgUserNotificationUpdater
-} from '../mutations/RemoveOrgUserMutation'
+  removeOrgUsersNotificationOnNext,
+  removeOrgUsersNotificationUpdater
+} from '../mutations/RemoveOrgUsersMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
@@ -112,8 +112,8 @@ const subscription = graphql`
       InviteToTeamPayload {
         ...InviteToTeamMutation_notification @relay(mask: false)
       }
-      RemoveOrgUserPayload {
-        ...RemoveOrgUserMutation_notification @relay(mask: false)
+      RemoveOrgUsersSuccess {
+        ...RemoveOrgUsersMutation_notification @relay(mask: false)
       }
       InvalidateSessionsPayload {
         ...InvalidateSessionsMutation_notification @relay(mask: false)
@@ -283,7 +283,7 @@ const updateHandlers = {
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
   InviteToTeamPayload: inviteToTeamNotificationUpdater,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitUpdater,
-  RemoveOrgUserPayload: removeOrgUserNotificationUpdater,
+  RemoveOrgUsersSuccess: removeOrgUsersNotificationUpdater,
   StripeFailPaymentPayload: stripeFailPaymentNotificationUpdater,
   ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater
 } as const
@@ -292,7 +292,7 @@ const onNextHandlers = {
   AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
-  RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
+  RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext,
   MeetingStageTimeLimitPayload: meetingStageTimeLimitOnNext,
   InvalidateSessionsPayload: invalidateSessionsNotificationOnNext,

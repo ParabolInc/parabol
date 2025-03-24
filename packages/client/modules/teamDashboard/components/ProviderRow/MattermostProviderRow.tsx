@@ -21,10 +21,12 @@ graphql`
   fragment MattermostProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
     mattermost {
       auth {
-        ...NotificationSettings_auth
         provider {
           id
         }
+      }
+      teamNotificationSettings {
+        ...NotificationSettings_settings
       }
     }
   }

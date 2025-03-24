@@ -70,12 +70,12 @@ const NewMeetingCheckIn = (props: Props) => {
   const {endedAt, showSidebar, localStage, phases} = meeting
   const {id: localStageId} = localStage
   const teamMember = localStage.teamMember!
-  const {userId} = teamMember
+  const {user} = teamMember
   const nextStageRes = findStageAfterId(phases, localStageId)
   // in case the checkin is the last phase of the meeting
   if (!nextStageRes) return null
   const {viewerId} = atmosphere
-  const isViewerMeetingSection = userId === viewerId
+  const isViewerMeetingSection = user.id === viewerId
   return (
     <MeetingContent>
       <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
@@ -87,7 +87,7 @@ const NewMeetingCheckIn = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <NewMeetingCheckInPrompt meeting={meeting} teamMember={teamMember} />
+          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user} />
           <CheckIn>
             {isViewerMeetingSection && (
               <Hint>
@@ -107,8 +107,10 @@ const NewMeetingCheckIn = (props: Props) => {
 graphql`
   fragment NewMeetingCheckInLocalStage on CheckInStage {
     teamMember {
-      userId
-      ...NewMeetingCheckInPrompt_teamMember
+      user {
+        id
+        ...NewMeetingCheckInPrompt_user
+      }
     }
   }
 `

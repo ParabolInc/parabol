@@ -1,3 +1,4 @@
+import ConfigureNotificationsModal from './ConfigureNotificationsModal'
 import CreateTaskModalRoot from './CreateTaskModal'
 import InviteToMeetingModalRoot from './InviteToMeetingModal'
 import InviteToTeamModalRoot from './InviteToTeamModal'
@@ -14,6 +15,7 @@ const ModalRoot = () => {
       <LinkTeamModal />
       <PushReflectionModalRoot />
       <StartActivityModalRoot />
+      <ConfigureNotificationsModal />
     </>
   )
 }

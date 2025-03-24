@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 
@@ -17,24 +17,35 @@ const InviteToTeamModal = () => {
   const channel = useCurrentChannel()
   const data = useLazyLoadQuery<InviteToTeamModalQuery>(
     graphql`
-      query InviteToTeamModalQuery($channel: ID!) {
-        linkedTeamIds(channel: $channel)
+      query InviteToTeamModalQuery {
         viewer {
           teams {
             ...useInviteToTeam_team
             id
             name
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
           }
         }
       }
     `,
-    {
-      channel: channel?.id ?? ''
-    }
+    {}
   )
 
-  const {viewer, linkedTeamIds} = data
-  const linkedTeams = viewer.teams.filter((team) => linkedTeamIds?.includes(team.id))
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
   const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
 

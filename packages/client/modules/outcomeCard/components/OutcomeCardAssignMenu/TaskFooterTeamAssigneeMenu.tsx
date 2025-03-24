@@ -54,7 +54,6 @@ const gqlQuery = graphql`
         name
         teamMembers(sortBy: "preferredName") {
           userId
-          preferredName
         }
       }
     }
@@ -142,7 +141,8 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
           await atmosphere.fetchQuery<TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery>(query, {
             teamId: nextTeam.id
           })
-        const {github, atlassian} = result?.viewer?.teamMember?.integrations ?? {}
+        const safeRes = result instanceof Error ? undefined : result
+        const {github, atlassian} = safeRes?.viewer?.teamMember?.integrations ?? {}
 
         if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
           // viewer is not integrated, now we have these options:

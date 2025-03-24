@@ -86,7 +86,6 @@ const DashboardAvatars = (props: Props) => {
           ...AddTeamMemberAvatarButton_teamMembers
           ...DashboardAvatar_teamMember
           id
-          preferredName
           user {
             isConnected
           }

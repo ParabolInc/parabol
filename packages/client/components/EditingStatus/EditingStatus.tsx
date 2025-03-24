@@ -22,7 +22,7 @@ const StatusHeader = styled('div')({
   justifyContent: 'space-between',
   lineHeight: '20px',
   minHeight: Card.BUTTON_HEIGHT,
-  padding: `0 ${Card.PADDING} 8px`,
+  padding: `0 ${Card.PADDING} 4px`,
   textAlign: 'left'
 })
 

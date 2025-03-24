@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinRequestsByIds'
 import getMeetingSeriesByIds from '../postgres/queries/getMeetingSeriesByIds'
@@ -29,6 +30,7 @@ import {
   selectTemplateScaleRef,
   selectTimelineEvent
 } from '../postgres/select'
+import {TeamNotificationSettings} from '../postgres/types/pg'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
 export const users = primaryKeyLoaderMaker(getUsersByIds)
@@ -163,4 +165,16 @@ export const teamMemberIntegrationAuths = primaryKeyLoaderMaker((ids: readonly n
     .selectAll()
     .where('id', 'in', ids)
     .execute()
+})
+
+export const teamNotificationSettings = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return (
+    getKysely()
+      .selectFrom('TeamNotificationSettings')
+      .selectAll()
+      // convert to text[] as kysely would otherwise not parse the array
+      .select(sql<TeamNotificationSettings['events']>`events::text[]`.as('events'))
+      .where('id', 'in', ids)
+      .execute()
+  )
 })

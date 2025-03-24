@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {NewMeetingCheckInPrompt_meeting$key} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
-import {NewMeetingCheckInPrompt_teamMember$key} from '../../../../__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import {NewMeetingCheckInPrompt_user$key} from '../../../../__generated__/NewMeetingCheckInPrompt_user.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
 import NewCheckInQuestion from './NewCheckInQuestion'
@@ -29,12 +29,12 @@ const CheckInBlock = styled('div')({
 })
 
 interface Props {
-  meeting: NewMeetingCheckInPrompt_meeting$key
-  teamMember: NewMeetingCheckInPrompt_teamMember$key
+  meetingRef: NewMeetingCheckInPrompt_meeting$key
+  userRef: NewMeetingCheckInPrompt_user$key
 }
 
 const NewMeetingCheckinPrompt = (props: Props) => {
-  const {meeting: meetingRef, teamMember: teamMemberRef} = props
+  const {meetingRef, userRef} = props
   const meeting = useFragment(
     graphql`
       fragment NewMeetingCheckInPrompt_meeting on NewMeeting {
@@ -60,16 +60,16 @@ const NewMeetingCheckinPrompt = (props: Props) => {
     `,
     meetingRef
   )
-  const teamMember = useFragment(
+  const user = useFragment(
     graphql`
-      fragment NewMeetingCheckInPrompt_teamMember on TeamMember {
-        ...NewMeetingCheckInGreeting_teamMember
+      fragment NewMeetingCheckInPrompt_user on User {
+        ...NewMeetingCheckInGreeting_user
         picture
       }
     `,
-    teamMemberRef
+    userRef
   )
-  const {picture} = teamMember
+  const {picture} = user
   const {localPhase} = meeting
   const {checkInGreeting} = localPhase
   return (
@@ -78,8 +78,8 @@ const NewMeetingCheckinPrompt = (props: Props) => {
         <Avatar picture={picture} className={`h-32 w-32 sidebar-left:h-40 sidebar-left:w-40`} />
       </AvatarBlock>
       <CheckInBlock>
-        <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting!} teamMember={teamMember} />
-        <NewCheckInQuestion meeting={meeting} />
+        <NewMeetingCheckInGreeting checkInGreetingRef={checkInGreeting!} userRef={user} />
+        <NewCheckInQuestion meetingRef={meeting} />
       </CheckInBlock>
     </PromptBlock>
   )

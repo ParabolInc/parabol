@@ -10,6 +10,7 @@ import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
+import TeamPrivacyToggle from './TeamPrivacyToggle'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -42,6 +43,7 @@ const query = graphql`
     viewer {
       team(teamId: $teamId) {
         ...ArchiveTeam_team
+        ...TeamPrivacyToggle_team
         isViewerLead
         id
         name
@@ -50,12 +52,14 @@ const query = graphql`
         orgId
         teamMembers(sortBy: "preferredName") {
           teamMemberId: id
-          userId
+          user {
+            id
+            preferredName
+            email
+          }
           isLead
           isOrgAdmin
           isSelf
-          preferredName
-          email
         }
       }
     }
@@ -75,7 +79,7 @@ const TeamSettings = (props: Props) => {
   if (!viewerTeamMember) return null
   const {isLead: viewerIsLead, isOrgAdmin: viewerIsOrgAdmin} = viewerTeamMember
   const lead = teamMembers.find((m) => m.isLead)
-  const contact = lead ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
+  const contact = lead?.user ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
   return (
     <TeamSettingsLayout>
       <PanelsLayout>
@@ -94,17 +98,24 @@ const TeamSettings = (props: Props) => {
           </Panel>
         )}
         {viewerIsLead || viewerIsOrgAdmin ? (
-          <Panel label='Danger Zone'>
-            <PanelRow>
-              <ArchiveTeam team={team!} />
-            </PanelRow>
-          </Panel>
+          <>
+            <Panel label='Team Privacy'>
+              <PanelRow>
+                <TeamPrivacyToggle teamRef={team!} />
+              </PanelRow>
+            </Panel>
+            <Panel label='Danger Zone'>
+              <PanelRow>
+                <ArchiveTeam team={team!} />
+              </PanelRow>
+            </Panel>
+          </>
         ) : (
           <Panel className='mt-8'>
             <StyledRow>
               <div>
                 This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
-                Team Leads can <b>Upgrade plans</b> and <b>Delete a team</b>.<br />
+                Team Leads can <b>delete a team</b>.<br />
                 The <b>Team Lead</b> for {teamName} is{' '}
                 <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
                   {contact.preferredName}

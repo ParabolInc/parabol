@@ -18,11 +18,11 @@ type TeamSubscriptionPayload {
   PushInvitationPayload: PushInvitationPayload
   PromoteToTeamLeadPayload: PromoteToTeamLeadPayload
   RemoveAgendaItemPayload: RemoveAgendaItemPayload
-  RemoveOrgUserPayload: RemoveOrgUserPayload
+  RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   RenameMeetingSuccess: RenameMeetingSuccess
   SelectTemplatePayload: SelectTemplatePayload
-  SetNotificationSettingSuccess: SetNotificationSettingSuccess
+  SetTeamNotificationSettingSuccess: SetTeamNotificationSettingSuccess
   StartCheckInSuccess: StartCheckInSuccess
   StartRetrospectiveSuccess: StartRetrospectiveSuccess
   StartSprintPokerSuccess: StartSprintPokerSuccess
@@ -71,4 +71,5 @@ type TeamSubscriptionPayload {
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   GenerateInsightSuccess: GenerateInsightSuccess
+  JoinTeamSuccess: JoinTeamSuccess
 }

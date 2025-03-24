@@ -21,6 +21,7 @@ import {
   type selectDiscussion
 } from '../select'
 import {
+  AIPrompt as AIPromptPG,
   Discussion as DiscussionPG,
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
@@ -102,3 +103,5 @@ export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
 export type Page = Selectable<PagePG>
+
+export type AIPrompt = Selectable<AIPromptPG>

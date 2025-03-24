@@ -4,7 +4,7 @@ import Avatar from './Avatar/Avatar'
 const AvatarCol = styled('div')<{isReply: boolean | undefined}>(({isReply}) => ({
   display: 'flex',
   paddingRight: 8,
-  paddingLeft: isReply ? undefined : 8
+  paddingLeft: isReply ? undefined : 12
 }))
 
 interface Props {

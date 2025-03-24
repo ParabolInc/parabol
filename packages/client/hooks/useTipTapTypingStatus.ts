@@ -11,6 +11,7 @@ export const useTipTapTypingStatus = (editor: Editor | null, discussionId: strin
   useEffect(() => {
     if (!editor) return
     const handleUpdate = () => {
+      if (editor.isEmpty) return
       setIsTyping(true)
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
       timeoutRef.current = setTimeout(() => setIsTyping(false), 5000)

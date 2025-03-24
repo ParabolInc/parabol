@@ -324,13 +324,23 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           isBillingLeader || isSuperUser(authToken) || isTeamMember(authToken, teamId)
         if (!canViewAllMembers) return []
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-        teamMembers.sort((a, b) => {
+        const teamMembersWithUserFields = await Promise.all(
+          teamMembers.map(async (teamMember) => {
+            const user = await dataLoader.get('users').loadNonNull(teamMember.userId)
+            return {
+              ...teamMember,
+              preferredName: user.preferredName,
+              email: user.email
+            }
+          })
+        )
+        teamMembersWithUserFields.sort((a, b) => {
           let [aProp, bProp] = [a[sortBy], b[sortBy]]
           aProp = aProp?.toLowerCase ? aProp.toLowerCase() : aProp
           bProp = bProp?.toLowerCase ? bProp.toLowerCase() : bProp
           return aProp > bProp ? 1 : -1
         })
-        return teamMembers
+        return teamMembersWithUserFields
       }
     },
     isArchived: {
