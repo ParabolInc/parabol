@@ -64,6 +64,15 @@ const AddTeamDialog = (props: Props) => {
   const isStarterTier = organization.tier === 'starter'
   const disablePrivacyToggle = isStarterTier
 
+  const goToBilling = () => {
+    SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
+      upgradeCTALocation: 'createTeam',
+      orgId: organization.id,
+      upgradeTier: 'team'
+    })
+    history.push(`/me/organizations/${organization.id}`)
+  }
+
   const MAX_TEAM_NAME_LENGTH = 50
   const generateTeamName = (newUsers: Option[]) => {
     return newUsers
@@ -161,8 +170,15 @@ const AddTeamDialog = (props: Props) => {
                 {isPublic ? (
                   disablePrivacyToggle ? (
                     <>
-                      Anyone in the organization can join this team. To make this team private, you
-                      need to upgrade.
+                      Anyone in the organization can join this team. You can make this team private
+                      if you{' '}
+                      <span
+                        onClick={goToBilling}
+                        className='cursor-pointer font-semibold text-sky-500 outline-none hover:text-sky-600'
+                      >
+                        upgrade
+                      </span>
+                      .
                     </>
                   ) : (
                     <span className='whitespace-nowrap'>
