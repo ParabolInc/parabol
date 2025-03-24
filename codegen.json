@@ -31,6 +31,7 @@
           "RemoveFeatureFlagOwnerSuccess": "./types/RemoveFeatureFlagOwnerSuccess#RemoveFeatureFlagOwnerSuccessSource",
           "RetrospectiveMeeting": "../../postgres/types/Meeting#RetrospectiveMeeting",
           "SAML": "./types/SAML#SAMLSource",
+          "ScimCreateUserSuccess": "./types/ScimCreateUserSuccess#ScimCreateUserSuccessSource",
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
           "StartTrialSuccess": "./types/StartTrialSuccess#StartTrialSuccessSource",

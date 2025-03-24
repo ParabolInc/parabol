@@ -1,0 +1,5 @@
+"""
+Return type of ScimCreateUser
+"""
+union ScimCreateUserPayload = ErrorPayload | ScimCreateUserSuccess
+

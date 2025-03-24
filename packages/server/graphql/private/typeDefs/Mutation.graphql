@@ -436,6 +436,11 @@ type Mutation {
     samlName: ID!
   ): UserLogInPayload!
 
+  scimCreateUser(
+    email: ID!
+    preferredName: String!
+  ): ScimCreateUserPayload!
+
   """
   Log in with email from a trusted Mattermost
   """

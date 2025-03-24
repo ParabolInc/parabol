@@ -25,6 +25,7 @@ import SSEPingHandler from './sse/SSEPingHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
 import SAMLHandler from './utils/SAMLHandler'
+import SCIMHandler from './scim/SCIMHandler'
 
 export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
@@ -72,6 +73,7 @@ uws
   .post('/graphql', httpGraphQLHandler)
   .post('/intranet-graphql', intranetGraphQLHandler)
   .post('/saml/:domain', SAMLHandler)
+  .any('/scim/*', SCIMHandler)
   .ws('/*', {
     compression: SHARED_COMPRESSOR,
     idleTimeout: 0,

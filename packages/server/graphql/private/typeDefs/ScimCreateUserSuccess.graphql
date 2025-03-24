@@ -1,0 +1,16 @@
+"""
+Generic payload when a user was created via SCIM
+"""
+type ScimCreateUserSuccess {
+  userId: ID
+
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
+
+  """
+  the newly created user, or the existing user
+  """
+  user: User
+}
