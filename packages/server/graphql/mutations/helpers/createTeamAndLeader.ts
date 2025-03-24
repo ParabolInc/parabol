@@ -67,10 +67,7 @@ export default async function createTeamAndLeader(
           teamId,
           userId,
           isLead: true,
-          openDrawer: 'manageTeam',
-          email,
-          picture,
-          preferredName
+          openDrawer: 'manageTeam'
         })
       )
       .with('SuggestedActionInsert', (qc) =>
