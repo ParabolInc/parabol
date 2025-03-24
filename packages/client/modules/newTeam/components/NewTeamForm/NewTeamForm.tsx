@@ -351,8 +351,8 @@ const NewTeamForm = (props: Props) => {
                           <b>Public teams:</b> Anyone in the organization can find and join the team
                         </div>
                         <div>
-                          <b>Private teams:</b> Only invited members can access the team. Team is
-                          hidden from other organization members
+                          <b>Private teams:</b> The team is hidden from other organization members
+                          and only invited members can access it
                         </div>
                       </div>
                     </TooltipContent>
@@ -362,14 +362,11 @@ const NewTeamForm = (props: Props) => {
                   {isPublic ? (
                     disablePrivacyToggle ? (
                       isNewOrg ? (
-                        <>
-                          New organizations start with public teams. You can upgrade after creating
-                          your organization to make teams private.
-                        </>
+                        <>After creating your organization you can upgrade to make teams private</>
                       ) : (
                         <>
-                          Anyone in the organization can join this team. To make this team private,
-                          you need to <StyledLink onClick={goToBilling}>upgrade</StyledLink>.
+                          Anyone in the organization can join this team. You can make this team
+                          private if you <StyledLink onClick={goToBilling}>upgrade</StyledLink>.
                         </>
                       )
                     ) : (
