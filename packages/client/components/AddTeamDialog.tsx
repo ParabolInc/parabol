@@ -60,9 +60,9 @@ const AddTeamDialog = (props: Props) => {
   const [teamName, setTeamName] = useState('')
   const [teamNameManuallyEdited, setTeamNameManuallyEdited] = useState(false)
 
-  const isStarterTier = organization?.tier === 'starter'
-  const disablePrivacyToggle = isStarterTier
   if (!organization) return null
+  const isStarterTier = organization.tier === 'starter'
+  const disablePrivacyToggle = isStarterTier
 
   const MAX_TEAM_NAME_LENGTH = 50
   const generateTeamName = (newUsers: Option[]) => {
