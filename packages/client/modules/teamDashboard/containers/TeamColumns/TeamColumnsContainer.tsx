@@ -24,8 +24,6 @@ const TeamColumnsContainer = (props: Props) => {
           }
           teamMembers(sortBy: "preferredName") {
             id
-            picture
-            preferredName
           }
           tasks(first: 1000) @connection(key: "TeamColumnsContainer_tasks") {
             edges {

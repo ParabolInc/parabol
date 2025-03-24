@@ -38,15 +38,18 @@ const TeamMemberAvatarMenu = (props: Props) => {
     graphql`
       fragment TeamMemberAvatarMenu_teamMember on TeamMember {
         isSelf
-        preferredName
-        userId
+        user {
+          id
+          preferredName
+        }
         isLead
       }
     `,
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const {preferredName, userId} = teamMember
+  const {user} = teamMember
+  const {id: userId, preferredName} = user
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin

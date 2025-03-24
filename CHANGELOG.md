@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.37.2](https://github.com/ParabolInc/parabol/compare/v8.37.1...v8.37.2) (2025-03-21)
+
+
+### Fixed
+
+* return 404 if PWAHandler cannot find files ([#11043](https://github.com/ParabolInc/parabol/issues/11043)) ([d66ef3d](https://github.com/ParabolInc/parabol/commit/d66ef3d7820826db41e9d38f149594ccce3266c7))
+* Undefined TeamMember in NewMeetingCheckIn ([#11042](https://github.com/ParabolInc/parabol/issues/11042)) ([aac4304](https://github.com/ParabolInc/parabol/commit/aac430457398fe28def7a1c3f60ef8c2056dfdf1))
+
+## [8.37.1](https://github.com/ParabolInc/parabol/compare/v8.37.0...v8.37.1) (2025-03-21)
+
+
+### Changed
+
+* Cork serving static files ([#11037](https://github.com/ParabolInc/parabol/issues/11037)) ([177b607](https://github.com/ParabolInc/parabol/commit/177b607c8342e004c1e473801db290f898252be3))
+* Normalize TeamMember ([#11026](https://github.com/ParabolInc/parabol/issues/11026)) ([4ea346c](https://github.com/ParabolInc/parabol/commit/4ea346c2bdb8f405a55aef198018821c04ea3bd6))
+
 ## [8.37.0](https://github.com/ParabolInc/parabol/compare/v8.36.1...v8.37.0) (2025-03-19)
 
 

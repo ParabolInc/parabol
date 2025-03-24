@@ -66,7 +66,7 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     dataLoader.get('users').loadNonNull(userId),
     dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
   ])
-  const {email, picture, preferredName} = user
+  const {email} = user
   const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team, dataLoader)
   const invitationNotifications = await pg
     .with('TeamMemberInsert', (qc) =>
@@ -76,9 +76,6 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
           id: TeamMemberId.join(teamId, userId),
           teamId,
           userId,
-          picture,
-          preferredName,
-          email,
           openDrawer: 'manageTeam'
         })
         .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))

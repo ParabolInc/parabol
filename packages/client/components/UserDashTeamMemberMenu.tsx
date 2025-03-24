@@ -35,8 +35,10 @@ const UserDashTeamMemberMenu = (props: Props) => {
           id
           name
           teamMembers(sortBy: "preferredName") {
-            userId
-            preferredName
+            user {
+              userId: id
+              preferredName
+            }
           }
         }
       }
@@ -63,11 +65,11 @@ const UserDashTeamMemberMenu = (props: Props) => {
       preferredName: string
     }[]
     const teamMembers = filteredTeams.map(({teamMembers}) => teamMembers.flat()).flat()
-    teamMembers.forEach((teamMember) => {
-      const userKey = teamMember.userId
+    teamMembers.forEach(({user}) => {
+      const userKey = user.userId
       if (!keySet.has(userKey)) {
         keySet.add(userKey)
-        filteredTeamMembers.push(teamMember)
+        filteredTeamMembers.push(user)
       }
     })
     filteredTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))

@@ -5,11 +5,9 @@ import {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateUserProfileMutation_team on UpdateUserProfilePayload {
-    teamMembers {
+    user {
+      id
       preferredName
-      user {
-        preferredName
-      }
     }
   }
 `

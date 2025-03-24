@@ -1,6 +1,6 @@
 {
   "name": "parabol-mattermost-plugin",
-  "version": "8.37.0",
+  "version": "8.37.2",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Georg Bremer <github@dschoordsch.de>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/mattermost-plugin#readme",
@@ -60,7 +60,7 @@
     "@tiptap/extension-link": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "mattermost-redux": "5.33.1",
-    "parabol-client": "8.37.0",
+    "parabol-client": "8.37.2",
     "react-relay": "^18.2.0",
     "react-select": "5.8.2",
     "relay-runtime": "^18.1.1",

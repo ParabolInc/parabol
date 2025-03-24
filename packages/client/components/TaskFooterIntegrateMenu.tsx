@@ -23,7 +23,9 @@ const query = graphql`
     viewer {
       id
       assigneeTeamMember: teamMember(userId: $userId, teamId: $teamId) {
-        preferredName
+        user {
+          preferredName
+        }
         prevUsedRepoIntegrations(first: 1) {
           items {
             id
@@ -65,7 +67,8 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const isAssigneeIntegrated = useIsIntegrated(assigneeTeamMember?.integrations)
   if (!assigneeTeamMember || !viewerTeamMember) return null
   const {integrations: viewerIntegrations} = viewerTeamMember
-  const {preferredName: assigneeName, prevUsedRepoIntegrations} = assigneeTeamMember
+  const {user: assigneeUser, prevUsedRepoIntegrations} = assigneeTeamMember
+  const {preferredName: assigneeName} = assigneeUser
   const {teamId, userId, id: taskId} = task
   const isViewerAssignee = viewerId === userId
   const showAssigneeIntegrations = !!(

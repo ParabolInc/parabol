@@ -45,12 +45,6 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   // RESOLUTION
   // propagate denormalized changes to TeamMember
   await pg
-    .with('TeamMemberUpdate', (qc) =>
-      qc
-        .updateTable('TeamMember')
-        .set({preferredName: normalizedPreferredName})
-        .where('userId', '=', userId)
-    )
     .updateTable('User')
     .set({preferredName: normalizedPreferredName})
     .where('id', '=', userId)
@@ -72,10 +66,10 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
 
   const teamIds = teamMembers.map(({teamId}) => teamId)
   teamIds.forEach((teamId) => {
-    const data = {userId, teamIds: [teamId]}
+    const data = {userId}
     publish(SubscriptionChannel.TEAM, teamId, 'UpdateUserProfilePayload', data, subOptions)
   })
-  return {userId, teamIds}
+  return {userId}
 }
 
 export default updateUserProfile

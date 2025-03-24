@@ -98,13 +98,10 @@ const NewMeetingAvatarGroup = (props: Props) => {
           id
           userId
           user {
+            ...NewMeetingAvatar_user
             isConnected
             lastSeenAt
             lastSeenAtURLs
-          }
-          teamMember {
-            ...NewMeetingAvatar_teamMember
-            id
           }
         }
       }
@@ -158,7 +155,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
         return (
           <OverlappingBlock key={meetingMember.child.id}>
             <NewMeetingAvatar
-              teamMemberRef={meetingMember.child.teamMember}
+              userRef={meetingMember.child.user}
               onTransitionEnd={meetingMember.onTransitionEnd}
               status={isInit ? TransitionStatus.ENTERED : meetingMember.status}
             />

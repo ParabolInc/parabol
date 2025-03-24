@@ -17,25 +17,27 @@ const pipeStreamOverResponse = (
         return
       }
       const ab = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
-      const lastOffset = res.getWriteOffset()
-      const [ok, done] = res.tryEnd(ab as ArrayBuffer, totalSize)
-      if (done) readStream.destroy()
-      if (ok) return
-      // backpressure found!
-      readStream.pause()
-      // save the current chunk & its offset
-      res.ab = ab
-      res.abOffset = lastOffset
+      res.cork(() => {
+        const lastOffset = res.getWriteOffset()
+        const [ok, done] = res.tryEnd(ab as ArrayBuffer, totalSize)
+        if (done) readStream.destroy()
+        if (ok) return
+        // backpressure found!
+        readStream.pause()
+        // save the current chunk & its offset
+        res.ab = ab
+        res.abOffset = lastOffset
 
-      // set up a drainage
-      res.onWritable((offset) => {
-        const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), totalSize)
-        if (done) {
-          readStream.destroy()
-        } else if (ok) {
-          readStream.resume()
-        }
-        return ok
+        // set up a drainage
+        res.onWritable((offset) => {
+          const [ok, done] = res.tryEnd(res.ab.slice(offset - res.abOffset), totalSize)
+          if (done) {
+            readStream.destroy()
+          } else if (ok) {
+            readStream.resume()
+          }
+          return ok
+        })
       })
     })
 

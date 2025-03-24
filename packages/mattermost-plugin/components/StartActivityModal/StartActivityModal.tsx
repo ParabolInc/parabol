@@ -54,10 +54,6 @@ const StartActivityModal = () => {
                 }
               }
             }
-            teamMembers {
-              id
-              email
-            }
           }
         }
       }
