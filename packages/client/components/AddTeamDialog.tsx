@@ -15,13 +15,8 @@ import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {Input} from '../ui/Input/Input'
-import {Select} from '../ui/Select/Select'
-import {SelectContent} from '../ui/Select/SelectContent'
-import {SelectGroup} from '../ui/Select/SelectGroup'
-import {SelectItem} from '../ui/Select/SelectItem'
-import {SelectTrigger} from '../ui/Select/SelectTrigger'
-import {SelectValue} from '../ui/Select/SelectValue'
 import FlatPrimaryButton from './FlatPrimaryButton'
+import Toggle from './Toggle/Toggle'
 
 interface Props {
   isOpen: boolean
@@ -33,15 +28,16 @@ interface Props {
 const AddTeamDialogViewerFragment = graphql`
   fragment AddTeamDialog_viewer on User {
     ...AdhocTeamMultiSelect_viewer
-    organizations {
+    organization(orgId: $orgId) {
       id
       name
+      tier
     }
   }
 `
 
 const query = graphql`
-  query AddTeamDialogQuery {
+  query AddTeamDialogQuery($orgId: ID!) {
     viewer {
       ...AddTeamDialog_viewer
     }
@@ -51,27 +47,22 @@ const query = graphql`
 const AddTeamDialog = (props: Props) => {
   const {isOpen, onClose, queryRef, onAddTeam} = props
   const atmosphere = useAtmosphere()
+  const {history} = useRouter()
 
   const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
-  const {history} = useRouter()
 
   const data = usePreloadedQuery<AddTeamDialogQuery>(query, queryRef)
   const viewer = useFragment<AddTeamDialog_viewer$key>(AddTeamDialogViewerFragment, data.viewer)
-  const {organizations: viewerOrganizations} = viewer
+  const {organization} = viewer
 
   const [selectedUsers, setSelectedUsers] = useState<Option[]>([])
-  const [mutualOrgsIds, setMutualOrgsIds] = useState<string[]>([])
-
-  const showOrgPicker = !!(
-    selectedUsers.length &&
-    (mutualOrgsIds.length > 1 || !mutualOrgsIds.length) &&
-    viewerOrganizations.length > 1
-  )
-
-  const defaultOrgId = mutualOrgsIds[0]
-  const [selectedOrgId, setSelectedOrgId] = useState(defaultOrgId)
+  const [isPublic, setIsPublic] = useState(true)
   const [teamName, setTeamName] = useState('')
   const [teamNameManuallyEdited, setTeamNameManuallyEdited] = useState(false)
+
+  const isStarterTier = organization?.tier === 'starter'
+  const disablePrivacyToggle = isStarterTier
+  if (!organization) return null
 
   const MAX_TEAM_NAME_LENGTH = 50
   const generateTeamName = (newUsers: Option[]) => {
@@ -83,20 +74,6 @@ const AddTeamDialog = (props: Props) => {
 
   const onSelectedUsersChange = (newUsers: Option[]) => {
     setSelectedUsers(newUsers)
-    const selectedUsersOrganizationIds = new Set()
-    newUsers.forEach((user) => {
-      //add user.organizationIds to selectedUserOrganizationIds
-      user.organizationIds.forEach((organizationId) => {
-        selectedUsersOrganizationIds.add(organizationId)
-      })
-    })
-
-    const mutualOrgs = viewerOrganizations.filter((org) => selectedUsersOrganizationIds.has(org.id))
-
-    const mutualOrgsIds = mutualOrgs.map((org) => org.id)
-    setMutualOrgsIds(mutualOrgsIds)
-    setSelectedOrgId(mutualOrgsIds[0] ?? viewerOrganizations[0]?.id)
-
     if (!teamNameManuallyEdited) {
       setTeamName(generateTeamName(newUsers))
     }
@@ -111,7 +88,8 @@ const AddTeamDialog = (props: Props) => {
   const handleAddTeam = () => {
     const newTeam = {
       name: teamName,
-      orgId: selectedOrgId
+      orgId: organization.id,
+      isPublic
     }
     submitMutation()
 
@@ -133,7 +111,7 @@ const AddTeamDialog = (props: Props) => {
     )
   }
 
-  const isValid = selectedUsers.length && teamName.trim()
+  const isValid = teamName.trim().length > 0
 
   const labelStyles = `text-left text-sm font-semibold mb-3`
   const fieldsetStyles = `mx-0 mb-6 flex flex-col w-full p-0`
@@ -159,28 +137,6 @@ const AddTeamDialog = (props: Props) => {
           )}
         </fieldset>
 
-        {showOrgPicker && (
-          <fieldset className={fieldsetStyles}>
-            <label className={labelStyles}>Organization</label>
-            <Select onValueChange={(orgId) => setSelectedOrgId(orgId)} value={selectedOrgId}>
-              <SelectTrigger className='bg-white'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {viewerOrganizations
-                    .filter((org) => (mutualOrgsIds.length ? mutualOrgsIds.includes(org.id) : true))
-                    .map((org) => (
-                      <SelectItem value={org.id} key={org.id}>
-                        {org.name}
-                      </SelectItem>
-                    ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </fieldset>
-        )}
-
         <fieldset className={fieldsetStyles}>
           <label className={labelStyles}>Team name</label>
           <Input
@@ -196,6 +152,41 @@ const AddTeamDialog = (props: Props) => {
             <div className='mt-2 text-sm font-semibold text-tomato-500'>{error.message}</div>
           )}
         </fieldset>
+
+        <fieldset className={fieldsetStyles}>
+          <div className='flex items-center justify-between'>
+            <div className='flex-1'>
+              <label className={labelStyles}>Team Privacy</label>
+              <div className='text-xs text-slate-600'>
+                {isPublic ? (
+                  disablePrivacyToggle ? (
+                    <>
+                      Anyone in the organization can join this team. To make this team private, you
+                      need to upgrade.
+                    </>
+                  ) : (
+                    <span className='whitespace-nowrap'>
+                      Anyone in the organization can join this team
+                    </span>
+                  )
+                ) : (
+                  <span className='whitespace-nowrap'>
+                    Only invited members can access this team
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className='flex items-center'>
+              <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
+              <Toggle
+                active={isPublic}
+                disabled={disablePrivacyToggle}
+                onClick={() => setIsPublic(!isPublic)}
+              />
+            </div>
+          </div>
+        </fieldset>
+
         <DialogActions>
           <FlatPrimaryButton
             size='medium'
