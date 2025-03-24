@@ -176,7 +176,7 @@ const BottomControlBarTips = (props: Props) => {
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <TallMenu ariaLabel='Meeting tips' {...menuProps}>
-          <MenuContent meetingType={meetingType} stageRef={localStage} meetingRef={meeting}/>
+          <MenuContent meetingType={meetingType} stageRef={localStage} meetingRef={meeting} />
         </TallMenu>
       )}
     </BottomNavControl>
