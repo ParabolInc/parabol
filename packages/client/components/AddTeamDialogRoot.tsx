@@ -13,7 +13,7 @@ interface Props {
 const AddTeamDialogRoot = (props: Props) => {
   const {onClose, onAddTeam} = props
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
-  const orgId = match?.params?.orgId!
+  const orgId = match?.params?.orgId || ''
 
   const queryRef = useQueryLoaderNow<AddTeamDialogQuery>(addTeamDialogQuery, {orgId})
 
