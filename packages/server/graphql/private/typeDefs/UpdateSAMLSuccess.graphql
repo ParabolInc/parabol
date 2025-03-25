@@ -1,4 +1,4 @@
-type VerifyDomainSuccess {
+type UpdateSAMLSuccess {
   """
   Updated SAML record
   """

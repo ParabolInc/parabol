@@ -567,4 +567,27 @@ type Mutation {
     """
     removeDomains: [ID!]
   ): VerifyDomainPayload!
+
+  """
+  update the SAML Org attribute
+  """
+  updateSAML(
+    """
+    The name of the company, used as a slug in signon URLs. Usually the domain without the tld
+    """
+    slug: ID!
+    """
+    The full attribute name used to provision users to specific orgs. Will be removed if null.
+    """
+    samlOrgAttribute: ID
+  ): UpdateSAMLPayload!
+
+  assignSAMLIdToOrg(
+    orgId: ID!
+
+    """
+    The new SAML Org Attribute value which should map to this org. Null will unset it.
+    """
+    samlId: ID
+  ): AssignSAMLIdToOrgPayload!
 }
