@@ -76,12 +76,12 @@ const TeamPrivacyToggle = (props: Props) => {
           </div>
 
           {isStarterTier && (
-            <div className='mt-2 text-xs text-slate-600'>
+            <div className='mt-2 text-xs font-medium text-slate-600'>
               {isPublic ? (
                 <>
                   To make this team private, you need to{' '}
                   <a className='cursor-pointer text-sky-500 underline' onClick={handleUpgradeClick}>
-                    upgrade to {TierLabel.TEAM} or ${TierLabel.ENTERPRISE} Plan
+                    upgrade to {TierLabel.TEAM} or {TierLabel.ENTERPRISE} Plan
                   </a>
                   .
                 </>
