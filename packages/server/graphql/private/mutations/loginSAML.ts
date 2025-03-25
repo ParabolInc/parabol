@@ -26,7 +26,8 @@ samlify.setSchemaValidator(samlXMLValidator)
 
 const CLAIM_SPEC = {
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'email',
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'displayname'
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'name',
+  'http://schemas.microsoft.com/identity/claims/displayname': 'displayname'
 }
 
 const getRelayState = (body: querystring.ParsedUrlQuery) => {
@@ -84,7 +85,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
 
   const {extract} = loginResponse
-  const {attributes, nameID: name} = extract
+  const {attributes, nameID} = extract
   const normalizedAttributes = Object.fromEntries(
     Object.entries(attributes).map(([key, value]) => {
       const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
@@ -95,8 +96,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       return [normalizedKey, String(value)]
     })
   )
-  const {email: inputEmail, emailaddress, displayname} = normalizedAttributes
-  const preferredName = displayname || name
+  const {email: inputEmail, emailaddress, displayname, name} = normalizedAttributes
+  const preferredName = displayname || name || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return standardError(
