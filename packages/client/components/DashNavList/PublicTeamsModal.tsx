@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Fragment} from 'react'
+import {Fragment, ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {PublicTeamsModal_team$key} from '../../__generated__/PublicTeamsModal_team.graphql'
 import {Dialog} from '../../ui/Dialog/Dialog'
@@ -14,10 +14,11 @@ type Props = {
   onClose: () => void
   orgName: string
   teamsRef: PublicTeamsModal_team$key
+  actions?: ReactNode
 }
 
 const PublicTeamsModal = (props: Props) => {
-  const {isOpen, onClose, teamsRef, orgName} = props
+  const {isOpen, onClose, teamsRef, orgName, actions} = props
 
   const publicTeams = useFragment(
     graphql`
@@ -46,6 +47,7 @@ const PublicTeamsModal = (props: Props) => {
             </Fragment>
           ))}
         </div>
+        {actions}
       </DialogContent>
     </Dialog>
   )

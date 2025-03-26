@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {useFragment} from 'react-relay'
+import {useClientQuery, useFragment} from 'react-relay'
 import {EmptyTeams_organization$key} from '../../__generated__/EmptyTeams_organization.graphql'
+import {EmptyTeamsQuery} from '../../__generated__/EmptyTeamsQuery.graphql'
+import {DialogActions} from '../../ui/Dialog/DialogActions'
 import AddTeamDialogRoot from '../AddTeamDialogRoot'
 import PublicTeamsModal from './PublicTeamsModal'
 
@@ -24,12 +26,23 @@ const EmptyTeams = (props: Props) => {
     `,
     organizationRef
   )
-
   const {publicTeams} = organization
-  const [showPublicTeams, setShowPublicTeams] = useState(false)
-  const [showAddTeamDialog, setShowAddTeamDialog] = useState(false)
-
   const hasPublicTeams = publicTeams.length > 0
+
+  const viewer = useClientQuery<EmptyTeamsQuery>(
+    graphql`
+      query EmptyTeamsQuery {
+        viewer {
+          isNewUser
+        }
+      }
+    `,
+    {}
+  )
+  const {isNewUser} = viewer.viewer
+
+  const [showPublicTeams, setShowPublicTeams] = useState(!!isNewUser && hasPublicTeams)
+  const [showAddTeamDialog, setShowAddTeamDialog] = useState(!!isNewUser && !hasPublicTeams)
 
   return (
     <>
@@ -54,6 +67,19 @@ const EmptyTeams = (props: Props) => {
         teamsRef={publicTeams}
         isOpen={showPublicTeams}
         onClose={() => setShowPublicTeams(false)}
+        actions={
+          <DialogActions className='justify-start'>
+            <a
+              className='cursor-pointer text-sky-500'
+              onClick={() => {
+                setShowPublicTeams(false)
+                setShowAddTeamDialog(true)
+              }}
+            >
+              Add a Team
+            </a>
+          </DialogActions>
+        }
       />
       {showAddTeamDialog && (
         <AddTeamDialogRoot
