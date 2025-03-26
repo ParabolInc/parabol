@@ -33,7 +33,7 @@ const EmptyTeams = (props: Props) => {
 
   return (
     <>
-      <div className='w-full rounded-md bg-white px-4 py-2'>
+      <div className='w-full rounded-md bg-white px-4 py-2 leading-5'>
         <p>You are not a member of any teams yet.</p>
         <p>
           {hasPublicTeams && (
