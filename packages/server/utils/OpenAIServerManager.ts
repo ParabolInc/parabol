@@ -392,7 +392,7 @@ Return the analysis as a JSON object with this structure:
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.
     Include quotes from the meeting, and mention the author.
-    Link directly to the discussion in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
+    Link directly to the discussion in the markdown format of [link](${meetingURL}/[meetingId]/discuss/[discussionId]).
     Don't mention the name of the meeting.
     Prioritise the topics that got the most votes.
     Be sure that each author is only mentioned once.
