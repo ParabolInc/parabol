@@ -76,6 +76,8 @@ extend type User {
   pageName: String
   # The team we should default to in team pickers, etc.
   preferredTeamId: ID
+  # Applies only to the viewer. True if it's the first time the user has logged in.
+  isNewUser: Boolean
 }
 
 extend type Task {
