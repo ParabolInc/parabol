@@ -32,19 +32,20 @@ const PublicTeamsModal = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent className='z-10 overflow-scroll'>
+      <DialogContent className='z-10 flex flex-col pr-0'>
         <DialogTitle>{`${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}</DialogTitle>
-        <DialogDescription>
+        <DialogDescription className='pr-6'>
           Join as a Team Member on any public teams at{' '}
           <span className='font-semibold'>{orgName}</span>
         </DialogDescription>
-        <hr className='my-2 border-t border-slate-300' />
-        {publicTeams.map((team, index) => (
-          <Fragment key={team.id}>
-            <PublicTeamItem teamRef={team} />
-            {index < publicTeams.length - 1 && <hr className='my-2 border-t border-slate-300' />}
-          </Fragment>
-        ))}
+        <div className='overflow-auto pr-6'>
+          {publicTeams.map((team) => (
+            <Fragment key={team.id}>
+              <hr className='my-2 border-t border-slate-300' />
+              <PublicTeamItem teamRef={team} />
+            </Fragment>
+          ))}
+        </div>
       </DialogContent>
     </Dialog>
   )
