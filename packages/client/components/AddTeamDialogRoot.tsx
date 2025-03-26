@@ -7,11 +7,11 @@ import AddTeamDialog from './AddTeamDialog'
 
 interface Props {
   onClose: () => void
-  onAddTeam: (teamId: string) => void
+  onTeamAdded: (teamId: string) => void
 }
 
 const AddTeamDialogRoot = (props: Props) => {
-  const {onClose, onAddTeam} = props
+  const {onClose, onTeamAdded} = props
   const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
   const orgId = match?.params?.orgId || ''
 
@@ -20,7 +20,12 @@ const AddTeamDialogRoot = (props: Props) => {
   return (
     <Suspense fallback={<Loader />}>
       {queryRef && (
-        <AddTeamDialog onAddTeam={onAddTeam} isOpen={true} onClose={onClose} queryRef={queryRef} />
+        <AddTeamDialog
+          onTeamAdded={onTeamAdded}
+          isOpen={true}
+          onClose={onClose}
+          queryRef={queryRef}
+        />
       )}
     </Suspense>
   )

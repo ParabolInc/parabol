@@ -150,7 +150,7 @@ const OrgTeams = (props: Props) => {
       </div>
 
       {isAddTeamDialogOpened ? (
-        <AddTeamDialogRoot onAddTeam={closeAddTeamDialog} onClose={closeAddTeamDialog} />
+        <AddTeamDialogRoot onTeamAdded={closeAddTeamDialog} onClose={closeAddTeamDialog} />
       ) : null}
     </div>
   )
