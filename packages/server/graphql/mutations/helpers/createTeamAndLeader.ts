@@ -13,6 +13,7 @@ interface ValidNewTeam {
   name: string
   orgId: string
   isOnboardTeam: boolean
+  isPublic: boolean
 }
 
 // used for addorg, addTeam
@@ -22,16 +23,18 @@ export default async function createTeamAndLeader(
   dataLoader: DataLoaderInstance
 ) {
   const {id: userId} = user
-  const {id: teamId, orgId} = newTeam
+  const {id: teamId, orgId, isPublic: requestedIsPublic} = newTeam
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, trialStartDate} = organization
+
+  const isPublic = tier === 'starter' ? true : requestedIsPublic
 
   const verifiedTeam = new Team({
     ...newTeam,
     createdBy: userId,
     tier,
     trialStartDate,
-    isPublic: true
+    isPublic
   })
 
   const timelineEvent = new TimelineEventCreatedTeam({
