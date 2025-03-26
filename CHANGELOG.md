@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.37.4](https://github.com/ParabolInc/parabol/compare/v8.37.3...v8.37.4) (2025-03-26)
+
+
+### Fixed
+
+* Public Teams Modal Layout on Safari ([#11069](https://github.com/ParabolInc/parabol/issues/11069)) ([b71ab71](https://github.com/ParabolInc/parabol/commit/b71ab710de8a12b44694763c250d12f686b8dfd5))
+
 ## [8.37.3](https://github.com/ParabolInc/parabol/compare/v8.37.2...v8.37.3) (2025-03-25)
 
 
