@@ -2,6 +2,8 @@ import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import querystring from 'querystring'
 import * as samlify from 'samlify'
+import {InvoiceItemType} from '../../../../client/types/constEnums'
+import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import AuthToken from '../../../database/types/AuthToken'
 import User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
@@ -24,7 +26,8 @@ samlify.setSchemaValidator(samlXMLValidator)
 
 const CLAIM_SPEC = {
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': 'email',
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'displayname'
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': 'name',
+  'http://schemas.microsoft.com/identity/claims/displayname': 'displayname'
 }
 
 const getRelayState = (body: querystring.ParsedUrlQuery) => {
@@ -47,7 +50,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const normalizedName = samlName.trim().toLowerCase()
   const body = querystring.parse(queryString)
   const relayState = getRelayState(body)
-  const {isInvited, metadataURL: newMetadataURL} = relayState
+  const {metadataURL: newMetadataURL, isInvited} = relayState
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
@@ -57,7 +60,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
         message: `Ask customer service to enable SSO for ${normalizedName}.`
       }
     }
-  const {domains, metadata: existingMetadata} = doc
+  const {domains, metadata: existingMetadata, orgId} = doc
   const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
   if (newMetadata instanceof Error) {
     return standardError(newMetadata)
@@ -82,7 +85,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
 
   const {extract} = loginResponse
-  const {attributes, nameID: name} = extract
+  const {attributes, nameID} = extract
   const normalizedAttributes = Object.fromEntries(
     Object.entries(attributes).map(([key, value]) => {
       const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
@@ -93,8 +96,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       return [normalizedKey, String(value)]
     })
   )
-  const {email: inputEmail, emailaddress, displayname} = normalizedAttributes
-  const preferredName = displayname || name
+  const {email: inputEmail, emailaddress, displayname, name} = normalizedAttributes
+  const preferredName = displayname || name || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return standardError(
@@ -151,7 +154,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     tier: 'enterprise'
   })
 
-  const authToken = await bootstrapNewUser(tempUser, !isInvited, dataLoader)
+  // treat SSO users with an associated orgId as non-organic so they don't get their personal org
+  const isOrganic = !orgId && !isInvited
+  const authToken = await bootstrapNewUser(tempUser, isOrganic, dataLoader)
+  // join existing org if any is tied to the SSO domain
+  if (orgId) {
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+  }
   return {
     userId,
     authToken: encodeAuthToken(authToken),
