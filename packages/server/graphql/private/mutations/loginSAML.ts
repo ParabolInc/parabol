@@ -14,6 +14,7 @@ import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
+import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -60,7 +61,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
         message: `Ask customer service to enable SSO for ${normalizedName}.`
       }
     }
-  const {domains, metadata: existingMetadata, orgId} = doc
+  const {domains, metadata: existingMetadata, orgId, samlOrgAttribute} = doc
   const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
   if (newMetadata instanceof Error) {
     return standardError(newMetadata)
@@ -96,6 +97,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       return [normalizedKey, String(value)]
     })
   )
+
   const {email: inputEmail, emailaddress, displayname, name} = normalizedAttributes
   const preferredName = displayname || name || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
@@ -154,13 +156,47 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     tier: 'enterprise'
   })
 
-  // treat SSO users with an associated orgId as non-organic so they don't get their personal org
-  const isOrganic = !orgId && !isInvited
-  const authToken = await bootstrapNewUser(tempUser, isOrganic, dataLoader)
-  // join existing org if any is tied to the SSO domain
-  if (orgId) {
-    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+  // find orgs specified in the SAML claim
+  const orgIds = await (async () => {
+    if (!samlOrgAttribute) {
+      return []
+    }
+    const samlOrgIdsAttribute = attributes[samlOrgAttribute]
+    if (!samlOrgIdsAttribute) {
+      // This is probably a misconfiguration but should not stop us from accepting the new user
+      sendToSentry(
+        new Error(
+          `The SAML attribute ${samlOrgAttribute} is missing from the SAML response. The following attributes were included: ${Object.keys(attributes).join(', ')}`
+        )
+      )
+      return []
+    }
+    const samlOrgIds = Array.isArray(samlOrgIdsAttribute)
+      ? samlOrgIdsAttribute
+      : [samlOrgIdsAttribute]
+    if (samlOrgIds.length === 0) {
+      return []
+    }
+    const orgs = await pg
+      .selectFrom('Organization')
+      .select('id')
+      .where('samlId', 'in', samlOrgIds)
+      .execute()
+    return orgs.map(({id}) => id)
+  })()
+
+  // if we don't provision via SAML claim, we default to the orgId from the SAML document
+  if (!samlOrgAttribute && orgId) {
+    orgIds.push(orgId)
   }
+
+  const isOrganic = orgIds.length > 0 && !isInvited
+  const authToken = await bootstrapNewUser(tempUser, !isOrganic, dataLoader)
+
+  await Promise.all(
+    orgIds.map((orgId) => adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader))
+  )
+
   return {
     userId,
     authToken: encodeAuthToken(authToken),
