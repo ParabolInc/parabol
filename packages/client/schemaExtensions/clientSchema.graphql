@@ -76,8 +76,6 @@ extend type User {
   pageName: String
   # The team we should default to in team pickers, etc.
   preferredTeamId: ID
-  # Applies only to the viewer. True if it's the first time the user has logged in.
-  isNewUser: Boolean
 }
 
 extend type Task {
@@ -147,4 +145,9 @@ extend type Discussion {
 extend type Organization {
   showDrawer: Boolean!
   showConfetti: Boolean!
+}
+
+extend type Query {
+  # True iff it's the first time the viewer has logged in.
+  isNewUser: Boolean
 }

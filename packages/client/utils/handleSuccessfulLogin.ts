@@ -49,8 +49,8 @@ export const handleSuccessfulLogin = (atmosphere: Atmosphere, payload: Payload) 
   safeIdentify(userId, email)
   const isNewUser = payload?.isNewUser ?? false
   commitLocalUpdate(atmosphere, (store) => {
-    const viewer = store.get(userId)
-    viewer?.setValue(isNewUser, 'isNewUser')
+    const root = store.getRoot()
+    root.setValue(isNewUser, 'isNewUser')
   })
   emitGA4SignUpEvent({isNewUser, userId, isPatient0: payload.user.isPatient0})
 }

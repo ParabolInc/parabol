@@ -17,6 +17,7 @@ const EmptyTeams = (props: Props) => {
   const organization = useFragment(
     graphql`
       fragment EmptyTeams_organization on Organization {
+        id
         name
         publicTeams {
           id
@@ -26,20 +27,18 @@ const EmptyTeams = (props: Props) => {
     `,
     organizationRef
   )
-  const {publicTeams} = organization
+  const {id: orgId, publicTeams} = organization
   const hasPublicTeams = publicTeams.length > 0
 
   const viewer = useClientQuery<EmptyTeamsQuery>(
     graphql`
       query EmptyTeamsQuery {
-        viewer {
-          isNewUser
-        }
+        isNewUser
       }
     `,
     {}
   )
-  const {isNewUser} = viewer.viewer
+  const {isNewUser} = viewer
 
   const [showPublicTeams, setShowPublicTeams] = useState(!!isNewUser && hasPublicTeams)
   const [showAddTeamDialog, setShowAddTeamDialog] = useState(!!isNewUser && !hasPublicTeams)
@@ -85,6 +84,7 @@ const EmptyTeams = (props: Props) => {
         <AddTeamDialogRoot
           onTeamAdded={() => setShowAddTeamDialog(false)}
           onClose={() => setShowAddTeamDialog(false)}
+          orgId={orgId}
         />
       )}
     </>
