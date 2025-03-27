@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {ChangeEvent, FormEvent, useState} from 'react'
@@ -339,21 +338,6 @@ const NewTeamForm = (props: Props) => {
               <div>
                 <div className='flex items-center'>
                   <div className='text-sm font-medium text-slate-700'>Team Privacy</div>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className='ml-2 flex cursor-pointer items-center text-slate-600'>
-                        <InfoIcon fontSize='small' />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div>
-                        <b>Public</b>: Anybody in the organization can find and join the team.
-                      </div>
-                      <div>
-                        <b>Private</b>: New team members may join by invite only.
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
                 </div>
                 <div className='mt-1 w-full text-xs text-slate-600'>
                   {isPublic ? (
@@ -369,26 +353,26 @@ const NewTeamForm = (props: Props) => {
                       )}
                     </>
                   ) : (
-                    <>
-                      <div>
-                        This team is <b>Private</b>. New team members may join by invite only.
-                      </div>
-                      {disablePrivacyToggle && !isNewOrg && (
-                        <div className='mt-1'>
-                          <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make private.
-                        </div>
-                      )}
-                    </>
+                    <div>
+                      This team is <b>Private</b>. New team members may join by invite only.
+                    </div>
                   )}
                 </div>
               </div>
             </div>
             <div className='flex items-center'>
-              <Toggle
-                active={!isPublic}
-                disabled={disablePrivacyToggle}
-                onClick={() => setIsPublic(!isPublic)}
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Toggle
+                      active={!isPublic}
+                      disabled={disablePrivacyToggle}
+                      onClick={() => setIsPublic(!isPublic)}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>{isPublic ? 'Set to private' : 'Set to public'}</TooltipContent>
+              </Tooltip>
             </div>
           </div>
           <p className='mt-8 mb-3 text-xs leading-4'>
