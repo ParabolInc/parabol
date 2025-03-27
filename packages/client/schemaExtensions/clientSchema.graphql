@@ -146,3 +146,8 @@ extend type Organization {
   showDrawer: Boolean!
   showConfetti: Boolean!
 }
+
+extend type Query {
+  # True iff it's the first time the viewer has logged in.
+  isNewUser: Boolean
+}

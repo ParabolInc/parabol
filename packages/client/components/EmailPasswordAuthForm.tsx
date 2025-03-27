@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import {commitLocalUpdate} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
@@ -181,6 +182,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     }
     const {token, ga4Args} = response
     atmosphere.setAuthToken(token)
+    commitLocalUpdate(atmosphere, (store) => {
+      const root = store.getRoot()
+      root.setValue(ga4Args.isNewUser, 'isNewUser')
+    })
     emitGA4SignUpEvent(ga4Args)
     if (invitationToken) {
       localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)

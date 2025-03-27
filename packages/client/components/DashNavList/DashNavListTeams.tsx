@@ -49,13 +49,13 @@ const DashNavListTeams = (props: Props) => {
 
   const handleClick = () => {
     setShowModal(true)
-    onClick && onClick()
+    onClick?.()
   }
 
   const getIcon = (lockedAt: string | null | undefined, isPaid: boolean | null | undefined) =>
     lockedAt || !isPaid ? 'warning' : 'group'
 
-  if (!viewerTeams.length && !publicTeamsCount) return null
+  if (viewerTeams.length === 0) return null
   return (
     <div>
       {viewerTeams.map((team) => {

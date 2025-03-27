@@ -21,7 +21,7 @@ import Toggle from './Toggle/Toggle'
 interface Props {
   isOpen: boolean
   onClose: () => void
-  onAddTeam: (teamId: string) => void
+  onTeamAdded: (teamId: string) => void
   queryRef: PreloadedQuery<AddTeamDialogQuery>
 }
 
@@ -45,7 +45,7 @@ const query = graphql`
 `
 
 const AddTeamDialog = (props: Props) => {
-  const {isOpen, onClose, queryRef, onAddTeam} = props
+  const {isOpen, onClose, queryRef, onTeamAdded} = props
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
 
@@ -100,7 +100,7 @@ const AddTeamDialog = (props: Props) => {
           onCompleted(res, errors)
           const error = getGraphQLError(res, errors)
           if (!error) {
-            onAddTeam(res.addTeam.team.id)
+            onTeamAdded(res.addTeam.team.id)
           }
         },
         history,
