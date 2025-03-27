@@ -346,9 +346,19 @@ const NewTeamForm = (props: Props) => {
                         This team is <b>Public</b>. Anybody in the organization can find and join
                         the team.
                       </div>
-                      {disablePrivacyToggle && !isNewOrg && (
+                      {disablePrivacyToggle && (
                         <div className='mt-1'>
-                          <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make private.
+                          {isNewOrg ? (
+                            <>
+                              After creating your organization you can upgrade to make teams
+                              private.
+                            </>
+                          ) : (
+                            <>
+                              <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make it
+                              private.
+                            </>
+                          )}
                         </div>
                       )}
                     </>
