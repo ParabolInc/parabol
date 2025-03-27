@@ -17,7 +17,7 @@ const assignSAMLIdToOrg: MutationResolvers['assignSAMLIdToOrg'] = async (
   const organization = await pg
     .updateTable('Organization')
     .set({
-      samlId: normalizedSamlId
+      samlId: normalizedSamlId ?? null
     })
     .where('id', '=', orgId)
     .returningAll()

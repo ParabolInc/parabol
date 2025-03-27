@@ -17,7 +17,7 @@ const updateSAML: MutationResolvers['updateSAML'] = async (_source, {slug, samlO
   const saml = await pg
     .updateTable('SAML')
     .set({
-      samlOrgAttribute: normalizedSamlOrgAttribute
+      samlOrgAttribute: normalizedSamlOrgAttribute ?? null
     })
     .where('id', '=', slugName)
     .returningAll()
