@@ -134,7 +134,7 @@ const NewTeamForm = (props: Props) => {
     `,
     organizationsRef
   )
-  const [isPublic, setIsPublic] = useState(false)
+  const [isPublic, setIsPublic] = useState(true)
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
   const [rawInvitees, setRawInvitees] = useState('')
@@ -347,34 +347,38 @@ const NewTeamForm = (props: Props) => {
                     </TooltipTrigger>
                     <TooltipContent>
                       <div>
-                        <b>Public:</b> Visible to all organization members
+                        <b>Public</b>: Anybody in the organization can find and join the team.
                       </div>
                       <div>
-                        <b>Private:</b> Only visible to invited members
+                        <b>Private</b>: New team members may join by invite only.
                       </div>
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <div className='mt-1 w-full max-w-[90%] text-xs text-slate-600'>
+                <div className='mt-1 w-full text-xs text-slate-600'>
                   {isPublic ? (
-                    disablePrivacyToggle ? (
-                      isNewOrg ? (
-                        <>After creating your organization you can upgrade to make teams private</>
-                      ) : (
-                        <>
-                          Anyone in the organization can join this team. You can make this team
-                          private if you <StyledLink onClick={goToBilling}>upgrade</StyledLink>.
-                        </>
-                      )
-                    ) : (
-                      <span className='whitespace-nowrap'>
-                        Anyone in the organization can join this team
-                      </span>
-                    )
+                    <>
+                      <div>
+                        This team is <b>Public</b>. Anybody in the organization can find and join
+                        the team.
+                      </div>
+                      {disablePrivacyToggle && !isNewOrg && (
+                        <div className='mt-1'>
+                          <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make private.
+                        </div>
+                      )}
+                    </>
                   ) : (
-                    <span className='whitespace-nowrap'>
-                      Only invited members can access this team
-                    </span>
+                    <>
+                      <div>
+                        This team is <b>Private</b>. New team members may join by invite only.
+                      </div>
+                      {disablePrivacyToggle && !isNewOrg && (
+                        <div className='mt-1'>
+                          <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make private.
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
