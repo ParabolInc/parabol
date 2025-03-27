@@ -134,7 +134,7 @@ const NewTeamForm = (props: Props) => {
     `,
     organizationsRef
   )
-  const [isPublic, setIsPublic] = useState(true)
+  const [isPublic, setIsPublic] = useState(false)
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
   const [rawInvitees, setRawInvitees] = useState('')
@@ -346,14 +346,11 @@ const NewTeamForm = (props: Props) => {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <div className='space-y-2'>
-                        <div>
-                          <b>Public teams:</b> Anyone in the organization can find and join the team
-                        </div>
-                        <div>
-                          <b>Private teams:</b> The team is hidden from other organization members
-                          and only invited members can access it
-                        </div>
+                      <div>
+                        <b>Public:</b> Visible to all organization members
+                      </div>
+                      <div>
+                        <b>Private:</b> Only visible to invited members
                       </div>
                     </TooltipContent>
                   </Tooltip>
@@ -383,9 +380,8 @@ const NewTeamForm = (props: Props) => {
               </div>
             </div>
             <div className='flex items-center'>
-              <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
               <Toggle
-                active={isPublic}
+                active={!isPublic}
                 disabled={disablePrivacyToggle}
                 onClick={() => setIsPublic(!isPublic)}
               />
