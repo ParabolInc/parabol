@@ -1,3 +1,3 @@
-import type {Extra} from 'graphql-ws/dist/use/uWebSockets'
+import type {Extra} from 'graphql-ws/use/uWebSockets'
 
 export default new Map<string, Extra>()

@@ -1,4 +1,4 @@
-import type SubscriptionIterator from '../../../utils/SubscriptionIterator'
+import type SubscriptionIterator from '../../utils/SubscriptionIterator'
 
 export const broadcastSubscription = (iter: SubscriptionIterator, socketId: string) => {
   return {

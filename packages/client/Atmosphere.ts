@@ -53,6 +53,12 @@ const noop = (): any => {
   /* noop */
 }
 
+export const noopSink = {
+  next: noop,
+  error: noop,
+  complete: noop
+}
+
 const toFormData = (
   request: RequestParameters,
   variables: Variables,

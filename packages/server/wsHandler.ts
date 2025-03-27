@@ -1,7 +1,7 @@
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {execute, GraphQLError, subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
-import {makeBehavior, UpgradeData} from 'graphql-ws/dist/use/uWebSockets'
+import {makeBehavior, UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
 import {isEqualWhenSerialized} from '../client/shared/isEqualWhenSerialized'
@@ -16,7 +16,7 @@ import {fromEpochSeconds} from './utils/epochTime'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {extractPersistedOperationId, getPersistedOperation, yoga} from './yoga'
 
-declare module 'graphql-ws/dist/use/uWebSockets' {
+declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
   }

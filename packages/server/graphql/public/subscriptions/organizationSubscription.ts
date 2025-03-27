@@ -3,8 +3,8 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionContext} from '../../graphql'
+import {broadcastSubscription} from '../broadcastSubscription'
 import {SubscriptionResolvers} from '../resolverTypes'
-import {broadcastSubscription} from './broadcastSubscription'
 
 const organizationSubscription: SubscriptionResolvers<SubscriptionContext>['organizationSubscription'] =
   {
