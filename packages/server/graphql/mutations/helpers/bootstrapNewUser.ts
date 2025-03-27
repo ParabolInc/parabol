@@ -120,7 +120,8 @@ const bootstrapNewUser = async (
       id: teamId,
       orgId,
       name: `${preferredName}’s Team`,
-      isOnboardTeam: true
+      isOnboardTeam: true,
+      isPublic: true
     }
     const orgName = `${newUser.preferredName}’s Org`
     await createNewOrg(orgId, orgName, userId, email, dataLoader)

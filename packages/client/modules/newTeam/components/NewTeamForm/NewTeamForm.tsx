@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {ChangeEvent, FormEvent, useState} from 'react'
@@ -12,6 +13,7 @@ import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
 import StyledError from '../../../../components/StyledError'
+import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -20,6 +22,9 @@ import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Threshold} from '../../../../types/constEnums'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import linkify from '../../../../utils/linkify'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
@@ -120,6 +125,7 @@ const NewTeamForm = (props: Props) => {
         id
         lockedAt
         name
+        tier
         allTeams {
           name
           ...NewTeamForm_teams @relay(mask: false)
@@ -128,6 +134,7 @@ const NewTeamForm = (props: Props) => {
     `,
     organizationsRef
   )
+  const [isPublic, setIsPublic] = useState(true)
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
   const [orgId, setOrgId] = useState('')
   const [rawInvitees, setRawInvitees] = useState('')
@@ -142,12 +149,14 @@ const NewTeamForm = (props: Props) => {
   )
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
   const showInviteAll = !!(!isNewOrg && selectedOrg && uniqueEmailsFromSelectedOrg.length)
+  const isStarterTier = selectedOrg?.tier === 'starter'
+  const disablePrivacyToggle = (!isNewOrg && isStarterTier) || isNewOrg
 
   const validateOrgName = (orgName: string) => {
     return new Legitity(orgName)
       .trim()
       .required('Your new org needs a name!')
-      .min(2, 'C’mon, you call that an organization?')
+      .min(2, `C'mon, you call that an organization?`)
       .max(100, 'Maybe just the legal name?')
       .test((val) => (linkify.match(val) ? 'Try using a name, not a link!' : undefined))
   }
@@ -195,7 +204,9 @@ const NewTeamForm = (props: Props) => {
       const {error: orgErr, value: orgName} = validateField('orgName')
       if (orgErr) return
       const newTeam = {
-        name: teamName
+        name: teamName,
+        orgId,
+        isPublic
       }
       const variables = {newTeam, orgName, invitees}
       submitMutation()
@@ -203,7 +214,8 @@ const NewTeamForm = (props: Props) => {
     } else {
       const newTeam = {
         name: teamName,
-        orgId
+        orgId,
+        isPublic
       }
       submitMutation()
       AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, history})
@@ -278,7 +290,7 @@ const NewTeamForm = (props: Props) => {
       </Header>
       <StyledPanel>
         <FormInner>
-          <NewTeamFormBlock>
+          <NewTeamFormBlock className='w-full'>
             <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
           </NewTeamFormBlock>
           <NewTeamFormBlock>
@@ -322,6 +334,63 @@ const NewTeamForm = (props: Props) => {
               {' to create more teams.'}
             </WarningMsg>
           )}
+          <div className='mt-8 flex items-center'>
+            <div className='flex flex-1 items-start'>
+              <div>
+                <div className='flex items-center'>
+                  <div className='text-sm font-medium text-slate-700'>Team Privacy</div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className='ml-2 flex cursor-pointer items-center text-slate-600'>
+                        <InfoIcon fontSize='small' />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className='space-y-2'>
+                        <div>
+                          <b>Public teams:</b> Anyone in the organization can find and join the team
+                        </div>
+                        <div>
+                          <b>Private teams:</b> The team is hidden from other organization members
+                          and only invited members can access it
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <div className='mt-1 w-full max-w-[90%] text-xs text-slate-600'>
+                  {isPublic ? (
+                    disablePrivacyToggle ? (
+                      isNewOrg ? (
+                        <>After creating your organization you can upgrade to make teams private</>
+                      ) : (
+                        <>
+                          Anyone in the organization can join this team. You can make this team
+                          private if you <StyledLink onClick={goToBilling}>upgrade</StyledLink>.
+                        </>
+                      )
+                    ) : (
+                      <span className='whitespace-nowrap'>
+                        Anyone in the organization can join this team
+                      </span>
+                    )
+                  ) : (
+                    <span className='whitespace-nowrap'>
+                      Only invited members can access this team
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className='flex items-center'>
+              <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
+              <Toggle
+                active={isPublic}
+                disabled={disablePrivacyToggle}
+                onClick={() => setIsPublic(!isPublic)}
+              />
+            </div>
+          </div>
           <p className='mt-8 mb-3 text-xs leading-4'>
             {'Invite others to your new team. Invites expire in 30 days.'}
           </p>

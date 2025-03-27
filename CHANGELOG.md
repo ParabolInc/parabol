@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.38.0](https://github.com/ParabolInc/parabol/compare/v8.37.4...v8.38.0) (2025-03-27)
+
+
+### Added
+
+* Add actions to the empty team experience ([#11070](https://github.com/ParabolInc/parabol/issues/11070)) ([5d53b1a](https://github.com/ParabolInc/parabol/commit/5d53b1a669b3f42c3968bc69c3f4c48b0b302d85))
+* can choose privacy when creating a team ([#11046](https://github.com/ParabolInc/parabol/issues/11046)) ([1a18729](https://github.com/ParabolInc/parabol/commit/1a18729e150bbcf95ab665887df637e35cf60cbd))
+* Join your organization when signing up with SAML ([#11054](https://github.com/ParabolInc/parabol/issues/11054)) ([2f7579e](https://github.com/ParabolInc/parabol/commit/2f7579e84b5bbec431f1be821530a0935e0f9a88))
+* User provisioning to different Organization via SAML claim ([#11059](https://github.com/ParabolInc/parabol/issues/11059)) ([3f331da](https://github.com/ParabolInc/parabol/commit/3f331da9be4e7bdb3d04a9d64b1adb717310a834))
+
 ## [8.37.4](https://github.com/ParabolInc/parabol/compare/v8.37.3...v8.37.4) (2025-03-26)
 
 
