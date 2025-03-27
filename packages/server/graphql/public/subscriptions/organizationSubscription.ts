@@ -4,10 +4,11 @@ import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionContext} from '../../graphql'
 import {SubscriptionResolvers} from '../resolverTypes'
+import {broadcastSubscription} from './broadcastSubscription'
 
 const organizationSubscription: SubscriptionResolvers<SubscriptionContext>['organizationSubscription'] =
   {
-    subscribe: async (_source, _args, {authToken}) => {
+    subscribe: async (_source, _args, {authToken, socketId}) => {
       // AUTH
       const viewerId = getUserId(authToken)
       const pg = getKysely()
@@ -24,7 +25,8 @@ const organizationSubscription: SubscriptionResolvers<SubscriptionContext>['orga
       const channelNames = orgIds
         .concat(viewerId)
         .map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
-      return getPubSub().subscribe(channelNames)
+      const iter = getPubSub().subscribe(channelNames)
+      return broadcastSubscription(iter, socketId)
     }
   }
 export default organizationSubscription

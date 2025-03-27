@@ -1,16 +1,3 @@
-import ConnectionContext from './socketHelpers/ConnectionContext'
+import type {Extra} from 'graphql-ws/dist/use/uWebSockets'
 
-class ActiveClients {
-  store = {} as Record<string, ConnectionContext>
-  get(connectionId: unknown) {
-    return this.store[String(connectionId)]
-  }
-  set(connectionContext: ConnectionContext) {
-    this.store[connectionContext.id] = connectionContext
-  }
-  delete(connectionId: string) {
-    delete this.store[connectionId]
-  }
-}
-
-export default new ActiveClients()
+export default new Map<string, Extra>()

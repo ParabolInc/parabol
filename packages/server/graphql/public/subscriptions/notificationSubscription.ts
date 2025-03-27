@@ -2,9 +2,10 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionResolvers} from '../resolverTypes'
+import {broadcastSubscription} from './broadcastSubscription'
 
 const notificationSubscription: SubscriptionResolvers['notificationSubscription'] = {
-  subscribe: async (_source, _args, {authToken}) => {
+  subscribe: async (_source, _args, {authToken, socketId}) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
@@ -14,7 +15,8 @@ const notificationSubscription: SubscriptionResolvers['notificationSubscription'
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.NOTIFICATION}.${viewerId}`
 
-    return getPubSub().subscribe([channelName])
+    const iter = getPubSub().subscribe([channelName])
+    return broadcastSubscription(iter, socketId)
   }
 }
 export default notificationSubscription

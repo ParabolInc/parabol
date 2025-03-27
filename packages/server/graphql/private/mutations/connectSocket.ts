@@ -28,6 +28,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   {socketInstanceId},
   {authToken, dataLoader, socketId}
 ) => {
+  console.log('connectedSocket')
   const redis = getRedis()
   const now = new Date()
 

@@ -4,9 +4,10 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionResolvers} from '../resolverTypes'
+import {broadcastSubscription} from './broadcastSubscription'
 
 const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
-  subscribe: async (_source, {meetingId}, {authToken}) => {
+  subscribe: async (_source, {meetingId}, {authToken, socketId}) => {
     // AUTH
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
@@ -21,7 +22,8 @@ const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
 
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
-    return getPubSub().subscribe([channelName])
+    const iter = getPubSub().subscribe([channelName])
+    return broadcastSubscription(iter, socketId)
   }
 }
 

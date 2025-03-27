@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {getRequest} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 
 graphql`
@@ -27,8 +26,8 @@ let timeout: number | undefined
 const SetAppLocationMutation = (atmosphere: Atmosphere, variables: {location: string | null}) => {
   window.clearTimeout(timeout)
   timeout = window.setTimeout(() => {
-    const request = getRequest(mutation).params
-    atmosphere.handleFetchPromise(request, variables)
+    // TODO server ddon't respond
+    atmosphere.fetchQuery(mutation, variables)
   }, 200)
 }
 

@@ -1,10 +1,12 @@
 import sleep from '../../client/utils/sleep'
 import ServerAuthToken from '../database/types/ServerAuthToken'
+import getDataLoader from '../graphql/getDataLoader'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
-import {disconnectQuery} from '../socketHandlers/handleDisconnect'
+import privateSchema from '../graphql/private/rootSchema'
+import {disconnectQuery} from '../wsHandler'
+import {yoga} from '../yoga'
 import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
-import publishInternalGQL from './publishInternalGQL'
 
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
@@ -67,17 +69,18 @@ class ServerHealthChecker {
           const key = keys[idx]!
           const userId = key.slice(key.indexOf(':') + 1)
           const connections = record[1]
-          return connections.map((connection) => {
+          return connections.map(async (connection) => {
             const presence = JSON.parse(connection) as UserPresence
             const {socketInstanceId, socketId} = presence
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
             Logger.log(`serverHealthChecker: ${socketId} is on dead instace ${socketInstanceId}`)
-            return publishInternalGQL({
-              authToken,
-              query: disconnectQuery,
-              socketId,
-              variables: {userId}
+            const {execute, parse} = yoga.getEnveloped()
+            await execute({
+              document: parse(disconnectQuery),
+              variableValues: {userId},
+              schema: privateSchema,
+              contextValue: {dataLoader: getDataLoader(), authToken, socketId}
             })
           })
         })

@@ -2,19 +2,21 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {SubscriptionResolvers} from '../resolverTypes'
+import {broadcastSubscription} from './broadcastSubscription'
 
 const teamSubscription: SubscriptionResolvers['teamSubscription'] = {
-  subscribe: async (_source, _args, {authToken}) => {
+  subscribe: async (_source, _args, {authToken, socketId}) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
     }
-
+    console.log('called teamSub')
     // RESOLUTION
     const userId = getUserId(authToken)
     const {tms: teamIds} = authToken
     const channelNames = teamIds.concat(userId).map((id) => `${SubscriptionChannel.TEAM}.${id}`)
-    return getPubSub().subscribe(channelNames)
+    const iter = getPubSub().subscribe(channelNames)
+    return broadcastSubscription(iter, socketId)
   }
 }
 export default teamSubscription
