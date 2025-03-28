@@ -14,12 +14,13 @@ const handleParsedMessage = async (
 ) => {
   const parsedMessages = Array.isArray(parsedMessage) ? parsedMessage : [parsedMessage]
   parsedMessages.forEach(async (msg) => {
-    const response = await handleGraphQLTrebuchetRequest(msg, connectionContext)
-    // only reply if an opId was included. no opId = no sink on client = ignored
-    if (response?.id) {
-      const {type, id: opId, payload} = response
-      sendGQLMessage(connectionContext, opId, type, false, payload)
-    }
+    handleGraphQLTrebuchetRequest(msg, connectionContext, (response) => {
+      // only reply if an opId was included. no opId = no sink on client = ignored
+      if (response?.id) {
+        const {type, id: opId, payload} = response
+        sendGQLMessage(connectionContext, opId, type, false, payload)
+      }
+    })
   })
 }
 

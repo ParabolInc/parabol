@@ -75,7 +75,7 @@ uws
   .ws('/*', {
     compression: SHARED_COMPRESSOR,
     idleTimeout: 0,
-    maxPayloadLength: 5 * 2 ** 20,
+    maxPayloadLength: 7 * 2 ** 20,
     upgrade: handleUpgrade,
     open: handleOpen,
     message: handleMessage,

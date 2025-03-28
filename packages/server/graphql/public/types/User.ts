@@ -609,10 +609,18 @@ const User: ReqResolvers<'User'> = {
   },
 
   tms: ({id: userId, tms}, _args, {authToken}) => {
-    const viewerId = getUserId(authToken)
-    return viewerId === userId
-      ? tms
-      : tms.filter((teamId: string) => authToken.tms.includes(teamId))
+    async function* streamItems() {
+      for (const item of tms) {
+        await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate delay
+        yield item
+      }
+    }
+    return streamItems()
+    // const viewerId = getUserId(authToken)
+
+    // return viewerId === userId
+    // ? tms
+    // : tms.filter((teamId: string) => authToken.tms.includes(teamId))
   },
 
   userOnTeam: async (_source, {userId}, {authToken, dataLoader}) => {

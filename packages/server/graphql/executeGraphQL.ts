@@ -5,8 +5,7 @@
   It IS used to transform a source stream into a response stream
  */
 import tracer from 'dd-trace'
-import {graphql} from 'graphql'
-import {FormattedExecutionResult} from 'graphql/execution/execute'
+import {experimentalExecuteIncrementally, parse} from 'graphql'
 import type {GQLRequest} from '../types/GQLRequest'
 import sendToSentry from '../utils/sendToSentry'
 import CompiledQueryCache from './CompiledQueryCache'
@@ -40,32 +39,49 @@ const executeGraphQL = async (req: GQLRequest) => {
   const schema = isPrivate ? privateSchema : publicSchema
   const variableValues = variables
   const source = query!
-  let response: FormattedExecutionResult
-  if (isAdHoc) {
-    response = await graphql({schema, source, variableValues, contextValue})
-  } else {
-    const compiledQuery = docId
-      ? await queryCache.fromID(docId, schema)
-      : queryCache.fromString(source, schema)
-    if (compiledQuery) {
-      response = (await compiledQuery.query(
-        rootValue,
-        contextValue,
-        variableValues
-      )) as any as FormattedExecutionResult
-    } else {
-      const message = docId
-        ? `DocumentID not found: ${docId}`
-        : `Error parsing query: ${source.slice(0, 40)}...`
-      response = {errors: [new Error(message)] as any}
+  // if (isAdHoc) {
+    // const document = parse(source)
+    // const compiledQuery = compileQuery(schema, document)
+    // if (!('query' in compiledQuery)) {
+    //   console.log('BAD QUERY')
+    //   return {
+    //     errors: [new Error('Invalid query')]
+    //   }
+    // }
+
+    // const result = await compiledQuery.query(rootValue, contextValue, variableValues)
+    // console.log({result})
+    const result = await experimentalExecuteIncrementally({
+      schema,
+      document: parse(source),
+      variableValues,
+      contextValue
+    })
+    if ('errors' in result && result.errors) {
+      const [firstError] = result.errors
+      sendToSentry(firstError as Error)
     }
-  }
-  if (response.errors) {
-    const [firstError] = response.errors
-    sendToSentry(firstError as Error)
-  }
-  dataLoader.dispose()
-  return response
+    if (!('initialResult' in result)) {
+      dataLoader.dispose()
+    }
+    return result
+  // }
+  // const compiledQuery = docId
+  //   ? await queryCache.fromID(docId, schema)
+  //   : queryCache.fromString(source, schema)
+  // if (!compiledQuery) {
+  //   const message = docId
+  //     ? `DocumentID not found: ${docId}`
+  //     : `Error parsing query: ${source.slice(0, 40)}...`
+  //   return {errors: [new Error(message)] as any}
+  // }
+  // const result = await compiledQuery.query(rootValue, contextValue, variableValues)
+  // dataLoader.dispose()
+  // if ('errors' in result && result.errors) {
+  //   const [firstError] = result.errors
+  //   sendToSentry(firstError as Error)
+  // }
+  // return result
 }
 
 export default executeGraphQL

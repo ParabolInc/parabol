@@ -79,8 +79,20 @@ const run = async () => {
     activeJobCount++
     const response = await executeGraphQL(request)
     const channel = SocketServerChannelId.join(socketServerId)
-    publisher.publish(channel, JSON.stringify({response, jobId}))
-    activeJobCount--
+    if ('initialResult' in response) {
+      const {initialResult, subsequentResults} = response
+      publisher.publish(channel, JSON.stringify({response: initialResult, jobId}))
+      for await (const part of subsequentResults) {
+        // console.log('Received incremental response:', JSON.stringify(part, null, 2))
+        if (!part.hasNext) {
+          activeJobCount--
+        }
+        publisher.publish(channel, JSON.stringify({response: part, jobId}))
+      }
+    } else {
+      publisher.publish(channel, JSON.stringify({response, jobId}))
+      activeJobCount--
+    }
   }
 
   subscriber.on('message', onMessage)
