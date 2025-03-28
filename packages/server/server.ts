@@ -58,6 +58,8 @@ uws
   .get('/email/createics', ICSHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
+  .get('/health', yoga)
+  .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
   .post('/mattermost', mattermostWebhookHandler)
   .post('/graphql', (res, req) => {

@@ -1,7 +1,9 @@
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import type {GraphQLParams} from 'graphql-yoga'
-import {createYoga} from 'graphql-yoga'
+import {createYoga, useReadinessCheck} from 'graphql-yoga'
+import {sql} from 'kysely'
 import uws from 'uWebSockets.js'
+import sleep from '../client/utils/sleep'
 import AuthToken from './database/types/AuthToken'
 import getDataLoader from './graphql/getDataLoader'
 import getRateLimiter from './graphql/getRateLimiter'
@@ -53,7 +55,13 @@ export const yoga = createYoga<ServerContext>({
       extractPersistedOperationId,
       getPersistedOperation
     }),
-    usePrivateSchemaForSuperUser
+    usePrivateSchemaForSuperUser,
+    useReadinessCheck({
+      check: async () => {
+        const res = await Promise.race([sql`SELECT 1`.execute(getKysely()), sleep(5000)])
+        if (!res) throw new Error('503')
+      }
+    })
   ],
   // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
   // As a workaround, we set the schema via plugin using the `onEnveloped` hook
