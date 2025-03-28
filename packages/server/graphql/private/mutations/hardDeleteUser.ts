@@ -2,9 +2,9 @@ import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
+import {analytics} from '../../../utils/analytics/analytics'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
-import sendAccountRemovedEvent from '../../mutations/helpers/sendAccountRemovedEvent'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -74,8 +74,7 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
     .where('createdBy', '=', userIdToDelete)
     .execute()
 
-  // Send metrics to HubSpot before the user is really deleted in DB
-  await sendAccountRemovedEvent(userIdToDelete, user.email, reasonText ?? '')
+  analytics.accountRemoved(user, reasonText ?? '')
 
   // User needs to be deleted after children
   await pg.deleteFrom('User').where('id', '=', userIdToDelete).execute()
