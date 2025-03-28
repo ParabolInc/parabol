@@ -41,6 +41,7 @@ export const getPersistedOperation = async (docId: string) => {
 
 export const yoga = createYoga<ServerContext>({
   graphqlEndpoint: '/graphql',
+  landingPage: false,
   plugins: [
     usePersistedOperations({
       allowArbitraryOperations(request) {

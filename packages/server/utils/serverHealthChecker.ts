@@ -1,10 +1,7 @@
 import sleep from '../../client/utils/sleep'
-import ServerAuthToken from '../database/types/ServerAuthToken'
-import getDataLoader from '../graphql/getDataLoader'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
-import privateSchema from '../graphql/private/rootSchema'
 import {disconnectQuery} from '../wsHandler'
-import {yoga} from '../yoga'
+import {callGQL} from './callGQL'
 import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
 
@@ -52,7 +49,6 @@ class ServerHealthChecker {
     //
     await sleep(waitForStartup)
     const socketServers = await this.getLivingServers()
-    const authToken = new ServerAuthToken()
 
     // find all connected users and prune the dead servers from their list of connections
     const userPresenceStream = this.publisher.scanStream({match: 'presence:*'})
@@ -75,13 +71,7 @@ class ServerHealthChecker {
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
             Logger.log(`serverHealthChecker: ${socketId} is on dead instace ${socketInstanceId}`)
-            const {execute, parse} = yoga.getEnveloped()
-            await execute({
-              document: parse(disconnectQuery),
-              variableValues: {userId},
-              schema: privateSchema,
-              contextValue: {dataLoader: getDataLoader(), authToken, socketId}
-            })
+            await callGQL(disconnectQuery, {userId})
           })
         })
       )

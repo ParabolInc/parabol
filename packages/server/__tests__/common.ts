@@ -16,7 +16,7 @@ export async function sendIntranet(req: {
 }) {
   const authToken = encodeAuthToken(new ServerAuthToken())
 
-  const response = await fetch(`${PROTOCOL}://${HOST}/intranet-graphql`, {
+  const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',

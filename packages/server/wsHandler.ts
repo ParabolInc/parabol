@@ -159,13 +159,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
     const {ip, authToken, socketId, resubscribe} = extra
-    const {schema, execute, subscribe, contextFactory, parse, validate} = yoga.getEnveloped({
-      ...ctx,
-      req: ctx.extra.request,
-      request: ctx.extra.persistedRequest,
-      socket: ctx.extra.socket,
-      params
-    })
+    const {schema, execute, subscribe, contextFactory, parse, validate} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
     const query = await getPersistedOperation(docId!)
     const document = parse(query)

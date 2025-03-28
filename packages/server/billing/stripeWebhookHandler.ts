@@ -1,7 +1,7 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
-import publishWebhookGQL from '../utils/publishWebhookGQL'
+import {callGQL} from '../utils/callGQL'
 import {getStripeManager} from '../utils/stripe'
 
 interface InvoiceEventCallBackArg {
@@ -141,7 +141,7 @@ const stripeWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: Http
 
   const {getVars, query} = actionHandler
   const variables = getVars(payload)
-  const result = await publishWebhookGQL<{data: any}>(query, variables)
+  const result = await callGQL(query, variables)
   if (result?.data) {
     res.writeStatus('200').end()
   } else {
