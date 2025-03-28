@@ -1,5 +1,6 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -10,6 +11,7 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const pg = getKysely()
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
@@ -42,7 +44,7 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   team.isPublic = !team.isPublic
 
   const data = {teamId}
-
+  analytics.teamPrivacyChanged(viewer, teamId, team.isPublic)
   return data
 }
 

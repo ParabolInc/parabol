@@ -131,6 +131,7 @@ export type AnalyticsEvent =
   | 'Sent Invite Accepted'
   | 'Notification Email Sent'
   | 'Team Joined'
+  | 'Team Privacy Changed'
   // org
   | 'Upgrade CTA Clicked'
   | 'Organization Upgrade Attempted'
@@ -143,6 +144,10 @@ export type AnalyticsEvent =
   | 'Task Created'
   | 'Task Published'
   | 'Task Estimate Set'
+  // page
+  | 'Page Created'
+  // insight
+  | 'Insight Generated'
   // user
   | 'Account Created'
   | 'Account Removed'
@@ -509,6 +514,10 @@ class Analytics {
     })
   }
 
+  teamPrivacyChanged = (user: AnalyticsUser, teamId: string, isPublic: boolean) => {
+    this.track(user, 'Team Privacy Changed', {teamId, isPublic})
+  }
+
   //org
   clickedUpgradeCTA = (user: AnalyticsUser, upgradeCTALocation: UpgradeCTALocationEnumType) => {
     this.track(user, 'Upgrade CTA Clicked', {upgradeCTALocation})
@@ -550,6 +559,16 @@ class Analytics {
 
   taskEstimateSet = (user: AnalyticsUser, taskEstimateProperties: TaskEstimateProperties) => {
     this.track(user, 'Task Estimate Set', taskEstimateProperties)
+  }
+
+  // page
+  pageCreated = (user: AnalyticsUser, pageId: number) => {
+    this.track(user, 'Page Created', {pageId})
+  }
+
+  // insight
+  insightGenerated = (user: AnalyticsUser, insightId: number, teamId: string) => {
+    this.track(user, 'Insight Generated', {insightId, teamId})
   }
 
   // user
