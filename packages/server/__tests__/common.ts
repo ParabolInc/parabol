@@ -21,7 +21,7 @@ export async function sendIntranet(req: {
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
-      'x-application-authorization': `Bearer ${authToken}`
+      authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({
       isPrivate: req.isPrivate,
@@ -72,7 +72,7 @@ export async function sendPublic(req: {
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
-      'x-application-authorization': `Bearer ${authToken}`
+      authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({
       type: 'start',

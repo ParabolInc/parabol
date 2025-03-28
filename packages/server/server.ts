@@ -66,7 +66,6 @@ uws
     const ip = uwsGetIP(res, req)
     return yoga(res, req, {authToken, ip})
   })
-  .post('/intranet-graphql', yoga)
   .post('/saml/:domain', SAMLHandler)
   .ws('/*', wsHandler)
   .any('/*', createSSR)

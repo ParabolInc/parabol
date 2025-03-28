@@ -146,9 +146,9 @@ export default class Atmosphere extends Environment {
       const response = fetch('/graphql', {
         method: 'POST',
         headers: {
-          'content-type': 'application/json',
           accept: 'application/json',
-          Authorization: this.authToken ? `Bearer ${this.authToken}` : ''
+          Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
+          ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables
           ? toFormData(request, variables, uploadables)

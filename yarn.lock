@@ -3273,10 +3273,10 @@
   dependencies:
     google-gax "^4.0.3"
 
-"@graphiql/react@^0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@graphiql/react/-/react-0.27.0.tgz#4475a0f4ddf25d8ebc1bfc538fb21f5f1d435916"
-  integrity sha512-K9ZKWd+ewodbS/1kewedmITeeKLUQswMOXwIv8XFLPt3Ondodji0vr1XXXsttlyl+V2QG/9tYVV2RJ9Ch5LdrA==
+"@graphiql/react@^0.28.2":
+  version "0.28.2"
+  resolved "https://registry.yarnpkg.com/@graphiql/react/-/react-0.28.2.tgz#031a3599e0fa054990b31a2f4eceb5ac13845188"
+  integrity sha512-6PE2Ff9dXpyQMHy3oKzCjT738kY2+wdQ4Xce8+1K+G2yMGZ716Fo0i4vW3S6ErHVI4S/C76gFTQlv/pzxU5ylg==
   dependencies:
     "@graphiql/toolkit" "^0.11.0"
     "@headlessui/react" "^1.7.15"
@@ -3287,12 +3287,13 @@
     "@types/codemirror" "^5.60.8"
     clsx "^1.2.1"
     codemirror "^5.65.3"
-    codemirror-graphql "^2.1.1"
+    codemirror-graphql "^2.2.0"
     copy-to-clipboard "^3.2.0"
     framer-motion "^6.5.1"
     get-value "^3.0.1"
     graphql-language-service "^5.3.0"
     markdown-it "^14.1.0"
+    react-compiler-runtime "19.0.0-beta-37ed2a7-20241206"
     set-value "^4.1.0"
 
 "@graphiql/toolkit@^0.11.0":
@@ -3855,11 +3856,6 @@
   integrity sha512-QjHp+QN4PX0czprEihPdBlLVHFN+dPRWa9O9BuSiuGRfjUpj0P0myT00T0VeAbdLw4qfUEhHM2CrXtPpRXavGw==
   dependencies:
     "@whatwg-node/promise-helpers" "^1.2.4"
-
-"@graphql-yoga/render-graphiql@^5.13.2":
-  version "5.13.2"
-  resolved "https://registry.yarnpkg.com/@graphql-yoga/render-graphiql/-/render-graphiql-5.13.2.tgz#3301bc11994828c24941c6afda5df9b48f88279b"
-  integrity sha512-rNNkGuBT3RzUwOyY1wH2yUuqxQjSUy57vEjlxLVX+mgW1TGSulDNrFMPma6b8rtL6A6WiddZRKOQAwHYYfVMCA==
 
 "@graphql-yoga/subscription@^5.0.3":
   version "5.0.3"
@@ -11145,10 +11141,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha512-RpAVKQA5T63xEj6/giIbUEtZwJ4UFIc3ZtvEkiaUERylqe8xb5IvqcgOurZLahv93CLKfxcw5YI+DZcUBRyLXA==
 
-codemirror-graphql@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-2.1.1.tgz#cbf5f0c8d2143b70cd832a08a6d827148d6e9a1d"
-  integrity sha512-qVNd+H4OqkeBLDztB5bYllAmToxmZASOoELgbf+csNcoovIHKqSB/eppkzWI5jdQGd8bvLK1lTePfqXsCBFryw==
+codemirror-graphql@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/codemirror-graphql/-/codemirror-graphql-2.2.0.tgz#1eb7388a1d6844b0ce902a26cba4bdf59b547bc0"
+  integrity sha512-egIiewf5zEH5LLSkJpJDpYxO1OkNruD0gTWiBrS1JmXk7yjt5WPw7jSmDRkWJx8JheHONltaJPNPWdTUT5LRIQ==
   dependencies:
     "@types/codemirror" "^0.0.90"
     graphql-language-service "5.3.0"
@@ -14376,12 +14372,12 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-graphiql@^3.0.0:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-3.7.2.tgz#6a754256f4f2e6268a64e585b0fe35bf38f1b87d"
-  integrity sha512-DL+KrX+aQdyzl+KwcqjlmdYdjyKegm7FcZJKkIQ1e56xn6Eoe8lw5F4t65gFex/45fHzv8e8CpaIcljxfJhO7A==
+graphiql@^3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/graphiql/-/graphiql-3.8.3.tgz#3ce95db42317c3fbba6cdbfab5d2430756f9b5dd"
+  integrity sha512-cuPDYtXVKV86Pu5PHBX642Odi/uVEE2y1Jxq5rGO/Qy1G2lRp7ZZ7a/T30RzxhuLSWo9zUbzq0P3U49//H0Ugw==
   dependencies:
-    "@graphiql/react" "^0.27.0"
+    "@graphiql/react" "^0.28.2"
 
 graphql-config@^5.0.2:
   version "5.1.3"
@@ -20499,6 +20495,11 @@ react-chartjs-2@^4.2.0:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-4.3.1.tgz#9941e7397fb963f28bb557addb401e9ff96c6681"
   integrity sha512-5i3mjP6tU7QSn0jvb8I4hudTzHJqS8l00ORJnVwI2sYu0ihpj83Lv2YzfxunfxTZkscKvZu2F2w9LkwNBhj6xA==
+
+react-compiler-runtime@19.0.0-beta-37ed2a7-20241206:
+  version "19.0.0-beta-37ed2a7-20241206"
+  resolved "https://registry.yarnpkg.com/react-compiler-runtime/-/react-compiler-runtime-19.0.0-beta-37ed2a7-20241206.tgz#f05231928f2daf9ff5ff9b63e5861161de2c3e6d"
+  integrity sha512-9e6rCpVylr9EnVocgYAjft7+2v01BDpajeHKRoO+oc9pKcAMTpstHtHvE/TSVbyf4FvzCGjfKcfHM9XGTXI6Tw==
 
 react-copy-to-clipboard@^5.0.0:
   version "5.1.0"

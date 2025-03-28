@@ -119,7 +119,7 @@
     "eventemitter3": "^4.0.0",
     "fbjs": "^3.0.4",
     "flatted": "^2.0.1",
-    "graphiql": "^3.0.0",
+    "graphiql": "^3.8.3",
     "graphql-typed": "^0.7.2",
     "history": "4.9.0",
     "hoist-non-react-statics": "^3.3.0",
