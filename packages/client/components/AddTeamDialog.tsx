@@ -15,6 +15,9 @@ import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {Input} from '../ui/Input/Input'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import Toggle from './Toggle/Toggle'
 
@@ -152,39 +155,45 @@ const AddTeamDialog = (props: Props) => {
           <div className='flex items-center justify-between'>
             <div className='flex-1'>
               <label className={labelStyles}>Team Privacy</label>
-              <div className='text-xs text-slate-600'>
+              <div className='mt-1 text-xs text-slate-600'>
                 {isPublic ? (
-                  disablePrivacyToggle ? (
-                    <>
-                      Anyone in the organization can join this team. You can make this team private
-                      if you{' '}
-                      <span
-                        onClick={goToBilling}
-                        className='cursor-pointer font-semibold text-sky-500 outline-none hover:text-sky-600'
-                      >
-                        upgrade
-                      </span>
-                      .
-                    </>
-                  ) : (
-                    <span className='whitespace-nowrap'>
-                      Anyone in the organization can join this team
-                    </span>
-                  )
+                  <>
+                    <div>
+                      This team is <b>Public</b>. Anybody in the organization can find and join the
+                      team.
+                    </div>
+                    {disablePrivacyToggle && (
+                      <div className='mt-1'>
+                        <span
+                          onClick={goToBilling}
+                          className='cursor-pointer font-semibold text-sky-500 outline-none hover:text-sky-600'
+                        >
+                          Upgrade
+                        </span>{' '}
+                        to make private.
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <span className='whitespace-nowrap'>
-                    Only invited members can access this team
-                  </span>
+                  <div>
+                    This team is <b>Private</b>. New team members may join by invite only.
+                  </div>
                 )}
               </div>
             </div>
             <div className='flex items-center'>
-              <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
-              <Toggle
-                active={isPublic}
-                disabled={disablePrivacyToggle}
-                onClick={() => setIsPublic(!isPublic)}
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Toggle
+                      active={!isPublic}
+                      disabled={disablePrivacyToggle}
+                      onClick={() => setIsPublic(!isPublic)}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>{isPublic ? 'Set to private' : 'Set to public'}</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </fieldset>

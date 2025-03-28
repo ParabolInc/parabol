@@ -7,7 +7,9 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useRouter from '../../../../hooks/useRouter'
 import ToggleTeamPrivacyMutation from '../../../../mutations/ToggleTeamPrivacyMutation'
-import {TierLabel} from '../../../../types/constEnums'
+import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 import TeamPrivacyConfirmModal from './TeamPrivacyConfirmModal'
 
 interface Props {
@@ -68,38 +70,43 @@ const TeamPrivacyToggle = (props: Props) => {
   return (
     <>
       <div className='flex w-full items-start justify-between'>
-        <div className='max-w-[80%] text-sm text-slate-700'>
+        <div className='text-sm text-slate-700'>
           <div className='text-sm text-slate-700'>
-            {isPublic
-              ? `${teamName} is currently public. Anyone in your organization can find and join this team.`
-              : `${teamName} is currently private. Only invited members can join this team.`}
+            {isPublic ? (
+              <>
+                <div>
+                  This team is <b>Public</b>. Anybody in the organization can find and join this
+                  team.
+                </div>
+                {isStarterTier && (
+                  <div className='mt-1 text-xs font-medium text-slate-600'>
+                    <a className='cursor-pointer text-sky-500' onClick={handleUpgradeClick}>
+                      Upgrade
+                    </a>{' '}
+                    to make it private.
+                  </div>
+                )}
+              </>
+            ) : (
+              <div>
+                This team is <b>Private</b>. New team members may join by invite only.
+              </div>
+            )}
           </div>
-
-          {isStarterTier && (
-            <div className='mt-2 text-xs font-medium text-slate-600'>
-              {isPublic ? (
-                <>
-                  To make this team private, you need to{' '}
-                  <a className='cursor-pointer text-sky-500 underline' onClick={handleUpgradeClick}>
-                    upgrade to {TierLabel.TEAM} or {TierLabel.ENTERPRISE} Plan
-                  </a>
-                  .
-                </>
-              ) : (
-                <>
-                  <b>Note</b>: Making this team public cannot be undone on the starter plan.
-                </>
-              )}
-            </div>
-          )}
         </div>
         <div className='ml-6 flex flex-shrink-0 items-center'>
-          <div className='mr-2 text-sm font-semibold text-slate-700'>Public</div>
-          <Toggle
-            active={isPublic}
-            disabled={submitting || (isPublic && isStarterTier)}
-            onClick={toggleTeamPrivacy}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Toggle
+                  active={!isPublic}
+                  disabled={submitting || (isPublic && isStarterTier)}
+                  onClick={toggleTeamPrivacy}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>{isPublic ? 'Set to private' : 'Set to public'}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
