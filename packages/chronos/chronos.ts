@@ -16,9 +16,8 @@
 //      Steps: e.g. */2
 
 import {CronJob} from 'cron'
-import getGraphQLExecutor from 'parabol-server/utils/getGraphQLExecutor'
 import {Logger} from 'parabol-server/utils/Logger'
-import publishWebhookGQL from 'parabol-server/utils/publishWebhookGQL'
+import {fetchGQL} from '../server/utils/fetchGQL'
 
 interface PossibleJob {
   onTick(): void
@@ -41,14 +40,11 @@ const chronos = () => {
 
   if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
 
-  // listen to responses
-  getGraphQLExecutor().subscribe()
-
   const jobs: Record<string, PossibleJob> = {
     autoPause: {
       onTick: () => {
         const query = 'mutation AutoPauseUsers { autopauseUsers }'
-        publishWebhookGQL(query, {})
+        fetchGQL(query, {})
       },
       cronTime: CHRONOS_AUTOPAUSE
     },
@@ -61,7 +57,7 @@ const chronos = () => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        publishWebhookGQL(query, variables)
+        fetchGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_DAILY
     },
@@ -74,21 +70,21 @@ const chronos = () => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        publishWebhookGQL(query, variables)
+        fetchGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_WEEKLY
     },
     batchEmails: {
       onTick: () => {
         const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
-        publishWebhookGQL(query, {})
+        fetchGQL(query, {})
       },
       cronTime: CHRONOS_BATCH_EMAILS
     },
     scheduleJobs: {
       onTick: () => {
         const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
-        publishWebhookGQL(query, {})
+        fetchGQL(query, {})
       },
       cronTime: CHRONOS_SCHEDULE_JOBS
     },
@@ -96,7 +92,7 @@ const chronos = () => {
       onTick: () => {
         const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
         const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
-        publishWebhookGQL(query, variables)
+        fetchGQL(query, variables)
       },
       cronTime: CHRONOS_UPDATE_TOKENS
     },
@@ -112,7 +108,7 @@ const chronos = () => {
             }
           }
         `
-        publishWebhookGQL(query, {}, {longRunning: true})
+        fetchGQL(query, {})
       },
       cronTime: CHRONOS_PROCESS_RECURRENCE
     }

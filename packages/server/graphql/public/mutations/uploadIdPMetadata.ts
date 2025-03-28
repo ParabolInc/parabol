@@ -3,8 +3,8 @@ import {MutationResolvers} from '../resolverTypes'
 
 const uploadIdPMetadata: MutationResolvers['uploadIdPMetadata'] = async (_, {file, orgId}) => {
   // VALIDATION
-  const {contentType, buffer: jsonBuffer} = file
-  const buffer = Buffer.from(jsonBuffer.data)
+  const contentType = file.type
+  const buffer = Buffer.from(await file.arrayBuffer())
   if (!contentType || !contentType.includes('xml')) {
     return {error: {message: 'file must be XML'}}
   }

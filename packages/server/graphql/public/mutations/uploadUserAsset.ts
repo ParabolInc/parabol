@@ -11,8 +11,8 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (_, {file}, 
   const userId = getUserId(authToken)
 
   // VALIDATION
-  const {contentType, buffer: jsonBuffer} = file
-  const buffer = Buffer.from(jsonBuffer.data)
+  const contentType = file.type
+  const buffer = Buffer.from(await file.arrayBuffer())
   const ext = mime.extension(contentType)
   if (!ext) {
     return {error: {message: `Unable to determine extension for ${contentType}`}}

@@ -1,7 +1,7 @@
-import {Fetcher} from '@graphiql/toolkit'
+import {createGraphiQLFetcher} from '@graphiql/toolkit'
 import GraphiQL from 'graphiql/dist'
 import 'graphiql/graphiql.css'
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
@@ -13,18 +13,15 @@ import {AuthTokenRole} from '../../../../types/constEnums'
 const GraphqlContainer = () => {
   const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
-  const fetcher: Fetcher = async ({query, variables}) => {
-    const res = await fetch('/intranet-graphql', {
-      method: 'POST',
+  const fetcher = useCallback(
+    createGraphiQLFetcher({
+      url: '/graphql',
       headers: {
-        'content-type': 'application/json',
-        'x-application-authorization': `Bearer ${atmosphere.authToken}`
-      },
-      body: JSON.stringify({query, variables, isPrivate: true})
-    })
-    const resJSON = await res.json()
-    return resJSON
-  }
+        authorization: `Bearer ${atmosphere.authToken}`
+      }
+    }),
+    [atmosphere.authToken]
+  )
 
   const [isDarkMode, setIsDarkMode] = useState(false)
   useEffect(() => {

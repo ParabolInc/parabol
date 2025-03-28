@@ -26,17 +26,18 @@ For all matters, please contact: support@parabol.co
 
 ## Stack Information
 
-| Concern                | Solution                                                       |
-| ---------------------- | -------------------------------------------------------------- |
-| Server                 | [Node](https://nodejs.org/)                                    |
-| Server Framework       | [uWebSockts.js](https://github.com/uNetworking/uWebSockets.js) |
-| Database               | [PostgreSQL](https://www.postgresql.org/)                      |
-| PubSub & Cache         | [Redis](https://redis.io)                                      |
-| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)               |
-| Real-time Connectivity | [trebuchet](https://github.com/mattkrick/trebuchet-client)     |
-| Client Cache           | [Relay](https://facebook.github.io/relay/)                     |
-| UI Framework           | [React](https://facebook.github.io/react/)                     |
-| Styling                | [Emotion](https://emotion.sh/)                                 |
+| Concern                | Solution                                                        |
+| ---------------------- | --------------------------------------------------------------- |
+| Server                 | [Node](https://nodejs.org/)                                     |
+| Server Framework       | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
+| Database               | [PostgreSQL](https://www.postgresql.org/)                       |
+| PubSub & Cache         | [Redis](https://redis.io)                                       |
+| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)                |
+| Real-time Connectivity | [graphql-ws](https://github.com/enisdenjo/graphql-ws)           |
+| Client Cache           | [Relay](https://facebook.github.io/relay/)                      |
+| UI Framework           | [React](https://facebook.github.io/react/)                      |
+| Styling (Legacy)       | [Emotion](https://emotion.sh/)                                  |
+| Styling                | [Tailwind CSS](https://tailwindcss.com/)                        |
 
 ## Setup
 

@@ -2,7 +2,6 @@ import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
-import useTrebuchetEvents from '../../hooks/useTrebuchetEvents'
 import {GlobalBanner, LoaderSize} from '../../types/constEnums'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
@@ -31,7 +30,6 @@ const InvitationLink = lazy(
 )
 
 const Action = memo(() => {
-  useTrebuchetEvents()
   useServiceWorkerUpdater()
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   // Global Banner

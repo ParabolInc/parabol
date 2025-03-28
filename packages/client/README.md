@@ -1,14 +1,14 @@
 # Client
 
-| Concern                | Solution                                                   |
-| ---------------------- | ---------------------------------------------------------- |
-| Real-time Connectivity | [trebuchet](https://github.com/mattkrick/trebuchet-client) |
-| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)           |
-| Client Cache           | [Relay](https://facebook.github.io/relay/)                 |
-| UI Framework           | [React](https://facebook.github.io/react/)                 |
-| Styling (Legacy)       | [Emotion](https://emotion.sh/)                             |
-| Styling                | [TailwindCSS](https://tailwindcss.com)                     |
-| UI Primitives          | [RadixUI](https://www.radix-ui.com/)                       |
+| Concern                | Solution                                              |
+| ---------------------- | ----------------------------------------------------- |
+| Real-time Connectivity | [graphql-ws](https://github.com/enisdenjo/graphql-ws) |
+| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)      |
+| Client Cache           | [Relay](https://facebook.github.io/relay/)            |
+| UI Framework           | [React](https://facebook.github.io/react/)            |
+| Styling (Legacy)       | [Emotion](https://emotion.sh/)                        |
+| Styling                | [TailwindCSS](https://tailwindcss.com)                |
+| UI Primitives          | [RadixUI](https://www.radix-ui.com/)                  |
 
 ## UI components
 

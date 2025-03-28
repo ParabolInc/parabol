@@ -23,8 +23,8 @@ const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
   }
 
   // VALIDATION
-  const {contentType, buffer: jsonBuffer} = file
-  const buffer = Buffer.from(jsonBuffer.data)
+  const contentType = file.type
+  const buffer = Buffer.from(await file.arrayBuffer())
   const [validExt, validBuffer] = await validateAvatarUpload(contentType, buffer)
 
   // RESOLUTION

@@ -52,13 +52,12 @@ module.exports = {
     port: PORT,
     proxy: [
       ...[
-        'sse',
-        'sse-ping',
         'jira-attachments',
         'stripe',
         'webhooks',
         'graphql',
-        'intranet-graphql',
+        'health',
+        'ready',
         'self-hosted',
         'mattermost',
         // important terminating / so saml-redirect doesn't get targeted, too

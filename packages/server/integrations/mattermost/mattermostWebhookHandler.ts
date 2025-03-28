@@ -2,7 +2,7 @@ import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import appOrigin from '../../appOrigin'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
-import publishWebhookGQL from '../../utils/publishWebhookGQL'
+import {callGQL} from '../../utils/callGQL'
 import sendToSentry from '../../utils/sendToSentry'
 
 const login = async (variables: {request: string; body: string}) => {
@@ -17,12 +17,10 @@ const login = async (variables: {request: string; body: string}) => {
     }
   `
 
-  const loginResult = await publishWebhookGQL<{
-    data: {
-      loginMattermost: {
-        error: {message: string} | null
-        authToken: string | null
-      }
+  const loginResult = await callGQL<{
+    loginMattermost: {
+      error: {message: string} | null
+      authToken: string | null
     }
   }>(query, variables)
   return loginResult?.data?.loginMattermost ?? {authToken: null, error: {message: 'Unknown error'}}

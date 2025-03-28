@@ -1,4 +1,3 @@
-import {FetchHTTPData} from 'parabol-client/Atmosphere'
 import isObject from 'parabol-client/utils/isObject'
 import {getParts, HttpResponse, MultipartField} from 'uWebSockets.js'
 import {Threshold} from '../client/types/constEnums'
@@ -17,7 +16,7 @@ type ParseFormBodySignature = {
   contentType: string
 }
 
-const isFetchHTTPData = (body: any): body is FetchHTTPData => {
+const isFetchHTTPData = (body: any): body is any => {
   const validShape = isObject(body)
   const validTypeField = ['start', 'stop'].includes(body['type'])
   const validPayloadField = isObject(body['payload'])
@@ -41,10 +40,7 @@ const parseRes = (res: HttpResponse) => {
   })
 }
 
-const parseFormBody = async ({
-  res,
-  contentType
-}: ParseFormBodySignature): Promise<FetchHTTPData | null> => {
+const parseFormBody = async ({res, contentType}: ParseFormBodySignature): Promise<any | null> => {
   let parsedBody: unknown
   const parsedUploadables: UploadableBufferMap = {}
   const resBuffer = await parseRes(res)
@@ -65,7 +61,7 @@ const parseFormBody = async ({
       }
     })
     if (!isFetchHTTPData(parsedBody)) return null
-    const validParsedBody = parsedBody as FetchHTTPData
+    const validParsedBody = parsedBody as any
     if (Object.keys(parsedUploadables).length) {
       validParsedBody.payload.variables = {
         ...validParsedBody.payload.variables,

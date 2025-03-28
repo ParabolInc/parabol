@@ -1,7 +1,7 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
-import publishWebhookGQL from './publishWebhookGQL'
+import {callGQL} from './callGQL'
 
 const query = `
 mutation LoginSAML($queryString: String!, $samlName: ID!) {
@@ -19,19 +19,16 @@ mutation LoginSAML($queryString: String!, $samlName: ID!) {
 }
 `
 
-type Response = {
-  errors: string[]
-  data: {
-    loginSAML: {
-      error?: {
-        message: string
-      }
-      userId: string
-      authToken: string
-      isNewUser: boolean
-      user: {
-        isPatient0: boolean
-      }
+type TData = {
+  loginSAML: {
+    error?: {
+      message: string
+    }
+    userId: string
+    authToken: string
+    isNewUser: boolean
+    user: {
+      isPatient0: boolean
     }
   }
 }
@@ -49,7 +46,8 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   }
   const parser = (buffer: Buffer) => buffer.toString()
   const queryString = await parseBody({res, parser})
-  const payload = await publishWebhookGQL<Response>(query, {samlName, queryString})
+  const payload = await callGQL<TData>(query, {queryString, samlName})
+  console.log('SAML GOT PAYLOAD', payload)
   if (!payload) return
   const {data, errors} = payload
   if (!data || errors) {
