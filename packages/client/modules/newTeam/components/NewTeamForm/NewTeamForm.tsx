@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {ChangeEvent, FormEvent, useState} from 'react'
@@ -339,56 +338,51 @@ const NewTeamForm = (props: Props) => {
               <div>
                 <div className='flex items-center'>
                   <div className='text-sm font-medium text-slate-700'>Team Privacy</div>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className='ml-2 flex cursor-pointer items-center text-slate-600'>
-                        <InfoIcon fontSize='small' />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className='space-y-2'>
-                        <div>
-                          <b>Public teams:</b> Anyone in the organization can find and join the team
-                        </div>
-                        <div>
-                          <b>Private teams:</b> The team is hidden from other organization members
-                          and only invited members can access it
-                        </div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
                 </div>
-                <div className='mt-1 w-full max-w-[90%] text-xs text-slate-600'>
+                <div className='mt-1 w-full text-xs text-slate-600'>
                   {isPublic ? (
-                    disablePrivacyToggle ? (
-                      isNewOrg ? (
-                        <>After creating your organization you can upgrade to make teams private</>
-                      ) : (
-                        <>
-                          Anyone in the organization can join this team. You can make this team
-                          private if you <StyledLink onClick={goToBilling}>upgrade</StyledLink>.
-                        </>
-                      )
-                    ) : (
-                      <span className='whitespace-nowrap'>
-                        Anyone in the organization can join this team
-                      </span>
-                    )
+                    <>
+                      <div>
+                        This team is <b>Public</b>. Anybody in the organization can find and join
+                        the team.
+                      </div>
+                      {disablePrivacyToggle && (
+                        <div className='mt-1'>
+                          {isNewOrg ? (
+                            <>
+                              After creating your organization you can upgrade to make teams
+                              private.
+                            </>
+                          ) : (
+                            <>
+                              <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make it
+                              private.
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </>
                   ) : (
-                    <span className='whitespace-nowrap'>
-                      Only invited members can access this team
-                    </span>
+                    <div>
+                      This team is <b>Private</b>. New team members may join by invite only.
+                    </div>
                   )}
                 </div>
               </div>
             </div>
             <div className='flex items-center'>
-              <div className='mr-2 text-sm font-medium text-slate-700'>Public</div>
-              <Toggle
-                active={isPublic}
-                disabled={disablePrivacyToggle}
-                onClick={() => setIsPublic(!isPublic)}
-              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Toggle
+                      active={!isPublic}
+                      disabled={disablePrivacyToggle}
+                      onClick={() => setIsPublic(!isPublic)}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>{isPublic ? 'Set to private' : 'Set to public'}</TooltipContent>
+              </Tooltip>
             </div>
           </div>
           <p className='mt-8 mb-3 text-xs leading-4'>
