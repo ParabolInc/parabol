@@ -8,6 +8,7 @@ import {
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
+import {sortOrgTeams} from './helpers/sortOrgTeams'
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
@@ -53,21 +54,36 @@ const Organization: OrganizationResolvers = {
     return getActiveTeamCountByOrgIds(orgId)
   },
 
-  allTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
+  teams: async ({id: orgId}, {showAll = false, sort = 'name'}, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
-    const [allTeamsOnOrg, isOrgAdmin] = await Promise.all([
+    const [teamsInOrg, isOrgAdmin] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
-      dataLoader.get('organizations').loadNonNull(orgId),
       isUserOrgAdmin(viewerId, orgId, dataLoader)
     ])
-    const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
-    if (isOrgAdmin || isSuperUser(authToken)) {
-      const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
-      const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
-      return [...viewerTeams, ...otherTeams]
-    } else {
-      return sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+
+    if (!showAll) {
+      const viewerTeams = teamsInOrg.filter((team) => authToken.tms.includes(team.id))
+      return sortOrgTeams(viewerTeams, sort, dataLoader)
     }
+
+    if (isOrgAdmin || isSuperUser(authToken)) {
+      const viewerTeams = teamsInOrg.filter((team) => authToken.tms.includes(team.id))
+      const otherTeams = teamsInOrg.filter((team) => !authToken.tms.includes(team.id))
+
+      if (sort === 'name') {
+        const sortedViewerTeams = await sortOrgTeams(viewerTeams, sort, dataLoader)
+        const sortedOtherTeams = await sortOrgTeams(otherTeams, sort, dataLoader)
+        return [...sortedViewerTeams, ...sortedOtherTeams]
+      }
+
+      const combinedTeams = [...viewerTeams, ...otherTeams]
+      return sortOrgTeams(combinedTeams, sort, dataLoader)
+    }
+
+    const accessibleTeams = teamsInOrg.filter(
+      (team) => team.isPublic || authToken.tms.includes(team.id)
+    )
+    return sortOrgTeams(accessibleTeams, sort, dataLoader)
   },
 
   allTeamsCount: async ({id: orgId}, _args, {dataLoader}) => {

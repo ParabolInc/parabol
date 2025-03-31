@@ -48,9 +48,29 @@ type Organization {
   activeTeamCount: Int!
 
   """
+  Teams in the organization that the viewer has access to.
+  """
+  teams(
+    """
+    If true, returns only teams the viewer is a member of
+    """
+    viewerOnly: Boolean = false
+
+    """
+    If true, returns only public teams the viewer is not a member of
+    """
+    publicOnly: Boolean = false
+
+    """
+    How to sort the teams
+    """
+    sort: TeamSortEnum = name
+  ): [Team!]!
+
+  """
   All the teams in the organization. If the viewer is not a billing lead, org admin, super user, or they do not have the publicTeams flag, return the teams they are a member of.
   """
-  allTeams: [Team!]!
+  allTeams: [Team!]! @deprecated(reason: "Use teams field instead")
 
   """
   The count of all teams in the organization
@@ -60,12 +80,12 @@ type Organization {
   """
   all the teams the viewer is on in the organization
   """
-  viewerTeams: [Team!]!
+  viewerTeams: [Team!]! @deprecated(reason: "Use teams(viewerOnly: true) instead")
 
   """
   all the teams that the viewer does not belong to that are in the organization. Only visible if the org has the publicTeams flag set to true.
   """
-  publicTeams: [Team!]!
+  publicTeams: [Team!]! @deprecated(reason: "Use teams(publicOnly: true, sort: lastMetAt) instead")
 
   """
   THe datetime the current billing cycle ends

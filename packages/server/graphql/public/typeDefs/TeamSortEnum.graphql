@@ -1,0 +1,14 @@
+"""
+Sorting options for teams
+"""
+enum TeamSortEnum {
+  """
+  Sort alphabetically by name
+  """
+  name
+
+  """
+  Sort by most recent meeting time
+  """
+  lastMetAt
+}
