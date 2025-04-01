@@ -31,6 +31,7 @@ const DashNavListTeams = (props: Props) => {
         tier
         teams {
           ...DashNavListTeam @relay(mask: false)
+          ...PublicTeamsModal_team
           isViewerOnTeam
         }
       }
