@@ -54,19 +54,15 @@ const Organization: OrganizationResolvers = {
     return getActiveTeamCountByOrgIds(orgId)
   },
 
-  teams: async ({id: orgId}, {showAll = false, sort = 'name'}, {dataLoader, authToken}) => {
+  teams: async ({id: orgId}, {sort = 'name'}, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
     const [teamsInOrg, isOrgAdmin] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
       isUserOrgAdmin(viewerId, orgId, dataLoader)
     ])
 
-    if (!showAll) {
-      const viewerTeams = teamsInOrg.filter((team) => authToken.tms.includes(team.id))
-      return sortOrgTeams(viewerTeams, sort, dataLoader)
-    }
-
     if (isOrgAdmin || isSuperUser(authToken)) {
+      // Org admins and super users can see all teams
       const viewerTeams = teamsInOrg.filter((team) => authToken.tms.includes(team.id))
       const otherTeams = teamsInOrg.filter((team) => !authToken.tms.includes(team.id))
 
@@ -76,14 +72,15 @@ const Organization: OrganizationResolvers = {
         return [...sortedViewerTeams, ...sortedOtherTeams]
       }
 
-      const combinedTeams = [...viewerTeams, ...otherTeams]
-      return sortOrgTeams(combinedTeams, sort, dataLoader)
+      const accessibleTeams = [...viewerTeams, ...otherTeams]
+      return sortOrgTeams(accessibleTeams, sort, dataLoader)
+    } else {
+      // Regular users can see teams they're on plus public teams
+      const accessibleTeams = teamsInOrg.filter(
+        (team) => team.isPublic || authToken.tms.includes(team.id)
+      )
+      return sortOrgTeams(accessibleTeams, sort, dataLoader)
     }
-
-    const accessibleTeams = teamsInOrg.filter(
-      (team) => team.isPublic || authToken.tms.includes(team.id)
-    )
-    return sortOrgTeams(accessibleTeams, sort, dataLoader)
   },
 
   allTeamsCount: async ({id: orgId}, _args, {dataLoader}) => {
@@ -91,12 +88,12 @@ const Organization: OrganizationResolvers = {
     return allTeamsOnOrg?.length ?? 0
   },
 
-  viewerTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
-    const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-    return allTeamsOnOrg
-      .filter((team) => authToken.tms.includes(team.id))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  },
+  // viewerTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
+  //   const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
+  //   return allTeamsOnOrg
+  //     .filter((team) => authToken.tms.includes(team.id))
+  //     .sort((a, b) => a.name.localeCompare(b.name))
+  // },
 
   publicTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
