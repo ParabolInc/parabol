@@ -49,17 +49,15 @@ type Organization {
 
   """
   Teams in the organization that the viewer has access to.
+  By default, returns only teams the viewer is a member of.
+  When showAll is true, returns all teams the viewer is allowed to see.
   """
   teams(
     """
-    If true, returns only teams the viewer is a member of
+    If true, includes teams the viewer doesn't belong to but is allowed to see
+    (public teams for regular users, all teams for admins)
     """
-    viewerOnly: Boolean = false
-
-    """
-    If true, returns only public teams the viewer is not a member of
-    """
-    publicOnly: Boolean = false
+    showAll: Boolean = false
 
     """
     How to sort the teams
@@ -68,24 +66,27 @@ type Organization {
   ): [Team!]!
 
   """
-  All the teams in the organization. If the viewer is not a billing lead, org admin, super user, or they do not have the publicTeams flag, return the teams they are a member of.
-  """
-  allTeams: [Team!]! @deprecated(reason: "Use teams field instead")
-
-  """
   The count of all teams in the organization
   """
-  allTeamsCount: Int!
+  allTeamsCount: Int
 
   """
-  all the teams the viewer is on in the organization
+  All the teams in the organization. If the viewer is not an org admin, super user,
+  or they don't have the public teams flag, returns only the teams they are a member of.
   """
-  viewerTeams: [Team!]! @deprecated(reason: "Use teams(viewerOnly: true) instead")
+  allTeams: [Team!]! @deprecated(reason: "Use teams(showAll: true) instead")
 
   """
-  all the teams that the viewer does not belong to that are in the organization. Only visible if the org has the publicTeams flag set to true.
+  All the teams the viewer is on in the organization
   """
-  publicTeams: [Team!]! @deprecated(reason: "Use teams(publicOnly: true, sort: lastMetAt) instead")
+  viewerTeams: [Team!]! @deprecated(reason: "Use teams field instead")
+
+  """
+  All the teams that the viewer does not belong to that are in the organization.
+  Only visible if the org has the publicTeams flag set to true.
+  """
+  publicTeams: [Team!]!
+    @deprecated(reason: "Use teams(showAll: true) and filter client-side with !isViewerOnTeam")
 
   """
   THe datetime the current billing cycle ends
