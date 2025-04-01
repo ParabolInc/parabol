@@ -10,6 +10,7 @@ import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
+import LinearProviderRow from '../ProviderRow/LinearProviderRow'
 import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
@@ -52,7 +53,7 @@ const query = graphql`
       ...AzureDevOpsProviderRow_viewer
       ...MSTeamsProviderRow_viewer
       ...GcalProviderRow_viewer
-
+      ...LinearProviderRow_viewer
       teamMember(teamId: $teamId) {
         integrations {
           atlassian {
@@ -80,6 +81,11 @@ const query = graphql`
               provider {
                 scope
               }
+            }
+          }
+          linear {
+            auth {
+              id
             }
           }
           mattermost {
@@ -139,6 +145,11 @@ const ProviderList = (props: Props) => {
       name: 'GitLab',
       connected: !!integrations?.gitlab.auth,
       component: <GitLabProviderRow key='gitlab' teamId={teamId} viewerRef={viewer} />
+    },
+    {
+      name: 'Linear',
+      connected: !!integrations?.linear?.auth,
+      component: <LinearProviderRow key='linear' teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'Mattermost',
