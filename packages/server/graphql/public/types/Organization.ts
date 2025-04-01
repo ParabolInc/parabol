@@ -8,7 +8,6 @@ import {
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
-import {sortOrgTeams} from './helpers/sortOrgTeams'
 
 const Organization: OrganizationResolvers = {
   approvedDomains: async ({id: orgId}, _args, {dataLoader}) => {
@@ -54,7 +53,7 @@ const Organization: OrganizationResolvers = {
     return getActiveTeamCountByOrgIds(orgId)
   },
 
-  teams: async ({id: orgId}, {sort = 'name'}, {dataLoader, authToken}) => {
+  teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
     const [teamsInOrg, isOrgAdmin] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
@@ -66,20 +65,15 @@ const Organization: OrganizationResolvers = {
       const viewerTeams = teamsInOrg.filter((team) => authToken.tms.includes(team.id))
       const otherTeams = teamsInOrg.filter((team) => !authToken.tms.includes(team.id))
 
-      if (sort === 'name') {
-        const sortedViewerTeams = await sortOrgTeams(viewerTeams, sort, dataLoader)
-        const sortedOtherTeams = await sortOrgTeams(otherTeams, sort, dataLoader)
-        return [...sortedViewerTeams, ...sortedOtherTeams]
-      }
-
-      const accessibleTeams = [...viewerTeams, ...otherTeams]
-      return sortOrgTeams(accessibleTeams, sort, dataLoader)
+      const sortedViewerTeams = viewerTeams.sort((a, b) => a.name.localeCompare(b.name))
+      const sortedOtherTeams = otherTeams.sort((a, b) => a.name.localeCompare(b.name))
+      return [...sortedViewerTeams, ...sortedOtherTeams]
     } else {
       // Regular users can see teams they're on plus public teams
       const accessibleTeams = teamsInOrg.filter(
         (team) => team.isPublic || authToken.tms.includes(team.id)
       )
-      return sortOrgTeams(accessibleTeams, sort, dataLoader)
+      return accessibleTeams.sort((a, b) => a.name.localeCompare(b.name))
     }
   },
 

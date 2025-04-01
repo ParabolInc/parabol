@@ -49,21 +49,10 @@ type Organization {
 
   """
   Teams in the organization that the viewer has access to.
-  By default, returns only teams the viewer is a member of.
-  When showAll is true, returns all teams the viewer is allowed to see.
+  For org admins/super users: all teams in the org (viewer's teams first).
+  For regular users: teams the viewer is on plus public teams.
   """
-  teams(
-    """
-    If true, includes teams the viewer doesn't belong to but is allowed to see
-    (public teams for regular users, all teams for admins)
-    """
-    showAll: Boolean = false
-
-    """
-    How to sort the teams
-    """
-    sort: TeamSortEnum = name
-  ): [Team!]!
+  teams: [Team!]!
 
   """
   The count of all teams in the organization

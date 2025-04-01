@@ -24,12 +24,19 @@ const PublicTeamsModal = (props: Props) => {
     graphql`
       fragment PublicTeamsModal_team on Team @relay(plural: true) {
         id
+        lastMetAt
         ...PublicTeamItem_team
       }
     `,
     teamsRef
   )
   const publicTeamsCount = publicTeams.length
+
+  const sortedTeams = [...publicTeams].sort((a, b) => {
+    if (!a.lastMetAt) return 1
+    if (!b.lastMetAt) return -1
+    return new Date(b.lastMetAt).getTime() - new Date(a.lastMetAt).getTime()
+  })
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
@@ -40,7 +47,7 @@ const PublicTeamsModal = (props: Props) => {
           <span className='font-semibold'>{orgName}</span>
         </DialogDescription>
         <div className='overflow-auto pr-6'>
-          {publicTeams.map((team) => (
+          {sortedTeams.map((team) => (
             <Fragment key={team.id}>
               <hr className='my-2 border-t border-slate-300' />
               <PublicTeamItem teamRef={team} />
