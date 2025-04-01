@@ -3,9 +3,10 @@ import {commitMutation} from 'react-relay'
 import {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
-const mutation = graphql`
+export const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
-    $providerId: ID!
+    $providerId: ID
+    $service: IntegrationProviderServiceEnum
     $oauthCodeOrPat: ID
     $oauthVerifier: ID
     $teamId: ID!
@@ -13,6 +14,7 @@ const mutation = graphql`
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
+      service: $service
       oauthCodeOrPat: $oauthCodeOrPat
       oauthVerifier: $oauthVerifier
       teamId: $teamId
@@ -30,6 +32,7 @@ const mutation = graphql`
           ...JiraServerProviderRowTeamMember
           ...AzureDevOpsProviderRowTeamMember
           ...GcalProviderRowTeamMember
+          ...LinearProviderRowTeamMember
           integrations {
             ...MattermostProviderRowTeamMemberIntegrations
             ...MSTeamsProviderRowTeamMemberIntegrations

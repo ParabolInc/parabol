@@ -104,6 +104,7 @@
           "JiraServerIntegration": "./types/JiraServerIntegration#JiraServerIntegrationSource",
           "JiraServerIssue": "./types/JiraServerIssue#JiraServerIssueSource",
           "JiraServerRemoteProject": "../../dataloader/jiraServerLoaders#JiraServerProject",
+          "LinearIntegration": "./types/LinearIntegration#LinearIntegrationSource",
           "JoinTeamSuccess": "./types/JoinTeamSuccess#JoinTeamSuccessSource",
           "MSTeamsIntegration": "./types/MSTeamsIntegration#MSTeamsIntegrationSource",
           "MattermostIntegration": "./types/MattermostIntegration#MattermostIntegrationSource",
