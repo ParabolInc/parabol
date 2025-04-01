@@ -11,7 +11,7 @@ import {MutationResolvers} from '../resolverTypes'
 const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmails'] = async (
   _source,
   _args,
-  {dataLoader}
+  context
 ) => {
   const pg = getKysely()
   // RESOLUTION
@@ -35,6 +35,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
   const userNotificationMap = new Map(
     userNotificationCount.map((value) => [value.userId, Number(value.notificationCount)])
   )
+  const {dataLoader} = context
   const users = (await dataLoader.get('users').loadMany([...userNotificationMap.keys()])).filter(
     isValid
   )
@@ -47,7 +48,7 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
       const notificationCount = userNotificationMap.get(user.id)!
 
       const authToken = new AuthToken({sub: user.id, tms, rol: 'impersonate'})
-      const environment = new ServerEnvironment(authToken, dataLoader.share())
+      const environment = new ServerEnvironment({...context, authToken})
       const {subject, html, body} = await notificationSummaryCreator({
         preferredName,
         notificationCount,

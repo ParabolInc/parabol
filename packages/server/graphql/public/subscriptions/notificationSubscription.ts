@@ -5,7 +5,8 @@ import {broadcastSubscription} from '../broadcastSubscription'
 import {SubscriptionResolvers} from '../resolverTypes'
 
 const notificationSubscription: SubscriptionResolvers['notificationSubscription'] = {
-  subscribe: async (_source, _args, {authToken, socketId}) => {
+  subscribe: async (_source, _args, context) => {
+    const {authToken} = context
     // AUTH
     if (!isAuthenticated(authToken)) {
       throw new Error('Not authenticated')
@@ -16,7 +17,7 @@ const notificationSubscription: SubscriptionResolvers['notificationSubscription'
     const channelName = `${SubscriptionChannel.NOTIFICATION}.${viewerId}`
 
     const iter = getPubSub().subscribe([channelName])
-    return broadcastSubscription(iter, socketId)
+    return broadcastSubscription(iter, context)
   }
 }
 export default notificationSubscription

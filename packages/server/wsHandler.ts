@@ -9,11 +9,14 @@ import {Threshold} from '../client/types/constEnums'
 import sleep from '../client/utils/sleep'
 import activeClients from './activeClients'
 import AuthToken from './database/types/AuthToken'
+import {getNewDataLoader} from './graphql/getDataLoader'
+import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import {INSTANCE_ID} from './utils/instanceId'
 import {extractPersistedOperationId, getPersistedOperation, yoga} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
@@ -25,6 +28,7 @@ declare module 'graphql-ws/use/uWebSockets' {
     authToken: AuthToken
     socketId: string
     resubscribe: Record<string, () => void>
+    dispose: Record<string, () => void>
   }
 }
 
@@ -36,8 +40,6 @@ type EnvelopedExecutionArgs = ExecutionArgs & {
     subscribe: typeof subscribe
   }
 }
-
-const INSTANCE_ID = `${process.env.SERVER_ID}:${process.pid}`
 
 const connectQuery = `
 mutation ConnectSocket($socketInstanceId: ID!) {
@@ -108,14 +110,16 @@ export const wsHandler = makeBehavior<{token?: string}>({
     extra.ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
     extra.resubscribe = {}
-    const {execute, contextFactory, parse} = yoga.getEnveloped(ctx)
-    const context = await contextFactory()
+    extra.dispose = {}
+    const {execute, parse} = yoga.getEnveloped(ctx)
+    const dataLoader = getNewDataLoader()
     const {data} = await execute({
       document: parse(connectQuery),
       variableValues: {socketInstanceId: INSTANCE_ID},
       schema: privateSchema,
-      contextValue: {...context, ip: extra.ip, authToken, socketId: extra.socketId}
+      contextValue: {dataLoader, ip: extra.ip, authToken, socketId: extra.socketId}
     })
+    dataLoader.dispose()
     const tms = data?.connectSocket?.tms
     const freshToken = setFreshTokenIfNeeded(extra, tms)
     activeClients.set(extra.socketId, extra)
@@ -158,26 +162,16 @@ export const wsHandler = makeBehavior<{token?: string}>({
   subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
-    const {ip, authToken, socketId, resubscribe} = extra
-    const {schema, execute, subscribe, contextFactory, parse, validate} = yoga.getEnveloped(ctx)
+    const {ip, authToken, socketId, resubscribe, dispose} = extra
+    const {schema, execute, subscribe, parse} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
     const query = await getPersistedOperation(docId!)
     const document = parse(query)
-    const context = await contextFactory()
-    const args: EnvelopedExecutionArgs = {
-      // TODO use private schema when necessary
-      schema,
-      operationName: params.operationName,
-      document,
-      variableValues: params.variables,
-      contextValue: {...context, ip, authToken, socketId},
-      rootValue: {
-        execute,
-        subscribe
-      }
-    }
-
+    const rateLimiter = getRateLimiter()
     const isSubscription = docId.startsWith('s')
+    // subscribe functions don't need a dataloader since they just kickstart an async iterator
+    const dataLoader = isSubscription ? null : getNewDataLoader()
+
     if (isSubscription) {
       resubscribe[id] = async () => {
         const oldSub = ctx.subscriptions[id]
@@ -191,27 +185,39 @@ export const wsHandler = makeBehavior<{token?: string}>({
         await sleep(1)
         wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
       }
+    } else {
+      dispose[id] = () => dataLoader!.dispose()
     }
-    const errors = validate(args.schema, args.document)
-    if (errors.length) {
-      console.log('SOME ERRS', errors)
-      return errors
+    const args: EnvelopedExecutionArgs = {
+      schema: authToken.rol === 'su' ? privateSchema : schema,
+      operationName: params.operationName,
+      document,
+      variableValues: params.variables,
+      contextValue: {dataLoader, rateLimiter, ip, authToken, socketId},
+      rootValue: {
+        execute,
+        subscribe
+      }
     }
     return args
+  },
+  onComplete: (ctx, id) => {
+    ctx.extra.dispose[id]?.()
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
     const {authToken, socketId} = extra
     const {sub: userId} = authToken
     activeClients.delete(extra.socketId)
-    const {execute, contextFactory, parse} = yoga.getEnveloped(ctx)
-    const context = await contextFactory()
+    const {execute, parse} = yoga.getEnveloped(ctx)
+    const dataLoader = getNewDataLoader()
     await execute({
       document: parse(disconnectQuery),
       variableValues: {userId},
       schema: privateSchema,
-      contextValue: {...context, ip: extra.ip, authToken, socketId}
+      contextValue: {dataLoader, ip: extra.ip, authToken, socketId}
     })
+    dataLoader.dispose()
   }
 })
 

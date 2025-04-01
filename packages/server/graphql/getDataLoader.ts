@@ -1,24 +1,65 @@
-import RootDataLoader from '../dataloader/RootDataLoader'
+import type DataLoader from 'dataloader'
+import RootDataLoader, {type Loaders} from '../dataloader/RootDataLoader'
+import getRedis from '../utils/getRedis'
+import {INSTANCE_ID} from '../utils/instanceId'
 import numToBase64 from '../utils/numToBase64'
 import DataLoaderCache from './DataLoaderCache'
-import getNodeId from './getNodeId'
-
 const dataLoaderCache = new DataLoaderCache(RootDataLoader)
-const NODE_ID = getNodeId()
 let nextId = 0
 
-/**
- * A user can keep reusing their dataloader for 500ms until a mutation comes in.
- * Once the user triggers a mutation, then the dataloader is no longer safe to reuse.
- *
- * @warning This should not get called outside the GraphQL executor logic. The dataloader returned must be disposed of via `dataLoader.dispose()`
- */
-const getDataLoader = (did?: string) => {
-  // if a did was provided, attempt to reuse that, since a mutation likely filled it up before sharing it
-  // if the viewer is logged in, give them their own dataloader that they can quickly reuse for subsequent requests or share with others
-  // if not logged in, just make a new anonymous loader.
-  const id = did || `${NODE_ID}:${numToBase64(nextId++)}`
-  return dataLoaderCache.use(id) || dataLoaderCache.add(id)
+setInterval(() => {
+  const workerCount = Object.keys(dataLoaderCache.workers)
+  console.log({workerCount})
+}, 5000)
+
+const hydrateDataLoader = (id: string, dataLoaderJSON: string) => {
+  const loaders = JSON.parse(dataLoaderJSON)
+  const cacheWorker = dataLoaderCache.add(id)
+  // treat this as shared so if the first subscriber tries to dispose of it, it will wait 500ms (see wsHandler.onComplete)
+  // which should be enough time for other subscribers to grab it
+  cacheWorker.share()
+  Object.entries(loaders).forEach(([loaderName, serializedCacheMap]) => {
+    const hydratedLoader = cacheWorker.get(loaderName as Loaders) as DataLoader<any, any>
+    Object.entries(serializedCacheMap as Record<string, any>).forEach(([cacheKey, record]) => {
+      const unsafeCacheMap = (hydratedLoader as any)._cacheMap as Map<string, any>
+      unsafeCacheMap.set(cacheKey, Promise.resolve(record))
+    })
+  })
+  cacheWorker.dispose()
+  console.log('hydration complete for', id, cacheWorker)
+  return cacheWorker
+}
+
+export const getNewDataLoader = () => {
+  const id = `${INSTANCE_ID}:${numToBase64(nextId++)}`
+  return dataLoaderCache.add(id)
+}
+
+export const getInMemoryDataLoader = (id: string) => {
+  return dataLoaderCache.use(id)
+}
+
+const getRedisDataLoader = async (id: string) => {
+  const serializedDataLoader = await getRedis().get(`dataLoader:${id}`)
+  if (serializedDataLoader) {
+    return hydrateDataLoader(id, serializedDataLoader)
+  }
+  return undefined
+}
+
+// WARNING you must call dispose on the returned dataloader when you're done with it
+// This should be done after the request is complete
+// see `onResultProcess` hook in `useDisposeDataloader`
+// or wsHandler onComplete
+const getDataLoader = async (id?: string) => {
+  if (id) {
+    const inMemoryLoader = getInMemoryDataLoader(id)
+    if (inMemoryLoader) return inMemoryLoader
+    const redisDataLoader = await getRedisDataLoader(id)
+    if (redisDataLoader) return redisDataLoader
+    console.error(`Could not find dataloader: ${id}. Did redis dispose too early?`)
+  }
+  return getNewDataLoader()
 }
 
 export default getDataLoader

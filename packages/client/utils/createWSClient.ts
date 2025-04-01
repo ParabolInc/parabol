@@ -2,12 +2,7 @@ import {createClient, type Client} from 'graphql-ws'
 import ms from 'ms'
 import {commitLocalUpdate} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
-import isObject from './isObject'
 import createProxyRecord from './relay/createProxyRecord'
-
-function isLikeCloseEvent(val: unknown) {
-  return isObject(val) && 'code' in val && 'reason' in val
-}
 
 const setConnectedStatus = (atmosphere: Atmosphere, isConnected: boolean) => {
   commitLocalUpdate(atmosphere, (store) => {
@@ -69,9 +64,9 @@ export function createWSClient(atmosphere: Atmosphere) {
         return String(nextId++)
       },
       retryAttempts: 20,
-      shouldRetry: (errorOrCloseEvent) => {
+      shouldRetry: () => {
         if (!atmosphere.authToken) return false
-        return isLikeCloseEvent(errorOrCloseEvent)
+        return true
       },
       on: {
         connected: async (socket, payload, wasRetry) => {

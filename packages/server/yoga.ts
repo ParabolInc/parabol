@@ -5,11 +5,11 @@ import {sql} from 'kysely'
 import uws from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import AuthToken from './database/types/AuthToken'
-import getDataLoader from './graphql/getDataLoader'
 import getRateLimiter from './graphql/getRateLimiter'
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 
 export interface ServerContext {
@@ -17,6 +17,10 @@ export interface ServerContext {
   res: uws.HttpResponse
   ip: string
   authToken: AuthToken | null
+}
+
+export interface UserContext {
+  rateLimiter: ReturnType<typeof getRateLimiter>
 }
 
 export const extractPersistedOperationId = (
@@ -39,7 +43,7 @@ export const getPersistedOperation = async (docId: string) => {
   return queryStringRes?.query
 }
 
-export const yoga = createYoga<ServerContext>({
+export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   plugins: [
@@ -57,6 +61,8 @@ export const yoga = createYoga<ServerContext>({
       getPersistedOperation
     }),
     usePrivateSchemaForSuperUser,
+    useDisposeDataloader,
+
     useReadinessCheck({
       check: async () => {
         const res = await Promise.race([sql`SELECT 1`.execute(getKysely()), sleep(5000)])
@@ -67,10 +73,9 @@ export const yoga = createYoga<ServerContext>({
   // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
   // As a workaround, we set the schema via plugin using the `onEnveloped` hook
   schema: rootSchema,
-  context: async () => {
-    const dataLoader = getDataLoader()
-    dataLoader.share()
+
+  context: () => {
     const rateLimiter = getRateLimiter()
-    return {dataLoader, rateLimiter}
+    return {rateLimiter}
   }
 })

@@ -1,7 +1,7 @@
 import '../../../../../../../scripts/webpack/utils/dotenv'
 import {createPGTables, truncatePGTables} from '../../../../../__tests__/common'
 import getKysely from '../../../../../postgres/getKysely'
-import getDataLoader from '../../../../getDataLoader'
+import {getNewDataLoader} from '../../../../getDataLoader'
 import getIsEmailApprovedByOrg from '../getIsEmailApprovedByOrg'
 
 const TEST_DB = 'getIsEmailApprovedByOrgTest'
@@ -43,7 +43,7 @@ test.each([
   'foo@other.subtest.com',
   'foo@notwildtest.com'
 ])('Unapproved email fails: %s', async (email) => {
-  const dataloader = getDataLoader()
+  const dataloader = getNewDataLoader()
   const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
   expect(error).toBeInstanceOf(Error)
 })
@@ -51,7 +51,7 @@ test.each([
 test.each(['foo@test.com', 'foo@sub.subtest.com', 'foo@wildtest.com', 'foo@sub.wildtest.com'])(
   'Approved email passes: %s',
   async (email) => {
-    const dataloader = getDataLoader()
+    const dataloader = getNewDataLoader()
     const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
     expect(error).toBe(undefined)
   }

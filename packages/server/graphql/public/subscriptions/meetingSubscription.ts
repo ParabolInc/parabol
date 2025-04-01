@@ -7,7 +7,8 @@ import {broadcastSubscription} from '../broadcastSubscription'
 import {SubscriptionResolvers} from '../resolverTypes'
 
 const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
-  subscribe: async (_source, {meetingId}, {authToken, socketId}) => {
+  subscribe: async (_source, {meetingId}, context) => {
+    const {authToken} = context
     // AUTH
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
@@ -23,7 +24,7 @@ const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
     const iter = getPubSub().subscribe([channelName])
-    return broadcastSubscription(iter, socketId)
+    return broadcastSubscription(iter, context)
   }
 }
 

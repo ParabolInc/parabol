@@ -1,24 +1,25 @@
+export const SHARED_DATALOADER_TTL = 30_000
 export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: (id: any) => any}> {
-  cache: DataLoaderCache
   dataLoaderWorker: T
   did: string
   disposeId: NodeJS.Timeout | undefined
   shared = false
   get: T['get']
   clearAll: T['clearAll']
-  constructor(dataLoaderWorker: T, did: string, cache: DataLoaderCache) {
+  onDispose: () => void
+  constructor(dataLoaderWorker: T, did: string, onDispose: () => void) {
     this.dataLoaderWorker = dataLoaderWorker
     this.did = did
-    this.cache = cache
     this.get = this.dataLoaderWorker.get
     this.clearAll = this.dataLoaderWorker.clearAll
+    this.onDispose = onDispose
   }
 
-  dispose(force?: boolean) {
-    const ttl = force || !this.shared ? 0 : this.cache.ttl
-    clearTimeout(this.disposeId!)
-    this.disposeId = global.setTimeout(() => {
-      delete this.cache.workers[this.did]
+  dispose() {
+    const ttl = this.shared ? SHARED_DATALOADER_TTL : 0
+    clearTimeout(this.disposeId)
+    this.disposeId = setTimeout(() => {
+      this.onDispose()
     }, ttl)
   }
 
@@ -34,18 +35,19 @@ export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: 
 export default class DataLoaderCache<
   T extends new (...args: any) => any = new (...args: any) => any
 > {
-  ttl: number
   workers: {[did: string]: CacheWorker<InstanceType<T>>} = {}
   nextId = 0
   DataLoaderWorkerConstructor: T
-  constructor(DataLoaderWorkerConstructor: T, {ttl} = {ttl: 500}) {
+  constructor(DataLoaderWorkerConstructor: T) {
     this.DataLoaderWorkerConstructor = DataLoaderWorkerConstructor
-    this.ttl = ttl
   }
 
   add(did: string) {
     const dataLoaderWorker = new this.DataLoaderWorkerConstructor()
-    this.workers[did] = new CacheWorker(dataLoaderWorker, did, this)
+    const onDispose = () => {
+      delete this.workers[did]
+    }
+    this.workers[did] = new CacheWorker(dataLoaderWorker, did, onDispose)
     return this.workers[did]!
   }
 

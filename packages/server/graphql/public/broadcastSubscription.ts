@@ -1,12 +1,17 @@
 import type SubscriptionIterator from '../../utils/SubscriptionIterator'
+import getDataLoader from '../getDataLoader'
+import type {InternalContext} from '../graphql'
 
-export const broadcastSubscription = (iter: SubscriptionIterator, socketId: string) => {
+export const broadcastSubscription = (iter: SubscriptionIterator, context: InternalContext) => {
   return {
     async next() {
       const sourceIter = await iter.next()
       if (sourceIter.done) return sourceIter
-      const {mutatorId} = sourceIter.value
-      if (mutatorId === socketId) return this.next()
+      const {mutatorId, operationId} = sourceIter.value
+      if (mutatorId === context.socketId) return this.next()
+      // use the same dataloader that the mutation used to avoid hitting the DB
+      console.log('setting dataloader to', operationId)
+      context.dataLoader = await getDataLoader(operationId)
       return {done: false, value: sourceIter.value.rootValue}
     },
     return() {
