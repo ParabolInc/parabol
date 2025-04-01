@@ -1,0 +1,10 @@
+- Do not add comments
+- Never edit or directly edit the schema.graphql file, this file is generated
+  - To generate Relay type artifacts, run "yarn relay:build"
+- Never edit any .graphql file in a **generated** directory, these files are
+  generated via `yarn relay:build`
+- Never edit the following files, they are generated via `yarn codegen`
+  - packages/server/graphql/private/resolverTypes.ts
+  - packages/server/graphql/public/resolverTypes.ts
+  - packages/server/types/githubTypes.ts
+  - packages/server/types/gitlabTypes.ts

@@ -35,7 +35,8 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
   },
 
   azureDevOps: (source) => source,
-  msTeams: (source) => source
+  msTeams: (source) => source,
+  linear: (source) => source
 }
 
 export default TeamMemberIntegrations
