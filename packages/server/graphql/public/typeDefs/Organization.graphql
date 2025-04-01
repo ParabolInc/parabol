@@ -60,19 +60,6 @@ type Organization {
   allTeamsCount: Int!
 
   """
-  All the teams in the organization. If the viewer is not an org admin, super user,
-  or they don't have the public teams flag, returns only the teams they are a member of.
-  """
-  allTeams: [Team!]! @deprecated(reason: "Use teams(showAll: true) instead")
-
-  """
-  All the teams that the viewer does not belong to that are in the organization.
-  Only visible if the org has the publicTeams flag set to true.
-  """
-  publicTeams: [Team!]!
-    @deprecated(reason: "Use teams(showAll: true) and filter client-side with !isViewerOnTeam")
-
-  """
   THe datetime the current billing cycle ends
   """
   periodEnd: DateTime
