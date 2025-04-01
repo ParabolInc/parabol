@@ -1,9 +1,10 @@
-import {ArrowBack, MoreVert} from '@mui/icons-material'
+import {ArrowBack, Delete} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
+import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
@@ -31,6 +32,7 @@ const query = graphql`
           isNotRemoved
           ...AddTeamMemberModal_teamMembers
           ...OrgTeamMembersRow_teamMember
+          ...InviteTeamMemberAvatar_teamMembers
         }
         tier
       }
@@ -43,7 +45,7 @@ export const OrgTeamMembers = (props: Props) => {
   const data = usePreloadedQuery<OrgTeamMembersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {togglePortal, menuPortal, menuProps, originRef} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const {
     open: openDeleteTeamDialog,
@@ -53,7 +55,7 @@ export const OrgTeamMembers = (props: Props) => {
 
   if (!team) return null
   const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
-  const showMenuButton = isViewerLead || isViewerOrgAdmin
+  const showDeleteButton = isViewerLead || isViewerOrgAdmin
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -64,17 +66,19 @@ export const OrgTeamMembers = (props: Props) => {
           </Link>
         </Button>
         <h1 className='flex-1 text-2xl leading-7 font-semibold'>{team.name}</h1>
-        <div className='ml-auto'>
-          {showMenuButton && (
-            <Button
-              shape='circle'
-              variant='ghost'
-              onClick={togglePortal}
-              ref={originRef}
-              className='bg-slate-400'
-            >
-              <MoreVert />
-            </Button>
+        <div className='ml-auto flex items-center'>
+          <InviteTeamMemberAvatar teamId={team.id} teamMembers={teamMembers} />
+          {showDeleteButton && (
+            <div className='group mx-1.5 cursor-pointer'>
+              <div className='flex h-7 justify-center'>
+                <span className='h-6 w-6 self-center text-tomato-500 group-hover:text-tomato-600'>
+                  <Delete />
+                </span>
+              </div>
+              <div className='text-center text-xs leading-4 font-semibold text-slate-700'>
+                Delete
+              </div>
+            </div>
           )}
         </div>
       </div>
