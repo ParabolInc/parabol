@@ -47,7 +47,6 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   const parser = (buffer: Buffer) => buffer.toString()
   const queryString = await parseBody({res, parser})
   const payload = await callGQL<TData>(query, {queryString, samlName})
-  console.log('SAML GOT PAYLOAD', payload)
   if (!payload) return
   const {data, errors} = payload
   if (!data || errors) {

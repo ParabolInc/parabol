@@ -10,8 +10,10 @@ export const broadcastSubscription = (iter: SubscriptionIterator, context: Inter
       const {mutatorId, operationId} = sourceIter.value
       if (mutatorId === context.socketId) return this.next()
       // use the same dataloader that the mutation used to avoid hitting the DB
-      console.log('setting dataloader to', operationId)
-      context.dataLoader = await getDataLoader(operationId)
+      if (operationId) {
+        // operationId could we null if a mutation purposefully wants to send to self (e.g. new auth token)
+        context.dataLoader = await getDataLoader(operationId)
+      }
       return {done: false, value: sourceIter.value.rootValue}
     },
     return() {

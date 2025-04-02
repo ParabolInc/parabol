@@ -143,7 +143,6 @@ export const wsHandler = makeBehavior<{token?: string}>({
       // wait for other payloads to get flushed to the client before resubscribing
       setTimeout(() => {
         Object.keys(resubscribe).forEach((key) => {
-          console.log('calling resubscribe', key)
           resubscribe[key]!()
         })
       }, 1000)

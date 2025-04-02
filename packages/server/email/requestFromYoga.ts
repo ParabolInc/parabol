@@ -10,10 +10,14 @@ export const requestFromYoga = async (
   const {getPersistedOperation, yoga} = require('../yoga')
   const {schema, execute, parse} = yoga.getEnveloped()
   const query = await getPersistedOperation(docId)
-  return execute({
+  const res = await execute({
     document: parse(query),
     variableValues: variables,
     schema,
     contextValue: context
   })
+  // yoga creates objects using a null prototype. Relay incorrectly uses `{}.hasOwnProperty`
+  // As a quick hack, we recate the objects using an Object prototype here
+  res.data = JSON.parse(JSON.stringify(res.data))
+  return res
 }
