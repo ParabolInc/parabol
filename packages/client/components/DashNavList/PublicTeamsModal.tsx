@@ -13,7 +13,7 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   orgName: string
-  teamsRef: PublicTeamsModal_team$key[]
+  teamsRef: PublicTeamsModal_team$key
   actions?: ReactNode
 }
 
