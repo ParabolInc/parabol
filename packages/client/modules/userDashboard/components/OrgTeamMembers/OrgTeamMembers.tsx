@@ -71,7 +71,7 @@ export const OrgTeamMembers = (props: Props) => {
           {showDeleteButton && (
             <div className='group mx-1.5 cursor-pointer'>
               <div className='flex h-7 justify-center'>
-                <span className='h-6 w-6 self-center text-tomato-500 group-hover:text-tomato-600'>
+                <span className='h-6 w-6 self-center text-slate-500 group-hover:text-slate-600'>
                   <Delete />
                 </span>
               </div>
