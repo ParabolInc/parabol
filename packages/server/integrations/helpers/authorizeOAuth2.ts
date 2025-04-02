@@ -9,6 +9,7 @@ interface AuthorizeOAuth2Params {
   body?: Record<string, string>
   additonalHeaders?: Record<string, string>
   contentType?: string
+  noRefreshToken?: boolean
 }
 
 const transformBody = (contentType: string, body?: Record<string, string>): string => {
@@ -43,7 +44,8 @@ export const authorizeOAuth2 = async <
   searchParams,
   body,
   additonalHeaders,
-  contentType
+  contentType,
+  noRefreshToken = false
 }: AuthorizeOAuth2Params) => {
   const headers = {
     Accept: 'application/json',
@@ -81,10 +83,11 @@ export const authorizeOAuth2 = async <
     scope,
     expires_in: expiresIn
   } = tokenJson
-  return {
+  const result = {
     accessToken,
     expiresIn,
-    refreshToken: oauthRefreshToken,
+    refreshToken: noRefreshToken ? accessToken : oauthRefreshToken,
     scopes: scope
-  } as unknown as TSuccess
+  }
+  return result as TSuccess
 }

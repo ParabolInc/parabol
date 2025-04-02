@@ -311,7 +311,9 @@ export const enum Providers {
   AZUREDEVOPS_NAME = 'Azure DevOps',
   AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol.',
   MSTEAMS_NAME = 'Microsoft Teams',
-  MSTEAMS_DESC = 'Push notifications to Microsoft Teams'
+  MSTEAMS_DESC = 'Push notifications to Microsoft Teams',
+  LINEAR_NAME = 'Linear',
+  LINEAR_DESC = 'Use Linear Issues from within Parabol.'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
