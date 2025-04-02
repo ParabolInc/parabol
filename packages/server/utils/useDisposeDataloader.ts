@@ -4,16 +4,14 @@ import {getNewDataLoader} from '../graphql/getDataLoader'
 type DataLoaderContext = {dataLoader: ReturnType<typeof getNewDataLoader>}
 export const useDisposeDataloader: Plugin<DataLoaderContext, DataLoaderContext> = {
   onContextBuilding: ({context, extendContext}) => {
-    const dataLoader = getNewDataLoader()
+    // This shouldn't even happen, but as the code evolves, it's a good check to prevent memory leaks
     if (context.dataLoader) {
       throw new Error('Dataloader already exists. This is a mem leak')
     }
+    const dataLoader = getNewDataLoader()
     extendContext({dataLoader})
   },
   onResultProcess: ({serverContext}) => {
-    const {dataLoader} = serverContext
-    if (!dataLoader) return
-    // if the dataloader has been shared, give it 500ms for a subscriber to claim it
-    dataLoader.dispose()
+    serverContext.dataLoader?.dispose()
   }
 }

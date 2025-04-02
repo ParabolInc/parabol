@@ -176,13 +176,13 @@ export default class Atmosphere extends Environment {
           )
           if (invalidSessionError) {
             this.invalidateSession(invalidSessionError.message)
+          } else {
+            _error(new Error(error[0]?.message ?? 'Unknown Error'))
           }
         } else if (error instanceof CloseEvent) {
-          console.log('HOW DID WE GET A CLOSE EVENT HERE', error)
-          // do nothing
+          // convert to an error so subscribers only have to worry about handling Error types
           _error(new Error(error.reason))
         } else {
-          console.log('SINK ERR', error)
           _error(error)
         }
       }

@@ -69,8 +69,7 @@ export function createWSClient(atmosphere: Atmosphere) {
         return true
       },
       on: {
-        connected: async (socket, payload, wasRetry) => {
-          console.log('connected', {socket, payload, wasRetry, abruptlyClosed})
+        connected: async (_socket, payload, _wasRetry) => {
           const {version, authToken} = payload as {version: string; authToken?: string | null}
           if (authToken) {
             atmosphere.setAuthToken(authToken)
@@ -102,7 +101,6 @@ export function createWSClient(atmosphere: Atmosphere) {
             console.error('Could not connect via WebSocket')
             reject(event)
           }
-          console.log('socket closed', event)
           const {code, reason} = event as CloseEvent
           // These codes are sent from the connected hook on the server
           if ([4403, 4500].includes(code)) {
