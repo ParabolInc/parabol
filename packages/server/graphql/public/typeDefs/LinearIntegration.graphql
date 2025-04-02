@@ -5,12 +5,22 @@ type LinearIntegration {
   """
   The team member's authentication details for this integration
   """
-  auth: TeamMemberIntegrationAuth
+  auth: TeamMemberIntegrationAuthOAuth2
 
   """
-  The Linear application's Client ID (from environment variables)
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
   """
-  clientId: String
+  cloudProvider: IntegrationProviderOAuth2
+
+  """
+  Composite key in ado:teamId:userId format
+  """
+  id: ID!
+
+  """
+  The non-global providers shared with the team or organization
+  """
+  sharedProviders: [IntegrationProviderOAuth2!]!
 
   # Add other Linear-specific fields here later if needed
 }

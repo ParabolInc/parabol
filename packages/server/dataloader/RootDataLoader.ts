@@ -9,7 +9,6 @@ import * as githubLoaders from './githubLoaders'
 import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
-import * as linearLoaders from './linearLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 
@@ -29,8 +28,7 @@ const loaderMakers = {
   ...gcalLoaders,
   ...integrationAuthLoaders,
   ...pollLoaders,
-  ...azureDevOpsLoaders,
-  ...linearLoaders // Add linear loaders to the makers object
+  ...azureDevOpsLoaders
 } as const
 
 export type Loaders = keyof typeof loaderMakers
