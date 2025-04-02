@@ -234,7 +234,7 @@ const OrgMembers = (props: Props) => {
                 ? `${filteredOrgUsers.length} matched`
                 : `${organizationUsers.edges.length} total`}
               {selectedUserIds.length > 0 && (
-                <span className='ml-2 text-sky-600'>{selectedUserIds.length} selected</span>
+                <span className='ml-2 text-sky-600'>({selectedUserIds.length} selected)</span>
               )}
             </div>
             <div className='flex space-x-2'>
