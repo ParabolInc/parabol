@@ -24,5 +24,5 @@ To test new CronJobs:
 
 1. create a new `CronJob` with `runOnInit: true`
 2. run `yarn build`. For faster builds, comment out all entry points except chronos in `prod.server.config.js`
-3. run `node dist/gqlExecutor.js` to get the executor server running first
+3. run `node dist/web.js` to get the server running first
 4. run `node dist/chronos.js`. It will immediately execute any jobs with `runOnInit: true`

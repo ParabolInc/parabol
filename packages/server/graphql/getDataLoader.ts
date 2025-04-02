@@ -2,15 +2,18 @@ import type DataLoader from 'dataloader'
 import RootDataLoader, {type Loaders} from '../dataloader/RootDataLoader'
 import getRedis from '../utils/getRedis'
 import {INSTANCE_ID} from '../utils/instanceId'
+import {Logger} from '../utils/Logger'
 import numToBase64 from '../utils/numToBase64'
 import DataLoaderCache from './DataLoaderCache'
 const dataLoaderCache = new DataLoaderCache(RootDataLoader)
 let nextId = 0
 
+// Can remove this after we verify there are no memory leaks in prod
+// count staying constant or going down = good
 setInterval(() => {
-  const workerCount = Object.keys(dataLoaderCache.workers)
-  console.log({workerCount})
-}, 5000)
+  const workerCount = Object.keys(dataLoaderCache.workers).length
+  Logger.log({workerCount})
+}, 60_000)
 
 const hydrateDataLoader = (id: string, dataLoaderJSON: string) => {
   const loaders = JSON.parse(dataLoaderJSON)
@@ -26,7 +29,6 @@ const hydrateDataLoader = (id: string, dataLoaderJSON: string) => {
     })
   })
   cacheWorker.dispose()
-  console.log('hydration complete for', id, cacheWorker)
   return cacheWorker
 }
 

@@ -17,7 +17,7 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (_source, {isDangerous}) =
     const MB = 2 ** 20
     const usedMB = Math.floor(rss / MB)
     const now = new Date().toJSON()
-    const fileName = `Dumpy_${now}_GQLExecutor-${SERVER_ID}_${usedMB}.heapsnapshot`
+    const fileName = `Dumpy_${now}_${SERVER_ID}_${usedMB}.heapsnapshot`
     const pathName = path.join(os.tmpdir(), fileName)
     const fd = fs.openSync(pathName, 'w')
     session.connect()

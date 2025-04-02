@@ -36,7 +36,6 @@ module.exports = (config) => {
         path.join(SERVER_ROOT, 'server.ts')
       ],
       embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
-      gqlExecutor: [DOTENV, INIT_PUBLIC_PATH, path.join(GQL_ROOT, 'gqlExecutor.ts')],
       preDeploy: [
         DOTENV,
         INIT_PUBLIC_PATH,

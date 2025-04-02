@@ -1,3 +1,4 @@
+import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import type {GraphQLParams} from 'graphql-yoga'
 import {createYoga, useReadinessCheck} from 'graphql-yoga'
@@ -6,11 +7,19 @@ import uws from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import AuthToken from './database/types/AuthToken'
 import getRateLimiter from './graphql/getRateLimiter'
+import {MutationResolvers, QueryResolvers, Resolver} from './graphql/public/resolverTypes'
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
+
+type OperationResolvers = QueryResolvers & MutationResolvers
+type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
+type ExcludedArgs = {
+  [P in keyof OperationResolvers]?: Array<keyof ExtractArgs<OperationResolvers[P]>>
+}
 
 export interface ServerContext {
   req: uws.HttpRequest
@@ -47,6 +56,25 @@ export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   plugins: [
+    useDatadogTracing({
+      excludeArgs: {
+        acceptTeamInvitation: ['invitationToken'],
+        loginWithPassword: ['password'],
+        resetPassword: ['token', 'newPassword'],
+        signUpWithPassword: ['password', 'invitationToken'],
+        verifyEmail: ['verificationToken']
+      } as ExcludedArgs,
+      hooks: {
+        execute: (span, args) => {
+          const userId = args.contextValue.authToken?.sub
+          if (userId) {
+            span.setTag('userId', userId)
+          }
+        }
+      },
+      collapse: true
+    }),
+    useDeferStream(),
     usePersistedOperations({
       allowArbitraryOperations(request) {
         const {headers} = request
@@ -62,7 +90,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     usePrivateSchemaForSuperUser,
     useDisposeDataloader,
-
     useReadinessCheck({
       check: async () => {
         const res = await Promise.race([sql`SELECT 1`.execute(getKysely()), sleep(5000)])
@@ -71,7 +98,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
     })
   ],
   // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
-  // As a workaround, we set the schema via plugin using the `onEnveloped` hook
+  // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook
   schema: rootSchema,
 
   context: () => {
