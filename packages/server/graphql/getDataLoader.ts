@@ -13,7 +13,7 @@ let nextId = 0
 setInterval(() => {
   const workerCount = Object.keys(dataLoaderCache.workers).length
   Logger.log({workerCount})
-}, 60_000)
+}, 60_000).unref()
 
 const hydrateDataLoader = (id: string, dataLoaderJSON: string) => {
   const loaders = JSON.parse(dataLoaderJSON)
