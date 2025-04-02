@@ -47,10 +47,8 @@ const OrgTeams = (props: Props) => {
   const [sortBy, setSortBy] = useState<SortField>('lastMetAt')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const {teams, allTeamsCount, tier} = organization
-
-  const viewerTeams = teams.filter((team) => team.isViewerOnTeam)
   const showingAllTeams = teams.length === allTeamsCount
-  const viewerTeamCount = viewerTeams.length
+  const viewerTeamCount = teams.length
 
   const handleSort = (field: SortField) => {
     if (sortBy === field) {
