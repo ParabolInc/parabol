@@ -32,7 +32,9 @@ graphql`
     addedNotification {
       type
       changeAuthor {
-        preferredName
+        user {
+          preferredName
+        }
       }
       team {
         id

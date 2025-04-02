@@ -5,7 +5,8 @@ export default function addTeamValidation(teamNames: string[]) {
   return legitify({
     newTeam: {
       name: makeTeamNameSchema(teamNames),
-      orgId: requiredId
+      orgId: requiredId,
+      isPublic: (value: boolean) => value
     }
   })
 }

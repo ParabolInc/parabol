@@ -5,6 +5,55 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.38.0](https://github.com/ParabolInc/parabol/compare/v8.37.4...v8.38.0) (2025-03-27)
+
+
+### Added
+
+* Add actions to the empty team experience ([#11070](https://github.com/ParabolInc/parabol/issues/11070)) ([5d53b1a](https://github.com/ParabolInc/parabol/commit/5d53b1a669b3f42c3968bc69c3f4c48b0b302d85))
+* can choose privacy when creating a team ([#11046](https://github.com/ParabolInc/parabol/issues/11046)) ([1a18729](https://github.com/ParabolInc/parabol/commit/1a18729e150bbcf95ab665887df637e35cf60cbd))
+* Join your organization when signing up with SAML ([#11054](https://github.com/ParabolInc/parabol/issues/11054)) ([2f7579e](https://github.com/ParabolInc/parabol/commit/2f7579e84b5bbec431f1be821530a0935e0f9a88))
+* User provisioning to different Organization via SAML claim ([#11059](https://github.com/ParabolInc/parabol/issues/11059)) ([3f331da](https://github.com/ParabolInc/parabol/commit/3f331da9be4e7bdb3d04a9d64b1adb717310a834))
+
+## [8.37.4](https://github.com/ParabolInc/parabol/compare/v8.37.3...v8.37.4) (2025-03-26)
+
+
+### Fixed
+
+* Public Teams Modal Layout on Safari ([#11069](https://github.com/ParabolInc/parabol/issues/11069)) ([b71ab71](https://github.com/ParabolInc/parabol/commit/b71ab710de8a12b44694763c250d12f686b8dfd5))
+
+## [8.37.3](https://github.com/ParabolInc/parabol/compare/v8.37.2...v8.37.3) (2025-03-25)
+
+
+### Fixed
+
+* can see public teams when there are no viewer teams ([#11056](https://github.com/ParabolInc/parabol/issues/11056)) ([62fb10a](https://github.com/ParabolInc/parabol/commit/62fb10a1c15cc81f8f25a3c6009f05c2a230bea1))
+* correct meeting link URL in the prompt for generating meeting summaries ([#11062](https://github.com/ParabolInc/parabol/issues/11062)) ([3448235](https://github.com/ParabolInc/parabol/commit/34482355221e55ff060b0cbe01efbd9c893c725d))
+* dynamic text for instruction text ([#10942](https://github.com/ParabolInc/parabol/issues/10942)) ([ef9d3ad](https://github.com/ParabolInc/parabol/commit/ef9d3ad274d8fd651f5da263d8f5fb321461976a))
+* typo on public team setting help text ([#11063](https://github.com/ParabolInc/parabol/issues/11063)) ([1963a32](https://github.com/ParabolInc/parabol/commit/1963a32bbbf1ea37f93938a2f447971182568d6f))
+
+
+### Changed
+
+* add private teams to team benefits ([#11061](https://github.com/ParabolInc/parabol/issues/11061)) ([bcfeb81](https://github.com/ParabolInc/parabol/commit/bcfeb812a976359acb7fae707a92fa7673c24c8c))
+* update insights flag expiration ([#11055](https://github.com/ParabolInc/parabol/issues/11055)) ([d0e2fea](https://github.com/ParabolInc/parabol/commit/d0e2fea425b60217bced4268c099ee10ceaa3c34))
+
+## [8.37.2](https://github.com/ParabolInc/parabol/compare/v8.37.1...v8.37.2) (2025-03-21)
+
+
+### Fixed
+
+* return 404 if PWAHandler cannot find files ([#11043](https://github.com/ParabolInc/parabol/issues/11043)) ([d66ef3d](https://github.com/ParabolInc/parabol/commit/d66ef3d7820826db41e9d38f149594ccce3266c7))
+* Undefined TeamMember in NewMeetingCheckIn ([#11042](https://github.com/ParabolInc/parabol/issues/11042)) ([aac4304](https://github.com/ParabolInc/parabol/commit/aac430457398fe28def7a1c3f60ef8c2056dfdf1))
+
+## [8.37.1](https://github.com/ParabolInc/parabol/compare/v8.37.0...v8.37.1) (2025-03-21)
+
+
+### Changed
+
+* Cork serving static files ([#11037](https://github.com/ParabolInc/parabol/issues/11037)) ([177b607](https://github.com/ParabolInc/parabol/commit/177b607c8342e004c1e473801db290f898252be3))
+* Normalize TeamMember ([#11026](https://github.com/ParabolInc/parabol/issues/11026)) ([4ea346c](https://github.com/ParabolInc/parabol/commit/4ea346c2bdb8f405a55aef198018821c04ea3bd6))
+
 ## [8.37.0](https://github.com/ParabolInc/parabol/compare/v8.36.1...v8.37.0) (2025-03-19)
 
 

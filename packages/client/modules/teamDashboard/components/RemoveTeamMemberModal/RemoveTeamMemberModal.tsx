@@ -30,12 +30,15 @@ const RemoveTeamMemberModal = (props: Props) => {
     graphql`
       fragment RemoveTeamMemberModal_teamMember on TeamMember {
         teamMemberId: id
-        preferredName
+        user {
+          preferredName
+        }
       }
     `,
     teamMemberRef
   )
-  const {teamMemberId, preferredName} = teamMember
+  const {teamMemberId, user} = teamMember
+  const {preferredName} = user
   const handleClick = () => {
     closePortal()
     RemoveTeamMemberMutation(atmosphere, {teamMemberId})

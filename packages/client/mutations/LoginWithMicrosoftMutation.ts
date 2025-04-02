@@ -46,7 +46,7 @@ const LoginWithMicrosoftMutation: StandardMutation<
       const {error: uiError} = loginWithMicrosoft
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
-        handleSuccessfulLogin(loginWithMicrosoft)
+        handleSuccessfulLogin(atmosphere, loginWithMicrosoft)
         const authToken = acceptTeamInvitation?.authToken || loginWithMicrosoft.authToken!
         atmosphere.setAuthToken(authToken)
         handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history})

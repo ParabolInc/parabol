@@ -1,5 +1,5 @@
 import '../../../../../../../scripts/webpack/utils/dotenv'
-import {createPGTables, truncatePGTables} from '../../../../../__tests__/common'
+import {createPGTables} from '../../../../../__tests__/common'
 import getKysely from '../../../../../postgres/getKysely'
 import {getNewDataLoader} from '../../../../getDataLoader'
 import getIsEmailApprovedByOrg from '../getIsEmailApprovedByOrg'
@@ -31,8 +31,9 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  await truncatePGTables('User', 'Organization', 'OrganizationApprovedDomain')
-  await getKysely().destroy()
+  const pg = getKysely()
+  await pg.schema.dropSchema(TEST_DB).cascade().execute()
+  await pg.destroy()
 })
 
 test.each([

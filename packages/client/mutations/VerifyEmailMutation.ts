@@ -36,7 +36,7 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, History
       const authToken = acceptTeamInvitation?.authToken ?? verifyEmail.authToken
       onCompleted({verifyEmail}, errors)
       if (authToken) {
-        handleSuccessfulLogin(verifyEmail)
+        handleSuccessfulLogin(atmosphere, verifyEmail)
         atmosphere.setAuthToken(authToken)
         const redirectPath = '/meetings'
 

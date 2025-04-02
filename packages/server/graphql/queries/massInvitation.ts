@@ -22,19 +22,20 @@ export default {
       }
       const {error, teamId, userId} = tokenRes as any
       const teamMemberId = toTeamMemberId(teamId, userId)
-      const [teamMember, team] = await Promise.all([
+      const [user, teamMember, team] = await Promise.all([
+        dataLoader.get('users').load(userId),
         dataLoader.get('teamMembers').load(teamMemberId),
         dataLoader.get('teams').load(teamId)
       ])
 
-      if (!teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
+      if (!user || !teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
         // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
         return {errorType: InvitationTokenError.NOT_FOUND}
       }
 
       return {
         errorType: error,
-        inviterName: teamMember.preferredName,
+        inviterName: user.preferredName,
         teamId,
         teamName: team.name
       }

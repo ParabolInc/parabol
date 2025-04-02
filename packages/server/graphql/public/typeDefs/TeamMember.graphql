@@ -33,11 +33,6 @@ type TeamMember {
   openDrawer: TeamDrawer
 
   """
-  The user email
-  """
-  email: Email!
-
-  """
   true if this team member belongs to the user that queried it
   """
   isSelf: Boolean!
@@ -51,11 +46,6 @@ type TeamMember {
   The meeting specifics for the meeting the team member is currently in
   """
   meetingMember(meetingId: ID!): MeetingMember
-
-  """
-  The name of the assignee
-  """
-  preferredName: String!
 
   """
   The integrations that the team has previously used
@@ -125,9 +115,4 @@ type TeamMember {
   Is user an admin of the team's org?
   """
   isOrgAdmin: Boolean!
-
-  """
-  url of user’s profile picture
-  """
-  picture: URL!
 }

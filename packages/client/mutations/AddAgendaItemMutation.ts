@@ -16,8 +16,11 @@ graphql`
       teamId
       teamMember {
         id
-        picture
-        preferredName
+        user {
+          id
+          picture
+          preferredName
+        }
       }
     }
     meeting {

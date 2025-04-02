@@ -52,12 +52,14 @@ const query = graphql`
         orgId
         teamMembers(sortBy: "preferredName") {
           teamMemberId: id
-          userId
+          user {
+            id
+            preferredName
+            email
+          }
           isLead
           isOrgAdmin
           isSelf
-          preferredName
-          email
         }
       }
     }
@@ -77,7 +79,7 @@ const TeamSettings = (props: Props) => {
   if (!viewerTeamMember) return null
   const {isLead: viewerIsLead, isOrgAdmin: viewerIsOrgAdmin} = viewerTeamMember
   const lead = teamMembers.find((m) => m.isLead)
-  const contact = lead ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
+  const contact = lead?.user ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
   return (
     <TeamSettingsLayout>
       <PanelsLayout>

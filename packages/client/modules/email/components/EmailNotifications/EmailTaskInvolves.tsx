@@ -30,8 +30,8 @@ const EmailTaskInvolves = (props: Props) => {
         changeAuthor {
           user {
             rasterPicture
+            preferredName
           }
-          preferredName
         }
         involvement
         status
@@ -49,8 +49,8 @@ const EmailTaskInvolves = (props: Props) => {
   )
   const {task, team, involvement, changeAuthor} = notification
   const {tags} = task || deletedTask
-  const {user, preferredName: changeAuthorName} = changeAuthor
-  const {rasterPicture: changeAuthorPicture} = user
+  const {user} = changeAuthor
+  const {rasterPicture: changeAuthorPicture, preferredName: changeAuthorName} = user
   const {name: teamName, id: teamId} = team
   const action = involvementWord[involvement]
 

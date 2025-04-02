@@ -89,8 +89,10 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
             ... on TeamPromptResponseStage {
               discussionId
               teamMember {
-                picture
-                preferredName
+                user {
+                  picture
+                  preferredName
+                }
               }
               response {
                 id
@@ -128,6 +130,8 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
   if (!discussionId || !teamMember) {
     return null
   }
+  const {user} = teamMember
+  const {picture, preferredName} = user
 
   const onToggleReactji = (emojiId: string) => {
     if (submitting || !reactjis || !response) return
@@ -156,9 +160,9 @@ const TeamPromptDiscussionDrawer = ({meetingRef, onToggleDrawer}: Props) => {
       <DiscussionResponseCard>
         <Header>
           <div className='flex items-center'>
-            <Avatar picture={teamMember.picture} className={'h-12 w-12'} />
+            <Avatar picture={picture} className={'h-12 w-12'} />
             <TeamMemberName>
-              {teamMember.preferredName}
+              {preferredName}
               {response && (
                 <TeamPromptLastUpdatedTime
                   updatedAt={response.updatedAt}

@@ -51,7 +51,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       fragment AdhocTeamMultiSelect_viewer on User {
         id
         email
-        organizations {
+        organization(orgId: $orgId) {
           id
           organizationUsers {
             edges {
@@ -71,13 +71,13 @@ export const AdhocTeamMultiSelect = (props: Props) => {
     viewerRef
   )
 
-  const {email, organizations} = viewer
+  const {email, organization} = viewer
   const viewerDomain = email.slice(email.indexOf('@') + 1)
 
   const usersMap: {[key: string]: Option} = {}
 
-  organizations.forEach((org) => {
-    org.organizationUsers.edges.forEach((edge) => {
+  if (organization) {
+    organization.organizationUsers.edges.forEach((edge) => {
       const user = edge.node.user
       if (user.id === viewer.id) {
         return
@@ -88,13 +88,11 @@ export const AdhocTeamMultiSelect = (props: Props) => {
           label: user.preferredName,
           email: user.email,
           picture: user.picture,
-          organizationIds: [org.id]
+          organizationIds: [organization.id]
         }
-      } else {
-        usersMap[user.id]?.organizationIds.push(org.id)
       }
     })
-  })
+  }
 
   const options = Object.values(usersMap)
 

@@ -93,11 +93,11 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
       fragment TeamPromptResponseSummaryCard_stage on TeamPromptResponseStage {
         id
         teamMember {
-          userId
           user {
+            id
             rasterPicture
+            preferredName
           }
-          preferredName
         }
         response {
           plaintextContent
@@ -109,8 +109,8 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
     stageRef
   )
   const {teamMember, response} = stage
-  const {user, preferredName} = teamMember
-  const {rasterPicture} = user
+  const {user} = teamMember
+  const {rasterPicture, preferredName} = user
   const contentJSON = response ? JSON.parse(response.content) : null
   const html = generateHTML(contentJSON, serverTipTapExtensions)
 

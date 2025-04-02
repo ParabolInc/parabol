@@ -187,6 +187,11 @@ type Organization {
   saml: SAML
 
   """
+  The SAML id for the organization if it is provisioned via SAML attribute
+  """
+  samlId: ID
+
+  """
   A list of domains approved by the organization to join.
   Empty if all domains are allowed
   """

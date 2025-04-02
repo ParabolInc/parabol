@@ -57,13 +57,13 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
         meetingMembers {
           ...ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
           user {
+            picture
+            preferredName
             isConnected
           }
           teamMember {
             id
             isSelf
-            picture
-            preferredName
           }
         }
         phases {
@@ -85,8 +85,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   )
   if (!currentMeetingMember) return null
   const {teamMember, user} = currentMeetingMember
-  const {isSelf: isViewerMeetingSection, picture, preferredName} = teamMember
-  const {isConnected} = user
+  const {isSelf: isViewerMeetingSection} = teamMember
+  const {picture, preferredName, isConnected} = user
   const prefix = isConnected ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
   return (

@@ -31,14 +31,7 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
   const manager = getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(normalBuffer, userId, normalExt)
 
-  await pg
-    .with('TeamMemberUpdate', (qc) =>
-      qc.updateTable('TeamMember').set({picture: publicLocation}).where('userId', '=', userId)
-    )
-    .updateTable('User')
-    .set({picture: publicLocation})
-    .where('id', '=', userId)
-    .execute()
+  await pg.updateTable('User').set({picture: publicLocation}).where('id', '=', userId).execute()
   dataLoader.clearAll(['users', 'teamMembers'])
   const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
   const teamIds = teamMembers.map(({teamId}) => teamId)

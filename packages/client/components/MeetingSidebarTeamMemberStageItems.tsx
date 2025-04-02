@@ -86,7 +86,8 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
           if (!teamMember || !teamMemberId) {
             return null
           }
-          const {picture, preferredName} = teamMember
+          const {user} = teamMember
+          const {picture, preferredName} = user
           const isLocalStage = localStageId === stageId
           const isFacilitatorStage = facilitatorStageId === stageId
           const isUnsyncedFacilitatorStage = isFacilitatorStage !== isLocalStage && !isLocalStage
@@ -127,8 +128,10 @@ graphql`
       ... on NewMeetingTeamMemberStage {
         teamMemberId
         teamMember {
-          picture
-          preferredName
+          user {
+            picture
+            preferredName
+          }
         }
       }
     }

@@ -1,0 +1,4 @@
+"""
+Return value for assignSAMLIdToOrg, which could be an error
+"""
+union AssignSAMLIdToOrgPayload = ErrorPayload | AssignSAMLIdToOrgSuccess

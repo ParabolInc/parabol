@@ -48,4 +48,9 @@ type SAML {
   The organization that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
   """
   organization: Organization
+
+  """
+  The full attribute name used to provision users to specific orgs, see also Organization.samlId
+  """
+  samlOrgAttribute: ID
 }

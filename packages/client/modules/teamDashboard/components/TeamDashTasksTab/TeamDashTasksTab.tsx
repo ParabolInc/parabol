@@ -32,7 +32,9 @@ const TeamDashTasksTab = (props: Props) => {
           id
           name
           teamMemberFilter {
-            preferredName
+            user {
+              preferredName
+            }
           }
           teamMembers(sortBy: "preferredName") {
             id
@@ -49,7 +51,7 @@ const TeamDashTasksTab = (props: Props) => {
   const {id: teamId, teamMembers, teamMemberFilter} = team
 
   const teamMemberFilterName =
-    (teamMemberFilter && teamMemberFilter.preferredName) || 'All team members'
+    (teamMemberFilter && teamMemberFilter.user.preferredName) || 'All team members'
   const {togglePortal, menuProps, originRef, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     isDropdown: true
   })

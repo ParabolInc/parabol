@@ -44,7 +44,9 @@ const ActionMeetingLastCall = (props: Props) => {
         id
         facilitatorUserId
         facilitator {
-          preferredName
+          user {
+            preferredName
+          }
         }
         phases {
           phaseType
@@ -65,7 +67,9 @@ const ActionMeetingLastCall = (props: Props) => {
   const {stages} = agendaItemPhase ?? {}
   if (!stages) return null
   const agendaItemsCompleted = stages.filter((stage) => stage.isComplete).length
-  const {preferredName} = facilitator
+  const {
+    user: {preferredName}
+  } = facilitator
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL)
   const endMeeting = () => {
