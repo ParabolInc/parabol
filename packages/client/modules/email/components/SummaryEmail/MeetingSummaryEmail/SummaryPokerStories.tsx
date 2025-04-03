@@ -76,6 +76,10 @@ const SummaryPokerStories = (props: Props) => {
                       __typename
                       title
                     }
+                    ... on AzureDevOpsWorkItem {
+                      __typename
+                      title
+                    }
                   }
                 }
               }
@@ -110,6 +114,8 @@ const SummaryPokerStories = (props: Props) => {
                 } else if (integration?.__typename === '_xGitHubIssue') {
                   title = integration.title
                 } else if (integration?.__typename === '_xGitLabIssue') {
+                  title = integration.title
+                } else if (integration?.__typename === 'AzureDevOpsWorkItem') {
                   title = integration.title
                 }
                 const urlPath = `/meet/${meetingId}/estimate/${idx + 1}`
