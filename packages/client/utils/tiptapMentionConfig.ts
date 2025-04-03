@@ -13,8 +13,6 @@ const queryNode = graphql`
     viewer {
       team(teamId: $teamId) {
         teamMembers {
-          id
-          userId
           user {
             id
             picture
@@ -44,9 +42,13 @@ export const tiptapMentionConfig = (
       return (
         teamMembers
           .map((teamMember) => {
-            const score = query ? stringScore(teamMember.user.preferredName, query) : 1
+            const {user} = teamMember
+            const {id, picture, preferredName} = user
+            const score = query ? stringScore(preferredName, query) : 1
             return {
-              teamMember,
+              id,
+              picture,
+              preferredName,
               score
             }
           })
@@ -54,7 +56,7 @@ export const tiptapMentionConfig = (
           .slice(0, 6)
           // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
           .filter((obj, _idx, arr) => obj.score > 0 && arr[0]!.score - obj.score < 0.3)
-          .map((s) => ({...s.teamMember}))
+          .map((s) => ({id: s.id, picture: s.picture, preferredName: s.preferredName}))
       )
     },
 
