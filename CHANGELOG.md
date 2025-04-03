@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.39.0](https://github.com/ParabolInc/parabol/compare/v8.38.0...v8.39.0) (2025-04-02)
+
+
+### Added
+
+* **orgAdmin:** org admin can invite people right in the org team view ([#11087](https://github.com/ParabolInc/parabol/issues/11087)) ([85ea1ea](https://github.com/ParabolInc/parabol/commit/85ea1eaa97284e0fea8d839e750ae0bd8945a19e))
+* team privacy UI updates ([#11078](https://github.com/ParabolInc/parabol/issues/11078)) ([d408a2c](https://github.com/ParabolInc/parabol/commit/d408a2cfe8c37c1ef31a225aa1540bd16a0fd613))
+* update OrgMembers component to display matched users in search results ([#11086](https://github.com/ParabolInc/parabol/issues/11086)) ([19cd155](https://github.com/ParabolInc/parabol/commit/19cd155549446e55698bd91d664bc92debd740be))
+
 ## [8.38.0](https://github.com/ParabolInc/parabol/compare/v8.37.4...v8.38.0) (2025-03-27)
 
 

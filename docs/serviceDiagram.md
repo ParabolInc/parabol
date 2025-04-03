@@ -20,8 +20,6 @@ flowchart TD
   end
 
   click Server "../packages/server/server.ts"
-  click RedisResultPubSub "../packages/server/utils/getPubSub.ts"
-  click GQLExecutor "../packages/gql-executor/gqlExecutor.ts"
 
   Client <---->|Websocket| Server
   Server -->|gqlStream| RedisStream -->|gqlConsumerGroup| GQLExecutor

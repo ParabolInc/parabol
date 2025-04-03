@@ -61,7 +61,6 @@ $ yarn dev
 - [Dev.js](./scripts/README.md)
 - [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
 - [GraphiQL, Private Schema Admin](./packages/server/graphql/private/README.md)
-- [GraphQL Executor](./packages/gql-executor/README.md)
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
