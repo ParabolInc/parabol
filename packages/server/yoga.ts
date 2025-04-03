@@ -42,7 +42,8 @@ export const getPersistedOperation = async (docId: string) => {
   if (!__PRODUCTION__) {
     const queryMap = require('../../queryMap.json')
     const queryString = queryMap[docId]
-    return queryString
+    // for testing we actually commit to the DB & this allows testing on a dev server
+    if (queryString) return queryString
   }
   const queryStringRes = await getKysely()
     .selectFrom('QueryMap')

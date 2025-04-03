@@ -33,7 +33,7 @@ module.exports = {
     {
       name: 'Dev Server',
       script: 'scripts/hmrServer.js'
-    }
+    },
     {
       name: 'Flush Redis',
       script: 'scripts/flushRedis.js',

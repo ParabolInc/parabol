@@ -1,8 +1,8 @@
 import faker from 'faker'
 import '../../../../scripts/webpack/utils/dotenv'
-import {getNewDataLoader} from '../../graphql/getDataLoader'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
+import {getNewDataLoader} from '../getNewDataLoader'
 
 test('Result is mapped to correct id', async () => {
   const dataloader = getNewDataLoader()

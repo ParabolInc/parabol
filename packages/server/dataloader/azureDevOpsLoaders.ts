@@ -15,7 +15,7 @@ import AzureDevOpsServerManager, {
 import {Logger} from '../utils/Logger'
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import sendToSentry from '../utils/sendToSentry'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
   teamId: string

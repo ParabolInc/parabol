@@ -1,5 +1,5 @@
-import type RootDataLoader from '../dataloader/RootDataLoader'
-import {getInMemoryDataLoader} from '../graphql/getDataLoader'
+import {getInMemoryDataLoader} from '../dataloader/getInMemoryDataLoader'
+import {serializeDataLoader} from '../dataloader/serializeDataLoader'
 import getPubSub from './getPubSub'
 import getRedis from './getRedis'
 import {Logger} from './Logger'
@@ -7,22 +7,6 @@ import {Logger} from './Logger'
 export interface SubOptions {
   mutatorId?: string // passing the socket id of the mutator will omit sending a message to that user
   operationId?: string | null
-}
-
-const serializeDataLoader = async (dataLoaderWorker: RootDataLoader) => {
-  const result = {} as Record<string, any>
-  const loaders = Object.entries(dataLoaderWorker.loaders)
-  await Promise.all(
-    loaders.map(async ([entity, loader]) => {
-      const cacheMap = (loader as any)._cacheMap as Map<string, Promise<any>>
-      const values = {} as Record<string, any>
-      for (const [key, val] of cacheMap) {
-        values[key] = await val
-      }
-      result[entity] = values
-    })
-  )
-  return JSON.stringify(result)
 }
 
 const REDIS_DATALOADER_TTL = 25_000

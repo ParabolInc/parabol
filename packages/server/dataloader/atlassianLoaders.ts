@@ -23,7 +23,7 @@ import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/ji
 import {getIssue} from '../utils/atlassian/jiraIssues'
 import publish from '../utils/publish'
 import sendToSentry from '../utils/sendToSentry'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
   teamId: string

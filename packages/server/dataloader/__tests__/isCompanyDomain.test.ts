@@ -1,5 +1,5 @@
 import '../../../../scripts/webpack/utils/dotenv'
-import {getNewDataLoader} from '../../graphql/getDataLoader'
+import {getNewDataLoader} from '../getNewDataLoader'
 
 const dataloader = getNewDataLoader()
 

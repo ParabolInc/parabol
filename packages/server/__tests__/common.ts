@@ -61,7 +61,7 @@ export async function sendPublic(req: {
   const authToken = req.authToken ?? ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
-  const documentId = await persistQuery(query)
+  const docId = await persistQuery(query)
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
@@ -70,15 +70,12 @@ export async function sendPublic(req: {
       authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      type: 'start',
-      payload: {
-        documentId,
-        variables
-      }
+      docId,
+      variables
     })
   })
   const body = await response.json()
-  return body.payload
+  return body
 }
 
 const SIGNUP_WITH_PASSWORD_MUTATION = `

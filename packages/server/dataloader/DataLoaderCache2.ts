@@ -3,6 +3,7 @@ export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: 
   dataLoaderWorker: T
   did: string
   disposeId: NodeJS.Timeout | undefined
+
   shared = false
   get: T['get']
   clearAll: T['clearAll']

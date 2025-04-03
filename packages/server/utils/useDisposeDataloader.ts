@@ -1,5 +1,5 @@
 import type {Plugin} from 'graphql-yoga'
-import {getNewDataLoader} from '../graphql/getDataLoader'
+import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 
 type DataLoaderContext = {dataLoader: ReturnType<typeof getNewDataLoader>}
 export const useDisposeDataloader: Plugin<DataLoaderContext, DataLoaderContext> = {

@@ -1,6 +1,6 @@
 import type {ExecutionResult} from 'graphql'
 import ServerAuthToken from '../database/types/ServerAuthToken'
-import {getNewDataLoader} from '../graphql/getDataLoader'
+import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import privateSchema from '../graphql/private/rootSchema'
 import {yoga} from '../yoga'
 
