@@ -40,11 +40,11 @@ const {schema: typeDefsWithGitHubGitLab, gitlabRequest} = nestGitLab(typeDefsWit
 // See https://github.com/ardatan/graphql-tools/issues/4367
 const publicSchema = resolveTypesForMutationPayloads(
   addResolversToSchema({
-    schema: typeDefsWithGitHubGitLab,
+    schema: typeDefsWithGitHubGitLabLinear,
     resolvers: composeResolvers(resolvers, permissions),
     inheritResolversFromInterfaces: true
   })
 )
 
-export {githubRequest, gitlabRequest}
+export {githubRequest, gitlabRequest, linearRequest}
 export default publicSchema
