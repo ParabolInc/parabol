@@ -1,0 +1,28 @@
+mutation createIssue(
+  $title: String!
+  $teamId: String!
+  $description: String
+  $projectId: String
+  $labelIds: [String!]
+  $assigneeId: String
+  $priority: Int
+) {
+  issueCreate(
+    input: {
+      title: $title
+      teamId: $teamId
+      description: $description
+      projectId: $projectId
+      labelIds: $labelIds
+      assigneeId: $assigneeId
+      priority: $priority
+    }
+  ) {
+    success
+    issue {
+      id
+      identifier
+      title
+    }
+  }
+}

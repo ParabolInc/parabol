@@ -1,0 +1,19 @@
+mutation createComment($issueId: String!, $body: String!) {
+  commentCreate(
+    input: {
+      issueId: $issueId
+      body: $body
+    }
+  ) {
+    success
+    comment {
+      id
+      body
+      createdAt
+      user {
+        id
+        name
+      }
+    }
+  }
+}

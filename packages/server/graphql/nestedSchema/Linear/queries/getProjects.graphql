@@ -1,0 +1,23 @@
+query getProjects($first: Int, $after: String, $ids: [ID!]) {
+  projects(first: $first, after: $after, filter: {id: {in: $ids}}) {
+    edges {
+      node {
+        __typename
+        id
+        name
+        updatedAt
+        url
+        teams {
+          nodes {
+            id
+            name
+          }
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
