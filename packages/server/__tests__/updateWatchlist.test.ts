@@ -33,8 +33,7 @@ test('Add user to watchlist by email', async () => {
     variables: {
       emails: [email],
       includeInWatchlist: true
-    },
-    isPrivate: true
+    }
   })
 
   expect(update).toMatchObject({
@@ -49,8 +48,7 @@ test('Add user to watchlist by email', async () => {
     query: USER,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -71,8 +69,7 @@ test('Remove user from watchlist by email', async () => {
     variables: {
       emails: [email],
       includeInWatchlist: false
-    },
-    isPrivate: true
+    }
   })
 
   expect(update).toMatchObject({
@@ -87,8 +84,7 @@ test('Remove user from watchlist by email', async () => {
     query: USER,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -110,8 +106,7 @@ test('Add user to watchlist by domain', async () => {
     variables: {
       domain,
       includeInWatchlist: true
-    },
-    isPrivate: true
+    }
   })
 
   expect(update).toMatchObject({
@@ -126,8 +121,7 @@ test('Add user to watchlist by domain', async () => {
     query: USER,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -149,8 +143,7 @@ test('Remove user from watchlist by domain', async () => {
     variables: {
       domain,
       includeInWatchlist: false
-    },
-    isPrivate: true
+    }
   })
 
   expect(update).toMatchObject({
@@ -165,8 +158,7 @@ test('Remove user from watchlist by domain', async () => {
     query: USER,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({

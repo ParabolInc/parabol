@@ -39,8 +39,7 @@ test('Delete user', async () => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({

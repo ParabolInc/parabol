@@ -31,8 +31,7 @@ test.skip('SAML', async () => {
       slug: samlName,
       addDomains: [domain],
       orgId
-    },
-    isPrivate: true
+    }
   })
 
   expect(verifyDomain).toMatchObject({
@@ -103,8 +102,7 @@ test.skip('SAML', async () => {
     variables: {
       queryString: `SAMLResponse=${samlResponse}&RelayState=${relayState}`,
       samlName
-    },
-    isPrivate: true
+    }
   })
 
   expect(saml).toMatchObject({

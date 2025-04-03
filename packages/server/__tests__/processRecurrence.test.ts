@@ -29,8 +29,7 @@ const PROCESS_RECURRENCE = `
 const assertIdempotency = async () => {
   // Assert that subsequent mutations do nothing.
   let res = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(res).toEqual({
@@ -43,8 +42,7 @@ const assertIdempotency = async () => {
   })
 
   res = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(res).toEqual({
@@ -68,8 +66,7 @@ beforeAll(async () => {
 
   // in case there are pending recurrence events
   await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 })
 
@@ -96,8 +93,7 @@ test.skip('Should not end meetings that are not scheduled to end', async () => {
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -143,8 +139,7 @@ test.skip('Should not end meetings that are scheduled to end in the future', asy
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -191,8 +186,7 @@ test.skip('Should end meetings that are scheduled to end in the past', async () 
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -255,8 +249,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -338,8 +331,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -416,8 +408,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -482,8 +473,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({
@@ -547,8 +537,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .execute()
 
   const update = await sendIntranet({
-    query: PROCESS_RECURRENCE,
-    isPrivate: true
+    query: PROCESS_RECURRENCE
   })
 
   expect(update).toEqual({

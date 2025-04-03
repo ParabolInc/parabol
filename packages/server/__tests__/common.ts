@@ -9,11 +9,7 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
 const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
 
-export async function sendIntranet(req: {
-  query: string
-  variables?: Record<string, any>
-  isPrivate?: boolean
-}) {
+export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   const authToken = encodeAuthToken(new ServerAuthToken())
 
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
@@ -24,7 +20,6 @@ export async function sendIntranet(req: {
       authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      isPrivate: req.isPrivate,
       query: req.query,
       variables: req.variables
     })
@@ -183,8 +178,7 @@ export const getUserTeams = async (userId: string) => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -216,8 +210,7 @@ export const getUserOrgs = async (userId: string) => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
