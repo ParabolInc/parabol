@@ -28,7 +28,7 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
     const {first, queryString, projectKeyFilters, isWIQL} = args as WorkItemArgs
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      const err = new Error('Cannot access another team members user stories')
+      const err = new Error("Cannot access another team member's user stories")
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
       return connectionFromTasks([], 0, err)
     }
