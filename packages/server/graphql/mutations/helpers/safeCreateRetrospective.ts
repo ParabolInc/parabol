@@ -24,13 +24,7 @@ const safeCreateRetrospective = async (
   const pg = getKysely()
   const {teamId, facilitatorUserId, name} = meetingSettings
   const meetingType: MeetingTypeEnum = 'retrospective'
-  const [meetingCount, team] = await Promise.all([
-    dataLoader.get('meetingCount').load({teamId, meetingType}),
-    dataLoader.get('teams').loadNonNull(teamId)
-  ])
-
-  const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
-  const {showConversionModal} = organization
+  const meetingCount = await dataLoader.get('meetingCount').load({teamId, meetingType})
 
   const meetingId = generateUID()
   const [phases, inserts] = await createNewMeetingPhases<RetroMeetingPhase>(
@@ -46,7 +40,6 @@ const safeCreateRetrospective = async (
     id: meetingId,
     meetingCount,
     phases,
-    showConversionModal,
     ...meetingSettings,
     name
   }) as RetrospectiveMeeting

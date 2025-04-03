@@ -24,8 +24,5 @@ graphql`
         tier
       }
     }
-    meetings {
-      showConversionModal
-    }
   }
 `

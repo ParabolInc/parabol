@@ -24,13 +24,15 @@ export const OrgTeamMembersRow = (props: Props) => {
     graphql`
       fragment OrgTeamMembersRow_teamMember on TeamMember {
         ...OrgTeamMemberMenu_teamMember
-        userId
-        picture
-        preferredName
+        user {
+          id
+          picture
+          preferredName
+          email
+        }
         isLead
         isOrgAdmin
         isSelf
-        email
         ...PromoteTeamMemberModal_teamMember
         ...RemoveTeamMemberModal_teamMember
       }
@@ -39,7 +41,8 @@ export const OrgTeamMembersRow = (props: Props) => {
   )
 
   const {isViewerLead, isViewerOrgAdmin} = props
-  const {isLead, isOrgAdmin, userId} = teamMember
+  const {isLead, isOrgAdmin, user} = teamMember
+  const {id: userId, picture, preferredName, email} = user
 
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -62,11 +65,11 @@ export const OrgTeamMembersRow = (props: Props) => {
   return (
     <div className='flex w-full items-center justify-center gap-4 p-4'>
       <div>
-        <Avatar className='h-8 w-8' picture={teamMember.picture} alt={teamMember.preferredName} />
+        <Avatar className='h-8 w-8' picture={picture} alt={preferredName} />
       </div>
       <div className='flex w-full flex-col gap-y-1 py-1'>
         <div className='text-gray-700 inline-flex items-center gap-x-2 text-lg font-bold'>
-          {teamMember.preferredName}{' '}
+          {preferredName}{' '}
           {teamMember.isLead ? (
             <span className='rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
               Team Lead
@@ -75,7 +78,7 @@ export const OrgTeamMembersRow = (props: Props) => {
         </div>
         <div>
           <Button asChild variant='link'>
-            <a href={`mailto:${teamMember.email}`}>{teamMember.email}</a>
+            <a href={`mailto:${email}`}>{email}</a>
           </Button>
         </div>
       </div>

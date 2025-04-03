@@ -47,7 +47,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
       const {error: uiError} = loginWithGoogle
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
-        handleSuccessfulLogin(loginWithGoogle)
+        handleSuccessfulLogin(atmosphere, loginWithGoogle)
         const authToken = acceptTeamInvitation?.authToken || loginWithGoogle.authToken!
         atmosphere.setAuthToken(authToken)
         const redirectPath = '/meetings'

@@ -15,7 +15,7 @@ import OrgTeams from '../OrgTeams/OrgTeams'
 import OrgNav from '../Organization/OrgNav'
 
 const OrgPlansAndBillingRoot = lazy(
-  () => import(/* webpackChunkName: 'OrgBillingRoot' */ './OrgPlansAndBillingRoot')
+  () => import(/* webpackChunkName: 'OrgPlansAndBillingRoot' */ './OrgPlansAndBillingRoot')
 )
 const OrgMembers = lazy(
   () =>

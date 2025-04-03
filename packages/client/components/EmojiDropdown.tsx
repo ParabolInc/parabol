@@ -57,7 +57,7 @@ export default forwardRef(
           return (
             <div
               ref={isActive ? activeRef : undefined}
-              data-highlighted={isActive}
+              data-highlighted={isActive ? '' : undefined}
               className={
                 'flex w-full cursor-pointer items-center rounded-md px-4 py-1 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
               }

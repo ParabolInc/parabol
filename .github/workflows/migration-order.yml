@@ -22,7 +22,7 @@ jobs:
 
       - name: Get new migrations
         id: new-migrations
-        uses: tj-actions/changed-files@v41
+        uses: tj-actions/changed-files@v46
         with:
           files: packages/server/postgres/migrations/*.ts
           output_renamed_files_as_deleted_and_added: "true"

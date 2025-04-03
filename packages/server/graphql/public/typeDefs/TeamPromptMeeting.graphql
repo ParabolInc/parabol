@@ -124,11 +124,6 @@ type TeamPromptMeeting implements NewMeeting {
   scheduledEndTime: DateTime
 
   """
-  true if should show the org the conversion modal, else false
-  """
-  showConversionModal: Boolean!
-
-  """
   Is the OpenAI summary still being generated?
   """
   isLoadingSummary: Boolean!

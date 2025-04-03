@@ -22,7 +22,6 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         tier
-        hasPublicTeamsFlag: featureFlag(featureName: "publicTeams")
         allTeams {
           id
           name
@@ -50,8 +49,8 @@ const OrgTeams = (props: Props) => {
   const [sortBy, setSortBy] = useState<SortField>('lastMetAt')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
-  const {allTeams, tier, viewerTeams, allTeamsCount, hasPublicTeamsFlag} = organization
-  const showAllTeams = allTeams.length === allTeamsCount || hasPublicTeamsFlag
+  const {allTeams, tier, viewerTeams, allTeamsCount} = organization
+  const showingAllTeams = allTeams.length === allTeamsCount
   const viewerTeamCount = viewerTeams.length
 
   const handleSort = (field: SortField) => {
@@ -103,7 +102,7 @@ const OrgTeams = (props: Props) => {
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
               {allTeamsCount} {' total '}
-              {!showAllTeams ? `(${allTeamsCount - viewerTeamCount} hidden)` : null}
+              {!showingAllTeams ? `(${allTeamsCount - viewerTeamCount} hidden)` : null}
             </div>
           </div>
         </div>
@@ -142,7 +141,7 @@ const OrgTeams = (props: Props) => {
           </table>
         </div>
 
-        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showAllTeams && (
+        {tier !== 'enterprise' && allTeamsCount > viewerTeamCount && !showingAllTeams && (
           <TeaserOrgTeamsRow
             hiddenTeamCount={allTeamsCount - viewerTeamCount}
             orgId={organization.id}
@@ -151,7 +150,11 @@ const OrgTeams = (props: Props) => {
       </div>
 
       {isAddTeamDialogOpened ? (
-        <AddTeamDialogRoot onAddTeam={closeAddTeamDialog} onClose={closeAddTeamDialog} />
+        <AddTeamDialogRoot
+          onTeamAdded={closeAddTeamDialog}
+          onClose={closeAddTeamDialog}
+          orgId={organization.id}
+        />
       ) : null}
     </div>
   )

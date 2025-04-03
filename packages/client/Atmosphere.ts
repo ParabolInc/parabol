@@ -347,9 +347,8 @@ export default class Atmosphere extends Environment {
       fetchPolicy?: FetchQueryFetchPolicy
     }
   ) => {
-    let res: T['response']
     try {
-      res = await fetchQuery<T>(
+      const res = await fetchQuery<T>(
         this,
         taggedNode,
         variables,
@@ -357,10 +356,10 @@ export default class Atmosphere extends Environment {
           fetchPolicy: 'store-or-network'
         }
       ).toPromise()
+      return res!
     } catch (e) {
-      return null
+      return e as Error
     }
-    return res
   }
   getAuthToken = (global: Window) => {
     if (!global) return

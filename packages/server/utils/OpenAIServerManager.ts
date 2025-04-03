@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import type {ChatCompletionCreateParamsNonStreaming} from 'openai/resources'
 import {ModifyType} from '../graphql/public/resolverTypes'
 import {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
@@ -22,6 +23,16 @@ class OpenAIServerManager {
     })
   }
 
+  async chatCompletion(body: ChatCompletionCreateParamsNonStreaming) {
+    if (!this.openAIApi) return null
+    try {
+      return await this.openAIApi.chat.completions.create(body)
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
+      sendToSentry(error)
+      return null
+    }
+  }
   async getStandupSummary(
     responses: Array<{content: string; user: string}>,
     meetingPrompt: string
@@ -381,7 +392,7 @@ Return the analysis as a JSON object with this structure:
     You need to summarize the content of a meeting. Your summary must be one paragraph with no more than a two or three sentences.
     Below is a list of reflection topics and comments in YAML format from the meeting.
     Include quotes from the meeting, and mention the author.
-    Link directly to the discussion in the markdown format of [link](${meetingURL}[meetingId]/discuss/[discussionId]).
+    Link directly to the discussion in the markdown format of [link](${meetingURL}/[meetingId]/discuss/[discussionId]).
     Don't mention the name of the meeting.
     Prioritise the topics that got the most votes.
     Be sure that each author is only mentioned once.

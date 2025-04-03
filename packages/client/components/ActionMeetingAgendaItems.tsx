@@ -82,7 +82,8 @@ const ActionMeetingAgendaItems = (props: Props) => {
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
-  const {picture, preferredName} = teamMember
+  const {user} = teamMember
+  const {picture, preferredName} = user
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   return (
     <MeetingContent ref={meetingContentRef}>
@@ -130,8 +131,10 @@ graphql`
     agendaItem {
       content
       teamMember {
-        picture
-        preferredName
+        user {
+          picture
+          preferredName
+        }
       }
     }
   }

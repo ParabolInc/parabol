@@ -11,14 +11,17 @@ import MeetingSettings from './MeetingSettings'
 
 import styled from 'styled-components'
 import {StartActivityModalQuery} from '../../__generated__/StartActivityModalQuery.graphql'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
+import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 
 const SettingsArea = styled.div!`
   min-height: 80px;
 `
 
 const StartActivityModal = () => {
+  const channel = useCurrentChannel()
   const data = useLazyLoadQuery<StartActivityModalQuery>(
     graphql`
       query StartActivityModalQuery {
@@ -43,9 +46,13 @@ const StartActivityModal = () => {
             id
             name
             orgId
-            teamMembers {
+            viewerTeamMember {
               id
-              email
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
             }
           }
         }
@@ -54,10 +61,19 @@ const StartActivityModal = () => {
     {}
   )
 
-  const {config, viewer} = data
-  const {availableTemplates, teams} = viewer
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
-  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
+  const {config, viewer} = data
+  const {availableTemplates} = viewer
+
+  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
   const [selectedTemplate, setSelectedTemplate] =
     useState<NonNullable<typeof availableTemplates.edges>[number]['node']>()
 
@@ -75,10 +91,10 @@ const StartActivityModal = () => {
   )
 
   useEffect(() => {
-    if (!selectedTeam && teams && teams.length > 0) {
-      setSelectedTeam(teams[0])
+    if (!selectedTeam && linkedTeams && linkedTeams.length > 0) {
+      setSelectedTeam(linkedTeams[0])
     }
-  }, [teams, selectedTeam])
+  }, [linkedTeams, selectedTeam])
   useEffect(() => {
     if (!selectedTemplate && filteredTemplates && filteredTemplates.length > 0) {
       setSelectedTemplate(filteredTemplates[0])
@@ -91,19 +107,29 @@ const StartActivityModal = () => {
     dispatch(closeStartActivityModal())
   }
 
-  const [startMeeting, {isLoading: isStartActivityLoading}] = useStartMeeting()
+  const [startMeeting, {isLoading}] = useStartMeeting()
+  const [error, setError] = useState<string>()
 
   const handleStart = async () => {
     if (!selectedTeam || !selectedTemplate) {
       return
     }
-    if (isStartActivityLoading) {
+    if (isLoading) {
       return
     }
 
-    startMeeting(selectedTeam.id, selectedTemplate.type, selectedTemplate.id)
+    setError(undefined)
+    try {
+      await startMeeting(selectedTeam.id, selectedTemplate.type, selectedTemplate.id)
+      handleClose()
+    } catch (error) {
+      console.error('Start activity failed', error)
+      setError('Failed to start activity')
+    }
+  }
 
-    handleClose()
+  if (!linkedTeams || linkedTeams.length === 0) {
+    return <NoLinkedTeamsModal title='Start a Parabol Activity' handleClose={handleClose} />
   }
 
   return (
@@ -112,6 +138,8 @@ const StartActivityModal = () => {
       commitButtonLabel='Start Activity'
       handleClose={handleClose}
       handleCommit={handleStart}
+      error={error}
+      isLoading={isLoading}
     >
       <div>
         <p>
@@ -121,11 +149,11 @@ const StartActivityModal = () => {
           </a>
         </p>
       </div>
-      {teams && (
+      {linkedTeams && (
         <Select
           label='Choose Parabol Team'
           required={true}
-          options={teams ?? []}
+          options={linkedTeams}
           value={selectedTeam}
           onChange={setSelectedTeam}
         />

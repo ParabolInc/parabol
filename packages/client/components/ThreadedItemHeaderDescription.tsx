@@ -7,7 +7,7 @@ const Header = styled('div')({
   fontSize: 12,
   lineHeight: '12px',
   justifyContent: 'space-between',
-  paddingBottom: 8,
+  padding: '4px 0 0',
   width: '100%'
 })
 

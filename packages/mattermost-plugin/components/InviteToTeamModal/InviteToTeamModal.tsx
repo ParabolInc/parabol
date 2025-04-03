@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
 
@@ -14,6 +14,7 @@ import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 
 const InviteToTeamModal = () => {
+  const channel = useCurrentChannel()
   const data = useLazyLoadQuery<InviteToTeamModalQuery>(
     graphql`
       query InviteToTeamModalQuery {
@@ -22,6 +23,14 @@ const InviteToTeamModal = () => {
             ...useInviteToTeam_team
             id
             name
+            viewerTeamMember {
+              id
+              integrations {
+                mattermost {
+                  linkedChannels
+                }
+              }
+            }
           }
         }
       }
@@ -29,17 +38,22 @@ const InviteToTeamModal = () => {
     {}
   )
 
-  const {viewer} = data
-  const {teams} = viewer
+  const linkedTeams = useMemo(() => {
+    const {viewer} = data
+    return viewer.teams.filter(
+      (team) =>
+        channel &&
+        team.viewerTeamMember?.integrations.mattermost.linkedChannels.includes(channel.id)
+    )
+  }, [data, channel])
 
-  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof teams>[number]>()
-  const channel = useCurrentChannel()
+  const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
 
   useEffect(() => {
-    if (!selectedTeam && teams && teams.length > 0) {
-      setSelectedTeam(teams[0])
+    if (!selectedTeam && linkedTeams && linkedTeams.length > 0) {
+      setSelectedTeam(linkedTeams[0])
     }
-  }, [teams, selectedTeam])
+  }, [linkedTeams, selectedTeam])
 
   const invite = useInviteToTeam(selectedTeam)
 
@@ -63,11 +77,11 @@ const InviteToTeamModal = () => {
       handleCommit={handleStart}
       handleClose={handleClose}
     >
-      {teams ? (
+      {linkedTeams ? (
         <Select
           label='Parabol Team'
           required={true}
-          options={teams ?? []}
+          options={linkedTeams ?? []}
           value={selectedTeam}
           onChange={setSelectedTeam}
         />

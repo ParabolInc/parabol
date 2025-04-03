@@ -10,7 +10,9 @@ const popInvolvementToast: OnNextHandler<TaskInvolves_notification$data, OnNextH
   if (!notification) return
   const {
     involvement,
-    changeAuthor: {preferredName: changeAuthorName},
+    changeAuthor: {
+      user: {preferredName: changeAuthorName}
+    },
     task,
     team
   } = notification

@@ -90,14 +90,17 @@ const ManageTeamMember = (props: Props) => {
         id
         isLead
         isOrgAdmin
-        preferredName
-        picture
-        userId
+        user {
+          id
+          preferredName
+          picture
+        }
       }
     `,
     props.teamMember
   )
-  const {id: teamMemberId, isLead, isOrgAdmin, preferredName, picture, userId} = teamMember
+  const {id: teamMemberId, isLead, isOrgAdmin, user} = teamMember
+  const {id: userId, preferredName, picture} = user
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId

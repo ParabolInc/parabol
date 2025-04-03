@@ -18,7 +18,7 @@ jobs:
       id-token: "write"
     services:
       postgres:
-        image: pgvector/pgvector:0.7.0-pg16
+        image: pgvector/pgvector:0.8.0-pg16
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
@@ -129,6 +129,12 @@ jobs:
           name: test-results
           path: packages/integration-tests/test-results/
           retention-days: 7
+
+      - name: Run new down migrations
+        run: |
+          git fetch --depth=1 origin master
+          LAST_COMMON_MIGRATION=$(comm -12 <(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | xargs basename -s.ts) <(ls packages/server/postgres/migrations/ | xargs basename -s.ts) | tail -n1)
+          yarn kysely migrate:down $LAST_COMMON_MIGRATION
 
       - name: Report Status
         if: ${{ failure() && github.ref_name == 'master' }}

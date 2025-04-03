@@ -38,9 +38,11 @@ const gqlQuery = graphql`
         teamId: id
         teamMembers(sortBy: "preferredName") {
           id
-          picture
-          preferredName
-          userId
+          user {
+            id
+            picture
+            preferredName
+          }
         }
       }
     }
@@ -68,15 +70,15 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   const atmosphere = useAtmosphere()
   const teamMembers = team?.teamMembers || []
   const taskUserIdx = useMemo(
-    () => teamMembers.findIndex(({userId}) => userId) + 1,
+    () => teamMembers.findIndex(({user}) => user.id === userId) + 1,
     [userId, teamMembers]
   )
   const assignees = useMemo(
-    () => teamMembers.filter((teamMember) => teamMember.userId !== userId),
+    () => teamMembers.filter(({user}) => user.id !== userId),
     [userId, teamMembers]
   )
-  const handleTaskUpdate = (newAssignee: {userId: string}) => () => {
-    const newUserId = newAssignee.userId === userId ? null : newAssignee.userId
+  const handleTaskUpdate = (newAssignee: {user: {id: string}}) => () => {
+    const newUserId = newAssignee.user.id === userId ? null : newAssignee.user.id
     UpdateTaskMutation(atmosphere, {updatedTask: {id: taskId, userId: newUserId}, area}, {})
   }
 
@@ -84,7 +86,7 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
     query,
     filteredItems: matchedAssignees,
     onQueryChange
-  } = useSearchFilter(assignees, (assignee) => assignee.preferredName)
+  } = useSearchFilter(assignees, (assignee) => assignee.user.preferredName)
 
   if (!team) return null
   return (
@@ -109,8 +111,11 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
             key={assignee.id}
             label={
               <MenuItemLabel>
-                <MenuAvatar alt={assignee.preferredName} src={assignee.picture || avatarUser} />
-                <StyledPreferredName>{assignee.preferredName}</StyledPreferredName>
+                <MenuAvatar
+                  alt={assignee.user.preferredName}
+                  src={assignee.user.picture || avatarUser}
+                />
+                <StyledPreferredName>{assignee.user.preferredName}</StyledPreferredName>
               </MenuItemLabel>
             }
             onClick={handleTaskUpdate(assignee)}

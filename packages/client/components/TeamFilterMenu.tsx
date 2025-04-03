@@ -35,7 +35,6 @@ const TeamFilterMenu = (props: Props) => {
           name
           teamMembers(sortBy: "preferredName") {
             userId
-            preferredName
           }
         }
       }

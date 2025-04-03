@@ -126,11 +126,6 @@ type User {
   suggestedActions: [SuggestedAction!]!
 
   """
-  the number of times the user clicked pay later
-  """
-  payLaterClickCount: Int!
-
-  """
   The timeline of important events for the viewer
   """
   timeline(
@@ -491,4 +486,33 @@ type User {
   The number of free custom poker templates remaining
   """
   freeCustomPokerTemplatesRemaining: Int!
+  """
+  AI-provided Insights
+  """
+  pageInsights(
+    meetingIds: [ID!]!
+    prompt: String!
+    responseFormat: ContentFormatEnum = markdown
+  ): String!
+
+  """
+  Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared
+  """
+  aiPrompts: [AIPrompt!]!
+  meetings(
+    """
+    The max number of meetings to return
+    """
+    first: Int!
+    teamIds: [ID!]!
+    meetingTypes: [MeetingTypeEnum!]!
+    """
+    The createdAt DateTime used as a cursor
+    """
+    after: DateTime
+    """
+    The createdAt DateTime used as an end cursor
+    """
+    before: DateTime!
+  ): MeetingConnection!
 }

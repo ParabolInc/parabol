@@ -4,11 +4,9 @@ import {parse, stringify} from 'flatted'
 import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
-import stringSimilarity from 'string-similarity'
 import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import GoogleAnalyzedEntity from '../../../server/database/types/GoogleAnalyzedEntity'
 import ReflectPhase from '../../../server/database/types/ReflectPhase'
 import {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
 import {
@@ -28,15 +26,14 @@ import {
 } from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
+import {getSimpleGroupTitle} from '../../utils/getSimpleGroupTitle'
 import findStageById from '../../utils/meetings/findStageById'
 import sleep from '../../utils/sleep'
-import getGroupSmartTitle from '../../utils/smartGroup/getGroupSmartTitle'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
 import LocalAtmosphere from './LocalAtmosphere'
-import entityLookup from './entityLookup'
-import getDemoEntities from './getDemoEntities'
+import getDemoTitles from './getDemoTitles'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
 import initDB, {
@@ -54,7 +51,6 @@ export type DemoReflection = {
   createdAt: string | Date
   dragContext: any
   editorIds: any
-  entities: any
   groupColor: string
   isEditing: any
   isHumanTouched: boolean
@@ -192,6 +188,36 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     if (!isFresh) return
 
     return validDB
+  }
+
+  private async updateReflectionGroupTitle(
+    reflectionGroup: DemoReflectionGroup,
+    reflectionsContent: string[],
+    titleIsUserDefined = false
+  ) {
+    const loadingTitle = ''
+    reflectionGroup.smartTitle = loadingTitle
+    if (!titleIsUserDefined) {
+      reflectionGroup.title = loadingTitle
+    }
+
+    try {
+      const aiTitle = await getDemoTitles(reflectionsContent)
+      if (aiTitle && aiTitle !== loadingTitle) {
+        reflectionGroup.smartTitle = aiTitle
+        if (!titleIsUserDefined) {
+          reflectionGroup.title = aiTitle
+        }
+        this.emit(SubscriptionChannel.MEETING, {
+          __typename: 'UpdateReflectionGroupTitlePayload',
+          meetingId: RetroDemo.MEETING_ID,
+          reflectionGroupId: reflectionGroup.id,
+          reflectionGroup: reflectionGroup
+        })
+      }
+    } catch (err) {
+      console.error('Error generating AI title:', err)
+    }
   }
 
   startDemo() {
@@ -476,10 +502,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const doc = JSON.parse(content)
       const {title, bodyContent} = splitTipTapContent(doc)
       const bodyHTML = generateHTML(bodyContent, serverTipTapExtensions)
+      const now = new Date().toJSON()
 
       if (integrationProviderService === 'github') {
         Object.assign(task, {
-          updatedAt: new Date().toJSON(),
+          updatedAt: now,
           integration: {
             __typename: '_xGitHubIssue',
             id: `${taskId}:GitHub`,
@@ -501,7 +528,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const issueKey = this.getTempId(`${key}-`)
 
         Object.assign(task, {
-          updatedAt: new Date().toJSON(),
+          updatedAt: now,
           integrationHash: integrationRepoId,
           integration: {
             __typename: 'JiraIssue',
@@ -520,6 +547,27 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
               avatar,
               cloudId
             }
+          }
+        })
+      }
+
+      if (integrationProviderService === 'gitlab') {
+        const fullPath = integrationRepoId
+        const iid = this.getTempId('')
+        const webPath = `/${fullPath}/-/issues/${iid}`
+
+        Object.assign(task, {
+          updatedAt: now,
+          integrationHash: integrationRepoId,
+          integration: {
+            __typename: '_xGitLabIssue',
+            id: `gitlab:${taskId}`,
+            iid,
+            title,
+            description: bodyHTML,
+            webPath,
+            webUrl: 'https://www.parabol.co/integrations/',
+            state: 'opened'
           }
         })
       }
@@ -551,12 +599,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const reflectionId = id || this.getTempId('ref')
       const normalizedContent = JSON.parse(content) as JSONContent
       const plaintextContent = generateText(normalizedContent, serverTipTapExtensions)
-      let entities = [] as GoogleAnalyzedEntity[]
-      if (userId !== demoViewerId) {
-        entities = entityLookup[reflectionId as keyof typeof entityLookup].entities
-      } else {
-        entities = (await getDemoEntities(plaintextContent)) as any
-      }
 
       const reflection = {
         __typename: 'RetroReflection',
@@ -574,7 +616,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isActive: true,
         isEditing: null,
         isViewerCreator: userId === demoViewerId,
-        entities,
         meetingId: RetroDemo.MEETING_ID,
         meeting: this.db.newMeeting,
         prompt,
@@ -586,15 +627,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         retroReflectionGroup: undefined as any
       } as DemoReflection
 
-      const smartTitle = getGroupSmartTitle([reflection])
+      const smartTitle = getSimpleGroupTitle([{plaintextContent}])
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
-        commentors: null,
         id: reflectionGroupId,
         reflectionGroupId,
         smartTitle,
         title: smartTitle,
+        commentors: null,
         voteCount: 0,
         viewerVoteCount: 0,
         createdAt: now,
@@ -742,28 +783,43 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflection.content = content
       reflection.updatedAt = new Date().toJSON()
       const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
-      const isVeryDifferent =
-        stringSimilarity.compareTwoStrings(plaintextContent, reflection.plaintextContent) < 0.9
-      const entities = isVeryDifferent
-        ? await getDemoEntities(plaintextContent)
-        : reflection.entities
       reflection.plaintextContent = plaintextContent
-      reflection.entities = entities as any
 
       const reflectionsInGroup = this.db.reflections.filter(
         ({reflectionGroupId}) => reflectionGroupId === reflection.reflectionGroupId
       )
-      const newTitle = getGroupSmartTitle(reflectionsInGroup)
       const reflectionGroup = this.db.reflectionGroups.find(
         (group) => group.id === reflection.reflectionGroupId
       )
+
       if (reflectionGroup) {
         const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
-        reflectionGroup.smartTitle = newTitle
         if (!titleIsUserDefined) {
-          reflectionGroup.title = newTitle
+          const reflectionsContent = reflectionsInGroup.map((r) => r.content)
+          // Set loading state
+          const loadingTitle = ''
+          reflectionGroup.smartTitle = loadingTitle
+          reflectionGroup.title = loadingTitle
+
+          getDemoTitles(reflectionsContent)
+            .then((aiTitle) => {
+              if (aiTitle && aiTitle !== loadingTitle) {
+                reflectionGroup.smartTitle = aiTitle
+                reflectionGroup.title = aiTitle
+                this.emit(SubscriptionChannel.MEETING, {
+                  __typename: 'UpdateReflectionGroupTitlePayload',
+                  meetingId: RetroDemo.MEETING_ID,
+                  reflectionGroupId: reflectionGroup.id,
+                  reflectionGroup: reflectionGroup
+                })
+              }
+            })
+            .catch((err) => {
+              console.error('Error generating AI title:', err)
+            })
         }
       }
+
       const data = {
         error: null,
         meeting: this.db.newMeeting,
@@ -1009,7 +1065,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         dropTargetType,
         dropTargetId,
         dragId
-      }: {reflectionId: string; dropTargetType: any; dropTargetId: string; dragId: string},
+      }: {
+        reflectionId: string
+        dropTargetType: any
+        dropTargetId: string
+        dragId: string
+      },
       userId: string
     ) => {
       const now = new Date().toJSON()
@@ -1024,6 +1085,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )!
       const oldReflections = oldReflectionGroup.reflections!
       let failedDrop = false
+
       if ((dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GRID') {
         const {promptId} = reflection
         newReflectionGroupId = this.getTempId('group')
@@ -1050,36 +1112,23 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
 
         this.db.reflectionGroups.push(newReflectionGroup)
         this.db.discussions.push(new DemoDiscussion(newReflectionGroupId))
-        oldReflections.splice(oldReflections.indexOf(reflection as any), 1)
+        oldReflections.splice(
+          oldReflections.findIndex((r) => r.id === reflection.id),
+          1
+        )
 
         Object.assign(reflection, {
           sortOrder: 0,
           reflectionGroupId: newReflectionGroupId,
           updatedAt: now
         })
-        const nextTitle = getGroupSmartTitle([reflection as DemoReflection])
-        newReflectionGroup.smartTitle = nextTitle
-        newReflectionGroup.title = nextTitle
-        if (oldReflections.length > 0) {
-          const oldTitle = getGroupSmartTitle(oldReflections)
-          const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
-          oldReflectionGroup.smartTitle = oldTitle
-          if (!titleIsUserDefined) {
-            oldReflectionGroup.title = oldTitle
-          }
-        } else {
-          const meetingGroups = (this.db.newMeeting as any).reflectionGroups
-          meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
-          Object.assign(oldReflectionGroup, {
-            isActive: false,
-            updatedAt: now
-          })
-        }
+        const reflectionContent = (reflection as DemoReflection).content
+
+        this.updateReflectionGroupTitle(newReflectionGroup, [reflectionContent])
       } else if (
         (dropTargetType as DragReflectionDropTargetTypeEnum) === 'REFLECTION_GROUP' &&
         dropTargetId
       ) {
-        // group
         const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === dropTargetId)!
         if (reflectionGroup) {
           newReflectionGroupId = dropTargetId
@@ -1096,7 +1145,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           reflectionGroup.reflections.push(reflection as any)
           reflectionGroup.reflections.sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
           oldReflections.splice(
-            oldReflections.findIndex((reflection) => reflection === reflection),
+            oldReflections.findIndex((r) => r.id === reflection.id),
             1
           )
           if (oldReflectionGroupId !== newReflectionGroupId) {
@@ -1104,25 +1153,24 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             const nextReflections = reflections.filter(
               (reflection) => reflection.reflectionGroupId === newReflectionGroupId
             )
-            const oldReflections = reflections.filter(
+            const oldReflectionsForGroup = reflections.filter(
               (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
             )
-            const nextTitle = getGroupSmartTitle(nextReflections)
-            const titleIsUserDefined = reflectionGroup.smartTitle !== reflectionGroup.title
-            reflectionGroup.smartTitle = nextTitle
-            if (!titleIsUserDefined) {
-              reflectionGroup.title = nextTitle
+
+            if (nextReflections.length > 0) {
+              this.updateReflectionGroupTitle(
+                reflectionGroup,
+                nextReflections.map((r) => r.content)
+              )
             }
-            const oldReflectionGroup = this.db.reflectionGroups.find(
-              (group) => group.id === oldReflectionGroupId
-            )!
-            if (oldReflections.length > 0) {
-              const oldTitle = getGroupSmartTitle(oldReflections)
+
+            if (oldReflectionsForGroup.length > 0) {
               const titleIsUserDefined = oldReflectionGroup.smartTitle !== oldReflectionGroup.title
-              oldReflectionGroup.smartTitle = oldTitle
-              if (!titleIsUserDefined) {
-                oldReflectionGroup.title = oldTitle
-              }
+              this.updateReflectionGroupTitle(
+                oldReflectionGroup,
+                oldReflectionsForGroup.map((r) => r.content),
+                titleIsUserDefined
+              )
             } else {
               const meetingGroups = (this.db.newMeeting as any).reflectionGroups
               meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
@@ -1348,7 +1396,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       // To reproduce, get to the discuss phase & quickly add a task before the bots do
       // the result is tasks == [undefined]
       // if a sleep is added, RetroDiscussPhase component is notified, but without, only MeetingAgendaCards is notified
-      // (I removed MeetingAgendaCards, mentioned in the comment line above, as it’s unused, TA)
+      // (I removed MeetingAgendaCards, mentioned in the comment line above, as it's unused, TA)
       // Safe to test removing this now that MeetingAgendaCards is gone MK
       // honestly, no good idea what is going on here. don't even know if it's relay or react (or me)
       await sleep(100)

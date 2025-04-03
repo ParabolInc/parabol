@@ -8,13 +8,7 @@ import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import sortByTier from '../../utils/sortByTier'
 import DashNavListTeams from './DashNavListTeams'
-
-const EmptyTeams = styled('div')({
-  fontSize: 16,
-  fontStyle: 'italic',
-  padding: 16,
-  textAlign: 'center'
-})
+import EmptyTeams from './EmptyTeams'
 
 const StyledIcon = styled(ManageAccounts)({
   height: 18,
@@ -32,6 +26,7 @@ const DashNavList = (props: Props) => {
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
         ...DashNavListTeams_organization
+        ...EmptyTeams_organization
         id
         name
         tier
@@ -44,7 +39,6 @@ const DashNavList = (props: Props) => {
   )
 
   const sortedOrgs = sortByTier(organizations)
-  const teams = organizations.flatMap((org) => org.viewerTeams)
 
   return (
     <div className='w-full p-3 pt-4 pb-0'>
@@ -69,11 +63,9 @@ const DashNavList = (props: Props) => {
             </Tooltip>
           </div>
           <DashNavListTeams onClick={onClick} organizationRef={org} />
+          {org.viewerTeams.length === 0 && <EmptyTeams organizationRef={org} />}
         </div>
       ))}
-      {teams?.length === 0 && (
-        <EmptyTeams>{'It appears you are not a member of any team!'}</EmptyTeams>
-      )}
     </div>
   )
 }

@@ -41,9 +41,4 @@ type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
   The provider strategy this token connects to
   """
   provider: IntegrationProviderWebhook!
-
-  """
-  The events that trigger a notification
-  """
-  events: [SlackNotificationEventEnum!]!
 }

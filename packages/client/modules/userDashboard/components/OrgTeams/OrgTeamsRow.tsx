@@ -19,7 +19,6 @@ const OrgTeamsRow = (props: Props) => {
         teamMembers {
           isSelf
           isLead
-          preferredName
         }
         lastMetAt
       }

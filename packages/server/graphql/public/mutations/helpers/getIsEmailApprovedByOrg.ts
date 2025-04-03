@@ -13,7 +13,7 @@ const getIsEmailApprovedByOrg = async (
   const [tld, domain] = exactDomain.split('.').reverse()
   const wildcardDomain = `*.${domain}.${tld}`
   const isApproved = approvedDomains.some(
-    (domain) => email.endsWith(domain) || domain === wildcardDomain
+    (approvedDomain) => exactDomain === approvedDomain || approvedDomain === wildcardDomain
   )
 
   if (!isApproved) {

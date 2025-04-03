@@ -31,9 +31,6 @@ const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail,
 
   // Update the email along with the identity
   await pg
-    .with('TeamMemberUpdate', (qc) =>
-      qc.updateTable('TeamMember').set({email: newEmail}).where('userId', '=', userId)
-    )
     .updateTable('User')
     .set({email: newEmail, identities: identities})
     .where('id', '=', userId)

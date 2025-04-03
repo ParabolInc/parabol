@@ -21,10 +21,6 @@ const TeamMember: TeamMemberResolvers = {
     return organizationUser?.role === 'ORG_ADMIN'
   },
 
-  picture: async ({picture}, _args, {dataLoader}) => {
-    return dataLoader.get('fileStoreAsset').load(picture)
-  },
-
   isSelf: (source, _args, {authToken}) => {
     const userId = getUserId(authToken)
     return source.userId === userId
