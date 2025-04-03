@@ -246,6 +246,15 @@
       ],
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql"
+    },
+    "packages/server/types/linearTypes.ts": {
+      "config": {"assumeValidSDL": true},
+      "documents": [
+        "packages/server/graphql/nestedSchema/Linear/queries/*.graphql",
+        "packages/server/graphql/nestedSchema/Linear/mutations/*.graphql"
+      ],
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "schema": "packages/server/graphql/nestedSchema/Linear/linearSchema.graphql"
     }
   }
 }

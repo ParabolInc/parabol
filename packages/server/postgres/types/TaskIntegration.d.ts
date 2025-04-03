@@ -1,5 +1,5 @@
 interface BaseTaskIntegration {
-  service: 'jira' | 'jiraServer' | 'github' | 'gitlab' | 'azureDevOps'
+  service: 'jira' | 'jiraServer' | 'github' | 'gitlab' | 'azureDevOps' | 'linear'
   accessUserId: string
 }
 
@@ -35,12 +35,19 @@ interface TaskIntegrationAzureDevOps extends BaseTaskIntegration {
   issueKey: string
   projectKey: string
 }
+interface TaskIntegrationLinear extends BaseTaskIntegration {
+  service: 'linear'
+  providerId: string // Assuming providerId is needed based on other integrations
+  gid: string // Assuming gid (Linear Issue ID) is needed
+}
 
 export type AnyTaskIntegration =
   | TaskIntegrationJira
   | TaskIntegrationJiraServer
   | TaskIntegrationGitHub
   | TaskIntegrationGitLab
+  | TaskIntegrationAzureDevOps
+  | TaskIntegrationLinear
   | TaskIntegrationAzureDevOps
 
 export type TaskServiceEnum = AnyTaskIntegration['service'] | 'PARABOL'

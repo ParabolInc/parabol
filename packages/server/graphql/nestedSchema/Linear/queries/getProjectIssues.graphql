@@ -1,0 +1,36 @@
+query getProjectIssues(
+  $projectId: ID!
+  $first: Int!
+  $after: String
+  $searchQuery: String
+  $state: WorkflowStateFilter
+  $sort: PaginationOrderBy
+) {
+  issues(
+    first: $first
+    after: $after
+    filter: {
+      project: {id: {eq: $projectId}}
+      state: $state
+      title: {containsIgnoreCase: $searchQuery}
+    }
+    orderBy: $sort
+  ) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      cursor
+      node {
+        __typename
+        id
+        title
+        description
+        updatedAt
+        url
+        identifier
+      }
+    }
+  }
+}
