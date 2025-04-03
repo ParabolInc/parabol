@@ -1,6 +1,6 @@
 import {GraphQLFieldConfig} from 'graphql'
 import AuthToken from '../database/types/AuthToken'
-import type {CacheWorker} from '../dataloader/DataLoaderCache2'
+import type {CacheWorker} from '../dataloader/DataLoaderCache'
 import RootDataLoader from '../dataloader/RootDataLoader'
 import {InMemoryRateLimiter} from '../utils/rateLimiters/InMemoryRateLimiter'
 
