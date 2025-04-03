@@ -3,10 +3,10 @@ import {USER_REASON_REMOVED_LIMIT} from '../../postgres/constants'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
+import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
-import sendAccountRemovedEvent from './helpers/sendAccountRemovedEvent'
 import softDeleteUser from './helpers/softDeleteUser'
 
 const markUserSoftDeleted = async (
@@ -69,7 +69,7 @@ export default {
     const deletedUserEmail = await softDeleteUser(userIdToDelete, dataLoader)
     await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
 
-    sendAccountRemovedEvent(userIdToDelete, user.email, validReason)
+    analytics.accountRemoved(user, validReason)
 
     return {}
   }

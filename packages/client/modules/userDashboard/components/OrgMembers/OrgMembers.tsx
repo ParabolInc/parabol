@@ -230,7 +230,9 @@ const OrgMembers = (props: Props) => {
         <div className='flex h-10 items-center bg-slate-100 px-4'>
           <div className='flex w-full items-center justify-between'>
             <div className='flex items-center font-bold'>
-              {organizationUsers.edges.length} total
+              {searchInput
+                ? `${filteredOrgUsers.length} matched`
+                : `${organizationUsers.edges.length} total`}
               {selectedUserIds.length > 0 && (
                 <span className='ml-2 text-sky-600'>({selectedUserIds.length} selected)</span>
               )}
@@ -269,7 +271,7 @@ const OrgMembers = (props: Props) => {
               <tr className='border-b border-slate-300'>
                 <th className='w-[5%] p-3 text-left'>
                   <div className='flex items-center justify-center'>
-                    {isOrgAdmin && (
+                    {isOrgAdmin && filteredOrgUsers.length > 0 && (
                       <input
                         type='checkbox'
                         checked={isAllSelected}
