@@ -12,7 +12,9 @@ import githubSchema from '../../utils/githubSchema.graphql'
 import composeResolvers from '../composeResolvers'
 import {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
+import linearSchema from '../nestedSchema/Linear/linearSchema.graphql'
 import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
+import nestLinearEndpoint from '../nestedSchema/nestLinearEndpoint'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import mutation from '../rootMutation'
 import query from '../rootQuery'
@@ -77,26 +79,54 @@ const {schema: typeDefsWithGitHubGitLab, gitlabRequest} = nestGitLabEndpoint({
   schemaIDL: gitlabSchema
 })
 
+const {schema: typeDefsWithGitHubGitLabLinear, linearRequest} = nestLinearEndpoint({
+  parentSchema: typeDefsWithGitHubGitLab,
+  parentType: 'LinearIntegration',
+  fieldName: 'api',
+  resolveEndpointContext: async (
+    {teamId, userId}: {teamId: string; userId: string},
+    _args,
+    {dataLoader}: GQLContext
+  ) => {
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: 'linear', teamId, userId})
+    if (!auth?.accessToken) throw new Error('No Linear token found')
+    return {
+      accessToken: auth.accessToken
+    }
+  },
+  prefix: '_extLinear',
+  schemaIDL: linearSchema
+})
+
 // IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
 // See https://github.com/ardatan/graphql-tools/issues/4367
 const publicSchema = resolveTypesForMutationPayloads(
   addResolversToSchema({
-    schema: typeDefsWithGitHubGitLab,
+    schema: typeDefsWithGitHubGitLabLinear,
     resolvers: composeResolvers(resolvers, permissions),
     inheritResolversFromInterfaces: true
   })
 )
 
-const addRequestors = (schema: GraphQLSchema) => {
+const addRequestors = (
+  schema: GraphQLSchema,
+  _githubRequest: typeof githubRequest,
+  _gitlabRequest: typeof gitlabRequest,
+  _linearRequest: typeof linearRequest
+) => {
   const finalSchema = schema as any
-  finalSchema.githubRequest = githubRequest
-  finalSchema.gitlabRequest = gitlabRequest
+  finalSchema.githubRequest = _githubRequest
+  finalSchema.gitlabRequest = _gitlabRequest
+  finalSchema.linearRequest = _linearRequest
   return finalSchema as GraphQLSchema & {
     githubRequest: typeof githubRequest
     gitlabRequest: typeof gitlabRequest
+    linearRequest: typeof linearRequest
   }
 }
 
-const rootSchema = addRequestors(publicSchema)
+const rootSchema = addRequestors(publicSchema, githubRequest, gitlabRequest, linearRequest)
 
 export default rootSchema
