@@ -1,0 +1,11 @@
+"""
+Represents a Project integration from Linear.
+"""
+type _xLinearProject implements RepoIntegration {
+  id: ID!
+  service: IntegrationProviderServiceEnum! # Should be 'linear'
+  name: String!
+  nameWithTeam: String!
+  url: String
+  updatedAt: DateTime
+}

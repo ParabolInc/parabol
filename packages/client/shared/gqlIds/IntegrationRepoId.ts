@@ -31,12 +31,19 @@ type JiraServerRepoIntegration = {
   service: 'jiraServer'
 }
 
+// Add type for Linear integration
+type LinearRepoIntegration = {
+  id: string // Linear Team ID
+  service: 'linear'
+}
+
 export type RepoIntegration =
   | GitHubRepoIntegration
   | JiraRepoIntegration
   | JiraServerRepoIntegration
   | AzureDevOpsRepoIntegration
   | GitLabRepoIntegration
+  | LinearRepoIntegration // Add Linear to the union
 
 const IntegrationRepoId = {
   join: (integration: RepoIntegration) => {
@@ -52,6 +59,8 @@ const IntegrationRepoId = {
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
       case 'gitlab':
         return integration.fullPath
+      case 'linear': // Add case for Linear
+        return integration.id // Return the Linear Team ID directly
     }
   },
   split: (id: string) => {

@@ -44,6 +44,7 @@ const getValue = (item: Item) => {
     return item.name ?? ''
   else if (service === 'github') return item.nameWithOwner ?? ''
   else if (service === 'gitlab') return item.fullPath ?? ''
+  else if (service === 'linear') return item.nameWithTeam ?? ''
   return ''
 }
 
@@ -74,6 +75,10 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       ... on JiraServerRemoteProject {
         name
       }
+      ... on _xLinearProject {
+        id
+        nameWithTeam
+      }
     }
   `
 
@@ -102,6 +107,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     {teamId, networkOnly, first}
   )
   const items = viewer?.teamMember?.repoIntegrations.items ?? []
+  // TODO: make this filter work for Linear type-ahead search
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -205,6 +211,19 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               label={name}
               onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps', name)}
               service='azureDevOps'
+            />
+          )
+        }
+        if (service === 'linear' && repoIntegration.nameWithTeam) {
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={repoIntegration.nameWithTeam}
+              onClick={() =>
+                onPushToIntegration(integrationRepoId, 'linear', repoIntegration.nameWithTeam)
+              }
+              service='linear'
             />
           )
         }

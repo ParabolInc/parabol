@@ -27,7 +27,6 @@ import {
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
   GetProjectsQuery,
-  GetProjectsQueryVariables,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
@@ -124,7 +123,7 @@ class LinearServerManager implements TaskIntegrationManager {
 
     return {
       integrationHash: LinearIssueId.join(providerId, issue.id),
-      issueId: issue.id, // Use the actual Linear Issue ID
+      issueId: issue.id,
       integration: {
         accessUserId: this.auth.userId,
         service: 'linear',
@@ -139,7 +138,7 @@ class LinearServerManager implements TaskIntegrationManager {
     assigneeName: string,
     teamName: string,
     teamDashboardUrl: string,
-    issueId: string // Linear Issue ID
+    issueId: string
   ): Promise<string | Error> {
     const body = makeCreateLinearTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
 
@@ -162,11 +161,10 @@ class LinearServerManager implements TaskIntegrationManager {
   }
 
   async updateIssue(
-    variables: UpdateIssueMutationVariables // Use the variables type directly
+    variables: UpdateIssueMutationVariables
   ): Promise<[UpdateIssueMutation | null, Error | null]> {
-    // Assuming this method uses the constructor's info/context
-    const linearRequest = this.getLinearRequest(this.info, this.context) // Added batchRef (this.context)
-    const [data, error] = await linearRequest(updateIssueMutation, variables) // Pass variables directly
+    const linearRequest = this.getLinearRequest(this.info, this.context)
+    const [data, error] = await linearRequest(updateIssueMutation, variables)
     return [data, error]
   }
 
@@ -174,40 +172,43 @@ class LinearServerManager implements TaskIntegrationManager {
     args: GetProjectIssuesQueryVariables
   ): Promise<[GetProjectIssuesQuery | null, Error | null]> {
     // Assuming this method uses the constructor's info/context
-    const linearRequest = this.getLinearRequest(this.info, this.context) // Added batchRef (this.context)
+    const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getProjectIssuesQuery, args)
     return [data, error]
   }
 
-  async getProjects(
-    args: GetProjectsQueryVariables
-  ): Promise<[GetProjectsQuery | null, Error | null]> {
+  async getProjects({
+    first = 100,
+    ids = null
+  }: {
+    first?: number
+    ids?: string[] | null
+  }): Promise<[GetProjectsQuery | null, Error | null]> {
     // Assuming this method uses the constructor's info/context
-    const linearRequest = this.getLinearRequest(this.info, this.context) // Added batchRef (this.context)
-    const [data, error] = await linearRequest(getProjectsQuery, args)
+    const linearRequest = this.getLinearRequest(this.info, this.context)
+    const [data, error] = await linearRequest(getProjectsQuery, {first, ids})
     return [data, error]
   }
 
   async getIssue(args: GetIssueQueryVariables): Promise<[GetIssueQuery | null, Error | null]> {
     // Assuming this method uses the constructor's info/context
-    const linearRequest = this.getLinearRequest(this.info, this.context) // Added batchRef (this.context)
+    const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getIssueQuery, args)
     return [data, error]
   }
 
   async getLabels(args: GetLabelsQueryVariables): Promise<[GetLabelsQuery | null, Error | null]> {
     // Assuming this method uses the constructor's info/context
-    const linearRequest = this.getLinearRequest(this.info, this.context) // Added batchRef (this.context)
+    const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getLabelsQuery, args)
     return [data, error]
   }
 
   async createLabel(
-    variables: CreateLabelMutationVariables // Use the variables type directly
+    variables: CreateLabelMutationVariables
   ): Promise<[CreateLabelMutation | null, Error | null]> {
-    // Assuming this method uses the constructor's info/context
-    const linearRequest = this.getLinearRequest(this.info, this.context) // Added batchRef (this.context)
-    const [data, error] = await linearRequest(createLabelMutation, variables) // Pass variables directly
+    const linearRequest = this.getLinearRequest(this.info, this.context)
+    const [data, error] = await linearRequest(createLabelMutation, variables)
     return [data, error]
   }
 
@@ -221,18 +222,14 @@ class LinearServerManager implements TaskIntegrationManager {
 
     // Use the provided info/context for this specific check, not necessarily the constructor ones
     const linearRequest = this.getLinearRequest(info, context)
-    const [, error] = await linearRequest(getProfileQuery, {}) // Empty variables for profile query
+    const [, error] = await linearRequest(getProfileQuery, {})
 
     if (error) {
-      // Return false and the error if the profile query fails
       return [false, error]
     }
 
     return [true, null]
   }
-
-  // --- Internal Helpers ---
-  // (e.g., createIssue, createComment - might be called by public methods)
 
   async createIssueInternal({
     info,
@@ -243,7 +240,7 @@ class LinearServerManager implements TaskIntegrationManager {
     context: GQLContext
     variables: CreateIssueMutationVariables
   }): Promise<[CreateIssueMutation | null, Error | null]> {
-    const linearRequest = this.getLinearRequest(info, context) // Added batchRef (context)
+    const linearRequest = this.getLinearRequest(info, context)
     // Pass the imported GraphQL document
     const [data, error] = await linearRequest(createIssueMutation, variables)
     // Cast the result back to the expected types for type safety downstream
@@ -259,7 +256,7 @@ class LinearServerManager implements TaskIntegrationManager {
     context: GQLContext
     variables: CreateCommentMutationVariables
   }): Promise<[CreateCommentMutation | null, Error | null]> {
-    const linearRequest = this.getLinearRequest(info, context) // Added batchRef (context)
+    const linearRequest = this.getLinearRequest(info, context)
     const [data, error] = await linearRequest(createCommentMutation, variables)
     return [data, error]
   }

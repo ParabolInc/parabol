@@ -8,3 +8,4 @@
   - packages/server/graphql/public/resolverTypes.ts
   - packages/server/types/githubTypes.ts
   - packages/server/types/gitlabTypes.ts
+- You may apply edits to `codegen.json`, if necessary
