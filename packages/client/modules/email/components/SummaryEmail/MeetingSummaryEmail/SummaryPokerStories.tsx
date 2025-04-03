@@ -72,6 +72,10 @@ const SummaryPokerStories = (props: Props) => {
                       number
                       title
                     }
+                    ... on _xGitLabIssue {
+                      __typename
+                      title
+                    }
                   }
                 }
               }
@@ -104,6 +108,8 @@ const SummaryPokerStories = (props: Props) => {
                 if (integration?.__typename === 'JiraIssue') {
                   title = integration.summary
                 } else if (integration?.__typename === '_xGitHubIssue') {
+                  title = integration.title
+                } else if (integration?.__typename === '_xGitLabIssue') {
                   title = integration.title
                 }
                 const urlPath = `/meet/${meetingId}/estimate/${idx + 1}`
