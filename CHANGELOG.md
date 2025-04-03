@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.39.1](https://github.com/ParabolInc/parabol/compare/v8.39.0...v8.39.1) (2025-04-03)
+
+
+### Fixed
+
+* tiptap mentions ([#11093](https://github.com/ParabolInc/parabol/issues/11093)) ([14f4670](https://github.com/ParabolInc/parabol/commit/14f46707e252403f2938185beb9abf7ef0442efb))
+
 ## [8.39.0](https://github.com/ParabolInc/parabol/compare/v8.38.0...v8.39.0) (2025-04-02)
 
 
