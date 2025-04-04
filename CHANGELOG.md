@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.2](https://github.com/ParabolInc/parabol/compare/v9.0.1...v9.0.2) (2025-04-04)
+
+
+### Fixed
+
+* missing githubRequest from schema ([#11105](https://github.com/ParabolInc/parabol/issues/11105)) ([636f4a9](https://github.com/ParabolInc/parabol/commit/636f4a94b480e4103992e296dfb9be5c3700d6bb))
+
 ## [9.0.1](https://github.com/ParabolInc/parabol/compare/v9.0.0...v9.0.1) (2025-04-04)
 
 
