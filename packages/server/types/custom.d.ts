@@ -1,5 +1,3 @@
-import type {GraphQLSchema} from 'graphql'
-import type nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import '../../client/types/reactHTML4'
 import type ScheduledJobMeetingStageTimeLimit from '../database/types/ScheduledJobMetingStageTimeLimit'
 import type ScheduledTeamLimitsJob from '../database/types/ScheduledTeamLimitsJob'
@@ -23,8 +21,3 @@ export interface OAuth2Error {
   error_uri?: string
 }
 export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTeamLimitsJob
-
-export type RootSchema = GraphQLSchema & {
-  githubRequest: ReturnType<typeof nestGitHubEndpoint>['githubRequest']
-  gitlabRequest: ReturnType<typeof nestGitHubEndpoint>['githubRequest']
-}

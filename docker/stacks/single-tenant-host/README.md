@@ -18,20 +18,20 @@ To run Parabol in single tenant mode (e.g. simple docker-compose on a docker hos
 
 1. Edit the `docker-compose.yaml` and change the `#image:tag` changing the tag. Ex: from `v7.15.0` to `v7.15.2`.
 2. (optional) In a different terminal, run `docker compose logs -f` to follow the upgrade.
-3. Run `docker compose --profile parabol up -d`. It will start the `pre-deploy` and, once it is done successfully, then it will stop and recreate the `web-server` and `gql-executor` with the new version of the image. **This step implies a downtime**.
+3. Run `docker compose --profile parabol up -d`. It will start the `pre-deploy` and, once it is done successfully, then it will stop and recreate the `web-server` with the new version of the image. **This step implies a downtime**.
 4. Verify the application is still up and running.
 
 ## Running Chronos
 
 Chronos isn't started by default. If it needs to run, it must be managed using `docker compose --profile databases --profile parabol --profile chronos up`.
 
-This will run `pre-deploy` and thus it will recreate the `web-server` and the `gql-executor`.
+This will run `pre-deploy` and thus it will recreate the `web-server`.
 
 ## Running Embedder
 
 Embedder isn't started by default. If it needs to run, it must be managed using `docker compose --profile databases --profile parabol --profile embedder up`.
 
-This will run `pre-deploy` and thus it will recreate the `web-server` and the `gql-executor`.
+This will run `pre-deploy` and thus it will recreate the `web-server`.
 
 The Embedder requires a model. It can be provided using the **Text Embeddings Inference** container available on the stack. It can be executed with `docker compose --profile databases --profile text-embeddings --profile parabol --profile embedder up`
 

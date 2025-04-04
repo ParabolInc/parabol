@@ -3,7 +3,7 @@ import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {TeamMemberIntegrationAuth} from '../postgres/types'
 import sendToSentry from '../utils/sendToSentry'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 export const freshGitlabAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(

@@ -52,7 +52,6 @@ const MeetingSelector = (props: Props) => {
     if (!meetingId || !isConnected) return
     const location = `/meet/${meetingId}`
     const setAfterUpgrade = async () => {
-      await atmosphere.upgradeTransport()
       SetAppLocationMutation(atmosphere, {location})
     }
     setAfterUpgrade()

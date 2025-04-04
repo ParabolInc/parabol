@@ -3,10 +3,12 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
+import {broadcastSubscription} from '../broadcastSubscription'
 import {SubscriptionResolvers} from '../resolverTypes'
 
 const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
-  subscribe: async (_source, {meetingId}, {authToken}) => {
+  subscribe: async (_source, {meetingId}, context) => {
+    const {authToken} = context
     // AUTH
     const viewerId = getUserId(authToken)
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
@@ -21,7 +23,8 @@ const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
 
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
-    return getPubSub().subscribe([channelName])
+    const iter = getPubSub().subscribe([channelName])
+    return broadcastSubscription(iter, context)
   }
 }
 

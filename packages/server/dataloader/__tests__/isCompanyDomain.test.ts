@@ -1,10 +1,10 @@
 import '../../../../scripts/webpack/utils/dotenv'
-import getDataLoader from '../../graphql/getDataLoader'
+import {getNewDataLoader} from '../getNewDataLoader'
 
-const dataloader = getDataLoader()
+const dataloader = getNewDataLoader()
 
 afterAll(async () => {
-  dataloader.dispose(true)
+  dataloader.dispose()
 })
 
 test('Result is mapped to correct id', async () => {

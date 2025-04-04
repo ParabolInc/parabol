@@ -1,10 +1,9 @@
 import sleep from '../../client/utils/sleep'
-import ServerAuthToken from '../database/types/ServerAuthToken'
 import {UserPresence} from '../graphql/private/mutations/connectSocket'
-import {disconnectQuery} from '../socketHandlers/handleDisconnect'
+import {disconnectQuery} from '../wsHandler'
+import {callGQL} from './callGQL'
 import {Logger} from './Logger'
 import RedisInstance from './RedisInstance'
-import publishInternalGQL from './publishInternalGQL'
 
 const SERVER_ID = process.env.SERVER_ID!
 const INSTANCE_ID = `${SERVER_ID}:${process.pid}`
@@ -50,7 +49,6 @@ class ServerHealthChecker {
     //
     await sleep(waitForStartup)
     const socketServers = await this.getLivingServers()
-    const authToken = new ServerAuthToken()
 
     // find all connected users and prune the dead servers from their list of connections
     const userPresenceStream = this.publisher.scanStream({match: 'presence:*'})
@@ -67,18 +65,13 @@ class ServerHealthChecker {
           const key = keys[idx]!
           const userId = key.slice(key.indexOf(':') + 1)
           const connections = record[1]
-          return connections.map((connection) => {
+          return connections.map(async (connection) => {
             const presence = JSON.parse(connection) as UserPresence
             const {socketInstanceId, socketId} = presence
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
             Logger.log(`serverHealthChecker: ${socketId} is on dead instace ${socketInstanceId}`)
-            return publishInternalGQL({
-              authToken,
-              query: disconnectQuery,
-              socketId,
-              variables: {userId}
-            })
+            await callGQL(disconnectQuery, {userId})
           })
         })
       )

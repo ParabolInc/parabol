@@ -11,9 +11,7 @@ module.exports = {
     vendors: [
       '@emotion/core',
       '@emotion/styled',
-      '@mattkrick/graphql-trebuchet-client',
       '@mattkrick/sanitize-svg',
-      '@mattkrick/trebuchet-client',
       '@sentry/browser',
       'debug',
       'email-addresses',

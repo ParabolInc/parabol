@@ -5,7 +5,7 @@ import {IGetPollsByIdsQueryResult} from '../postgres/queries/generated/getPollsB
 import getPollOptionsByPollIds from '../postgres/queries/getPollOptionsByPollIds'
 import getPollsByDiscussionIds from '../postgres/queries/getPollsByDiscussionIds'
 import getPollsByIds from '../postgres/queries/getPollsByIds'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 export const pollOptions = (parent: RootDataLoader) => {
   return new DataLoader<number, IGetPollOptionsByPollIdsQueryResult[], string>(

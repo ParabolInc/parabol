@@ -42,21 +42,6 @@
     },
     {
       "type": "json",
-      "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.version"
-    },
-    {
-      "type": "json",
-      "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.dependencies['parabol-client']"
-    },
-    {
-      "type": "json",
-      "path": "packages/gql-executor/package.json",
-      "jsonpath": "$.dependencies['parabol-server']"
-    },
-    {
-      "type": "json",
       "path": "packages/integration-tests/package.json",
       "jsonpath": "$.version"
     },

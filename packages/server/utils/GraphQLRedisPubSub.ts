@@ -1,16 +1,8 @@
 import Redis from 'ioredis'
-import SubscriptionIterator, {
-  SubscriptionListener,
-  SubscriptionTransform
-} from './SubscriptionIterator'
+import SubscriptionIterator, {SubscriptionListener} from './SubscriptionIterator'
 
 interface ListenersByChannel {
   [channel: string]: SubscriptionListener[]
-}
-
-interface SubscribeOptions {
-  onCompleted?: () => void
-  transform?: SubscriptionTransform
 }
 
 export default class GraphQLRedisPubSub {
@@ -36,7 +28,7 @@ export default class GraphQLRedisPubSub {
     return this.publisher.publish(channel, JSON.stringify(payload))
   }
 
-  subscribe = (channels: string[], options: SubscribeOptions = {}) => {
+  subscribe = (channels: string[]) => {
     this.subscriber.subscribe(...channels)
     const onStart = (listener: SubscriptionListener) => {
       channels.forEach((channel) => {
@@ -45,10 +37,9 @@ export default class GraphQLRedisPubSub {
       })
     }
     const onCompleted = (listener: SubscriptionListener) => {
-      options?.onCompleted?.()
       this.unsubscribe(channels, listener)
     }
-    return new SubscriptionIterator({onStart, onCompleted, transform: options?.transform})
+    return new SubscriptionIterator({onStart, onCompleted})
   }
 
   unsubscribe = (channels: string[], listener: SubscriptionListener) => {

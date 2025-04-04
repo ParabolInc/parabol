@@ -1,4 +1,5 @@
 import path from 'path'
+import '../types/webpackEnv'
 
 const importAll = (context: __WebpackModuleApi.RequireContext) => {
   const collector = {} as Record<string, any>

@@ -133,26 +133,6 @@ services:
         condition: service_healthy
     networks:
       - parabol-network
-  gql-executor:
-    container_name: gql-executor
-    profiles: ["parabol"]
-    image: #image:tag
-    restart: always
-    command: bash -c "node dist/gqlExecutor.js"
-    env_file: .env
-    environment:
-      - SERVER_ID=10
-    volumes:
-      - "./.env:/parabol/.env"
-    depends_on:
-      pre-deploy:
-        condition: service_completed_successfully
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - parabol-network
   embedder:
     container_name: embedder
     profiles: ["embedder"]

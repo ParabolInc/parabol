@@ -16,5 +16,6 @@ const shieldedSchema = makeExecutableSchema({
   resolvers: composeResolvers(resolvers, permissions)
 })
 const privateSchema = resolveTypesForMutationPayloads(shieldedSchema)
+
 const fullSchema = mergeSchemas({schemas: [privateSchema, publicSchema]})
 export default fullSchema

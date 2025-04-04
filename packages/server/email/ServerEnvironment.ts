@@ -1,6 +1,7 @@
 import {FormattedExecutionResult} from 'graphql'
 import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
-import AuthToken from '../database/types/AuthToken'
+import type {InternalContext} from '../graphql/graphql'
+import {requestFromYoga} from './requestFromYoga'
 
 const noop = (): any => {
   /**/
@@ -10,17 +11,15 @@ export default class ServerEnvironment extends Environment {
   requestCache: Promise<FormattedExecutionResult>[] = []
   results: FormattedExecutionResult[] | undefined
   isFetched = false
-  authToken: AuthToken
-  dataLoaderId: string
-  constructor(authToken: AuthToken, dataLoaderId: string) {
+  context: InternalContext
+  constructor(context: InternalContext) {
     super({
       store: new Store(new RecordSource()),
       network: Network.create(noop),
       isServer: true
     })
     ;(this as any)._network = Network.create(this.fetch)
-    this.authToken = authToken
-    this.dataLoaderId = dataLoaderId
+    this.context = context
   }
 
   async load() {
@@ -32,16 +31,8 @@ export default class ServerEnvironment extends Environment {
   }
 
   fetch: FetchFunction = (request, variables) => {
-    const executeGraphQL = require('../graphql/executeGraphQL').default
     if (!this.isFetched) {
-      this.requestCache.push(
-        executeGraphQL({
-          authToken: this.authToken,
-          docId: request.id!,
-          variables,
-          dataLoaderId: this.dataLoaderId
-        })
-      )
+      this.requestCache.push(requestFromYoga(this.context, request.id!, variables))
       // relay expects an array of responses, or a single valid response
       return [] as any
     } else {
