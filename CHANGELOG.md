@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.1](https://github.com/ParabolInc/parabol/compare/v9.0.0...v9.0.1) (2025-04-04)
+
+
+### Fixed
+
+* dataloaders in redis bugfix ([#11102](https://github.com/ParabolInc/parabol/issues/11102)) ([7df894d](https://github.com/ParabolInc/parabol/commit/7df894d121e4dc1bf98a19febccae9dad3c2561b))
+
 ## [9.0.0](https://github.com/ParabolInc/parabol/compare/v8.39.2...v9.0.0) (2025-04-04)
 
 
