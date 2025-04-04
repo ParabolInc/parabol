@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.3](https://github.com/ParabolInc/parabol/compare/v9.0.2...v9.0.3) (2025-04-04)
+
+
+### Fixed
+
+* set app location on ws conn ([#11109](https://github.com/ParabolInc/parabol/issues/11109)) ([228c8c7](https://github.com/ParabolInc/parabol/commit/228c8c7211a5be03b0c8ae452aabe97669633b32))
+
 ## [9.0.2](https://github.com/ParabolInc/parabol/compare/v9.0.1...v9.0.2) (2025-04-04)
 
 
