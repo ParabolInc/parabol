@@ -223,8 +223,10 @@ export default class Atmosphere extends Environment {
           } as any,
           sink as any
         )
-        const subKey = Atmosphere.getKey(operation.name, variables)
-        this.subscriptions[subKey] = {unsubscribe}
+        if (operation.operationKind === 'subscription') {
+          const subKey = Atmosphere.getKey(operation.name, variables)
+          this.subscriptions[subKey] = {unsubscribe}
+        }
       })()
     })
   }

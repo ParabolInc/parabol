@@ -29,8 +29,8 @@ const {id, name} = request
 const SetAppLocationMutation = (atmosphere: Atmosphere, variables: {location: string | null}) => {
   window.clearTimeout(timeout)
   timeout = window.setTimeout(() => {
-    atmosphere.fetchQuery(mutation, variables)
-    atmosphere.subscriptionClient.subscribe(
+    // if they just refresh or they lose connection, the subscriptionClient will be undefined
+    atmosphere.subscriptionClient?.subscribe(
       {operationName: name, docId: id, query: '', variables} as any,
       noopSink
     )
