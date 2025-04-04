@@ -17,8 +17,7 @@ test('Draft enterprise invoice payload', async () => {
     `,
     variables: {
       email
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -67,8 +66,7 @@ test('Draft enterprise invoice payload', async () => {
       orgId,
       quantity: 1,
       email
-    },
-    isPrivate: true
+    }
   })
 
   expect(invoice).toMatchObject({

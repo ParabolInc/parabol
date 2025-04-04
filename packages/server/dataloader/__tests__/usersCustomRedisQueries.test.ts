@@ -1,17 +1,11 @@
 import faker from 'faker'
 import '../../../../scripts/webpack/utils/dotenv'
-import getDataLoader from '../../graphql/getDataLoader'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
-
-afterAll(async () => {
-  const dataloader = getDataLoader()
-  dataloader.dispose(true)
-  // TODO shutdown redis to properly end test
-})
+import {getNewDataLoader} from '../getNewDataLoader'
 
 test('Result is mapped to correct id', async () => {
-  const dataloader = getDataLoader()
+  const dataloader = getNewDataLoader()
 
   const existingUsers = await getKysely()
     .selectFrom('User')

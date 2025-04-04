@@ -1,6 +1,6 @@
 import normalizeResults from './normalizeResults'
 import NullableDataLoader from './NullableDataLoader'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 /**
  * Register a loader for types loaded by their {id: string} field.

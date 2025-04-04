@@ -44,7 +44,7 @@ const makeSimilarDiscussionLink = async (
 
 const publishComment = async (meetingId: string, commentId: string) => {
   const data = {commentId, meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, {}, false)
+  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, {})
 }
 
 export const publishSimilarRetroTopics = async (

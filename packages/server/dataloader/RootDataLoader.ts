@@ -1,7 +1,9 @@
 import DataLoader from 'dataloader'
+import {Logger} from '../utils/Logger'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
+import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as gcalLoaders from './gcalLoaders'
 import * as githubLoaders from './githubLoaders'
@@ -82,3 +84,20 @@ export default class RootDataLoader<
     return loader as any
   }
 }
+
+// Important! This is here because otherwise there will be a circular dependency:
+// RootDataLoader
+// dataLoaderCache
+// getInMemoryDataLoader
+// publish
+// atlassianLoaders
+// RootDataLoader
+
+export const dataLoaderCache = new DataLoaderCache(RootDataLoader)
+
+// Can remove this after we verify there are no memory leaks in prod
+// count staying constant or going down = good
+setInterval(() => {
+  const workerCount = Object.keys(dataLoaderCache.workers).length
+  Logger.log({workerCount})
+}, 60_000).unref()

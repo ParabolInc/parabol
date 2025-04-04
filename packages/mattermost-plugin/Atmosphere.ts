@@ -33,15 +33,12 @@ const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Va
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
-          'x-application-authorization': authToken ? `Bearer ${authToken}` : ''
+          authorization: authToken ? `Bearer ${authToken}` : ''
         },
         body: JSON.stringify({
-          type: 'start',
-          payload: {
-            documentId: params.id,
-            query: params.text,
-            variables
-          }
+          docId: params.id,
+          query: params.text,
+          variables
         })
       })
     )
@@ -49,7 +46,7 @@ const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Va
     response
       .then(async (data) => {
         const json = await data.json()
-        sink.next(json.payload)
+        sink.next(json)
         sink.complete()
       })
       .catch((error) => {

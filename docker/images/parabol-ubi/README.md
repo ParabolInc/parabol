@@ -25,15 +25,6 @@ export _DOCKER_TAG=vX.X.X
 docker run --name=parabol-predeploy --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "node dist/preDeploy.js"
 ```
 
-- Start GraphQL
-
-```commandLine
-export _DOCKER_REPOSITORY=parabol; \
-export _DOCKER_TAG=vX.X.X
-
-docker run --name=parabol-gql-executor --network=host -v $(pwd)/.env:/home/node/parabol/.env ${_DOCKER_REPOSITORY}:${_DOCKER_TAG} /bin/bash -c "node ./dist/gqlExecutor.js" || docker container rm parabol-gql-executor -f
-```
-
 - Start Web Server
 
 ```commandLine

@@ -65,32 +65,6 @@
       "program": "${workspaceFolder}/node_modules/.bin/relay-compiler",
       "args": [],
       "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Babel Plugin",
-      "console": "integratedTerminal",
-      "autoAttachChildProcesses": true,
-      "program": "${workspaceFolder}/node_modules/.bin/babel",
-      "args": [
-        "--config-file=${workspaceFolder}/packages/gql-executor/babel.config.json",
-        "${workspaceFolder}/packages/gql-executor/client/utils/GitHubManager.js"
-      ],
-      "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Codeshift",
-      "console": "integratedTerminal",
-      // "autoAttachChildProcesses": true,
-      "program": "${workspaceFolder}/node_modules/.bin/jscodeshift",
-      "args": [
-        "--transform=${workspaceFolder}/scripts/codeshift/packageRefToRelative.ts",
-        "${workspaceFolder}/packages/gql-executor/"
-      ],
-      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

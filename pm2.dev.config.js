@@ -18,19 +18,6 @@ module.exports = {
       autorestart: false
     },
     {
-      name: 'GraphQL Executor',
-      script: 'scripts/runExecutor.js',
-      // increase this to test scaling
-      instances: 1,
-      increment_var: 'SERVER_ID',
-      env: {
-        SERVER_ID: 3
-      },
-      watch: ['dev/gqlExecutor.js'],
-      // if the watched file doeesn't exist, wait for it instead of restarting
-      autorestart: false
-    },
-    {
       name: 'Embedder',
       script: 'scripts/runEmbedder.js',
       // increase this to test scaling
@@ -90,9 +77,7 @@ module.exports = {
     {
       name: 'Mattermost Relay Compiler',
       script: 'yarn workspace parabol-mattermost-plugin relay-compiler',
-      watch: [
-        'packages/mattermost-plugin/**/*.[ts*,js*,css]'
-      ],
+      watch: ['packages/mattermost-plugin/**/*.[ts*,js*,css]'],
       autorestart: false,
       instances: 1
     },

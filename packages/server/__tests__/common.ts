@@ -9,22 +9,17 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
 const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
 
-export async function sendIntranet(req: {
-  query: string
-  variables?: Record<string, any>
-  isPrivate?: boolean
-}) {
+export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   const authToken = encodeAuthToken(new ServerAuthToken())
 
-  const response = await fetch(`${PROTOCOL}://${HOST}/intranet-graphql`, {
+  const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
-      'x-application-authorization': `Bearer ${authToken}`
+      authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      isPrivate: req.isPrivate,
       query: req.query,
       variables: req.variables
     })
@@ -66,24 +61,21 @@ export async function sendPublic(req: {
   const authToken = req.authToken ?? ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
-  const documentId = await persistQuery(query)
+  const docId = await persistQuery(query)
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
-      'x-application-authorization': `Bearer ${authToken}`
+      authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({
-      type: 'start',
-      payload: {
-        documentId,
-        variables
-      }
+      docId,
+      variables
     })
   })
   const body = await response.json()
-  return body.payload
+  return body
 }
 
 const SIGNUP_WITH_PASSWORD_MUTATION = `
@@ -183,8 +175,7 @@ export const getUserTeams = async (userId: string) => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
@@ -216,8 +207,7 @@ export const getUserOrgs = async (userId: string) => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({

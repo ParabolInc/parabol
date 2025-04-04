@@ -3,8 +3,8 @@ import crypto from 'crypto'
 import fs from 'fs'
 import http, {RequestListener, Server} from 'http'
 import path from 'path'
-import clientConfig from '../relay.config'
 import mattermostPluginConfig from '../packages/mattermost-plugin/relay.config'
+import clientConfig from '../relay.config'
 
 export default class RelayPersistServer {
   server: Server
@@ -13,6 +13,15 @@ export default class RelayPersistServer {
   constructor(port = 2999) {
     this.server = http.createServer(this.requestListener)
     this.server.listen(port)
+    this.server.on('error', (err) => {
+      if ((err as any).code === 'EADDRINUSE') {
+        console.error(`Port ${port} in use, retrying...`)
+        setTimeout(() => {
+          this.server.close()
+          this.server.listen(port)
+        }, 1000)
+      }
+    })
     let flushArtifacts = false
     try {
       this.queryMap = JSON.parse(fs.readFileSync(this.queryMapPath, 'utf-8'))

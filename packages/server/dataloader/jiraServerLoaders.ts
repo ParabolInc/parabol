@@ -9,7 +9,7 @@ import getJiraServerDimensionFieldMap, {
   JiraServerDimensionFieldMap
 } from '../postgres/queries/getJiraServerDimensionFieldMap'
 import sendToSentry from '../utils/sendToSentry'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 export interface JiraServerIssueKey {
   teamId: string

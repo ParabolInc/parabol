@@ -44,21 +44,6 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production'
       }
-    },
-    {
-      name: 'GQL Executor',
-      script: 'dist/gqlExecutor.js',
-      instances: 2,
-      increment_var: 'SERVER_ID',
-      autorestart: true,
-      watch: false,
-      max_memory_restart: '24576M',
-      env: {
-        SERVER_ID: 6
-      },
-      env_production: {
-        NODE_ENV: 'production'
-      }
     }
   ]
 }

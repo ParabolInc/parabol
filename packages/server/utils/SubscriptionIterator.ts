@@ -11,10 +11,8 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
   private done = false
   private pushQueue = [] as any[]
   private pullQueue = [] as ((resolvedValue?: any) => void)[]
-  private transform?: SubscriptionTransform
   private onCompleted?: (listener: SubscriptionListener) => void
-  private pushValue: SubscriptionListener = async (input) => {
-    const value = this.transform ? await this.transform(input) : input
+  private pushValue: SubscriptionListener = async (value) => {
     if (value !== undefined) {
       const resolver = this.pullQueue.shift()
       if (resolver) {
@@ -25,8 +23,7 @@ export default class SubscriptionIterator<T = any> implements AsyncIterator<T> {
     }
   }
 
-  constructor({onStart, onCompleted, transform}: Handlers) {
-    this.transform = transform
+  constructor({onStart, onCompleted}: Handlers) {
     this.onCompleted = onCompleted
     onStart?.(this.pushValue)
   }

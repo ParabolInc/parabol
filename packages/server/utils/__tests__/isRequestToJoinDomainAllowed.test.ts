@@ -73,7 +73,6 @@ afterAll(async () => {
   await pg.schema.dropSchema(TEST_DB).cascade().execute()
   await pg.destroy()
   getRedis().quit()
-  console.log('request to join destroy')
 })
 
 test('Only the biggest org with verified emails qualify', async () => {

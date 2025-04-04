@@ -3,7 +3,7 @@ import GcalOAuth2Manager from '../integrations/gcal/GcalOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {TeamMemberIntegrationAuth} from '../postgres/types'
 import sendToSentry from '../utils/sendToSentry'
-import RootDataLoader from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
 
 export const freshGcalAuth = (parent: RootDataLoader) => {
   return new DataLoader<{teamId: string; userId: string}, TeamMemberIntegrationAuth | null, string>(

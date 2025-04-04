@@ -4,7 +4,7 @@
     "defaultScalarType": "string",
     "enumsAsTypes": true,
     "optionalResolveType": true,
-    "scalars": {"DateTime": "Date", "File": "TFile", "RRule": "RRuleSet"}
+    "scalars": {"DateTime": "Date", "File": "File", "RRule": "RRuleSet"}
   },
   "generates": {
     "packages/server/graphql/private/resolverTypes.ts": {
@@ -18,7 +18,6 @@
           "DeleteFeatureFlagSuccess": "./types/DeleteFeatureFlagSuccess#DeleteFeatureFlagSuccessSource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "EndTrialSuccess": "./types/EndTrialSuccess#EndTrialSuccessSource",
-          "File": "../public/types/File#TFile",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
@@ -85,7 +84,6 @@
           "Discussion": "../../postgres/types/index#Discussion",
           "DomainJoinRequest": "../../database/types/DomainJoinRequest#default as DomainJoinRequestDB",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",
-          "File": "./types/File#TFile",
           "GetDemoGroupTitleSuccess": "./types/GetDemoGroupTitleSuccess#GetDemoGroupTitleSuccessSource",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",

@@ -14,8 +14,7 @@ test('Update user email with unknown email fails', async () => {
     variables: {
       oldEmail: email,
       newEmail
-    },
-    isPrivate: true
+    }
   })
 
   expect(updateEmail).toMatchObject({
@@ -36,8 +35,7 @@ test('Update user email', async () => {
     variables: {
       oldEmail: email,
       newEmail
-    },
-    isPrivate: true
+    }
   })
 
   expect(updateEmail).toMatchObject({
@@ -57,8 +55,7 @@ test('Update user email', async () => {
     `,
     variables: {
       userId
-    },
-    isPrivate: true
+    }
   })
 
   expect(user).toMatchObject({
