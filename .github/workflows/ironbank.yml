@@ -55,17 +55,6 @@ jobs:
       - name: Zip the files
         run: zip -r ${{ github.event.inputs.version_number }}.zip dist build ip-to-server_id
 
-      - name: Set up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.IRONBANK_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.IRONBANK_AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
-
-      - name: Upload to S3
-        run: |
-          aws s3 cp ${{ github.event.inputs.version_number }}.zip s3://ironbank-proving-ground-action-files.parabol.co/${{ github.event.inputs.version_number }}.zip
-
       - name: Upload to GCS
         uses: actions-hub/gcloud@master
         env:
