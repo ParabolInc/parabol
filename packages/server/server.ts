@@ -3,7 +3,7 @@ import uws from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
-import activeClients from './activeClients'
+import {activeClients} from './activeClients'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
 import './hocusPocus'
@@ -37,7 +37,7 @@ process.on('SIGTERM', async (signal) => {
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
   await Promise.allSettled(
-    activeClients.values().map(async (extra) => {
+    Array.from(activeClients.values()).map(async (extra) => {
       const disconnectIn = Math.floor(Math.random() * RECONNECT_WINDOW)
       await sleep(disconnectIn)
       extra.socket.end(1012, 'Closing connection')

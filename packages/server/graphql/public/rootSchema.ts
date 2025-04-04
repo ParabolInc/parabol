@@ -87,16 +87,5 @@ const publicSchema = resolveTypesForMutationPayloads(
   })
 )
 
-const addRequestors = (schema: GraphQLSchema) => {
-  const finalSchema = schema as any
-  finalSchema.githubRequest = githubRequest
-  finalSchema.gitlabRequest = gitlabRequest
-  return finalSchema as GraphQLSchema & {
-    githubRequest: typeof githubRequest
-    gitlabRequest: typeof gitlabRequest
-  }
-}
-
-const rootSchema = addRequestors(publicSchema)
-
-export default rootSchema
+export {githubRequest, gitlabRequest}
+export default publicSchema
