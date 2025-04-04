@@ -17,7 +17,5 @@ const shieldedSchema = makeExecutableSchema({
 })
 const privateSchema = resolveTypesForMutationPayloads(shieldedSchema)
 
-const fullSchema = mergeSchemas({schemas: [privateSchema, publicSchema]}) as typeof publicSchema
-fullSchema.githubRequest = publicSchema.githubRequest
-fullSchema.gitlabRequest = publicSchema.gitlabRequest
+const fullSchema = mergeSchemas({schemas: [privateSchema, publicSchema]})
 export default fullSchema

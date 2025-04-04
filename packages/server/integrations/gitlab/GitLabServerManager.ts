@@ -12,8 +12,8 @@ import getLabels from '../../graphql/nestedSchema/GitLab/queries/getLabels.graph
 import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.graphql'
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
+import {gitlabRequest} from '../../graphql/public/rootSchema'
 import {TeamMemberIntegrationAuth} from '../../postgres/types'
-import {RootSchema} from '../../types/custom'
 import {
   CreateIssueMutation,
   CreateLabelMutation,
@@ -52,10 +52,8 @@ class GitLabServerManager implements TaskIntegrationManager {
   }
 
   getGitLabRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
-    const {schema} = info
-    const composedRequest = (schema as RootSchema).gitlabRequest
     return async <TData = any, TVars = any>(query: string, variables: TVars) => {
-      const result = await composedRequest<TData, TVars>({
+      const result = await gitlabRequest<TData, TVars>({
         query,
         variables,
         info,
