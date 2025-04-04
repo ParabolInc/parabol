@@ -1,5 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -14,6 +15,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
 ) => {
   const {dataLoader, socketId: mutatorId, authToken} = context
   const viewerId = getUserId(authToken)
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const hasInsightsFlag = await dataLoader
     .get('featureFlagByOwnerId')
@@ -65,7 +67,7 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
   }
 
   publish(SubscriptionChannel.TEAM, teamId, 'GenerateInsightSuccess', data, subOptions)
-
+  analytics.insightGenerated(viewer, insertedInsight.id, teamId)
   return data
 }
 

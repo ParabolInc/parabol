@@ -21,7 +21,7 @@ import AtmosphereProvider from './AtmosphereProvider'
 import AutoLogin from './components/AutoLogin'
 import ModalRoot from './components/ModalRoot'
 import './index.css'
-import commands from './public/mattermost-plugin-commands.json'
+import commands from './plugin-commands.json'
 
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())

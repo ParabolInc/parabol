@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [8.39.2](https://github.com/ParabolInc/parabol/compare/v8.39.1...v8.39.2) (2025-04-04)
+
+
+### Fixed
+
+* gitlab & azure summaries show up ([#11091](https://github.com/ParabolInc/parabol/issues/11091)) ([7c48282](https://github.com/ParabolInc/parabol/commit/7c48282d5759d7b15165f756912fef87c023a243))
+
+
+### Changed
+
+* add metrics for page creation, insight generation, and team privacy changes ([#11075](https://github.com/ParabolInc/parabol/issues/11075)) ([3c344f2](https://github.com/ParabolInc/parabol/commit/3c344f29513a218433c50d1e5362b7909862608a))
+* **Mattermost Plugin:** Move plugin commands ([#11089](https://github.com/ParabolInc/parabol/issues/11089)) ([c438c68](https://github.com/ParabolInc/parabol/commit/c438c6811376e793ca05944e61c65f7e892b52a6))
+* remove S3 from Iron Bank action ([#11097](https://github.com/ParabolInc/parabol/issues/11097)) ([e991ec0](https://github.com/ParabolInc/parabol/commit/e991ec03d7050badafaa69df39c6bce91526a957))
+
+## [8.39.1](https://github.com/ParabolInc/parabol/compare/v8.39.0...v8.39.1) (2025-04-03)
+
+
+### Fixed
+
+* tiptap mentions ([#11093](https://github.com/ParabolInc/parabol/issues/11093)) ([14f4670](https://github.com/ParabolInc/parabol/commit/14f46707e252403f2938185beb9abf7ef0442efb))
+
 ## [8.39.0](https://github.com/ParabolInc/parabol/compare/v8.38.0...v8.39.0) (2025-04-02)
 
 
