@@ -16,7 +16,7 @@ export default [
   ...base,
   {
     ignores: [
-      'types/webpackEnv.d.ts',
+      'types/webpackEnv.ts',
       'postgres/migrations',
       '**/generated/',
       '**/*/githubTypes.ts',

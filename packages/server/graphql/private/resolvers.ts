@@ -1,7 +1,6 @@
 /* This file dynamically requires all queries, mutations, and types.
  * No need to mess with this unless we add subscriptions to the private schema
  */
-import '../../types/webpackEnv.d'
 import importAll from '../../utils/importAll'
 import {Resolvers} from './resolverTypes'
 
