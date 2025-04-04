@@ -28,7 +28,7 @@ class PublishedDataLoaders {
 }
 const publishedDataLoaders = new PublishedDataLoaders()
 
-const publish = <T>(
+const publish = async <T>(
   topic: T,
   channel: string,
   type: string,
@@ -39,7 +39,7 @@ const publish = <T>(
   const rootValue = {[subName]: {fieldName: type, [type]: payload}}
   const {operationId} = subOptions
   if (operationId) {
-    publishedDataLoaders.add(operationId)
+    await publishedDataLoaders.add(operationId)
   }
   getPubSub()
     .publish(`${topic}.${channel}`, {rootValue, ...subOptions})
