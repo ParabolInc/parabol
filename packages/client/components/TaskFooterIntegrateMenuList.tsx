@@ -39,13 +39,23 @@ type Item = NonNullable<
   >['repoIntegrations']['items']
 >[0]
 
+type LinearProjectItem = Item & {__typename: '_xLinearProject'}
+
+const linearTeamAndProjectName = (item: LinearProjectItem) => {
+  const {name: projectName, teams} = item
+  const {name: teamName} = teams?.nodes?.[0] ?? {}
+  return teamName ? `${teamName}/${projectName}` : `${projectName}`
+}
+
 const getValue = (item: Item) => {
   const {service} = item
   if (service === 'jira' || service === 'azureDevOps' || service === 'jiraServer')
     return item.name ?? ''
   else if (service === 'github') return item.nameWithOwner ?? ''
   else if (service === 'gitlab') return item.fullPath ?? ''
-  else if (service === 'linear') return item.name ?? '' // TODO: nameWithTeam me
+  else if (service === 'linear' && item.__typename === '_xLinearTeam') return item.displayName ?? ''
+  else if (service === 'linear' && item.__typename === '_xLinearProject')
+    return linearTeamAndProjectName(item as LinearProjectItem)
   return ''
 }
 
@@ -76,8 +86,10 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       ... on JiraServerRemoteProject {
         name
       }
+      ... on _xLinearTeam {
+        displayName
+      }
       ... on _xLinearProject {
-        id
         name
         teams(first: 1) {
           nodes {
@@ -221,11 +233,33 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'linear' && repoIntegration.name) {
-          const {id: projectId, name: projectName, teams} = repoIntegration
-          const {id: teamId, name: teamName} = teams?.nodes?.[0] ?? {}
+        if (
+          service === 'linear' &&
+          repoIntegration.__typename === '_xLinearTeam' &&
+          repoIntegration.displayName
+        ) {
+          const {id: teamId, displayName: teamName} = repoIntegration
           if (!teamId) return null
-          const nameWithTeam = teamName ? `${teamName}/${projectName}` : `${projectName}`
+          const integrationRepoId = LinearProjectId.join(teamId)
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={`${teamName}`}
+              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
+              service='linear'
+            />
+          )
+        }
+        if (
+          service === 'linear' &&
+          repoIntegration.__typename === '_xLinearProject' &&
+          repoIntegration.name
+        ) {
+          const {id: projectId, teams} = repoIntegration
+          const {id: teamId} = teams?.nodes?.[0] ?? {}
+          if (!teamId) return null
+          const nameWithTeam = linearTeamAndProjectName(repoIntegration as LinearProjectItem)
           const integrationRepoId = LinearProjectId.join(teamId, projectId)
           return (
             <TaskIntegrationMenuItem
