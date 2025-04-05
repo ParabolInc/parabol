@@ -30,8 +30,9 @@ const DashNavList = (props: Props) => {
         id
         name
         tier
-        viewerTeams {
+        teams {
           id
+          isViewerOnTeam
         }
       }
     `,
@@ -63,7 +64,9 @@ const DashNavList = (props: Props) => {
             </Tooltip>
           </div>
           <DashNavListTeams onClick={onClick} organizationRef={org} />
-          {org.viewerTeams.length === 0 && <EmptyTeams organizationRef={org} />}
+          {org.teams.filter((team) => team.isViewerOnTeam).length === 0 && (
+            <EmptyTeams organizationRef={org} />
+          )}
         </div>
       ))}
     </div>

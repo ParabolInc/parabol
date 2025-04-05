@@ -125,7 +125,7 @@ const NewTeamForm = (props: Props) => {
         lockedAt
         name
         tier
-        allTeams {
+        teams {
           name
           ...NewTeamForm_teams @relay(mask: false)
         }
@@ -143,7 +143,7 @@ const NewTeamForm = (props: Props) => {
   const [inviteAll, setInviteAll] = useState(false)
   const disableFields = !!lockedSelectedOrg && !isNewOrg
   const selectedOrg = organizations.find((org) => org.id === orgId)
-  const selectedOrgTeamMemberEmails = selectedOrg?.allTeams.flatMap(({teamMembers}) =>
+  const selectedOrgTeamMemberEmails = selectedOrg?.teams.flatMap(({teamMembers}) =>
     teamMembers.filter(({isSelf}) => !isSelf).map(({user}) => user.email)
   )
   const uniqueEmailsFromSelectedOrg = Array.from(new Set(selectedOrgTeamMemberEmails))
@@ -164,7 +164,7 @@ const NewTeamForm = (props: Props) => {
     let teamNames: string[] = []
     if (!isNewOrg) {
       if (selectedOrg) {
-        teamNames = selectedOrg.allTeams.map((team) => team.name)
+        teamNames = selectedOrg.teams.map((team) => team.name)
       }
     }
     return teamNameValidation(teamName, teamNames)

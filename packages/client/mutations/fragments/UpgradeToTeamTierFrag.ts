@@ -19,7 +19,7 @@ graphql`
       periodStart
       updatedAt
       lockedAt
-      viewerTeams {
+      teams {
         isPaid
         tier
       }

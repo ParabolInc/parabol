@@ -19,15 +19,17 @@ const EmptyTeams = (props: Props) => {
       fragment EmptyTeams_organization on Organization {
         id
         name
-        publicTeams {
+        teams {
           id
+          isViewerOnTeam
           ...PublicTeamsModal_team
         }
       }
     `,
     organizationRef
   )
-  const {id: orgId, publicTeams} = organization
+  const {id: orgId, teams} = organization
+  const publicTeams = teams.filter((team) => !team.isViewerOnTeam)
   const hasPublicTeams = publicTeams.length > 0
 
   const viewer = useClientQuery<EmptyTeamsQuery>(
@@ -90,4 +92,5 @@ const EmptyTeams = (props: Props) => {
     </>
   )
 }
+
 export default EmptyTeams

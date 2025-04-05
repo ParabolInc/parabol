@@ -8,7 +8,7 @@ graphql`
     organization {
       tier
       billingTier
-      viewerTeams {
+      teams {
         isPaid
         tier
       }
