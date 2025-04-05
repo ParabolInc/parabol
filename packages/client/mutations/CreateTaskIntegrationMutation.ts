@@ -55,11 +55,26 @@ graphql`
           title
           url
         }
+        ... on _xLinearIssue {
+          __typename
+          id
+          description
+          identifier
+          title
+          linearProject: project {
+            name
+          }
+          team {
+            name
+          }
+          url
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
         ...TaskIntegrationLinkIntegrationJiraServer
         ...TaskIntegrationLinkIntegrationGitLab
         ...TaskIntegrationLinkIntegrationAzure
+        ...TaskIntegrationLinkIntegrationLinear
       }
       updatedAt
       teamId
@@ -217,6 +232,37 @@ const azureTaskIntegrationOptimisitcUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
+const linearTaskIntegrationOptimisitcUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: TCreateTaskIntegrationMutation['variables']
+) => {
+  const {taskId} = variables
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const integrationProject = createProxyRecord(store, '_xLinearProject', {
+    name: '?'
+  })
+  const integrationTeam = createProxyRecord(store, '_xLinearTeam', {
+    name: '?'
+  })
+  const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const description = generateHTML(bodyContent, serverTipTapExtensions)
+  const optimisticIntegration = {
+    id: '?',
+    description,
+    identifier: '?',
+    title,
+    updatedAt: now.toJSON()
+  } as const
+  const integration = createProxyRecord(store, '_xLinearIssue', optimisticIntegration)
+  integration.setLinkedRecord(integrationProject, 'project')
+  integration.setLinkedRecord(integrationTeam, 'team')
+  task.setLinkedRecord(integration, 'integration')
+}
+
 const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMutation> = (
   atmosphere,
   variables,
@@ -238,6 +284,8 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
         gitlabTaskIntegrationOptimisitcUpdater(store, variables)
       } else if (integrationProviderService === 'azureDevOps') {
         azureTaskIntegrationOptimisitcUpdater(store, variables)
+      } else if (integrationProviderService === 'linear') {
+        linearTaskIntegrationOptimisitcUpdater(store, variables)
       }
     },
     onCompleted: (data, errors) => {

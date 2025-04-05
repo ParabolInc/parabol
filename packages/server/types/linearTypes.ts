@@ -16436,17 +16436,11 @@ export type CreateCommentMutationVariables = Exact<{
 export type CreateCommentMutation = { __typename?: 'Mutation', commentCreate: { __typename?: 'CommentPayload', success: boolean, comment: { __typename?: 'Comment', id: string, body: string, createdAt: Date, user?: { __typename?: 'User', id: string, name: string } | null } } };
 
 export type CreateIssueMutationVariables = Exact<{
-  title: Scalars['String']['input'];
-  teamId: Scalars['String']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  labelIds?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-  assigneeId?: InputMaybe<Scalars['String']['input']>;
-  priority?: InputMaybe<Scalars['Int']['input']>;
+  input: IssueCreateInput;
 }>;
 
 
-export type CreateIssueMutation = { __typename?: 'Mutation', issueCreate: { __typename?: 'IssuePayload', success: boolean, issue?: { __typename?: 'Issue', id: string, identifier: string, title: string } | null } };
+export type CreateIssueMutation = { __typename?: 'Mutation', issueCreate: { __typename?: 'IssuePayload', success: boolean, issue?: { __typename?: 'Issue', id: string, title: string } | null } };
 
 export type CreateLabelMutationVariables = Exact<{
   name: Scalars['String']['input'];

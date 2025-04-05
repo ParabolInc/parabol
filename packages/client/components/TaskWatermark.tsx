@@ -4,13 +4,15 @@ import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import LinearSVG from './LinearSVG'
 
 const iconLookup = {
   _xGitHubIssue: GitHubSVG,
   JiraIssue: JiraSVG,
   JiraServerIssue: JiraServerSVG,
   _xGitLabIssue: GitLabSVG,
-  AzureDevOpsWorkItem: AzureDevOpsSVG
+  AzureDevOpsWorkItem: AzureDevOpsSVG,
+  _xLinearIssue: LinearSVG
 } as const
 
 const WatermarkBlock = styled('div')({
