@@ -13,6 +13,7 @@ import getLabelsQuery from '../../graphql/nestedSchema/Linear/queries/getLabels.
 import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfile.graphql'
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
+import getTeamsQuery from '../../graphql/nestedSchema/Linear/queries/getTeams.graphql'
 import {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {RootSchema} from '../../types/custom'
 import {
@@ -26,7 +27,6 @@ import {
   GetLabelsQueryVariables,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
-  GetProjectsQuery,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
@@ -162,13 +162,7 @@ class LinearServerManager implements TaskIntegrationManager {
     return [data, error]
   }
 
-  async getProjects({
-    first = 100,
-    ids = null
-  }: {
-    first?: number
-    ids?: string[] | null
-  }): Promise<[GetProjectsQuery | null, Error | null]> {
+  async getProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getProjectsQuery, {first, ids})
     return [data, error]
@@ -185,6 +179,12 @@ class LinearServerManager implements TaskIntegrationManager {
     // Assuming this method uses the constructor's info/context
     const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getLabelsQuery, args)
+    return [data, error]
+  }
+
+  async getTeams({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
+    const linearRequest = this.getLinearRequest(this.info, this.context)
+    const [data, error] = await linearRequest(getTeamsQuery, {first, ids})
     return [data, error]
   }
 

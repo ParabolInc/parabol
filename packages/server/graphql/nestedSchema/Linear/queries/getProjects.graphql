@@ -5,12 +5,11 @@ query getProjects($first: Int, $after: String, $ids: [ID!]) {
         __typename
         id
         name
-        updatedAt
-        url
         teams {
           nodes {
             id
             name
+            key
           }
         }
       }

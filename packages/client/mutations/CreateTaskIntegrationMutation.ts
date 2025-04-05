@@ -130,7 +130,7 @@ const jiraTaskIntegrationOptimisticUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const githubTaskIntegrationOptimisitcUpdater = (
+const githubTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -156,7 +156,7 @@ const githubTaskIntegrationOptimisitcUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const gitlabTaskIntegrationOptimisitcUpdater = (
+const gitlabTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -207,7 +207,7 @@ const jiraServerTaskIntegrationOptimisticUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const azureTaskIntegrationOptimisitcUpdater = (
+const azureTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -232,7 +232,7 @@ const azureTaskIntegrationOptimisitcUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const linearTaskIntegrationOptimisitcUpdater = (
+const linearTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -277,15 +277,15 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
       if (integrationProviderService === 'jira') {
         jiraTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'github') {
-        githubTaskIntegrationOptimisitcUpdater(store, variables)
+        githubTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'jiraServer') {
         jiraServerTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'gitlab') {
-        gitlabTaskIntegrationOptimisitcUpdater(store, variables)
+        gitlabTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'azureDevOps') {
-        azureTaskIntegrationOptimisitcUpdater(store, variables)
+        azureTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'linear') {
-        linearTaskIntegrationOptimisitcUpdater(store, variables)
+        linearTaskIntegrationOptimisticUpdater(store, variables)
       }
     },
     onCompleted: (data, errors) => {
