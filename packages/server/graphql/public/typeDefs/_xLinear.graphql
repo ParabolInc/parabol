@@ -1,0 +1,7 @@
+type _xLinearIssue implements TaskIntegration
+
+type _xLinearProject implements RepoIntegration
+
+extend type _xLinearProject {
+  service: IntegrationProviderServiceEnum!
+}

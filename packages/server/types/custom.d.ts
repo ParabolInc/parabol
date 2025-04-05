@@ -27,4 +27,5 @@ export type ScheduledJobUnion = ScheduledJobMeetingStageTimeLimit | ScheduledTea
 export type RootSchema = GraphQLSchema & {
   githubRequest: ReturnType<typeof nestGitHubEndpoint>['githubRequest']
   gitlabRequest: ReturnType<typeof nestGitHubEndpoint>['githubRequest']
+  linearRequest: ReturnType<typeof nestGitHubEndpoint>['githubRequest']
 }

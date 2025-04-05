@@ -96,7 +96,7 @@ const {schema: typeDefsWithGitHubGitLabLinear, linearRequest} = nestLinearEndpoi
       accessToken: auth.accessToken
     }
   },
-  prefix: '_extLinear',
+  prefix: '_xLinear',
   schemaIDL: linearSchema
 })
 
