@@ -6,7 +6,7 @@ import {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
 import {GQLContext} from '../../graphql'
 import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchGitLabProjects from './fetchGitLabProjects'
-import fetchLinearProjects from './fetchLinearProjects'
+import {fetchLinearProjects, fetchLinearTeams} from './fetchLinearTeamsAndProjects'
 
 type GitHubRepo = {
   id: string
@@ -24,7 +24,12 @@ type GitLabProject = {
 type LinearProject = {
   id: string
   service: 'linear'
-  __typename: 'Project'
+  displayName: string
+}
+
+type LinearTeam = {
+  id: string
+  service: 'linear'
   name: string
 }
 
@@ -35,6 +40,7 @@ export type RemoteRepoIntegration =
   | JiraServerProject
   | AzureAccountProject
   | LinearProject
+  | LinearTeam
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -49,14 +55,16 @@ const fetchAllRepoIntegrations = async (
     gitlabProjects,
     jiraServerProjects,
     azureProjects,
-    linearProjects
+    linearProjects,
+    linearTeams
   ] = await Promise.all([
     dataLoader.get('allJiraProjects').load({teamId, userId}),
     fetchGitHubRepos(teamId, userId, dataLoader, context, info),
     fetchGitLabProjects(teamId, userId, context, info),
     dataLoader.get('allJiraServerProjects').load({teamId, userId}),
     dataLoader.get('allAzureDevOpsProjects').load({teamId, userId}),
-    fetchLinearProjects(teamId, userId, context, info)
+    fetchLinearProjects(teamId, userId, context, info),
+    fetchLinearTeams(teamId, userId, context, info)
   ])
   const repos: RemoteRepoIntegration[][] = [
     jiraProjects,
@@ -64,7 +72,8 @@ const fetchAllRepoIntegrations = async (
     gitlabProjects,
     jiraServerProjects,
     azureProjects,
-    linearProjects
+    linearProjects,
+    linearTeams
   ]
   const maxRepos = Math.max(...repos.map((repo) => repo.length))
   return new Array(maxRepos)
