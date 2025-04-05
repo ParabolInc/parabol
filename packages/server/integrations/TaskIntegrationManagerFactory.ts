@@ -106,14 +106,15 @@ export default class TaskIntegrationManagerFactory {
     }
 
     if (service === 'linear') {
-      // Assuming a data loader key 'freshLinearAuth' exists for Linear
-      const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId})
-      if (!auth) return null
-      const {providerId} = auth
-      const provider = await dataLoader.get('integrationProviders').load(providerId)
-      // Linear requires serverBaseUrl for API endpoint construction
-      if (!provider?.serverBaseUrl) return null
-      return new LinearServerManager(auth, context, info, provider.serverBaseUrl)
+      const auth = await dataLoader
+        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+        .load({service: 'linear', teamId, userId})
+
+      if (!auth) {
+        return null
+      }
+
+      return new LinearServerManager(auth, context, info)
     }
 
     return null

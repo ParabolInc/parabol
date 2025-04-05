@@ -226,7 +226,7 @@
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
           "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject",
-          "_xLinearTeam": "./types/_xLinearTeam#_xLinearTeamSource"
+          "_xLinearTeam": "./types/_xLinearTeam#_xLinearTeamSource as _xLinearProject"
         },
         "showUnusedMappers": false
       },
