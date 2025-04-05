@@ -1,6 +1,7 @@
 import {JSONContent} from '@tiptap/core'
 import {GraphQLResolveInfo} from 'graphql'
 import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
+import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import {GQLContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
@@ -13,15 +14,14 @@ import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfil
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
 import {TeamMemberIntegrationAuth} from '../../postgres/types'
+import {RootSchema} from '../../types/custom'
 import {
   CreateCommentMutation,
   CreateCommentMutationVariables,
   CreateIssueMutation,
-  CreateIssueMutationVariables,
   CreateLabelMutation,
   CreateLabelMutationVariables,
   GetIssueQuery,
-  GetIssueQueryVariables,
   GetLabelsQuery,
   GetLabelsQueryVariables,
   GetProjectIssuesQuery,
@@ -48,7 +48,7 @@ class LinearServerManager implements TaskIntegrationManager {
 
   getLinearRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
     const {schema} = info
-    const composedRequest = (schema as any).linearRequest
+    const composedRequest = (schema as RootSchema).linearRequest
     if (!composedRequest) {
       throw new Error('linearRequest composer not found on schema. Ensure it is configured.')
     }
@@ -75,8 +75,6 @@ class LinearServerManager implements TaskIntegrationManager {
   async createTask(params: {
     rawContentJSON: JSONContent
     integrationRepoId: string // Format: "teamId:projectId" or "teamId"
-    context?: GQLContext
-    info?: GraphQLResolveInfo
   }): Promise<CreateTaskResponse | Error> {
     const {rawContentJSON, integrationRepoId} = params
 
@@ -84,9 +82,8 @@ class LinearServerManager implements TaskIntegrationManager {
       return new Error('integrationRepoId is required and cannot be empty.')
     }
 
-    const ids = integrationRepoId.split(':')
-    const teamId = ids[0]
-    const projectId = ids.length > 1 ? ids[1] : undefined
+    console.log(`integrationRepoId: ${integrationRepoId}`)
+    const {teamId, projectId} = LinearProjectId.split(integrationRepoId)
 
     if (!teamId) {
       return new Error('Could not parse teamId from integrationRepoId.')
@@ -94,19 +91,11 @@ class LinearServerManager implements TaskIntegrationManager {
     const {title, bodyContent} = splitTipTapContent(rawContentJSON)
     const description = convertTipTapToMarkdown(bodyContent)
 
-    // Use provided context/info if available, otherwise use the ones from constructor
-    const info = params.info ?? this.info
-    const context = params.context ?? this.context
-
     const [createIssueData, createIssueError] = await this.createIssueInternal({
-      info,
-      context,
-      variables: {
-        title,
-        description,
-        teamId,
-        projectId
-      }
+      title,
+      description,
+      teamId,
+      projectId: projectId ? projectId : null
     })
 
     if (createIssueError) {
@@ -114,21 +103,18 @@ class LinearServerManager implements TaskIntegrationManager {
     }
 
     const issue = createIssueData?.issueCreate?.issue
-    if (!issue || !issue.id || !issue.identifier) {
+    if (!issue || !issue.id) {
       return new Error('Failed to create Linear issue or missing ID/identifier in response.')
     }
 
-    // Cast providerId to string as the integration type expects string
-    const providerId = String(this.auth.providerId)
-
     return {
-      integrationHash: LinearIssueId.join(providerId, issue.id),
+      integrationHash: LinearIssueId.join(`${this.auth.providerId}`, issue.id),
       issueId: issue.id,
       integration: {
         accessUserId: this.auth.userId,
         service: 'linear',
         gid: issue.id,
-        providerId: providerId
+        providerId: `${this.auth.providerId}`
       }
     }
   }
@@ -142,7 +128,6 @@ class LinearServerManager implements TaskIntegrationManager {
   ): Promise<string | Error> {
     const body = makeCreateLinearTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
 
-    // Assuming this method uses the constructor's info/context
     const [commentData, commentError] = await this.createCommentInternal({
       info: this.info,
       context: this.context,
@@ -184,16 +169,15 @@ class LinearServerManager implements TaskIntegrationManager {
     first?: number
     ids?: string[] | null
   }): Promise<[GetProjectsQuery | null, Error | null]> {
-    // Assuming this method uses the constructor's info/context
     const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getProjectsQuery, {first, ids})
     return [data, error]
   }
 
-  async getIssue(args: GetIssueQueryVariables): Promise<[GetIssueQuery | null, Error | null]> {
+  async getIssue({id}: {id: string}): Promise<[GetIssueQuery | null, Error | null]> {
     // Assuming this method uses the constructor's info/context
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(getIssueQuery, args)
+    const [data, error] = await linearRequest(getIssueQuery, {id})
     return [data, error]
   }
 
@@ -232,19 +216,35 @@ class LinearServerManager implements TaskIntegrationManager {
   }
 
   async createIssueInternal({
-    info,
-    context,
-    variables
+    title,
+    description,
+    teamId,
+    projectId
   }: {
-    info: GraphQLResolveInfo
-    context: GQLContext
-    variables: CreateIssueMutationVariables
-  }): Promise<[CreateIssueMutation | null, Error | null]> {
-    const linearRequest = this.getLinearRequest(info, context)
-    // Pass the imported GraphQL document
-    const [data, error] = await linearRequest(createIssueMutation, variables)
+    title: string
+    description: string
+    teamId: string
+    projectId: string | null
+  }) {
+    const linearRequest = this.getLinearRequest(this.info, this.context)
+
+    console.log(`
+title: ${title}
+description: ${description}
+teamId: ${teamId}
+projectId: ${projectId}
+    `)
+
+    const [data, error] = await linearRequest<CreateIssueMutation>(createIssueMutation, {
+      input: {
+        title,
+        description,
+        teamId,
+        projectId
+      }
+    })
     // Cast the result back to the expected types for type safety downstream
-    return [data, error]
+    return [data, error] as const
   }
 
   async createCommentInternal({

@@ -7,6 +7,7 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
+import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {PALETTE} from '../styles/paletteV3'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -44,7 +45,7 @@ const getValue = (item: Item) => {
     return item.name ?? ''
   else if (service === 'github') return item.nameWithOwner ?? ''
   else if (service === 'gitlab') return item.fullPath ?? ''
-  else if (service === 'linear') return item.nameWithTeam ?? ''
+  else if (service === 'linear') return item.name ?? '' // TODO: nameWithTeam me
   return ''
 }
 
@@ -77,7 +78,13 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       }
       ... on _xLinearProject {
         id
-        nameWithTeam
+        name
+        teams(first: 1) {
+          nodes {
+            id
+            name
+          }
+        }
       }
     }
   `
@@ -214,15 +221,18 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
             />
           )
         }
-        if (service === 'linear' && repoIntegration.nameWithTeam) {
+        if (service === 'linear' && repoIntegration.name) {
+          const {id: projectId, name: projectName, teams} = repoIntegration
+          const {id: teamId, name: teamName} = teams?.nodes?.[0] ?? {}
+          if (!teamId) return null
+          const nameWithTeam = teamName ? `${teamName}/${projectName}` : `${projectName}`
+          const integrationRepoId = LinearProjectId.join(teamId, projectId)
           return (
             <TaskIntegrationMenuItem
               key={integrationRepoId}
               query={query}
-              label={repoIntegration.nameWithTeam}
-              onClick={() =>
-                onPushToIntegration(integrationRepoId, 'linear', repoIntegration.nameWithTeam)
-              }
+              label={nameWithTeam}
+              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
               service='linear'
             />
           )

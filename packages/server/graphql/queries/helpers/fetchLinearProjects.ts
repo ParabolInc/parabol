@@ -47,14 +47,7 @@ const fetchLinearProjects = async (
             return null
           }
 
-          const teamName = edge.node.teams?.nodes?.[0]?.name ?? ''
-
-          return {
-            ...edge.node,
-            nameWithTeam: `${teamName}/${edge.node.name}`,
-            __typename: '_xLinearProject' as const,
-            service: 'linear' as const
-          }
+          return {...edge.node, service: 'linear' as const}
         })
         .filter(isNotNull) ?? []
 

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
+import renderMarkdown from '../utils/renderMarkdown'
 
 const Content = styled('div')({
   paddingLeft: 16,
@@ -44,6 +45,10 @@ const IntegratedTaskContent = (props: Props) => {
           }
           ... on AzureDevOpsWorkItem {
             descriptionHTML
+            title
+          }
+          ... on _xLinearIssue {
+            description
             title
           }
         }
@@ -91,6 +96,15 @@ const IntegratedTaskContent = (props: Props) => {
       <Content>
         <Summary>{title}</Summary>
         {descriptionHTML && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
+      </Content>
+    )
+  } else if (integration.__typename === '_xLinearIssue') {
+    const {description, title} = integration
+    const descriptionHTML = renderMarkdown(`${description}`)
+    return (
+      <Content>
+        <Summary>{title}</Summary>
+        {description && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
       </Content>
     )
   }

@@ -38,6 +38,7 @@ const TaskIntegrationLink = (props: Props) => {
         ...TaskIntegrationLinkIntegrationJiraServer @relay(mask: false)
         ...TaskIntegrationLinkIntegrationGitLab @relay(mask: false)
         ...TaskIntegrationLinkIntegrationAzure @relay(mask: false)
+        ...TaskIntegrationLinkIntegrationLinear @relay(mask: false)
       }
     `,
     integrationRef
@@ -119,6 +120,27 @@ const TaskIntegrationLink = (props: Props) => {
         {children}
       </StyledLink>
     )
+  } else if (integration.__typename === '_xLinearIssue') {
+    const {
+      identifier,
+      team: {name: teamName},
+      linearProject,
+      url
+    } = integration
+    const projectName = linearProject?.name
+    const nameWithTeam = projectName ? `${teamName}/${projectName}` : `${teamName}`
+    return (
+      <StyledLink
+        href={url}
+        rel='noopener noreferrer'
+        target='_blank'
+        title={`Linear Issue #${identifier} on ${nameWithTeam}`}
+        className={className}
+      >
+        {`Issue #${identifier}`}
+        {children}
+      </StyledLink>
+    )
   }
   return null
 }
@@ -162,6 +184,20 @@ graphql`
     id
     teamProject
     type
+    url
+  }
+`
+
+graphql`
+  fragment TaskIntegrationLinkIntegrationLinear on _xLinearIssue {
+    id
+    identifier
+    linearProject: project {
+      name
+    }
+    team {
+      name
+    }
     url
   }
 `
