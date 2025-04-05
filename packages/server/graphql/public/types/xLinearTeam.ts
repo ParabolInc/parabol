@@ -1,7 +1,7 @@
 import {_XLinearProjectResolvers} from '../resolverTypes'
 
-const _xLinearProject: _XLinearProjectResolvers = {
+const _xLinearTeam: _XLinearTeamResolvers = {
   service: () => 'linear'
 }
 
-export default _xLinearProject
+export default _xLinearTeam
