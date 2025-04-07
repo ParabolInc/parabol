@@ -11,19 +11,22 @@ export interface SubOptions {
 
 const REDIS_DATALOADER_TTL = 25_000
 class PublishedDataLoaders {
-  private set = new Set<string>()
-  async add(id: string) {
-    const exists = this.set.has(id)
-    if (exists) return
-    this.set.add(id)
+  private promiseLookup = {} as Record<string, Promise<void>>
+  private async pushToRedis(id: string) {
     const dataLoaderWorker = getInMemoryDataLoader(id)!.dataLoaderWorker
     const str = await serializeDataLoader(dataLoaderWorker)
     // keep the serialized dataloader in redis for long enough for each server to fetch it and make an in-memory copy
     await getRedis().set(`dataLoader:${id}`, str, 'PX', REDIS_DATALOADER_TTL)
     setTimeout(() => {
-      this.set.delete(id)
+      delete this.promiseLookup[id]
       // all calls to publish within a single mutation SHOULD happen within this timeframe
     }, REDIS_DATALOADER_TTL)
+  }
+  async add(id: string) {
+    if (!this.promiseLookup[id]) {
+      this.promiseLookup[id] = this.pushToRedis(id)
+    }
+    return this.promiseLookup[id]
   }
 }
 const publishedDataLoaders = new PublishedDataLoaders()

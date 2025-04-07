@@ -22,6 +22,7 @@ module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
   return {
     mode: 'production',
+    devtool: noDeps ? 'source-map' : undefined,
     node: {
       __dirname: false
     },

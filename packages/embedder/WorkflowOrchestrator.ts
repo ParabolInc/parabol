@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
-import RootDataLoader from 'parabol-server/dataloader/RootDataLoader'
 import getKysely from 'parabol-server/postgres/getKysely'
+import {getNewDataLoader} from '../server/dataloader/getNewDataLoader'
 import {EmbedderJobType} from './EmbedderJobType'
 import {JobQueueError} from './JobQueueError'
 import {DBJob, JobType, Workflow} from './custom'
@@ -93,7 +93,7 @@ export class WorkflowOrchestrator {
     if (!step)
       return this.failJob(jobId, retryCount, new JobQueueError(`Step ${stepName} not found`))
     const {run, getNextStep} = step
-    const dataLoader = new RootDataLoader()
+    const dataLoader = getNewDataLoader()
     let result: Awaited<ReturnType<typeof run>> = false
     const data = {...jobData, embeddingsMetadataId, model}
     try {
@@ -104,6 +104,7 @@ export class WorkflowOrchestrator {
         result.stack = e.stack
       }
     }
+    dataLoader.dispose()
     if (result instanceof JobQueueError) return this.failJob(jobId, retryCount, result)
     await this.finishJob(jobId)
     if (result === false) return

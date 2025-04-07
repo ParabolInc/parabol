@@ -122,7 +122,7 @@ jobs:
           environment: "production"
           sourcemaps: "./build"
           version: ${{env.ACTION_VERSION}}
-      - name: Push Artifacts to Datadog
+      - name: Push Client Artifacts to Datadog
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
           CDN_BUILD_URL: "https://action-files.parabol.co/production/build/"
@@ -131,7 +131,14 @@ jobs:
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
             --minified-path-prefix=${{env.CDN_BUILD_URL}}
-
+      - name: Push Server Artifacts to Datadog
+        env:
+          DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
+        run: |
+          yarn datadog-ci sourcemaps upload ./dist \
+            --service=web \
+            --release-version=${{env.ACTION_VERSION}} \
+            --minified-path-prefix="/parabol/dist/"
       - name: Report Status
         if: failure()
         uses: ravsamhq/notify-slack-action@v2

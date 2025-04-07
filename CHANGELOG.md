@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.4](https://github.com/ParabolInc/parabol/compare/v9.0.3...v9.0.4) (2025-04-07)
+
+
+### Fixed
+
+* [#11107](https://github.com/ParabolInc/parabol/issues/11107) push server sourcemaps to dd ([#11119](https://github.com/ParabolInc/parabol/issues/11119)) ([37d4d98](https://github.com/ParabolInc/parabol/commit/37d4d9856fb58db2203ae898dbcc45a4d121ebb1))
+* bugs found under production load with graphql-yoga ([#11116](https://github.com/ParabolInc/parabol/issues/11116)) ([b46ad57](https://github.com/ParabolInc/parabol/commit/b46ad57e8970625b2f930469e7f349be43dcb37d))
+* use abs path ([#11120](https://github.com/ParabolInc/parabol/issues/11120)) ([1d38bc0](https://github.com/ParabolInc/parabol/commit/1d38bc00aa611d682b5e705b02bab4b920288e30))
+
 ## [9.0.3](https://github.com/ParabolInc/parabol/compare/v9.0.2...v9.0.3) (2025-04-04)
 
 

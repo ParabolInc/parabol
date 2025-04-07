@@ -18,6 +18,7 @@ if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
 }
 const server = Server.configure({
+  stopOnSignals: false,
   port,
   quiet: true,
   async onListen(data) {
@@ -92,3 +93,15 @@ const server = Server.configure({
 })
 
 server.listen()
+
+const signalHandler = async () => {
+  await server.destroy()
+  process.exit(0)
+}
+
+process.on('SIGINT', signalHandler)
+process.on('SIGQUIT', signalHandler)
+process.on('SIGTERM', async () => {
+  // DO NOT CALL process.exit(0), let the handler in server.js handle that
+  await server.destroy()
+})
