@@ -221,9 +221,9 @@ const NewTeamForm = (props: Props) => {
     }
   }
 
-  const goToBilling = () => {
+  const goToBilling = (isPublicTrigger: boolean = false) => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'createTeam',
+      upgradeCTALocation: isPublicTrigger ? 'publicTeams' : 'createTeam',
       orgId,
       upgradeTier: 'team'
     })
