@@ -33,7 +33,6 @@ graphql`
       organization {
         teams {
           id
-          isViewerOnTeam
         }
       }
     }
