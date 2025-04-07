@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.5](https://github.com/ParabolInc/parabol/compare/v9.0.4...v9.0.5) (2025-04-07)
+
+
+### Fixed
+
+* abs path for sourcemaps, add hc to blocklist for dd, disconnect query ([#11122](https://github.com/ParabolInc/parabol/issues/11122)) ([b969fda](https://github.com/ParabolInc/parabol/commit/b969fdab0cb10a5a7122e3a54fc948f5a50a2809))
+
 ## [9.0.4](https://github.com/ParabolInc/parabol/compare/v9.0.3...v9.0.4) (2025-04-07)
 
 
