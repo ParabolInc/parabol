@@ -2,6 +2,7 @@ import {SubscriptionChannel} from '../../../client/types/constEnums'
 import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../../server/appOrigin'
 import {DataLoaderInstance} from '../../../server/dataloader/RootDataLoader'
+import type {DataLoaderWorker} from '../../../server/graphql/graphql'
 import {
   buildCommentContentBlock,
   createAIComment
@@ -42,15 +43,20 @@ const makeSimilarDiscussionLink = async (
   )
 }
 
-const publishComment = async (meetingId: string, commentId: string) => {
+const publishComment = async (
+  meetingId: string,
+  commentId: string,
+  dataLoader: DataLoaderWorker
+) => {
   const data = {commentId, meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, {})
+  const operationId = dataLoader.share()
+  publish(SubscriptionChannel.MEETING, meetingId, 'AddCommentSuccess', data, {operationId})
 }
 
 export const publishSimilarRetroTopics = async (
   embeddingsMetadataId: number,
   similarEmbeddings: {embeddingsMetadataId: number; similarity: number}[],
-  dataLoader: DataLoaderInstance
+  dataLoader: DataLoaderWorker
 ) => {
   const pg = getKysely()
   const links = await Promise.all(
@@ -77,5 +83,5 @@ export const publishSimilarRetroTopics = async (
       discussionId: relatedDiscussionsComment.discussionId
     })
     .execute()
-  publishComment(meetingId, relatedDiscussionsComment.id)
+  publishComment(meetingId, relatedDiscussionsComment.id, dataLoader)
 }
