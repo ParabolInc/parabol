@@ -71,7 +71,7 @@ class ServerHealthChecker {
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
             Logger.log(`serverHealthChecker: ${socketId} is on dead instace ${socketInstanceId}`)
-            await callGQL(disconnectQuery, {userId})
+            await callGQL(disconnectQuery, {userId, socketId})
           })
         })
       )
