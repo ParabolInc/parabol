@@ -138,7 +138,7 @@ jobs:
           yarn datadog-ci sourcemaps upload ./dist \
             --service=web \
             --release-version=${{env.ACTION_VERSION}} \
-            --minified-path-prefix="parabol/dist/"
+            --minified-path-prefix="/parabol/dist/"
       - name: Report Status
         if: failure()
         uses: ravsamhq/notify-slack-action@v2
