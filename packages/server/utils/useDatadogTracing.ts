@@ -1,7 +1,6 @@
 import {handleStreamOrSingleExecutionResult, type ExecutionArgs} from '@envelop/core'
-import {useOnResolve} from '@envelop/on-resolve'
 import tracer, {type opentelemetry, type Span} from 'dd-trace'
-import {defaultFieldResolver, getNamedType, getOperationAST, type GraphQLResolveInfo} from 'graphql'
+import {getOperationAST, type GraphQLResolveInfo} from 'graphql'
 import type {ExecutionResult} from 'graphql-ws'
 import type {Plugin} from 'graphql-yoga'
 import {Path} from 'graphql/jsutils/Path'
@@ -48,43 +47,44 @@ interface Config {
 export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerContext> => {
   if (process.env.DD_TRACE_ENABLED !== 'true') return {}
   return {
-    onPluginInit({addPlugin}) {
-      addPlugin(
-        useOnResolve(({info, context, args, replaceResolver, resolver}) => {
-          // Ignore anything without a custom resolver since it's basically an identity function
-          if (resolver === defaultFieldResolver) return
-          const path = getPath(info, config)
-          const computedPathString = path.join('.')
-          const ddContext = context[ddSymbol]
-          const {rootSpan, fields} = ddContext
-          // if collapsed, we just measure the first item in a list
-          if (config.collapse && fields[computedPathString]) return
+    // Removing resolve-level tracing to see if we can measure executions without OOMs
+    // onPluginInit({addPlugin}) {
+    //   addPlugin(
+    //     useOnResolve(({info, context, args, replaceResolver, resolver}) => {
+    //       // Ignore anything without a custom resolver since it's basically an identity function
+    //       if (resolver === defaultFieldResolver) return
+    //       const path = getPath(info, config)
+    //       const computedPathString = path.join('.')
+    //       const ddContext = context[ddSymbol]
+    //       const {rootSpan, fields} = ddContext
+    //       // if collapsed, we just measure the first item in a list
+    //       if (config.collapse && fields[computedPathString]) return
 
-          const parentSpan = getParentSpan(path, fields) ?? rootSpan
-          const {fieldName, returnType, parentType} = info
-          const returnTypeName = getNamedType(info.returnType).name
-          const parentTypeName = getNamedType(parentType).name
-          const fieldSpan = tracer.startSpan('graphql.resolve', {
-            childOf: parentSpan,
-            tags: {
-              'resource.name': `${info.fieldName}:${returnType}`,
-              'span.type': 'graphql',
-              'graphql.resolver.fieldName': fieldName,
-              'graphql.resolver.typeName': parentTypeName,
-              'graphql.resolver.returnType': returnTypeName,
-              'graphql.resolver.fieldPath': computedPathString,
-              ...makeVariables(config.excludeArgs, args, fieldName)
-            }
-          })
-          fields[computedPathString] = {span: fieldSpan}
-          replaceResolver((...args) => tracer.scope().activate(fieldSpan, () => resolver(...args)))
-          return ({result}) => {
-            markSpanError(fieldSpan, result)
-            fieldSpan.finish()
-          }
-        })
-      )
-    },
+    //       const parentSpan = getParentSpan(path, fields) ?? rootSpan
+    //       const {fieldName, returnType, parentType} = info
+    //       const returnTypeName = getNamedType(info.returnType).name
+    //       const parentTypeName = getNamedType(parentType).name
+    //       const fieldSpan = tracer.startSpan('graphql.resolve', {
+    //         childOf: parentSpan,
+    //         tags: {
+    //           'resource.name': `${info.fieldName}:${returnType}`,
+    //           'span.type': 'graphql',
+    //           'graphql.resolver.fieldName': fieldName,
+    //           'graphql.resolver.typeName': parentTypeName,
+    //           'graphql.resolver.returnType': returnTypeName,
+    //           'graphql.resolver.fieldPath': computedPathString,
+    //           ...makeVariables(config.excludeArgs, args, fieldName)
+    //         }
+    //       })
+    //       fields[computedPathString] = {span: fieldSpan}
+    //       replaceResolver((...args) => tracer.scope().activate(fieldSpan, () => resolver(...args)))
+    //       return ({result}) => {
+    //         markSpanError(fieldSpan, result)
+    //         fieldSpan.finish()
+    //       }
+    //     })
+    //   )
+    // },
     onExecute({args, extendContext, executeFn, setExecuteFn}) {
       const operationAst = getOperationAST(args.document, args.operationName)!
       const operationType = operationAst.operation
@@ -110,45 +110,46 @@ export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerCont
           })
         }
       }
-    },
-    onSubscribe({args, extendContext, setSubscribeFn, subscribeFn}) {
-      const operationAst = getOperationAST(args.document, args.operationName)!
-      const operationType = operationAst.operation
-      const operationName = operationAst.name?.value || 'anonymous'
-      const resourceName = `${operationType} ${operationName}`
-
-      const rootSpan = tracer.startSpan('graphql', {
-        tags: {
-          'service.name': 'web-graphql',
-          'resource.name': resourceName,
-          'span.type': 'graphql',
-          'graphql.subscribe.operationName': operationName,
-          'graphql.subscribe.operationType': operationType
-        }
-      })
-      extendContext({[ddSymbol]: {rootSpan, fields: {}}})
-      setSubscribeFn((args) => tracer.scope().activate(rootSpan, () => subscribeFn(args)))
-      return {
-        onSubscribeError: ({error}) => {
-          markSpanError(rootSpan, error)
-          rootSpan.finish()
-        },
-        onSubscribeResult() {
-          return {
-            onNext: ({result}) => {
-              markTopLevelError(rootSpan, result)
-            },
-            onEnd: () => {
-              rootSpan.finish()
-            }
-          }
-        }
-      }
     }
+    // Ignoring subscriptions to see if that reduces OOM errors caused by dd-trace
+    // onSubscribe({args, extendContext, setSubscribeFn, subscribeFn}) {
+    //   const operationAst = getOperationAST(args.document, args.operationName)!
+    //   const operationType = operationAst.operation
+    //   const operationName = operationAst.name?.value || 'anonymous'
+    //   const resourceName = `${operationType} ${operationName}`
+
+    //   const rootSpan = tracer.startSpan('graphql', {
+    //     tags: {
+    //       'service.name': 'web-graphql',
+    //       'resource.name': resourceName,
+    //       'span.type': 'graphql',
+    //       'graphql.subscribe.operationName': operationName,
+    //       'graphql.subscribe.operationType': operationType
+    //     }
+    //   })
+    //   extendContext({[ddSymbol]: {rootSpan, fields: {}}})
+    //   setSubscribeFn((args) => tracer.scope().activate(rootSpan, () => subscribeFn(args)))
+    //   return {
+    //     onSubscribeError: ({error}) => {
+    //       markSpanError(rootSpan, error)
+    //       rootSpan.finish()
+    //     },
+    //     onSubscribeResult() {
+    //       return {
+    //         onNext: ({result}) => {
+    //           markTopLevelError(rootSpan, result)
+    //         },
+    //         onEnd: () => {
+    //           rootSpan.finish()
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
 
-const makeVariables = (
+export const makeVariables = (
   excludeArgs: Config['excludeArgs'],
   variableValues: Record<string, any> | undefined | null,
   fieldName: string
@@ -163,7 +164,7 @@ const makeVariables = (
   )
 }
 
-const getParentSpan = (path: (string | number)[], fields: Fields) => {
+export const getParentSpan = (path: (string | number)[], fields: Fields) => {
   const maybeParentPath = path.slice(0, -1)
   const lastField = maybeParentPath.at(-1)
   const parentPath =
@@ -182,7 +183,7 @@ function markTopLevelError(span: tracer.Span | opentelemetry.Span, result: Execu
   }
 }
 
-function markSpanError(span: tracer.Span, error: unknown) {
+export function markSpanError(span: tracer.Span, error: unknown) {
   if (error instanceof Error) {
     span.setTag('error.stack', error.stack)
     span.setTag('error.message', error.message)
@@ -190,7 +191,7 @@ function markSpanError(span: tracer.Span, error: unknown) {
   }
 }
 
-function getPath(info: GraphQLResolveInfo, config: {collapse?: boolean}) {
+export function getPath(info: GraphQLResolveInfo, config: {collapse?: boolean}) {
   const responsePathAsArray = config.collapse ? withCollapse(pathToArray) : pathToArray
   return responsePathAsArray(info && info.path)
 }

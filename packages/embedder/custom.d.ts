@@ -1,4 +1,4 @@
-import type {DataLoaderInstance} from '../server/dataloader/RootDataLoader'
+import type {DataLoaderWorker} from '../server/graphql/graphql'
 import type {DB} from '../server/postgres/types/pg'
 import {JobQueueError} from './JobQueueError'
 
@@ -8,7 +8,7 @@ type GetInputData<T> = T extends JobQueueStepRun<infer U> ? U : never
 export type ParentJob<T> = GetInputData<T> | GetInputData<T>[]
 
 interface StepContext<TData> {
-  dataLoader: DataLoaderInstance
+  dataLoader: DataLoaderWorker
   data: TData
 }
 
