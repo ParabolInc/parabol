@@ -58,15 +58,14 @@ const Organization: OrganizationResolvers = {
       dataLoader.get('teamsByOrgIds').load(orgId),
       isUserOrgAdmin(viewerId, orgId, dataLoader)
     ])
+    const sortedTeams = teamsInOrg.sort((a, b) => a.name.localeCompare(b.name))
 
     if (isOrgAdmin || isSuperUser(authToken)) {
       // Org admins and super users can see all teams
-      return teamsInOrg.sort((a, b) => a.name.localeCompare(b.name))
+      return sortedTeams.sort((a, b) => a.name.localeCompare(b.name))
     } else {
       // Regular users can see teams they're on plus public teams
-      return teamsInOrg
-        .filter((team) => team.isPublic || authToken.tms.includes(team.id))
-        .sort((a, b) => a.name.localeCompare(b.name))
+      return sortedTeams.filter((team) => team.isPublic || authToken.tms.includes(team.id))
     }
   },
 
