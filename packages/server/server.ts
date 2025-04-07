@@ -30,7 +30,12 @@ tracer.init({
   plugins: false,
   version: __APP_VERSION__
 })
-tracer.use('ioredis').use('http').use('pg')
+tracer
+  .use('ioredis')
+  .use('http', {
+    blocklist: ['/health', '/ready']
+  })
+  .use('pg')
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
