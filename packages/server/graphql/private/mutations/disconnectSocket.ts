@@ -8,13 +8,10 @@ import {MutationResolvers} from '../resolverTypes'
 
 const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   _source,
-  {userId},
-  {dataLoader, socketId}
+  {userId, socketId},
+  {dataLoader}
 ) => {
   const redis = getRedis()
-
-  // AUTH
-  if (!socketId) return null
 
   // RESOLUTION
   const [user, userPresence] = await Promise.all([

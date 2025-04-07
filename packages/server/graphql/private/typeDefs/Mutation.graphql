@@ -149,6 +149,10 @@ type Mutation {
     the userId to disconnect
     """
     userId: ID!
+    """
+    the socketId of the user that disconnected
+    """
+    socketId: ID!
   ): DisconnectSocketPayload
 
   """
