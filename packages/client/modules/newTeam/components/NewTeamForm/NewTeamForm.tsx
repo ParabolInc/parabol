@@ -329,7 +329,7 @@ const NewTeamForm = (props: Props) => {
               <BoldText>{lockedSelectedOrg.name}</BoldText>
               {` has reached the limit of `}
               <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams.`} </BoldText>
-              <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
+              <StyledLink onClick={() => goToBilling()}>Upgrade</StyledLink>
               {' to create more teams.'}
             </WarningMsg>
           )}
@@ -355,8 +355,8 @@ const NewTeamForm = (props: Props) => {
                             </>
                           ) : (
                             <>
-                              <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make it
-                              private.
+                              <StyledLink onClick={() => goToBilling(true)}>Upgrade</StyledLink> to
+                              make it private.
                             </>
                           )}
                         </div>
