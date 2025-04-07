@@ -49,8 +49,8 @@ mutation ConnectSocket($socketInstanceId: ID!) {
 }`
 
 export const disconnectQuery = `
-mutation DisconnectSocket($userId: ID!) {
-  disconnectSocket(userId: $userId) {
+mutation DisconnectSocket($userId: ID!, $socketId: ID!) {
+  disconnectSocket(userId: $userId, socketId: $socketId) {
     user {
       id
     }
@@ -212,7 +212,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     const dataLoader = getNewDataLoader()
     await execute({
       document: parse(disconnectQuery),
-      variableValues: {userId},
+      variableValues: {userId, socketId},
       schema: privateSchema,
       contextValue: {dataLoader, ip: extra.ip, authToken, socketId}
     })
