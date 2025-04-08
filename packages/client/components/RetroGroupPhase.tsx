@@ -98,7 +98,11 @@ const RetroGroupPhase = (props: Props) => {
     MenuPosition.UPPER_CENTER
   )
   const showSuggestGroups = !resetReflectionGroups // resetReflectionGroups only exists after clicking suggest groups and is removed after clicking reset
-  const tooltipSuggestGroupsText = `Click to group cards by common topics. Don't worry, you'll be able to undo this! This is a premium feature that we'll share with you during your first few retros.`
+  const tooltipSuggestGroupsText = `Click to group cards by common topics. Don't worry, you'll be able to undo this! ${
+    tier === 'starter'
+      ? `This is a premium feature that we'll share with you during your first few retros.`
+      : ''
+  }`
   const tooltipResetText = `Reset your groups to the way they were before you clicked Suggest Groups`
   const teamOverLimitText = `You have reached the limit. Please upgrade to a paid plan to continue using this feature.`
   const tooltipText = showSuggestGroups
