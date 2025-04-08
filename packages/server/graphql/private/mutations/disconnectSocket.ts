@@ -19,6 +19,8 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
     redis.lrange(`presence:${userId}`, 0, -1)
   ])
   if (!user) {
+    // user could've been deleted & then key not wiped
+    await redis.del(`presence:${userId}`)
     throw new Error(`User does not exist: ${userId}`)
   }
   const tms = user.tms ?? []
