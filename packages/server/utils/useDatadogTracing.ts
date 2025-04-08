@@ -57,6 +57,9 @@ export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerCont
           const path = getPath(info, config)
           const computedPathString = path.join('.')
           const ddContext = context[ddSymbol]
+          // context is set in onExecute or onSubscribe, depending on the parent operation
+          // if the parent operation did not set context, then the resolver has no parent & we cannot continue
+          if (!ddContext) return
           const {rootSpan, fields} = ddContext
           // if collapsed, we just measure the first item in a list
           if (config.collapse && fields[computedPathString]) return
