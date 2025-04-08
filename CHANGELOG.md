@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.6](https://github.com/ParabolInc/parabol/compare/v9.0.5...v9.0.6) (2025-04-08)
+
+
+### Fixed
+
+* turn on dd resolvers ([#11125](https://github.com/ParabolInc/parabol/issues/11125)) ([ba2ef28](https://github.com/ParabolInc/parabol/commit/ba2ef2884be0422cbac5fe461dc438f626838cfa))
+
+
+### Changed
+
+* refactor teams query in organization ([#11085](https://github.com/ParabolInc/parabol/issues/11085)) ([7134bbb](https://github.com/ParabolInc/parabol/commit/7134bbbe14042e7828c26171e494c1c45488d1df))
+* Trace Azure DevOps workItems queries ([#11132](https://github.com/ParabolInc/parabol/issues/11132)) ([f2357c8](https://github.com/ParabolInc/parabol/commit/f2357c835560ca09fa0c37fb3f418c895b4448da))
+
 ## [9.0.5](https://github.com/ParabolInc/parabol/compare/v9.0.4...v9.0.5) (2025-04-07)
 
 

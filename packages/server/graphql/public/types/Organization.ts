@@ -1,7 +1,6 @@
 import {
   getUserId,
   isSuperUser,
-  isTeamMember,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
@@ -53,72 +52,26 @@ const Organization: OrganizationResolvers = {
     return getActiveTeamCountByOrgIds(orgId)
   },
 
-  allTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
+  teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
-    const [allTeamsOnOrg, isOrgAdmin] = await Promise.all([
+    const [teamsInOrg, isOrgAdmin] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
-      dataLoader.get('organizations').loadNonNull(orgId),
       isUserOrgAdmin(viewerId, orgId, dataLoader)
     ])
-    const sortedTeamsOnOrg = allTeamsOnOrg.sort((a, b) => a.name.localeCompare(b.name))
+    const sortedTeams = teamsInOrg.sort((a, b) => a.name.localeCompare(b.name))
+
     if (isOrgAdmin || isSuperUser(authToken)) {
-      const viewerTeams = sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
-      const otherTeams = sortedTeamsOnOrg.filter((team) => !authToken.tms.includes(team.id))
-      return [...viewerTeams, ...otherTeams]
+      // Org admins and super users can see all teams
+      return sortedTeams
     } else {
-      return sortedTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
+      // Regular users can see teams they're on plus public teams
+      return sortedTeams.filter((team) => team.isPublic || authToken.tms.includes(team.id))
     }
   },
 
   allTeamsCount: async ({id: orgId}, _args, {dataLoader}) => {
     const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
     return allTeamsOnOrg?.length ?? 0
-  },
-
-  viewerTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
-    const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-    return allTeamsOnOrg
-      .filter((team) => authToken.tms.includes(team.id))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  },
-
-  publicTeams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
-    const allTeamsOnOrg = await dataLoader.get('teamsByOrgIds').load(orgId)
-    const publicTeams = allTeamsOnOrg.filter(
-      (team) => (team.isPublic || isSuperUser(authToken)) && !isTeamMember(authToken, team.id)
-    )
-
-    const teamsWithMeetingData = await Promise.all(
-      publicTeams.map(async (team) => {
-        const [completedMeetings, activeMeetings] = await Promise.all([
-          dataLoader.get('completedMeetingsByTeamId').load(team.id),
-          dataLoader.get('activeMeetingsByTeamId').load(team.id)
-        ])
-
-        const allMeetingDates = [
-          ...completedMeetings.map((meeting) => new Date(meeting.endedAt || meeting.createdAt)),
-          ...activeMeetings.map((meeting) => new Date(meeting.createdAt))
-        ]
-
-        const lastMetAt =
-          allMeetingDates.length > 0
-            ? new Date(Math.max(...allMeetingDates.map((date) => date.getTime())))
-            : null
-
-        return {
-          ...team,
-          lastMetAt
-        }
-      })
-    )
-
-    // Show teams who met most recently first
-    return teamsWithMeetingData.sort((a, b) => {
-      if (!a.lastMetAt && !b.lastMetAt) return 0
-      if (!a.lastMetAt) return 1
-      if (!b.lastMetAt) return -1
-      return b.lastMetAt.getTime() - a.lastMetAt.getTime()
-    })
   },
 
   viewerOrganizationUser: async ({id: orgId}, _args, {dataLoader, authToken}) => {

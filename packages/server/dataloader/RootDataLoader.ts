@@ -1,5 +1,4 @@
 import DataLoader from 'dataloader'
-import {Logger} from '../utils/Logger'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
@@ -94,10 +93,3 @@ export default class RootDataLoader<
 // RootDataLoader
 
 export const dataLoaderCache = new DataLoaderCache(RootDataLoader)
-
-// Can remove this after we verify there are no memory leaks in prod
-// count staying constant or going down = good
-setInterval(() => {
-  const workerCount = Object.keys(dataLoaderCache.workers).length
-  Logger.log({workerCount})
-}, 60_000).unref()
