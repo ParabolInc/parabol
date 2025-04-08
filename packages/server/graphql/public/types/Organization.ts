@@ -62,7 +62,7 @@ const Organization: OrganizationResolvers = {
 
     if (isOrgAdmin || isSuperUser(authToken)) {
       // Org admins and super users can see all teams
-      return sortedTeams.sort((a, b) => a.name.localeCompare(b.name))
+      return sortedTeams
     } else {
       // Regular users can see teams they're on plus public teams
       return sortedTeams.filter((team) => team.isPublic || authToken.tms.includes(team.id))
