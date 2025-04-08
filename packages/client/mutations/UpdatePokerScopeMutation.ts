@@ -72,6 +72,10 @@ graphql`
       parabolSearchQuery {
         queryString
       }
+      linearSearchQuery {
+        queryString
+        selectedProjectsIds
+      }
       phases {
         ... on EstimatePhase {
           stages {

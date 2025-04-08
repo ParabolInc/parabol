@@ -22,5 +22,42 @@ type LinearIntegration {
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
 
-  # Add other Linear-specific fields here later if needed
+  """
+  An historical list of GitLab Sprint Poker search queries
+  """
+  linearSearchQueries: [LinearSearchQuery!]!
+
+  """
+  A list of projects accessible by this team member
+  """
+  projects: [RepoIntegration!]!
+  projectsIssues(
+    first: Int!
+
+    """
+    the stringified cursors for pagination
+    """
+    after: String
+
+    """
+    the ids of the projects selected as filters
+    """
+    projectsIds: [String]
+
+    """
+    the search query that the user enters to filter issues
+    """
+    searchQuery: String!
+
+    """
+    the sort string that defines the order of the returned issues
+    """
+    sort: String!
+
+    """
+    the state of issues, e.g. opened or closed
+    """
+    state: String!
+  ): LinearIntegrationConnection!
+}
 }
