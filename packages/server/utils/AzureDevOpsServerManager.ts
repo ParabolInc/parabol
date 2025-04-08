@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import tracer from 'dd-trace'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
@@ -422,55 +423,59 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
 
   async getWorkItemData(instanceId: string, workItemIds: number[], fields?: string[]) {
-    const workItems = [] as WorkItem[]
-    let firstError: Error | undefined
-    const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
-    // we can fetch at most 200 items at once VS403474
-    for (let i = 0; i < workItemIds.length; i += 200) {
-      const ids = workItemIds.slice(i, i + 200)
-      const payload = !!fields ? {ids, fields: fields} : {ids, $expand: 'Links'}
-      const res = await this.post<WorkItemBatchResponse>(uri, payload)
+    return tracer.trace('AzureDevOpsServerManager.getWorkItemData', async () => {
+      const workItems = [] as WorkItem[]
+      let firstError: Error | undefined
+      const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
+      // we can fetch at most 200 items at once VS403474
+      for (let i = 0; i < workItemIds.length; i += 200) {
+        const ids = workItemIds.slice(i, i + 200)
+        const payload = !!fields ? {ids, fields: fields} : {ids, $expand: 'Links'}
+        const res = await this.post<WorkItemBatchResponse>(uri, payload)
+        if (res instanceof Error) {
+          if (!firstError) {
+            firstError = res
+          }
+        } else {
+          const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
+            return {
+              ...workItem
+            }
+          })
+          workItems.push(...mappedWorkItems)
+        }
+      }
+      return {error: firstError, workItems: workItems}
+    })
+  }
+
+  async executeWiqlQuery(instanceId: string, query: string) {
+    return tracer.trace('AzureDevOpsServerManager.executeWiqlQuery', async () => {
+      const workItemReferences = [] as WorkItemReference[]
+      let firstError: Error | undefined
+      const payload = {
+        query: query
+      }
+      const res = await this.post<WorkItemQueryResult>(
+        `https://${instanceId}/_apis/wit/wiql?api-version=6.0`,
+        payload
+      )
       if (res instanceof Error) {
         if (!firstError) {
           firstError = res
         }
       } else {
-        const mappedWorkItems = (res.value as WorkItem[]).map((workItem) => {
+        const workItems = res.workItems.map((workItem) => {
+          const {id, url} = workItem
           return {
-            ...workItem
+            id,
+            url
           }
         })
-        workItems.push(...mappedWorkItems)
+        workItemReferences.push(...workItems)
       }
-    }
-    return {error: firstError, workItems: workItems}
-  }
-
-  async executeWiqlQuery(instanceId: string, query: string) {
-    const workItemReferences = [] as WorkItemReference[]
-    let firstError: Error | undefined
-    const payload = {
-      query: query
-    }
-    const res = await this.post<WorkItemQueryResult>(
-      `https://${instanceId}/_apis/wit/wiql?api-version=6.0`,
-      payload
-    )
-    if (res instanceof Error) {
-      if (!firstError) {
-        firstError = res
-      }
-    } else {
-      const workItems = res.workItems.map((workItem) => {
-        const {id, url} = workItem
-        return {
-          id,
-          url
-        }
-      })
-      workItemReferences.push(...workItems)
-    }
-    return {error: firstError, workItems: workItemReferences}
+      return {error: firstError, workItems: workItemReferences}
+    })
   }
 
   async getWorkItems(
@@ -479,24 +484,26 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     projectKeyFilters: string[] | null,
     isWIQL: boolean
   ) {
-    let projectFilter = ''
-    if (projectKeyFilters && projectKeyFilters.length > 0) {
-      projectKeyFilters.forEach((projectKey, idx) => {
-        if (idx === 0) projectFilter = `AND ( [System.TeamProject] = '${projectKey}'`
-        else projectFilter += ` OR [System.TeamProject] = '${projectKey}'`
-      })
-      projectFilter += ` )`
-    }
-    let customQueryString = ''
-    if (isWIQL)
-      customQueryString = queryString
-        ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString} ${projectFilter}`
-        : `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
-    else {
-      const queryFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
-      customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' ${queryFilter} ${projectFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
-    }
-    return await this.executeWiqlQuery(instanceId, customQueryString)
+    return tracer.trace('AzureDevOpsServerManager.getWorkItems', async () => {
+      let projectFilter = ''
+      if (projectKeyFilters && projectKeyFilters.length > 0) {
+        projectKeyFilters.forEach((projectKey, idx) => {
+          if (idx === 0) projectFilter = `AND ( [System.TeamProject] = '${projectKey}'`
+          else projectFilter += ` OR [System.TeamProject] = '${projectKey}'`
+        })
+        projectFilter += ` )`
+      }
+      let customQueryString = ''
+      if (isWIQL)
+        customQueryString = queryString
+          ? `Select [System.Id], [System.Title], [System.State] From WorkItems Where ${queryString} ${projectFilter}`
+          : `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+      else {
+        const queryFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
+        customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' ${queryFilter} ${projectFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
+      }
+      return await this.executeWiqlQuery(instanceId, customQueryString)
+    })
   }
 
   async getAllUserWorkItems(
@@ -504,49 +511,51 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     projectKeyFilters: string[] | null,
     isWIQL: boolean
   ) {
-    const allWorkItems = [] as WorkItem[]
-    let firstError: Error | undefined
+    return tracer.trace('AzureDevOpsServerManager.getAllUserWorkItems', async () => {
+      const allWorkItems = [] as WorkItem[]
+      let firstError: Error | undefined
 
-    const meResult = await this.getMe()
-    const {error: meError, azureDevOpsUser} = meResult
-    if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
+      const meResult = await this.getMe()
+      const {error: meError, azureDevOpsUser} = meResult
+      if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
 
-    const {id} = azureDevOpsUser
-    const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-    if (!!accessibleError) return {error: accessibleError, projects: null}
+      const {id} = azureDevOpsUser
+      const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
+      if (!!accessibleError) return {error: accessibleError, projects: null}
 
-    for (const resource of accessibleOrgs) {
-      const {accountName} = resource
-      const instanceId = `dev.azure.com/${accountName}`
-      const {error: workItemsError, workItems} = await this.getWorkItems(
-        instanceId,
-        queryString,
-        projectKeyFilters,
-        isWIQL
-      )
-      if (!!workItemsError) {
-        if (!firstError) {
-          firstError = workItemsError
-        }
-      }
-      if (!!workItems) {
-        const resturnedIds = workItems.map((workItem) => workItem.id)
-        if (resturnedIds.length > 0) {
-          const {error: fullWorkItemsError, workItems: fullWorkItems} = await this.getWorkItemData(
+      await Promise.allSettled(
+        accessibleOrgs.map(async (resource) => {
+          const {accountName} = resource
+          const instanceId = `dev.azure.com/${accountName}`
+          const {error: workItemsError, workItems} = await this.getWorkItems(
             instanceId,
-            resturnedIds
+            queryString,
+            projectKeyFilters,
+            isWIQL
           )
-          if (!!fullWorkItemsError) {
+          if (!!workItemsError) {
             if (!firstError) {
-              firstError = fullWorkItemsError
+              firstError = workItemsError
             }
-          } else {
-            allWorkItems.push(...fullWorkItems)
           }
-        }
-      }
-    }
-    return {error: firstError, workItems: allWorkItems}
+          if (!!workItems) {
+            const resturnedIds = workItems.map((workItem) => workItem.id)
+            if (resturnedIds.length > 0) {
+              const {error: fullWorkItemsError, workItems: fullWorkItems} =
+                await this.getWorkItemData(instanceId, resturnedIds)
+              if (!!fullWorkItemsError) {
+                if (!firstError) {
+                  firstError = fullWorkItemsError
+                }
+              } else {
+                allWorkItems.push(...fullWorkItems)
+              }
+            }
+          }
+        })
+      )
+      return {error: firstError, workItems: allWorkItems}
+    })
   }
 
   async getMe() {
@@ -567,28 +576,30 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
 
   async getAllUserProjects() {
-    const teamProjectReferences = [] as TeamProjectReference[]
-    let firstError: Error | undefined
-    const meResult = await this.getMe()
-    const {error: meError, azureDevOpsUser} = meResult
-    if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
+    return tracer.trace('AzureDevOpsServerManager.getAllUserProjects', async () => {
+      const teamProjectReferences = [] as TeamProjectReference[]
+      let firstError: Error | undefined
+      const meResult = await this.getMe()
+      const {error: meError, azureDevOpsUser} = meResult
+      if (!!meError || !azureDevOpsUser) return {error: meError, projects: null}
 
-    const {id} = azureDevOpsUser
-    const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-    if (!!accessibleError) return {error: accessibleError, projects: null}
+      const {id} = azureDevOpsUser
+      const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
+      if (!!accessibleError) return {error: accessibleError, projects: null}
 
-    for (const resource of accessibleOrgs) {
-      const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
-        resource.accountName
-      )
-      if (!!accountProjectsError && !firstError) {
-        firstError = accountProjectsError
-        break
-      } else {
-        teamProjectReferences.push(...accountProjects)
+      for (const resource of accessibleOrgs) {
+        const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
+          resource.accountName
+        )
+        if (!!accountProjectsError && !firstError) {
+          firstError = accountProjectsError
+          break
+        } else {
+          teamProjectReferences.push(...accountProjects)
+        }
       }
-    }
-    return {error: undefined, projects: teamProjectReferences}
+      return {error: undefined, projects: teamProjectReferences}
+    })
   }
 
   private async getProjectProperties(instanceId: string, projectId: string) {
@@ -603,39 +614,43 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   }
 
   async getProjectProcessTemplate(instanceId: string, projectId: string) {
-    let firstError: Error | undefined
-    const result = await this.getProjectProperties(instanceId, projectId)
-    if (result.error) {
-      firstError = result.error
-    }
-    const processTemplateProperty = result.projectProperties.value[0]
-    if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
-      return {error: firstError, projectTemplate: ''}
-    }
-    const processTemplateDetailsResult = await this.getProcessTemplate(
-      instanceId,
-      processTemplateProperty?.value
-    )
-    if (processTemplateDetailsResult.error) {
-      if (!firstError) {
-        firstError = processTemplateDetailsResult.error
+    return tracer.trace('AzureDevOpsServerManager.getProjectProcessTemplate', async () => {
+      let firstError: Error | undefined
+      const result = await this.getProjectProperties(instanceId, projectId)
+      if (result.error) {
+        firstError = result.error
       }
-    }
-    return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+      const processTemplateProperty = result.projectProperties.value[0]
+      if (processTemplateProperty?.name !== 'System.CurrentProcessTemplateId') {
+        return {error: firstError, projectTemplate: ''}
+      }
+      const processTemplateDetailsResult = await this.getProcessTemplate(
+        instanceId,
+        processTemplateProperty?.value
+      )
+      if (processTemplateDetailsResult.error) {
+        if (!firstError) {
+          firstError = processTemplateDetailsResult.error
+        }
+      }
+      return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+    })
   }
 
   async getProcessTemplate(instanceId: string, processId: string) {
-    let firstError: Error | undefined
-    const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
-    const result = await this.get<Process>(uri)
-    const unknownProcessErrorCode = 'VS402362'
-    if (result instanceof Error) {
-      if (result.message.includes(unknownProcessErrorCode, 0)) {
-        return {error: firstError, process: 'Basic'}
+    return tracer.trace('AzureDevOpsServerManager.getProcessTemplate', async () => {
+      let firstError: Error | undefined
+      const uri = `https://${instanceId}/_apis/process/processes/${processId}?api-version=6.0`
+      const result = await this.get<Process>(uri)
+      const unknownProcessErrorCode = 'VS402362'
+      if (result instanceof Error) {
+        if (result.message.includes(unknownProcessErrorCode, 0)) {
+          return {error: firstError, process: 'Basic'}
+        }
+        firstError = result
       }
-      firstError = result
-    }
-    return {error: firstError, process: result.name}
+      return {error: firstError, process: result.name}
+    })
   }
 
   async getProject(instanceId: string, projectId: string) {
