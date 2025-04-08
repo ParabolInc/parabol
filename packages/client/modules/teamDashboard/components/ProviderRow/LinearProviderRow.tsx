@@ -17,23 +17,29 @@ interface Props {
 }
 
 graphql`
+  fragment LinearProviderRowTeamMemberIntegrations on TeamMemberIntegrations {
+    linear {
+      auth {
+        accessToken
+      }
+      cloudProvider {
+        id
+        clientId
+        serverBaseUrl
+      }
+      sharedProviders {
+        id
+        clientId
+        serverBaseUrl
+      }
+    }
+  }
+`
+
+graphql`
   fragment LinearProviderRowTeamMember on TeamMember {
     integrations {
-      linear {
-        auth {
-          accessToken
-        }
-        cloudProvider {
-          id
-          clientId
-          serverBaseUrl
-        }
-        sharedProviders {
-          id
-          clientId
-          serverBaseUrl
-        }
-      }
+      ...LinearProviderRowTeamMemberIntegrations @relay(mask: false)
     }
   }
 `

@@ -28,6 +28,7 @@ extend type PokerMeeting {
   jiraServerSearchQuery: JiraSearchQuery!
   parabolSearchQuery: ParabolSearchQuery!
   azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
+  linearSearchQuery: LinearSearchQuery!
 }
 
 extend type RetrospectiveMeeting {
