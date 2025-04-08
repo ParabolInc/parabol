@@ -22,17 +22,15 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         tier
-        allTeams {
+        teams {
           id
           name
           lastMetAt
           teamMembers {
             id
           }
+          isViewerOnTeam
           ...OrgTeamsRow_team
-        }
-        viewerTeams {
-          id
         }
         allTeamsCount
       }
@@ -48,10 +46,9 @@ const OrgTeams = (props: Props) => {
 
   const [sortBy, setSortBy] = useState<SortField>('lastMetAt')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-
-  const {allTeams, tier, viewerTeams, allTeamsCount} = organization
-  const showingAllTeams = allTeams.length === allTeamsCount
-  const viewerTeamCount = viewerTeams.length
+  const {teams, allTeamsCount, tier} = organization
+  const showingAllTeams = teams.length === allTeamsCount
+  const viewerTeamCount = teams.length
 
   const handleSort = (field: SortField) => {
     if (sortBy === field) {
@@ -62,7 +59,7 @@ const OrgTeams = (props: Props) => {
     }
   }
 
-  const sortedTeams = [...allTeams].sort((a, b) => {
+  const sortedTeams = [...teams].sort((a, b) => {
     const direction = sortDirection === 'asc' ? 1 : -1
     if (sortBy === 'name') {
       return direction * a.name.localeCompare(b.name)

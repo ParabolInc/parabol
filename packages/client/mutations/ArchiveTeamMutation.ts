@@ -31,10 +31,7 @@ graphql`
         id
       }
       organization {
-        allTeams {
-          id
-        }
-        viewerTeams {
+        teams {
           id
         }
       }
@@ -106,7 +103,6 @@ export const archiveTeamTeamUpdater: SharedUpdater<ArchiveTeamMutation_team$data
   const orgs = viewer.getLinkedRecords('organizations')!
   orgs.forEach((org) => {
     safeRemoveNodeFromArray(teamId, org, 'teams')
-    safeRemoveNodeFromArray(teamId, org, 'allTeams')
   })
 
   const notification = payload.getLinkedRecord('notification')

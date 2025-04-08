@@ -7,14 +7,9 @@ graphql`
       id
     }
     organization {
-      allTeams {
+      teams {
         id
-      }
-      viewerTeams {
-        id
-      }
-      publicTeams {
-        id
+        isViewerOnTeam
       }
     }
   }

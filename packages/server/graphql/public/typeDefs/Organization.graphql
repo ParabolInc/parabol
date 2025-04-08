@@ -48,24 +48,16 @@ type Organization {
   activeTeamCount: Int!
 
   """
-  All the teams in the organization. If the viewer is not a billing lead, org admin, super user, or they do not have the publicTeams flag, return the teams they are a member of.
+  Teams in the organization that the viewer has access to.
+  For org admins/super users: all teams in the org (viewer's teams first).
+  For regular users: teams the viewer is on plus public teams.
   """
-  allTeams: [Team!]!
+  teams: [Team!]!
 
   """
   The count of all teams in the organization
   """
   allTeamsCount: Int!
-
-  """
-  all the teams the viewer is on in the organization
-  """
-  viewerTeams: [Team!]!
-
-  """
-  all the teams that the viewer does not belong to that are in the organization. Only visible if the org has the publicTeams flag set to true.
-  """
-  publicTeams: [Team!]!
 
   """
   THe datetime the current billing cycle ends
