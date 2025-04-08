@@ -15,12 +15,14 @@ import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import LinearSVG from './LinearSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
+import ScopePhaseAreaLinear from './ScopePhaseAreaLinear'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
@@ -95,6 +97,7 @@ const ScopePhaseArea = (props: Props) => {
         ...ScopePhaseAreaJiraServer_meeting
         ...ScopePhaseAreaParabolScoping_meeting
         ...ScopePhaseAreaAzureDevOps_meeting
+        ...ScopePhaseAreaLinear_meeting
         endedAt
         localPhase {
           ...ScopePhaseArea_phase @relay(mask: false)
@@ -130,6 +133,14 @@ const ScopePhaseArea = (props: Props) => {
                   id
                 }
               }
+              linear {
+                cloudProvider {
+                  clientId
+                }
+                sharedProviders {
+                  clientId
+                }
+              }
             }
           }
         }
@@ -142,12 +153,16 @@ const ScopePhaseArea = (props: Props) => {
   const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
+  const linearIntegration = viewerMeetingMember?.teamMember.integrations.linear
   const allowAzureDevOps =
     !!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
+  const isLinearProviderAvailable = !!(
+    linearIntegration?.cloudProvider?.clientId || linearIntegration?.sharedProviders.length
+  )
 
   const baseTabs = [
     {
@@ -185,6 +200,12 @@ const ScopePhaseArea = (props: Props) => {
       label: 'Azure DevOps',
       allow: allowAzureDevOps,
       Component: ScopePhaseAreaAzureDevOps
+    },
+    {
+      icon: <LinearSVG />,
+      label: 'Linear',
+      allow: isLinearProviderAvailable,
+      Component: ScopePhaseAreaLinear
     }
   ] as const
 
