@@ -6,6 +6,7 @@ import PWAHandler from './PWAHandler'
 import {activeClients} from './activeClients'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import createSSR from './createSSR'
+import {setIsShuttingDown} from './getIsShuttingDown'
 import './hocusPocus'
 import './initSentry'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
@@ -41,11 +42,15 @@ process.on('SIGTERM', async (signal) => {
   Logger.log(
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
+  setIsShuttingDown()
+  //socket.end will fire wsHandler.onDisconnect. Give it this long to complete
+  const ONDISCONNECT_LIMIT = 3000
   await Promise.allSettled(
     Array.from(activeClients.values()).map(async (extra) => {
-      const disconnectIn = Math.floor(Math.random() * RECONNECT_WINDOW)
+      const disconnectIn = Math.floor(Math.random() * (RECONNECT_WINDOW - ONDISCONNECT_LIMIT))
       await sleep(disconnectIn)
       extra.socket.end(1012, 'Closing connection')
+      await sleep(ONDISCONNECT_LIMIT)
     })
   )
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
