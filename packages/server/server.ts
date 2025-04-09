@@ -45,14 +45,19 @@ process.on('SIGTERM', async (signal) => {
   setIsShuttingDown()
   //socket.end will fire wsHandler.onDisconnect. Give it this long to complete
   const ONDISCONNECT_LIMIT = 3000
-  await Promise.allSettled(
-    Array.from(activeClients.values()).map(async (extra) => {
-      const disconnectIn = Math.floor(Math.random() * (RECONNECT_WINDOW - ONDISCONNECT_LIMIT))
-      await sleep(disconnectIn)
-      extra.socket.end(1012, 'Closing connection')
-      await sleep(ONDISCONNECT_LIMIT)
-    })
-  )
+  const connectionsToClose = Array.from(activeClients.values())
+  if (connectionsToClose.length > 0) {
+    const msPerClose = (RECONNECT_WINDOW - ONDISCONNECT_LIMIT) / connectionsToClose.length
+    const closeEvery = Math.min(200, msPerClose)
+    await Promise.allSettled(
+      connectionsToClose.map(async (extra, idx) => {
+        const disconnectIn = idx * closeEvery
+        await sleep(disconnectIn)
+        extra.socket.end(1012, 'Closing connection')
+      })
+    )
+    await sleep(ONDISCONNECT_LIMIT)
+  }
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })
