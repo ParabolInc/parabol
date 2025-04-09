@@ -1,3 +1,6 @@
+const {DEV_RUN_ONLY} = process.env
+// const DEV_RUN_ONLY = 'Webpack Servers,Socket Server,Dev Server'
+const runOnly = DEV_RUN_ONLY ? DEV_RUN_ONLY.split(',') : []
 module.exports = {
   apps: [
     {
@@ -86,10 +89,12 @@ module.exports = {
       script: './scripts/hmrServer.js',
       cwd: 'packages/mattermost-plugin'
     }
-  ].map((app) => ({
-    env_production: {
-      NODE_ENV: 'development'
-    },
-    ...app
-  }))
+  ]
+    .map((app) => ({
+      env_production: {
+        NODE_ENV: 'development'
+      },
+      ...app
+    }))
+    .filter((app) => (runOnly.length === 0 ? true : runOnly.includes(app.name)))
 }

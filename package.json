@@ -33,7 +33,7 @@
     "db:stop": "docker compose -f docker/stacks/development/docker-compose.yml down",
     "deduplicate": "yarn yarn-deduplicate yarn.lock",
     "predeploy": "node dist/preDeploy.js",
-    "dev": "PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon",
+    "dev": "PM2_SILENT=true node --env-file=.env ./node_modules/.bin/pm2 start pm2.dev.config.js --no-daemon",
     "lint": "nx run-many --target=lint",
     "newMutation": "yarn sucrase-node scripts/codeshift/newMutation.ts",
     "typecheck": "nx run-many --target=typecheck",

@@ -10,6 +10,7 @@ import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
 import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
+import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
@@ -92,19 +93,12 @@ const dehydrateResult = (result: ExecutionResult) => {
 export const wsHandler = makeBehavior<{token?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
-    if (!connectionParams) return false
-    const {token} = connectionParams
+    const token = connectionParams?.token
     if (!(typeof token === 'string')) return false
     const authToken = getVerifiedAuthToken(token)
     const {sub: userId, iat} = authToken
     const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-    if (isBlacklistedJWT) {
-      throw new GraphQLError('Session Expired', {
-        extensions: {
-          code: 'SESSION_EXPIRED'
-        }
-      })
-    }
+    if (isBlacklistedJWT) return false
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
     extra.ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || extra.socket.ip
@@ -222,6 +216,14 @@ export const wsHandler = makeBehavior<{token?: string}>({
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = (res, req, context) => {
+  // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
+  // which is what we send when we want to invalidate a session (ie log them out)
+  // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
+  const isShuttingDown = getIsShuttingDown()
+  if (isShuttingDown) {
+    res.end()
+    return
+  }
   const headers: http.IncomingHttpHeaders = {}
   req.forEach((key, value) => {
     headers[key] = value
