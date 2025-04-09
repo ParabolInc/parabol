@@ -5,7 +5,6 @@ import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graph
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
-import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
 import isTaskArchived from '../../utils/isTaskArchived'
 import isTempId from '../../utils/relay/isTempId'
 import NullCard from '../NullCard/NullCard'
@@ -59,27 +58,10 @@ const NullableTask = (props: Props) => {
   const isArchived = isTaskArchived(tags)
   const readOnly = isTempId(taskId) || isArchived || !!isDraggingOver || isIntegration
 
-  const handleSubmit = () => {
-    if (!editor) return
-    const nextContentJSON = editor.getJSON()
-    if (JSON.stringify(nextContentJSON) !== content) {
-      UpdateTaskMutation(
-        atmosphere,
-        {
-          updatedTask: {id: taskId, content: JSON.stringify(nextContentJSON)},
-          area
-        },
-        {onCompleted: () => {}}
-      )
-    }
-    editor.commands.blur()
-  }
-
   const {editor} = useTipTapTaskEditor(content, {
     atmosphere,
     teamId,
-    readOnly,
-    onSubmit: handleSubmit
+    readOnly
   })
 
   const showOutcome =
