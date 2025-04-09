@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.1.1](https://github.com/ParabolInc/parabol/compare/v9.1.0...v9.1.1) (2025-04-09)
+
+
+### Fixed
+
+* sigterm faster ([#11152](https://github.com/ParabolInc/parabol/issues/11152)) ([0320f51](https://github.com/ParabolInc/parabol/commit/0320f51dad2499e4d154fabe83f04275a7e4f61c))
+
 ## [9.1.0](https://github.com/ParabolInc/parabol/compare/v9.0.7...v9.1.0) (2025-04-09)
 
 
