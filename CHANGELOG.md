@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.0.7](https://github.com/ParabolInc/parabol/compare/v9.0.6...v9.0.7) (2025-04-09)
+
+
+### Fixed
+
+* escape hatch for missing datadog context ([#11136](https://github.com/ParabolInc/parabol/issues/11136)) ([025c44e](https://github.com/ParabolInc/parabol/commit/025c44eff83c9d8b7d1967d5096609af6fbeb596))
+* Org admin can remove team members without being on team ([#11142](https://github.com/ParabolInc/parabol/issues/11142)) ([c3ebadb](https://github.com/ParabolInc/parabol/commit/c3ebadb9c93cd800fe7394f945417a2ae7072304))
+
 ## [9.0.6](https://github.com/ParabolInc/parabol/compare/v9.0.5...v9.0.6) (2025-04-08)
 
 
