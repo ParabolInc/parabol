@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.1.0](https://github.com/ParabolInc/parabol/compare/v9.0.7...v9.1.0) (2025-04-09)
+
+
+### Added
+
+* Disable Suggest Groups button if the free team has exceeded the limit ([#11133](https://github.com/ParabolInc/parabol/issues/11133)) ([7e76235](https://github.com/ParabolInc/parabol/commit/7e762354e82aaaaf0f83a0342965f9861102ce69))
+
+
+### Fixed
+
+* handle sigterm more gracefully ([#11150](https://github.com/ParabolInc/parabol/issues/11150)) ([465667e](https://github.com/ParabolInc/parabol/commit/465667e8410cb695d87660731b87254291a8733e))
+* super user can toggle ai features ([#11144](https://github.com/ParabolInc/parabol/issues/11144)) ([13c97d3](https://github.com/ParabolInc/parabol/commit/13c97d3bf758119fdf6372651d3a56668b7b8223))
+
+
+### Changed
+
+* track upgrade clicks from public teams ([#11130](https://github.com/ParabolInc/parabol/issues/11130)) ([85086d0](https://github.com/ParabolInc/parabol/commit/85086d0645dd469edf5304db97cd9548e63d791b))
+
 ## [9.0.7](https://github.com/ParabolInc/parabol/compare/v9.0.6...v9.0.7) (2025-04-09)
 
 
