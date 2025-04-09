@@ -15,6 +15,7 @@ import useTooltip from '../hooks/useTooltip'
 import AutogroupMutation from '../mutations/AutogroupMutation'
 import ResetReflectionGroupsMutation from '../mutations/ResetReflectionGroupsMutation'
 import {Elevation} from '../styles/elevation'
+import {Threshold} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
@@ -69,6 +70,9 @@ const RetroGroupPhase = (props: Props) => {
           tier
           useAI
         }
+        team {
+          qualAIMeetingsCount
+        }
       }
     `,
     meetingRef
@@ -83,9 +87,12 @@ const RetroGroupPhase = (props: Props) => {
     organization,
     autogroupReflectionGroups,
     resetReflectionGroups,
-    localStage
+    localStage,
+    team
   } = meeting
   const {useAI, tier} = organization
+  const {qualAIMeetingsCount} = team
+  const teamOverLimit = qualAIMeetingsCount >= Threshold.MAX_QUAL_AI_MEETINGS && tier === 'starter'
   const isGroupPhaseActive = localStage?.phaseType === 'group' && !localStage?.isComplete
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
@@ -97,7 +104,12 @@ const RetroGroupPhase = (props: Props) => {
       : ''
   }`
   const tooltipResetText = `Reset your groups to the way they were before you clicked Suggest Groups`
-  const tooltipText = showSuggestGroups ? tooltipSuggestGroupsText : tooltipResetText
+  const teamOverLimitText = `You have reached the limit. Please upgrade to a paid plan to continue using this feature.`
+  const tooltipText = showSuggestGroups
+    ? teamOverLimit
+      ? teamOverLimitText
+      : tooltipSuggestGroupsText
+    : tooltipResetText
 
   const handleAutoGroupClick = () => {
     AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
@@ -125,7 +137,9 @@ const RetroGroupPhase = (props: Props) => {
               (showSuggestGroups ? (
                 <ButtonWrapper>
                   <StyledButton
-                    disabled={!autogroupReflectionGroups?.length || !isGroupPhaseActive}
+                    disabled={
+                      !autogroupReflectionGroups?.length || !isGroupPhaseActive || teamOverLimit
+                    }
                     onClick={handleAutoGroupClick}
                   >
                     {'Suggest Groups ✨'}
