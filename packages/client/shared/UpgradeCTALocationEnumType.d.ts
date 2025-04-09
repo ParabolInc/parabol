@@ -16,3 +16,4 @@ export type UpgradeCTALocationEnumType =
   | 'createNewTemplateAL'
   | 'cloneTemplateAL'
   | 'meetingSettingsTeamHealth'
+  | 'publicTeams'
