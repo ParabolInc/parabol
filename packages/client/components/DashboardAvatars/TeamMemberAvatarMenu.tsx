@@ -38,18 +38,14 @@ const TeamMemberAvatarMenu = (props: Props) => {
     graphql`
       fragment TeamMemberAvatarMenu_teamMember on TeamMember {
         isSelf
-        user {
-          id
-          preferredName
-        }
+        userId
         isLead
       }
     `,
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const {user} = teamMember
-  const {id: userId, preferredName} = user
+  const {userId} = teamMember
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const isViewerTeamAdmin = isViewerLead || isViewerOrgAdmin
@@ -60,14 +56,14 @@ const TeamMemberAvatarMenu = (props: Props) => {
         <MenuItem
           key='promote'
           onClick={togglePromote}
-          label={<StyledLabel>Promote {preferredName} to Team Lead</StyledLabel>}
+          label={<StyledLabel>Promote to Team Lead</StyledLabel>}
         />
       )}
       {isViewerTeamAdmin && !isSelf && (
         <MenuItem
           key='remove'
           onClick={toggleRemove}
-          label={<StyledLabel>Remove {preferredName} from Team</StyledLabel>}
+          label={<StyledLabel>Remove from Team</StyledLabel>}
         />
       )}
       {!isViewerLead && isSelf && (
