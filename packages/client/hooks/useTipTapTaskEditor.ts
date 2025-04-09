@@ -3,7 +3,7 @@ import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import {generateText, useEditor} from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import {StarterKit} from '@tiptap/starter-kit'
 import Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
@@ -22,18 +22,16 @@ export const useTipTapTaskEditor = (
     // onBlur here vs. on the component means when the component mounts with new editor content
     // (e.g. HeaderCard changes taskId) the onBlur won't fire, which is probably desireable
     onBlur?: () => void
-    onSubmit?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, onBlur, onSubmit} = options
+  const {atmosphere, teamId, readOnly, onBlur} = options
   const [contentJSON, editorRef] = useTipTapEditorContent(content)
+
   editorRef.current = useEditor(
     {
       content: contentJSON,
       extensions: [
-        StarterKit.configure({
-          hardBreak: onBlur ? false : undefined
-        }),
+        StarterKit,
         Underline,
         LoomExtension,
         Placeholder.configure({
@@ -49,15 +47,20 @@ export const useTipTapTaskEditor = (
           openOnClick: false
         }),
         Extension.create({
-          name: 'customEnterHandler',
+          name: 'taskKeyboardShortcuts',
           addKeyboardShortcuts() {
             return {
-              Enter: () => {
-                if (onSubmit) {
-                  onSubmit()
-                  return true
+              'Shift-Enter': ({editor}) => {
+                editor.storage.shifted = true
+                return editor.commands.keyboardShortcut('Enter')
+              },
+              Enter: ({editor}) => {
+                if (editor.storage.shifted) {
+                  editor.storage.shifted = undefined
+                  return false
                 }
-                return false
+                this.editor.commands.blur()
+                return true
               }
             }
           }
