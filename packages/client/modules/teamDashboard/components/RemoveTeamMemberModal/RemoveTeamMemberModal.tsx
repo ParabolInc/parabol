@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -9,14 +8,6 @@ import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
-
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 320
-})
-
-const StyledButton = styled(PrimaryButton)({
-  margin: '1.5rem auto 0'
-})
 
 interface Props {
   closePortal: () => void
@@ -44,16 +35,20 @@ const RemoveTeamMemberModal = (props: Props) => {
     RemoveTeamMemberMutation(atmosphere, {teamMemberId})
   }
   return (
-    <StyledDialogContainer>
+    <DialogContainer>
       <DialogTitle>Are you sure?</DialogTitle>
       <DialogContent>
         This will remove {preferredName} from the team.
         <br />
-        <StyledButton size='medium' onClick={handleClick}>
-          <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
-        </StyledButton>
+        <PrimaryButton size='medium' className='mx-auto mt-6 mb-0' onClick={handleClick}>
+          <IconLabel
+            icon='arrow_forward'
+            iconAfter
+            label={<div className='break-word whitespace-normal'>Remove {preferredName}</div>}
+          />
+        </PrimaryButton>
       </DialogContent>
-    </StyledDialogContainer>
+    </DialogContainer>
   )
 }
 

@@ -34,7 +34,7 @@ export default {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const [isOrgAdmin, teamMember] = await Promise.all([
       isUserOrgAdmin(viewerId, team.orgId, dataLoader),
-      dataLoader.get('teamMembers').loadNonNull(TeamMemberId.join(teamId, viewerId))
+      dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
     ])
     const isViewerTeamLead = teamMember?.isLead
     const isSelf = viewerId === userId

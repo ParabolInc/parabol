@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -11,14 +10,6 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
 import {upperFirst} from '../../../../utils/upperFirst'
-
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 420
-})
-
-const StyledButton = styled(PrimaryButton)({
-  margin: '1.5rem auto 0'
-})
 
 interface Props {
   closePortal: () => void
@@ -70,15 +61,24 @@ const PromoteTeamMemberModal = (props: Props) => {
   const copy = `${copyStart} ${copyEnd}`
 
   return (
-    <StyledDialogContainer>
+    <DialogContainer>
       <DialogTitle>{'Are you sure?'}</DialogTitle>
       <DialogContent>
         {copy}
-        <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
-          <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
-        </StyledButton>
+        <PrimaryButton
+          size='medium'
+          className='mx-auto mt-6 mb-0'
+          onClick={handleClick}
+          waiting={submitting}
+        >
+          <IconLabel
+            icon='arrow_forward'
+            iconAfter
+            label={<div className='break-word whitespace-normal'>Yes, promote {preferredName}</div>}
+          />
+        </PrimaryButton>
       </DialogContent>
-    </StyledDialogContainer>
+    </DialogContainer>
   )
 }
 
