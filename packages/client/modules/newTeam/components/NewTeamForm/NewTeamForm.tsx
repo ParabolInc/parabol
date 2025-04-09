@@ -221,9 +221,9 @@ const NewTeamForm = (props: Props) => {
     }
   }
 
-  const goToBilling = () => {
+  const goToBilling = (ctaLocation: 'publicTeams' | 'createTeam') => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
-      upgradeCTALocation: 'createTeam',
+      upgradeCTALocation: ctaLocation,
       orgId,
       upgradeTier: 'team'
     })
@@ -329,7 +329,7 @@ const NewTeamForm = (props: Props) => {
               <BoldText>{lockedSelectedOrg.name}</BoldText>
               {` has reached the limit of `}
               <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams.`} </BoldText>
-              <StyledLink onClick={goToBilling}>Upgrade</StyledLink>
+              <StyledLink onClick={() => goToBilling('publicTeams')}>Upgrade</StyledLink>
               {' to create more teams.'}
             </WarningMsg>
           )}
@@ -355,8 +355,10 @@ const NewTeamForm = (props: Props) => {
                             </>
                           ) : (
                             <>
-                              <StyledLink onClick={goToBilling}>Upgrade</StyledLink> to make it
-                              private.
+                              <StyledLink onClick={() => goToBilling('createTeam')}>
+                                Upgrade
+                              </StyledLink>{' '}
+                              to make it private.
                             </>
                           )}
                         </div>

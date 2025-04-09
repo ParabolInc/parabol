@@ -11,7 +11,15 @@ const getDataLoader = async (id: string) => {
   if (inMemoryLoader) return inMemoryLoader
   const redisDataLoader = await getRedisDataLoader(id)
   if (redisDataLoader) return redisDataLoader
-  console.error(`Could not find dataloader: ${id}. Did redis dispose too early?`)
+  // setTimeout is here for debugging purposes. Can't figure out what we sometimes get errors saying the dataloader isn't found
+  setTimeout(async () => {
+    const eventualDataloader = await getRedisDataLoader(id)
+    if (eventualDataloader) {
+      console.error(`Tried accessing Redis dataloader before it existed: ${id}`)
+    } else {
+      console.error(`Redis dataloader disposed too early: ${id}`)
+    }
+  }, 3000)
   // Anything past this line is a bug, but we handle bugs gracefully
   const fallback = getNewDataLoader()
   fallback.share()

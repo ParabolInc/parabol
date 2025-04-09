@@ -102,8 +102,8 @@ export function createWSClient(atmosphere: Atmosphere) {
             reject(event)
           }
           const {code, reason} = event as CloseEvent
-          // These codes are sent from the connected hook on the server
-          if ([4403, 4500].includes(code)) {
+          // This code is sent from wsHandler.onConnect on the server
+          if (code === 4403) {
             atmosphere.invalidateSession(reason)
           }
           // non-1000 close codes are abrupt closes

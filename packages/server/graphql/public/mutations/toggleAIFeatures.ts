@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {getUserId, isSuperUser, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
@@ -14,8 +14,9 @@ const toggleAIFeatures: MutationResolvers['toggleAIFeatures'] = async (
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
+  const canAccess = (await isUserOrgAdmin(viewerId, orgId, dataLoader)) || isSuperUser(authToken)
   // VALIDATION
-  if (!(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
+  if (!canAccess) {
     return standardError(new Error('Not organization admin'))
   }
 
