@@ -21,6 +21,7 @@ import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnUR
 import {SSORelayState} from '../../public/queries/SAMLIdP'
 import {MutationResolvers} from '../resolverTypes'
 import {generateIdenticon} from './helpers/generateIdenticon'
+import {shouldRefreshMetadata} from './helpers/shouldRefreshMetadata'
 
 const serviceProvider = samlify.ServiceProvider({})
 samlify.setSchemaValidator(samlXMLValidator)
@@ -61,8 +62,21 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
         message: `Ask customer service to enable SSO for ${normalizedName}.`
       }
     }
-  const {domains, metadata: existingMetadata, orgId, samlOrgAttribute} = doc
-  const newMetadata = newMetadataURL ? await getSSOMetadataFromURL(newMetadataURL) : undefined
+  const {
+    domains,
+    metadata: existingMetadata,
+    metadataURL: existingMetadataURL,
+    orgId,
+    samlOrgAttribute
+  } = doc
+
+  const shouldRefresh = shouldRefreshMetadata(doc)
+  const fetchMetadataUrl = newMetadataURL || (shouldRefresh ? existingMetadataURL : null)
+  if (fetchMetadataUrl) {
+    console.log('Fetching new SAML metadata', {shouldRefresh, newMetadataURL})
+  }
+
+  const newMetadata = fetchMetadataUrl ? await getSSOMetadataFromURL(fetchMetadataUrl) : undefined
   if (newMetadata instanceof Error) {
     return standardError(newMetadata)
   }
@@ -132,7 +146,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     }
     await pg
       .updateTable('SAML')
-      .set({metadata: newMetadata, metadataURL: newMetadataURL})
+      .set({metadata: newMetadata, metadataURL: fetchMetadataUrl})
       .where('id', '=', normalizedName)
       .execute()
   }
