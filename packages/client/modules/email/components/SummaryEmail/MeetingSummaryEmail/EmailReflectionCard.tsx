@@ -31,7 +31,7 @@ const contentStyle = {
   width: 188,
   minWidth: 188,
   maxWidth: 188,
-  wordBreak: 'break-all'
+  wordBreak: 'break-word'
 } as React.CSSProperties
 
 const reflectionCardFooter = {
