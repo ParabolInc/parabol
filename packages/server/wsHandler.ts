@@ -18,7 +18,7 @@ import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {INSTANCE_ID} from './utils/instanceId'
-import {extractPersistedOperationId, getPersistedOperation, yoga} from './yoga'
+import {extractPersistedOperationId, getPersistedOperation, yoga, type ServerContext} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
@@ -119,7 +119,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     activeClients.set(extra.socketId, extra)
     return {version: __APP_VERSION__, authToken: freshToken}
   },
-  async onNext(context, id, _payload, _args, result) {
+  async onNext(context, id, _payload, {contextValue}, result) {
     const isSubscription = !!context.subscriptions[id]
     if (!isSubscription) return result
     const subResult = dehydrateResult(result)
@@ -133,7 +133,8 @@ export const wsHandler = makeBehavior<{token?: string}>({
     if (jwt) {
       const {extra} = context
       const {resubscribe} = extra
-      extra.authToken = new AuthToken(decode(jwt) as any)
+      const nextAuthToken = new AuthToken(decode(jwt) as any)
+      extra.authToken = (contextValue as ServerContext).authToken = nextAuthToken
       // wait for other payloads to get flushed to the client before resubscribing
       setTimeout(() => {
         Object.keys(resubscribe).forEach((key) => {
