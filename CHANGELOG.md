@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.1.2](https://github.com/ParabolInc/parabol/compare/v9.1.1...v9.1.2) (2025-04-10)
+
+
+### Fixed
+
+* bugs from datadog logs updateTask, acceptTeamInvitation ([#11169](https://github.com/ParabolInc/parabol/issues/11169)) ([a18a951](https://github.com/ParabolInc/parabol/commit/a18a9510587f8d29f81d4b4b3935340690c5386e))
+* gracefully handle acceptTeamInvitation ([#11173](https://github.com/ParabolInc/parabol/issues/11173)) ([e087f29](https://github.com/ParabolInc/parabol/commit/e087f29130338bf3898ac112420bb140c2b5d5c7))
+* Meeting summary line breaks ([#11160](https://github.com/ParabolInc/parabol/issues/11160)) ([6afbfae](https://github.com/ParabolInc/parabol/commit/6afbfaee1bf66fcf13a178847fcfdb4cedcda3d6))
+* serialize using msgpack to preserve Dates for dataloaders ([#11155](https://github.com/ParabolInc/parabol/issues/11155)) ([f5e385e](https://github.com/ParabolInc/parabol/commit/f5e385e54229c235ee6fd80d76f8e0c16e98d223))
+
+
+### Changed
+
+* **SAML:** Fetch fresh metadata before expiry ([#11163](https://github.com/ParabolInc/parabol/issues/11163)) ([5c15f80](https://github.com/ParabolInc/parabol/commit/5c15f8030d6fa2cbc31ceee8c35269ecc43f9bf2))
+* Update service diagram ([#11168](https://github.com/ParabolInc/parabol/issues/11168)) ([f01b0d8](https://github.com/ParabolInc/parabol/commit/f01b0d81c96f944c261da2bc593595dc3198fa0e))
+
 ## [9.1.1](https://github.com/ParabolInc/parabol/compare/v9.1.0...v9.1.1) (2025-04-09)
 
 
