@@ -20,8 +20,9 @@ import getIsUserIdApprovedByOrg from './helpers/getIsUserIdApprovedByOrg'
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   _source,
   {invitationToken, notificationId},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -108,10 +109,14 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     invitationNotificationIds
   }
 
-  const encodedAuthToken = encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
+  const nextAuthToken = new AuthToken({tms, sub: viewerId, rol: authToken.rol})
+  // This is to triage https://github.com/ParabolInc/parabol/issues/11167. We know it worked if we don't see it again
+  context.authToken = nextAuthToken
 
   // Send the new team member a welcome & a new token
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+  // https://github.com/ParabolInc/parabol/issues/11167 We need to sleep a bit to let the new authToken propagate
+  // To all of the viewer's subscribers (they may have 2 tabs open)
 
   // remove the old notifications
   if (invitationNotificationIds.length > 0) {
@@ -151,7 +156,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   analytics.inviteAccepted(viewer, inviter, teamId, isNewUser, acceptAt)
   return {
     ...data,
-    authToken: encodedAuthToken
+    authToken: encodeAuthToken(nextAuthToken)
   }
 }
 

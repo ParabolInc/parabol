@@ -4,30 +4,26 @@ Overview how the different services interact with each other.
 
 ## Flow
 
-Data flow for a GraphQL request which also publishes subscription data.
+Data flow for a GraphQL mutation by Client 1 which also publishes subscription data to Client 2.
+The example shows a deployment with 2 servers.
 
 ```mermaid
-flowchart TD
-  Client
-  Server[Websocket/Subscription server]
-  RedisStream(Redis Stream)
-  RedisResultPubSub(Redis PubSub\ngqlExRes)
-  RedisSubscriptionPubSub(Redis PubSub\nTeam.teamId)
-  subgraph "per executor {executorChannel}"
-    GQLExecutor[GraphQL Executor]
-    RedisServerPubSub(Redis PubSub\nexecutorChannel)
-    RedisServerPubSub --> GQLExecutor
-  end
+flowchart LR
+  Client1(Client 1)
+  Client2(Client 2)
+  Server1(Server 1 - GraphQL Resolver)
+  Server2(Server 2 - GraphQL Resolver)
+  RedisSubscriptionPubSub(Redis PubSub)
 
-  click Server "../packages/server/server.ts"
+  click Server1 "../packages/server/server.ts"
 
-  Client <---->|Websocket| Server
-  Server -->|gqlStream| RedisStream -->|gqlConsumerGroup| GQLExecutor
-  GQLExecutor --> RedisResultPubSub
-  GQLExecutor --> |"{executorChannel}"| RedisSubscriptionPubSub
-  RedisSubscriptionPubSub --> |"{executorChannel}"|Server
-  Server --> RedisServerPubSub
-  RedisResultPubSub --> Server
+  Client1 <--->|Websocket| Server1
+  Server2 --->|Websocket| Client2
+subgraph Server
+  direction LR
+  Server1 --->|publish subscription root value| RedisSubscriptionPubSub
+  RedisSubscriptionPubSub <---|root value| Server2
+end
 ```
 
 ## Sequence
@@ -39,24 +35,15 @@ sequenceDiagram
   participant Client
   participant Server
   participant Redis
-  participant GQLExecutor
 
-  Client ->>+ Server: updateTeamName
-  Server ->> Redis: gqlStream
-  Redis ->>+ GQLExecutor: gqlConsumerGroup
-  note over GQLExecutor: resolve mutation
-  par Resolve and return result
-    GQLExecutor ->> Redis: gqlExRes
-    Redis ->> Server: gqlExRes
+  par Resolve mutation
+    Client ->>+ Server: updateTeamName
+    note over Server: resolve mutation
+    Server ->> Redis: publish Team.teamId
     Server ->>- Client: execution result
-  and Publish subscription
-    GQLExecutor ->>- Redis: Team.teamId
+  and Resolve subscription
     Redis ->>+ Server: Team.teamId
-    Server ->> Redis: executorChannel
-    Redis ->>+ GQLExecutor: executorChannel
-    note over GQLExecutor: resolve subscription
-    GQLExecutor ->>- Redis: gqlExRes
-    Redis ->> Server: gqlExRes
+    note over Server: resolve subscription
     Server ->>- Client: subscription next
   end
 

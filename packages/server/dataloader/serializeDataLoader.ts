@@ -1,3 +1,4 @@
+import {pack} from 'msgpackr'
 import type RootDataLoader from './RootDataLoader'
 
 export const serializeDataLoader = async (dataLoaderWorker: RootDataLoader) => {
@@ -13,5 +14,5 @@ export const serializeDataLoader = async (dataLoaderWorker: RootDataLoader) => {
       result[entity] = values
     })
   )
-  return JSON.stringify(result)
+  return pack(result)
 }
