@@ -4,7 +4,6 @@ import {
   LOCKED_MESSAGE,
   SubscriptionChannel
 } from '../../../../client/types/constEnums'
-import sleep from '../../../../client/utils/sleep'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import RedisLock from '../../../utils/RedisLock'
@@ -118,7 +117,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
   // https://github.com/ParabolInc/parabol/issues/11167 We need to sleep a bit to let the new authToken propagate
   // To all of the viewer's subscribers (they may have 2 tabs open)
-  await sleep(100)
 
   // remove the old notifications
   if (invitationNotificationIds.length > 0) {

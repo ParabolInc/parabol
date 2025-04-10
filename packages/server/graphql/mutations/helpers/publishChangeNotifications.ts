@@ -4,7 +4,6 @@ import getKysely from '../../../postgres/getKysely'
 import {Task} from '../../../postgres/types'
 import {TaskInvolvesNotification} from '../../../postgres/types/Notification'
 import {analytics} from '../../../utils/analytics/analytics'
-import {Logger} from '../../../utils/Logger'
 
 const publishChangeNotifications = async (
   task: Task,
@@ -21,8 +20,6 @@ const publishChangeNotifications = async (
   const oldMentions = wasPrivate
     ? []
     : getAllNodesAttributesByType<{id: string}>(oldContentJSON, 'mention').map(({id}) => id)
-  // DEBUGGING FOR https://github.com/ParabolInc/parabol/issues/11166
-  // I assume there error is here & the attribute doesn't have an id field. Need to find out how!
   const mentions = isPrivate
     ? []
     : getAllNodesAttributesByType<{id: string}>(contentJSON, 'mention').map(({id}) => id)
@@ -71,13 +68,7 @@ const publishChangeNotifications = async (
 
   // update changes in the db
   if (notificationsToAdd.length) {
-    // DEBUGGING FOR https://github.com/ParabolInc/parabol/issues/11166
-    const goodOnes = notificationsToAdd.filter((n) => n.userId)
-    await pg.insertInto('Notification').values(goodOnes).execute()
-    if (goodOnes.length < notificationsToAdd.length) {
-      const firstWithoutUserId = notificationsToAdd.find((n) => !n.userId)
-      Logger.error(`No userId found for: ${JSON.stringify(firstWithoutUserId)}`)
-    }
+    await pg.insertInto('Notification').values(notificationsToAdd).execute()
   }
   return {notificationsToAdd}
 }

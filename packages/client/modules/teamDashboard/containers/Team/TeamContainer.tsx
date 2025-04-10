@@ -49,13 +49,13 @@ const TeamContainer = (props: Props) => {
   const {location} = window
   const {pathname} = location
   useEffect(() => {
-    if (!canAccessTeam && !team) {
+    if (!canAccessTeam) {
       history.replace({
         pathname: `/invitation-required`,
         search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
       })
     }
-  })
+  }, [canAccessTeam])
   if (!team) return null
 
   const isSettings = Boolean(
