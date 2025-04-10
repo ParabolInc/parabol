@@ -1,9 +1,10 @@
 import type DataLoader from 'dataloader'
+import {unpack} from 'msgpackr'
 import {type Loaders} from '../dataloader/RootDataLoader'
 import {dataLoaderCache} from './RootDataLoader'
 
-export const hydrateDataLoader = (id: string, dataLoaderJSON: string) => {
-  const loaders = JSON.parse(dataLoaderJSON)
+export const hydrateDataLoader = (id: string, packedDataloader: Buffer) => {
+  const loaders = unpack(packedDataloader)
   const cacheWorker = dataLoaderCache.add(id)
   // treat this as shared so if the first subscriber tries to dispose of it, it will wait 500ms (see wsHandler.onComplete)
   // which should be enough time for other subscribers to grab it

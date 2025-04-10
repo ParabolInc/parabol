@@ -14,9 +14,9 @@ class PublishedDataLoaders {
   private promiseLookup = {} as Record<string, Promise<void>>
   private async pushToRedis(id: string) {
     const dataLoaderWorker = getInMemoryDataLoader(id)!.dataLoaderWorker
-    const str = await serializeDataLoader(dataLoaderWorker)
+    const buffer = await serializeDataLoader(dataLoaderWorker)
     // keep the serialized dataloader in redis for long enough for each server to fetch it and make an in-memory copy
-    await getRedis().set(`dataLoader:${id}`, str, 'PX', REDIS_DATALOADER_TTL)
+    await getRedis().set(`dataLoader:${id}`, buffer, 'PX', REDIS_DATALOADER_TTL)
     setTimeout(() => {
       delete this.promiseLookup[id]
       // all calls to publish within a single mutation SHOULD happen within this timeframe
