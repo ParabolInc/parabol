@@ -5,9 +5,10 @@ Overview how the different services interact with each other.
 ## Flow
 
 Data flow for a GraphQL mutation by Client 1 which also publishes subscription data to Client 2.
+The example shows a deployment with 2 servers.
 
 ```mermaid
-flowchart TD
+flowchart LR
   Client1(Client 1)
   Client2(Client 2)
   Server1(Server 1 - GraphQL Resolver)
@@ -16,10 +17,13 @@ flowchart TD
 
   click Server1 "../packages/server/server.ts"
 
-  Client1 <---->|Websocket| Server1
-  Server1 -->|publish subscription root value| RedisSubscriptionPubSub
-  RedisSubscriptionPubSub -->|root value| Server2
-  Server2 ---->|Websocket| Client2
+  Client1 <--->|Websocket| Server1
+  Server2 --->|Websocket| Client2
+subgraph Server
+  direction LR
+  Server1 --->|publish subscription root value| RedisSubscriptionPubSub
+  RedisSubscriptionPubSub <---|root value| Server2
+end
 ```
 
 ## Sequence
