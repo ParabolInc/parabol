@@ -83,7 +83,14 @@ const LinearScopingSearchResults = (props: Props) => {
   >(
     graphql`
       fragment LinearScopingSearchResults_query on Query
-      @argumentDefinitions(cursor: {type: "String"}, count: {type: "Int", defaultValue: 25})
+      @argumentDefinitions(
+        cursor: {type: "String"}
+        count: {type: "Int", defaultValue: 25}
+        filter: {
+          type: "_xLinearIssueFilter"
+          defaultValue: {description: {contains: "integrations"}}
+        }
+      )
       @refetchable(queryName: "LinearScopingSearchResultsPaginationQuery") {
         viewer {
           teamMember(teamId: $teamId) {
@@ -99,7 +106,7 @@ const LinearScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    issues(first: $count, after: $cursor)
+                    issues(first: $count, after: $cursor, filter: $filter)
                       @connection(key: "LinearScopingSearchResults_issues") {
                       edges {
                         node {
