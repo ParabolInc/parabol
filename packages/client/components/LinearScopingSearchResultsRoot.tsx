@@ -31,7 +31,7 @@ const LinearScopingSearchResultsRoot = (props: Props) => {
   const normalizedQueryString = queryString.trim()
   const queryRef = useQueryLoaderNow<LinearScopingSearchResultsQuery>(
     linearScopingSearchResultsQuery,
-    {teamId, queryString: normalizedQueryString}
+    {teamId} // filter: {description: {contains: 'integrations'}}}
   )
   return (
     <Suspense fallback={<MockScopingList />}>
