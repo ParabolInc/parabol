@@ -1,3 +1,4 @@
+import {Extension} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
@@ -25,6 +26,7 @@ export const useTipTapTaskEditor = (
 ) => {
   const {atmosphere, teamId, readOnly, onBlur} = options
   const [contentJSON, editorRef] = useTipTapEditorContent(content)
+
   editorRef.current = useEditor(
     {
       content: contentJSON,
@@ -43,6 +45,25 @@ export const useTipTapTaskEditor = (
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
           openOnClick: false
+        }),
+        Extension.create({
+          name: 'taskKeyboardShortcuts',
+          addKeyboardShortcuts() {
+            return {
+              'Shift-Enter': ({editor}) => {
+                editor.storage.shifted = true
+                return editor.commands.keyboardShortcut('Enter')
+              },
+              Enter: ({editor}) => {
+                if (editor.storage.shifted) {
+                  editor.storage.shifted = undefined
+                  return false
+                }
+                this.editor.commands.blur()
+                return true
+              }
+            }
+          }
         })
       ],
       editable: !readOnly,
