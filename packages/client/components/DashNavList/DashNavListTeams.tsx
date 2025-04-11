@@ -33,6 +33,7 @@ const DashNavListTeams = (props: Props) => {
           ...DashNavListTeam @relay(mask: false)
           ...PublicTeamsModal_team
           isViewerOnTeam
+          isPublic
         }
       }
     `,
@@ -41,7 +42,7 @@ const DashNavListTeams = (props: Props) => {
   const [showModal, setShowModal] = useState(false)
   const allTeams = organization.teams
   const viewerTeams = allTeams.filter((team) => team.isViewerOnTeam)
-  const publicTeams = allTeams.filter((team) => !team.isViewerOnTeam)
+  const publicTeams = allTeams.filter((team) => !team.isViewerOnTeam && team.isPublic)
   const publicTeamsCount = publicTeams.length
 
   const handleClose = () => {
