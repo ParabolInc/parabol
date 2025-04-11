@@ -5,12 +5,9 @@ import {Link} from 'react-router-dom'
 import {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import {ORGANIZATIONS} from '../../../../utils/constants'
-import {OrgTeamMembersMenu} from './OrgTeamMembersMenu'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
 
 interface Props {
@@ -45,7 +42,6 @@ export const OrgTeamMembers = (props: Props) => {
   const data = usePreloadedQuery<OrgTeamMembersQuery>(query, queryRef)
   const {viewer} = data
   const {team} = viewer
-  const {menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
   const {
     open: openDeleteTeamDialog,
@@ -69,7 +65,7 @@ export const OrgTeamMembers = (props: Props) => {
         <div className='ml-auto flex items-center'>
           <InviteTeamMemberAvatar teamId={team.id} teamMembers={teamMembers} />
           {showDeleteButton && (
-            <div className='group mx-1.5 cursor-pointer'>
+            <div className='group mx-1.5 cursor-pointer' onClick={openDeleteTeamDialog}>
               <div className='flex h-7 justify-center'>
                 <span className='h-6 w-6 self-center text-slate-500 group-hover:text-slate-600'>
                   <Delete />
@@ -98,10 +94,6 @@ export const OrgTeamMembers = (props: Props) => {
           />
         ))}
       </div>
-
-      {menuPortal(
-        <OrgTeamMembersMenu menuProps={menuProps} openDeleteTeamModal={openDeleteTeamDialog} />
-      )}
 
       {isDeleteTeamDialogOpened ? (
         <DeleteTeamDialog
