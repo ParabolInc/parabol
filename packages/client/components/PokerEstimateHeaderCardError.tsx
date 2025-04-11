@@ -1,8 +1,12 @@
 import styled from '@emotion/styled'
+import DeleteIcon from '@mui/icons-material/Delete'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 const ErrorCard = styled('div')({
   alignItems: 'flex-start',
@@ -25,6 +29,7 @@ const HeaderCard = styled('div')({
   boxShadow: Elevation.Z1,
   height: '100%',
   padding: '12px 16px',
+  position: 'relative',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
   margin: '0 auto',
   width: '100%'
@@ -56,11 +61,12 @@ const CardDescription = styled('div')<{isExpanded: boolean}>(({isExpanded}) => (
 
 interface Props {
   service?: string
+  onRemove?: () => void
 }
 const PokerEstimateHeaderCardError = (props: Props) => {
-  const {service} = props
+  const {onRemove, service} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  if (!service) {
+  if (!service || !onRemove) {
     return (
       <HeaderCardWrapper isDesktop={isDesktop}>
         <ErrorCard>
@@ -78,6 +84,16 @@ const PokerEstimateHeaderCardError = (props: Props) => {
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
       <HeaderCard>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button className='absolute top-2 right-2 cursor-pointer bg-inherit'>
+              <DeleteIcon onClick={() => onRemove()} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side='bottom' align='center' sideOffset={2} className=''>
+            {'Remove from Scope'}
+          </TooltipContent>
+        </Tooltip>
         <CardTitleWrapper>
           <CardTitle>{`${serviceName} is Down!`}</CardTitle>
         </CardTitleWrapper>
