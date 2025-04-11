@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.1.4](https://github.com/ParabolInc/parabol/compare/v9.1.3...v9.1.4) (2025-04-11)
+
+
+### Fixed
+
+* support poker removing unintegrated items  ([#11183](https://github.com/ParabolInc/parabol/issues/11183)) ([f61dc59](https://github.com/ParabolInc/parabol/commit/f61dc5960b7a21cf99092a598af0cc83451293e1))
+
 ## [9.1.3](https://github.com/ParabolInc/parabol/compare/v9.1.2...v9.1.3) (2025-04-11)
 
 
