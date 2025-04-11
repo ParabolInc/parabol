@@ -98,7 +98,7 @@
     "@tiptap/extension-text": "^2.11.5",
     "@tiptap/html": "^2.11.5",
     "adaptivecards": "2.10.0",
-    "api": "^5.0.7",
+    "api": "^6.1.3",
     "base64url": "^3.0.1",
     "bcryptjs": "^2.4.3",
     "cheerio": "1.0.0",
