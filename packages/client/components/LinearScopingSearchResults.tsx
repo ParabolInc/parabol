@@ -37,16 +37,11 @@ interface Props {
   meetingRef: LinearScopingSearchResults_meeting$key
 }
 
-const searchResultToIssueId = (input: string) => {
-  const colonIndex = input.indexOf(':')
-  return colonIndex !== -1 ? input.slice(colonIndex + 1) : ''
-}
-
 const LinearScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
-      query LinearScopingSearchResultsQuery($teamId: ID!, $queryString: String!) {
+      query LinearScopingSearchResultsQuery($teamId: ID!) {
         ...LinearScopingSearchResults_query
         viewer {
           # ...NewLinearIssueInput_viewer
@@ -104,12 +99,12 @@ const LinearScopingSearchResults = (props: Props) => {
                     path
                   }
                   query {
-                    searchIssues(first: $count, after: $cursor, term: $queryString)
-                      @connection(key: "LinearScopingSearchResults_searchIssues") {
+                    issues(first: $count, after: $cursor)
+                      @connection(key: "LinearScopingSearchResults_issues") {
                       edges {
                         node {
                           __typename
-                          ... on _xLinearIssueSearchResult {
+                          ... on _xLinearIssue {
                             ...LinearScopingSelectAllIssues_issues
                             id
                             identifier
@@ -163,11 +158,11 @@ const LinearScopingSearchResults = (props: Props) => {
   const {id: meetingId, linearSearchQuery, teamId, phases} = meeting
   const {queryString} = linearSearchQuery
   const errors = linear?.api?.errors ?? null
-  const nullableEdges = linear?.api?.query?.searchIssues?.edges ?? null
+  const nullableEdges = linear?.api?.query?.issues?.edges ?? null
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
-        .filter((edge) => edge.node.__typename === '_xLinearIssueSearchResult')
-        .map(({node}) => node as GQLType<typeof node, '_xLinearIssueSearchResult'>)
+        .filter((edge) => edge.node.__typename === '_xLinearIssue')
+        .map(({node}) => node as GQLType<typeof node, '_xLinearIssue'>)
     : null
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
@@ -224,7 +219,7 @@ const LinearScopingSearchResults = (props: Props) => {
         )} */}
         {issues.map((node) => {
           const {
-            id: searchResultIssueId,
+            id: issueId,
             identifier,
             title,
             project,
@@ -235,14 +230,13 @@ const LinearScopingSearchResults = (props: Props) => {
             id: undefined,
             projectName: undefined
           }
-          const issueId = searchResultToIssueId(searchResultIssueId)
           const repoId = LinearProjectId.join(teamId, projectId)
           const serviceTaskId = LinearIssueId.join(repoId, issueId)
           const repoStr = projectName ? `${teamName}/${projectName}` : teamName
           const linkText = `${identifier} ${repoStr}`
           return (
             <ScopingSearchResultItem
-              key={node.id}
+              key={issueId}
               service={'linear'}
               usedServiceTaskIds={usedServiceTaskIds}
               serviceTaskId={serviceTaskId}

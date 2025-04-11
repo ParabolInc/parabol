@@ -42,8 +42,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
   const {meetingId, usedServiceTaskIds, issuesRef} = props
   const issues = useFragment(
     graphql`
-      fragment LinearScopingSelectAllIssues_issues on _xLinearIssueSearchResult
-      @relay(plural: true) {
+      fragment LinearScopingSelectAllIssues_issues on _xLinearIssue @relay(plural: true) {
         id
         title
         number
