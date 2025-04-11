@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.1.3](https://github.com/ParabolInc/parabol/compare/v9.1.2...v9.1.3) (2025-04-11)
+
+
+### Fixed
+
+* multipart header vuln ([#11181](https://github.com/ParabolInc/parabol/issues/11181)) ([43ada48](https://github.com/ParabolInc/parabol/commit/43ada486b5afebaf39a910253f3dbac7526398a6))
+* org admins can delete teams ([#11178](https://github.com/ParabolInc/parabol/issues/11178)) ([9174ed0](https://github.com/ParabolInc/parabol/commit/9174ed03a1eb5463266f5b916bb78d35f14ffaaf))
+
 ## [9.1.2](https://github.com/ParabolInc/parabol/compare/v9.1.1...v9.1.2) (2025-04-10)
 
 
