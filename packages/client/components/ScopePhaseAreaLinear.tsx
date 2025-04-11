@@ -21,13 +21,13 @@ graphql`
     }
   }
 `
-const ScopePhaseAreaAzureDevOps = (props: Props) => {
+const ScopePhaseAreaLinear = (props: Props) => {
   const {isActive, gotoParabol, meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment ScopePhaseAreaLinear_meeting on PokerMeeting {
         ...ScopePhaseAreaAddLinear_meeting
-        #        ...ScopePhaseAreaLinearScoping_meeting
+        ...ScopePhaseAreaLinearScoping_meeting
         viewerMeetingMember {
           teamMember {
             ...ScopePhaseAreaLinear_teamMember @relay(mask: false)
@@ -48,4 +48,4 @@ const ScopePhaseAreaAzureDevOps = (props: Props) => {
   return <ScopePhaseAreaLinearScoping meetingRef={meeting} />
 }
 
-export default ScopePhaseAreaAzureDevOps
+export default ScopePhaseAreaLinear

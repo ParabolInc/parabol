@@ -1,70 +1,70 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {GitLabScopingSearchBar_meeting$key} from '../__generated__/GitLabScopingSearchBar_meeting.graphql'
-import GitLabScopingSearchFilterToggle from './GitLabScopingSearchFilterToggle'
+import {LinearScopingSearchBar_meeting$key} from '../__generated__/LinearScopingSearchBar_meeting.graphql'
+import {SprintPokerDefaults} from '../types/constEnums'
+import LinearScopingSearchFilterToggle from './LinearScopingSearchFilterToggle'
 import ScopingSearchBar from './ScopingSearchBar'
 import ScopingSearchHistoryToggle from './ScopingSearchHistoryToggle'
 import ScopingSearchInput from './ScopingSearchInput'
 
 interface Props {
-  meetingRef: GitLabScopingSearchBar_meeting$key
+  meetingRef: LinearScopingSearchBar_meeting$key
 }
 
-const GitLabScopingSearchBar = (props: Props) => {
+const LinearScopingSearchBar = (props: Props) => {
   const {meetingRef} = props
+
+  graphql`
+    fragment LinearScopingSearchBarLinearIntegration on LinearIntegration {
+      linearSearchQueries {
+        queryString
+      }
+    }
+  `
 
   const meeting = useFragment(
     graphql`
-      fragment GitLabScopingSearchBar_meeting on PokerMeeting {
-        ...GitLabScopingSearchFilterToggle_meeting
+      fragment LinearScopingSearchBar_meeting on PokerMeeting {
         id
-        gitlabSearchQuery {
-          selectedProjectsIds
+        linearSearchQuery {
           queryString
         }
         viewerMeetingMember {
           teamMember {
             integrations {
-              gitlab {
-                projects {
-                  ... on _xGitLabProject {
-                    id
-                    fullPath
-                  }
-                }
+              linear {
+                ...LinearScopingSearchBarLinearIntegration @relay(mask: false)
               }
             }
           }
         }
+        ...LinearScopingSearchFilterToggle_meeting
       }
     `,
     meetingRef
   )
 
-  const {gitlabSearchQuery, viewerMeetingMember, id: meetingId} = meeting
-  const {selectedProjectsIds, queryString} = gitlabSearchQuery
-  const projects = viewerMeetingMember?.teamMember.integrations.gitlab.projects
+  const {queryString} = meeting.linearSearchQuery
 
-  const selectedProjectsPaths = [] as string[]
-  selectedProjectsIds?.forEach((projectId) => {
-    const selectedProjectPath = projects?.find((project) => project.id === projectId)?.fullPath
-    if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
-  })
-  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+  const linearSearchQueries =
+    meeting.viewerMeetingMember?.teamMember?.integrations?.linear?.linearSearchQueries
+  const defaultInput =
+    linearSearchQueries?.[0]?.queryString ?? SprintPokerDefaults.LINEAR_DEFAULT_QUERY
 
   return (
-    <ScopingSearchBar currentFilters={currentFilters}>
+    <ScopingSearchBar>
       <ScopingSearchHistoryToggle />
       <ScopingSearchInput
-        placeholder={'Search GitLab issues...'}
+        placeholder={'Search Linear issues...'}
         queryString={queryString}
-        meetingId={meetingId}
-        linkedRecordName={'gitlabSearchQuery'}
-        service={'gitlab'}
+        meetingId={meeting.id}
+        linkedRecordName={'linearSearchQuery'}
+        defaultInput={defaultInput}
+        service={'linear'}
       />
-      <GitLabScopingSearchFilterToggle meetingRef={meeting} />
+      <LinearScopingSearchFilterToggle meetingRef={meeting} />
     </ScopingSearchBar>
   )
 }
 
-export default GitLabScopingSearchBar
+export default LinearScopingSearchBar
