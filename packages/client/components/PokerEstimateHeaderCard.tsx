@@ -4,6 +4,8 @@ import {
   PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
+import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import PokerEstimateHeaderCardContent, {
   PokerEstimateHeaderCardContentProps
 } from './PokerEstimateHeaderCardContent'
@@ -71,9 +73,11 @@ const getHeaderFields = (
 
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage: stageRef} = props
+  const atmosphere = useAtmosphere()
   const stage = useFragment(
     graphql`
       fragment PokerEstimateHeaderCard_stage on EstimateStage {
+        meetingId
         task {
           ...PokerEstimateHeaderCardParabol_task
           integrationHash
@@ -122,7 +126,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
     `,
     stageRef
   )
-  const {task} = stage
+  const {meetingId, task} = stage
   if (!task) {
     return <PokerEstimateHeaderCardError />
   }
@@ -135,7 +139,28 @@ const PokerEstimateHeaderCard = (props: Props) => {
   // it's an integrated task, but the service might be down
   const headerFields = getHeaderFields(integration)
   if (!headerFields) {
-    return <PokerEstimateHeaderCardError service={'Integration'} />
+    const onRemove = () => {
+      UpdatePokerScopeMutation(
+        atmosphere,
+        {
+          meetingId,
+          updates: [
+            {
+              // since this is a delete the service doesn't matter
+              service: 'PARABOL',
+              serviceTaskId: integrationHash,
+              action: 'DELETE'
+            }
+          ]
+        },
+        {
+          onCompleted: () => {},
+          onError: () => {},
+          contents: []
+        }
+      )
+    }
+    return <PokerEstimateHeaderCardError service={'Integration'} onRemove={onRemove} />
   }
   return <PokerEstimateHeaderCardContent {...headerFields} />
 }
