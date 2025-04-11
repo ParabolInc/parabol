@@ -37,8 +37,8 @@ interface TaskIntegrationAzureDevOps extends BaseTaskIntegration {
 }
 interface TaskIntegrationLinear extends BaseTaskIntegration {
   service: 'linear'
-  providerId: string // Assuming providerId is needed based on other integrations
-  gid: string // Assuming gid (Linear Issue ID) is needed
+  repoId: string
+  issueId: string
 }
 
 export type AnyTaskIntegration =
