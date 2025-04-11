@@ -207,10 +207,10 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
         .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
         .load({service: 'linear', teamId, userId: accessUserId})
       if (!linearAuth?.accessToken) return null
-      const {gid} = integration
+      const {issueId} = integration
       const query = `
           query {
-            issue(id: "${gid}"){
+            issue(id: "${issueId}"){
               ...info
             }
           }

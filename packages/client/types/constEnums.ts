@@ -498,7 +498,8 @@ export const enum SprintPokerDefaults {
   GITLAB_FIELD_TIME_ESTIMATE = '__timeEstimate',
   GITLAB_FIELD_TIME_ESTIMATE_LABEL = 'Time Estimate',
   GITLAB_FIELD_WEIGHT = '__weight',
-  GITLAB_FIELD_WEIGHT_LABEL = 'Weight'
+  GITLAB_FIELD_WEIGHT_LABEL = 'Weight',
+  LINEAR_DEFAULT_QUERY = 'integrations' // JRH: TODO
 }
 
 export const enum AriaLabels {

@@ -108,7 +108,7 @@ class LinearServerManager implements TaskIntegrationManager {
     }
 
     return {
-      integrationHash: LinearIssueId.join(`${this.auth.providerId}`, issue.id),
+      integrationHash: LinearIssueId.join(integrationRepoId, issue.id),
       issueId: issue.id,
       integration: {
         accessUserId: this.auth.userId,

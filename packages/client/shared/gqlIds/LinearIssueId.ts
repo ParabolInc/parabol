@@ -1,10 +1,11 @@
+// repoId is Linear's teamId:projectId or just teamId
 const LinearIssueId = {
-  join: (providerId: string, id: string) => `${providerId}::${id}`,
+  join: (repoId: string, issueId: string) => `${repoId}::${issueId}`,
   split: (integrationHash: string) => {
-    const [providerId, id] = integrationHash.split('::') as [string, string]
+    const [repoId, issueId] = integrationHash.split('::') as [string, string]
     return {
-      providerId,
-      id
+      repoId,
+      issueId
     }
   }
 }
