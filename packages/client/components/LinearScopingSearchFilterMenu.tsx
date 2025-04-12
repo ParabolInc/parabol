@@ -68,10 +68,8 @@ type TeamEdge = NonNullable<
 
 type Team = NonNullable<TeamEdge['node']>
 
-type ProjectAndTeam = Project & Team
-
-const linearTeamAndProjectName = (item: ProjectAndTeam) => {
-  const {name: projectName, teams} = item
+const linearProjectNameWithTeam = (project: Project) => {
+  const {name: projectName, teams} = project
   const {displayName: teamName} = teams?.nodes?.[0] ?? {}
   return teamName ? `${teamName}/${projectName}` : `${projectName}`
 }
@@ -81,8 +79,8 @@ const getNodeId = (edge: ProjectEdge) => {
   return id
 }
 
-const getValue = (item: ProjectAndTeam) => {
-  return linearTeamAndProjectName(item) || 'Unknown Project'
+const getValue = (item: Project | Team) => {
+  return 'teams' in item ? linearProjectNameWithTeam(item) : item.name || 'Unknown Project or Team'
 }
 
 const LinearScopingSearchFilterMenu = (props: Props) => {
@@ -108,6 +106,7 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
                     myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
                       edges {
                         node {
+                          __typename
                           id
                           name
                           teams(first: 1) {
@@ -121,6 +120,7 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
                     allProjects: projects(first: 100) {
                       edges {
                         node {
+                          __typename
                           id
                           name
                           teams(first: 1) {
@@ -134,6 +134,7 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
                     teams(first: 100) {
                       edges {
                         node {
+                          __typename
                           id
                           name
                         }
@@ -165,7 +166,7 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
     query.viewer.teamMember?.integrations.linear.api?.query?.teams?.edges ?? []
   const teams = useMemo(() => getNonNullEdges(nullableTeamEdges).map(({node}) => node), [query])
   const projectsAndTeams = useMemo(
-    () => (projects as ProjectAndTeam[]).concat(teams as ProjectAndTeam[]),
+    () => (projects as (Project | Team)[]).concat(teams as (Project | Team)[]),
     [query]
   )
   const meeting = query?.viewer?.meeting
@@ -178,7 +179,7 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
     query: searchQuery,
     filteredItems: filteredProjects,
     onQueryChange
-  } = useSearchFilter(projectsAndTeams as ProjectAndTeam[], getValue)
+  } = useSearchFilter(projectsAndTeams as (Project | Team)[], getValue)
   const visibleProjects = filteredProjects.slice(0, MAX_PROJECTS)
 
   const {portalStatus, isDropdown} = menuProps
@@ -197,10 +198,11 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
       {visibleProjects.length === 0 && (
         <EmptyDropdownMenuItemLabel key='no-results'>No projects found!</EmptyDropdownMenuItemLabel>
       )}
-      {visibleProjects.map((project) => {
-        const {id: projectId} = project
-        const projectNameWithTeam = getValue(project)
-        const isSelected = !!selectedProjectsIds?.includes(projectId)
+      {visibleProjects.map((node) => {
+        const {id, __typename: nodeType} = node
+        const selectionValue = `${nodeType}:${id}`
+        const projectNameWithTeam = getValue(node)
+        const isSelected = !!selectedProjectsIds?.includes(selectionValue)
 
         const handleClick = () => {
           commitLocalUpdate(atmosphere, (store) => {
@@ -210,19 +212,19 @@ const LinearScopingSearchFilterMenu = (props: Props) => {
               'selectedProjectsIds'
             ) as string[]
             const newSelectedProjectsIds = isSelected
-              ? selectedProjectsIds.filter((id) => id !== projectId)
-              : [...selectedProjectsIds, projectId]
+              ? selectedProjectsIds.filter((id) => id !== selectionValue)
+              : [...selectedProjectsIds, selectionValue]
             linearSearchQuery.setValue(newSelectedProjectsIds, 'selectedProjectsIds')
           })
           SendClientSideEvent(atmosphere, 'Selected Poker Scope Project Filter', {
             meetingId,
-            projectId,
+            selectionValue,
             service: 'linear'
           })
         }
         return (
           <MenuItem
-            key={projectId}
+            key={selectionValue}
             label={
               <StyledMenuItemLabel>
                 <StyledCheckBox active={isSelected} />
