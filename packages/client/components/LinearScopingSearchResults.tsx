@@ -41,8 +41,8 @@ const LinearScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
     graphql`
-      query LinearScopingSearchResultsQuery($teamId: ID!) {
-        ...LinearScopingSearchResults_query
+      query LinearScopingSearchResultsQuery($teamId: ID!, $filter: _xLinearIssueFilter) {
+        ...LinearScopingSearchResults_query @arguments(filter: $filter)
         viewer {
           # ...NewLinearIssueInput_viewer
           teamMember(teamId: $teamId) {

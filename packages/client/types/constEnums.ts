@@ -492,14 +492,14 @@ export const enum SprintPokerDefaults {
   SERVICE_FIELD_NULL = '',
   SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
+  LINEAR_DEFAULT_QUERY = '',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn\'t fix the missing field! In Jira, use "Find my field" to determine the error',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type',
   GITLAB_FIELD_TIME_ESTIMATE = '__timeEstimate',
   GITLAB_FIELD_TIME_ESTIMATE_LABEL = 'Time Estimate',
   GITLAB_FIELD_WEIGHT = '__weight',
-  GITLAB_FIELD_WEIGHT_LABEL = 'Weight',
-  LINEAR_DEFAULT_QUERY = 'integrations' // JRH: TODO
+  GITLAB_FIELD_WEIGHT_LABEL = 'Weight'
 }
 
 export const enum AriaLabels {

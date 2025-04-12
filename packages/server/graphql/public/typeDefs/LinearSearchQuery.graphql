@@ -13,7 +13,9 @@ type LinearSearchQuery {
   queryString: String!
 
   """
-  The list of ids of projects that have been selected as a filter. Null if none have been selected
+  The list of ids of teams or projects that have been selected as a filter.
+  Elements are of the form _xLinearTeam:[id] or _xLinearProject:[id].
+  Null if none have been selected
   """
   selectedProjectsIds: [ID!]
 
