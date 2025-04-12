@@ -14,8 +14,8 @@ import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfil
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
 import getTeamsQuery from '../../graphql/nestedSchema/Linear/queries/getTeams.graphql'
+import {linearRequest} from '../../graphql/public/rootSchema'
 import {TeamMemberIntegrationAuth} from '../../postgres/types'
-import {RootSchema} from '../../types/custom'
 import {
   CreateCommentMutation,
   CreateCommentMutationVariables,
@@ -47,16 +47,10 @@ class LinearServerManager implements TaskIntegrationManager {
   }
 
   getLinearRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
-    const {schema} = info
-    const composedRequest = (schema as RootSchema).linearRequest
-    if (!composedRequest) {
-      throw new Error('linearRequest composer not found on schema. Ensure it is configured.')
-    }
-
     return async <TData = any, TVars = any>(query: string, variables: TVars) => {
       // Note: we're always using the default executor of the nested schema
       //       (https://api.linear.app/graphql)
-      const result = await composedRequest({
+      const result = await linearRequest({
         query,
         variables,
         info,
@@ -82,7 +76,6 @@ class LinearServerManager implements TaskIntegrationManager {
       return new Error('integrationRepoId is required and cannot be empty.')
     }
 
-    console.log(`integrationRepoId: ${integrationRepoId}`)
     const {teamId, projectId} = LinearProjectId.split(integrationRepoId)
 
     if (!teamId) {
@@ -113,8 +106,8 @@ class LinearServerManager implements TaskIntegrationManager {
       integration: {
         accessUserId: this.auth.userId,
         service: 'linear',
-        gid: issue.id,
-        providerId: `${this.auth.providerId}`
+        issueId: issue.id,
+        repoId: integrationRepoId
       }
     }
   }
