@@ -6,6 +6,7 @@ import {generateHTML} from '@tiptap/core'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
+import LinearIssueId from '../shared/gqlIds/LinearIssueId'
 import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
@@ -250,6 +251,17 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               iid
             })
             optimisticTask.setLinkedRecord(optimisticGitLabIssue, 'integration')
+          } else if (service === 'linear') {
+            const {issueId} = LinearIssueId.split(serviceTaskId)
+            const linearIssue = store.get(issueId)
+            const identifier = linearIssue?.getValue('identifier')
+            const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
+              title,
+              description: '',
+              identifier,
+              url: ''
+            })
+            optimisticTask.setLinkedRecord(optimisticTaskIntegration, 'integration')
           }
 
           const newStages = dimensionRefIds.map((dimensionRefId, dimensionRefIdx) => {

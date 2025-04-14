@@ -4,8 +4,8 @@ const LinearIssueId = {
   split: (integrationHash: string) => {
     const [repoId, issueId] = integrationHash.split('::') as [string, string]
     return {
-      repoId,
-      issueId
+      issueId,
+      repoId
     }
   }
 }
