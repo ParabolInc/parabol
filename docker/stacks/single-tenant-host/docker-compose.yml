@@ -91,26 +91,6 @@ services:
         condition: service_healthy
     networks:
       - parabol-network
-  chronos:
-    container_name: chronos
-    profiles: ["chronos"]
-    image: #image:tag
-    restart: always
-    command: bash -c "node dist/chronos.js"
-    env_file: .env
-    environment:
-      - SERVER_ID=1
-    volumes:
-      - "./.env:/parabol/.env"
-    depends_on:
-      pre-deploy:
-        condition: service_completed_successfully
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - parabol-network
   web-server:
     container_name: web-server
     profiles: ["parabol"]

@@ -27,7 +27,6 @@ module.exports = (config) => {
       __dirname: false
     },
     entry: {
-      chronos: [DOTENV, path.join(PROJECT_ROOT, 'packages/chronos/chronos.ts')],
       web: [
         DOTENV,
         INIT_PUBLIC_PATH,
