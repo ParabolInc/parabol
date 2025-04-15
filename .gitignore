@@ -8,6 +8,7 @@
 .awcache/
 .history/
 .idea/
+.roomodes
 .nx/
 .yarn/
 pgBackup/
