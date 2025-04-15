@@ -41,12 +41,11 @@ export const extractPersistedOperationId = (
 
 const queryMap = {} as Record<string, string | undefined>
 const primeQueryMap = () => {
-  if (!__PRODUCTION__) {
-    const primed = require('../../queryMap.json')
-    Object.keys(primed).forEach((key) => {
-      queryMap[key] = primed[key].replace('@stream_HACK', '@stream')
-    })
-  }
+  if (__PRODUCTION__) return
+  const primed = require('../../queryMap.json')
+  Object.keys(primed).forEach((key) => {
+    queryMap[key] = primed[key].replace('@stream_HACK', '@stream')
+  })
 }
 primeQueryMap()
 
@@ -58,10 +57,12 @@ export const getPersistedOperation = async (docId: string) => {
       .select('query')
       .where('id', '=', docId)
       .executeTakeFirst()
-    // Relay only supports @stream internally, so our server created a new @stream_HACK directive
+    // Relay only supports @stream internally, so we call it @stream_HACK
     // so relay will compile it & ignore it on the client
     queryString = queryStringRes?.query.replace('@stream_HACK', '@stream')
-    queryMap[docId] = queryString
+    if (queryString) {
+      queryMap[docId] = queryString
+    }
   }
   return queryString || null
 }

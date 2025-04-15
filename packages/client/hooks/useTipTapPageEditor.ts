@@ -1,10 +1,12 @@
 import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
+import {BulletList} from '@tiptap/extension-bullet-list'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Document from '@tiptap/extension-document'
 import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
+import {OrderedList} from '@tiptap/extension-ordered-list'
 import Placeholder from '@tiptap/extension-placeholder'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
@@ -24,6 +26,7 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {toSlug} from '../shared/toSlug'
+import {CustomListItem} from '../tiptap/extensions/CustomListItem'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
@@ -110,7 +113,16 @@ export const useTipTapPageEditor = (
         Document.extend({
           content: 'heading block*'
         }),
-        StarterKit.configure({document: false, history: false}),
+        StarterKit.configure({
+          document: false,
+          history: false,
+          listItem: false,
+          bulletList: false,
+          orderedList: false
+        }),
+        OrderedList,
+        BulletList,
+        CustomListItem,
         Underline,
         TaskList,
         TaskItem.configure({
