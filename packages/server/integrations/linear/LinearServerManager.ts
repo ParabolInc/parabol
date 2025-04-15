@@ -92,7 +92,7 @@ class LinearServerManager implements TaskIntegrationManager {
     })
 
     if (createIssueError) {
-      throw createIssueError
+      return createIssueError
     }
 
     const issue = createIssueData?.issueCreate?.issue
@@ -197,7 +197,6 @@ class LinearServerManager implements TaskIntegrationManager {
       return [false, new Error('LinearServerManager has no access token')]
     }
 
-    // Use the provided info/context for this specific check, not necessarily the constructor ones
     const linearRequest = this.getLinearRequest(info, context)
     const [, error] = await linearRequest(getProfileQuery, {})
 
@@ -220,14 +219,6 @@ class LinearServerManager implements TaskIntegrationManager {
     projectId: string | null
   }) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-
-    console.log(`
-title: ${title}
-description: ${description}
-teamId: ${teamId}
-projectId: ${projectId}
-    `)
-
     const [data, error] = await linearRequest<CreateIssueMutation>(createIssueMutation, {
       input: {
         title,
@@ -236,7 +227,7 @@ projectId: ${projectId}
         projectId
       }
     })
-    // Cast the result back to the expected types for type safety downstream
+
     return [data, error] as const
   }
 

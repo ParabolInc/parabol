@@ -6,19 +6,21 @@ import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import {LinearScopingSearchResultsPaginationQuery} from '../__generated__/LinearScopingSearchResultsPaginationQuery.graphql'
 import {LinearScopingSearchResultsQuery} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
 import {LinearScopingSearchResults_meeting$key} from '../__generated__/LinearScopingSearchResults_meeting.graphql'
-import {LinearScopingSearchResults_query$key} from '../__generated__/LinearScopingSearchResults_query.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
+import {
+  LinearScopingSearchResults_query$data,
+  LinearScopingSearchResults_query$key
+} from '../__generated__/LinearScopingSearchResults_query.graphql'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-// import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
 import LinearIssueId from '../shared/gqlIds/LinearIssueId'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
-import {SprintPokerDefaults} from '../types/constEnums'
 import {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import LinearScopingSelectAllIssues from './LinearScopingSelectAllIssues'
+import NewIntegrationRecordButton from './NewIntegrationRecordButton'
+import NewLinearIssueInput from './NewLinearIssueInput'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
 
 const ResultScroller = styled('div')({
@@ -37,6 +39,16 @@ interface Props {
   meetingRef: LinearScopingSearchResults_meeting$key
 }
 
+type LinearIssueEdge = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<
+        LinearScopingSearchResults_query$data['viewer']['teamMember']
+      >['integrations']['linear']['api']
+    >['query']
+  >['issues']['edges']
+>[number]
+
 const LinearScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
   const query = usePreloadedQuery(
@@ -44,7 +56,7 @@ const LinearScopingSearchResults = (props: Props) => {
       query LinearScopingSearchResultsQuery($teamId: ID!, $filter: _xLinearIssueFilter) {
         ...LinearScopingSearchResults_query @arguments(filter: $filter)
         viewer {
-          # ...NewLinearIssueInput_viewer
+          ...NewLinearIssueInput_viewer
           teamMember(teamId: $teamId) {
             repoIntegrations(first: 20, networkOnly: false) {
               items {
@@ -67,6 +79,7 @@ const LinearScopingSearchResults = (props: Props) => {
               linear {
                 linearSearchQueries {
                   queryString
+                  selectedProjectsIds
                 }
               }
             }
@@ -144,11 +157,11 @@ const LinearScopingSearchResults = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment LinearScopingSearchResults_meeting on PokerMeeting {
-        # ...NewLinearIssueInput_meeting
         id
         teamId
         linearSearchQuery {
           queryString
+          selectedProjectsIds
         }
         phases {
           ...useGetUsedServiceTaskIds_phase
@@ -162,23 +175,19 @@ const LinearScopingSearchResults = (props: Props) => {
   const teamMember = viewer.teamMember!
   const {integrations} = teamMember
   const {linear} = integrations
-  const {id: meetingId, linearSearchQuery, teamId, phases} = meeting
-  const {queryString} = linearSearchQuery
+  const {id: meetingId, phases} = meeting
   const errors = linear?.api?.errors ?? null
   const nullableEdges = linear?.api?.query?.issues?.edges ?? null
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
-        .filter((edge) => edge.node.__typename === '_xLinearIssue')
+        .filter((edge: LinearIssueEdge) => edge.node.__typename === '_xLinearIssue')
         .map(({node}) => node as GQLType<typeof node, '_xLinearIssue'>)
     : null
   const [isEditing, setIsEditing] = useState(false)
-  const atmosphere = useAtmosphere()
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
   const handleAddIssueClick = () => setIsEditing(true)
 
-  // even though it's a little herky jerky, we need to give the user feedback that a search is pending
-  // TODO fix flicker after viewer is present but edges isn't set
   if (!issues) return <MockScopingList />
   if (issues.length === 0 && !isEditing) {
     return (
@@ -187,27 +196,11 @@ const LinearScopingSearchResults = (props: Props) => {
           error={errors?.[0]?.message}
           msg={'No issues match that query'}
         />
-        {/* <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} /> */}
+        <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       </>
     )
   }
-  const persistQuery = () => {
-    // don't persist empty
-    if (!queryString) return
-    const normalizedQueryString = queryString.toLowerCase().trim()
-    // don't persist default
-    if (normalizedQueryString === SprintPokerDefaults.LINEAR_DEFAULT_QUERY) return
-    const linearSearchQueries =
-      query.viewer.teamMember?.integrations.linear?.linearSearchQueries ?? []
-    const searchHashes = linearSearchQueries.map(({queryString}) => queryString)
-    const isQueryNew = !searchHashes.includes(normalizedQueryString)
-    // if (isQueryNew) {
-    //   PersistGitHubSearchQueryMutation(atmosphere, {
-    //     teamId,
-    //     queryString: normalizedQueryString
-    //   })
-    // }
-  }
+
   return (
     <>
       <LinearScopingSelectAllIssues
@@ -216,29 +209,23 @@ const LinearScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
       />
       <ResultScroller>
-        {/* {query && (
+        {query && (
           <NewLinearIssueInput
             isEditing={isEditing}
-            meetingRef={meeting}
+            meetingId={meeting.id}
             setIsEditing={setIsEditing}
             viewerRef={query.viewer}
           />
-        )} */}
+        )}
         {issues.map((node) => {
-          const {
-            id: issueId,
-            identifier,
-            title,
-            project,
-            team: {id: teamId, displayName: teamName},
-            url
-          } = node
+          const {id: issueId, identifier, title, project, team, url} = node
           const {id: projectId, name: projectName} = project ?? {
             id: undefined,
             projectName: undefined
           }
-          const repoId = LinearProjectId.join(teamId, projectId)
+          const repoId = LinearProjectId.join(team?.id ?? 'unknown-team-id', projectId)
           const serviceTaskId = LinearIssueId.join(repoId, issueId)
+          const teamName = team?.displayName ?? ''
           const repoStr = projectName ? `${teamName}/${projectName}` : teamName
           const linkText = `${identifier} ${repoStr}`
           return (
@@ -248,7 +235,6 @@ const LinearScopingSearchResults = (props: Props) => {
               usedServiceTaskIds={usedServiceTaskIds}
               serviceTaskId={serviceTaskId}
               meetingId={meetingId}
-              persistQuery={persistQuery}
               summary={title}
               url={url}
               linkText={linkText}
@@ -263,9 +249,9 @@ const LinearScopingSearchResults = (props: Props) => {
           </LoadingNext>
         )}
       </ResultScroller>
-      {/* {!isEditing && (
+      {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
-      )} */}
+      )}
     </>
   )
 }
