@@ -13,7 +13,7 @@ interface Props {
   meetingRef: LinearScopingSearchResultsRoot_meeting$key
 }
 
-const makeLinearIssueFilter = (
+export const makeLinearIssueFilter = (
   queryString: string,
   selectedProjectsIds: readonly string[] | null | undefined
 ): _xLinearIssueFilter | null => {

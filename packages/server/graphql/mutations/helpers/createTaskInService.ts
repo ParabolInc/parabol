@@ -9,6 +9,7 @@ import IntegrationRepoId from '../../../../client/shared/gqlIds/IntegrationRepoI
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
+import LinearIssueId from '../../../../client/shared/gqlIds/LinearIssueId'
 import {removeNodeByType} from '../../../../client/shared/tiptap/removeNodeByType'
 import {GQLContext} from '../../graphql'
 import {CreateTaskIntegrationInput} from '../createTask'
@@ -16,6 +17,7 @@ import createAzureTask from './createAzureTask'
 import createGitHubTask from './createGitHubTask'
 import createGitLabTask from './createGitLabTask'
 import createJiraTask from './createJiraTask'
+import createLinearTask from './createLinearTask'
 
 const createTaskInService = async (
   integrationInput: CreateTaskIntegrationInput | null | undefined,
@@ -137,6 +139,35 @@ const createTaskInService = async (
         issueKey
       },
       integrationHash,
+      integrationRepoId
+    }
+  } else if (service === 'linear') {
+    const linearAuth = await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: 'linear', teamId, userId: accessUserId})
+    if (!linearAuth?.accessToken) {
+      return {error: new Error('Cannot create Linear task without a valid token')}
+    }
+    const linearTaskRes = await createLinearTask(
+      taglessContentJSON,
+      serviceProjectHash,
+      linearAuth,
+      context,
+      info
+    )
+    if (linearTaskRes.error) {
+      return {error: linearTaskRes.error}
+    }
+    const {issueId, repoId} = linearTaskRes
+    const integrationRepoId = IntegrationRepoId.join({teamId, id: issueId, service})
+    return {
+      integration: {
+        service: 'linear' as const,
+        accessUserId,
+        issueId,
+        repoId
+      },
+      integrationHash: LinearIssueId.join(repoId, issueId),
       integrationRepoId
     }
   }
