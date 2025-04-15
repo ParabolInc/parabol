@@ -133,6 +133,7 @@ const chronos = () => {
 }
 
 const runOnPrimary = async () => {
+  if (!__PRODUCTION__) return
   const redis = new RedisInstance(`server_${SERVER_ID}`)
   const primaryLock = await establishPrimaryServer(redis, 'embedder')
   if (!primaryLock) return
