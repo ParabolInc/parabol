@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.0.0](https://github.com/ParabolInc/parabol/compare/v9.1.5...v10.0.0) (2025-04-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* run chronos on the primary webserver ([#11189](https://github.com/ParabolInc/parabol/issues/11189))
+
+### Added
+
+* run chronos on the primary webserver ([#11189](https://github.com/ParabolInc/parabol/issues/11189)) ([f4493b8](https://github.com/ParabolInc/parabol/commit/f4493b8ecfe2cdfe47d53994f6a4ef11efa28ce4))
+
 ## [9.1.5](https://github.com/ParabolInc/parabol/compare/v9.1.4...v9.1.5) (2025-04-15)
 
 
