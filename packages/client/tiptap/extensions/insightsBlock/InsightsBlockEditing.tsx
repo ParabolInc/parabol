@@ -1,6 +1,8 @@
 import {type NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import type {InsightsBlockEditingQuery} from '../../../__generated__/InsightsBlockEditingQuery.graphql'
+import type {GraphQLError} from 'graphql'
+import {marked} from 'marked'
+import {getRequest} from 'relay-runtime'
 import Ellipsis from '../../../components/Ellipsis/Ellipsis'
 import {MeetingDatePicker} from '../../../components/MeetingDatePicker'
 import {MeetingTypePickerCombobox} from '../../../components/MeetingTypePickerCombobox'
@@ -13,10 +15,36 @@ import {quickHash} from '../../../utils/quickHash'
 import type {InsightsBlockAttrs} from './InsightsBlock'
 import {InsightsBlockPromptRoot} from './InsightsBlockPromptRoot'
 
+marked.use({
+  gfm: true,
+  breaks: true,
+  renderer: {
+    listitem({text}) {
+      // TipTap does not like empty list items
+      const nextItem = text || '<p></p>'
+      return `<li>${nextItem}</li>`
+    }
+  }
+})
+export interface ExecutionResult<TData = any, TExtensions = any> {
+  incremental?: ReadonlyArray<{
+    path?: ReadonlyArray<string | number>
+    items?: TData | null
+    errors?: ReadonlyArray<GraphQLError>
+  }>
+  data?: TData | null
+  errors?: ReadonlyArray<GraphQLError>
+  hasNext?: boolean
+  extensions?: TExtensions
+  label?: string
+  path?: ReadonlyArray<string | number>
+  items?: TData | null
+}
+
 const queryNode = graphql`
   query InsightsBlockEditingQuery($meetingIds: [ID!]!, $prompt: String!) {
     viewer {
-      pageInsights(meetingIds: $meetingIds, prompt: $prompt)
+      pageInsights(meetingIds: $meetingIds, prompt: $prompt) @stream_HACK
     }
   }
 `
@@ -24,7 +52,7 @@ const queryNode = graphql`
 export const InsightsBlockEditing = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
-  const {id, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
+  const {id: blockId, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
@@ -38,34 +66,63 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       return
     }
     submitMutation()
-    const res = await atmosphere.fetchQuery<InsightsBlockEditingQuery>(queryNode, {
-      meetingIds,
-      prompt
-    })
-    onCompleted()
-    if (res instanceof Error) {
-      atmosphere.eventEmitter.emit('addSnackbar', {
-        key: 'insightsBlockGenError',
-        message: res.message || 'Error generating insights',
-        autoDismiss: 5
-      })
-      return
-    }
-    const {viewer} = res
-    const {pageInsights} = viewer
-    const insightsNode = editor.$node('insightsBlock', {id})
-    if (!insightsNode) {
-      console.error('Insights block node removed before insights were generated')
-      return
-    }
-    editor.commands.insertContentAt(
-      {
-        from: insightsNode.from,
-        to: insightsNode.to - 1
+    let first = true
+    const request = getRequest(queryNode).params
+    const {id, name} = request
+    let buffer = `# ${title}\n`
+    const sink = {
+      error: (err: unknown) => {
+        console.error(err)
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'insightsBlockGenError',
+          message: (err as Error).message || 'Error generating insights',
+          autoDismiss: 5
+        })
+        return
       },
-      `# ${title}\n` + pageInsights
+      next: (val: ExecutionResult) => {
+        try {
+          const chunk = val?.incremental?.[0]?.items?.[0]
+          if (!chunk) {
+            const error = val?.incremental?.[0]?.errors?.[0]
+            if (error) {
+              sink.error(error)
+            }
+            return
+          }
+          const freshInsightsNode = editor.$node('insightsBlock', {id: blockId})
+          if (!freshInsightsNode) return
+          if (first) {
+            first = false
+            updateAttributes({editing: false, hash: resultsHash})
+          }
+          buffer += chunk
+          const bufferFragment = marked.parse(buffer)
+          editor.commands.insertContentAt(
+            {from: freshInsightsNode.from, to: freshInsightsNode.to - 1},
+            bufferFragment
+          )
+        } catch (e) {
+          sink.error('message' in (e as Error) ? e : new Error((e as string) || 'Unkonwn error'))
+        }
+      },
+      complete: () => {
+        onCompleted()
+      }
+    }
+
+    atmosphere.subscriptionClient.subscribe(
+      {
+        operationName: name,
+        docId: id,
+        query: '',
+        variables: {
+          meetingIds,
+          prompt
+        }
+      } as any,
+      sink
     )
-    updateAttributes({editing: false, hash: resultsHash})
   }
   return (
     <>
