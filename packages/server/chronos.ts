@@ -16,13 +16,18 @@
 //      Steps: e.g. */2
 
 import {CronJob} from 'cron'
-import {Logger} from 'parabol-server/utils/Logger'
-import {fetchGQL} from '../server/utils/fetchGQL'
+import {establishPrimaryServer} from './establishPrimaryServer'
+import {callGQL} from './utils/callGQL'
+import {Logger} from './utils/Logger'
+import RedisInstance from './utils/RedisInstance'
 
 interface PossibleJob {
   onTick(): void
   cronTime: string | undefined
 }
+
+const {SERVER_ID} = process.env
+if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
 
 const chronos = () => {
   const {
@@ -37,14 +42,11 @@ const chronos = () => {
     CHRONOS_UPDATE_TOKENS,
     CHRONOS_PROCESS_RECURRENCE
   } = process.env
-
-  if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
-
   const jobs: Record<string, PossibleJob> = {
     autoPause: {
       onTick: () => {
         const query = 'mutation AutoPauseUsers { autopauseUsers }'
-        fetchGQL(query, {})
+        callGQL(query, {})
       },
       cronTime: CHRONOS_AUTOPAUSE
     },
@@ -57,7 +59,7 @@ const chronos = () => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        fetchGQL(query, variables)
+        callGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_DAILY
     },
@@ -70,21 +72,21 @@ const chronos = () => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        fetchGQL(query, variables)
+        callGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_WEEKLY
     },
     batchEmails: {
       onTick: () => {
         const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
-        fetchGQL(query, {})
+        callGQL(query, {})
       },
       cronTime: CHRONOS_BATCH_EMAILS
     },
     scheduleJobs: {
       onTick: () => {
         const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
-        fetchGQL(query, {})
+        callGQL(query, {})
       },
       cronTime: CHRONOS_SCHEDULE_JOBS
     },
@@ -92,7 +94,7 @@ const chronos = () => {
       onTick: () => {
         const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
         const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
-        fetchGQL(query, variables)
+        callGQL(query, variables)
       },
       cronTime: CHRONOS_UPDATE_TOKENS
     },
@@ -108,14 +110,14 @@ const chronos = () => {
             }
           }
         `
-        fetchGQL(query, {})
+        callGQL(query, {})
       },
       cronTime: CHRONOS_PROCESS_RECURRENCE
     }
   }
   Object.entries(jobs).forEach(([name, {onTick, cronTime}]) => {
     try {
-      new CronJob({
+      CronJob.from({
         start: true,
         // assume non-null & catch on fail
         cronTime: cronTime!,
@@ -130,4 +132,11 @@ const chronos = () => {
   Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
 }
 
-chronos()
+const runOnPrimary = async () => {
+  const redis = new RedisInstance(`server_${SERVER_ID}`)
+  const primaryLock = await establishPrimaryServer(redis, 'embedder')
+  if (!primaryLock) return
+  chronos()
+}
+
+runOnPrimary()
