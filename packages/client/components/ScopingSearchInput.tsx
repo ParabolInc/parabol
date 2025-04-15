@@ -1,38 +1,11 @@
-import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import * as React from 'react'
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
+import {twMerge} from 'tailwind-merge'
 import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV3'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-
-const SearchInput = styled('input')({
-  appearance: 'none',
-  border: 'none',
-  borderLeft: `1px solid ${PALETTE.SLATE_400}`,
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  margin: 0,
-  padding: 12,
-  outline: 0,
-  backgroundColor: 'transparent',
-  width: '100%'
-})
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1
-})
-
-const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  margin: 12,
-  visibility: isEmpty ? 'hidden' : undefined
-}))
 
 interface Props {
   placeholder: string
@@ -85,15 +58,19 @@ const ScopingSearchInput = (props: Props) => {
   }
 
   return (
-    <Wrapper>
-      <SearchInput
+    <div className='flex flex-1 items-center'>
+      <input
+        className='m-0 w-full appearance-none border-l border-none border-slate-400 bg-transparent p-3 text-base text-slate-700 outline-none placeholder:text-slate-500'
         value={queryString}
         placeholder={placeholder}
         onChange={handleOnChange}
         ref={inputRef}
       />
-      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch} />
-    </Wrapper>
+      <Close
+        className={twMerge('m-3 cursor-pointer text-slate-600', isEmpty && 'invisible')}
+        onClick={clearSearch}
+      />
+    </div>
   )
 }
 
