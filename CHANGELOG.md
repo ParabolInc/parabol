@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [9.1.5](https://github.com/ParabolInc/parabol/compare/v9.1.4...v9.1.5) (2025-04-15)
+
+
+### Fixed
+
+* ensure public teams are public for org admins ([#11162](https://github.com/ParabolInc/parabol/issues/11162)) ([2702328](https://github.com/ParabolInc/parabol/commit/270232880ab37e3f42773704d534dd6d0e4372a5))
+
+
+### Changed
+
+* **.env.example:** separe developer variables from the rest ([c90aa5a](https://github.com/ParabolInc/parabol/commit/c90aa5a9b498716d91e4242421959fab4f913845))
+
 ## [9.1.4](https://github.com/ParabolInc/parabol/compare/v9.1.3...v9.1.4) (2025-04-11)
 
 
