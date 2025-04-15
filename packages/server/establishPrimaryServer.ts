@@ -1,13 +1,13 @@
 import ms from 'ms'
-import RedisInstance from 'parabol-server/utils/RedisInstance'
 import Redlock from 'redlock'
+import RedisInstance from './utils/RedisInstance'
 
-export const establishPrimaryEmbedder = async (redis: RedisInstance) => {
+export const establishPrimaryServer = async (redis: RedisInstance, prefix: string) => {
   const redlock = new Redlock([redis], {retryCount: 0})
-  const MAX_TIME_BETWEEN_WORKER_STARTUPS = ms('5s')
+  const MAX_TIME_BETWEEN_WORKER_STARTUPS = ms('30s')
   try {
     const primaryWorkerLock = await redlock.acquire(
-      [`embedder_isPrimary_${__APP_VERSION__}`],
+      [`${prefix}_isPrimary_${__APP_VERSION__}`],
       MAX_TIME_BETWEEN_WORKER_STARTUPS
     )
     return primaryWorkerLock

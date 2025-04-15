@@ -21,12 +21,6 @@ To run Parabol in single tenant mode (e.g. simple docker-compose on a docker hos
 3. Run `docker compose --profile parabol up -d`. It will start the `pre-deploy` and, once it is done successfully, then it will stop and recreate the `web-server` with the new version of the image. **This step implies a downtime**.
 4. Verify the application is still up and running.
 
-## Running Chronos
-
-Chronos isn't started by default. If it needs to run, it must be managed using `docker compose --profile databases --profile parabol --profile chronos up`.
-
-This will run `pre-deploy` and thus it will recreate the `web-server`.
-
 ## Running Embedder
 
 Embedder isn't started by default. If it needs to run, it must be managed using `docker compose --profile databases --profile parabol --profile embedder up`.
@@ -46,5 +40,5 @@ To operate them use `docker compose up --profile databases --profile database-de
 
 ## Running the whole stack
 
-- Start the whole stack: `docker compose --profile databases --profiles text-embeddings --profile parabol --profile database-debug --profile chronos up --profile embedder -d`.
-- Stop the stack: `docker compose --profile databases --profiles text-embeddings --profile parabol --profile database-debug --profile chronos up --profile embedder down`.
+- Start the whole stack: `docker compose --profile databases --profiles text-embeddings --profile parabol --profile database-debug --profile embedder -d`.
+- Stop the stack: `docker compose --profile databases --profiles text-embeddings --profile parabol --profile database-debug --profile embedder down`.
