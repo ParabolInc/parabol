@@ -125,7 +125,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
     )
   }
   return (
-    <>
+    <div contentEditable={false}>
       <input
         className='bg-inherit p-4 text-lg ring-0 outline-0'
         onChange={(e) => {
@@ -160,6 +160,6 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
           {submitting ? <Ellipsis /> : undefined}
         </Button>
       </div>
-    </>
+    </div>
   )
 }
