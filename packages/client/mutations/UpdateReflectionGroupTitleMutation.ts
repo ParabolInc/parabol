@@ -37,9 +37,9 @@ export const updateReflectionGroupTitleMeetingUpdater: SharedUpdater<
 
   const groupId = reflectionGroup.getValue('id') as string
   const newTitle = reflectionGroup.getValue('title')
-  const groupRecord = store.get(groupId)
-  if (groupRecord) {
-    groupRecord.setValue(newTitle, 'title')
+  const group = store.get(groupId)
+  if (group) {
+    group.setValue(newTitle, 'title')
   }
 }
 
