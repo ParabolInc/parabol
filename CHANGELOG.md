@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.0](https://github.com/ParabolInc/parabol/compare/v10.0.2...v10.1.0) (2025-04-16)
+
+
+### Added
+
+* streaming page insights ([#11191](https://github.com/ParabolInc/parabol/issues/11191)) ([a30c0f7](https://github.com/ParabolInc/parabol/commit/a30c0f73416d1c7b694ad9d6fad175f25043c6e3))
+
+
+### Fixed
+
+* listitem updates inside insights ([#11204](https://github.com/ParabolInc/parabol/issues/11204)) ([a735922](https://github.com/ParabolInc/parabol/commit/a735922b73fb6f2c2a429826cb9e348034c41a9a))
+
+## [10.0.2](https://github.com/ParabolInc/parabol/compare/v10.0.1...v10.0.2) (2025-04-16)
+
+
+### Fixed
+
+* terminate client WS if server does not respond ([#11198](https://github.com/ParabolInc/parabol/issues/11198)) ([fa89159](https://github.com/ParabolInc/parabol/commit/fa891593b143d643e4c53e030aa90d9cf6ace20e))
+
 ## [10.0.1](https://github.com/ParabolInc/parabol/compare/v10.0.0...v10.0.1) (2025-04-16)
 
 

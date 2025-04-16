@@ -39,6 +39,13 @@ export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: Markdown
   },
   addAttributes() {
     return {
+      id: {
+        default: () => crypto.randomUUID(),
+        parseHTML: (element) => element.getAttribute('data-id'),
+        renderHTML: (attributes) => ({
+          'data-id': attributes.id
+        })
+      },
       editing: {
         default: true,
         parseHTML: (element) => {

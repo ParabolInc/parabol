@@ -58,6 +58,7 @@ export function createWSClient(atmosphere: Atmosphere) {
     let hasConnected = false
     let abruptlyClosed = false
     let nextId = 1
+    let timedOut: number
     const subscriptionClient = createClient({
       lazy: false,
       generateID: () => {
@@ -68,7 +69,20 @@ export function createWSClient(atmosphere: Atmosphere) {
         if (!atmosphere.authToken) return false
         return true
       },
+      keepAlive: 10_000,
       on: {
+        ping: (received) => {
+          if (!received) {
+            timedOut = window.setTimeout(() => {
+              subscriptionClient.terminate()
+            }, 5_000)
+          }
+        },
+        pong: (received) => {
+          if (received) {
+            clearTimeout(timedOut)
+          }
+        },
         connected: async (_socket, payload, _wasRetry) => {
           const {version, authToken} = payload as {version: string; authToken?: string | null}
           if (authToken) {

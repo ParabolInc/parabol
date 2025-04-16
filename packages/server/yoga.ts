@@ -39,19 +39,32 @@ export const extractPersistedOperationId = (
   return params.docId!
 }
 
+const queryMap = {} as Record<string, string | undefined>
+const primeQueryMap = () => {
+  if (__PRODUCTION__) return
+  const primed = require('../../queryMap.json')
+  Object.keys(primed).forEach((key) => {
+    queryMap[key] = primed[key].replace('@stream_HACK', '@stream')
+  })
+}
+primeQueryMap()
+
 export const getPersistedOperation = async (docId: string) => {
-  if (!__PRODUCTION__) {
-    const queryMap = require('../../queryMap.json')
-    const queryString = queryMap[docId]
-    // for testing we actually commit to the DB & this allows testing on a dev server
-    if (queryString) return queryString
+  let queryString = queryMap[docId]
+  if (!queryString) {
+    const queryStringRes = await getKysely()
+      .selectFrom('QueryMap')
+      .select('query')
+      .where('id', '=', docId)
+      .executeTakeFirst()
+    // Relay only supports @stream internally, so we call it @stream_HACK
+    // so relay will compile it & ignore it on the client
+    queryString = queryStringRes?.query.replace('@stream_HACK', '@stream')
+    if (queryString) {
+      queryMap[docId] = queryString
+    }
   }
-  const queryStringRes = await getKysely()
-    .selectFrom('QueryMap')
-    .select('query')
-    .where('id', '=', docId)
-    .executeTakeFirst()
-  return queryStringRes?.query
+  return queryString || null
 }
 
 export const yoga = createYoga<ServerContext, UserContext>({

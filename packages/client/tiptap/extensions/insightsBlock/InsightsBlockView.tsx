@@ -8,7 +8,7 @@ export const InsightsBlockView = (props: NodeViewProps) => {
   const {editing} = attrs
 
   return (
-    <NodeViewWrapper contentEditable={false}>
+    <NodeViewWrapper>
       <div className='relative m-0 w-full p-0 text-slate-900'>
         <div className='flex flex-col rounded-sm bg-slate-200 p-4'>
           {editing ? <InsightsBlockEditing {...props} /> : <InsightsBlockResult {...props} />}

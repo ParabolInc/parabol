@@ -1,3 +1,4 @@
+directive @stream_HACK on FIELD
 """
 The user account profile
 """
@@ -493,7 +494,7 @@ type User {
     meetingIds: [ID!]!
     prompt: String!
     responseFormat: ContentFormatEnum = markdown
-  ): String!
+  ): [String!]!
 
   """
   Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared
