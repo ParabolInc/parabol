@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.0.1](https://github.com/ParabolInc/parabol/compare/v10.0.0...v10.0.1) (2025-04-16)
+
+
+### Fixed
+
+* chronos primary lock ([#11193](https://github.com/ParabolInc/parabol/issues/11193)) ([60ebd77](https://github.com/ParabolInc/parabol/commit/60ebd7788a5f0f866ba1198b6da012cbd7ac1157))
+
 ## [10.0.0](https://github.com/ParabolInc/parabol/compare/v9.1.5...v10.0.0) (2025-04-15)
 
 
