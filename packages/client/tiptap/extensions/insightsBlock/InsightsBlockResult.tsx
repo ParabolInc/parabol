@@ -13,7 +13,7 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
   const {id} = attrs
   return (
     <>
-      <NodeViewContent className='px-4 outline-hidden' contentEditable />
+      <NodeViewContent className='px-4 outline-hidden' />
       <div className='absolute top-0 right-0 flex justify-end space-x-2 p-4'>
         <Tooltip>
           <TooltipTrigger asChild>
