@@ -23,6 +23,7 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {updateReflectionGroupTitleMeetingUpdater} from '../mutations/UpdateReflectionGroupTitleMutation' // Import the updater
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -181,6 +182,7 @@ const updateHandlers = {
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
+  UpdateReflectionGroupTitlePayload: updateReflectionGroupTitleMeetingUpdater,
   UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater
 } as const
 

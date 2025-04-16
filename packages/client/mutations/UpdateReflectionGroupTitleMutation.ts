@@ -4,6 +4,7 @@
  */
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
+import type {RecordProxy} from 'relay-runtime'
 import {UpdateReflectionGroupTitleMutation as TUpdateReflectionGroupTitleMutation} from '../__generated__/UpdateReflectionGroupTitleMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
@@ -24,6 +25,16 @@ const mutation = graphql`
     }
   }
 `
+
+export const updateReflectionGroupTitleMeetingUpdater = (payload: RecordProxy) => {
+  const reflectionGroupRecord = payload.getLinkedRecord('reflectionGroup')
+  if (!reflectionGroupRecord) return
+
+  const title = reflectionGroupRecord.getValue('title')
+  if (typeof title === 'string') {
+    reflectionGroupRecord.setValue(title, 'title')
+  }
+}
 
 const UpdateReflectionGroupTitleMutation: StandardMutation<TUpdateReflectionGroupTitleMutation> = (
   atmosphere,
