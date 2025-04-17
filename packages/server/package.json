@@ -149,6 +149,6 @@
     "string-similarity": "^3.0.0",
     "stripe": "^9.13.0",
     "tslib": "^2.4.0",
-    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.34.0"
+    "uWebSockets.js": "uNetworking/uWebSockets.js#v20.51.0"
   }
 }
