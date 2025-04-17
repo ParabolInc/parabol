@@ -193,6 +193,10 @@ type Mutation {
     must pass true to make it work
     """
     isDangerous: Boolean!
+    """
+    if true, will disconnect all users. useful if the memory leak is not stored on the socket object
+    """
+    disconnectSockets: Boolean
   ): String
 
   """

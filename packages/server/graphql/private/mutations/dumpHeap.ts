@@ -10,14 +10,20 @@ import {MutationResolvers} from '../resolverTypes'
 
 const {SERVER_ID} = process.env
 
-const dumpHeap: MutationResolvers['dumpHeap'] = async (_source, {isDangerous}) => {
+const dumpHeap: MutationResolvers['dumpHeap'] = async (
+  _source,
+  {isDangerous, disconnectSockets}
+) => {
   if (!isDangerous)
     return 'This action will block the server for about 1 minute, Must ack the danger!'
-  Logger.log('[Heap Dump]: Disconnecting sockets')
+  Logger.log('[Heap Dump]: Marking server as busy')
   setIsBusy(true)
   // wait 10 seconds for the readiness probe to fail
   await sleep(10_000)
-  await disconnectAllSockets()
+  if (disconnectSockets) {
+    Logger.log('[Heap Dump]: Disconnecting Sockets')
+    await disconnectAllSockets()
+  }
   Logger.log('[Heap Dump]: Ready to Dump')
   return new Promise((resolve) => {
     global.gc?.()
