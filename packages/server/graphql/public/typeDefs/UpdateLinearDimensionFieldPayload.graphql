@@ -1,0 +1,1 @@
+union UpdateLinearDimensionFieldPayload = ErrorPayload | UpdateLinearDimensionFieldSuccess
