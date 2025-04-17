@@ -62,7 +62,7 @@ export const fetchLinearTeams = async (
 
     const manager = new LinearServerManager(auth, context, info)
 
-    const [data, error] = await manager.getTeams({})
+    const [data, error] = await manager.getTeamsAndProjects({})
 
     if (error) {
       Logger.error(

@@ -40,7 +40,7 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       service: 'linear',
       authStrategy: 'oauth2',
       scope: 'global',
-      serverBaseUrl: 'https://api.linear.app/',
+      serverBaseUrl: 'https://linear.app/',
       clientId: process.env.LINEAR_CLIENT_ID,
       clientSecret: process.env.LINEAR_CLIENT_SECRET
     }

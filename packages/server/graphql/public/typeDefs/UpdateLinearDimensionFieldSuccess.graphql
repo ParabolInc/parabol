@@ -1,0 +1,6 @@
+type UpdateLinearDimensionFieldSuccess {
+  teamId: ID
+  meetingId: ID
+  team: Team
+  meeting: NewMeeting
+}
