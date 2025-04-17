@@ -5,5 +5,8 @@ query getIssue($id: String!) {
     project {
       id
     }
+    team {
+      id
+    }
   }
 }

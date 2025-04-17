@@ -492,6 +492,8 @@ export const enum SprintPokerDefaults {
   SERVICE_FIELD_NULL = '',
   SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
+  LINEAR_FIELD_WEIGHT = '__weight',
+  LINEAR_FIELD_WEIGHT_LABEL = 'Weight',
   LINEAR_DEFAULT_QUERY = '',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn\'t fix the missing field! In Jira, use "Find my field" to determine the error',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',

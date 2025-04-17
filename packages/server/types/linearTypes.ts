@@ -16470,7 +16470,7 @@ export type GetIssueQueryVariables = Exact<{
 }>;
 
 
-export type GetIssueQuery = { __typename?: 'Query', issue: { __typename?: 'Issue', id: string, identifier: string, project?: { __typename?: 'Project', id: string } | null } };
+export type GetIssueQuery = { __typename?: 'Query', issue: { __typename?: 'Issue', id: string, identifier: string, project?: { __typename?: 'Project', id: string } | null, team: { __typename?: 'Team', id: string } } };
 
 export type GetLabelsQueryVariables = Exact<{
   first: Scalars['Int']['input'];

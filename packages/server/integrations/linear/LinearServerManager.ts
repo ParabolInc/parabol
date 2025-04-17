@@ -27,6 +27,7 @@ import {
   GetLabelsQueryVariables,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
+  GetTeamsAndProjectsQuery,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
@@ -48,9 +49,7 @@ class LinearServerManager implements TaskIntegrationManager {
 
   getLinearRequest(info: GraphQLResolveInfo, batchRef: Record<any, any>) {
     return async <TData = any, TVars = any>(query: string, variables: TVars) => {
-      // Note: we're always using the default executor of the nested schema
-      //       (https://api.linear.app/graphql)
-      const result = await linearRequest({
+      const result = await linearRequest<TData, TVars>({
         query,
         variables,
         info,
@@ -138,12 +137,10 @@ class LinearServerManager implements TaskIntegrationManager {
     return commentId
   }
 
-  async updateIssue(
-    variables: UpdateIssueMutationVariables
-  ): Promise<[UpdateIssueMutation | null, Error | null]> {
+  async updateIssue(variables: UpdateIssueMutationVariables) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(updateIssueMutation, variables)
-    return [data, error]
+    const [data, error] = await linearRequest<UpdateIssueMutation>(updateIssueMutation, variables)
+    return [data, error] as const
   }
 
   async getProjectIssues(
@@ -152,47 +149,40 @@ class LinearServerManager implements TaskIntegrationManager {
     // Assuming this method uses the constructor's info/context
     const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest(getProjectIssuesQuery, args)
-    return [data, error]
+    return [data, error] as const
   }
 
   async getProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(getProjectsQuery, {first, ids})
-    return [data, error]
+    const [data, error] = await linearRequest<GetProjectIssuesQuery>(getProjectsQuery, {first, ids})
+    return [data, error] as const
   }
 
-  async getIssue({id}: {id: string}): Promise<[GetIssueQuery | null, Error | null]> {
-    // Assuming this method uses the constructor's info/context
+  async getIssue({id}: {id: string}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(getIssueQuery, {id})
-    return [data, error]
+    const [data, error] = await linearRequest<GetIssueQuery>(getIssueQuery, {id})
+    return [data, error] as const
   }
 
-  async getLabels(args: GetLabelsQueryVariables): Promise<[GetLabelsQuery | null, Error | null]> {
-    // Assuming this method uses the constructor's info/context
+  async getLabels(args: GetLabelsQueryVariables) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(getLabelsQuery, args)
-    return [data, error]
+    const [data, error] = await linearRequest<GetLabelsQuery>(getLabelsQuery, args)
+    return [data, error] as const
   }
 
-  async getTeams({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
+  async getTeamsAndProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(getTeamsQuery, {first, ids})
-    return [data, error]
+    const [data, error] = await linearRequest<GetTeamsAndProjectsQuery>(getTeamsQuery, {first, ids})
+    return [data, error] as const
   }
 
-  async createLabel(
-    variables: CreateLabelMutationVariables
-  ): Promise<[CreateLabelMutation | null, Error | null]> {
+  async createLabel(variables: CreateLabelMutationVariables) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(createLabelMutation, variables)
-    return [data, error]
+    const [data, error] = await linearRequest<CreateLabelMutation>(createLabelMutation, variables)
+    return [data, error] as const
   }
 
-  async isTokenValid(
-    info: GraphQLResolveInfo,
-    context: Record<any, any>
-  ): Promise<[boolean, Error | null]> {
+  async isTokenValid(info: GraphQLResolveInfo, context: Record<any, any>) {
     if (!this.auth.accessToken) {
       return [false, new Error('LinearServerManager has no access token')]
     }
@@ -242,7 +232,7 @@ class LinearServerManager implements TaskIntegrationManager {
   }): Promise<[CreateCommentMutation | null, Error | null]> {
     const linearRequest = this.getLinearRequest(info, context)
     const [data, error] = await linearRequest(createCommentMutation, variables)
-    return [data, error]
+    return [data, error] as const
   }
 }
 

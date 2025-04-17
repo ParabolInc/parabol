@@ -11,6 +11,7 @@ import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
 import GitLabFieldDimensionDropdown from './GitLabFieldDimensionDropdown'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
 import JiraServerFieldDimensionDropdown from './JiraServerFieldDimensionDropdown'
+import LinearFieldDimensionDropdown from './LinearFieldDimensionDropdown'
 import LinkButton from './LinkButton'
 import StyledError from './StyledError'
 
@@ -87,6 +88,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
         ...AzureDevOpsFieldDimensionDropdown_stage
         ...GitLabFieldDimensionDropdown_stage
         ...JiraServerFieldDimensionDropdown_stage
+        ...LinearFieldDimensionDropdown_stage
         task {
           integration {
             __typename
@@ -104,7 +106,8 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     JiraIssue: 'Jira',
     JiraServerIssue: 'Jira Data Center',
     _xGitLabIssue: 'GitLab',
-    AzureDevOpsWorkItem: 'Azure DevOps'
+    AzureDevOpsWorkItem: 'Azure DevOps',
+    _xLinearIssue: 'Linear'
   } as const
   const title = titleByType[integrationType as keyof typeof titleByType]
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -157,8 +160,18 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
+
           {integrationType === 'JiraServerIssue' && (
             <JiraServerFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+
+          {integrationType === '_xLinearIssue' && (
+            <LinearFieldDimensionDropdown
               clearError={clearError}
               stageRef={stage}
               isFacilitator={isFacilitator}
