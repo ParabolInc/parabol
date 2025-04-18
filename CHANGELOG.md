@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.1](https://github.com/ParabolInc/parabol/compare/v10.1.0...v10.1.1) (2025-04-18)
+
+
+### Fixed
+
+* bump node version ([#11209](https://github.com/ParabolInc/parabol/issues/11209)) ([c8bd950](https://github.com/ParabolInc/parabol/commit/c8bd950b674d80bce3dddd4ddeb5da4405f772f8))
+* remove referece to dispose fn ([#11215](https://github.com/ParabolInc/parabol/issues/11215)) ([def8f55](https://github.com/ParabolInc/parabol/commit/def8f553b80c4d51405b08723dbc91c3f59f26d7))
+
 ## [10.1.0](https://github.com/ParabolInc/parabol/compare/v10.0.2...v10.1.0) (2025-04-16)
 
 
