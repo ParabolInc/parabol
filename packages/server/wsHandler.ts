@@ -180,7 +180,10 @@ export const wsHandler = makeBehavior<{token?: string}>({
         wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
       }
     } else {
-      dispose[id] = () => dataLoader!.dispose()
+      dispose[id] = () => {
+        delete dispose[id]
+        dataLoader!.dispose()
+      }
     }
     const args: EnvelopedExecutionArgs = {
       schema: authToken.rol === 'su' ? privateSchema : schema,
@@ -196,6 +199,9 @@ export const wsHandler = makeBehavior<{token?: string}>({
     return args
   },
   onComplete: (ctx, id) => {
+    ctx.extra.dispose[id]?.()
+  },
+  onError: (ctx, id) => {
     ctx.extra.dispose[id]?.()
   },
   onDisconnect: async (ctx) => {
