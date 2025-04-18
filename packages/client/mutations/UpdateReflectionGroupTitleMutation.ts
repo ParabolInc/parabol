@@ -4,13 +4,17 @@
  */
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UpdateReflectionGroupTitleMutation as TUpdateReflectionGroupTitleMutation} from '../__generated__/UpdateReflectionGroupTitleMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import {
+  UpdateReflectionGroupTitleMutation as TUpdateReflectionGroupTitleMutation,
+  UpdateReflectionGroupTitleMutation$data
+} from '../__generated__/UpdateReflectionGroupTitleMutation.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 
 graphql`
   fragment UpdateReflectionGroupTitleMutation_meeting on UpdateReflectionGroupTitlePayload {
     reflectionGroup {
+      id
       title
       titleIsUserDefined
     }
@@ -24,6 +28,20 @@ const mutation = graphql`
     }
   }
 `
+
+export const updateReflectionGroupTitleMeetingUpdater: SharedUpdater<
+  UpdateReflectionGroupTitleMutation$data
+> = (payload, {store}) => {
+  const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
+  if (!reflectionGroup) return
+
+  const groupId = reflectionGroup.getValue('id') as string
+  const newTitle = reflectionGroup.getValue('title')
+  const group = store.get(groupId)
+  if (group) {
+    group.setValue(newTitle, 'title')
+  }
+}
 
 const UpdateReflectionGroupTitleMutation: StandardMutation<TUpdateReflectionGroupTitleMutation> = (
   atmosphere,
