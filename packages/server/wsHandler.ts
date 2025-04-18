@@ -10,6 +10,7 @@ import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
 import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
+import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
@@ -226,8 +227,8 @@ wsHandler.upgrade = (res, req, context) => {
   // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
-  const isShuttingDown = getIsShuttingDown()
-  if (isShuttingDown) {
+  const isUnavailable = getIsShuttingDown() || getIsBusy()
+  if (isUnavailable) {
     res.end()
     return
   }
