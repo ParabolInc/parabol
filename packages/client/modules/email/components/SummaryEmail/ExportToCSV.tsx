@@ -77,6 +77,11 @@ const query = graphql`
                     number
                     title
                   }
+                  ... on _xLinearIssue {
+                    __typename
+                    identifier
+                    title
+                  }
                 }
                 title
               }
@@ -198,6 +203,8 @@ const ExportToCSV = (props: Props) => {
         story = `${integration.issueKey}: ${integration.summary}`
       } else if (integration?.__typename === '_xGitHubIssue') {
         story = `${integration.number}: ${integration.title}`
+      } else if (integration?.__typename === '_xLinearIssue') {
+        story = `${integration.identifier}: ${integration.title}`
       }
       const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
