@@ -139,6 +139,7 @@ class LinearServerManager implements TaskIntegrationManager {
 
   async updateIssue(variables: UpdateIssueMutationVariables) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
+
     const [data, error] = await linearRequest<UpdateIssueMutation>(updateIssueMutation, variables)
     return [data, error] as const
   }
@@ -173,6 +174,15 @@ class LinearServerManager implements TaskIntegrationManager {
   async getTeamsAndProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest<GetTeamsAndProjectsQuery>(getTeamsQuery, {first, ids})
+    return [data, error] as const
+  }
+
+  async createComment(variables: CreateCommentMutationVariables) {
+    const [data, error] = await this.createCommentInternal({
+      info: this.info,
+      context: this.context,
+      variables
+    })
     return [data, error] as const
   }
 

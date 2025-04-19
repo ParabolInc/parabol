@@ -16457,6 +16457,7 @@ export type UpdateIssueMutationVariables = Exact<{
   description?: InputMaybe<Scalars['String']['input']>;
   stateId?: InputMaybe<Scalars['String']['input']>;
   priority?: InputMaybe<Scalars['Int']['input']>;
+  estimate?: InputMaybe<Scalars['Int']['input']>;
   assigneeId?: InputMaybe<Scalars['String']['input']>;
   projectId?: InputMaybe<Scalars['String']['input']>;
   labelIds?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;

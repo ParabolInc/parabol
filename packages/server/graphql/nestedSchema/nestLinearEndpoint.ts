@@ -35,8 +35,9 @@ const defaultExecutor: Executor<{
     clearTimeout(timeout)
     const resJSON = (await result.json()) as EndpointExecutionResult | {message?: string}
     // Ensure the returned object and its nested properties have standard prototypes
-    if ('errors' in resJSON || 'data' in resJSON) return {...resJSON}
-    const message = String(resJSON.message) || JSON.stringify(resJSON)
+    const processedRes = {...resJSON}
+    if ('errors' in processedRes || 'data' in processedRes) return processedRes
+    const message = String(processedRes.message) || JSON.stringify(processedRes)
     return {
       errors: [
         {

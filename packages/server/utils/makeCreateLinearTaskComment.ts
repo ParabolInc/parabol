@@ -6,8 +6,6 @@ const makeCreateLinearTaskComment = (
   teamName: string,
   teamDashboardUrl: string
 ): string => {
-  // Linear markdown might handle mentions differently, but basic sanitization is safe.
-  // Using the same sanitization as GitLab for now.
   const sanitizedCreator = creator.replace(/#(\d+)/g, '#\u200b$1')
   const sanitizedAssignee = assignee.replace(/#(\d+)/g, '#\u200b$1')
 

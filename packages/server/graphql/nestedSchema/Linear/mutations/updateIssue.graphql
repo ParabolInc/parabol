@@ -4,6 +4,7 @@ mutation updateIssue(
   $description: String
   $stateId: String
   $priority: Int
+  $estimate: Int
   $assigneeId: String
   $projectId: String
   $labelIds: [String!]
@@ -15,6 +16,7 @@ mutation updateIssue(
       description: $description
       stateId: $stateId
       priority: $priority
+      estimate: $estimate
       assigneeId: $assigneeId
       projectId: $projectId
       labelIds: $labelIds
