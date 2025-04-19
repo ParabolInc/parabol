@@ -116,9 +116,6 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
     if (manager) {
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-      console.log('--------------------------------------------------')
-      console.log(authRes)
-      console.log('--------------------------------------------------')
       tokenMetadata = convertExpiresIn(authRes)
     }
   }
