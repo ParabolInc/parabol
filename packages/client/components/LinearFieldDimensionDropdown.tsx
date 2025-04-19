@@ -40,7 +40,8 @@ const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}
 }))
 
 const labelLookup = {
-  [SprintPokerDefaults.LINEAR_FIELD_WEIGHT]: SprintPokerDefaults.LINEAR_FIELD_WEIGHT_LABEL,
+  [SprintPokerDefaults.LINEAR_FIELD_ESTIMATE]: SprintPokerDefaults.LINEAR_FIELD_ESTIMATE_LABEL,
+  [SprintPokerDefaults.LINEAR_FIELD_PRIORITY]: SprintPokerDefaults.LINEAR_FIELD_PRIORITY_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_COMMENT]: SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL,
   [SprintPokerDefaults.SERVICE_FIELD_NULL]: SprintPokerDefaults.SERVICE_FIELD_NULL_LABEL
 }
