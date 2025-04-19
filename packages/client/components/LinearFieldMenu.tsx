@@ -51,7 +51,8 @@ const LinearFieldMenu = (props: Props) => {
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
   const defaults = [
-    SprintPokerDefaults.LINEAR_FIELD_WEIGHT,
+    SprintPokerDefaults.LINEAR_FIELD_ESTIMATE,
+    SprintPokerDefaults.LINEAR_FIELD_PRIORITY,
     SprintPokerDefaults.SERVICE_FIELD_COMMENT,
     SprintPokerDefaults.SERVICE_FIELD_NULL
   ] as string[]
@@ -97,8 +98,12 @@ const LinearFieldMenu = (props: Props) => {
         defaultActiveIdx={defaultActiveIdx}
       >
         <MenuItem
-          label={SprintPokerDefaults.LINEAR_FIELD_WEIGHT_LABEL}
-          onClick={handleClick(SprintPokerDefaults.LINEAR_FIELD_WEIGHT)}
+          label={SprintPokerDefaults.LINEAR_FIELD_ESTIMATE_LABEL}
+          onClick={handleClick(SprintPokerDefaults.LINEAR_FIELD_ESTIMATE)}
+        />
+        <MenuItem
+          label={SprintPokerDefaults.LINEAR_FIELD_PRIORITY_LABEL}
+          onClick={handleClick(SprintPokerDefaults.LINEAR_FIELD_PRIORITY)}
         />
         <MenuItem
           label={SprintPokerDefaults.SERVICE_FIELD_COMMENT_LABEL}

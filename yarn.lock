@@ -18240,10 +18240,9 @@ neo-async@^2.5.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-nest-graphql-endpoint@0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/nest-graphql-endpoint/-/nest-graphql-endpoint-0.8.1.tgz#445f71da12dfbb859dc085dc6b294603c53e2341"
-  integrity sha512-l3P6qozmrSzId0o7CpnFHdbBleqFSsTwyIAyK6VB8MnzSR/IkugYiQnTCcCef0P+gI/UJnTSLBc3kRRjN5rWaw==
+"nest-graphql-endpoint@github:jordanh/nest-graphql-endpoint#fix/null-variable-reuse":
+  version "0.8.2"
+  resolved "https://codeload.github.com/jordanh/nest-graphql-endpoint/tar.gz/e462193956624de5d3bdc8cf88a648faa38d0306"
   dependencies:
     "@graphql-tools/schema" "^10.0.4"
     "@graphql-tools/wrap" "^10.0.5"

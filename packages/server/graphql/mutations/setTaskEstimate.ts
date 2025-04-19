@@ -21,6 +21,7 @@ import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
 import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
 import pushEstimateToGitLab from './helpers/pushEstimateToGitLab'
+import pushEstimateToLinear from './helpers/pushEstimateToLinear'
 
 const setTaskEstimate = {
   type: new GraphQLNonNull(SetTaskEstimatePayload),
@@ -365,6 +366,20 @@ const setTaskEstimate = {
           break
         }
         gitlabLabelId = gitlabPushRes
+        success = true
+        break
+      }
+      case undefined: {
+        success = true
+        break
+      }
+      case 'linear': {
+        const linearPushRes = await pushEstimateToLinear(taskEstimate, context, info, stageId)
+        if (linearPushRes instanceof Error) {
+          const {message} = linearPushRes
+          errorMessage = message
+          break
+        }
         success = true
         break
       }
