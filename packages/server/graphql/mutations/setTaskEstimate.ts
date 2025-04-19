@@ -369,10 +369,6 @@ const setTaskEstimate = {
         success = true
         break
       }
-      case undefined: {
-        success = true
-        break
-      }
       case 'linear': {
         const linearPushRes = await pushEstimateToLinear(taskEstimate, context, info, stageId)
         if (linearPushRes instanceof Error) {
