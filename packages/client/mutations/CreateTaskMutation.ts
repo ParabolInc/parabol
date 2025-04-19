@@ -25,6 +25,7 @@ import handleEditTask from './handlers/handleEditTask'
 import handleGitHubCreateIssue from './handlers/handleGitHubCreateIssue'
 import handleGitLabCreateIssue from './handlers/handleGitLabCreateIssue'
 import handleJiraCreateIssue from './handlers/handleJiraCreateIssue'
+import handleLinearCreateIssue from './handlers/handleLinearCreateIssue'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
 import popInvolvementToast from './toasts/popInvolvementToast'
 
@@ -71,6 +72,20 @@ graphql`
           project {
             name
           }
+        }
+        ... on _xLinearIssue {
+          __typename
+          id
+          description
+          identifier
+          title
+          linearProject: project {
+            name
+          }
+          team {
+            name
+          }
+          url
         }
       }
     }
@@ -119,6 +134,7 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
   handleGitHubCreateIssue(task, store)
   handleGitLabCreateIssue(task, store)
   handleAzureCreateIssue(task, store)
+  handleLinearCreateIssue(task, store)
 }
 
 export const createTaskNotificationOnNext: OnNextHandler<
@@ -234,6 +250,20 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           })
           optimisticTaskIntegration.setLinkedRecord(project, 'project')
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
+        } else if (service === 'linear') {
+          const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
+            state: 'opened',
+            identifier: '?',
+            title: plaintextContent,
+            description: '',
+            url: '?'
+          })
+          const optimisticTeam = createProxyRecord(store, '_xLinearTeam', {
+            id: 'temp-linear-team-id:' + (integration.serviceProjectHash || 'unknown'),
+            name: '?'
+          })
+          optimisticTaskIntegration.setLinkedRecord(optimisticTeam, 'team')
+          task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else {
           console.log('FIXME: implement createTask')
         }
@@ -246,6 +276,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
       handleGitHubCreateIssue(task as any, store)
       handleGitLabCreateIssue(task as any, store)
       handleAzureCreateIssue(task as any, store)
+      handleLinearCreateIssue(task as any, store)
     },
     onError,
     onCompleted

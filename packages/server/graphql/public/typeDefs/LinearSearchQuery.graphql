@@ -1,0 +1,26 @@
+"""
+A Linear search query including the search query and the project filters
+"""
+type LinearSearchQuery {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The query string used to search Linear issue titles and descriptions
+  """
+  queryString: String!
+
+  """
+  The list of ids of teams or projects that have been selected as a filter.
+  Elements are of the form _xLinearTeam:[id] or _xLinearProject:[id].
+  Null if none have been selected
+  """
+  selectedProjectsIds: [ID!]
+
+  """
+  the time the search query was last used. Used for sorting
+  """
+  lastUsedAt: DateTime!
+}

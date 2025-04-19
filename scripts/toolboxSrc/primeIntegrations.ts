@@ -1,4 +1,3 @@
-import getPg from '../../packages/server/postgres/getPg'
 import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 import {Logger} from '../../packages/server/utils/Logger'
 
@@ -36,12 +35,21 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       scope: 'global',
       serverBaseUrl: process.env.MATTERMOST_URL,
       sharedSecret: process.env.MATTERMOST_SECRET
+    },
+    {
+      service: 'linear',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      serverBaseUrl: 'https://linear.app/',
+      clientId: process.env.LINEAR_CLIENT_ID,
+      clientSecret: process.env.LINEAR_CLIENT_SECRET
     }
   ] as const
 
-  const validProviders = providers.filter(({authStrategy, clientId, clientSecret, serverBaseUrl, sharedSecret}) => 
-    (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl)
-    || (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
+  const validProviders = providers.filter(
+    ({authStrategy, clientId, clientSecret, serverBaseUrl, sharedSecret}) =>
+      (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl) ||
+      (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
   )
 
   await Promise.all(

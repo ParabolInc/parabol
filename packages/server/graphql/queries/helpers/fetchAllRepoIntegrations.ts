@@ -6,6 +6,7 @@ import {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
 import {GQLContext} from '../../graphql'
 import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchGitLabProjects from './fetchGitLabProjects'
+import {fetchLinearProjects, fetchLinearTeams} from './fetchLinearTeamsAndProjects'
 
 type GitHubRepo = {
   id: string
@@ -20,12 +21,26 @@ type GitLabProject = {
   fullPath: string
 }
 
+type LinearProject = {
+  id: string
+  service: 'linear'
+  displayName: string
+}
+
+type LinearTeam = {
+  id: string
+  service: 'linear'
+  name: string
+}
+
 export type RemoteRepoIntegration =
   | JiraGQLProject
   | GitHubRepo
   | GitLabProject
   | JiraServerProject
   | AzureAccountProject
+  | LinearProject
+  | LinearTeam
 
 const fetchAllRepoIntegrations = async (
   teamId: string,
@@ -34,20 +49,31 @@ const fetchAllRepoIntegrations = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-  const [jiraProjects, githubRepos, gitlabProjects, jiraServerProjects, azureProjects] =
-    await Promise.all([
-      dataLoader.get('allJiraProjects').load({teamId, userId}),
-      fetchGitHubRepos(teamId, userId, dataLoader, context, info),
-      fetchGitLabProjects(teamId, userId, context, info),
-      dataLoader.get('allJiraServerProjects').load({teamId, userId}),
-      dataLoader.get('allAzureDevOpsProjects').load({teamId, userId})
-    ])
+  const [
+    jiraProjects,
+    githubRepos,
+    gitlabProjects,
+    jiraServerProjects,
+    azureProjects,
+    linearProjects,
+    linearTeams
+  ] = await Promise.all([
+    dataLoader.get('allJiraProjects').load({teamId, userId}),
+    fetchGitHubRepos(teamId, userId, dataLoader, context, info),
+    fetchGitLabProjects(teamId, userId, context, info),
+    dataLoader.get('allJiraServerProjects').load({teamId, userId}),
+    dataLoader.get('allAzureDevOpsProjects').load({teamId, userId}),
+    fetchLinearProjects(teamId, userId, context, info),
+    fetchLinearTeams(teamId, userId, context, info)
+  ])
   const repos: RemoteRepoIntegration[][] = [
     jiraProjects,
     githubRepos,
     gitlabProjects,
     jiraServerProjects,
-    azureProjects
+    azureProjects,
+    linearProjects,
+    linearTeams
   ]
   const maxRepos = Math.max(...repos.map((repo) => repo.length))
   return new Array(maxRepos)

@@ -12,7 +12,9 @@ import githubSchema from '../../utils/githubSchema.graphql'
 import composeResolvers from '../composeResolvers'
 import {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
+import linearSchema from '../nestedSchema/Linear/linearSchema.graphql'
 import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
+import nestLinearEndpoint from '../nestedSchema/nestLinearEndpoint'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import mutation from '../rootMutation'
 import query from '../rootQuery'
@@ -77,15 +79,36 @@ const {schema: typeDefsWithGitHubGitLab, gitlabRequest} = nestGitLabEndpoint({
   schemaIDL: gitlabSchema
 })
 
+const {schema: typeDefsWithGitHubGitLabLinear, linearRequest} = nestLinearEndpoint({
+  parentSchema: typeDefsWithGitHubGitLab,
+  parentType: 'LinearIntegration',
+  fieldName: 'api',
+  resolveEndpointContext: async (
+    {teamId, userId}: {teamId: string; userId: string},
+    _args,
+    {dataLoader}: GQLContext
+  ) => {
+    const auth = await dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: 'linear', teamId, userId})
+    if (!auth?.accessToken) throw new Error('No Linear token found')
+    return {
+      accessToken: auth.accessToken
+    }
+  },
+  prefix: '_xLinear',
+  schemaIDL: linearSchema
+})
+
 // IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
 // See https://github.com/ardatan/graphql-tools/issues/4367
 const publicSchema = resolveTypesForMutationPayloads(
   addResolversToSchema({
-    schema: typeDefsWithGitHubGitLab,
+    schema: typeDefsWithGitHubGitLabLinear,
     resolvers: composeResolvers(resolvers, permissions),
     inheritResolversFromInterfaces: true
   })
 )
 
-export {githubRequest, gitlabRequest}
+export {githubRequest, gitlabRequest, linearRequest}
 export default publicSchema

@@ -67,6 +67,9 @@ export interface IntegrationProviderGitLabPAT extends IntegrationProviderPAT {
 export interface IntegrationProviderJiraServer extends IntegrationProviderOAuth1 {
   service: 'jiraServer'
 }
+export interface IntegrationProviderLinear extends IntegrationProviderOAuth2 {
+  service: 'linear'
+}
 export interface IntegrationProviderMSTeams extends IntegrationProviderWebhook {
   service: 'msTeams'
 }
@@ -84,6 +87,7 @@ export type TIntegrationProvider =
   | IntegrationProviderAzureDevOps
   | IntegrationProviderMSTeams
   | IntegrationProviderGcalOAuth2
+  | IntegrationProviderLinear
 
 const getIntegrationProvidersByIds = async <T = TIntegrationProvider>(ids: readonly number[]) => {
   const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())

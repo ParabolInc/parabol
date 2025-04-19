@@ -1,0 +1,12 @@
+query getIssue($id: String!) {
+  issue(id: $id) {
+    id
+    identifier
+    project {
+      id
+    }
+    team {
+      id
+    }
+  }
+}

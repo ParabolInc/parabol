@@ -13,6 +13,7 @@ graphql`
       integrations {
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
+        ...LinearProviderRowTeamMemberIntegrations
       }
     }
   }
