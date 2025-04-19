@@ -80,6 +80,10 @@ const SummaryPokerStories = (props: Props) => {
                       __typename
                       title
                     }
+                    ... on _xLinearIssue {
+                      __typename
+                      title
+                    }
                   }
                 }
               }
@@ -116,6 +120,8 @@ const SummaryPokerStories = (props: Props) => {
                 } else if (integration?.__typename === '_xGitLabIssue') {
                   title = integration.title
                 } else if (integration?.__typename === 'AzureDevOpsWorkItem') {
+                  title = integration.title
+                } else if (integration?.__typename === '_xLinearIssue') {
                   title = integration.title
                 }
                 const urlPath = `/meet/${meetingId}/estimate/${idx + 1}`
