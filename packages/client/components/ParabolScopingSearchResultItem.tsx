@@ -78,6 +78,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} =
     useTaskChildFocus(serviceTaskId)
 
+  const editorLinkChanger = useTaskChild('editor-link-changer')
+
   const updatePokerScope = () => {
     if (submitting || disabled) return
     submitMutation()
@@ -140,11 +142,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           addTaskChild('root')
         }}
       >
-        <TipTapEditor
-          className='px-4'
-          editor={editor}
-          useLinkEditor={() => useTaskChild('editor-link-changer')}
-        />
+        <TipTapEditor className='px-4' editor={editor} useLinkEditor={() => editorLinkChanger} />
       </Task>
     </Item>
   )
