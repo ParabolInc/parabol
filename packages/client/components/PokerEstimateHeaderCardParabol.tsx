@@ -79,6 +79,9 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   const [isExpanded, setIsExpanded] = useState(true)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {useTaskChild} = useTaskChildFocus(taskId)
+
+  const editorLinkChanger = useTaskChild('editor-link-changer')
+
   const {teamId} = task
   const onBlur = useEventCallback(() => {
     if (!editor || editor.isEmpty) return
@@ -106,10 +109,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
       <HeaderCard>
         <Content>
           <EditorWrapper isExpanded={isExpanded}>
-            <TipTapEditor
-              editor={editor}
-              useLinkEditor={() => useTaskChild('editor-link-changer')}
-            />
+            <TipTapEditor editor={editor} useLinkEditor={() => editorLinkChanger} />
           </EditorWrapper>
         </Content>
         <CardIcons>
