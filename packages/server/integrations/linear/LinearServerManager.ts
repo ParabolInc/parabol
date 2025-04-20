@@ -6,10 +6,8 @@ import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapConten
 import {GQLContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
 import createIssueMutation from '../../graphql/nestedSchema/Linear/mutations/createIssue.graphql'
-import createLabelMutation from '../../graphql/nestedSchema/Linear/mutations/createLabel.graphql'
 import updateIssueMutation from '../../graphql/nestedSchema/Linear/mutations/updateIssue.graphql'
 import getIssueQuery from '../../graphql/nestedSchema/Linear/queries/getIssue.graphql'
-import getLabelsQuery from '../../graphql/nestedSchema/Linear/queries/getLabels.graphql'
 import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfile.graphql'
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
@@ -20,11 +18,7 @@ import {
   CreateCommentMutation,
   CreateCommentMutationVariables,
   CreateIssueMutation,
-  CreateLabelMutation,
-  CreateLabelMutationVariables,
   GetIssueQuery,
-  GetLabelsQuery,
-  GetLabelsQueryVariables,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
   GetTeamsAndProjectsQuery,
@@ -165,12 +159,6 @@ class LinearServerManager implements TaskIntegrationManager {
     return [data, error] as const
   }
 
-  async getLabels(args: GetLabelsQueryVariables) {
-    const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<GetLabelsQuery>(getLabelsQuery, args)
-    return [data, error] as const
-  }
-
   async getTeamsAndProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
     const [data, error] = await linearRequest<GetTeamsAndProjectsQuery>(getTeamsQuery, {first, ids})
@@ -183,12 +171,6 @@ class LinearServerManager implements TaskIntegrationManager {
       context: this.context,
       variables
     })
-    return [data, error] as const
-  }
-
-  async createLabel(variables: CreateLabelMutationVariables) {
-    const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<CreateLabelMutation>(createLabelMutation, variables)
     return [data, error] as const
   }
 

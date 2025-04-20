@@ -1,5 +1,3 @@
-import {_XLinearProjectResolvers} from '../resolverTypes'
-
 const _xLinearTeam: _XLinearTeamResolvers = {
   service: () => 'linear'
 }

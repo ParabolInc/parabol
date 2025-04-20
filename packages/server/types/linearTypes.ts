@@ -16442,15 +16442,6 @@ export type CreateIssueMutationVariables = Exact<{
 
 export type CreateIssueMutation = { __typename?: 'Mutation', issueCreate: { __typename?: 'IssuePayload', success: boolean, issue?: { __typename?: 'Issue', id: string, title: string } | null } };
 
-export type CreateLabelMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  teamId: Scalars['String']['input'];
-  color?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type CreateLabelMutation = { __typename?: 'Mutation', issueLabelCreate: { __typename?: 'IssueLabelPayload', success: boolean, issueLabel: { __typename?: 'IssueLabel', id: string, name: string, color: string } } };
-
 export type UpdateIssueMutationVariables = Exact<{
   id: Scalars['String']['input'];
   title?: InputMaybe<Scalars['String']['input']>;
@@ -16472,16 +16463,6 @@ export type GetIssueQueryVariables = Exact<{
 
 
 export type GetIssueQuery = { __typename?: 'Query', issue: { __typename?: 'Issue', id: string, identifier: string, project?: { __typename?: 'Project', id: string } | null, team: { __typename?: 'Team', id: string } } };
-
-export type GetLabelsQueryVariables = Exact<{
-  first: Scalars['Int']['input'];
-  after?: InputMaybe<Scalars['String']['input']>;
-  nameSearch?: InputMaybe<Scalars['String']['input']>;
-  teamId: Scalars['String']['input'];
-}>;
-
-
-export type GetLabelsQuery = { __typename?: 'Query', team: { __typename?: 'Team', labels: { __typename?: 'IssueLabelConnection', nodes: Array<{ __typename?: 'IssueLabel', id: string, name: string }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } } };
 
 export type GetProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
