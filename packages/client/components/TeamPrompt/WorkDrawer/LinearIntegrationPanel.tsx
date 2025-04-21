@@ -7,6 +7,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import linearSVG from '../../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../../utils/LinearClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar' // Corrected import name
 
 interface Props {
@@ -73,10 +74,10 @@ const LinearIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {isActive ? (
+      {isActive && teamMember ? (
         <>
           <LinearProjectFilterBar
-            teamMemberRef={teamMember!}
+            teamMemberRef={teamMember}
             selectedLinearIds={selectedLinearIds}
             setSelectedLinearIds={(ids) => {
               SendClientSideEvent(atmosphere, 'Your Work Filter Changed', {
@@ -87,11 +88,10 @@ const LinearIntegrationPanel = (props: Props) => {
               setSelectedLinearIds(ids)
             }}
           />
-          {/* <LinearIntegrationResultsRoot
+          <LinearIntegrationResultsRoot
             teamId={teamMember.teamId}
-            queryType={githubType}
-            selectedRepos={selectedRepos}
-          /> */}
+            selectedLinearIds={selectedLinearIds}
+          />
         </>
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
