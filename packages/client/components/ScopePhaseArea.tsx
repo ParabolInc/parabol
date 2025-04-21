@@ -137,9 +137,6 @@ const ScopePhaseArea = (props: Props) => {
                 cloudProvider {
                   clientId
                 }
-                sharedProviders {
-                  clientId
-                }
               }
             }
           }
@@ -160,9 +157,7 @@ const ScopePhaseArea = (props: Props) => {
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
-  const isLinearProviderAvailable = !!(
-    linearIntegration?.cloudProvider?.clientId || linearIntegration?.sharedProviders.length
-  )
+  const isLinearProviderAvailable = !!linearIntegration?.cloudProvider?.clientId
 
   const baseTabs = [
     {

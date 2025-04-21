@@ -21,7 +21,6 @@ const LinearScopingSearchFilterToggle = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment LinearScopingSearchFilterToggle_meeting on PokerMeeting {
-        ...LinearScopingSearchFilterMenuRoot_meeting
         id
         teamId
       }
@@ -39,7 +38,7 @@ const LinearScopingSearchFilterToggle = (props: Props) => {
       {menuPortal(
         <LinearScopingSearchFilterMenuRoot
           teamId={teamId}
-          meetingRef={meeting}
+          meetingId={meeting.id}
           menuProps={menuProps}
         />
       )}

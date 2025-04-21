@@ -11,6 +11,7 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
 import JiraSVG from '../JiraSVG'
 import JiraServerSVG from '../JiraServerSVG'
+import LinearSVG from '../LinearSVG'
 import ParabolLogoSVG from '../ParabolLogoSVG'
 import Tab from '../Tab/Tab'
 import Tabs from '../Tabs/Tabs'
@@ -18,6 +19,7 @@ import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 import JiraServerIntegrationPanel from './WorkDrawer/JiraServerIntegrationPanel'
+import LinearIntegrationPanel from './WorkDrawer/LinearIntegrationPanel'
 import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 
 interface Props {
@@ -37,6 +39,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
         ...JiraIntegrationPanel_meeting
         ...GCalIntegrationPanel_meeting
         ...JiraServerIntegrationPanel_meeting
+        ...LinearIntegrationPanel_meeting
         viewerMeetingMember {
           teamMember {
             teamId
@@ -51,6 +54,11 @@ const TeamPromptWorkDrawer = (props: Props) => {
                   id
                 }
               }
+              linear {
+                cloudProvider {
+                  id
+                }
+              }
             }
           }
         }
@@ -61,6 +69,8 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const atmosphere = useAtmosphere()
   const hasJiraServer =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.jiraServer?.sharedProviders?.length
+  const hasLinear =
+    !!meeting.viewerMeetingMember?.teamMember?.integrations.linear?.cloudProvider?.id
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
 
   useEffect(() => {
@@ -101,6 +111,16 @@ const TeamPromptWorkDrawer = (props: Props) => {
       : []),
     ...(AtlassianClientManager.isAvailable
       ? [{icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel}]
+      : []),
+    ...(hasLinear
+      ? [
+          {
+            icon: <LinearSVG />,
+            service: 'linear',
+            label: 'Linear',
+            Component: LinearIntegrationPanel
+          }
+        ]
       : []),
     ...(hasGCal
       ? [
