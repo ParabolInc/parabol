@@ -27,11 +27,6 @@ graphql`
         clientId
         serverBaseUrl
       }
-      sharedProviders {
-        id
-        clientId
-        serverBaseUrl
-      }
     }
   }
 `
@@ -62,7 +57,7 @@ const LinearProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {linear} = integrations
-  const provider = linear?.sharedProviders[0] ?? linear?.cloudProvider
+  const provider = linear?.cloudProvider
   const accessToken = linear?.auth?.accessToken ?? undefined
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
