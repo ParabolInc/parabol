@@ -21,14 +21,6 @@ const LinearIntegration: LinearIntegrationResolvers = {
 
   id: ({teamId, userId}) => `linear:${teamId}:${userId}`,
 
-  sharedProviders: async ({teamId}, _args, {dataLoader}) => {
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {orgId} = team
-    return dataLoader
-      .get('sharedIntegrationProviders')
-      .load({service: 'linear', orgIds: [orgId], teamIds: [teamId]})
-  },
-
   linearSearchQueries: async () => []
 }
 

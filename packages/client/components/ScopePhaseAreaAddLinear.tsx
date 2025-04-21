@@ -54,11 +54,6 @@ const ScopePhaseAreaAddLinear = (props: Props) => {
                   clientId
                   serverBaseUrl
                 }
-                sharedProviders {
-                  id
-                  clientId
-                  serverBaseUrl
-                }
               }
             }
           }
@@ -72,7 +67,7 @@ const ScopePhaseAreaAddLinear = (props: Props) => {
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
   const {linear} = integrations
-  const provider = linear?.sharedProviders[0] ?? linear?.cloudProvider
+  const provider = linear?.cloudProvider
   if (!provider) return null
 
   const authLinear = () => {
