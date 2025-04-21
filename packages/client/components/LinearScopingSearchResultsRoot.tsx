@@ -3,47 +3,14 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import linearScopingSearchResultsQuery, {
-  _xLinearIssueFilter,
   LinearScopingSearchResultsQuery
 } from '../__generated__/LinearScopingSearchResultsQuery.graphql'
 import {LinearScopingSearchResultsRoot_meeting$key} from '../__generated__/LinearScopingSearchResultsRoot_meeting.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {makeLinearIssueFilter} from '../utils/makeLinearIssueFilter'
 import LinearScopingSearchResults from './LinearScopingSearchResults'
 interface Props {
   meetingRef: LinearScopingSearchResultsRoot_meeting$key
-}
-
-export const makeLinearIssueFilter = (
-  queryString: string,
-  selectedProjectsIds: readonly string[] | null | undefined
-): _xLinearIssueFilter | null => {
-  const normalizedQueryString = queryString.trim()
-  const finalFilters = []
-  if (queryString.length) {
-    finalFilters.push({
-      or: [
-        {description: {containsIgnoreCaseAndAccent: normalizedQueryString}},
-        {title: {containsIgnoreCaseAndAccent: normalizedQueryString}}
-      ]
-    })
-  }
-  if (selectedProjectsIds?.length) {
-    const teamAndProjectFilters: _xLinearIssueFilter[] = []
-    selectedProjectsIds.map((selectedTypeAndId) => {
-      const [typeName, id] = selectedTypeAndId.split(':') as [string?, string?]
-      if (id && typeName === '_xLinearProject') {
-        teamAndProjectFilters.push({project: {id: {eq: id}}})
-      }
-      if (id && typeName === '_xLinearTeam') {
-        teamAndProjectFilters.push({team: {id: {eq: id}}})
-      }
-    })
-    finalFilters.push({or: teamAndProjectFilters})
-  }
-  if (finalFilters.length) {
-    return {and: finalFilters}
-  }
-  return null
 }
 
 const LinearScopingSearchResultsRoot = (props: Props) => {
