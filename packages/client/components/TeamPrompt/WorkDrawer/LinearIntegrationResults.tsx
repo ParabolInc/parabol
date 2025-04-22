@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
-// NOTE: Using GitHub's empty state image temporarily. Replace if a Linear-specific one exists.
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {LinearIntegrationResultsPaginationQuery} from '../../../__generated__/LinearIntegrationResultsPaginationQuery.graphql'
 import {LinearIntegrationResultsQuery} from '../../../__generated__/LinearIntegrationResultsQuery.graphql'
@@ -11,6 +10,7 @@ import {
 } from '../../../__generated__/LinearIntegrationResults_query.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
+import LinearObjectCard from './LinearObjectCard'
 
 type LinearIssueEdge = NonNullable<
   NonNullable<
@@ -70,8 +70,12 @@ const LinearIntegrationResults = (props: Props) => {
                   path
                 }
                 query {
-                  issues(first: $count, after: $cursor, filter: $filter)
-                    @connection(key: "LinearIntegrationResults_query_issues") {
+                  issues(
+                    first: $count
+                    after: $cursor
+                    filter: $filter
+                    sort: {updatedAt: {order: Descending}}
+                  ) @connection(key: "LinearIntegrationResults_query_issues") {
                     edges {
                       node {
                         ... on _xLinearIssue {
@@ -85,6 +89,8 @@ const LinearIntegrationResults = (props: Props) => {
                           team {
                             displayName
                           }
+                          # Spread the fragment for LinearObjectCard
+                          ...LinearObjectCard_issue
                         }
                       }
                     }
@@ -119,38 +125,10 @@ const LinearIntegrationResults = (props: Props) => {
               return null
             }
 
-            const {identifier, title, project, team, url} = issue
-            const projectName = project?.name
-            const teamName = team?.displayName ?? 'Unknown Team'
-            const repoStr = projectName ? `${teamName} / ${projectName}` : teamName
-
-            return (
-              <div
-                key={issue.id}
-                className='border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded border bg-white p-2'
-              >
-                <div className='flex items-center gap-x-2'>
-                  <a
-                    href={url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-blue-600 dark:text-blue-400 flex-shrink-0 font-medium hover:underline'
-                    title={title}
-                  >
-                    {identifier}
-                  </a>
-                  <span className='text-gray-800 dark:text-gray-200 truncate text-sm' title={title}>
-                    {title}
-                  </span>
-                </div>
-                {repoStr && (
-                  <div className='text-gray-500 dark:text-gray-400 mt-1 text-xs'>{repoStr}</div>
-                )}
-              </div>
-            )
+            return <LinearObjectCard key={issue.id} issueRef={issue} />
           })
         ) : (
-          // Empty or Error State (Adapted from GitHubIntegrationResults)
+          // Empty or Error State
           <div className='-mt-14 flex h-full flex-col items-center justify-center text-center'>
             <img
               className='w-20'
