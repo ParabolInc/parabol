@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {FormEvent, useEffect, useMemo, useRef, useState} from 'react'
@@ -11,7 +10,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
-import {PALETTE} from '~/styles/paletteV3'
 import getNonNullEdges from '~/utils/getNonNullEdges'
 import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
@@ -26,81 +24,6 @@ import getUniqueEdges from '../utils/getUniqueEdges'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
 import NewLinearIssueMenu from './NewLinearIssueMenu'
-import PlainButton from './PlainButton/PlainButton'
-import StyledError from './StyledError'
-
-const StyledButton = styled(PlainButton)({
-  alignItems: 'center',
-  backgroundColor: 'transparent',
-  display: 'flex',
-  height: '20px',
-  justifyContent: 'flex-start',
-  margin: 0,
-  opacity: 1,
-  width: 'fit-content',
-  ':hover, :focus': {
-    backgroundColor: 'transparent'
-  }
-})
-
-const StyledIcon = styled(ExpandMore)({
-  color: PALETTE.SKY_500,
-  height: 20,
-  width: 20,
-  padding: 0,
-  alignContent: 'center'
-})
-
-const StyledLink = styled('a')({
-  color: PALETTE.SKY_500,
-  display: 'block',
-  fontSize: 12,
-  lineHeight: '20px',
-  textDecoration: 'none',
-  '&:hover,:focus': {
-    textDecoration: 'underline'
-  }
-})
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const Item = styled('div')({
-  backgroundColor: PALETTE.SLATE_100,
-  cursor: 'pointer',
-  display: 'flex',
-  paddingLeft: 16,
-  paddingTop: 8,
-  paddingBottom: 8
-})
-
-const Issue = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16,
-  width: '100%'
-})
-
-const NewIssueInput = styled('input')({
-  appearance: 'none',
-  background: 'transparent',
-  border: 'none',
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  margin: 0,
-  padding: '0px 8px 0px 0px',
-  outline: 0,
-  width: '100%'
-})
-
-const Error = styled(StyledError)({
-  fontSize: 13,
-  textAlign: 'left',
-  width: '100%'
-})
 
 interface Props {
   isEditing: boolean
@@ -110,7 +33,7 @@ interface Props {
 }
 
 const validateIssue = (issue: string) => {
-  return new Legitity(issue).trim().min(2, `C’mon, you call that an issue?`)
+  return new Legitity(issue).trim().min(2, `C'mon, you call that an issue?`)
 }
 
 type ProjectEdge = NonNullable<
@@ -345,23 +268,25 @@ const NewLinearIssueInput = (props: Props) => {
 
   if (createTaskError) {
     return (
-      <Item>
+      <div className='flex cursor-pointer bg-slate-100 py-2 pl-4'>
         <Checkbox active disabled />
-        <Issue>
-          <Error>{createTaskError}</Error>
-          <StyledLink>{selectedProjectAndId.name}</StyledLink>
-        </Issue>
-      </Item>
+        <div className='flex w-full flex-col pl-4'>
+          <div className='text-red-500 w-full text-left text-sm'>{createTaskError}</div>
+          <a className='block text-xs leading-5 text-sky-500 no-underline hover:underline focus:underline'>
+            {selectedProjectAndId.name}
+          </a>
+        </div>
+      </div>
     )
   }
   if (!isEditing) return null
   return (
     <>
-      <Item>
+      <div className='flex cursor-pointer bg-slate-100 py-2 pl-4'>
         <Checkbox active />
-        <Issue>
-          <Form onSubmit={handleCreateNewIssue}>
-            <NewIssueInput
+        <div className='flex w-full flex-col pl-4'>
+          <form onSubmit={handleCreateNewIssue} className='flex w-full flex-col'>
+            <input
               autoFocus
               onBlur={handleCreateNewIssue}
               onChange={onChange}
@@ -370,15 +295,22 @@ const NewLinearIssueInput = (props: Props) => {
               placeholder='New issue title'
               ref={ref}
               type='text'
+              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-base text-slate-700 outline-none'
             />
-            {dirty && error && <Error>{error}</Error>}
-          </Form>
-          <StyledButton ref={originRef} onMouseDown={togglePortal}>
-            <StyledLink>{selectedProjectAndId.name}</StyledLink>
-            <StyledIcon />
-          </StyledButton>
-        </Issue>
-      </Item>
+            {dirty && error && <div className='text-red-500 w-full text-left text-sm'>{error}</div>}
+          </form>
+          <button
+            ref={originRef}
+            onMouseDown={togglePortal}
+            className='m-0 flex w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
+          >
+            <a className='block text-xs leading-5 text-sky-500 no-underline hover:underline focus:underline'>
+              {selectedProjectAndId.name}
+            </a>
+            <ExpandMore className='h-5 w-5 p-0 text-sky-500' />
+          </button>
+        </div>
+      </div>
       {menuPortal(
         <NewLinearIssueMenu
           linearProjects={projectsAndIds}

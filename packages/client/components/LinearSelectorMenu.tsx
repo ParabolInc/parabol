@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
 import {MenuProps} from '../hooks/useMenu'
 import Checkbox from './Checkbox'
@@ -8,17 +7,6 @@ import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const StyledCheckBox = styled(Checkbox)({
-  marginLeft: -8,
-  marginRight: 8
-})
-
-const StyledMenuItemLabel = styled(MenuItemLabel)({})
-
-const StyledMenu = styled(Menu)({
-  maxWidth: '100%'
-})
 
 export interface LinearSelectorMenuProps {
   items: ReadonlyArray<LinearProjectOrTeam>
@@ -54,7 +42,8 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
   // TODO: Add loading state indicator if isLoading is true
 
   return (
-    <StyledMenu
+    <Menu
+      className='max-w-full'
       keepParentFocus
       ariaLabel='Select Linear projects or teams'
       portalStatus={portalStatus}
@@ -83,16 +72,16 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
           <MenuItem
             key={itemId}
             label={
-              <StyledMenuItemLabel>
-                <StyledCheckBox active={isSelected} />
+              <MenuItemLabel className=''>
+                <Checkbox className='mr-2 -ml-2' active={isSelected} />
                 <TypeAheadLabel query={searchQuery} label={itemLabel} />
-              </StyledMenuItemLabel>
+              </MenuItemLabel>
             }
             onClick={handleClick}
           />
         )
       })}
-    </StyledMenu>
+    </Menu>
   )
 }
 

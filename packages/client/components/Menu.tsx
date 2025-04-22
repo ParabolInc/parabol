@@ -1,5 +1,3 @@
-import styled from '@emotion/styled'
-
 import {
   Children,
   cloneElement,
@@ -20,13 +18,6 @@ import MenuItemAnimation from './MenuItemAnimation'
 const isMenuItem = (node: any) => node && node.onClick
 const REACT_ELEMENT = Symbol.for('react.element')
 const isReactElement = (child: any) => child && child.$$typeof === REACT_ELEMENT
-
-const MenuStyles = styled('div')({
-  maxHeight: 224,
-  maxWidth: 400,
-  outline: 0,
-  userSelect: 'none'
-})
 
 interface Props {
   ariaLabel: string
@@ -174,17 +165,17 @@ const Menu = forwardRef((props: Props, ref: any) => {
   )
 
   return (
-    <MenuStyles
+    <div
       role='menu'
       aria-label={ariaLabel}
-      className={className}
+      className={`max-h-56 max-w-md outline-none select-none ${className || ''}`}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
       ref={menuRef}
     >
       {makeSmartChildren(children)}
-    </MenuStyles>
+    </div>
   )
 })
 

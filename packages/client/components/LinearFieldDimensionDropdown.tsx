@@ -1,8 +1,6 @@
-import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import {LinearFieldDimensionDropdown_stage$key} from '../__generated__/LinearFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -17,27 +15,6 @@ interface Props {
   stageRef: LinearFieldDimensionDropdown_stage$key
   submitScore(): void
 }
-
-const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  color: PALETTE.SLATE_700,
-  cursor: isFacilitator ? undefined : 'default',
-  display: 'flex',
-  paddingRight: isFacilitator ? undefined : 8,
-  userSelect: 'none',
-  ':hover,:focus,:active': {
-    opacity: isFacilitator ? '50%' : undefined
-  }
-}))
-
-const CurrentValue = styled('div')({
-  fontSize: 14
-})
-
-const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  height: 18,
-  width: 18,
-  display: isFacilitator ? undefined : 'none'
-}))
 
 const labelLookup = {
   [SprintPokerDefaults.LINEAR_FIELD_ESTIMATE]: SprintPokerDefaults.LINEAR_FIELD_ESTIMATE_LABEL,
@@ -82,10 +59,14 @@ const LinearFieldDimensionDropdown = (props: Props) => {
 
   return (
     <>
-      <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
-        <CurrentValue>{label}</CurrentValue>
-        <StyledIcon isFacilitator={isFacilitator} />
-      </Wrapper>
+      <PlainButton
+        className={`flex text-slate-700 select-none ${isFacilitator ? 'hover:opacity-50 focus:opacity-50 active:opacity-50' : 'cursor-default'} ${!isFacilitator ? 'pr-2' : ''}`}
+        onClick={onClick}
+        ref={originRef}
+      >
+        <div className='text-sm'>{label}</div>
+        <ExpandMore className={`h-[18px] w-[18px] ${!isFacilitator ? 'hidden' : ''}`} />
+      </PlainButton>
       {menuPortal(
         <LinearFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore} />
       )}

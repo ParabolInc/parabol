@@ -1,9 +1,7 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
-import {PALETTE} from '../../../../styles/paletteV3'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
 import GcalProviderRow from '../ProviderRow/GcalProviderRow'
@@ -20,26 +18,6 @@ interface Props {
   teamId: string
   retry: () => void
 }
-
-const StyledWrapper = styled(SettingsWrapper)({
-  display: 'block'
-})
-
-const Note = styled('div')({
-  paddingTop: 29,
-  paddingBottom: 25,
-  fontSize: 13
-})
-
-const Heading = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  fontWeight: 600
-})
-
-const AvailableHeading = styled(Heading)({
-  paddingTop: 16
-})
 
 const query = graphql`
   query ProviderListQuery($teamId: ID!) {
@@ -189,20 +167,26 @@ const ProviderList = (props: Props) => {
     .map((integration) => integration.component)
 
   return (
-    <StyledWrapper>
-      <Note>
-        Each team member must add the integrations they want to use. Integrations are scoped to the
-        team where you add them.
-      </Note>
+    <div className='block'>
+      <SettingsWrapper>
+        <div className='pt-7 pb-6 text-sm'>
+          Each team member must add the integrations they want to use. Integrations are scoped to
+          the team where you add them.
+        </div>
 
-      {connectedIntegrations.length > 0 && <Heading>Connected</Heading>}
+        {connectedIntegrations.length > 0 && (
+          <div className='text-base font-semibold text-slate-700'>Connected</div>
+        )}
 
-      {connectedIntegrations}
+        {connectedIntegrations}
 
-      {availableIntegrations.length > 0 && <AvailableHeading>Available</AvailableHeading>}
+        {availableIntegrations.length > 0 && (
+          <div className='pt-4 text-base font-semibold text-slate-700'>Available</div>
+        )}
 
-      {availableIntegrations}
-    </StyledWrapper>
+        {availableIntegrations}
+      </SettingsWrapper>
+    </div>
   )
 }
 
