@@ -8,8 +8,9 @@ import ErrorBoundary from '../../ErrorBoundary'
 import LinearIntegrationResults from './LinearIntegrationResults'
 
 interface Props {
-  teamId: string
+  linearViewerId: string
   selectedLinearIds: string[]
+  teamId: string
 }
 
 // Define the GraphQL Query right here
@@ -26,16 +27,36 @@ const linearIntegrationResultsQuery = graphql`
 `
 
 const LinearIntegrationResultsRoot = (props: Props) => {
-  const {teamId, selectedLinearIds} = props
-  const filter = makeLinearIssueFilter('', selectedLinearIds)
+  const {linearViewerId, selectedLinearIds, teamId} = props
+  const projectsAndTeamsFilter = makeLinearIssueFilter('', selectedLinearIds)
+  const involvesLinearViewerConds = [
+    {assignee: {id: {eq: linearViewerId}}},
+    {
+      comments: {
+        some: {
+          user: {id: {eq: linearViewerId}},
+          reactions: {some: {id: {eq: linearViewerId}}}
+        }
+      }
+    },
+    {creator: {id: {eq: linearViewerId}}},
+    {reactions: {some: {id: {eq: linearViewerId}}}},
+    {subscribers: {id: {eq: linearViewerId}}}
+  ]
+  const filter = !projectsAndTeamsFilter
+    ? {
+        or: involvesLinearViewerConds
+      }
+    : {
+        ...projectsAndTeamsFilter,
+        or: Array.isArray(projectsAndTeamsFilter.or)
+          ? [...projectsAndTeamsFilter.or, ...involvesLinearViewerConds]
+          : involvesLinearViewerConds
+      }
 
-  // Load the query
   const queryRef = useQueryLoaderNow<LinearIntegrationResultsRootQuery>(
     linearIntegrationResultsQuery,
-    {
-      teamId: teamId,
-      filter: filter
-    }
+    {teamId, filter}
   )
 
   return (
