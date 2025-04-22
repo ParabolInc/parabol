@@ -26,6 +26,13 @@ const LinearIntegrationPanel = (props: Props) => {
             teamId
             integrations {
               linear {
+                api {
+                  query {
+                    viewer {
+                      id
+                    }
+                  }
+                }
                 auth {
                   isActive
                 }
@@ -49,6 +56,8 @@ const LinearIntegrationPanel = (props: Props) => {
   const linear = teamMember?.integrations?.linear
   const isActive = !!linear?.auth?.isActive
   const provider = linear?.cloudProvider
+
+  const linearViewerId = linear?.api?.query?.viewer?.id
 
   const [selectedLinearIds, setSelectedLinearIds] = useState<string[]>([])
 
@@ -74,7 +83,7 @@ const LinearIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {isActive && teamMember ? (
+      {isActive && linearViewerId && teamMember ? (
         <>
           <LinearProjectFilterBar
             teamMemberRef={teamMember}
@@ -89,10 +98,16 @@ const LinearIntegrationPanel = (props: Props) => {
             }}
           />
           <LinearIntegrationResultsRoot
-            teamId={teamMember.teamId}
+            linearViewerId={linearViewerId}
             selectedLinearIds={selectedLinearIds}
+            teamId={teamMember.teamId}
           />
         </>
+      ) : !linearViewerId ? (
+        <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
+          <b>Error: Linear Integration API Not Responding</b>
+          <div className='w-1/2 text-center text-sm'>Please try your request again later.</div>
+        </div>
       ) : (
         <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
           <div className='h-10 w-10'>
