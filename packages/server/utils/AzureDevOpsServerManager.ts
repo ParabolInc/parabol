@@ -4,7 +4,6 @@ import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import {isError} from 'util'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
@@ -727,7 +726,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`
     const contentType = 'application/x-www-form-urlencoded'
     const oAuthRes = await authorizeOAuth2({authUrl, body, contentType})
-    if (!isError(oAuthRes)) {
+    if (!(oAuthRes instanceof Error)) {
       this.accessToken = oAuthRes.accessToken
     }
     return oAuthRes

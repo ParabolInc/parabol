@@ -2,5 +2,5 @@ type UpdateRecurrenceSettingsSuccess {
   """
   The updated meeting
   """
-  meeting: TeamPromptMeeting!
+  meeting: NewMeeting!
 }
