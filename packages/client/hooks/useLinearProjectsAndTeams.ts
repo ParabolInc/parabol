@@ -55,61 +55,65 @@ export interface UseLinearProjectsAndTeamsResult {
   // isLoading and error handling can be added based on Relay's suspense/error boundary patterns if needed
 }
 
+// Modified to accept null as a parameter
 const useLinearProjectsAndTeams = (
-  teamMemberRef: useLinearProjectsAndTeams_teamMember$key
+  teamMemberRef: useLinearProjectsAndTeams_teamMember$key | null
 ): UseLinearProjectsAndTeamsResult => {
-  const teamMember = useFragment(
-    graphql`
-      fragment useLinearProjectsAndTeams_teamMember on TeamMember {
-        integrations {
-          linear {
-            api {
-              query {
-                myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
-                  edges {
-                    node {
-                      __typename
-                      id
-                      name
-                      teams(first: 1) {
-                        nodes {
-                          displayName
+  // Handle the null case by using a default empty fragment
+  const teamMember = teamMemberRef
+    ? useFragment(
+        graphql`
+          fragment useLinearProjectsAndTeams_teamMember on TeamMember {
+            integrations {
+              linear {
+                api {
+                  query {
+                    myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
+                      edges {
+                        node {
+                          __typename
+                          id
+                          name
+                          teams(first: 1) {
+                            nodes {
+                              displayName
+                            }
+                          }
                         }
                       }
                     }
-                  }
-                }
-                allProjects: projects(first: 100) {
-                  edges {
-                    node {
-                      __typename
-                      id
-                      name
-                      teams(first: 1) {
-                        nodes {
-                          displayName
+                    allProjects: projects(first: 100) {
+                      edges {
+                        node {
+                          __typename
+                          id
+                          name
+                          teams(first: 1) {
+                            nodes {
+                              displayName
+                            }
+                          }
                         }
                       }
                     }
-                  }
-                }
-                teams(first: 100) {
-                  edges {
-                    node {
-                      __typename
-                      id
-                      name
+                    teams(first: 100) {
+                      edges {
+                        node {
+                          __typename
+                          id
+                          name
+                        }
+                      }
                     }
                   }
                 }
               }
             }
           }
-        }
-      }
-    `,
-    teamMemberRef
-  )
+        `,
+        teamMemberRef
+      )
+    : null
 
   const linearQuery = teamMember?.integrations?.linear?.api?.query
 
