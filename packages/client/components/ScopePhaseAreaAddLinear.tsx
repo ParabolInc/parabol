@@ -1,35 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import LinearClientManager from '~/utils/LinearClientManager'
 import {ScopePhaseAreaAddLinear_meeting$key} from '../__generated__/ScopePhaseAreaAddLinear_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {PALETTE} from '../styles/paletteV3'
 import LinearSVG from './LinearSVG'
-import RaisedButton from './RaisedButton'
-
-const AddLinearArea = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  height: '100%'
-})
-
-const StyledLink = styled('span')({
-  color: PALETTE.SKY_500,
-  cursor: 'pointer',
-  outline: 0,
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  },
-  paddingTop: 24
-})
-
-const AddLinearButton = styled(RaisedButton)({
-  whiteSpace: 'pre-wrap'
-})
 
 interface Props {
   gotoParabol: () => void
@@ -74,13 +49,21 @@ const ScopePhaseAreaAddLinear = (props: Props) => {
     LinearClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
   }
   return (
-    <AddLinearArea>
-      <AddLinearButton onClick={authLinear} size={'medium'}>
+    <div className='flex h-full flex-col items-center justify-center'>
+      <button
+        onClick={authLinear}
+        className='text-gray-900 flex items-center justify-center rounded bg-white px-4 py-2 whitespace-pre-wrap shadow transition-shadow duration-100 hover:shadow-md'
+      >
         <LinearSVG />
         Import issues from Linear
-      </AddLinearButton>
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
-    </AddLinearArea>
+      </button>
+      <span
+        onClick={gotoParabol}
+        className='cursor-pointer pt-6 text-sky-500 outline-0 hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+      >
+        Or add new tasks in Parabol
+      </span>
+    </div>
   )
 }
 

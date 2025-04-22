@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
@@ -23,17 +22,6 @@ import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import NewLinearIssueInput from './NewLinearIssueInput'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
 
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
-
-const LoadingNext = styled('div')({
-  display: 'flex',
-  height: 32,
-  fontSize: 24,
-  justifyContent: 'center',
-  width: '100%'
-})
 interface Props {
   queryRef: PreloadedQuery<LinearScopingSearchResultsQuery>
   meetingRef: LinearScopingSearchResults_meeting$key
@@ -208,7 +196,7 @@ const LinearScopingSearchResults = (props: Props) => {
         issuesRef={issues}
         meetingId={meetingId}
       />
-      <ResultScroller>
+      <div className='overflow-auto'>
         {query && (
           <NewLinearIssueInput
             isEditing={isEditing}
@@ -244,11 +232,11 @@ const LinearScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
         {hasNext && (
-          <LoadingNext key={'loadingNext'}>
+          <div className='flex h-8 w-full justify-center text-2xl' key={'loadingNext'}>
             <Ellipsis />
-          </LoadingNext>
+          </div>
         )}
-      </ResultScroller>
+      </div>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}

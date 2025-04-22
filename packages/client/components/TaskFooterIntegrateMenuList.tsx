@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
@@ -8,7 +7,6 @@ import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
-import {PALETTE} from '../styles/paletteV3'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
@@ -26,12 +24,6 @@ interface Props {
     integrationLabel?: string
   ) => void
 }
-
-const Label = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  padding: '8px 8px 0'
-})
 
 type Item = NonNullable<
   NonNullable<
@@ -153,7 +145,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     >
       {label && (
         <>
-          <Label>{label}</Label>
+          <div className='p-2 pt-2 pb-0 text-sm text-slate-600'>{label}</div>
           <MenuItemHR />
         </>
       )}
