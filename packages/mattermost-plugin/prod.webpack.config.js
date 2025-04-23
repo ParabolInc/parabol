@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
 const path = require('path')
+const fs = require('fs')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
@@ -68,7 +69,12 @@ module.exports = (config) => {
       path: buildPath,
       publicPath: "auto",
       filename: 'mattermost-plugin_[name]_[contenthash].js',
-      chunkFilename: (pathData) => (`mattermost-plugin_${normalizeName(pathData)}_[contenthash].js`),
+      chunkFilename: (pathData) => {
+        if (pathData.chunk.name === 'env') {
+          return 'mattermost-plugin_env.js'
+        }
+        return `mattermost-plugin_${normalizeName(pathData)}_[contenthash].js`
+      },
       assetModuleFilename: 'mattermost-plugin_asset_[name]_[contenthash][ext]'
     },
     resolve: {
@@ -144,6 +150,21 @@ module.exports = (config) => {
         // name refers to the chunk name, which would create 1 copy for each chunk referencing the css
         chunkFilename: '[contenthash].css'
       }),
+      {
+        apply: (compiler) => {
+          compiler.hooks.afterEmit.tap('RenameEnvPlugin', (compilation) => {
+            const outputPath = compilation.outputOptions.path;
+            const original = path.join(outputPath, 'mattermost-plugin_env.js');
+            const renamed = path.join(outputPath, 'mattermost-plugin_envSkeleton.js');
+
+            if (fs.existsSync(original)) {
+              fs.renameSync(original, renamed);
+            } else {
+              console.warn('⚠️ mattermost-plugin_env.js not found to rename');
+            }
+          });
+        }
+      }
     ],
     externals: {
       react: 'React',

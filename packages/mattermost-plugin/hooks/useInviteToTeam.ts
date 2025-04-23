@@ -3,10 +3,9 @@ import {Client4} from 'mattermost-redux/client'
 import {Post} from 'mattermost-redux/types/posts'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useCallback} from 'react'
-import {useSelector} from 'react-redux'
 import {useFragment} from 'react-relay'
 import {useInviteToTeam_team$key} from '../__generated__/useInviteToTeam_team.graphql'
-import {getPluginServerRoute} from '../selectors'
+import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'
 
@@ -23,7 +22,8 @@ export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
 
   const {id: teamId, name: teamName} = team || {}
   const getToken = useMassInvitationToken({teamId})
-  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const config = useConfig()
+  const {parabolUrl} = config
   const channel = useCurrentChannel()
 
   const invite = useCallback(async () => {
@@ -35,7 +35,7 @@ export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
       return
     }
 
-    const inviteUrl = `${pluginServerRoute}/parabol/invitation-link/${token}`
+    const inviteUrl = `${parabolUrl}/invitation-link/${token}`
     const props = {
       attachments: [
         {
@@ -60,7 +60,7 @@ export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
       channel_id: channel.id,
       props
     } as Partial<Post> as Post)
-  }, [channel, getToken, teamName, pluginServerRoute])
+  }, [channel, getToken, teamName, parabolUrl])
 
   return invite
 }
