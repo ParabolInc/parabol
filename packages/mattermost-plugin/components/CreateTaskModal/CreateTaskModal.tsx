@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
 import {useEffect, useMemo, useState} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
 
 import {closeCreateTaskModal} from '../../reducers'
@@ -18,8 +18,8 @@ import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipT
 import type {TaskStatusEnum} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalMutation} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalQuery} from '../../__generated__/CreateTaskModalQuery.graphql'
+import {useConfig} from '../../hooks/useConfig'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
-import {getPluginServerRoute} from '../../selectors'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
@@ -27,7 +27,8 @@ import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 
 const CreateTaskModal = () => {
-  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const config = useConfig()
+  const {parabolUrl} = config
   const channel = useCurrentChannel()
   const mmUser = useCurrentUser()
 
@@ -135,7 +136,7 @@ const CreateTaskModal = () => {
     }
 
     if (channel) {
-      const teamUrl = `${pluginServerRoute}/parabol/team/${teamId}/tasks`
+      const teamUrl = `${parabolUrl}/team/${teamId}/tasks`
       const message = `Task created in [${teamName}](${teamUrl})`
       Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
         method: 'post',
