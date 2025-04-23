@@ -180,8 +180,7 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           meetingId: reflection.getValue('meetingId') as string,
           isActive: true,
           sortOrder: 0,
-          updatedAt: nowISO,
-          title: ''
+          updatedAt: nowISO
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
@@ -199,7 +198,6 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           reflectionGroupId
         })
         reflection.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
-        reflectionGroupProxy.setValue('', 'title')
       }
       moveReflectionLocation(reflection, reflectionGroupProxy, oldReflectionGroupId, store)
     }

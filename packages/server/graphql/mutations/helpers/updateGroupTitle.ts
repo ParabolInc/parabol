@@ -1,5 +1,4 @@
 import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
-import getKysely from '../../../postgres/getKysely'
 import {DataLoaderWorker} from '../../graphql'
 import {RetroReflection} from '../../public/resolverTypes'
 import canAccessAI from './canAccessAI'
@@ -23,12 +22,6 @@ const updateGroupTitle = async (input: Input) => {
     await updateSmartGroupTitle(reflectionGroupId, smartTitle)
     return
   }
-  const pg = getKysely()
-  await pg
-    .updateTable('RetroReflectionGroup')
-    .set({title: '', smartTitle: ''})
-    .where('id', '=', reflectionGroupId)
-    .execute()
   // Generate title and don't await or the reflection will hang when it's dropped
   generateAIGroupTitle(reflections, reflectionGroupId, meetingId, dataLoader)
 }
