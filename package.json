@@ -138,7 +138,7 @@
     "yarn-deduplicate": "^3.1.0"
   },
   "dependencies": {
-    "@module-federation/enhanced": "^0.7.6",
+    "@module-federation/enhanced": "^0.13.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "lodash.toarray": "^4.4.0",
