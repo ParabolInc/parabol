@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.2](https://github.com/ParabolInc/parabol/compare/v10.1.1...v10.1.2) (2025-04-23)
+
+
+### Fixed
+
+* dump sockets before dumping heap ([#11213](https://github.com/ParabolInc/parabol/issues/11213)) ([d3d0d58](https://github.com/ParabolInc/parabol/commit/d3d0d58d9d43c49b171b0a10b6360886417c2e55))
+* group titles sometimes load indefinitely until refresh ([#11196](https://github.com/ParabolInc/parabol/issues/11196)) ([c205e6e](https://github.com/ParabolInc/parabol/commit/c205e6e62a2fca5ddfbfcd3274dd53288e6d3743))
+* udpaterecurrencesetting return type ([#11230](https://github.com/ParabolInc/parabol/issues/11230)) ([4c7c81a](https://github.com/ParabolInc/parabol/commit/4c7c81aa28f41fc792f0871a09b2377773f4c65d))
+* upgrade module-federation/enhanced to fix koa vulnerability ([#11225](https://github.com/ParabolInc/parabol/issues/11225)) ([39350cf](https://github.com/ParabolInc/parabol/commit/39350cf0c13a8b380303a68d5099c7fdd76e1fe4))
+
+
+### Changed
+
+* Add Self Managed GitLab to the Enterprise benefits list ([#11220](https://github.com/ParabolInc/parabol/issues/11220)) ([d66c619](https://github.com/ParabolInc/parabol/commit/d66c6199db5edd97fdb940a72981160f43853539))
+* Use Parabol URL from environment for Mattermost Plugin ([#11226](https://github.com/ParabolInc/parabol/issues/11226)) ([1454e80](https://github.com/ParabolInc/parabol/commit/1454e80e3951f1173617965a3dd492745644342b))
+
 ## [10.1.1](https://github.com/ParabolInc/parabol/compare/v10.1.0...v10.1.1) (2025-04-18)
 
 
