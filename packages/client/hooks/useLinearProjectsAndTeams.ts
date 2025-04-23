@@ -12,7 +12,6 @@ import {isNotNull} from '../utils/predicates'
 type ArrayElement<ArrayType extends readonly unknown[] | null | undefined> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never
 
-// Safely extract the type of the 'query' object, handling nulls along the path
 type LinearQuery = useLinearProjectsAndTeams_teamMember$data extends {
   integrations?: {linear?: {api?: {query?: infer Q | null} | null} | null} | null
 }
@@ -52,72 +51,71 @@ export interface UseLinearProjectsAndTeamsResult {
   searchQuery: string
   setSearchQuery: (query: string) => void
   filteredProjectsAndTeams: ReadonlyArray<LinearProjectOrTeam>
-  // isLoading and error handling can be added based on Relay's suspense/error boundary patterns if needed
 }
 
-// Modified to accept null as a parameter
-const useLinearProjectsAndTeams = (
-  teamMemberRef: useLinearProjectsAndTeams_teamMember$key | null
-): UseLinearProjectsAndTeamsResult => {
-  // Handle the null case by using a default empty fragment
-  const teamMember = teamMemberRef
-    ? useFragment(
-        graphql`
-          fragment useLinearProjectsAndTeams_teamMember on TeamMember {
-            integrations {
-              linear {
-                api {
-                  query {
-                    myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
-                      edges {
-                        node {
-                          __typename
-                          id
-                          name
-                          teams(first: 1) {
-                            nodes {
-                              displayName
-                            }
-                          }
-                        }
-                      }
-                    }
-                    allProjects: projects(first: 100) {
-                      edges {
-                        node {
-                          __typename
-                          id
-                          name
-                          teams(first: 1) {
-                            nodes {
-                              displayName
-                            }
-                          }
-                        }
-                      }
-                    }
-                    teams(first: 100) {
-                      edges {
-                        node {
-                          __typename
-                          id
-                          name
-                        }
-                      }
+const teamMemberFragment = graphql`
+  fragment useLinearProjectsAndTeams_teamMember on TeamMember {
+    integrations {
+      linear {
+        api {
+          query {
+            myProjects: projects(first: 100, filter: {members: {isMe: {eq: true}}}) {
+              edges {
+                node {
+                  __typename
+                  id
+                  name
+                  teams(first: 1) {
+                    nodes {
+                      displayName
                     }
                   }
                 }
               }
             }
+            allProjects: projects(first: 100) {
+              edges {
+                node {
+                  __typename
+                  id
+                  name
+                  teams(first: 1) {
+                    nodes {
+                      displayName
+                    }
+                  }
+                }
+              }
+            }
+            teams(first: 100) {
+              edges {
+                node {
+                  __typename
+                  id
+                  name
+                }
+              }
+            }
           }
-        `,
-        teamMemberRef
-      )
-    : null
+        }
+      }
+    }
+  }
+`
 
-  const linearQuery = teamMember?.integrations?.linear?.api?.query
+const useLinearProjectsAndTeams = (
+  teamMemberRef: useLinearProjectsAndTeams_teamMember$key | null
+): UseLinearProjectsAndTeamsResult => {
+  const teamMember = useFragment(
+    teamMemberFragment,
+    teamMemberRef as useLinearProjectsAndTeams_teamMember$key
+  )
+
+  const linearQuery = teamMemberRef ? teamMember?.integrations?.linear?.api?.query : null
 
   const projectsAndTeams = useMemo(() => {
+    if (!linearQuery) return []
+
     const nullableMyProjectEdges = linearQuery?.myProjects?.edges ?? []
     const nullableAllProjectEdges = linearQuery?.allProjects?.edges ?? []
     const nullableTeamEdges = linearQuery?.teams?.edges ?? []
@@ -125,13 +123,12 @@ const useLinearProjectsAndTeams = (
     const allNullableProjectEdges = [...nullableMyProjectEdges, ...nullableAllProjectEdges]
 
     const uniqueProjectEdges = getUniqueEdges(getNonNullEdges(allNullableProjectEdges), getNodeId)
-    const projects = uniqueProjectEdges.map(({node}) => node).filter(isNotNull) // Removed 'as Project[]'
+    const projects = uniqueProjectEdges.map(({node}) => node).filter(isNotNull)
 
     const uniqueTeamEdges = getUniqueEdges(getNonNullEdges(nullableTeamEdges), getNodeId)
-    const teams = uniqueTeamEdges.map(({node}) => node).filter(isNotNull) // Removed 'as Team[]'
+    const teams = uniqueTeamEdges.map(({node}) => node).filter(isNotNull)
 
-    // Cast might still be needed as TS struggles with the union type here
-    return (projects as LinearProjectOrTeam[]).concat(teams as LinearProjectOrTeam[])
+    return [...projects, ...teams] as LinearProjectOrTeam[]
   }, [linearQuery])
 
   const [searchQuery, setSearchQuery] = useState('')
