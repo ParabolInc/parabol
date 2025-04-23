@@ -32,7 +32,7 @@ type JiraServerRepoIntegration = {
   service: 'jiraServer'
 }
 
-type LinearRepoIntegration = {
+export type LinearRepoIntegration = {
   id: string
   service: 'linear'
   teamId: string

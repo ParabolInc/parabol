@@ -92,7 +92,7 @@ const LinearFieldMenu = (props: Props) => {
   return (
     <>
       <Menu
-        ariaLabel={'Select whether to publish estimate as a comment in Linear'}
+        ariaLabel={'Select how to publish estimate to Linear'}
         portalStatus={portalStatus}
         isDropdown={isDropdown}
         defaultActiveIdx={defaultActiveIdx}

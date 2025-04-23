@@ -7,7 +7,10 @@
 import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLObjectType, GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
-import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
+import {
+  IntegrationProviderGitLabOAuth2,
+  IntegrationProviderLinear
+} from '../../postgres/queries/getIntegrationProvidersByIds'
 import githubSchema from '../../utils/githubSchema.graphql'
 import composeResolvers from '../composeResolvers'
 import {GQLContext} from '../graphql'
@@ -92,8 +95,13 @@ const {schema: typeDefsWithGitHubGitLabLinear, linearRequest} = nestLinearEndpoi
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'linear', teamId, userId})
     if (!auth?.accessToken) throw new Error('No Linear token found')
+    if (!auth?.providerId) throw new Error('No Linear provider found')
+    const {accessToken, providerId} = auth
+    const provider = await dataLoader.get('integrationProviders').load(providerId)
+    const {serverBaseUrl} = provider as IntegrationProviderLinear
     return {
-      accessToken: auth.accessToken
+      accessToken,
+      baseUri: serverBaseUrl
     }
   },
   prefix: '_xLinear',
