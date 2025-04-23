@@ -3,14 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import CardsSVG from 'parabol-client/components/CardsSVG'
 import {ReactNode, useState} from 'react'
 
-import {useSelector} from 'react-redux'
 import {useFragment} from 'react-relay'
 import {
   MeetingRow_meeting$key,
   MeetingTypeEnum
 } from '../../__generated__/MeetingRow_meeting.graphql'
+import {useConfig} from '../../hooks/useConfig'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
-import {getPluginServerRoute} from '../../selectors'
 
 export const meetingTypeToIcon = {
   retrospective: <History fontSize='large' />,
@@ -39,7 +38,8 @@ const MeetingRow = ({meetingRef}: Props) => {
     meetingRef
   )
   const {id, name, team, meetingType} = meeting
-  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const config = useConfig()
+  const {parabolUrl} = config
 
   const invite = useInviteToMeeting(meeting)
   const [error] = useState<string | null>()
@@ -53,11 +53,7 @@ const MeetingRow = ({meetingRef}: Props) => {
       <div className='pt-4 pl-2 text-2xl text-slate-400'>{meetingTypeToIcon[meetingType]}</div>
       <div className='flex flex-col items-start p-2'>
         <div className='flex flex-col'>
-          <a
-            href={`${pluginServerRoute}/parabol/meet/${id}`}
-            target='_blank'
-            className='text-2xl font-bold'
-          >
+          <a href={`${parabolUrl}/meet/${id}`} target='_blank' className='text-2xl font-bold'>
             {name}
           </a>
           <div className='font-semibold text-slate-400'>{team?.name}</div>

@@ -1,4 +1,5 @@
-const { ModuleFederationPlugin } = require("webpack").container;
+const webpack = require("webpack");
+const { ModuleFederationPlugin } = webpack.container;
 const path = require('path')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
@@ -115,7 +116,12 @@ module.exports = {
         }
       },
       */
-    })
+    }),
+    new webpack.DefinePlugin({
+      '__PROTO__': JSON.stringify(process.env.PROTO),
+      '__HOST__': JSON.stringify(process.env.HOST),
+      '__PORT__': JSON.stringify(process.env.PORT),
+    }),
   ],
   externals: {
     react: 'React',

@@ -5,14 +5,14 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
 
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import MoreMenu from '../Menu'
 
 import plural from 'parabol-client/utils/plural'
+import {useConfig} from '../../hooks/useConfig'
 import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
 import {openConfigureNotificationsModal} from '../../reducers'
-import {getPluginServerRoute} from '../../selectors'
 
 type Props = {
   teamRef: TeamRow_team$key
@@ -33,7 +33,8 @@ const TeamRow = ({teamRef}: Props) => {
   )
 
   const {id, name, teamMembers} = team
-  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const config = useConfig()
+  const {parabolUrl} = config
   const [unlinkTeam] = useUnlinkTeam()
   const [error, setError] = useState<string>()
   const invite = useInviteToTeam(team)
@@ -64,11 +65,7 @@ const TeamRow = ({teamRef}: Props) => {
       </div>
       <div className='flex grow flex-col items-start p-2'>
         <div className='flex w-full flex-col'>
-          <a
-            href={`${pluginServerRoute}/parabol/team/${id}`}
-            target='_blank'
-            className='text-2xl font-bold'
-          >
+          <a href={`${parabolUrl}/team/${id}`} target='_blank' className='text-2xl font-bold'>
             {name}
           </a>
           <div className='font-semibold text-slate-400'>

@@ -23,9 +23,6 @@ const ActiveMeetings = () => {
   const data = useLazyLoadQuery<ActiveMeetingsQuery>(
     graphql`
       query ActiveMeetingsQuery {
-        config {
-          parabolUrl
-        }
         viewer {
           teams {
             ...ActiveMeetings_team @relay(mask: false)
