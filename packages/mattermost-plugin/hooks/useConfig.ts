@@ -1,5 +1,9 @@
-let configPromise: Promise<any> | null = null
-let config: any | null = null
+type Config = {
+  parabolUrl: string
+}
+
+let configPromise: Promise<void> | null = null
+let config: Config | null = null
 
 export const useConfig = () => {
   // With React 18 this should be reduced to sth. like

@@ -11,6 +11,7 @@ import MeetingSettings from './MeetingSettings'
 
 import styled from 'styled-components'
 import {StartActivityModalQuery} from '../../__generated__/StartActivityModalQuery.graphql'
+import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
@@ -22,12 +23,11 @@ const SettingsArea = styled.div!`
 
 const StartActivityModal = () => {
   const channel = useCurrentChannel()
+  const config = useConfig()
+
   const data = useLazyLoadQuery<StartActivityModalQuery>(
     graphql`
       query StartActivityModalQuery {
-        config {
-          parabolUrl
-        }
         viewer {
           availableTemplates(first: 2000) {
             edges {
@@ -70,7 +70,7 @@ const StartActivityModal = () => {
     )
   }, [data, channel])
 
-  const {config, viewer} = data
+  const {viewer} = data
   const {availableTemplates} = viewer
 
   const [selectedTeam, setSelectedTeam] = useState<NonNullable<typeof linkedTeams>[number]>()
