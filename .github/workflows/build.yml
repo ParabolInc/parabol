@@ -47,6 +47,7 @@ jobs:
 
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}" >> $GITHUB_ENV
+          corepack enable
 
       - name: Setup Node
         uses: actions/setup-node@v3

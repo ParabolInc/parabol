@@ -54,6 +54,7 @@ jobs:
           PLAYWRIGHT_VERSION=$(yarn list @playwright/test | grep @playwright | sed 's/.*@//')
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
+          corepack enable
 
       - name: Get cached node modules
         id: cache
