@@ -7,7 +7,6 @@ export type UpdateRecurrenceSettingsSuccessSource = {
 const UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'teamPrompt') throw new Error('Not a team prompt')
     return meeting
   }
 }
