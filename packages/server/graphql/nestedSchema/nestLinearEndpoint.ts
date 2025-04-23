@@ -6,19 +6,27 @@ import {
   NestGraphQLEndpointParams,
   NestedSource
 } from 'nest-graphql-endpoint/lib/types'
+import {URL} from 'url'
 
 const defaultExecutor: Executor<{
   accessToken: string
+  baseUri?: string
   headers?: Record<string, string>
 }> = async (document, variables, endpointTimeout, context) => {
   const controller = new AbortController()
   const {signal} = controller
-  const {accessToken, headers} = context
+  const {accessToken, baseUri, headers} = context
+  const url = new URL(baseUri ?? 'https://linear.app')
+  // We assume the baseUri handed to us contains the hostname used
+  // for authentication. We must modify this to become the API
+  // endpoint
+  const apiHostname = `api.${url.hostname}`
+  const apiEndpoint = `${url.protocol}//${apiHostname}/graphql`
   const timeout = setTimeout(() => {
     controller.abort()
   }, endpointTimeout)
   try {
-    const result = await fetch(`https://api.linear.app/graphql`, {
+    const result = await fetch(apiEndpoint, {
       signal: signal as any,
       method: 'POST',
       headers: {
