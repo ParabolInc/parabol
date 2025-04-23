@@ -15,6 +15,7 @@ import {Post} from 'mattermost-redux/types/posts'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
 import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
+import {PALETTE} from '../../../client/styles/paletteV3'
 import type {TaskStatusEnum} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalMutation} from '../../__generated__/CreateTaskModalMutation.graphql'
 import {CreateTaskModalQuery} from '../../__generated__/CreateTaskModalQuery.graphql'
@@ -138,13 +139,23 @@ const CreateTaskModal = () => {
     if (channel) {
       const teamUrl = `${parabolUrl}/team/${teamId}/tasks`
       const message = `Task created in [${teamName}](${teamUrl})`
+      const props = {
+        attachments: [
+          {
+            fallback: message,
+            title: message,
+            color: PALETTE.GRAPE_500
+          }
+        ]
+      }
+
       Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
         method: 'post',
         body: JSON.stringify({
           user_id: mmUser.id,
           post: {
             channel_id: channel.id,
-            message
+            props
           }
         } as Partial<Post>)
       })
