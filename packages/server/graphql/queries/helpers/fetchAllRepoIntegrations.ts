@@ -1,4 +1,5 @@
 import {GraphQLResolveInfo} from 'graphql'
+import {LinearRepoIntegration} from '../../../../client/shared/gqlIds/IntegrationRepoId'
 import {isNotNull} from '../../../../client/utils/predicates'
 import {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
 import {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
@@ -21,17 +22,15 @@ type GitLabProject = {
   fullPath: string
 }
 
-type LinearProject = {
-  id: string
-  service: 'linear'
+type LinearProjectRepo = LinearRepoIntegration & {
   displayName: string
 }
 
-type LinearTeam = {
-  id: string
-  service: 'linear'
+type LinearTeamRepo = LinearRepoIntegration & {
   name: string
 }
+
+type LinearRepo = LinearProjectRepo | LinearTeamRepo
 
 export type RemoteRepoIntegration =
   | JiraGQLProject
@@ -39,8 +38,7 @@ export type RemoteRepoIntegration =
   | GitLabProject
   | JiraServerProject
   | AzureAccountProject
-  | LinearProject
-  | LinearTeam
+  | LinearRepo
 
 const fetchAllRepoIntegrations = async (
   teamId: string,

@@ -11,7 +11,7 @@ import getIssueQuery from '../../graphql/nestedSchema/Linear/queries/getIssue.gr
 import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfile.graphql'
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
-import getTeamsQuery from '../../graphql/nestedSchema/Linear/queries/getTeams.graphql'
+import getTeamsAndProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getTeamsAndProjects.graphql'
 import {linearRequest} from '../../graphql/public/rootSchema'
 import {TeamMemberIntegrationAuth} from '../../postgres/types'
 import {
@@ -21,6 +21,7 @@ import {
   GetIssueQuery,
   GetProjectIssuesQuery,
   GetProjectIssuesQueryVariables,
+  GetProjectsQuery,
   GetTeamsAndProjectsQuery,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
@@ -141,15 +142,14 @@ class LinearServerManager implements TaskIntegrationManager {
   async getProjectIssues(
     args: GetProjectIssuesQueryVariables
   ): Promise<[GetProjectIssuesQuery | null, Error | null]> {
-    // Assuming this method uses the constructor's info/context
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest(getProjectIssuesQuery, args)
+    const [data, error] = await linearRequest<GetProjectIssuesQuery>(getProjectIssuesQuery, args)
     return [data, error] as const
   }
 
   async getProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<GetProjectIssuesQuery>(getProjectsQuery, {first, ids})
+    const [data, error] = await linearRequest<GetProjectsQuery>(getProjectsQuery, {first, ids})
     return [data, error] as const
   }
 
@@ -161,7 +161,10 @@ class LinearServerManager implements TaskIntegrationManager {
 
   async getTeamsAndProjects({first = 100, ids = null}: {first?: number; ids?: string[] | null}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<GetTeamsAndProjectsQuery>(getTeamsQuery, {first, ids})
+    const [data, error] = await linearRequest<GetTeamsAndProjectsQuery>(getTeamsAndProjectsQuery, {
+      first,
+      ids
+    })
     return [data, error] as const
   }
 

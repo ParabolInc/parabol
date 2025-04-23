@@ -271,7 +271,7 @@ const NewLinearIssueInput = (props: Props) => {
       <div className='flex cursor-pointer bg-slate-100 py-2 pl-4'>
         <Checkbox active disabled />
         <div className='flex w-full flex-col pl-4'>
-          <div className='text-red-500 w-full text-left text-sm'>{createTaskError}</div>
+          <div className='w-full text-left text-sm text-tomato-500'>{createTaskError}</div>
           <a className='block text-xs leading-5 text-sky-500 no-underline hover:underline focus:underline'>
             {selectedProjectAndId.name}
           </a>
@@ -297,7 +297,9 @@ const NewLinearIssueInput = (props: Props) => {
               type='text'
               className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-base text-slate-700 outline-none'
             />
-            {dirty && error && <div className='text-red-500 w-full text-left text-sm'>{error}</div>}
+            {dirty && error && (
+              <div className='w-full text-left text-sm text-tomato-500'>{error}</div>
+            )}
           </form>
           <button
             ref={originRef}

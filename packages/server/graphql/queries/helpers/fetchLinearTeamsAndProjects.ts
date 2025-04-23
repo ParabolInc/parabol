@@ -33,7 +33,14 @@ export const fetchLinearProjects = async (
 
     return (
       data.projects?.edges
-        ?.map((edge: any) => edge?.node && {...edge.node, service: 'linear' as const})
+        ?.map(
+          (edge: any) =>
+            edge?.node && {
+              ...edge.node,
+              service: 'linear' as const,
+              teamId: edge.node.teams.nodes.id
+            }
+        )
         .filter(isNotNull) ?? []
     )
   } catch (error: any) {
@@ -73,7 +80,14 @@ export const fetchLinearTeams = async (
 
     return (
       data.teams?.edges
-        ?.map((edge: any) => edge?.node && {...edge.node, service: 'linear' as const})
+        ?.map(
+          (edge: any) =>
+            edge?.node && {
+              ...edge.node,
+              service: 'linear' as const,
+              teamId: edge.node.id
+            }
+        )
         .filter(isNotNull) ?? []
     )
   } catch (error: any) {

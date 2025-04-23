@@ -103,14 +103,9 @@ const LinearScopingSearchFilterMenuContent = ({queryRef, menuProps, meetingId}: 
   const linearSearchQueryStoreObject = meeting?.linearSearchQuery
   const selectedProjectsIds = linearSearchQueryStoreObject?.selectedProjectsIds ?? []
 
-  // Convert undefined to null explicitly to satisfy TypeScript
   const teamMemberRefForHook = fragmentData.viewer?.teamMember ?? null
-
-  // Always call the hook - now it accepts null
   const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
     useLinearProjectsAndTeams(teamMemberRefForHook)
-
-  // Now we can check and return early if needed
   if (!teamMemberRefForHook) {
     console.error('LinearScopingSearchFilterMenu: teamMember data is missing.')
     return <MockFieldList />

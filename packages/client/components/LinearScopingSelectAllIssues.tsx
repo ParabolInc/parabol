@@ -88,7 +88,7 @@ const LinearScopingSelectAllIssues = (props: Props) => {
         <Checkbox active={allSelected} />
         <div className='flex flex-col pb-5 pl-4 font-semibold'>
           <div>{title}</div>
-          {error && <div className='font-semibold text-[#E05252]'>{error.message}</div>}
+          {error && <div className='font-semibold text-tomato-500'>{error.message}</div>}
         </div>
       </div>
     </>
