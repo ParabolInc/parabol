@@ -1,4 +1,4 @@
-import {keyframes} from '@emotion/core'
+import {keyframes} from '@emotion/react'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'

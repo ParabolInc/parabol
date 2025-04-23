@@ -1,5 +1,5 @@
 // Timing function to decelerate
-import {keyframes} from '@emotion/core'
+import {keyframes} from '@emotion/react'
 
 export const DECELERATE = 'cubic-bezier(0, 0, .2, 1)'
 

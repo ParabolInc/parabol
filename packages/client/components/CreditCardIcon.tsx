@@ -1,4 +1,4 @@
-import {keyframes} from '@emotion/core'
+import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
 import ccAmex from '../../../static/images/creditCards/cc-amex-brands.svg'
 import ccDiners from '../../../static/images/creditCards/cc-diners-club-brands.svg'
