@@ -84,7 +84,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         try {
           const chunk = val?.incremental?.flatMap((i) => i.items).join('')
           if (!chunk) {
-            const error = val?.incremental?.flatMap((e) => e.errors)[0]
+            const error = val?.incremental?.flatMap((e) => e.errors)[0] || val?.errors?.[0]
             if (error) {
               sink.error(error)
             }

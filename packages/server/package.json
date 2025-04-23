@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.1.2",
+  "version": "10.1.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -90,8 +90,7 @@
     "@mattkrick/sanitize-svg": "0.4.0",
     "@octokit/graphql-schema": "^10.36.0",
     "@pgtyped/query": "^0.11.0",
-    "@sentry/integrations": "^7.74.1",
-    "@sentry/node": "^7.74.1",
+    "@sentry/node": "^9.14.0",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-bold": "^2.11.5",
     "@tiptap/extension-document": "^2.11.5",
@@ -137,7 +136,7 @@
     "oauth-1.0a": "^2.2.6",
     "openai": "^4.86.1",
     "oy-vey": "^0.12.1",
-    "parabol-client": "10.1.2",
+    "parabol-client": "10.1.4",
     "pg": "^8.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
