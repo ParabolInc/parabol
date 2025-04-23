@@ -8,6 +8,8 @@
 .awcache/
 .history/
 .idea/
+.nx/
+.yarn/
 pgBackup/
 build/
 coverage/

@@ -111,10 +111,12 @@
     "kysely-codegen": "^0.17.0",
     "kysely-ctl": "^0.12.1",
     "lerna": "^6.4.1",
+    "lint-staged": "^15.5.1",
     "marked": "^15.0.7",
     "mini-css-extract-plugin": "^2.7.2",
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
+    "nx": "^20.8.0",
     "pm2": "^5.4.2",
     "postcss": "^8.5.1",
     "postcss-loader": "^7.0.2",
@@ -143,5 +145,6 @@
     "dotenv-expand": "5.1.0",
     "lodash.toarray": "^4.4.0",
     "pg": "^8.13.0"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }

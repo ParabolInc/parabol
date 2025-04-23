@@ -60,7 +60,6 @@
     "jest-junit": "^16.0.0",
     "jest-transform-graphql": "^2.1.0",
     "json-loader": "^0.5.7",
-    "lint-staged": "^10.1.7",
     "style-loader": "2.0.0",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.2",
