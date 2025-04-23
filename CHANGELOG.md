@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.4](https://github.com/ParabolInc/parabol/compare/v10.1.3...v10.1.4) (2025-04-23)
+
+
+### Fixed
+
+* pageInsights set initial prompt on load ([#11236](https://github.com/ParabolInc/parabol/issues/11236)) ([4f7ca84](https://github.com/ParabolInc/parabol/commit/4f7ca84b1c7cfeb0680ef56554b89f0edc828098))
+
 ## [10.1.3](https://github.com/ParabolInc/parabol/compare/v10.1.2...v10.1.3) (2025-04-23)
 
 
