@@ -6,6 +6,7 @@
 .npmrc
 .DS_Store
 .awcache/
+.clinerules-code
 .history/
 .idea/
 .roomodes
