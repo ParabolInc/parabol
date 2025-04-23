@@ -122,7 +122,6 @@
     "kysely": "^0.27.6",
     "kysely-codegen": "^0.17.0",
     "kysely-ctl": "^0.12.1",
-    "lerna": "^6.4.1",
     "lint-staged": "^15.5.1",
     "marked": "^15.0.7",
     "mini-css-extract-plugin": "^2.7.2",
