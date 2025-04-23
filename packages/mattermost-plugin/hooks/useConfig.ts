@@ -1,17 +1,22 @@
-import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
-import {useConfigQuery} from '../__generated__/useConfigQuery.graphql'
+let configPromise: Promise<any> | null = null
+let config: any | null = null
 
 export const useConfig = () => {
-  const data = useLazyLoadQuery<useConfigQuery>(
-    graphql`
-      query useConfigQuery {
-        config {
-          parabolUrl
-        }
+  // With React 18 this should be reduced to sth. like
+  // const config = use(import(/* webpackChunkName: "env" */ '../env.js' as any))
+  if (config) {
+    return config
+  }
+  if (!configPromise) {
+    configPromise = import(/* webpackChunkName: "env" */ '../env.js' as any).then(
+      (env) => {
+        config = env
+      },
+      (error) => {
+        console.error('Error loading config', error)
       }
-    `,
-    {}
-  )
-  return data.config
+    )
+  }
+  // eslint-disable-next-line @typescript-eslint/only-throw-error
+  throw configPromise
 }
