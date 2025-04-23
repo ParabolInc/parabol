@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.3](https://github.com/ParabolInc/parabol/compare/v10.1.2...v10.1.3) (2025-04-23)
+
+
+### Fixed
+
+* bump sentry from v7 to v9 ([#11231](https://github.com/ParabolInc/parabol/issues/11231)) ([762ddde](https://github.com/ParabolInc/parabol/commit/762ddde4e44e3b8aeff9b51c79c4dece13174f26))
+
 ## [10.1.2](https://github.com/ParabolInc/parabol/compare/v10.1.1...v10.1.2) (2025-04-23)
 
 
