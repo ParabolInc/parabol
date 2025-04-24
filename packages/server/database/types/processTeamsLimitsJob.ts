@@ -7,6 +7,8 @@ import getKysely from '../../postgres/getKysely'
 import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
   const {orgId, type} = job
   const [organization, orgUsers] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
@@ -45,8 +47,6 @@ const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: Da
     }))
 
     await getKysely().insertInto('Notification').values(notificationsToInsert).execute()
-    const operationId = dataLoader.share()
-    const subOptions = {operationId}
     notificationsToInsert.forEach((notification) => {
       publishNotification(notification, subOptions)
     })
