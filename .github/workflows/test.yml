@@ -33,6 +33,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -54,8 +58,6 @@ jobs:
           PLAYWRIGHT_VERSION=$(yarn list @playwright/test | grep @playwright | sed 's/.*@//')
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
-          corepack enable
-
       - name: Get cached node modules
         id: cache
         uses: actions/cache@v3

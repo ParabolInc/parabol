@@ -24,9 +24,6 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@babel/cli": "7.18.6",
-    "@babel/core": "7.18.6",
-    "@babel/preset-react": "^7.25.9",
     "@mattermost/types": "6.7.0-0",
     "@tailwindcss/postcss": "^4.0.3",
     "@types/node": "^16.11.62",
