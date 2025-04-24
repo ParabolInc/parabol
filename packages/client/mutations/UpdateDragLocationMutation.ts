@@ -30,7 +30,7 @@ const UpdateDragLocationMutation = (
   atmosphere: Atmosphere,
   variables: TUpdateDragLocationMutation['variables']
 ) => {
-  atmosphere.subscriptionClient.subscribe(
+  atmosphere.subscriptionClient?.subscribe(
     {operationName: name, docId: id, query: '', variables} as any,
     noopSink
   )
