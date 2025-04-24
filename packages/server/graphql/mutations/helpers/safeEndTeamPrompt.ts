@@ -17,6 +17,8 @@ import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
   const pg = getKysely()
 
   const summary = await generateStandupMeetingSummary(meeting, dataLoader)
@@ -29,8 +31,6 @@ const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: Internal
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)
   const data = {meetingId: meeting.id}
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
   publish(SubscriptionChannel.MEETING, meeting.id, 'EndTeamPromptSuccess', data, subOptions)
 }
 

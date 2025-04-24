@@ -3,6 +3,9 @@ import updateNotification from '../../graphql/public/mutations/helpers/updateNot
 import getKysely from '../../postgres/getKysely'
 
 const removeTeamsLimitObjects = async (orgId: string, dataLoader: DataLoaderWorker) => {
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
+
   const removeJobTypes = ['LOCK_ORGANIZATION', 'WARN_ORGANIZATION'] as const
   const removeNotificationTypes = ['TEAMS_LIMIT_EXCEEDED', 'TEAMS_LIMIT_REMINDER'] as const
   const pg = getKysely()
@@ -18,9 +21,6 @@ const removeTeamsLimitObjects = async (orgId: string, dataLoader: DataLoaderWork
     .where('type', 'in', removeNotificationTypes)
     .returning(['id', 'userId'])
     .execute()
-
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
 
   updateNotificationsChanges?.forEach((change) => {
     updateNotification(change, subOptions)
