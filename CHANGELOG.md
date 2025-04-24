@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.5](https://github.com/ParabolInc/parabol/compare/v10.1.4...v10.1.5) (2025-04-24)
+
+
+### Fixed
+
+* Dragging reflections would crash if subscription did not work ([#11241](https://github.com/ParabolInc/parabol/issues/11241)) ([30258ed](https://github.com/ParabolInc/parabol/commit/30258ed8e6c0c270f107104b164c289799e6862b))
+* Handle publish taking longer than 30s ([#11248](https://github.com/ParabolInc/parabol/issues/11248)) ([d39702c](https://github.com/ParabolInc/parabol/commit/d39702c33ae6f87a29d05a941f89fc5c1d7cd52e))
+
 ## [10.1.4](https://github.com/ParabolInc/parabol/compare/v10.1.3...v10.1.4) (2025-04-23)
 
 
