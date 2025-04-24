@@ -71,29 +71,6 @@ export const getPersistedOperation = async (docId: string) => {
 export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
-  fetchAPI: {
-    fetch,
-    Headers,
-    Request,
-    Response,
-    FormData,
-    ReadableStream,
-    WritableStream,
-    TransformStream,
-    CompressionStream,
-    DecompressionStream,
-    TextDecoderStream,
-    TextEncoderStream,
-    Blob,
-    File,
-    crypto,
-    btoa,
-    TextEncoder,
-    TextDecoder,
-    URL,
-    URLSearchParams
-  },
-  graphiql: false,
   plugins: [
     useDatadogTracing({
       excludeArgs: {
