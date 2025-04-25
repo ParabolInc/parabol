@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.7](https://github.com/ParabolInc/parabol/compare/v10.1.6...v10.1.7) (2025-04-25)
+
+
+### Fixed
+
+* disconnectAllSockets accepts an input parameters for the disconnect window ([#11247](https://github.com/ParabolInc/parabol/issues/11247)) ([7ffd28f](https://github.com/ParabolInc/parabol/commit/7ffd28fd2181af0e348ab1317028c0675f14a21c))
+
 ## [10.1.6](https://github.com/ParabolInc/parabol/compare/v10.1.5...v10.1.6) (2025-04-24)
 
 
