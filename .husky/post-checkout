@@ -1,0 +1,25 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+pnpm postcheckout
+
+DELETED_POSTGRES_MIGRATIONS=$(git diff $1 $2 --name-only --diff-filter=D -- packages/server/postgres/migrations/)
+LAST_COMMON_MIGRATION=$(bash -c "comm -12 <(git ls-tree --name-only $2 -- packages/server/postgres/migrations/ | xargs basename -s.ts) <(git ls-tree --name-only $1 -- packages/server/postgres/migrations/ | xargs basename -s.ts) | tail -n1")
+if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
+    CURRENT_BRANCH=$(git branch --show-current)
+    NUM_POSTGRES_MIGRATIONS=$(echo $DELETED_POSTGRES_MIGRATIONS | wc -w)
+    echo "WARNING: You're leaving behind the following migrations not present on the current branch:"
+    echo
+    for X in $DELETED_POSTGRES_MIGRATIONS; do
+        echo "  ${X##*/}"
+    done
+    echo
+    echo "Consider running:"
+    echo
+    echo "  git checkout ${1} &&"
+    if [ ! -z "$DELETED_POSTGRES_MIGRATIONS" ]; then
+        echo "  pnpm kysely migrate:down ${LAST_COMMON_MIGRATION} &&"
+    fi
+    echo "  git checkout ${CURRENT_BRANCH:-$2}"
+    echo
+fi
