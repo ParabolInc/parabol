@@ -1,4 +1,5 @@
 import {JSONContent} from '@tiptap/core'
+import {fetch} from '@whatwg-node/fetch'
 import tracer from 'dd-trace'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'

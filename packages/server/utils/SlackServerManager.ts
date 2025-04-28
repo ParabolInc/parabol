@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import SlackManager from 'parabol-client/utils/SlackManager'
 import {stringify} from 'querystring'
 import {makeOAuth2Redirect} from './makeOAuth2Redirect'

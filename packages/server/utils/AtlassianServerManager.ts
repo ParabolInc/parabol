@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
@@ -276,7 +277,7 @@ interface JiraPageBean<T> {
 export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
 class AtlassianServerManager extends AtlassianManager {
-  fetch = fetch as any
+  fetch = fetch
   static async init(code: string) {
     return AtlassianServerManager.fetchToken({
       grant_type: 'authorization_code',

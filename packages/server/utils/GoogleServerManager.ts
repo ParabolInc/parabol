@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import {decode} from 'jsonwebtoken'
 import GoogleManager from 'parabol-client/utils/GoogleManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
