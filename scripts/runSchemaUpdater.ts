@@ -16,7 +16,6 @@ const compileToolbox = async (ignoreErrors: boolean) => {
         Logger.log('Webpack error:', err)
       }
       const errors = stats?.compilation?.errors ?? []
-      console.log({ignoreErrors})
       if (!ignoreErrors && errors.length > 0) {
         Logger.log('COMPILATION ERRORS:', errors)
       }
@@ -30,9 +29,7 @@ const updateGraphQLSchema = async () => {
 }
 
 const runSchemaUpdater = async (ignoreErrors: boolean) => {
-  console.log('1')
-  await compileToolbox(false)
-  console.log('2')
+  await compileToolbox(ignoreErrors)
   return updateGraphQLSchema()
 }
 

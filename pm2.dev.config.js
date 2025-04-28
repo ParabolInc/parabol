@@ -79,7 +79,7 @@ module.exports = {
     },
     {
       name: 'Mattermost Relay Compiler',
-      script: 'pnpm workspace parabol-mattermost-plugin relay-compiler',
+      script: 'pnpm --filter parabol-mattermost-plugin relay-compiler',
       watch: ['packages/mattermost-plugin/**/*.[ts*,js*,css]'],
       autorestart: false,
       instances: 1

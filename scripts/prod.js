@@ -40,7 +40,7 @@ const prod = async (isDeploy, noDeps) => {
     ])
     Logger.log('building mattermost-plugin')
     await runChild(
-      `pnpm --filter parabol-mattermost-plugin webpack --config ./prod.webpack.config.js --env=minimize=${isDeploy}`
+      `pnpm webpack --config ./packages/mattermost-plugin/prod.webpack.config.js --env=minimize=${isDeploy}`
     )
   } catch (e) {
     Logger.log('error webpackifying', e)

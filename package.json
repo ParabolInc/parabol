@@ -41,8 +41,8 @@
     "prepare": "husky install",
     "relay:build": "node scripts/generateGraphQLArtifacts.js",
     "relay:watch": "node scripts/relayWatch.js",
-    "test:client": "pnpm workspace parabol-client test",
-    "test:server": "pnpm workspace parabol-server test"
+    "test:client": "pnpm --filter parabol-client test",
+    "test:server": "pnpm --filter parabol-server test"
   },
   "resolutions": {
     "typescript": "^5.7.3",

@@ -103,6 +103,7 @@ module.exports = (config) => {
       new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
       // native bindings might be faster, but abandonware & not currently used
       new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
+      new webpack.IgnorePlugin({resourceRegExp: /^pg-cloudflare$/, contextRegExp: /pg\/lib/}),
       new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /inter-regular.otf$/, contextRegExp: /@dicebear/}),
