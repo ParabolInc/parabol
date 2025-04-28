@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'

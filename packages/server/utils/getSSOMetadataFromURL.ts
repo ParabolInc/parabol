@@ -1,3 +1,5 @@
+import {fetch} from '@whatwg-node/fetch'
+
 export const getSSOMetadataFromURL = async (metadataURL: string) => {
   const normalizedURL = metadataURL.trim()
   if (!normalizedURL.startsWith('https://'))

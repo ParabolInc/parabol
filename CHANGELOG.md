@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.8](https://github.com/ParabolInc/parabol/compare/v10.1.7...v10.1.8) (2025-04-28)
+
+
+### Fixed
+
+* Node 22 type fixes ([#11260](https://github.com/ParabolInc/parabol/issues/11260)) ([5e6e582](https://github.com/ParabolInc/parabol/commit/5e6e58236b5f35e8daf8a9b95bcdf31c9e99f8c0))
+* Switch to @whatwg/fetch throughout the server ([#11263](https://github.com/ParabolInc/parabol/issues/11263)) ([f31bdd7](https://github.com/ParabolInc/parabol/commit/f31bdd7e5079967fdf9e29b5527cd8cb1ab38f5f))
+
 ## [10.1.7](https://github.com/ParabolInc/parabol/compare/v10.1.6...v10.1.7) (2025-04-25)
 
 

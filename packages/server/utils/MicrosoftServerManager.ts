@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import {decode} from 'jsonwebtoken'
 import MicrosoftManager from 'parabol-client/utils/MicrosoftManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'

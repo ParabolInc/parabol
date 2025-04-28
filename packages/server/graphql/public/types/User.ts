@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {sql} from 'kysely'
 import ms from 'ms'
