@@ -33,6 +33,8 @@ const getTranscription = async (recallBotId?: string | null) => {
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
   const {id: meetingId, phases, teamId, recallBotId} = meeting
   const pg = getKysely()
   const [reflectionGroups, reflections, sentimentScore, transcription] = await Promise.all([
@@ -75,8 +77,6 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
   const data = {meetingId}
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
   publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
 }
 

@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
 import appOrigin from '../../appOrigin'

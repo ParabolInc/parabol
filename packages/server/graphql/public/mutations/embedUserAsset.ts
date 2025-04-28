@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {createHash} from 'crypto'
 import mime from 'mime-types'

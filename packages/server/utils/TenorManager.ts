@@ -1,3 +1,5 @@
+import {fetch} from '@whatwg-node/fetch'
+
 const MAX_REQUEST_TIME = 5000
 
 interface TenorResponse {

@@ -1,3 +1,5 @@
+import {fetch} from '@whatwg-node/fetch'
+
 const accessToken = process.env.HUBSPOT_API_KEY
 
 type Company = {

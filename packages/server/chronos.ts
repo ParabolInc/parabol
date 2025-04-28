@@ -132,7 +132,7 @@ const chronos = () => {
 }
 
 const runOnPrimary = () => {
-  // if (!__PRODUCTION__) return
+  if (!__PRODUCTION__) return () => {}
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
   const leader = new LeaderElector(redis, 'chronos', 20_000)
   leader.on('elected', () => {

@@ -16,6 +16,8 @@ const generateAIGroupTitle = async (
   meetingId: string,
   dataLoader: DataLoaderWorker
 ) => {
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
   const manager = new OpenAIServerManager()
   const aiTitle = await manager.generateGroupTitle(reflections)
   const newTitle = aiTitle ?? getSimpleGroupTitle(reflections)
@@ -31,7 +33,7 @@ const generateAIGroupTitle = async (
       reflectionGroupId,
       title: aiTitle
     },
-    {operationId: dataLoader.share()}
+    subOptions
   )
 }
 

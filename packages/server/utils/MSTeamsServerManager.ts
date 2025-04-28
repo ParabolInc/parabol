@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 // MS Teams is a server-only integration for now, unlike the Slack integration
 
 // We're following a similar manager pattern here should we wish to refactor the

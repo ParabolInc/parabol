@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import appOrigin from '../appOrigin'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import encodeAuthToken from './encodeAuthToken'
