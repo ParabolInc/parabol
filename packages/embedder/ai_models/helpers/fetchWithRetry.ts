@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import {Logger} from '../../../server/utils/Logger'
 
 interface FetchWithRetryOptions extends RequestInit {
