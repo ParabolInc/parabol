@@ -1,2 +1,23 @@
 packages:
-  - 'packages/*'
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@datadog/native-appsec'
+  - '@datadog/native-iast-taint-tracking'
+  - '@datadog/native-metrics'
+  - '@datadog/pprof'
+  - '@scarf/scarf'
+  - '@swc/core'
+  - core-js
+  - core-js-pure
+  - cpu-features
+  - dd-trace
+  - es5-ext
+  - esbuild
+  - msgpackr-extract
+  - nx
+  - protobufjs
+  - sharp
+  - ssh2
+  - styled-components
+  - swiper

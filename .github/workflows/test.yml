@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
+          # Caching pnpm dir & running pnpm install is too slow
           # Instead, we aggressively cache node_modules below to avoid calling install
 
       - name: Setup environment variables
@@ -55,7 +55,7 @@ jobs:
           echo NODE_VERSION=$NODE_VERSION >> $GITHUB_ENV
           echo NODE_VERSION=$NODE_VERSION
 
-          PLAYWRIGHT_VERSION=$(yarn list @playwright/test | grep @playwright | sed 's/.*@//')
+          PLAYWRIGHT_VERSION=$(pnpm list @playwright/test | grep @playwright | sed 's/.*@//')
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
       - name: Get cached node modules
@@ -64,48 +64,48 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable
+        run: pnpm install --immutable
 
       - name: Build the DBs
         run: |
           cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
-          yarn kysely migrate:latest
-          yarn pg:build
+          pnpm kysely migrate:latest
+          pnpm pg:build
 
       - name: Build for testing
-        run: yarn build
+        run: pnpm build
 
       - name: Verify source is clean
         run: git diff --quiet HEAD || (echo "Changes in generated files detected"; git diff; exit 1)
 
       - name: Run Predeploy for Testing
-        run: yarn predeploy
+        run: pnpm predeploy
 
       - name: Start testing server in background
         uses: JarvusInnovations/background-action@v1
         with:
           run: |
-            yarn start &
+            pnpm start &
           wait-on: |
             http://localhost:3000/graphql
 
       - name: Kysely Codegen
-        run: yarn pg:generate
+        run: pnpm pg:generate
 
       - name: Typecheck
-        run: yarn typecheck
+        run: pnpm typecheck
 
       - name: Run server tests
-        run: yarn test:server -- --reporters=default --reporters=jest-junit
+        run: pnpm test:server -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
 
       - name: Run client tests
-        run: yarn test:client -- --reporters=default --reporters=jest-junit
+        run: pnpm test:client -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
 
@@ -121,7 +121,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright Tests
-        run: yarn workspace integration-tests test --reporter list,junit
+        run: pnpm --filter integration-tests test --reporter list,junit
         env:
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
 
@@ -137,7 +137,7 @@ jobs:
         run: |
           git fetch --depth=1 origin master
           LAST_COMMON_MIGRATION=$(comm -12 <(git ls-tree --name-only origin/master -- packages/server/postgres/migrations/ | xargs basename -s.ts) <(ls packages/server/postgres/migrations/ | xargs basename -s.ts) | tail -n1)
-          yarn kysely migrate:down $LAST_COMMON_MIGRATION
+          pnpm kysely migrate:down $LAST_COMMON_MIGRATION
 
       - name: Report Status
         if: ${{ failure() && github.ref_name == 'master' }}

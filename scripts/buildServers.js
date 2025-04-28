@@ -15,7 +15,7 @@ const buildServers = async () => {
   const config = require('./webpack/dev.servers.config')
   const compiler = webpack(config)
   const queryMapExists = await waitForFileExists(path.join(__dirname, '../queryMap.json'), 20000)
-  if (!queryMapExists) throw Error('QueryMap Not Available. Run `yarn relay:build`')
+  if (!queryMapExists) throw Error('QueryMap Not Available. Run `pnpm relay:build`')
   compiler.watch({aggregateTimeout: 100}, (err, stats) => {
     if (err) {
       Logger.log('Webpack error:', err)

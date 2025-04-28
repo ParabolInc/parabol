@@ -1,4 +1,4 @@
-// call with yarn sucrase-node hubSpot/backfillHubSpot.ts
+// call with pnpm sucrase-node hubSpot/backfillHubSpot.ts
 import '../../../scripts/webpack/utils/dotenv'
 import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
 import {Logger} from '../utils/Logger'

@@ -23,8 +23,8 @@ COPY --chown=node static/fonts /usr/share/fonts
 
 COPY --chown=node .env.example ${HOME}/parabol/.env.example
 
-# The application requires a yarn.lock file on the root folder to identify it
-COPY --chown=node yarn.lock ${HOME}/parabol/yarn.lock
+# The application requires a pnpm-lock.yaml file on the root folder to identify it
+COPY --chown=node pnpm-lock.yaml ${HOME}/parabol/pnpm-lock.yaml
 COPY --chown=node build ${HOME}/parabol/build
 COPY --chown=node dist ${HOME}/parabol/dist
 

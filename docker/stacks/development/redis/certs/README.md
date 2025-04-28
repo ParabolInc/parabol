@@ -29,7 +29,7 @@ In development, that means:
 
 - Vars in .env should match the vars in `docker/stacks/development/docker-compose.yml`
 
-Any changes to `docker/stacks/development/docker-compose.yml` require running `yarn db:start`
+Any changes to `docker/stacks/development/docker-compose.yml` require running `pnpm db:start`
 
 REDIS_PASSWORD: Use this if you'd like our app to connect to redis using a password
 REDIS_TLS_CERT_FILE: The cert file used to authorize clients. Not available in GCP

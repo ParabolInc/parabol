@@ -44,7 +44,7 @@ module.exports = {
     },
     {
       name: 'PG Migrations',
-      script: 'yarn kysely migrate:latest',
+      script: 'pnpm kysely migrate:latest',
       autorestart: false
     },
     {
@@ -68,18 +68,18 @@ module.exports = {
     },
     {
       name: 'Kysely Codegen',
-      script: 'yarn pg:generate',
+      script: 'pnpm pg:generate',
       autorestart: false
     },
     {
       name: 'PG Typed',
-      script: 'yarn pg:build',
+      script: 'pnpm pg:build',
       watch: ['packages/server/postgres/queries/src/*.sql'],
       autorestart: false
     },
     {
       name: 'Mattermost Relay Compiler',
-      script: 'yarn workspace parabol-mattermost-plugin relay-compiler',
+      script: 'pnpm workspace parabol-mattermost-plugin relay-compiler',
       watch: ['packages/mattermost-plugin/**/*.[ts*,js*,css]'],
       autorestart: false,
       instances: 1

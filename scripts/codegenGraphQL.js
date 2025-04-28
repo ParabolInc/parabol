@@ -13,7 +13,7 @@ const waitForFileExists = require('./waitForFileExists').default
 const codegenGraphQL = async () => {
   const schemaPath = path.join(__dirname, '../packages/server/graphql/public/schema.graphql')
   const schemaExists = await waitForFileExists(schemaPath, 20000)
-  if (!schemaExists) throw Error('GraphQL Schema Not Available. Run `yarn relay:build`')
+  if (!schemaExists) throw Error('GraphQL Schema Not Available. Run `pnpm relay:build`')
   const watch = process.argv.find((arg) => arg === '--watch')
   if (watch) {
     generate(

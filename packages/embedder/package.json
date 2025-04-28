@@ -11,12 +11,12 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "lint": "yarn lint:check --fix .",
+    "lint": "pnpm lint:check --fix .",
     "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
     "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
     "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
     "test": "jest --verbose",
-    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
+    "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"
@@ -24,7 +24,6 @@
   "devDependencies": {
     "@types/franc": "^5.0.3",
     "@types/node": "^20.14.8",
-    "babel-plugin-inline-import": "^3.0.0",
     "jest-extended": "^3.2.4",
     "jest-junit": "^16.0.0",
     "openapi-fetch": "^0.10.0"

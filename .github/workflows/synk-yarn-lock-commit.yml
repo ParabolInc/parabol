@@ -1,4 +1,4 @@
-name: Update Snyk PR to add yarn.lock
+name: Update Snyk PR to add pnpm-lock.yaml
 
 on:
   pull_request:
@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
+          # Caching pnpm dir & running pnpm install is too slow
           # Instead, we aggressively cache node_modules below to avoid calling install
 
       - name: Get cached node modules
@@ -38,15 +38,15 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install node_modules
-        run: yarn install
+        run: pnpm install
 
-      - name: Commit yarn.lock to the PR branch
+      - name: Commit pnpm-lock.yaml to the PR branch
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git add yarn.lock
-          git commit -m "Update yarn.lock" || echo "No changes to commit"
+          git add pnpm-lock.yaml
+          git commit -m "Update pnpm-lock.yaml" || echo "No changes to commit"
           git push

@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
+          # Caching pnpm dir & running pnpm install is too slow
           # Instead, we aggressively cache node_modules below to avoid calling install
 
       - name: Setup environment variables
@@ -37,11 +37,11 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Check Code Quality
-        run: yarn codecheck
+        run: pnpm codecheck

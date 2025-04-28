@@ -35,6 +35,8 @@ module.exports = {
       '~': path.join(CLIENT_ROOT),
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT
+      // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+      // 'react/jsx-runtime': require.resolve('react/jsx-runtime')
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
     unsafeCache: true,
@@ -47,7 +49,7 @@ module.exports = {
   target: 'node',
   externals: [
     nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/, /@dicebear/]
+      allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, /sharp/]
     })
   ],
   plugins: [

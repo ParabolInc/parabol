@@ -5,7 +5,7 @@
   They are included in the build to minimize the number of webpack builds we perform
 */
 import webpack from 'webpack'
-import {Logger} from 'parabol-server/utils/Logger'
+import {Logger} from '../packages/server/utils/Logger'
 
 const compileToolbox = async (ignoreErrors: boolean) => {
   return new Promise<void>((resolve) => {
@@ -16,6 +16,7 @@ const compileToolbox = async (ignoreErrors: boolean) => {
         Logger.log('Webpack error:', err)
       }
       const errors = stats?.compilation?.errors ?? []
+      console.log({ignoreErrors})
       if (!ignoreErrors && errors.length > 0) {
         Logger.log('COMPILATION ERRORS:', errors)
       }
@@ -29,7 +30,9 @@ const updateGraphQLSchema = async () => {
 }
 
 const runSchemaUpdater = async (ignoreErrors: boolean) => {
-  await compileToolbox(ignoreErrors)
+  console.log('1')
+  await compileToolbox(false)
+  console.log('2')
   return updateGraphQLSchema()
 }
 

@@ -32,15 +32,15 @@ const prod = async (isDeploy, noDeps) => {
   try {
     await Promise.all([
       runChild(
-        `yarn webpack --config ./scripts/webpack/prod.servers.config.js --env=noDeps=${noDeps}`
+        `pnpm webpack --config ./scripts/webpack/prod.servers.config.js --env=noDeps=${noDeps}`
       ),
       runChild(
-        `yarn webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isDeploy}`
-      ),
+        `pnpm webpack --config ./scripts/webpack/prod.client.config.js --env=minimize=${isDeploy}`
+      )
     ])
     Logger.log('building mattermost-plugin')
     await runChild(
-      `yarn workspace parabol-mattermost-plugin webpack --config ./prod.webpack.config.js --env=minimize=${isDeploy}`
+      `pnpm --filter parabol-mattermost-plugin webpack --config ./prod.webpack.config.js --env=minimize=${isDeploy}`
     )
   } catch (e) {
     Logger.log('error webpackifying', e)

@@ -13,16 +13,16 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "format": "yarn typecheck && yarn lint && yarn prettier",
+    "format": "pnpm typecheck && pnpm lint && pnpm prettier",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
-    "lint": "yarn lint:check --fix .",
+    "lint": "pnpm lint:check --fix .",
     "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
     "precommit": "lint-staged",
     "prettier": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --write \"**/*.{ts,tsx,graphql}\"",
     "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose",
-    "typecheck": "yarn tsc --noEmit -p tsconfig.json"
+    "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@types/cleave.js": "^1.4.7",

@@ -37,9 +37,9 @@ There is a periodic sprint plan for updating and creating new features of which 
 
 New features/updates/fixes are tested in your local environment. With docker running open your terminal. Use git pulls to ensure your local repo is up-to-date and use git switch to get the branch you want to test. When you have your testing branch ready run the following commands:
 
-- yarn
-- yarn db:start
-- yarn dev
+- pnpm
+- pnpm db:start
+- pnpm dev
 
 To test the new feature or update, load your web browser and goto localhost:3000.
 

@@ -4,24 +4,27 @@
   To reduce watched file callback, we only want to write the file if there's a change
 */
 
-import fs from 'fs'
+import {mergeSchemas} from '@graphql-tools/schema'
 import {printSchema} from 'graphql'
+import {readFile, writeFile} from 'node:fs/promises'
 import path from 'path'
-import {promisify} from 'util'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
-import privateSchema from '../graphql/private/rootSchema'
-import publicSchema from '../graphql/public/rootSchema'
+import {typeDefs as privateTypeDefs} from '../graphql/private/importedTypeDefs'
+import {typeDefs} from '../graphql/public/importedTypeDefs'
+import {nestGitLab} from '../graphql/public/nestGitLab'
+import {nestGitHub} from './nestGitHub'
+
+// import privateSchema from '../graphql/private/rootSchema'
+// import publicSchema from '../graphql/public/rootSchema'
 
 const writeIfChanged = async (dataPath: string, data: string) => {
-  const write = promisify(fs.writeFile)
-  const read = promisify(fs.readFile)
   try {
-    const existingFile = await read(dataPath, {encoding: 'utf-8'})
+    const existingFile = await readFile(dataPath, {encoding: 'utf-8'})
     if (data === existingFile) return
   } catch {
     // file does not exist
   }
-  return write(dataPath, data)
+  return writeFile(dataPath, data)
 }
 
 const updateGQLSchema = async () => {
@@ -29,6 +32,13 @@ const updateGQLSchema = async () => {
   const GQL_ROOT = path.join(projectRoot, 'packages/server/graphql')
   const publicSchemaPath = path.join(GQL_ROOT, 'public/schema.graphql')
   const privateSchemaPath = path.join(GQL_ROOT, 'private/schema.graphql')
+  const publicTypeDefs = mergeSchemas({
+    schemas: [],
+    typeDefs
+  })
+  const publicSchema = nestGitLab(nestGitHub(publicTypeDefs).schema).schema
+  const privateSchema = mergeSchemas({schemas: [publicSchema], typeDefs: [privateTypeDefs]})
+
   await Promise.all([
     writeIfChanged(publicSchemaPath, printSchema(publicSchema)),
     writeIfChanged(privateSchemaPath, printSchema(privateSchema))
