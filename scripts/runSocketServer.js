@@ -7,7 +7,6 @@
 try {
   require('../dev/web.js')
 } catch (e) {
-  console.log(e)
   // webpack has not created the file yet
   // pm2 will restart this process when the file changes
 }
