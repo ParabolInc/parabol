@@ -143,5 +143,6 @@
     "dotenv-expand": "5.1.0",
     "lodash.toarray": "^4.4.0",
     "pg": "^8.13.0"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

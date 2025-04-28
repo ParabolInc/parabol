@@ -16,7 +16,7 @@
 //      Steps: e.g. */2
 
 import {CronJob} from 'cron'
-import {establishPrimaryServer} from './establishPrimaryServer'
+import {LeaderElector} from './LeaderElector'
 import {callGQL} from './utils/callGQL'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
@@ -29,11 +29,11 @@ interface PossibleJob {
 const {SERVER_ID} = process.env
 if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
 
+const runningJobs: CronJob[] = []
 const chronos = () => {
   const {
     CHRONOS_PULSE_EMAIL,
     CHRONOS_PULSE_CHANNEL,
-    SERVER_ID,
     CHRONOS_AUTOPAUSE,
     CHRONOS_PULSE_DAILY,
     CHRONOS_PULSE_WEEKLY,
@@ -117,27 +117,34 @@ const chronos = () => {
   }
   Object.entries(jobs).forEach(([name, {onTick, cronTime}]) => {
     try {
-      CronJob.from({
+      const job = CronJob.from({
         start: true,
         // assume non-null & catch on fail
         cronTime: cronTime!,
         onTick
       })
+      runningJobs.push(job)
       Logger.log(`🌱 Chronos Job ${name}: STARTED`)
     } catch {
       Logger.log(`🌱 Chronos Job ${name}: SKIPPED`)
     }
   })
-
-  Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
 }
 
-const runOnPrimary = async () => {
-  if (!__PRODUCTION__) return
+const runOnPrimary = () => {
+  // if (!__PRODUCTION__) return
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
-  const primaryLock = await establishPrimaryServer(redis, 'chronos')
-  if (!primaryLock) return
-  chronos()
+  const leader = new LeaderElector(redis, 'chronos', 20_000)
+  leader.on('elected', () => {
+    Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID} Elected for Chronos           🌾🌾🌾`)
+    chronos()
+  })
+  leader.on('revoked', () => {
+    Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID} Lost Chronos           🌾🌾🌾`)
+    runningJobs.forEach((job) => job.stop())
+  })
+  leader.start()
+  return () => leader.stop()
 }
 
-runOnPrimary()
+export const stopChronos = runOnPrimary()
