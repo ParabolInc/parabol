@@ -14,6 +14,8 @@ const generateGroups = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (reflections.length === 0) return
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   if (!(await canAccessAI(team, dataLoader))) return
@@ -58,8 +60,6 @@ const generateGroups = async (
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {facilitatorUserId} = meeting
   const data = {meetingId}
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
   const user = await dataLoader.get('users').loadNonNull(facilitatorUserId!)
   analytics.suggestedGroupsGenerated(user, meetingId, teamId)
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)

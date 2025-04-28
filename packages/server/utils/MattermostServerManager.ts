@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import {createSigner, httpbis} from 'http-message-signatures'
 // Mattermost is a server-only integration for now, unlike the Slack integration
 

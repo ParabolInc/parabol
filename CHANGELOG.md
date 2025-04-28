@@ -5,6 +5,36 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.8](https://github.com/ParabolInc/parabol/compare/v10.1.7...v10.1.8) (2025-04-28)
+
+
+### Fixed
+
+* Node 22 type fixes ([#11260](https://github.com/ParabolInc/parabol/issues/11260)) ([5e6e582](https://github.com/ParabolInc/parabol/commit/5e6e58236b5f35e8daf8a9b95bcdf31c9e99f8c0))
+* Switch to @whatwg/fetch throughout the server ([#11263](https://github.com/ParabolInc/parabol/issues/11263)) ([f31bdd7](https://github.com/ParabolInc/parabol/commit/f31bdd7e5079967fdf9e29b5527cd8cb1ab38f5f))
+
+## [10.1.7](https://github.com/ParabolInc/parabol/compare/v10.1.6...v10.1.7) (2025-04-25)
+
+
+### Fixed
+
+* disconnectAllSockets accepts an input parameters for the disconnect window ([#11247](https://github.com/ParabolInc/parabol/issues/11247)) ([7ffd28f](https://github.com/ParabolInc/parabol/commit/7ffd28fd2181af0e348ab1317028c0675f14a21c))
+
+## [10.1.6](https://github.com/ParabolInc/parabol/compare/v10.1.5...v10.1.6) (2025-04-24)
+
+
+### Fixed
+
+* revert back to @whatwg-node/fetch ([#11252](https://github.com/ParabolInc/parabol/issues/11252)) ([6285bcf](https://github.com/ParabolInc/parabol/commit/6285bcf3e2f304eaf8a456df5a65d05a6f442f97))
+
+## [10.1.5](https://github.com/ParabolInc/parabol/compare/v10.1.4...v10.1.5) (2025-04-24)
+
+
+### Fixed
+
+* Dragging reflections would crash if subscription did not work ([#11241](https://github.com/ParabolInc/parabol/issues/11241)) ([30258ed](https://github.com/ParabolInc/parabol/commit/30258ed8e6c0c270f107104b164c289799e6862b))
+* Handle publish taking longer than 30s ([#11248](https://github.com/ParabolInc/parabol/issues/11248)) ([d39702c](https://github.com/ParabolInc/parabol/commit/d39702c33ae6f87a29d05a941f89fc5c1d7cd52e))
+
 ## [10.1.4](https://github.com/ParabolInc/parabol/compare/v10.1.3...v10.1.4) (2025-04-23)
 
 

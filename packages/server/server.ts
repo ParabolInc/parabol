@@ -43,7 +43,7 @@ process.on('SIGTERM', async (signal) => {
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
   setIsShuttingDown()
-  await disconnectAllSockets()
+  await disconnectAllSockets(RECONNECT_WINDOW)
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })
