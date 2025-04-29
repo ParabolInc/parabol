@@ -109,8 +109,7 @@ module.exports = {
       os: false
     },
     unsafeCache: true,
-    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules'],
-    symlinks: false
+    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
   },
   resolveLoader: {
     modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']

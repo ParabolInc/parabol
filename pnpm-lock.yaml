@@ -158,9 +158,6 @@ importers:
       '@graphql-codegen/typescript-resolvers':
         specifier: 4.0.1
         version: 4.0.1(graphql@16.9.0)
-      '@graphql-tools/merge':
-        specifier: ^9.0.0
-        version: 9.0.24(graphql@16.9.0)
       '@pgtyped/cli':
         specifier: ^2.4.3
         version: 2.4.3(typescript@5.8.3)
@@ -411,8 +408,8 @@ importers:
   packages/client:
     dependencies:
       '@amplitude/analytics-browser':
-        specifier: ^2.2.3
-        version: 2.16.0
+        specifier: 2.2.3
+        version: 2.2.3
       '@datadog/browser-rum':
         specifier: ^3.6.12
         version: 3.11.0
@@ -906,8 +903,8 @@ importers:
         specifier: ^5.1.3
         version: 5.1.3(@envelop/core@5.2.3)(graphql@16.11.0)
       '@graphql-tools/schema':
-        specifier: ^9.0.16
-        version: 9.0.19(graphql@16.11.0)
+        specifier: ^10.0.23
+        version: 10.0.23(graphql@16.11.0)
       '@graphql-yoga/plugin-defer-stream':
         specifier: ^3.13.2
         version: 3.13.4(graphql-yoga@5.13.4(graphql@16.11.0))(graphql@16.11.0)
@@ -1019,9 +1016,6 @@ importers:
       graphql:
         specifier: ^16.10.0
         version: 16.11.0
-      graphql-middleware:
-        specifier: ^6.1.18
-        version: 6.1.35(graphql@16.11.0)
       graphql-relay:
         specifier: ^0.10.0
         version: 0.10.2(graphql@16.11.0)
@@ -1225,8 +1219,8 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@amplitude/analytics-browser@2.16.0':
-    resolution: {integrity: sha512-wf0r5bEQJC1u2vUXMNovgiJKXlHUDeB1jSc6Zykgnpg44hEyZyoP7CyjUoxPN+CskyW5NldPIaCqHLrDoLymmg==}
+  '@amplitude/analytics-browser@2.2.3':
+    resolution: {integrity: sha512-vuKG8/jqtsAFe0xK0ZGtXDxH7oPx989VIoCpUi97bkfxholySCNHjVMd5Q8D4Mqm/3eDH7YZhkFwEb0JFyCAfA==}
 
   '@amplitude/analytics-client-common@2.3.17':
     resolution: {integrity: sha512-NCOEQzRn4bIMFLICtfg72KHF9KZyCSHYmALlOMh9wXmgBndPF4e2vrhXwNu65rIfP21Vb9Zm/MbPh8RKJ+bJ5w==}
@@ -1243,20 +1237,17 @@ packages:
   '@amplitude/analytics-node@1.3.8':
     resolution: {integrity: sha512-Dwrh7bl5PTcHmnV8PtvHZTOlIfSfJDe+mf7l/XMiBdQR2kpdpsPAjo1so08Kze+aixWPwMAIDeFCub/QHBGhgA==}
 
-  '@amplitude/analytics-remote-config@0.4.1':
-    resolution: {integrity: sha512-BYl6kQ9qjztrCACsugpxO+foLaQIC0aSEzoXEAb/gwOzInmqkyyI+Ub+aWTBih4xgB/lhWlOcidWHAmNiTJTNw==}
-
   '@amplitude/analytics-types@1.3.5':
     resolution: {integrity: sha512-IpncCNTZZ6VoGe4fNwTTZtpi+ZNm3mtsocdbCHtIwmKg2wmOF2E09CAwvyF7mK5aRlMIrSAKQyR3GwraATghSw==}
 
   '@amplitude/analytics-types@2.9.1':
     resolution: {integrity: sha512-Hw0pgUQCDV6AgvZD8ymBF3mzyBnPrIvXiPxfTNTg/bAkg1h+GVNdJIL6VAXd53kYuO7Lx/vjdhZS54i+RYtgMA==}
 
-  '@amplitude/plugin-autocapture-browser@1.1.9':
-    resolution: {integrity: sha512-xv8MMCSj2Fx4oYlUR6G/qaPeeKiAM7oSEEXgTuwtOOps1Aw2gsZW40atVolpc1cGxM2B/HMe8H0OnrAyQ0DmiQ==}
-
   '@amplitude/plugin-page-view-tracking-browser@2.3.19':
     resolution: {integrity: sha512-4mAdIY5+AwBDd7MBsZSLrXQpPPGRWVhtZGi9gqjzzZC27H2YfAh1xi7evGBhsZrE1bfoOLbqxC5B6Ma4U3wMQg==}
+
+  '@amplitude/plugin-web-attribution-browser@2.1.43':
+    resolution: {integrity: sha512-ydL9a+NXYl8PKBaCDBLcn1SXpLWmXZQcAE0zo516kGx0qkWgWuk7do6D5SNqgc/AE69g3rvcOveuYopNmMAzQg==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -2845,11 +2836,6 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/merge@8.4.2':
-    resolution: {integrity: sha512-XbrHAaj8yDuINph+sAfuq3QCZ/tKblrTLOpirK0+CAgNlZUCHs0Fa+xtMUURgwCVThLle1AF7svJCxFizygLsw==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
   '@graphql-tools/merge@9.0.24':
     resolution: {integrity: sha512-NzWx/Afl/1qHT3Nm1bghGG2l4jub28AdvtG11PoUlmjcIjnFBJMv4vqL0qnxWe8A82peWo4/TkVdjJRLXwgGEw==}
     engines: {node: '>=16.0.0'}
@@ -2885,11 +2871,6 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/schema@9.0.19':
-    resolution: {integrity: sha512-oBRPoNBtCkk0zbUsyP4GaIzCt8C0aCI4ycIRUL67KK5pOHljKLBBtGT+Jr6hkzA74C8Gco8bpZPe7aWFjiaK2w==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
   '@graphql-tools/url-loader@8.0.31':
     resolution: {integrity: sha512-QGP3py6DAdKERHO5D38Oi+6j+v0O3rkBbnLpyOo87rmIRbwE6sOkL5JeHegHs7EEJ279fBX6lMt8ry0wBMGtyA==}
     engines: {node: '>=16.0.0'}
@@ -2904,11 +2885,6 @@ packages:
 
   '@graphql-tools/utils@8.9.0':
     resolution: {integrity: sha512-pjJIWH0XOVnYGXCqej8g/u/tsfV4LvLlj0eATKQu5zwnxd/TiTHq7Cg313qUPTFFHZ3PP5wJ15chYVtLDwaymg==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
-  '@graphql-tools/utils@9.2.1':
-    resolution: {integrity: sha512-WUw506Ql6xzmOORlriNrD6Ugx+HjVgYxt9KCXD9mHAak+eaXSwuGGPyE60hy9xaDEoXKBsG7SkG69ybitaVl6A==}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -13232,10 +13208,6 @@ packages:
     resolution: {integrity: sha512-41BrgH+dIbCFXClcSapVs5M6GkENd3gQOJpEfPDNa71LsUGMXDL0jMWpI/Rh7WhX+Aalfz2TTS3Zt5pUsbnhLg==}
     engines: {node: '>=12'}
 
-  value-or-promise@1.0.12:
-    resolution: {integrity: sha512-Z6Uz+TYwEqE7ZN50gwn+1LCVo9ZVrpxRPOhOLnncYkY1ZzOYtrX8Fwf/rFktZ8R5mJms6EZf5TqNOMeZmnPq9Q==}
-    engines: {node: '>=12'}
-
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
@@ -13684,12 +13656,13 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@amplitude/analytics-browser@2.16.0':
+  '@amplitude/analytics-browser@2.2.3':
     dependencies:
+      '@amplitude/analytics-client-common': 2.3.17
       '@amplitude/analytics-core': 2.10.1
-      '@amplitude/analytics-remote-config': 0.4.1
-      '@amplitude/plugin-autocapture-browser': 1.1.9
+      '@amplitude/analytics-types': 2.9.1
       '@amplitude/plugin-page-view-tracking-browser': 2.3.19
+      '@amplitude/plugin-web-attribution-browser': 2.1.43
       tslib: 2.8.1
 
   '@amplitude/analytics-client-common@2.3.17':
@@ -13717,26 +13690,20 @@ snapshots:
       '@amplitude/analytics-types': 1.3.5
       tslib: 2.8.1
 
-  '@amplitude/analytics-remote-config@0.4.1':
-    dependencies:
-      '@amplitude/analytics-client-common': 2.3.17
-      '@amplitude/analytics-core': 2.10.1
-      '@amplitude/analytics-types': 1.3.5
-      tslib: 2.8.1
-
   '@amplitude/analytics-types@1.3.5': {}
 
   '@amplitude/analytics-types@2.9.1': {}
 
-  '@amplitude/plugin-autocapture-browser@1.1.9':
-    dependencies:
-      '@amplitude/analytics-core': 2.10.1
-      rxjs: 7.8.2
-      tslib: 2.8.1
-
   '@amplitude/plugin-page-view-tracking-browser@2.3.19':
     dependencies:
       '@amplitude/analytics-client-common': 2.3.17
+      '@amplitude/analytics-types': 2.9.1
+      tslib: 2.8.1
+
+  '@amplitude/plugin-web-attribution-browser@2.1.43':
+    dependencies:
+      '@amplitude/analytics-client-common': 2.3.17
+      '@amplitude/analytics-core': 2.10.1
       '@amplitude/analytics-types': 2.9.1
       tslib: 2.8.1
 
@@ -16592,12 +16559,6 @@ snapshots:
       graphql: 16.11.0
       tslib: 2.8.1
 
-  '@graphql-tools/merge@8.4.2(graphql@16.11.0)':
-    dependencies:
-      '@graphql-tools/utils': 9.2.1(graphql@16.11.0)
-      graphql: 16.11.0
-      tslib: 2.8.1
-
   '@graphql-tools/merge@9.0.24(graphql@16.11.0)':
     dependencies:
       '@graphql-tools/utils': 10.8.6(graphql@16.11.0)
@@ -16674,14 +16635,6 @@ snapshots:
       tslib: 2.8.1
       value-or-promise: 1.0.11
 
-  '@graphql-tools/schema@9.0.19(graphql@16.11.0)':
-    dependencies:
-      '@graphql-tools/merge': 8.4.2(graphql@16.11.0)
-      '@graphql-tools/utils': 9.2.1(graphql@16.11.0)
-      graphql: 16.11.0
-      tslib: 2.8.1
-      value-or-promise: 1.0.12
-
   '@graphql-tools/url-loader@8.0.31(@types/node@22.15.3)(graphql@16.9.0)':
     dependencies:
       '@graphql-tools/executor-graphql-ws': 2.0.5(graphql@16.9.0)
@@ -16724,12 +16677,6 @@ snapshots:
 
   '@graphql-tools/utils@8.9.0(graphql@16.11.0)':
     dependencies:
-      graphql: 16.11.0
-      tslib: 2.8.1
-
-  '@graphql-tools/utils@9.2.1(graphql@16.11.0)':
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
       graphql: 16.11.0
       tslib: 2.8.1
 
@@ -28862,8 +28809,6 @@ snapshots:
   value-equal@0.4.0: {}
 
   value-or-promise@1.0.11: {}
-
-  value-or-promise@1.0.12: {}
 
   vary@1.1.2: {}
 

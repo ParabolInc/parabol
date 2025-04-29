@@ -108,23 +108,21 @@ module.exports = (config) => {
       new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /inter-regular.otf$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /inter-bold.otf$/, contextRegExp: /@dicebear/}),
-
-      noDeps &&
-        new CopyWebpackPlugin({
-          patterns: [
-            {
-              // copy sharp's libvips to the output
-              from: path.resolve(SERVER_ROOT, 'node_modules', 'sharp', 'vendor'),
-              to: 'vendor'
-            },
-            {
-              // dd-trace-js has a lookup table for hooks, which includes the key `pg`
-              // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
-              from: path.resolve(SERVER_ROOT, 'node_modules', 'pg', 'package.json'),
-              to: 'node_modules/pg/package.json'
-            }
-          ]
-        })
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            // copy sharp's libvips to the output
+            from: path.resolve(SERVER_ROOT, 'node_modules', 'sharp', 'vendor'),
+            to: 'vendor'
+          },
+          noDeps && {
+            // dd-trace-js has a lookup table for hooks, which includes the key `pg`
+            // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
+            from: path.resolve(SERVER_ROOT, 'node_modules', 'pg', 'package.json'),
+            to: 'node_modules/pg/package.json'
+          }
+        ].filter(Boolean)
+      })
     ].filter(Boolean),
     module: {
       parser: {
