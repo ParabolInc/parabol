@@ -54,8 +54,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
-          # Caching pnpm dir & running pnpm install is too slow
-          # Instead, we aggressively cache node_modules below to avoid calling install
+          cache: "pnpm"
 
       - name: Get cached node modules
         id: cache
@@ -67,7 +66,10 @@ jobs:
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        # pnpm has a bug that resolves git+https to ssh
+        run: |
+          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+          pnpm install --frozen-lockfile
 
       - name: Build the DBs
         run: |
