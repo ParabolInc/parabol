@@ -814,6 +814,9 @@ importers:
       mattermost-redux:
         specifier: 5.33.1
         version: 5.33.1(react-native@0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2))(react@17.0.2)
+      parabol-client:
+        specifier: workspace:*
+        version: link:../client
       react-dom:
         specifier: ^17.0.2
         version: 17.0.2(react@17.0.2)
