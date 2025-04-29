@@ -141,7 +141,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
 }
 
 const startChronos = () => {
-  //if (!__PRODUCTION__) return () => {}
+  if (!__PRODUCTION__) return () => {}
 
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
   const leaderRunner = new LeaderRunner(redis, 'chronos', 20_000)
