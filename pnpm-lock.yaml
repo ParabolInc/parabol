@@ -28,6 +28,7 @@ overrides:
   axios: ^1.7.8
   prosemirror-model: ^1.24.1
   prosemirror-view: ^1.38.0
+  redux-offline: git+https://github.com/enahum/redux-offline.git#885024de96b6ec73650c340c8928066585c413df
 
 importers:
 
@@ -267,7 +268,7 @@ importers:
         version: 4.1.4
       terser-webpack-plugin:
         specifier: ^5.3.9
-        version: 5.3.14(@swc/core@1.11.22)(webpack@5.99.7(@swc/core@1.11.22)(webpack-cli@5.1.4))
+        version: 5.3.14(@swc/core@1.11.22)(webpack@5.99.7)
       ts-jest:
         specifier: ^29.3.2
         version: 29.3.2(@babel/core@7.26.10)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.26.10))(jest@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0))(typescript@5.8.3)
@@ -28426,7 +28427,7 @@ snapshots:
       ansi-escapes: 4.3.2
       supports-hyperlinks: 2.3.0
 
-  terser-webpack-plugin@5.3.14(@swc/core@1.11.22)(webpack@5.99.7(@swc/core@1.11.22)(webpack-cli@5.1.4)):
+  terser-webpack-plugin@5.3.14(@swc/core@1.11.22)(webpack@5.99.7):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
@@ -29108,7 +29109,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.2
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.14(@swc/core@1.11.22)(webpack@5.99.7(@swc/core@1.11.22)(webpack-cli@5.1.4))
+      terser-webpack-plugin: 5.3.14(@swc/core@1.11.22)(webpack@5.99.7)
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     optionalDependencies:
