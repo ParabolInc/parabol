@@ -37,16 +37,12 @@ const GraphQLISO8601Type = new GraphQLScalarType({
   // Parse a date received as an inline value.
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
-      throw new Error(
-        `Query error: Can only parse strings to dates but got a: ${ast.kind}, ${[ast]}`
-      )
+      throw new Error(`Query error: Can only parse strings to dates but got a: ${ast.kind}`)
     }
     try {
       return parseDate(ast.value)
     } catch (e) {
-      throw new Error(
-        `Query error: ${e instanceof Error ? e.message : 'Unable to parseDate'}, ${[ast]}`
-      )
+      throw new Error(`Query error: ${e instanceof Error ? e.message : 'Unable to parseDate'}`)
     }
   }
 })

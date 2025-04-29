@@ -12,7 +12,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "lint": "pnpm lint:check --fix .",
-    "lint:check": "node --max_old_space_size=8192 ../../node_modules/.bin/eslint .",
+    "lint:check": "eslint .",
     "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
     "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
     "test": "jest --verbose",
