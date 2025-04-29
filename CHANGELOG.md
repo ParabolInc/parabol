@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.9](https://github.com/ParabolInc/parabol/compare/v10.1.8...v10.1.9) (2025-04-28)
+
+
+### Fixed
+
+* leader election on interval ([#11267](https://github.com/ParabolInc/parabol/issues/11267)) ([dd7e16e](https://github.com/ParabolInc/parabol/commit/dd7e16e449ac73d3c826a7a6c77abd85f9a99342))
+
 ## [10.1.8](https://github.com/ParabolInc/parabol/compare/v10.1.7...v10.1.8) (2025-04-28)
 
 

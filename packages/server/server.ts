@@ -3,7 +3,7 @@ import uws from 'uWebSockets.js'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
-import './chronos'
+import {stopChronos} from './chronos'
 import createSSR from './createSSR'
 import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
@@ -43,7 +43,8 @@ process.on('SIGTERM', async (signal) => {
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
   setIsShuttingDown()
-  await disconnectAllSockets(RECONNECT_WINDOW)
+  stopChronos()
+  await disconnectAllSockets()
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })
