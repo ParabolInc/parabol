@@ -17,8 +17,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, no need to create one
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Setup environment variables
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
