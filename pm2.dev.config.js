@@ -11,7 +11,7 @@ module.exports = {
       name: 'Socket Server',
       script: 'scripts/runSocketServer.js',
       // increase this to test scaling
-      instances: 1,
+      instances: 4,
       increment_var: 'SERVER_ID',
       env: {
         SERVER_ID: 0

@@ -16,7 +16,7 @@
 //      Steps: e.g. */2
 
 import {CronJob} from 'cron'
-import {LeaderElector} from './LeaderElector'
+import {LeaderRunner} from './LeaderRunner'
 import {callGQL} from './utils/callGQL'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
@@ -30,7 +30,8 @@ const {SERVER_ID} = process.env
 if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
 
 const runningJobs: CronJob[] = []
-const chronos = () => {
+
+const chronos = (leaderRunner: LeaderRunner) => {
   const {
     CHRONOS_PULSE_EMAIL,
     CHRONOS_PULSE_CHANNEL,
@@ -121,7 +122,15 @@ const chronos = () => {
         start: true,
         // assume non-null & catch on fail
         cronTime: cronTime!,
-        onTick
+        onTick: () =>
+          leaderRunner.runLocked(
+            name,
+            async () => {
+              Logger.log(`🌱 Chronos Job ${name}: TICK`)
+              onTick()
+            },
+            () => Logger.log(`🌱 Chronos Job ${name}: TICK SKIPPED (not leader)`)
+          )
       })
       runningJobs.push(job)
       Logger.log(`🌱 Chronos Job ${name}: STARTED`)
@@ -131,20 +140,18 @@ const chronos = () => {
   })
 }
 
-const runOnPrimary = () => {
-  if (!__PRODUCTION__) return () => {}
+const startChronos = () => {
+  //if (!__PRODUCTION__) return () => {}
+
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
-  const leader = new LeaderElector(redis, 'chronos', 20_000)
-  leader.on('elected', () => {
-    Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID} Elected for Chronos           🌾🌾🌾`)
-    chronos()
-  })
-  leader.on('revoked', () => {
-    Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID} Lost Chronos           🌾🌾🌾`)
-    runningJobs.forEach((job) => job.stop())
-  })
-  leader.start()
-  return () => leader.stop()
+  const leaderRunner = new LeaderRunner(redis, 'chronos', 20_000)
+  chronos(leaderRunner)
+  return () => {
+    runningJobs.forEach((job) => {
+      job.stop()
+      Logger.log(`🌱 Chronos Job ${job.name}: STOPPED`)
+    })
+  }
 }
 
-export const stopChronos = runOnPrimary()
+export const stopChronos = startChronos()
