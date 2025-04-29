@@ -42,7 +42,9 @@ jobs:
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: |
+          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+          pnpm install --frozen-lockfile
 
       - name: Check Code Quality
         run: pnpm codecheck
