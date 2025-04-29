@@ -40,6 +40,60 @@ importers:
       '@module-federation/enhanced':
         specifier: ^0.13.0
         version: 0.13.1(@rspack/core@1.3.5)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)(typescript@5.8.3)(webpack@5.99.7)
+      '@tiptap/core':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/pm@2.11.7)
+      '@tiptap/extension-character-count':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
+      '@tiptap/extension-collaboration':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)(y-prosemirror@1.3.4(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.2)(y-protocols@1.0.6(yjs@13.6.26))(yjs@13.6.26))
+      '@tiptap/extension-collaboration-cursor':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(y-prosemirror@1.3.4(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.2)(y-protocols@1.0.6(yjs@13.6.26))(yjs@13.6.26))
+      '@tiptap/extension-document':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
+      '@tiptap/extension-focus':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
+      '@tiptap/extension-image':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
+      '@tiptap/extension-link':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
+      '@tiptap/extension-mention':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)(@tiptap/suggestion@2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7))
+      '@tiptap/extension-placeholder':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
+      '@tiptap/extension-task-item':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
+      '@tiptap/extension-task-list':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
+      '@tiptap/extension-underline':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
+      '@tiptap/html':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
+      '@tiptap/pm':
+        specifier: ^2.11.7
+        version: 2.11.7
+      '@tiptap/react':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      '@tiptap/starter-kit':
+        specifier: ^2.11.7
+        version: 2.11.7
+      '@tiptap/suggestion':
+        specifier: ^2.11.7
+        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
       '@whatwg-node/fetch':
         specifier: ^0.10.6
         version: 0.10.6
@@ -58,6 +112,12 @@ importers:
       lodash.toarray:
         specifier: ^4.4.0
         version: 4.4.0
+      ms:
+        specifier: ^2.0.0
+        version: 2.1.3
+      openai:
+        specifier: ^4.86.1
+        version: 4.96.2(ws@8.18.0)
       pg:
         specifier: ^8.13.0
         version: 8.15.6
@@ -125,6 +185,9 @@ importers:
       '@types/dotenv':
         specifier: ^6.1.1
         version: 6.1.1
+      '@types/jest':
+        specifier: ^29.5.14
+        version: 29.5.14
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -134,6 +197,9 @@ importers:
       '@types/lodash.toarray':
         specifier: ^4.4.7
         version: 4.4.9
+      '@types/ms':
+        specifier: ^0.7.34
+        version: 0.7.34
       '@types/pg':
         specifier: ^8.11.10
         version: 8.11.14
@@ -212,6 +278,12 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0)
+      jest-extended:
+        specifier: ^3.2.4
+        version: 3.2.4(jest@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0))
+      jest-junit:
+        specifier: ^16.0.0
+        version: 16.0.0
       jscodeshift:
         specifier: ^0.14.0
         version: 0.14.0(@babel/preset-env@7.26.9(@babel/core@7.26.10))
@@ -353,6 +425,9 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.0
         version: 11.14.0(@emotion/react@11.14.0(@types/react@17.0.2)(react@17.0.2))(@types/react@17.0.2)(react@17.0.2)
+      '@graphiql/toolkit':
+        specifier: ^0.11.1
+        version: 0.11.1(@types/node@22.15.3)(graphql-ws@6.0.4(graphql@16.11.0)(ws@8.18.1))(graphql@16.11.0)
       '@hocuspocus/provider':
         specifier: ^2.15.2
         version: 2.15.2(y-protocols@1.0.6(yjs@13.6.26))(yjs@13.6.26)
@@ -422,57 +497,6 @@ importers:
       '@stripe/stripe-js':
         specifier: ^4.0.0
         version: 4.10.0
-      '@tiptap/core':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/pm@2.11.7)
-      '@tiptap/extension-character-count':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
-      '@tiptap/extension-collaboration':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)(y-prosemirror@1.3.4(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.2)(y-protocols@1.0.6(yjs@13.6.26))(yjs@13.6.26))
-      '@tiptap/extension-collaboration-cursor':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(y-prosemirror@1.3.4(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.2)(y-protocols@1.0.6(yjs@13.6.26))(yjs@13.6.26))
-      '@tiptap/extension-focus':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
-      '@tiptap/extension-image':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
-      '@tiptap/extension-link':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
-      '@tiptap/extension-mention':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)(@tiptap/suggestion@2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7))
-      '@tiptap/extension-placeholder':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
-      '@tiptap/extension-task-item':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
-      '@tiptap/extension-task-list':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
-      '@tiptap/extension-underline':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))
-      '@tiptap/html':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
-      '@tiptap/pm':
-        specifier: ^2.11.7
-        version: 2.11.7
-      '@tiptap/react':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      '@tiptap/starter-kit':
-        specifier: ^2.11.7
-        version: 2.11.7
-      '@tiptap/suggestion':
-        specifier: ^2.11.7
-        version: 2.11.7(@tiptap/core@2.11.7(@tiptap/pm@2.11.7))(@tiptap/pm@2.11.7)
       '@types/history':
         specifier: ^4.7.0
         version: 4.7.11
@@ -542,9 +566,6 @@ importers:
       mousetrap:
         specifier: ^1.6.3
         version: 1.6.5
-      ms:
-        specifier: ^2.0.0
-        version: 2.1.3
       node-html-markdown-cloudflare:
         specifier: ^1.3.0
         version: 1.3.0
@@ -672,9 +693,6 @@ importers:
       '@types/humanize-duration':
         specifier: 3.27.1
         version: 3.27.1
-      '@types/jest':
-        specifier: ^29.5.12
-        version: 29.5.14
       '@types/json2csv':
         specifier: ^4.4.0
         version: 4.5.1
@@ -687,9 +705,6 @@ importers:
       '@types/mousetrap':
         specifier: ^1.6.2
         version: 1.6.15
-      '@types/ms':
-        specifier: ^0.7.30
-        version: 0.7.34
       '@types/react':
         specifier: 17.0.2
         version: 17.0.2
@@ -738,9 +753,6 @@ importers:
       franc-min:
         specifier: ^5.0.0
         version: 5.0.0
-      ms:
-        specifier: ^2.1.3
-        version: 2.1.3
       redlock:
         specifier: ^5.0.0-beta.2
         version: 5.0.0-beta.2
@@ -751,12 +763,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.15.3
-      jest-extended:
-        specifier: ^3.2.4
-        version: 3.2.4(jest@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0))
-      jest-junit:
-        specifier: ^16.0.0
-        version: 16.0.0
       openapi-fetch:
         specifier: ^0.10.0
         version: 0.10.6
@@ -786,7 +792,7 @@ importers:
         version: 1.2.4(@types/react-dom@17.0.2)(@types/react@17.0.2)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       '@reduxjs/toolkit':
         specifier: 1.9.7
-        version: 1.9.7(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2))(react@17.0.2))(react@17.0.2)
+        version: 1.9.7(react-redux@9.2.0(@types/react@17.0.2)(react@17.0.2)(redux@4.0.5))(react@17.0.2)
       '@tiptap/core':
         specifier: ^2.11.7
         version: 2.11.7(@tiptap/pm@2.11.7)
@@ -808,6 +814,9 @@ importers:
       react-is:
         specifier: ^17.0.2
         version: 17.0.2
+      react-redux:
+        specifier: ^9.2.0
+        version: 9.2.0(@types/react@17.0.2)(react@17.0.2)(redux@4.0.5)
       react-relay:
         specifier: ^18.2.0
         version: 18.2.0(react@17.0.2)
@@ -845,12 +854,6 @@ importers:
       graphql:
         specifier: ^16.9.0
         version: 16.11.0
-      jest-extended:
-        specifier: ^3.2.4
-        version: 3.2.4(jest@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0))
-      jest-junit:
-        specifier: ^16.0.0
-        version: 16.0.0
       openapi-fetch:
         specifier: ^0.10.0
         version: 0.10.6
@@ -1055,9 +1058,6 @@ importers:
       mime-types:
         specifier: ^2.1.16
         version: 2.1.35
-      ms:
-        specifier: ^2.0.0
-        version: 2.1.3
       msgpackr:
         specifier: ^1.11.2
         version: 1.11.2
@@ -1079,9 +1079,6 @@ importers:
       object-hash:
         specifier: ^3.0.0
         version: 3.0.0
-      openai:
-        specifier: ^4.86.1
-        version: 4.96.2(ws@8.18.1)
       oy-vey:
         specifier: ^0.12.1
         version: 0.12.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -1179,9 +1176,6 @@ importers:
       '@types/html-minifier-terser':
         specifier: 5.1.2
         version: 5.1.2
-      '@types/jest':
-        specifier: ^29.5.1
-        version: 29.5.14
       '@types/jsdom':
         specifier: ^21.1.7
         version: 21.1.7
@@ -1194,9 +1188,6 @@ importers:
       '@types/mime-types':
         specifier: ^2.1.0
         version: 2.1.4
-      '@types/ms':
-        specifier: ^0.7.30
-        version: 0.7.34
       '@types/node':
         specifier: ^22.14.0
         version: 22.15.3
@@ -1221,12 +1212,6 @@ importers:
       graphql-tag:
         specifier: ^2.12.6
         version: 2.12.6(graphql@16.11.0)
-      jest-extended:
-        specifier: ^3.2.4
-        version: 3.2.4(jest@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0))
-      jest-junit:
-        specifier: ^16.0.0
-        version: 16.0.0
       jest-transform-graphql:
         specifier: ^2.1.0
         version: 2.1.0(graphql-tag@2.12.6(graphql@16.11.0))
@@ -11564,6 +11549,18 @@ packages:
       react-native:
         optional: true
 
+  react-redux@9.2.0:
+    resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
+    peerDependencies:
+      '@types/react': 17.0.2
+      react: ^18.0 || ^19
+      redux: ^5.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      redux:
+        optional: true
+
   react-refresh@0.14.2:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
@@ -18829,7 +18826,7 @@ snapshots:
       marked: 4.3.0
       mustache: 4.2.0
 
-  '@reduxjs/toolkit@1.9.7(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2))(react@17.0.2))(react@17.0.2)':
+  '@reduxjs/toolkit@1.9.7(react-redux@9.2.0(@types/react@17.0.2)(react@17.0.2)(redux@4.0.5))(react@17.0.2)':
     dependencies:
       immer: 9.0.21
       redux: 4.2.1
@@ -18837,7 +18834,7 @@ snapshots:
       reselect: 4.1.8
     optionalDependencies:
       react: 17.0.2
-      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2))(react@17.0.2)
+      react-redux: 9.2.0(@types/react@17.0.2)(react@17.0.2)(redux@4.0.5)
 
   '@remirror/core-constants@3.0.0': {}
 
@@ -21859,22 +21856,6 @@ snapshots:
       nan: 2.22.2
     optional: true
 
-  create-jest@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0):
-    dependencies:
-      '@jest/types': 29.6.3
-      chalk: 4.1.2
-      exit: 0.1.2
-      graceful-fs: 4.2.11
-      jest-config: 29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0)
-      jest-util: 29.7.0
-      prompts: 2.4.2
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - supports-color
-      - ts-node
-    optional: true
-
   create-jest@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0):
     dependencies:
       '@jest/types': 29.6.3
@@ -24307,26 +24288,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-cli@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0):
-    dependencies:
-      '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)
-      '@jest/test-result': 29.7.0
-      '@jest/types': 29.6.3
-      chalk: 4.1.2
-      create-jest: 29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0)
-      exit: 0.1.2
-      import-local: 3.2.0
-      jest-config: 29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0)
-      jest-util: 29.7.0
-      jest-validate: 29.7.0
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - supports-color
-      - ts-node
-    optional: true
-
   jest-cli@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0):
     dependencies:
       '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)
@@ -24345,37 +24306,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - ts-node
-
-  jest-config@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0):
-    dependencies:
-      '@babel/core': 7.26.10
-      '@jest/test-sequencer': 29.7.0
-      '@jest/types': 29.6.3
-      babel-jest: 29.7.0(@babel/core@7.26.10)
-      chalk: 4.1.2
-      ci-info: 3.9.0
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-circus: 29.7.0(babel-plugin-macros@3.1.0)
-      jest-environment-node: 29.7.0
-      jest-get-type: 29.6.3
-      jest-regex-util: 29.6.3
-      jest-resolve: 29.7.0
-      jest-runner: 29.7.0
-      jest-util: 29.7.0
-      jest-validate: 29.7.0
-      micromatch: 4.0.8
-      parse-json: 5.2.0
-      pretty-format: 29.7.0
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-    optionalDependencies:
-      '@types/node': 16.18.126
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - supports-color
-    optional: true
 
   jest-config@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0):
     dependencies:
@@ -24434,13 +24364,6 @@ snapshots:
       '@types/node': 22.15.3
       jest-mock: 29.7.0
       jest-util: 29.7.0
-
-  jest-extended@3.2.4(jest@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0)):
-    dependencies:
-      jest-diff: 29.7.0
-      jest-get-type: 29.6.3
-    optionalDependencies:
-      jest: 29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0)
 
   jest-extended@3.2.4(jest@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0)):
     dependencies:
@@ -24658,19 +24581,6 @@ snapshots:
       jest-util: 29.7.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
-
-  jest@29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0):
-    dependencies:
-      '@jest/core': 29.7.0(babel-plugin-macros@3.1.0)
-      '@jest/types': 29.6.3
-      import-local: 3.2.0
-      jest-cli: 29.7.0(@types/node@16.18.126)(babel-plugin-macros@3.1.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - supports-color
-      - ts-node
-    optional: true
 
   jest@29.7.0(@types/node@22.15.3)(babel-plugin-macros@3.1.0):
     dependencies:
@@ -26111,7 +26021,7 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@4.96.2(ws@8.18.1):
+  openai@4.96.2(ws@8.18.0):
     dependencies:
       '@types/node': 18.19.86
       '@types/node-fetch': 2.6.12
@@ -26121,7 +26031,7 @@ snapshots:
       formdata-node: 4.4.1
       node-fetch: 2.7.0
     optionalDependencies:
-      ws: 8.18.1
+      ws: 8.18.0
     transitivePeerDependencies:
       - encoding
 
@@ -26959,7 +26869,7 @@ snapshots:
       raf-schd: 4.0.3
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
-      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2))(react@17.0.2)
+      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       redux: 4.2.1
       use-memo-one: 1.1.3(react@17.0.2)
     transitivePeerDependencies:
@@ -27072,7 +26982,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react-native@0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2))(react@17.0.2):
+  react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
       '@babel/runtime': 7.27.0
       '@types/react-redux': 7.1.34
@@ -27083,7 +26993,15 @@ snapshots:
       react-is: 17.0.2
     optionalDependencies:
       react-dom: 17.0.2(react@17.0.2)
-      react-native: 0.79.1(@babel/core@7.26.10)(@types/react@17.0.2)(react@17.0.2)
+
+  react-redux@9.2.0(@types/react@17.0.2)(react@17.0.2)(redux@4.0.5):
+    dependencies:
+      '@types/use-sync-external-store': 0.0.6
+      react: 17.0.2
+      use-sync-external-store: 1.5.0(react@17.0.2)
+    optionalDependencies:
+      '@types/react': 17.0.2
+      redux: 4.0.5
 
   react-refresh@0.14.2: {}
 
