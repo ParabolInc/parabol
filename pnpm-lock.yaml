@@ -109,6 +109,9 @@ importers:
       graphql-ws:
         specifier: ^6.0.4
         version: 6.0.4(graphql@16.9.0)(ws@8.18.0)
+      html-minifier-terser:
+        specifier: ^5.1.1
+        version: 5.1.1
       lodash.toarray:
         specifier: ^4.4.0
         version: 4.4.0
@@ -185,6 +188,9 @@ importers:
       '@types/dotenv':
         specifier: ^6.1.1
         version: 6.1.1
+      '@types/html-minifier-terser':
+        specifier: ^7.0.2
+        version: 7.0.2
       '@types/jest':
         specifier: ^29.5.14
         version: 29.5.14
@@ -1022,9 +1028,6 @@ importers:
       graphql-yoga:
         specifier: ^5.13.4
         version: 5.13.4(graphql@16.11.0)
-      html-minifier-terser:
-        specifier: ^5.0.2
-        version: 5.1.1
       http-message-signatures:
         specifier: ^1.0.4
         version: 1.0.4
@@ -1173,9 +1176,6 @@ importers:
       '@types/faker':
         specifier: ^5.5.9
         version: 5.5.9
-      '@types/html-minifier-terser':
-        specifier: 5.1.2
-        version: 5.1.2
       '@types/jsdom':
         specifier: ^21.1.7
         version: 21.1.7
@@ -5874,11 +5874,11 @@ packages:
   '@types/hoist-non-react-statics@3.3.6':
     resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
 
-  '@types/html-minifier-terser@5.1.2':
-    resolution: {integrity: sha512-h4lTMgMJctJybDp8CQrxTUiiYmedihHWkjnF/8Pxseu2S6Nlfcy8kwboQ8yejh456rP2yWoEVm1sS/FVsfM48w==}
-
   '@types/html-minifier-terser@6.1.0':
     resolution: {integrity: sha512-oh/6byDPnL1zeNXFrDXFLyZjkr1MsBG667IM792caf1L2UPOOMf65NFzjUH/ltyfwjAGfs1rsX1eftK0jC/KIg==}
+
+  '@types/html-minifier-terser@7.0.2':
+    resolution: {integrity: sha512-mm2HqV22l8lFQh4r2oSsOEVea+m0qqxEmwpc9kC1p/XzmjLWrReR9D/GRs8Pex2NX/imyEH9c5IU/7tMBQCHOA==}
 
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
@@ -20206,9 +20206,9 @@ snapshots:
       '@types/react': 17.0.2
       hoist-non-react-statics: 3.3.2
 
-  '@types/html-minifier-terser@5.1.2': {}
-
   '@types/html-minifier-terser@6.1.0': {}
+
+  '@types/html-minifier-terser@7.0.2': {}
 
   '@types/http-errors@2.0.4': {}
 
