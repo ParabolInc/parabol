@@ -65,7 +65,7 @@ jobs:
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Build the DBs
         run: |
