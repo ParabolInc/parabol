@@ -28,7 +28,7 @@ overrides:
   axios: ^1.7.8
   prosemirror-model: ^1.24.1
   prosemirror-view: ^1.38.0
-  redux-offline: git+https://github.com/enahum/redux-offline.git#885024de96b6ec73650c340c8928066585c413df
+  redux-offline: enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df
 
 importers:
 
@@ -11712,7 +11712,7 @@ packages:
       redux: ^3.4.0 || ^4.0.0
 
   redux-offline@git+https://git@github.com:enahum/redux-offline.git#885024de96b6ec73650c340c8928066585c413df:
-    resolution: {commit: 885024de96b6ec73650c340c8928066585c413df, repo: git@github.com:enahum/redux-offline.git, type: git}
+    resolution: {commit: 885024de96b6ec73650c340c8928066585c413df, repo: https://github.com:enahum/redux-offline.git, type: git}
     version: 1.1.5
     peerDependencies:
       redux: '>=3'
