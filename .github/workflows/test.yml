@@ -118,7 +118,7 @@ jobs:
 
       - name: Setup Playwright
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
 
       - name: Run Playwright Tests
         run: pnpm --filter integration-tests test --reporter list,junit
