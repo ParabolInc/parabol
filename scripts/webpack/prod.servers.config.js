@@ -158,8 +158,8 @@ module.exports = (config) => {
               // use our fork of node-loader to exclude the public path from the script
               loader: path.resolve(__dirname, './utils/node-loader-private/cjs.js'),
               options: {
-                //   // sharp's bindings.gyp is hardcoded to look for libvips 2 directories up
-                //   // rather than do a custom build, we just output it 2 directories down (/node/binaries)
+                // sharp's bindings.gyp is hardcoded to look for libvips 2 directories up
+                // rather than do a custom build, we just output it 2 directories down (/node/binaries)
                 name: 'node/binaries/[name].[ext]'
               }
             }

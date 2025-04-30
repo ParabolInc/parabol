@@ -14,9 +14,6 @@ import {typeDefs} from '../graphql/public/importedTypeDefs'
 import {nestGitLab} from '../graphql/public/nestGitLab'
 import {nestGitHub} from './nestGitHub'
 
-// import privateSchema from '../graphql/private/rootSchema'
-// import publicSchema from '../graphql/public/rootSchema'
-
 const writeIfChanged = async (dataPath: string, data: string) => {
   try {
     const existingFile = await readFile(dataPath, {encoding: 'utf-8'})
@@ -36,6 +33,7 @@ const updateGQLSchema = async () => {
     schemas: [],
     typeDefs
   })
+
   const publicSchema = nestGitLab(nestGitHub(publicTypeDefs).schema).schema
   const privateSchema = mergeSchemas({schemas: [publicSchema], typeDefs: [privateTypeDefs]})
 
