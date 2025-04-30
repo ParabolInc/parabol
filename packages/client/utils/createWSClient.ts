@@ -112,7 +112,7 @@ export function createWSClient(atmosphere: Atmosphere) {
         },
         closed: (event) => {
           if (!hasConnected) {
-            console.error('Could not connect via WebSocket')
+            console.error('Could not connect via WebSocket', event)
             reject(event)
           }
           const {code, reason} = event as CloseEvent
