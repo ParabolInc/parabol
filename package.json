@@ -81,6 +81,7 @@
     "@graphql-codegen/typescript": "4.0.1",
     "@graphql-codegen/typescript-operations": "4.0.1",
     "@graphql-codegen/typescript-resolvers": "4.0.1",
+    "@parcel/watcher": "^2.5.1",
     "@pgtyped/cli": "^2.4.3",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.16",
     "@sucrase/webpack-loader": "^2.0.0",
