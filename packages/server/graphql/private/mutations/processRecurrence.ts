@@ -24,6 +24,7 @@ import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {stopMeetingSeries} from '../../public/mutations/updateRecurrenceSettings'
 import {MutationResolvers} from '../resolverTypes'
+import {checkSequential} from './helpers/checkSequential'
 
 const startRecurringMeeting = async (
   meetingSeries: MeetingSeries,
@@ -105,7 +106,7 @@ const startRecurringMeeting = async (
   return undefined
 }
 
-const processRecurrence: MutationResolvers['processRecurrence'] = async (
+const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(async (
   _source,
   _args,
   context
@@ -207,6 +208,6 @@ const processRecurrence: MutationResolvers['processRecurrence'] = async (
 
   const data = {meetingsStarted, meetingsEnded}
   return data
-}
+})
 
 export default processRecurrence
