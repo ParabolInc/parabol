@@ -356,6 +356,9 @@ importers:
       relay-config:
         specifier: ^12.0.1
         version: 12.0.1
+      string-replace-loader:
+        specifier: ^3.1.0
+        version: 3.1.0(webpack@5.99.7)
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.99.7)
@@ -12439,6 +12442,11 @@ packages:
   string-length@4.0.2:
     resolution: {integrity: sha512-+l6rNN5fYHNhZZy41RXsYptCjA2Igmq4EG7kZAYFQI1E1VTXarr6ZPXBg6eq7Y6eK4FEhY6AJlyuFIb/v/S0VQ==}
     engines: {node: '>=10'}
+
+  string-replace-loader@3.1.0:
+    resolution: {integrity: sha512-5AOMUZeX5HE/ylKDnEa/KKBqvlnFmRZudSOjVJHxhoJg9QYTwl1rECx7SLR8BBH7tfxb4Rp7EM2XVfQFxIhsbQ==}
+    peerDependencies:
+      webpack: ^5
 
   string-score@1.0.1:
     resolution: {integrity: sha512-HRm/tlGZR3NCphwEa+D60qvtTCucu5yybc2S9BI9An/Zq01/r8EOyrKD0wOgZebpijR/iydGP4lPgCzzSiX+Ug==}
@@ -27965,6 +27973,12 @@ snapshots:
     dependencies:
       char-regex: 1.0.2
       strip-ansi: 6.0.1
+
+  string-replace-loader@3.1.0(webpack@5.99.7):
+    dependencies:
+      loader-utils: 2.0.4
+      schema-utils: 3.3.0
+      webpack: 5.99.7(@swc/core@1.11.24)(webpack-cli@5.1.4)
 
   string-score@1.0.1: {}
 

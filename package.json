@@ -146,6 +146,7 @@
     "react-refresh": "^0.17.0",
     "relay-compiler": "^18.2.0",
     "relay-config": "^12.0.1",
+    "string-replace-loader": "^3.1.0",
     "style-loader": "^4.0.0",
     "sucrase": "^3.35.0",
     "tailwindcss": "^4.0.1",

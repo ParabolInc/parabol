@@ -108,11 +108,7 @@ module.exports = {
       assert: false,
       os: false
     },
-    unsafeCache: true,
-    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
-  },
-  resolveLoader: {
-    modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
+    unsafeCache: true
   },
   plugins: [
     new webpack.DllReferencePlugin({
