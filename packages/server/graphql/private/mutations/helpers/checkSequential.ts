@@ -17,9 +17,7 @@ export const checkSequential =
     const redlock = new Redlock([redis], {retryCount: 0})
 
     try {
-      console.log(`Attempting to acquire lock for ${fieldName}`)
       return await redlock.using([`checkSequential_${fieldName}`], 10_000, async () => {
-        console.log(`Lock acquired for ${fieldName}`)
         return resolver(parent, args, context, info)
       })
     } catch (error) {
