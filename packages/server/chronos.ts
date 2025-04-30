@@ -47,7 +47,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
     autoPause: {
       onTick: () => {
         const query = 'mutation AutoPauseUsers { autopauseUsers }'
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_AUTOPAUSE
     },
@@ -60,7 +60,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        callGQL(query, variables)
+        return callGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_DAILY
     },
@@ -73,21 +73,21 @@ const chronos = (leaderRunner: LeaderRunner) => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        callGQL(query, variables)
+        return callGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_WEEKLY
     },
     batchEmails: {
       onTick: () => {
         const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_BATCH_EMAILS
     },
     scheduleJobs: {
       onTick: () => {
         const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_SCHEDULE_JOBS
     },
@@ -95,7 +95,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
       onTick: () => {
         const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
         const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
-        callGQL(query, variables)
+        return callGQL(query, variables)
       },
       cronTime: CHRONOS_UPDATE_TOKENS
     },
@@ -111,7 +111,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
             }
           }
         `
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_PROCESS_RECURRENCE
     }
@@ -141,7 +141,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
 }
 
 const startChronos = () => {
-  if (!__PRODUCTION__) return () => {}
+  //if (!__PRODUCTION__) return () => {}
 
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
   const leaderRunner = new LeaderRunner(redis, 'chronos', 20_000)
