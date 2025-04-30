@@ -51,7 +51,7 @@ jobs:
           echo NODE_VERSION=$NODE_VERSION >> $GITHUB_ENV
           echo NODE_VERSION=$NODE_VERSION
 
-          PLAYWRIGHT_VERSION=$(pnpm list @playwright/test | grep @playwright | sed 's/.*@//')
+          PLAYWRIGHT_VERSION=$(pnpm --filter integration-tests list @playwright/test | grep @playwright | sed -n 's/^[^ ]* //p')
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
           echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
       - name: Get cached node modules
