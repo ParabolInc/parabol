@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.1.10](https://github.com/ParabolInc/parabol/compare/v10.1.9...v10.1.10) (2025-04-30)
+
+
+### Fixed
+
+* dont show person is typing if anonymous comment ([#11266](https://github.com/ParabolInc/parabol/issues/11266)) ([2e88e02](https://github.com/ParabolInc/parabol/commit/2e88e026a22df7081f864f53159a3135836a95a1))
+* elect chronos leader per tick ([#11272](https://github.com/ParabolInc/parabol/issues/11272)) ([ba9e0f0](https://github.com/ParabolInc/parabol/commit/ba9e0f01be7d2c09d2297cf53477d55eb336653b))
+* ensure process recurrence runs sequentially ([#11277](https://github.com/ParabolInc/parabol/issues/11277)) ([319c317](https://github.com/ParabolInc/parabol/commit/319c31745e841e68292c1d20f7c39d9f420ec60b))
+
 ## [10.1.9](https://github.com/ParabolInc/parabol/compare/v10.1.8...v10.1.9) (2025-04-28)
 
 
