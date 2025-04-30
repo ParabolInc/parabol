@@ -219,6 +219,12 @@ export const wsHandler = makeBehavior<{token?: string}>({
       contextValue: {dataLoader, ip: extra.ip, authToken, socketId}
     })
     dataLoader.dispose()
+  },
+  onClose: (ctx) => {
+    const {extra} = ctx
+    const {socketId} = extra
+    activeClients.delete(socketId)
+    extra.resubscribe = {}
   }
 })
 
