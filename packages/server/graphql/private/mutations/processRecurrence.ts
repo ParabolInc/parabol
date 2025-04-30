@@ -106,108 +106,106 @@ const startRecurringMeeting = async (
   return undefined
 }
 
-const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(async (
-  _source,
-  _args,
-  context
-) => {
-  const {dataLoader, socketId: mutatorId} = context
-  const now = new Date()
-  const operationId = dataLoader.share()
-  const subOptions = {mutatorId, operationId}
+const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(
+  async (_source, _args, context) => {
+    const {dataLoader, socketId: mutatorId} = context
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
-  // RESOLUTION
-  // Find any meetings with a scheduledEndTime before now, and close them
-  const meetingsToEnd = await selectNewMeetings()
-    .where('scheduledEndTime', '<', sql<Date>`CURRENT_TIMESTAMP`)
-    .where('endedAt', 'is', null)
-    .execute()
+    // RESOLUTION
+    // Find any meetings with a scheduledEndTime before now, and close them
+    const meetingsToEnd = await selectNewMeetings()
+      .where('scheduledEndTime', '<', sql<Date>`CURRENT_TIMESTAMP`)
+      .where('endedAt', 'is', null)
+      .execute()
 
-  const res = await tracer.trace('processRecurrence.endMeetings', async () =>
-    Promise.all(
-      meetingsToEnd.map((meeting) => {
-        if (meeting.meetingType === 'teamPrompt') {
-          return safeEndTeamPrompt({meeting, context, subOptions})
-        } else if (meeting.meetingType === 'retrospective') {
-          return safeEndRetrospective({meeting, now, context})
-        } else {
-          return standardError(new Error('Unhandled recurring meeting type'), {
-            tags: {meetingId: meeting.id, meetingType: meeting.meetingType}
-          })
-        }
-      })
+    const res = await tracer.trace('processRecurrence.endMeetings', async () =>
+      Promise.all(
+        meetingsToEnd.map((meeting) => {
+          if (meeting.meetingType === 'teamPrompt') {
+            return safeEndTeamPrompt({meeting, context, subOptions})
+          } else if (meeting.meetingType === 'retrospective') {
+            return safeEndRetrospective({meeting, now, context})
+          } else {
+            return standardError(new Error('Unhandled recurring meeting type'), {
+              tags: {meetingId: meeting.id, meetingType: meeting.meetingType}
+            })
+          }
+        })
+      )
     )
-  )
 
-  const meetingsEnded = res.filter((res) => !('error' in res)).length
+    const meetingsEnded = res.filter((res) => !('error' in res)).length
 
-  let meetingsStarted = 0
+    let meetingsStarted = 0
 
-  // For each active meeting series, get the meeting start times (according to rrule) after the most
-  // recent meeting start time and before now.
-  const activeMeetingSeries = await tracer.trace(
-    'processRecurrence.getActiveMeetingSeries',
-    getActiveMeetingSeries
-  )
-  await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
-    Promise.allSettled(
-      activeMeetingSeries.map(async (meetingSeries) => {
-        const {teamId, id: meetingSeriesId, recurrenceRule, facilitatorId} = meetingSeries
-        const teamMemberId = TeamMemberId.join(teamId, facilitatorId)
-        const [seriesTeam, facilitatorTeamMember] = await Promise.all([
-          dataLoader.get('teams').loadNonNull(teamId),
-          dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-        ])
-        if (seriesTeam.isArchived || !facilitatorTeamMember.isNotRemoved) {
-          return await stopMeetingSeries(meetingSeries)
-        }
-        if (!seriesTeam.isPaid) {
-          return
-        }
-
-        const [seriesOrg, lastMeeting] = await Promise.all([
-          dataLoader.get('organizations').loadNonNull(seriesTeam.orgId),
-          dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId)
-        ])
-
-        if (seriesOrg.lockedAt) {
-          return
-        }
-
-        // For meetings that should still be active, start the meeting and set its end time.
-        // Any subscriptions are handled by the shared meeting start code
-        const rrule = RRuleSet.parse(recurrenceRule)
-
-        // Only get meetings that should currently be active, i.e. meetings that should have started
-        // within the last 24 hours, started after the last meeting in the series, and started before
-        // 'now'.
-        const fromDate = lastMeeting
-          ? new Date(
-              Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
-            )
-          : new Date(0)
-        const newMeetingsStartTimes = rrule.between(
-          DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
-          DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
-        )
-        for (const startTime of newMeetingsStartTimes) {
-          const err = await tracer.trace('startRecurringMeeting', async (span) => {
-            span?.addTags({meetingSeriesId})
-            return startRecurringMeeting(
-              meetingSeries,
-              fromDateTime(startTime.toString(), rrule.tzid).toDate(),
-              dataLoader,
-              subOptions
-            )
-          })
-          if (!err) meetingsStarted++
-        }
-      })
+    // For each active meeting series, get the meeting start times (according to rrule) after the most
+    // recent meeting start time and before now.
+    const activeMeetingSeries = await tracer.trace(
+      'processRecurrence.getActiveMeetingSeries',
+      getActiveMeetingSeries
     )
-  )
+    await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
+      Promise.allSettled(
+        activeMeetingSeries.map(async (meetingSeries) => {
+          const {teamId, id: meetingSeriesId, recurrenceRule, facilitatorId} = meetingSeries
+          const teamMemberId = TeamMemberId.join(teamId, facilitatorId)
+          const [seriesTeam, facilitatorTeamMember] = await Promise.all([
+            dataLoader.get('teams').loadNonNull(teamId),
+            dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+          ])
+          if (seriesTeam.isArchived || !facilitatorTeamMember.isNotRemoved) {
+            return await stopMeetingSeries(meetingSeries)
+          }
+          if (!seriesTeam.isPaid) {
+            return
+          }
 
-  const data = {meetingsStarted, meetingsEnded}
-  return data
-})
+          const [seriesOrg, lastMeeting] = await Promise.all([
+            dataLoader.get('organizations').loadNonNull(seriesTeam.orgId),
+            dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId)
+          ])
+
+          if (seriesOrg.lockedAt) {
+            return
+          }
+
+          // For meetings that should still be active, start the meeting and set its end time.
+          // Any subscriptions are handled by the shared meeting start code
+          const rrule = RRuleSet.parse(recurrenceRule)
+
+          // Only get meetings that should currently be active, i.e. meetings that should have started
+          // within the last 24 hours, started after the last meeting in the series, and started before
+          // 'now'.
+          const fromDate = lastMeeting
+            ? new Date(
+                Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
+              )
+            : new Date(0)
+          const newMeetingsStartTimes = rrule.between(
+            DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
+            DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
+          )
+          for (const startTime of newMeetingsStartTimes) {
+            const err = await tracer.trace('startRecurringMeeting', async (span) => {
+              span?.addTags({meetingSeriesId})
+              return startRecurringMeeting(
+                meetingSeries,
+                fromDateTime(startTime.toString(), rrule.tzid).toDate(),
+                dataLoader,
+                subOptions
+              )
+            })
+            if (!err) meetingsStarted++
+          }
+        })
+      )
+    )
+
+    const data = {meetingsStarted, meetingsEnded}
+    return data
+  }
+)
 
 export default processRecurrence
