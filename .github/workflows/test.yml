@@ -99,12 +99,12 @@ jobs:
         run: pnpm typecheck
 
       - name: Run server tests
-        run: pnpm test:server -- --reporters=default --reporters=jest-junit
+        run: pnpm run test:server -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/server
 
       - name: Run client tests
-        run: pnpm test:client -- --reporters=default --reporters=jest-junit
+        run: pnpm run test:client -- --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
 
