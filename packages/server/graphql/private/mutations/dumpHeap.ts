@@ -43,10 +43,14 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (
     session.post('HeapProfiler.takeHeapSnapshot', undefined, (err) => {
       session.disconnect()
       fs.closeSync(fd)
+      Logger.log('[Heap Dump]: Dump Complete')
       setIsBusy(false)
       resolve(err?.toString() || pathName)
     })
   })
 }
 
+process.on('SIGUSR2', () => {
+  dumpHeap({}, {isDangerous: true}, {} as any, {} as any)
+})
 export default dumpHeap
