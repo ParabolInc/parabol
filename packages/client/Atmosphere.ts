@@ -129,13 +129,6 @@ export default class Atmosphere extends Environment {
     // wait until the first and only upgrade has completed
     if (!this.connectWebsocketPromise) {
       this.connectWebsocketPromise = createWSClient(this)
-      this.connectWebsocketPromise
-        .then((client) => {
-          this.subscriptionClient = client
-        })
-        .catch(() => {
-          /* noop */
-        })
     }
     return this.connectWebsocketPromise
   }

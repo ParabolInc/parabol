@@ -106,6 +106,7 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
           if (!hasConnected) {
             hasConnected = true
+            atmosphere.subscriptionClient = subscriptionClient
             resolve(subscriptionClient)
           }
           setConnectedStatus(atmosphere, true)
