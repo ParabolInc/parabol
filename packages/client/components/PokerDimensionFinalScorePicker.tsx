@@ -1,71 +1,16 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {RefObject} from 'react'
 import {useFragment} from 'react-relay'
+import LinkButton from '~/components/LinkButton'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import AzureDevOpsFieldDimensionDropdown from './AzureDevOpsFieldDimensionDropdown'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
 import GitLabFieldDimensionDropdown from './GitLabFieldDimensionDropdown'
 import JiraFieldDimensionDropdown from './JiraFieldDimensionDropdown'
 import JiraServerFieldDimensionDropdown from './JiraServerFieldDimensionDropdown'
-import LinkButton from './LinkButton'
-import StyledError from './StyledError'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexWrap: 'wrap',
-  userSelect: 'none',
-  width: '100%'
-})
-
-const Mapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  alignItems: isDesktop ? undefined : 'flex-end',
-  display: 'flex',
-  flex: 1,
-  flexDirection: isDesktop ? undefined : 'column-reverse',
-  justifyContent: 'flex-end'
-}))
-
-const Label = styled('div')({
-  display: 'flex',
-  fontSize: 14,
-  paddingLeft: 8,
-  paddingRight: 8,
-  fontWeight: 600
-})
-
-const ErrorMessage = styled(StyledError)<{isDesktop: boolean}>(({isDesktop}) => ({
-  fontSize: isDesktop ? 14 : 12,
-  fontWeight: isDesktop ? 600 : 400,
-  textAlign: isDesktop ? 'left' : 'right',
-  padding: isDesktop ? '0 0 0 8px' : '8px 0 0'
-}))
-
-const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SKY_500,
-  fontSize: 14,
-  fontWeight: 600,
-  height: 40,
-  marginLeft: 8,
-  padding: '0 8px',
-  ':hover,:focus,:active': {
-    boxShadow: 'none',
-    color: PALETTE.SKY_600
-  }
-})
-
-const ControlWrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex'
-})
-
-const MobileLabel = styled(Label)({
-  padding: '0 4px 0 0'
-})
+import LinearFieldDimensionDropdown from './LinearFieldDimensionDropdown'
 
 interface Props {
   canUpdate: boolean
@@ -87,6 +32,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
         ...AzureDevOpsFieldDimensionDropdown_stage
         ...GitLabFieldDimensionDropdown_stage
         ...JiraServerFieldDimensionDropdown_stage
+        ...LinearFieldDimensionDropdown_stage
         task {
           integration {
             __typename
@@ -104,24 +50,49 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     JiraIssue: 'Jira',
     JiraServerIssue: 'Jira Data Center',
     _xGitLabIssue: 'GitLab',
-    AzureDevOpsWorkItem: 'Azure DevOps'
+    AzureDevOpsWorkItem: 'Azure DevOps',
+    _xLinearIssue: 'Linear'
   } as const
   const title = titleByType[integrationType as keyof typeof titleByType]
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const focusInput = () => inputRef.current!.focus()
   return (
-    <Wrapper>
+    <div className='flex w-full flex-wrap items-center select-none'>
       {isFacilitator ? (
         canUpdate ? (
-          <StyledLinkButton onClick={submitScore}>{'Update'}</StyledLinkButton>
+          <LinkButton
+            className='ml-2'
+            onClick={submitScore}
+            palette='blue'
+            style={{fontSize: 12, fontWeight: 600}}
+          >
+            Update
+          </LinkButton>
         ) : (
-          <StyledLinkButton onClick={focusInput}>{'Edit Score'}</StyledLinkButton>
+          <LinkButton
+            className='ml-2'
+            onClick={focusInput}
+            palette='blue'
+            style={{fontSize: 12, fontWeight: 600}}
+          >
+            Edit Score
+          </LinkButton>
         )
       ) : null}
-      <Mapper isDesktop={isDesktop}>
-        {error && <ErrorMessage isDesktop={isDesktop}>{error}</ErrorMessage>}
-        <ControlWrapper>
-          {isDesktop ? <Label>{`${title} Label: `}</Label> : <MobileLabel>{'Label:'}</MobileLabel>}
+      <div className={`flex flex-1 justify-end ${isDesktop ? '' : 'flex-col-reverse items-end'}`}>
+        {error && (
+          <div
+            className={`text-tomato-500 ${isDesktop ? 'pl-2 text-left text-sm font-semibold' : 'pt-2 text-right text-xs font-normal'}`}
+          >
+            {error}
+          </div>
+        )}
+        <div className='flex items-center'>
+          {isDesktop ? (
+            <div className='flex px-2 text-sm font-semibold'>{`${title} Label: `}</div>
+          ) : (
+            <div className='flex pr-1 text-sm font-semibold'>Label:</div>
+          )}
 
           {integrationType === '_xGitHubIssue' && (
             <GitHubFieldDimensionDropdown
@@ -157,6 +128,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
+
           {integrationType === 'JiraServerIssue' && (
             <JiraServerFieldDimensionDropdown
               clearError={clearError}
@@ -165,9 +137,18 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
               submitScore={submitScore}
             />
           )}
-        </ControlWrapper>
-      </Mapper>
-    </Wrapper>
+
+          {integrationType === '_xLinearIssue' && (
+            <LinearFieldDimensionDropdown
+              clearError={clearError}
+              stageRef={stage}
+              isFacilitator={isFacilitator}
+              submitScore={submitScore}
+            />
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 

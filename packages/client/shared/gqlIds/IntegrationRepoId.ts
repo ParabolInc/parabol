@@ -1,5 +1,6 @@
 import AzureDevOpsProjectId from 'parabol-client/shared/gqlIds/AzureDevOpsProjectId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
+import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 
 type GitHubRepoIntegration = {
   nameWithOwner: string
@@ -31,12 +32,19 @@ type JiraServerRepoIntegration = {
   service: 'jiraServer'
 }
 
+export type LinearRepoIntegration = {
+  id: string
+  service: 'linear'
+  teamId: string
+}
+
 export type RepoIntegration =
   | GitHubRepoIntegration
   | JiraRepoIntegration
   | JiraServerRepoIntegration
   | AzureDevOpsRepoIntegration
   | GitLabRepoIntegration
+  | LinearRepoIntegration
 
 const IntegrationRepoId = {
   join: (integration: RepoIntegration) => {
@@ -52,6 +60,8 @@ const IntegrationRepoId = {
         return AzureDevOpsProjectId.join(integration.instanceId, integration.projectId)
       case 'gitlab':
         return integration.fullPath
+      case 'linear':
+        return LinearProjectId.join(integration.teamId, integration.id)
     }
   },
   split: (id: string) => {

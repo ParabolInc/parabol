@@ -1,0 +1,32 @@
+mutation updateIssue(
+  $id: String!
+  $title: String
+  $description: String
+  $stateId: String
+  $priority: Int
+  $estimate: Int
+  $assigneeId: String
+  $projectId: String
+  $labelIds: [String!]
+) {
+  issueUpdate(
+    id: $id
+    input: {
+      title: $title
+      description: $description
+      stateId: $stateId
+      priority: $priority
+      estimate: $estimate
+      assigneeId: $assigneeId
+      projectId: $projectId
+      labelIds: $labelIds
+    }
+  ) {
+    success
+    issue {
+      id
+      title
+      updatedAt
+    }
+  }
+}

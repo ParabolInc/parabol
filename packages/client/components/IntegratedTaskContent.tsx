@@ -1,20 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
+import renderMarkdown from '../utils/renderMarkdown'
 
-const Content = styled('div')({
-  paddingLeft: 16,
-  paddingRight: 16,
-  maxHeight: 320,
-  overflow: 'auto',
-  img: {
-    height: 'auto'
-  }
-})
-const Summary = styled('div')({
-  fontWeight: 600
-})
 interface Props {
   task: IntegratedTaskContent_task$key
 }
@@ -46,6 +34,10 @@ const IntegratedTaskContent = (props: Props) => {
             descriptionHTML
             title
           }
+          ... on _xLinearIssue {
+            description
+            title
+          }
         }
       }
     `,
@@ -56,42 +48,51 @@ const IntegratedTaskContent = (props: Props) => {
   if (integration.__typename === 'JiraIssue') {
     const {descriptionHTML, summary} = integration
     return (
-      <Content>
-        <Summary>{summary}</Summary>
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{summary}</div>
         <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
-      </Content>
+      </div>
     )
   } else if (integration.__typename === 'JiraServerIssue') {
     const {descriptionHTML, summary} = integration
     return (
-      <Content>
-        <Summary>{summary}</Summary>
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{summary}</div>
         <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
-      </Content>
+      </div>
     )
   } else if (integration.__typename === '_xGitHubIssue') {
     const {bodyHTML, title} = integration
     return (
-      <Content>
-        <Summary>{title}</Summary>
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{title}</div>
         <div dangerouslySetInnerHTML={{__html: bodyHTML}} />
-      </Content>
+      </div>
     )
   } else if (integration.__typename === '_xGitLabIssue') {
     const {descriptionHtml, title} = integration
     return (
-      <Content>
-        <Summary>{title}</Summary>
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{title}</div>
         {descriptionHtml && <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />}
-      </Content>
+      </div>
     )
   } else if (integration.__typename === 'AzureDevOpsWorkItem') {
     const {descriptionHTML, title} = integration
     return (
-      <Content>
-        <Summary>{title}</Summary>
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{title}</div>
         {descriptionHTML && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
-      </Content>
+      </div>
+    )
+  } else if (integration.__typename === '_xLinearIssue') {
+    const {description, title} = integration
+    const descriptionHTML = renderMarkdown(`${description}`)
+    return (
+      <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
+        <div className='font-semibold'>{title}</div>
+        {description && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
+      </div>
     )
   }
   return null

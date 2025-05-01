@@ -5,6 +5,7 @@ import GitHubIssueId from './GitHubIssueId'
 import GitLabIssueId from './GitLabIssueId'
 import JiraIssueId from './JiraIssueId'
 import JiraServerIssueId from './JiraServerIssueId'
+import LinearIssueId from './LinearIssueId'
 
 const IntegrationHash = {
   join: (integration: AnyTaskIntegration) => {
@@ -27,6 +28,8 @@ const IntegrationHash = {
           integration.projectKey,
           integration.issueKey
         )
+      case 'linear':
+        return LinearIssueId.join(integration.repoId, integration.issueId)
       default:
         return ''
     }
@@ -73,6 +76,14 @@ const IntegrationHash = {
         instanceId,
         issueKey,
         projectKey
+      }
+    }
+    if (service === 'linear') {
+      const {repoId, issueId} = LinearIssueId.split(integrationHash)
+      return {
+        service,
+        repoId,
+        issueId
       }
     }
     return null

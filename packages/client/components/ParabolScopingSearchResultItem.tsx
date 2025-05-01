@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,7 +8,6 @@ import useTaskChildFocus from '~/hooks/useTaskChildFocus'
 import DeleteTaskMutation from '~/mutations/DeleteTaskMutation'
 import UpdatePokerScopeMutation from '~/mutations/UpdatePokerScopeMutation'
 import UpdateTaskMutation from '~/mutations/UpdateTaskMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import {ParabolScopingSearchResultItem_task$key} from '../__generated__/ParabolScopingSearchResultItem_task.graphql'
 import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
@@ -17,19 +15,6 @@ import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {Threshold} from '../types/constEnums'
 import Checkbox from './Checkbox'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
-
-const Item = styled('div')<{isEditingThisItem: boolean}>(({isEditingThisItem}) => ({
-  backgroundColor: isEditingThisItem ? PALETTE.SLATE_100 : 'transparent',
-  cursor: isEditingThisItem ? undefined : 'pointer',
-  display: 'flex',
-  paddingLeft: 16,
-  paddingTop: 8,
-  paddingBottom: 8
-}))
-
-const Task = styled('div')({
-  width: '100%'
-})
 
 interface Props {
   meetingId: string
@@ -78,6 +63,8 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   const {useTaskChild, addTaskChild, removeTaskChild, isTaskFocused} =
     useTaskChildFocus(serviceTaskId)
 
+  const editorLinkChanger = useTaskChild('editor-link-changer')
+
   const updatePokerScope = () => {
     if (submitting || disabled) return
     submitMutation()
@@ -119,16 +106,17 @@ const ParabolScopingSearchResultItem = (props: Props) => {
   useScrollIntoView(ref, isEditingThisItem)
   if (!editor) return null
   return (
-    <Item
+    <div
       onClick={() => {
         if (isEditingThisItem) return
         updatePokerScope()
       }}
-      isEditingThisItem={isEditingThisItem}
+      className={`flex py-2 pl-4 ${isEditingThisItem ? 'bg-slate-100' : 'bg-transparent'} ${isEditingThisItem ? '' : 'cursor-pointer'}`}
       ref={ref}
     >
       <Checkbox active={isSelected || isEditingThisItem} disabled={disabled} />
-      <Task
+      <div
+        className='w-full'
         onBlur={() => {
           if (!isEditingThisItem) return
           removeTaskChild('root')
@@ -140,13 +128,9 @@ const ParabolScopingSearchResultItem = (props: Props) => {
           addTaskChild('root')
         }}
       >
-        <TipTapEditor
-          className='px-4'
-          editor={editor}
-          useLinkEditor={() => useTaskChild('editor-link-changer')}
-        />
-      </Task>
-    </Item>
+        <TipTapEditor className='px-4' editor={editor} useLinkEditor={() => editorLinkChanger} />
+      </div>
+    </div>
   )
 }
 

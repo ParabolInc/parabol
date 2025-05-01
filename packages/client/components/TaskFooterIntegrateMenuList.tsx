@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
@@ -7,7 +6,7 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
+import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
 import MenuItemHR from './MenuItemHR'
@@ -26,17 +25,19 @@ interface Props {
   ) => void
 }
 
-const Label = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  padding: '8px 8px 0'
-})
-
 type Item = NonNullable<
   NonNullable<
     TaskFooterIntegrateMenuListLocalQuery['response']['viewer']['teamMember']
   >['repoIntegrations']['items']
 >[0]
+
+type LinearProjectItem = Item & {__typename: '_xLinearProject'}
+
+const linearTeamAndProjectName = (item: LinearProjectItem) => {
+  const {name: projectName, teams} = item
+  const {name: teamName} = teams?.nodes?.[0] ?? {}
+  return teamName ? `${teamName}/${projectName}` : `${projectName}`
+}
 
 const getValue = (item: Item) => {
   const {service} = item
@@ -44,6 +45,9 @@ const getValue = (item: Item) => {
     return item.name ?? ''
   else if (service === 'github') return item.nameWithOwner ?? ''
   else if (service === 'gitlab') return item.fullPath ?? ''
+  else if (service === 'linear' && item.__typename === '_xLinearTeam') return item.displayName ?? ''
+  else if (service === 'linear' && item.__typename === '_xLinearProject')
+    return linearTeamAndProjectName(item as LinearProjectItem)
   return ''
 }
 
@@ -74,6 +78,18 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
       ... on JiraServerRemoteProject {
         name
       }
+      ... on _xLinearTeam {
+        displayName
+      }
+      ... on _xLinearProject {
+        name
+        teams(first: 1) {
+          nodes {
+            id
+            name
+          }
+        }
+      }
     }
   `
 
@@ -102,6 +118,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     {teamId, networkOnly, first}
   )
   const items = viewer?.teamMember?.repoIntegrations.items ?? []
+  // TODO: make this filter work for Linear type-ahead search
   const {
     query,
     filteredItems: filteredIntegrations,
@@ -128,7 +145,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     >
       {label && (
         <>
-          <Label>{label}</Label>
+          <div className='p-2 pt-2 pb-0 text-sm text-slate-600'>{label}</div>
           <MenuItemHR />
         </>
       )}
@@ -205,6 +222,44 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
               label={name}
               onClick={() => onPushToIntegration(integrationRepoId, 'azureDevOps', name)}
               service='azureDevOps'
+            />
+          )
+        }
+        if (
+          service === 'linear' &&
+          repoIntegration.__typename === '_xLinearTeam' &&
+          repoIntegration.displayName
+        ) {
+          const {id: teamId, displayName: teamName} = repoIntegration
+          if (!teamId) return null
+          const integrationRepoId = LinearProjectId.join(teamId)
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={`${teamName}`}
+              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
+              service='linear'
+            />
+          )
+        }
+        if (
+          service === 'linear' &&
+          repoIntegration.__typename === '_xLinearProject' &&
+          repoIntegration.name
+        ) {
+          const {id: projectId, teams} = repoIntegration
+          const {id: teamId} = teams?.nodes?.[0] ?? {}
+          if (!teamId) return null
+          const nameWithTeam = linearTeamAndProjectName(repoIntegration as LinearProjectItem)
+          const integrationRepoId = LinearProjectId.join(teamId, projectId)
+          return (
+            <TaskIntegrationMenuItem
+              key={integrationRepoId}
+              query={query}
+              label={nameWithTeam}
+              onClick={() => onPushToIntegration(integrationRepoId, 'linear')}
+              service='linear'
             />
           )
         }
