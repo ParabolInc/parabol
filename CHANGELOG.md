@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.2.0](https://github.com/ParabolInc/parabol/compare/v10.1.10...v10.2.0) (2025-05-01)
+
+
+### Added
+
+* dump on sigusr2 ([#11285](https://github.com/ParabolInc/parabol/issues/11285)) ([ab61ff9](https://github.com/ParabolInc/parabol/commit/ab61ff9775df98cc23cac63484200b68b0ad8764))
+
+
+### Fixed
+
+* improve error handling for websocket connections in safari  ([#11282](https://github.com/ParabolInc/parabol/issues/11282)) ([271d1d5](https://github.com/ParabolInc/parabol/commit/271d1d579e4a74acf1920ef59aebd8d4a5f59838))
+* remove resolver-level tracing for DD debugging ([#11284](https://github.com/ParabolInc/parabol/issues/11284)) ([ea755b6](https://github.com/ParabolInc/parabol/commit/ea755b6f61578e5fd91e834041f975976f93db56))
+
 ## [10.1.10](https://github.com/ParabolInc/parabol/compare/v10.1.9...v10.1.10) (2025-04-30)
 
 
