@@ -6,11 +6,11 @@ Migrations are managed by Kysely, and on the CLI by [Kysely-CTL](https://github.
 Kysely-CTL keeps the same API as Knex, so if the docs are not great, you can use the knex migration docs, too.
 There are 3 ways migrations are triggered:
 
-- Manually, calling `yarn kysely migrate:latest`, `yarn kysely migrate:up`, or `yarn kysely migrate:down`
-- After the app is built, calling `yarn predeploy` (this is run in prod, where the /migrations dir does not exist)
-- In dev, calling `yarn dev`, which uses PM2 to call `yarn kysely migrate:latest`
+- Manually, calling `pnpm kysely migrate:latest`, `pnpm kysely migrate:up`, or `pnpm kysely migrate:down`
+- After the app is built, calling `pnpm predeploy` (this is run in prod, where the /migrations dir does not exist)
+- In dev, calling `pnpm dev`, which uses PM2 to call `pnpm kysely migrate:latest`
 
-To create a new migration run `yarn kysely migrate:make NAME`
+To create a new migration run `pnpm kysely migrate:make NAME`
 
 ### Rebasing Migrations
 
@@ -23,7 +23,7 @@ It is time to rebase migrations when one of the following is true:
 To rebase:
 
 1. create a new DB in postgres & change it in the .env, e.g. `POSTGRES_DB='init1'`.
-2. run `yarn kysely migrate:latest` to build it
+2. run `pnpm kysely migrate:latest` to build it
 3. goto pgadmin, right click the database and click backup
 
 - General Tab
@@ -38,7 +38,7 @@ To rebase:
 - Table options
   - Exclude Patterns: Tables: `_*` (excludes `_migration`, `_migrationLock`)
 
-4. `yarn kysely migrate:make init` to create a new initial migration
+4. `pnpm kysely migrate:make init` to create a new initial migration
 5. Copy the contents of the old `_init.ts` migration to the new file you just created & just replace the SQL.
    At the beginning of the file, update the old `migrationTableName` so we delete the old migration table
 6. Delete all old migrations

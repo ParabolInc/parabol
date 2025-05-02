@@ -1,4 +1,4 @@
-name: Update Snyk PR to add yarn.lock
+name: Update Snyk PR to add pnpm-lock.yaml
 
 on:
   pull_request:
@@ -15,7 +15,8 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, no need to create one
-
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup environment variables
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
@@ -29,8 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
-          # Instead, we aggressively cache node_modules below to avoid calling install
+          cache: "pnpm"
 
       - name: Get cached node modules
         id: cache
@@ -38,15 +38,19 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install node_modules
-        run: yarn install
+        if: steps.cache.outputs.cache-hit != 'true'
+        # pnpm has a bug that resolves git+https to ssh
+        run: |
+          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+          pnpm install --frozen-lockfile
 
-      - name: Commit yarn.lock to the PR branch
+      - name: Commit pnpm-lock.yaml to the PR branch
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git add yarn.lock
-          git commit -m "Update yarn.lock" || echo "No changes to commit"
+          git add pnpm-lock.yaml
+          git commit -m "Update pnpm-lock.yaml" || echo "No changes to commit"
           git push

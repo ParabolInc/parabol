@@ -1,4 +1,4 @@
-import {captureException} from '@sentry/minimal'
+import {captureException} from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'

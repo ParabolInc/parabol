@@ -5,7 +5,7 @@
 ## General notes
 
 - **This stack is not meant for production use.** It is our development stack and can change at any moment, have errors and incorporate and remove components we are testing without any notice.
-- This stack is designed to be managed using `yarn db:start` and `yarn db:stop` to start the databases. The application can use it, starting with either `yarn dev` or building the application and using `yarn start`.
+- This stack is designed to be managed using `pnpm db:start` and `pnpm db:stop` to start the databases. The application can use it, starting with either `pnpm dev` or building the application and using `pnpm start`.
 
 ## Components
 

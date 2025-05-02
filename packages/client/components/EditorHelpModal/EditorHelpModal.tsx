@@ -209,7 +209,7 @@ const EditorHelpModal = (props: Props) => {
           <HelpList listIndex={listIndex} key={`shortcutList${listIndex + 1}`}>
             {shortcutList.map((shortcut, shortcutIndex) => {
               return (
-                <HelpRow shortcutIndex={shortcutIndex} key={`${shortcutList}${shortcutIndex + 1}`}>
+                <HelpRow shortcutIndex={shortcutIndex} key={`${shortcut.label}`}>
                   <Icon>
                     <IconLabel icon={shortcut.icon} />
                   </Icon>

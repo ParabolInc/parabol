@@ -17,6 +17,7 @@ const distPath = path.join(PROJECT_ROOT, 'dist')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
+const runtimePlatform = `${process.platform}-${process.arch}`
 
 module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
@@ -67,19 +68,16 @@ module.exports = (config) => {
         // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
         'react/jsx-runtime': require.resolve('react/jsx-runtime')
       },
-      extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
-      // this is run outside the server dir, but we want to favor using modules from the server dir
-      modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
-    },
-    resolveLoader: {
-      modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
+      extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
     },
     target: 'node',
     externals: [
-      !noDeps &&
-        nodeExternals({
-          allowlist: [/parabol-client/, /parabol-server/, /@dicebear/]
-        })
+      !noDeps && {
+        ...nodeExternals({
+          allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
+        }),
+        sharp: 'commonjs sharp'
+      }
     ].filter(Boolean),
     optimization: {
       // When Node exits with an uncaughtException it prints the callstack, which is the line that caused the error.
@@ -103,27 +101,29 @@ module.exports = (config) => {
       new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
       // native bindings might be faster, but abandonware & not currently used
       new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
+      new webpack.IgnorePlugin({resourceRegExp: /^pg-cloudflare$/, contextRegExp: /pg\/lib/}),
       new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /inter-regular.otf$/, contextRegExp: /@dicebear/}),
       new webpack.IgnorePlugin({resourceRegExp: /inter-bold.otf$/, contextRegExp: /@dicebear/}),
-
-      noDeps &&
-        new CopyWebpackPlugin({
-          patterns: [
-            {
-              // copy sharp's libvips to the output
-              from: path.resolve(PROJECT_ROOT, 'node_modules', 'sharp', 'vendor'),
-              to: 'vendor'
-            },
-            {
-              // dd-trace-js has a lookup table for hooks, which includes the key `pg`
-              // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
-              from: path.resolve(PROJECT_ROOT, 'node_modules', 'pg', 'package.json'),
-              to: 'node_modules/pg/package.json'
-            }
-          ]
-        })
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            // copy sharp's libvips to the output
+            from: path.resolve(
+              PROJECT_ROOT,
+              `node_modules/.pnpm/sharp@0.34.1/node_modules/@img/sharp-libvips-${runtimePlatform}`
+            ),
+            to: `sharp-libvips-${runtimePlatform}`
+          },
+          noDeps && {
+            // dd-trace-js has a lookup table for hooks, which includes the key `pg`
+            // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
+            from: path.resolve(SERVER_ROOT, 'node_modules', 'pg', 'package.json'),
+            to: 'node_modules/pg/package.json'
+          }
+        ].filter(Boolean)
+      })
     ].filter(Boolean),
     module: {
       parser: {
@@ -139,6 +139,15 @@ module.exports = (config) => {
           type: 'asset/resource',
           generator: {
             filename: 'images/[name][ext]'
+          }
+        },
+        {
+          test: /sharp\.js$/,
+          loader: 'string-replace-loader',
+          options: {
+            search: 'sharp = require(path)',
+            replace: `sharp = require('@img/sharp-${runtimePlatform}/sharp.node')`,
+            strict: true
           }
         },
         {

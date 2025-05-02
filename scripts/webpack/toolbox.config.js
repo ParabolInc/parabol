@@ -37,12 +37,7 @@ module.exports = {
       'parabol-client': CLIENT_ROOT
     },
     extensions: ['.js', '.json', '.ts', '.tsx'],
-    unsafeCache: true,
-    // this is run outside the server dir, but we want to favor using modules from the server dir
-    modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
-  },
-  resolveLoader: {
-    modules: [path.resolve(SERVER_ROOT, '../node_modules'), 'node_modules']
+    unsafeCache: true
   },
   target: 'node',
   externals: [
