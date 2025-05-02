@@ -1,4 +1,4 @@
-import styled from '@emotion/styled-base'
+import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'

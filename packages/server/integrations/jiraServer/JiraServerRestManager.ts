@@ -1,4 +1,5 @@
 import {generateText, JSONContent} from '@tiptap/core'
+import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'

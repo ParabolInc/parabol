@@ -6,6 +6,7 @@ import {sql} from 'kysely'
 import uws from 'uWebSockets.js'
 import sleep from '../client/utils/sleep'
 import AuthToken from './database/types/AuthToken'
+import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import {MutationResolvers, QueryResolvers, Resolver} from './graphql/public/resolverTypes'
@@ -70,29 +71,6 @@ export const getPersistedOperation = async (docId: string) => {
 export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
-  fetchAPI: {
-    fetch,
-    Headers,
-    Request,
-    Response,
-    FormData,
-    ReadableStream,
-    WritableStream,
-    TransformStream,
-    CompressionStream,
-    DecompressionStream,
-    TextDecoderStream,
-    TextEncoderStream,
-    Blob,
-    File,
-    crypto,
-    btoa,
-    TextEncoder,
-    TextDecoder,
-    URL,
-    URLSearchParams
-  },
-  graphiql: false,
   plugins: [
     useDatadogTracing({
       excludeArgs: {
@@ -130,8 +108,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
     useDisposeDataloader,
     useReadinessCheck({
       check: async () => {
-        const isShuttingDown = getIsShuttingDown()
-        if (isShuttingDown) return false
+        const isUnavailable = getIsShuttingDown() || getIsBusy()
+        if (isUnavailable) return false
         const res = await Promise.race([sql`SELECT 1`.execute(getKysely()), sleep(5000)])
         if (!res) return false
         return true

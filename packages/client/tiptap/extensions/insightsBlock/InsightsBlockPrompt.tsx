@@ -2,7 +2,7 @@ import HistoryIcon from '@mui/icons-material/History'
 import type {NodeViewProps} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import {Menu} from '~/ui/Menu/Menu'
 import {MenuContent} from '~/ui/Menu/MenuContent'
@@ -37,7 +37,11 @@ export const InsightsBlockPrompt = (props: Props) => {
   const {aiPrompts} = viewer
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
   const {prompt} = attrs
-  const defaultValue = prompt || aiPrompts[0]?.content || ''
+  useEffect(() => {
+    if (!prompt) {
+      updateAttributes({prompt: aiPrompts[0]?.content || ''})
+    }
+  }, [])
   return (
     <div>
       <h3 className='pointer-events-none pt-2'>What do you want to know?</h3>
@@ -65,7 +69,6 @@ export const InsightsBlockPrompt = (props: Props) => {
                     <MenuItem
                       key={id}
                       onClick={() => {
-                        textAreaRef.current!.value = content
                         updateAttributes({prompt: content})
                       }}
                       className='w-80 flex-col items-start justify-start'
@@ -82,7 +85,7 @@ export const InsightsBlockPrompt = (props: Props) => {
           </Menu>
         </div>
         <textarea
-          defaultValue={defaultValue}
+          value={prompt}
           autoComplete='on'
           autoCorrect='on'
           spellCheck={true}

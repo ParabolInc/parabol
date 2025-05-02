@@ -5,6 +5,103 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.2.0](https://github.com/ParabolInc/parabol/compare/v10.1.10...v10.2.0) (2025-05-01)
+
+
+### Added
+
+* dump on sigusr2 ([#11285](https://github.com/ParabolInc/parabol/issues/11285)) ([ab61ff9](https://github.com/ParabolInc/parabol/commit/ab61ff9775df98cc23cac63484200b68b0ad8764))
+
+
+### Fixed
+
+* improve error handling for websocket connections in safari  ([#11282](https://github.com/ParabolInc/parabol/issues/11282)) ([271d1d5](https://github.com/ParabolInc/parabol/commit/271d1d579e4a74acf1920ef59aebd8d4a5f59838))
+* remove resolver-level tracing for DD debugging ([#11284](https://github.com/ParabolInc/parabol/issues/11284)) ([ea755b6](https://github.com/ParabolInc/parabol/commit/ea755b6f61578e5fd91e834041f975976f93db56))
+
+## [10.1.10](https://github.com/ParabolInc/parabol/compare/v10.1.9...v10.1.10) (2025-04-30)
+
+
+### Fixed
+
+* dont show person is typing if anonymous comment ([#11266](https://github.com/ParabolInc/parabol/issues/11266)) ([2e88e02](https://github.com/ParabolInc/parabol/commit/2e88e026a22df7081f864f53159a3135836a95a1))
+* elect chronos leader per tick ([#11272](https://github.com/ParabolInc/parabol/issues/11272)) ([ba9e0f0](https://github.com/ParabolInc/parabol/commit/ba9e0f01be7d2c09d2297cf53477d55eb336653b))
+* ensure process recurrence runs sequentially ([#11277](https://github.com/ParabolInc/parabol/issues/11277)) ([319c317](https://github.com/ParabolInc/parabol/commit/319c31745e841e68292c1d20f7c39d9f420ec60b))
+
+## [10.1.9](https://github.com/ParabolInc/parabol/compare/v10.1.8...v10.1.9) (2025-04-28)
+
+
+### Fixed
+
+* leader election on interval ([#11267](https://github.com/ParabolInc/parabol/issues/11267)) ([dd7e16e](https://github.com/ParabolInc/parabol/commit/dd7e16e449ac73d3c826a7a6c77abd85f9a99342))
+
+## [10.1.8](https://github.com/ParabolInc/parabol/compare/v10.1.7...v10.1.8) (2025-04-28)
+
+
+### Fixed
+
+* Node 22 type fixes ([#11260](https://github.com/ParabolInc/parabol/issues/11260)) ([5e6e582](https://github.com/ParabolInc/parabol/commit/5e6e58236b5f35e8daf8a9b95bcdf31c9e99f8c0))
+* Switch to @whatwg/fetch throughout the server ([#11263](https://github.com/ParabolInc/parabol/issues/11263)) ([f31bdd7](https://github.com/ParabolInc/parabol/commit/f31bdd7e5079967fdf9e29b5527cd8cb1ab38f5f))
+
+## [10.1.7](https://github.com/ParabolInc/parabol/compare/v10.1.6...v10.1.7) (2025-04-25)
+
+
+### Fixed
+
+* disconnectAllSockets accepts an input parameters for the disconnect window ([#11247](https://github.com/ParabolInc/parabol/issues/11247)) ([7ffd28f](https://github.com/ParabolInc/parabol/commit/7ffd28fd2181af0e348ab1317028c0675f14a21c))
+
+## [10.1.6](https://github.com/ParabolInc/parabol/compare/v10.1.5...v10.1.6) (2025-04-24)
+
+
+### Fixed
+
+* revert back to @whatwg-node/fetch ([#11252](https://github.com/ParabolInc/parabol/issues/11252)) ([6285bcf](https://github.com/ParabolInc/parabol/commit/6285bcf3e2f304eaf8a456df5a65d05a6f442f97))
+
+## [10.1.5](https://github.com/ParabolInc/parabol/compare/v10.1.4...v10.1.5) (2025-04-24)
+
+
+### Fixed
+
+* Dragging reflections would crash if subscription did not work ([#11241](https://github.com/ParabolInc/parabol/issues/11241)) ([30258ed](https://github.com/ParabolInc/parabol/commit/30258ed8e6c0c270f107104b164c289799e6862b))
+* Handle publish taking longer than 30s ([#11248](https://github.com/ParabolInc/parabol/issues/11248)) ([d39702c](https://github.com/ParabolInc/parabol/commit/d39702c33ae6f87a29d05a941f89fc5c1d7cd52e))
+
+## [10.1.4](https://github.com/ParabolInc/parabol/compare/v10.1.3...v10.1.4) (2025-04-23)
+
+
+### Fixed
+
+* pageInsights set initial prompt on load ([#11236](https://github.com/ParabolInc/parabol/issues/11236)) ([4f7ca84](https://github.com/ParabolInc/parabol/commit/4f7ca84b1c7cfeb0680ef56554b89f0edc828098))
+
+## [10.1.3](https://github.com/ParabolInc/parabol/compare/v10.1.2...v10.1.3) (2025-04-23)
+
+
+### Fixed
+
+* bump sentry from v7 to v9 ([#11231](https://github.com/ParabolInc/parabol/issues/11231)) ([762ddde](https://github.com/ParabolInc/parabol/commit/762ddde4e44e3b8aeff9b51c79c4dece13174f26))
+
+## [10.1.2](https://github.com/ParabolInc/parabol/compare/v10.1.1...v10.1.2) (2025-04-23)
+
+
+### Fixed
+
+* dump sockets before dumping heap ([#11213](https://github.com/ParabolInc/parabol/issues/11213)) ([d3d0d58](https://github.com/ParabolInc/parabol/commit/d3d0d58d9d43c49b171b0a10b6360886417c2e55))
+* group titles sometimes load indefinitely until refresh ([#11196](https://github.com/ParabolInc/parabol/issues/11196)) ([c205e6e](https://github.com/ParabolInc/parabol/commit/c205e6e62a2fca5ddfbfcd3274dd53288e6d3743))
+* udpaterecurrencesetting return type ([#11230](https://github.com/ParabolInc/parabol/issues/11230)) ([4c7c81a](https://github.com/ParabolInc/parabol/commit/4c7c81aa28f41fc792f0871a09b2377773f4c65d))
+* upgrade module-federation/enhanced to fix koa vulnerability ([#11225](https://github.com/ParabolInc/parabol/issues/11225)) ([39350cf](https://github.com/ParabolInc/parabol/commit/39350cf0c13a8b380303a68d5099c7fdd76e1fe4))
+
+
+### Changed
+
+* Add Self Managed GitLab to the Enterprise benefits list ([#11220](https://github.com/ParabolInc/parabol/issues/11220)) ([d66c619](https://github.com/ParabolInc/parabol/commit/d66c6199db5edd97fdb940a72981160f43853539))
+* Use Parabol URL from environment for Mattermost Plugin ([#11226](https://github.com/ParabolInc/parabol/issues/11226)) ([1454e80](https://github.com/ParabolInc/parabol/commit/1454e80e3951f1173617965a3dd492745644342b))
+
+## [10.1.1](https://github.com/ParabolInc/parabol/compare/v10.1.0...v10.1.1) (2025-04-18)
+
+
+### Fixed
+
+* bump node version ([#11209](https://github.com/ParabolInc/parabol/issues/11209)) ([c8bd950](https://github.com/ParabolInc/parabol/commit/c8bd950b674d80bce3dddd4ddeb5da4405f772f8))
+* remove referece to dispose fn ([#11215](https://github.com/ParabolInc/parabol/issues/11215)) ([def8f55](https://github.com/ParabolInc/parabol/commit/def8f553b80c4d51405b08723dbc91c3f59f26d7))
+
 ## [10.1.0](https://github.com/ParabolInc/parabol/compare/v10.0.2...v10.1.0) (2025-04-16)
 
 

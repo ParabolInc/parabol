@@ -13,9 +13,6 @@ const LinkedTeams = () => {
   const data = useLazyLoadQuery<LinkedTeamsQuery>(
     graphql`
       query LinkedTeamsQuery {
-        config {
-          parabolUrl
-        }
         viewer {
           teams {
             id

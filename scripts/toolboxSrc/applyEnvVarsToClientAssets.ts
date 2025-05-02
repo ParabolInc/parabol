@@ -103,12 +103,28 @@ const rewriteIndexHTML = () => {
   fs.writeFileSync(path.join(clientDir, 'index.html'), minifiedHTML)
 }
 
+const rewriteMattermostEnv = () => {
+  const config = {
+      '__PROTO__': JSON.stringify(process.env.PROTO),
+      '__HOST__': JSON.stringify(process.env.HOST),
+      '__PORT__': JSON.stringify(process.env.PORT),
+  }
+
+  const skeleton = fs.readFileSync(path.join(clientDir, 'mattermost-plugin_envSkeleton.js'), 'utf8')
+
+  const replaced = Object.entries(config).reduce((acc, [key, value]) => {
+    return acc.replace(key, value)
+  }, skeleton)
+  fs.writeFileSync(path.join(clientDir, 'mattermost-plugin_env.js'), replaced)
+}
+
 export const applyEnvVarsToClientAssets = () => {
   // When web.js starts, serveStatic generates a whitelist of all valid built assets
   // so users cannot trigger a disk read by requesting an asset that may not exist (0days often involve disk reads)
   // That means this script must run synchronusly and complete before web.js starts
   rewriteServiceWorker()
   rewriteIndexHTML()
+  rewriteMattermostEnv()
   writeManifest()
 }
 

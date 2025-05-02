@@ -8,4 +8,4 @@
   - [`CI=true`](https://github.com/ParabolInc/parabol/blob/master/.env.example#L13)
   - [MAIL_PROVIDER='debug'](https://github.com/ParabolInc/parabol/blob/master/.env.example#L33)
   - [STRIPE\_\*](https://github.com/ParabolInc/parabol/blob/master/.env.example#L69) with test API keys https://stripe.com/docs/keys
-- run test with `yarn test:server`
+- run test with `pnpm test:server`

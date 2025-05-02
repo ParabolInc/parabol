@@ -13,7 +13,11 @@ const REDIS_DATALOADER_TTL = 25_000
 class PublishedDataLoaders {
   private promiseLookup = {} as Record<string, Promise<void>>
   private async pushToRedis(id: string) {
-    const dataLoaderWorker = getInMemoryDataLoader(id)!.dataLoaderWorker
+    const dataLoaderWorker = getInMemoryDataLoader(id)?.dataLoaderWorker
+    if (!dataLoaderWorker) {
+      // publish did not happen within SHARED_DATALOADER_TTL
+      return
+    }
     const buffer = await serializeDataLoader(dataLoaderWorker)
     // keep the serialized dataloader in redis for long enough for each server to fetch it and make an in-memory copy
     await getRedis().set(`dataLoader:${id}`, buffer, 'PX', REDIS_DATALOADER_TTL)

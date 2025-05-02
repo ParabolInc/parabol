@@ -1,4 +1,3 @@
-import getPg from '../../packages/server/postgres/getPg'
 import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 import {Logger} from '../../packages/server/utils/Logger'
 
@@ -39,9 +38,10 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
     }
   ] as const
 
-  const validProviders = providers.filter(({authStrategy, clientId, clientSecret, serverBaseUrl, sharedSecret}) => 
-    (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl)
-    || (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
+  const validProviders = providers.filter(
+    ({authStrategy, clientId, clientSecret, serverBaseUrl, sharedSecret}) =>
+      (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl) ||
+      (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
   )
 
   await Promise.all(

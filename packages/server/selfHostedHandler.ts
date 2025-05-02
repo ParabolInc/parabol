@@ -7,7 +7,7 @@ import pipeStreamOverResponse from './pipeStreamOverResponse'
 const getProjectRoot = () => {
   let cd = __dirname
   while (cd !== '/') {
-    if (fs.existsSync(path.join(cd, 'yarn.lock'))) return cd
+    if (fs.existsSync(path.join(cd, 'pnpm-lock.yaml'))) return cd
     cd = path.join(cd, '..')
   }
   return cd

@@ -1,7 +1,7 @@
-// call with yarn sucrase-node billing/debug.ts
+// call with pnpm sucrase-node billing/debug.ts
 import '../../../scripts/webpack/utils/dotenv'
-import {getStripeManager} from '../utils/stripe'
 import {Logger} from '../utils/Logger'
+import {getStripeManager} from '../utils/stripe'
 
 const doDebugStuff = async () => {
   const manager = getStripeManager()

@@ -2,10 +2,10 @@
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
 import {Migrator} from 'kysely'
-import {Logger} from 'parabol-server/utils/Logger'
 import path from 'path'
 import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'
+import {Logger} from '../../packages/server/utils/Logger'
 import '../webpack/utils/dotenv'
 import pgEnsureExtensions from './pgEnsureExtensions'
 

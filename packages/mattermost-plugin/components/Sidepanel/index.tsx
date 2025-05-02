@@ -1,12 +1,14 @@
 import {useSelector} from 'react-redux'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {getPluginServerRoute, isAuthorized} from '../../selectors'
+import {useConfig} from '../../hooks/useConfig'
+import {isAuthorized} from '../../selectors'
 import SidePanel from './SidePanel'
 
 const SidePanelRoot = () => {
   const atmosphere = useAtmosphere()
   const loggedIn = useSelector(isAuthorized)
-  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const config = useConfig()
+  const {parabolUrl} = config
 
   return (
     <div className='flex h-full flex-col items-stretch p-4'>
@@ -17,8 +19,8 @@ const SidePanelRoot = () => {
           <p className='py-4'>
             You are not logged in to Parabol.
             <br />
-            Please <a href={`${pluginServerRoute}/parabol/signin`}>sign in</a> or{' '}
-            <a href={`${pluginServerRoute}/parabol/create-account`}>create an account</a> and retry.
+            Please <a href={`${parabolUrl}/signin`}>sign in</a> or{' '}
+            <a href={`${parabolUrl}/create-account`}>create an account</a> and retry.
           </p>
           <button className='btn btn-primary' onClick={atmosphere.login}>
             Retry

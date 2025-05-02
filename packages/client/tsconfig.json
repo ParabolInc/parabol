@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["*"]
+      "~/*": ["*"],
+      "parabol-client/*": ["*"]
     },
     "outDir": "lib",
     "lib": ["esnext", "dom"]

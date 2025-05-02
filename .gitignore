@@ -8,11 +8,14 @@
 .awcache/
 .history/
 .idea/
+.nx/
+.yarn/
 pgBackup/
 build/
 coverage/
 dev/
 dist/
+.nx/
 dump.rdb
 node_modules/
 package-lock.json

@@ -16,7 +16,7 @@
 //      Steps: e.g. */2
 
 import {CronJob} from 'cron'
-import {establishPrimaryServer} from './establishPrimaryServer'
+import {LeaderRunner} from './LeaderRunner'
 import {callGQL} from './utils/callGQL'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
@@ -29,11 +29,12 @@ interface PossibleJob {
 const {SERVER_ID} = process.env
 if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
 
-const chronos = () => {
+const runningJobs: CronJob[] = []
+
+const chronos = (leaderRunner: LeaderRunner) => {
   const {
     CHRONOS_PULSE_EMAIL,
     CHRONOS_PULSE_CHANNEL,
-    SERVER_ID,
     CHRONOS_AUTOPAUSE,
     CHRONOS_PULSE_DAILY,
     CHRONOS_PULSE_WEEKLY,
@@ -46,7 +47,7 @@ const chronos = () => {
     autoPause: {
       onTick: () => {
         const query = 'mutation AutoPauseUsers { autopauseUsers }'
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_AUTOPAUSE
     },
@@ -59,7 +60,7 @@ const chronos = () => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        callGQL(query, variables)
+        return callGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_DAILY
     },
@@ -72,21 +73,21 @@ const chronos = () => {
           email: CHRONOS_PULSE_EMAIL,
           channelId: CHRONOS_PULSE_CHANNEL
         }
-        callGQL(query, variables)
+        return callGQL(query, variables)
       },
       cronTime: CHRONOS_PULSE_WEEKLY
     },
     batchEmails: {
       onTick: () => {
         const query = 'mutation SendBatchNotificationEmails { sendBatchNotificationEmails }'
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_BATCH_EMAILS
     },
     scheduleJobs: {
       onTick: () => {
         const query = 'mutation RunScheduledJobs { runScheduledJobs(seconds: 605) }'
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_SCHEDULE_JOBS
     },
@@ -94,7 +95,7 @@ const chronos = () => {
       onTick: () => {
         const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
         const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
-        callGQL(query, variables)
+        return callGQL(query, variables)
       },
       cronTime: CHRONOS_UPDATE_TOKENS
     },
@@ -110,34 +111,47 @@ const chronos = () => {
             }
           }
         `
-        callGQL(query, {})
+        return callGQL(query, {})
       },
       cronTime: CHRONOS_PROCESS_RECURRENCE
     }
   }
   Object.entries(jobs).forEach(([name, {onTick, cronTime}]) => {
     try {
-      CronJob.from({
+      const job = CronJob.from({
         start: true,
         // assume non-null & catch on fail
         cronTime: cronTime!,
-        onTick
+        onTick: () =>
+          leaderRunner.runLocked(
+            name,
+            async () => {
+              Logger.log(`🌱 Chronos Job ${name}: TICK`)
+              onTick()
+            },
+            () => Logger.log(`🌱 Chronos Job ${name}: TICK SKIPPED (not leader)`)
+          )
       })
+      runningJobs.push(job)
       Logger.log(`🌱 Chronos Job ${name}: STARTED`)
     } catch {
       Logger.log(`🌱 Chronos Job ${name}: SKIPPED`)
     }
   })
-
-  Logger.log(`\n🌾🌾🌾 Server ID: ${SERVER_ID}. Ready for Chronos           🌾🌾🌾`)
 }
 
-const runOnPrimary = async () => {
-  if (!__PRODUCTION__) return
+const startChronos = () => {
+  if (!__PRODUCTION__) return () => {}
+
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
-  const primaryLock = await establishPrimaryServer(redis, 'chronos')
-  if (!primaryLock) return
-  chronos()
+  const leaderRunner = new LeaderRunner(redis, 'chronos', 20_000)
+  chronos(leaderRunner)
+  return () => {
+    runningJobs.forEach((job) => {
+      job.stop()
+      Logger.log(`🌱 Chronos Job ${job.name}: STOPPED`)
+    })
+  }
 }
 
-runOnPrimary()
+export const stopChronos = startChronos()

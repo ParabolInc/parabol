@@ -11,12 +11,15 @@ const pipeStreamOverResponse = (
     res.aborted = true
   })
   readStream
-    .on('data', (chunk: Buffer) => {
+    .on('data', (chunk: string | Buffer) => {
       if (res.aborted) {
         readStream.destroy()
         return
       }
-      const ab = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
+      const ab =
+        typeof chunk === 'string'
+          ? chunk
+          : chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength)
       res.cork(() => {
         const lastOffset = res.getWriteOffset()
         const [ok, done] = res.tryEnd(ab as ArrayBuffer, totalSize)

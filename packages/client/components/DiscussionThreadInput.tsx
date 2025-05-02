@@ -140,7 +140,7 @@ const DiscussionThreadInput = (props: Props) => {
     onEscape: clearReplyingTo
   })
 
-  useTipTapTypingStatus(editor, discussionId)
+  useTipTapTypingStatus(editor, discussionId, isAnonymousComment)
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
 
   useInitialLocalState(discussionId, 'isAnonymousComment', false)

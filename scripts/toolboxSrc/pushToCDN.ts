@@ -1,7 +1,7 @@
 import fs from 'fs'
-import getFileStoreManager from 'parabol-server/fileStorage/getFileStoreManager'
-import {Logger} from 'parabol-server/utils/Logger'
 import path from 'path'
+import getFileStoreManager from '../../packages/server/fileStorage/getFileStoreManager'
+import {Logger} from '../../packages/server/utils/Logger'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 const PROJECT_ROOT = getProjectRoot()

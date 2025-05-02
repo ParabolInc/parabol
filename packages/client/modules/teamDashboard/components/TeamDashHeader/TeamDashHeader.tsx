@@ -1,4 +1,4 @@
-import {ClassNames} from '@emotion/core'
+import {ClassNames} from '@emotion/react'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'

@@ -2,7 +2,7 @@
   "git.ignoreLimitWarning": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.tabSize": 2,
-  "npm.packageManager": "yarn",
+  "npm.packageManager": "pnpm",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },

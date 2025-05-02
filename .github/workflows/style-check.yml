@@ -17,14 +17,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
-          # Instead, we aggressively cache node_modules below to avoid calling install
-
+          cache: "pnpm"
       - name: Setup environment variables
         run: |
           NODE_VERSION=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
@@ -37,11 +36,14 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable
+        # pnpm has a bug that resolves git+https to ssh
+        run: |
+          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+          pnpm install --frozen-lockfile
 
       - name: Check Code Quality
-        run: yarn codecheck
+        run: pnpm codecheck

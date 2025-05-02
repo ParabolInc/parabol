@@ -1,4 +1,4 @@
-// call with yarn sucrase-node billing/debug.ts
+// call with pnpm sucrase-node billing/debug.ts
 import '../../scripts/webpack/utils/dotenv'
 import getKysely from '../server/postgres/getKysely'
 import {Logger} from '../server/utils/Logger'

@@ -65,11 +65,7 @@ module.exports = (config) => {
       fallback: {
         assert: path.join(PROJECT_ROOT, 'scripts/webpack/assert.js'),
         os: false
-      },
-      modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
-    },
-    resolveLoader: {
-      modules: [path.resolve(CLIENT_ROOT, '../node_modules'), 'node_modules']
+      }
     },
     optimization: {
       minimize,

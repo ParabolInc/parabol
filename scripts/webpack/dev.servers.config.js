@@ -42,27 +42,32 @@ module.exports = {
       // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
       'react/jsx-runtime': require.resolve('react/jsx-runtime')
     },
-    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql'],
-    unsafeCache: true,
+    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
     // this is run outside the server dir, but we want to favor using modules from the server dir
-    modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]
-  },
-  resolveLoader: {
-    modules: [path.resolve(SERVER_ROOT, 'node_modules'), path.resolve(PROJECT_ROOT, 'node_modules')]
   },
   target: 'node',
   externals: [
-    nodeExternals({
-      allowlist: [/parabol-client/, /parabol-server/, /@dicebear/]
-    })
+    {
+      ...nodeExternals({
+        allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
+      }),
+      sharp: 'commonjs sharp'
+    }
   ],
   plugins: [
     new webpack.DefinePlugin({
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
     }),
+    // if we need canvas for SSR we can just install it to our own package.json
+    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    // native bindings might be faster, but abandonware & not currently used
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
+    new webpack.IgnorePlugin({resourceRegExp: /^pg-cloudflare$/, contextRegExp: /pg\/lib/}),
     new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
-    new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/})
+    new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/}),
+    new webpack.IgnorePlugin({resourceRegExp: /inter-regular.otf$/, contextRegExp: /@dicebear/}),
+    new webpack.IgnorePlugin({resourceRegExp: /inter-bold.otf$/, contextRegExp: /@dicebear/})
   ],
   module: {
     rules: [
@@ -88,6 +93,16 @@ module.exports = {
             options: {
               name: '[name].[ext]'
             }
+          }
+        ]
+      },
+      {
+        include: [/node_modules/],
+        test: /\.node$/,
+        use: [
+          {
+            // use our fork of node-loader to exclude the public path from the script
+            loader: path.resolve(__dirname, './utils/node-loader-private/cjs.js')
           }
         ]
       }

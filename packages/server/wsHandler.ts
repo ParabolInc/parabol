@@ -10,6 +10,7 @@ import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
 import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
+import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
@@ -23,6 +24,7 @@ import {extractPersistedOperationId, getPersistedOperation, yoga, type ServerCon
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
+    closed?: true
   }
   interface Extra {
     ip: string
@@ -177,10 +179,15 @@ export const wsHandler = makeBehavior<{token?: string}>({
           .buffer as ArrayBuffer
         // wait a tick for the old subscriptions to get removed before starting them again
         await sleep(1)
-        wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
+        if (!ctx.extra.socket.closed) {
+          wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
+        }
       }
     } else {
-      dispose[id] = () => dataLoader!.dispose()
+      dispose[id] = () => {
+        delete dispose[id]
+        dataLoader!.dispose()
+      }
     }
     const args: EnvelopedExecutionArgs = {
       schema: authToken.rol === 'su' ? privateSchema : schema,
@@ -198,6 +205,9 @@ export const wsHandler = makeBehavior<{token?: string}>({
   onComplete: (ctx, id) => {
     ctx.extra.dispose[id]?.()
   },
+  onError: (ctx, id) => {
+    ctx.extra.dispose[id]?.()
+  },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
     const {authToken, socketId} = extra
@@ -205,6 +215,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     activeClients.delete(extra.socketId)
     const {execute, parse} = yoga.getEnveloped(ctx)
     const dataLoader = getNewDataLoader()
+    extra.socket.closed = true
     await execute({
       document: parse(disconnectQuery),
       variableValues: {userId, socketId},
@@ -220,8 +231,8 @@ wsHandler.upgrade = (res, req, context) => {
   // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
-  const isShuttingDown = getIsShuttingDown()
-  if (isShuttingDown) {
+  const isUnavailable = getIsShuttingDown() || getIsBusy()
+  if (isUnavailable) {
     res.end()
     return
   }

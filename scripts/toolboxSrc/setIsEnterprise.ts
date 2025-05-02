@@ -1,6 +1,6 @@
-import getKysely from 'parabol-server/postgres/getKysely'
-import {defaultTier} from 'parabol-server/utils/defaultTier'
-import {Logger} from 'parabol-server/utils/Logger'
+import getKysely from '../../packages/server/postgres/getKysely'
+import {defaultTier} from '../../packages/server/utils/defaultTier'
+import {Logger} from '../../packages/server/utils/Logger'
 
 export default async function setIsEnterprise() {
   if (defaultTier !== 'enterprise') {

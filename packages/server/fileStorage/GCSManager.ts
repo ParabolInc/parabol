@@ -1,3 +1,4 @@
+import {fetch} from '@whatwg-node/fetch'
 import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'

@@ -1,7 +1,6 @@
 import dns, {MxRecord} from 'dns'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
-import util from 'util'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
@@ -12,8 +11,6 @@ import {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 
-const resolveMx = util.promisify(dns.resolveMx)
-
 const getIsGoogleProvider = async (user: IUser | null, email: string) => {
   const identities = user?.identities
   if (identities) {
@@ -22,7 +19,7 @@ const getIsGoogleProvider = async (user: IUser | null, email: string) => {
   const [, domain] = email.split('@') as [string, string]
   let res
   try {
-    res = await resolveMx(domain)
+    res = await dns.promises.resolveMx(domain)
   } catch (e) {
     return false
   }

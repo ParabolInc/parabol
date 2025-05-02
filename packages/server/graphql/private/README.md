@@ -3,11 +3,13 @@
 This part of Parabol's API is available only for admins. To become an admin user has to have `su` role set.
 
 To set the `su` role, run the following command with your email address
+
 ```
-yarn node ./scripts/toolbox/assignSURole.js --add you@example.com
+pnpm node ./scripts/toolbox/assignSURole.js --add you@example.com
 ```
 
 Alternatively you can set the `su` role in PG directly. Open pgAdmin (http://localhost:5050/browser/, credentials are specified in .env as PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD), configure the server, open the Query Tool and run the following query
+
 ```
 UPDATE "User" SET "rol" = 'su' WHERE "id" = 'set-your-user-id-here';
 ```

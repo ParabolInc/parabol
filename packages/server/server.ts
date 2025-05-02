@@ -1,12 +1,11 @@
 import tracer from 'dd-trace'
 import uws from 'uWebSockets.js'
-import sleep from '../client/utils/sleep'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
-import {activeClients} from './activeClients'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
-import './chronos'
+import {stopChronos} from './chronos'
 import createSSR from './createSSR'
+import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
 import './hocusPocus'
 import './initSentry'
@@ -44,21 +43,8 @@ process.on('SIGTERM', async (signal) => {
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
   setIsShuttingDown()
-  //socket.end will fire wsHandler.onDisconnect. Give it this long to complete
-  const ONDISCONNECT_LIMIT = 3000
-  const connectionsToClose = Array.from(activeClients.values())
-  if (connectionsToClose.length > 0) {
-    const msPerClose = (RECONNECT_WINDOW - ONDISCONNECT_LIMIT) / connectionsToClose.length
-    const closeEvery = Math.min(200, msPerClose)
-    await Promise.allSettled(
-      connectionsToClose.map(async (extra, idx) => {
-        const disconnectIn = idx * closeEvery
-        await sleep(disconnectIn)
-        extra.socket.end(1012, 'Closing connection')
-      })
-    )
-    await sleep(ONDISCONNECT_LIMIT)
-  }
+  stopChronos()
+  await disconnectAllSockets()
   Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
   process.exit()
 })

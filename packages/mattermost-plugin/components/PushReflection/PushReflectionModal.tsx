@@ -14,11 +14,12 @@ import {Post} from 'mattermost-redux/types/posts'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {PushReflectionModalMutation} from '../../__generated__/PushReflectionModalMutation.graphql'
 import {PushReflectionModalQuery} from '../../__generated__/PushReflectionModalQuery.graphql'
+import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import {closePushPostAsReflection, openLinkTeamModal, openStartActivityModal} from '../../reducers'
-import {getPluginServerRoute, getPostURL, pushPostAsReflection} from '../../selectors'
+import {getPostURL, pushPostAsReflection} from '../../selectors'
 import Modal from '../Modal'
 import Select from '../Select'
 import {TipTapEditor} from '../TipTap/Editor'
@@ -29,9 +30,11 @@ const PushReflectionModal = () => {
   const postId = useSelector(pushPostAsReflection)
   const post = useSelector((state: GlobalState) => getPost(state, postId!))
   const postUrl = useSelector((state: GlobalState) => getPostURL(state, postId!))
-  const pluginServerRoute = useSelector(getPluginServerRoute)
   const mmUser = useCurrentUser()
   const channel = useCurrentChannel()
+
+  const config = useConfig()
+  const {parabolUrl} = config
 
   const data = useLazyLoadQuery<PushReflectionModalQuery>(
     graphql`
@@ -199,7 +202,7 @@ const PushReflectionModal = () => {
       return
     }
 
-    const meetingUrl = `${pluginServerRoute}/parabol/meet/${meetingId}`
+    const meetingUrl = `${parabolUrl}/meet/${meetingId}`
     const props = {
       attachments: [
         {

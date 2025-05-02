@@ -3,13 +3,12 @@ import {Client4} from 'mattermost-redux/client'
 import {Post} from 'mattermost-redux/types/posts'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useCallback} from 'react'
-import {useSelector} from 'react-redux'
 import {useFragment} from 'react-relay'
 import {
   MeetingTypeEnum,
   useInviteToMeeting_meeting$key
 } from '../__generated__/useInviteToMeeting_meeting.graphql'
-import {getPluginServerRoute} from '../selectors'
+import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'
 
@@ -39,7 +38,8 @@ export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) 
   const {id: meetingId, team, name: meetingName, meetingType} = meeting || {}
   const {id: teamId, name: teamName} = team || {}
   const getToken = useMassInvitationToken({teamId, meetingId})
-  const pluginServerRoute = useSelector(getPluginServerRoute)
+  const config = useConfig()
+  const {parabolUrl} = config
   const channel = useCurrentChannel()
 
   const invite = useCallback(async () => {
@@ -51,7 +51,7 @@ export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) 
       return
     }
 
-    const inviteUrl = `${pluginServerRoute}/parabol/invitation-link/${token}`
+    const inviteUrl = `${parabolUrl}/invitation-link/${token}`
     const readableMeetingType = MeetingTypeToReadable[meetingType!]
     const props = {
       attachments: [
@@ -85,7 +85,7 @@ export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) 
       channel_id: channel.id,
       props
     } as Partial<Post> as Post)
-  }, [channel, getToken, meetingName, meetingType, pluginServerRoute, teamName])
+  }, [channel, getToken, meetingName, meetingType, parabolUrl, teamName])
 
   return invite
 }
