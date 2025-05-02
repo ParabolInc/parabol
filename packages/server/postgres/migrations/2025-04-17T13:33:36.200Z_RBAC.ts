@@ -103,12 +103,12 @@ export async function up(db: Kysely<any>): Promise<void> {
 -- FUNCTION TO UPDATE CACHED TABLE
 CREATE OR REPLACE FUNCTION "updatePageAccess"("_userId" VARCHAR, "_pageId" INT) RETURNS VOID AS $$
 DECLARE
-  "strongestRole" "PageRoleEnum";
-  "currentRole" "PageRoleEnum";
+  "_strongestRole" "PageRoleEnum";
+  "_currentRole" "PageRoleEnum";
 BEGIN
   -- Find the strongest applicable role
   SELECT MIN(role)
-  INTO "strongestRole"
+  INTO "_strongestRole"
   FROM (
     SELECT pua.role FROM "PageUserAccess" pua
     WHERE pua."userId" = "_userId" AND pua."pageId" = "_pageId"
@@ -125,22 +125,22 @@ BEGIN
   ) AS effective_roles;
 
   -- Check existing effective role
-  SELECT role INTO "currentRole"
+  SELECT role INTO "_currentRole"
   FROM "PageAccess"
   WHERE "userId" = "_userId" AND "pageId" = "_pageId";
 
-  IF "strongestRole" IS NULL THEN
+  IF "_strongestRole" IS NULL THEN
     -- User lost access
     DELETE FROM "PageAccess"
     WHERE "userId" = "_userId" AND "pageId" = "_pageId";
-  ELSIF "currentRole" IS NULL THEN
+  ELSIF "_currentRole" IS NULL THEN
     -- New access
     INSERT INTO "PageAccess" ("userId", "pageId", role)
-    VALUES ("_userId", "_pageId", "strongestRole");
-  ELSIF "strongestRole" <> "currentRole" THEN
+    VALUES ("_userId", "_pageId", "_strongestRole");
+  ELSIF "_strongestRole" != "_currentRole" THEN
     -- Changed access
     UPDATE "PageAccess"
-    SET role = "strongestRole"
+    SET role = "_strongestRole"
     WHERE "userId" = "_userId" AND "pageId" = "_pageId";
   END IF;
 END;
@@ -150,8 +150,11 @@ $$ LANGUAGE plpgsql;
 -- UPDATE CACHE FROM PageUserAccess
 CREATE OR REPLACE FUNCTION "updateUserPageAccess"() RETURNS TRIGGER AS $$
 BEGIN
-  PERFORM "updatePageAccess"(NEW."userId", NEW."pageId");
-  RETURN NEW;
+  PERFORM "updatePageAccess"(
+    COALESCE(NEW."userId", OLD."userId"),
+    COALESCE(NEW."pageId", OLD."pageId")
+  );
+  RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -164,9 +167,10 @@ FOR EACH ROW EXECUTE FUNCTION "updateUserPageAccess"();
 CREATE OR REPLACE FUNCTION "updateTeamPageAccess"() RETURNS TRIGGER AS $$
 DECLARE
   "_userId" VARCHAR;
+  "_pageId" INT := COALESCE(NEW."pageId", OLD."pageId");
 BEGIN
-  FOR "_userId" IN SELECT "userId" FROM "TeamMember" WHERE "teamId" = NEW."teamId" LOOP
-  PERFORM "updatePageAccess"("_userId", NEW."pageId");
+  FOR "_userId" IN SELECT "userId" FROM "TeamMember" WHERE "teamId" = COALESCE(NEW."teamId", OLD."teamId") LOOP
+  PERFORM "updatePageAccess"("_userId", "_pageId");
   END LOOP;
   RETURN NEW;
 END;
@@ -181,9 +185,10 @@ FOR EACH ROW EXECUTE FUNCTION "updateTeamPageAccess"();
 CREATE OR REPLACE FUNCTION "updateOrganizationPageAccess"() RETURNS TRIGGER AS $$
 DECLARE
   "_userId" VARCHAR;
+  "_pageId" INT := COALESCE(NEW."pageId", OLD."pageId");
 BEGIN
-  FOR "_userId" IN SELECT "userId" FROM "OrganizationUser" WHERE "orgId" = NEW."orgId" LOOP
-  PERFORM "updatePageAccess"("_userId", NEW."pageId");
+  FOR "_userId" IN SELECT "userId" FROM "OrganizationUser" WHERE "orgId" = COALESCE(NEW."orgId", OLD."orgId") LOOP
+  PERFORM "updatePageAccess"("_userId", "_pageId");
   END LOOP;
   RETURN NEW;
 END;
@@ -198,10 +203,15 @@ FOR EACH ROW EXECUTE FUNCTION "updateOrganizationPageAccess"();
 CREATE OR REPLACE FUNCTION "updateTeamPageAccessByTeamMember"() RETURNS TRIGGER AS $$
 DECLARE
   "_pageId" INT;
+  "_userId" VARCHAR := COALESCE(NEW."userId", OLD."userId");
 BEGIN
-  IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE' AND NEW."isNotRemoved" != OLD."isNotRemoved") THEN
-    FOR "_pageId" IN SELECT "pageId" FROM "PageTeamAccess" WHERE "teamId" = NEW."teamId" LOOP
-      PERFORM "updatePageAccess"(NEW."userId", "_pageId");
+  IF TG_OP != 'UPDATE' OR NEW."isNotRemoved" != OLD."isNotRemoved" THEN
+    FOR "_pageId" IN
+      SELECT "pageId"
+      FROM "PageTeamAccess"
+      WHERE "teamId" = COALESCE(NEW."teamId", OLD."teamId")
+    LOOP
+      PERFORM "updatePageAccess"("_userId", "_pageId");
     END LOOP;
   END IF;
   RETURN NEW;
@@ -209,14 +219,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER trg_team_member_update_team_page_access
-AFTER INSERT OR UPDATE ON "TeamMember"
+AFTER INSERT OR UPDATE OF "isNotRemoved" OR DELETE ON "TeamMember"
 FOR EACH ROW EXECUTE FUNCTION "updateTeamPageAccessByTeamMember"();
 
 
 -- HANDLE ARCHIVE TEAM
 CREATE OR REPLACE FUNCTION "removePageAccessOnTeamArchive"() RETURNS TRIGGER AS $$
 BEGIN
-  IF NEW."isArchived" = TRUE AND (OLD."isArchived" != TRUE) THEN
+  IF NEW."isArchived" = TRUE AND OLD."isArchived" != TRUE THEN
     DELETE FROM "PageTeamAccess"
     WHERE "teamId" = NEW."id";
   END IF;
@@ -225,19 +235,25 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER trg_team_archived_remove_page_access
-AFTER UPDATE ON "Team"
+AFTER UPDATE OF "isArchived" ON "Team"
 FOR EACH ROW
 EXECUTE FUNCTION "removePageAccessOnTeamArchive"();
 
 
 -- HANDLE JOIN/LEAVE ORG
-CREATE OR REPLACE FUNCTION "updateOrgPageAccessByOrgUser"() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION "updateOrgPageAccessByOrgUser"()
+RETURNS TRIGGER AS $$
 DECLARE
   "_pageId" INT;
+  "_userId" INT := COALESCE(NEW."userId", OLD."userId");
 BEGIN
-  IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE' AND NEW."removedAt" IS DISTINCT FROM OLD."removedAt") THEN
-    FOR "_pageId" IN SELECT "pageId" FROM "PageOrganizationAccess" WHERE "orgId" = NEW."orgId" LOOP
-      PERFORM "updatePageAccess"(NEW."userId", "_pageId");
+  IF TG_OP != 'UPDATE' OR NEW."removedAt" != OLD."removedAt" THEN
+    FOR "_pageId" IN
+      SELECT "pageId"
+      FROM "PageOrganizationAccess"
+      WHERE "orgId" = COALESCE(NEW."orgId", OLD."orgId")
+    LOOP
+      PERFORM "updatePageAccess"("_userId", "_pageId");
     END LOOP;
   END IF;
   RETURN NEW;
@@ -245,7 +261,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER trg_org_user_update_org_page_access
-AFTER INSERT OR UPDATE ON "OrganizationUser"
+AFTER INSERT OR UPDATE OF "removedAt" OR DELETE ON "OrganizationUser"
 FOR EACH ROW EXECUTE FUNCTION "updateOrgPageAccessByOrgUser"();
 `.execute(db)
 }
@@ -257,5 +273,14 @@ export async function down(db: Kysely<any>): Promise<void> {
     db.schema.dropTable('PageOrganizationAccess').ifExists().execute(),
     db.schema.dropTable('PageAccess').ifExists().execute()
   ])
+  await sql`
+    DROP TRIGGER IF EXISTS "updatePageAccess";
+    DROP TRIGGER IF EXISTS "updateUserPageAccess";
+    DROP TRIGGER IF EXISTS "updateTeamPageAccess";
+    DROP TRIGGER IF EXISTS "updateOrganizationPageAccess";
+    DROP TRIGGER IF EXISTS "updateTeamPageAccessByTeamMember";
+    DROP TRIGGER IF EXISTS "removePageAccessOnTeamArchive";
+    DROP TRIGGER IF EXISTS "updateOrgPageAccessByOrgUser";
+  `.execute(db)
   await db.schema.dropType('PageRoleEnum').ifExists().execute()
 }
