@@ -404,7 +404,7 @@ const useCollapsePlaceholder = (
   useEffect(() => {
     const {ref} = drag
     if (!ref) return
-    const {style, scrollHeight} = ref
+    const {style, scrollHeight, firstElementChild} = ref
     if (staticIdx === -1) {
       // the card has been picked up
       if (staticReflectionCount > 0) return
@@ -427,7 +427,8 @@ const useCollapsePlaceholder = (
         style.height = '0'
         style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`
         requestAnimationFrame(() => {
-          style.height = scrollHeight + 'px'
+          const cardHeight = (firstElementChild as HTMLElement | null)?.offsetHeight
+          style.height = `${cardHeight}px`
           setTimeout(reset, Times.REFLECTION_DROP_DURATION)
         })
       } else {
