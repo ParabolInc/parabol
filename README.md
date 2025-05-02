@@ -43,7 +43,7 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
-$ pnpm
+$ pnpm i
 $ pnpm db:start
 $ pnpm dev
 ```
@@ -64,12 +64,14 @@ $ pnpm dev
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
-- [VS Code Tips](.vscode/tips.md)
+- [VS Code Tips](.vscode/tips.md
 - [Tailwind CSS migration guide](./packages/client/README.md)
 
 ### Deploy
 
 ```bash
+# There's a pesky bug in pnpm if you don't have an SSH key: https://github.com/pnpm/pnpm/issues/7243
+$ git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
 $ pnpm && pnpm pg:build && pnpm build && pnpm predeploy && pnpm start
 ```
 
