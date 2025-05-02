@@ -106,13 +106,14 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
           if (!hasConnected) {
             hasConnected = true
+            atmosphere.subscriptionClient = subscriptionClient
             resolve(subscriptionClient)
           }
           setConnectedStatus(atmosphere, true)
         },
         closed: (event) => {
           if (!hasConnected) {
-            console.error('Could not connect via WebSocket')
+            console.error('Could not connect via WebSocket', event)
             reject(event)
           }
           const {code, reason} = event as CloseEvent

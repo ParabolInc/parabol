@@ -24,6 +24,7 @@ import {extractPersistedOperationId, getPersistedOperation, yoga, type ServerCon
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
+    closed?: true
   }
   interface Extra {
     ip: string
@@ -178,7 +179,9 @@ export const wsHandler = makeBehavior<{token?: string}>({
           .buffer as ArrayBuffer
         // wait a tick for the old subscriptions to get removed before starting them again
         await sleep(1)
-        wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
+        if (!ctx.extra.socket.closed) {
+          wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
+        }
       }
     } else {
       dispose[id] = () => {
@@ -212,6 +215,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     activeClients.delete(extra.socketId)
     const {execute, parse} = yoga.getEnveloped(ctx)
     const dataLoader = getNewDataLoader()
+    extra.socket.closed = true
     await execute({
       document: parse(disconnectQuery),
       variableValues: {userId, socketId},
