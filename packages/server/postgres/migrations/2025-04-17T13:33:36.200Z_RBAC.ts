@@ -19,6 +19,16 @@ export async function up(db: Kysely<any>): Promise<void> {
   // create tables
   await Promise.all([
     db.schema
+      .createTable('PageGuestAccess')
+      .addColumn('pageId', 'serial', (col) =>
+        col.references('Page.id').onDelete('cascade').notNull()
+      )
+      // if email is * then the page is public
+      .addColumn('email', 'citext', (col) => col.notNull())
+      .addColumn('role', sql`"PageRoleEnum"`, (col) => col.notNull())
+      .addPrimaryKeyConstraint('PageGuestAccess_pk', ['pageId', 'email'])
+      .execute(),
+    db.schema
       .createTable('PageUserAccess')
       .addColumn('pageId', 'serial', (col) =>
         col.references('Page.id').onDelete('cascade').notNull()
@@ -66,6 +76,16 @@ export async function up(db: Kysely<any>): Promise<void> {
   ])
 
   await Promise.all([
+    db.schema
+      .createIndex('idx_PageGuestAccess_email')
+      .on('PageGuestAccess')
+      .column('email')
+      .execute(),
+    db.schema
+      .createIndex('idx_PageGuestAccess_pageId')
+      .on('PageGuestAccess')
+      .column('pageId')
+      .execute(),
     db.schema
       .createIndex('idx_PageUserAccess_userId')
       .on('PageUserAccess')
@@ -145,6 +165,26 @@ BEGIN
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- MOVE GUEST ACCESS TO USER ACCESS ON SIGNUP
+CREATE OR REPLACE FUNCTION "promoteGuestAccess"()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
+  SELECT "pageId", NEW.id, "role"
+  FROM "PageGuestAccess"
+  WHERE "email" = NEW.email;
+
+  DELETE FROM "PageGuestAccess"
+  WHERE "email" = NEW.email;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER trg_promote_guest_access
+AFTER INSERT ON "User"
+FOR EACH ROW EXECUTE FUNCTION "promoteGuestAccess"();
 
 
 -- UPDATE CACHE FROM PageUserAccess
