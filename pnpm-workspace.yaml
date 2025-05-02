@@ -6,6 +6,7 @@ onlyBuiltDependencies:
   - '@datadog/native-iast-taint-tracking'
   - '@datadog/native-metrics'
   - '@datadog/pprof'
+  - '@parcel/watcher'
   - '@scarf/scarf'
   - '@swc/core'
   - core-js
