@@ -19,14 +19,14 @@ export async function up(db: Kysely<any>): Promise<void> {
   // create tables
   await Promise.all([
     db.schema
-      .createTable('PageGuestAccess')
+      .createTable('PageExternalAccess')
       .addColumn('pageId', 'serial', (col) =>
         col.references('Page.id').onDelete('cascade').notNull()
       )
       // if email is * then the page is public
-      .addColumn('email', 'citext', (col) => col.notNull())
+      .addColumn('email', sql`"citext"`, (col) => col.notNull())
       .addColumn('role', sql`"PageRoleEnum"`, (col) => col.notNull())
-      .addPrimaryKeyConstraint('PageGuestAccess_pk', ['pageId', 'email'])
+      .addPrimaryKeyConstraint('PageExternalAccess_pk', ['pageId', 'email'])
       .execute(),
     db.schema
       .createTable('PageUserAccess')
@@ -77,13 +77,13 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await Promise.all([
     db.schema
-      .createIndex('idx_PageGuestAccess_email')
-      .on('PageGuestAccess')
+      .createIndex('idx_PageExternalAccess_email')
+      .on('PageExternalAccess')
       .column('email')
       .execute(),
     db.schema
-      .createIndex('idx_PageGuestAccess_pageId')
-      .on('PageGuestAccess')
+      .createIndex('idx_PageExternalAccess_pageId')
+      .on('PageExternalAccess')
       .column('pageId')
       .execute(),
     db.schema
@@ -167,24 +167,24 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- MOVE GUEST ACCESS TO USER ACCESS ON SIGNUP
-CREATE OR REPLACE FUNCTION "promoteGuestAccess"()
+-- MOVE EXTERNAL ACCESS TO USER ACCESS ON SIGNUP
+CREATE OR REPLACE FUNCTION "promoteExternalAccess"()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
   SELECT "pageId", NEW.id, "role"
-  FROM "PageGuestAccess"
+  FROM "PageExternalAccess"
   WHERE "email" = NEW.email;
 
-  DELETE FROM "PageGuestAccess"
+  DELETE FROM "PageExternalAccess"
   WHERE "email" = NEW.email;
 
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-CREATE TRIGGER trg_promote_guest_access
+CREATE TRIGGER trg_promote_external_access
 AFTER INSERT ON "User"
-FOR EACH ROW EXECUTE FUNCTION "promoteGuestAccess"();
+FOR EACH ROW EXECUTE FUNCTION "promoteExternalAccess"();
 
 
 -- UPDATE CACHE FROM PageUserAccess
@@ -308,19 +308,23 @@ FOR EACH ROW EXECUTE FUNCTION "updateOrgPageAccessByOrgUser"();
 
 export async function down(db: Kysely<any>): Promise<void> {
   await Promise.all([
+    db.schema.dropTable('PageExternalAccess').ifExists().execute(),
     db.schema.dropTable('PageUserAccess').ifExists().execute(),
     db.schema.dropTable('PageTeamAccess').ifExists().execute(),
     db.schema.dropTable('PageOrganizationAccess').ifExists().execute(),
     db.schema.dropTable('PageAccess').ifExists().execute()
   ])
   await sql`
-    DROP TRIGGER IF EXISTS "updatePageAccess";
-    DROP TRIGGER IF EXISTS "updateUserPageAccess";
-    DROP TRIGGER IF EXISTS "updateTeamPageAccess";
-    DROP TRIGGER IF EXISTS "updateOrganizationPageAccess";
-    DROP TRIGGER IF EXISTS "updateTeamPageAccessByTeamMember";
-    DROP TRIGGER IF EXISTS "removePageAccessOnTeamArchive";
-    DROP TRIGGER IF EXISTS "updateOrgPageAccessByOrgUser";
-  `.execute(db)
+    DROP TRIGGER IF EXISTS "trg_promote_external_access" ON "User";
+    DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
+    DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
+    DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "updatePageAccess";
+    DROP FUNCTION IF EXISTS "updateUserPageAccess";
+    DROP FUNCTION IF EXISTS "updateTeamPageAccess";
+    DROP FUNCTION IF EXISTS "updateOrganizationPageAccess";
+    DROP FUNCTION IF EXISTS "updateTeamPageAccessByTeamMember";
+    DROP FUNCTION IF EXISTS "removePageAccessOnTeamArchive";
+    DROP FUNCTION IF EXISTS "updateOrgPageAccessByOrgUser";`.execute(db)
   await db.schema.dropType('PageRoleEnum').ifExists().execute()
 }

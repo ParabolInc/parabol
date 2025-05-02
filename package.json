@@ -128,7 +128,7 @@
     "jest-junit": "^16.0.0",
     "jscodeshift": "^0.14.0",
     "json-loader": "^0.5.7",
-    "kysely": "^0.27.6",
+    "kysely": "^0.28.2",
     "kysely-codegen": "^0.17.0",
     "kysely-ctl": "^0.12.1",
     "lint-staged": "^10.1.7",

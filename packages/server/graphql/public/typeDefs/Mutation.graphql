@@ -2066,4 +2066,17 @@ type Mutation {
     """
     verificationToken: ID!
   ): UserLogInPayload!
+
+  """
+  Update the role-based access for a page
+  """
+  updatePageAccess(
+    """
+    The page to update access for
+    """
+    pageId: ID!
+    subjectType: PageSubjectEnum!
+    subjectId: ID!
+    role: PageRoleEnum
+  ): UpdatePageAccessPayload
 }

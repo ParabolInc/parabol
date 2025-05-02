@@ -1,0 +1,7 @@
+type PageAccess {
+  public: PageRoleEnum
+  guests: [PageAccessGuest!]!
+  users: [PageAccessUser!]!
+  teams: [PageAccessTeam!]!
+  organizations: [PageAccessOrganization!]!
+}

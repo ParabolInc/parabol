@@ -305,3 +305,7 @@ export const selectTasks = () =>
 
 export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()
+
+export const selectPages = () => getKysely().selectFrom('Page').selectAll()
+
+export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
