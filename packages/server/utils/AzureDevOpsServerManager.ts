@@ -325,9 +325,6 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(MAX_REQUEST_TIME)
       })
-      if (res instanceof Error) {
-        return res
-      }
       const json = (await res.json()) as AzureDevOpsError | T
       if ('message' in json) {
         return new Error(json.message)
@@ -353,9 +350,6 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(MAX_REQUEST_TIME)
       })
-      if (res instanceof Error) {
-        return res
-      }
       const json = (await res.json()) as AzureDevOpsError | T
       if ('message' in json) {
         return new Error(json.message)

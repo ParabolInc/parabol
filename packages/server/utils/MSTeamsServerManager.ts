@@ -33,7 +33,6 @@ class MSTeamsServerManager {
         body: payload,
         signal: AbortSignal.timeout(MAX_REQUEST_TIME)
       })
-      if (res instanceof Error) return res
       if (res.status !== 200) {
         if (res.headers.get('content-type') === 'application/json') {
           const {message: error} = await res.json()
