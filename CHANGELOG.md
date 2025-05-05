@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.0](https://github.com/ParabolInc/parabol/compare/v10.2.0...v10.3.0) (2025-05-05)
+
+
+### Added
+
+* migrate from yarn to pnpm ([#11240](https://github.com/ParabolInc/parabol/issues/11240)) ([6f2a86a](https://github.com/ParabolInc/parabol/commit/6f2a86a742e468821fdc7d0273d39fd695218e62))
+
+
+### Fixed
+
+* catch AbortError on fetch ([#11291](https://github.com/ParabolInc/parabol/issues/11291)) ([02dea43](https://github.com/ParabolInc/parabol/commit/02dea4322a3c654fb0fb23f11ebfef32d35231bf))
+* only call wsHandler message if socket is open ([#11281](https://github.com/ParabolInc/parabol/issues/11281)) ([5e12162](https://github.com/ParabolInc/parabol/commit/5e12162f2d31f7563ada40dbf5a76299584b6ced))
+
 ## [10.2.0](https://github.com/ParabolInc/parabol/compare/v10.1.10...v10.2.0) (2025-05-01)
 
 
