@@ -95,6 +95,9 @@ export default abstract class AtlassianManager {
       }
       return json
     } catch (error) {
+      if (error instanceof Error) {
+        return error
+      }
       return new Error('Atlassian is down')
     }
   }
@@ -119,6 +122,9 @@ export default abstract class AtlassianManager {
       }
       return json
     } catch (error) {
+      if (error instanceof Error) {
+        return error
+      }
       return new Error('Atlassian is down')
     }
   }
@@ -147,6 +153,9 @@ export default abstract class AtlassianManager {
       }
       return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
     } catch (error) {
+      if (error instanceof Error) {
+        return error
+      }
       return new Error('Atlassian is down')
     }
   }
@@ -175,6 +184,9 @@ export default abstract class AtlassianManager {
 
       return new Error(`Unknown Jira error: ${JSON.stringify(error)}`)
     } catch (error) {
+      if (error instanceof Error) {
+        return error
+      }
       return new Error('Atlassian is down')
     }
   }

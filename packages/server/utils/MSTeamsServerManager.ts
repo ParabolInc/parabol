@@ -44,8 +44,9 @@ class MSTeamsServerManager {
       }
       return res
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error) {
         sendToSentry(error)
+        return error
       }
       return new Error('MS Teams is not responding')
     }
