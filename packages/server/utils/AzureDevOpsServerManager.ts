@@ -21,6 +21,7 @@ import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import {TeamMemberIntegrationAuth} from '../postgres/types'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
+import sendToSentry from './sendToSentry'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -250,6 +251,7 @@ export interface ProjectRes {
 const MAX_REQUEST_TIME = 8000
 
 class AzureDevOpsServerManager implements TaskIntegrationManager {
+  fetch = fetch
   public title = 'AzureDevOps'
   accessToken = ''
   private headers = {
@@ -291,70 +293,78 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     this.headers.Authorization = `Bearer ${token}`
   }
 
-  private readonly fetchWithTimeout = async (url: string, options: RequestInit) => {
-    const controller = new AbortController()
-    const {signal} = controller
-    const timeout = setTimeout(() => {
-      controller.abort()
-    }, MAX_REQUEST_TIME)
+  private readonly get = async <T extends object>(url: string) => {
     try {
-      const res = await fetch(url, {...options, signal} as any)
-      clearTimeout(timeout)
-      return res
-    } catch (e) {
-      clearTimeout(timeout)
+      const res = await this.fetch(url, {
+        headers: this.headers,
+        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      })
+      const {headers} = res
+      const contentType = headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        return new Error('Received non-JSON Azure DevOps Response')
+      }
+      const json = (await res.json()) as AzureDevOpsError | T
+      if ('message' in json) {
+        return new Error(json.message)
+      }
+      return json
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        sendToSentry(error)
+      }
       return new Error('Azure DevOps is down')
     }
   }
-  private readonly get = async <T extends object>(url: string) => {
-    const res = await this.fetchWithTimeout(url, {headers: this.headers})
-    if (res instanceof Error) {
-      return res
-    }
-    const {headers} = res
-    const contentType = headers.get('content-type') || ''
-    if (!contentType.includes('application/json')) {
-      return new Error('Received non-JSON Azure DevOps Response')
-    }
-    const json = (await res.json()) as AzureDevOpsError | T
-    if ('message' in json) {
-      return new Error(json.message)
-    }
-    return json
-  }
   private readonly post = async <T extends object>(url: string, payload: any) => {
-    const res = await this.fetchWithTimeout(url, {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify(payload)
-    })
-    if (res instanceof Error) {
-      return res
+    try {
+      const res = await this.fetch(url, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      })
+      if (res instanceof Error) {
+        return res
+      }
+      const json = (await res.json()) as AzureDevOpsError | T
+      if ('message' in json) {
+        return new Error(json.message)
+      }
+      return json
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        sendToSentry(error)
+      }
+      return new Error('Azure DevOps is down')
     }
-    const json = (await res.json()) as AzureDevOpsError | T
-    if ('message' in json) {
-      return new Error(json.message)
-    }
-    return json
   }
 
   private readonly patch = async <T extends object>(url: string, payload: any) => {
-    const res = await this.fetchWithTimeout(url, {
-      method: 'PATCH',
-      headers: {
-        ...this.headers,
-        ['Content-Type']: 'application/json-patch+json'
-      },
-      body: JSON.stringify(payload)
-    })
-    if (res instanceof Error) {
-      return res
+    try {
+      const res = await this.fetch(url, {
+        method: 'PATCH',
+        headers: {
+          ...this.headers,
+          ['Content-Type']: 'application/json-patch+json'
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      })
+      if (res instanceof Error) {
+        return res
+      }
+      const json = (await res.json()) as AzureDevOpsError | T
+      if ('message' in json) {
+        return new Error(json.message)
+      }
+      return json
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        sendToSentry(error)
+      }
+      return new Error('Azure DevOps is down')
     }
-    const json = (await res.json()) as AzureDevOpsError | T
-    if ('message' in json) {
-      return new Error(json.message)
-    }
-    return json
   }
 
   async createTask({

@@ -1,12 +1,13 @@
 import {fetch} from '@whatwg-node/fetch'
 import {createSigner, httpbis} from 'http-message-signatures'
+import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
+import sendToSentry from './sendToSentry'
+
 // Mattermost is a server-only integration for now, unlike the Slack integration
 
 // We're following a similar manager pattern here should we wish to refactor the
 // Mattermost integration. We might want to do this if we decide to use Mattermost's
 // upcoming "App" framework
-
-const MAX_REQUEST_TIME = 5000
 
 export interface MattermostApiResponse {
   ok: boolean
@@ -24,22 +25,6 @@ abstract class MattermostManager {
   constructor(webhookUrl: string, secret?: string) {
     this.webhookUrl = webhookUrl
     this.secret = secret
-  }
-
-  private fetchWithTimeout = async (url: string, options: RequestInit) => {
-    const controller = new AbortController()
-    const {signal} = controller
-    const timeout = setTimeout(() => {
-      controller.abort()
-    }, MAX_REQUEST_TIME)
-    try {
-      const res = await this.fetch(url, {...options, signal} as any)
-      clearTimeout(timeout)
-      return res
-    } catch (e) {
-      clearTimeout(timeout)
-      return new Error('Mattermost is not responding')
-    }
   }
 
   // See: https://developers.mattermost.com/integrate/incoming-webhooks/
@@ -76,21 +61,28 @@ abstract class MattermostManager {
       headers['Signature'] = signedRequest.headers['Signature']!
       headers['Signature-Input'] = signedRequest.headers['Signature-Input']!
     }
-    const res = await this.fetchWithTimeout(url, {
-      method,
-      headers,
-      body
-    })
-    if (res instanceof Error) return res
-    if (res.status !== 200) {
-      if (res.headers.get('content-type') === 'application/json') {
-        const {message: error} = await res.json()
-        return new Error(`${res.status}: ${error}`)
-      } else {
-        return new Error(`${res.status}: ${res.statusText}`)
+    try {
+      const res = await this.fetch(url, {
+        method,
+        headers,
+        body,
+        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      })
+      if (res.status !== 200) {
+        if (res.headers.get('content-type') === 'application/json') {
+          const {message: error} = await res.json()
+          return new Error(`${res.status}: ${error}`)
+        } else {
+          return new Error(`${res.status}: ${res.statusText}`)
+        }
       }
+      return res
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        sendToSentry(error)
+      }
+      return new Error('Mattermost is not responding')
     }
-    return res
   }
 
   async postMessage(textOrAttachmentsArray: string | unknown[], notificationText?: string) {

@@ -1,6 +1,5 @@
 import {fetch} from '@whatwg-node/fetch'
-
-const MAX_REQUEST_TIME = 5000
+import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
 
 interface TenorResponse {
   results: ResponseObject[]
@@ -49,29 +48,21 @@ export class TenorManager {
     this.apiKey = TENOR_SECRET
     this.clientKey = HOST!
   }
-  private fetchWithTimeout = async (url: string, options: RequestInit) => {
-    const controller = new AbortController()
-    const {signal} = controller
-    const timeout = setTimeout(() => {
-      controller.abort()
-    }, MAX_REQUEST_TIME)
+
+  private async get<T>(url: string): Promise<T | Error> {
     try {
-      const res = await fetch(url, {...options, signal})
-      clearTimeout(timeout)
-      return res
-    } catch (e) {
-      clearTimeout(timeout)
+      const res = await fetch(url, {signal: AbortSignal.timeout(MAX_REQUEST_TIME)})
+      if (res.status !== 200) {
+        return new Error(`${res.status}: ${res.statusText}`)
+      }
+      const resJSON = await res.json()
+      return resJSON as T
+    } catch (error) {
+      if (error instanceof Error) {
+        return error
+      }
       return new Error('Tenor is not responding')
     }
-  }
-  private async get<T>(url: string): Promise<T | Error> {
-    const res = await this.fetchWithTimeout(url, {})
-    if (res instanceof Error) return res
-    if (res.status !== 200) {
-      return new Error(`${res.status}: ${res.statusText}`)
-    }
-    const resJSON = await res.json()
-    return resJSON as T
   }
 
   async featured(opts: {limit: number; pos?: string | null; country?: string; locale?: string}) {
