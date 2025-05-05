@@ -15,7 +15,6 @@ build/
 coverage/
 dev/
 dist/
-.nx/
 dump.rdb
 node_modules/
 package-lock.json

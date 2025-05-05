@@ -18,5 +18,5 @@ module.exports = {
   },
   noFutureProofEnums: true,
   schema: path.join(__dirname, 'packages/server/graphql/public/schema.graphql'),
-  excludes: ['**/node_modules/**', '**/__generated__/**']
+  excludes: ['**/node_modules/**', '**/__generated__/**', '**/.*/**']
 }
