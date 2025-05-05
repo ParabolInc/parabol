@@ -72,6 +72,11 @@ export async function up(db: Kysely<any>): Promise<void> {
         col.references('User.id').onDelete('cascade').notNull()
       )
       .addColumn('role', sql`"PageRoleEnum"`, (col) => col.notNull())
+      .execute(),
+    db.schema
+      .alterTable('Page')
+      .addColumn('parentPageId', 'integer', (col) => col.references('Page.id').onDelete('cascade'))
+      .addColumn('isParentLinked', 'boolean', (col) => col.defaultTo(true))
       .execute()
   ])
 
@@ -116,7 +121,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       .on('PageOrganizationAccess')
       .column('pageId')
       .execute(),
-    db.schema.createIndex('idx_PageAccess_userId').on('PageAccess').column('userId').execute()
+    db.schema.createIndex('idx_PageAccess_userId').on('PageAccess').column('userId').execute(),
+    db.schema.createIndex('idx_Page_parentPageId').on('Page').column('parentPageId').execute()
   ])
 
   await sql`
@@ -303,6 +309,136 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER trg_org_user_update_org_page_access
 AFTER INSERT OR UPDATE OF "removedAt" OR DELETE ON "OrganizationUser"
 FOR EACH ROW EXECUTE FUNCTION "updateOrgPageAccessByOrgUser"();
+
+
+--- UNLINK FROM PARENT WHEN MORE RESTRICTIVE
+CREATE OR REPLACE FUNCTION "unlinkFromParentPage"()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'DELETE' OR OLD.role > NEW.role THEN
+    UPDATE "Page"
+    SET "isParentLinked" = FALSE
+    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId");
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_unlink_on_restriction_user
+AFTER UPDATE OR DELETE ON "PageUserAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "unlinkFromParentPage"();
+
+CREATE OR REPLACE TRIGGER trg_unlink_on_restriction_external
+AFTER UPDATE OR DELETE ON "PageExternalAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "unlinkFromParentPage"();
+
+CREATE OR REPLACE TRIGGER trg_unlink_on_restriction_team
+AFTER UPDATE OR DELETE ON "PageTeamAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "unlinkFromParentPage"();
+
+CREATE OR REPLACE TRIGGER trg_unlink_on_restriction_org
+AFTER UPDATE OR DELETE ON "PageOrganizationAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "unlinkFromParentPage"();
+
+--- PROPAGATE USER ACCESS TO CHILDREN
+CREATE OR REPLACE FUNCTION "propagateAccessToChildPagesUser"()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    DELETE FROM "PageUserAccess"
+    WHERE "pageId" IN (SELECT id FROM "Page" WHERE "parentPageId" = OLD."pageId" AND "isParentLinked" = TRUE)
+    AND "userId" = OLD."userId";
+  ELSE
+    INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
+    SELECT id, NEW."userId", NEW."role"
+    FROM (SELECT id FROM "Page" WHERE "parentPageId" = NEW."pageId" AND "isParentLinked" = TRUE)
+    ON CONFLICT ("pageId", "userId") DO UPDATE
+    SET "role" = EXCLUDED."role";
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_propagate_access_user
+AFTER INSERT OR UPDATE OR DELETE ON "PageUserAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "propagateAccessToChildPagesUser"();
+
+--- PROPAGATE TEAM ACCESS TO CHILDREN
+CREATE OR REPLACE FUNCTION "propagateAccessToChildPagesTeam"()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    DELETE FROM "PageTeamAccess"
+    WHERE "pageId" IN (SELECT id FROM "Page" WHERE "parentPageId" = OLD."pageId" AND "isParentLinked" = TRUE)
+    AND "teamId" = OLD."teamId";
+  ELSE
+    INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+    SELECT id, NEW."teamId", NEW."role"
+    FROM (SELECT id FROM "Page" WHERE "parentPageId" = NEW."pageId" AND "isParentLinked" = TRUE)
+    ON CONFLICT ("pageId", "teamId") DO UPDATE
+    SET "role" = EXCLUDED."role";
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_propagate_access_team
+AFTER INSERT OR UPDATE OR DELETE ON "PageTeamAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "propagateAccessToChildPagesTeam"();
+
+--- PROPAGATE EXTERNAL ACCESS TO CHILDREN
+CREATE OR REPLACE FUNCTION "propagateAccessToChildPagesExternal"()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    DELETE FROM "PageExternalAccess"
+    WHERE "pageId" IN (SELECT id FROM "Page" WHERE "parentPageId" = OLD."pageId" AND "isParentLinked" = TRUE)
+    AND "email" = OLD."email";
+  ELSE
+    INSERT INTO "PageExternalAccess" ("pageId", "email", "role")
+    SELECT id, NEW."email", NEW."role"
+    FROM (SELECT id FROM "Page" WHERE "parentPageId" = NEW."pageId" AND "isParentLinked" = TRUE)
+    ON CONFLICT ("pageId", "email") DO UPDATE
+    SET "role" = EXCLUDED."role";
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_propagate_access_external
+AFTER INSERT OR UPDATE OR DELETE ON "PageExternalAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "propagateAccessToChildPagesExternal"();
+
+--- PROPAGATE ORG ACCESS TO CHILDREN
+CREATE OR REPLACE FUNCTION "propagateAccessToChildPagesOrganization"()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    DELETE FROM "PageOrganizationAccess"
+    WHERE "pageId" IN (SELECT id FROM "Page" WHERE "parentPageId" = OLD."pageId" AND "isParentLinked" = TRUE)
+    AND "orgId" = OLD."orgId";
+  ELSE
+    INSERT INTO "PageOrganizationAccess" ("pageId", "orgId", "role")
+    SELECT id, NEW."orgId", NEW."role"
+    FROM (SELECT id FROM "Page" WHERE "parentPageId" = NEW."pageId" AND "isParentLinked" = TRUE)
+    ON CONFLICT ("pageId", "orgId") DO UPDATE
+    SET "role" = EXCLUDED."role";
+  END IF;
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_propagate_access_user
+AFTER INSERT OR UPDATE OR DELETE ON "PageOrganizationAccess"
+FOR EACH ROW
+EXECUTE FUNCTION "propagateAccessToChildPagesOrganization"();
 `.execute(db)
 }
 
@@ -312,13 +448,18 @@ export async function down(db: Kysely<any>): Promise<void> {
     db.schema.dropTable('PageUserAccess').ifExists().execute(),
     db.schema.dropTable('PageTeamAccess').ifExists().execute(),
     db.schema.dropTable('PageOrganizationAccess').ifExists().execute(),
-    db.schema.dropTable('PageAccess').ifExists().execute()
+    db.schema.dropTable('PageAccess').ifExists().execute(),
+    db.schema.alterTable('Page').dropColumn('parentPageId').dropColumn('isParentLinked').execute()
   ])
   await sql`
     DROP TRIGGER IF EXISTS "trg_promote_external_access" ON "User";
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "propagateAccessToChildPagesExternal";
+    DROP FUNCTION IF EXISTS "propagateAccessToChildPagesUser";
+    DROP FUNCTION IF EXISTS "propagateAccessToChildPagesTeam";
+    DROP FUNCTION IF EXISTS "propagateAccessToChildPagesOrganization";
     DROP FUNCTION IF EXISTS "updatePageAccess";
     DROP FUNCTION IF EXISTS "updateUserPageAccess";
     DROP FUNCTION IF EXISTS "updateTeamPageAccess";
