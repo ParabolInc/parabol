@@ -112,6 +112,9 @@ importers:
       html-minifier-terser:
         specifier: ^5.1.1
         version: 5.1.1
+      kysely:
+        specifier: ^0.28.2
+        version: 0.28.2
       lodash.toarray:
         specifier: ^4.4.0
         version: 4.4.0
@@ -302,15 +305,12 @@ importers:
       json-loader:
         specifier: ^0.5.7
         version: 0.5.7
-      kysely:
-        specifier: ^0.27.6
-        version: 0.27.6
       kysely-codegen:
         specifier: ^0.17.0
-        version: 0.17.0(kysely@0.27.6)(pg@8.15.6)
+        version: 0.17.0(kysely@0.28.2)(pg@8.15.6)
       kysely-ctl:
-        specifier: ^0.12.1
-        version: 0.12.2(kysely@0.27.6)
+        specifier: ^0.12.2
+        version: 0.12.2(kysely@0.28.2)
       lint-staged:
         specifier: ^10.1.7
         version: 10.5.4
@@ -1158,9 +1158,6 @@ importers:
       '@types/cheerio':
         specifier: ^0.22.30
         version: 0.22.35
-      '@types/cron':
-        specifier: ^2.4.3
-        version: 2.4.3
       '@types/dotenv':
         specifier: ^6.1.1
         version: 6.1.1
@@ -6072,10 +6069,6 @@ packages:
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
-  '@types/cron@2.4.3':
-    resolution: {integrity: sha512-ViRBkoZD9Rk0hGeMdd2GHGaOaZuH9mDmwsE5/Zo53Ftwcvh7h9VJc8lIt2wdgEwS4EW5lbtTX6vlE0idCLPOyA==}
-    deprecated: This is a stub types definition. cron provides its own type definitions, so you do not need this installed.
-
   '@types/datadog-metrics@0.6.1':
     resolution: {integrity: sha512-p6zVpfmNcXwtcXjgpz7do/fKyfndGhU5sGJVtb5Gn5PvLDiQUAgD0mI/itf/99sBi9DRxeyhFQ9dQF6OxxQNbA==}
 
@@ -9931,9 +9924,9 @@ packages:
       kysely-postgres-js:
         optional: true
 
-  kysely@0.27.6:
-    resolution: {integrity: sha512-FIyV/64EkKhJmjgC0g2hygpBv5RNWVPyNCqSAD7eTCv6eFWNIi4PN1UvdSJGicN/o35bnevgis4Y0UDC0qi8jQ==}
-    engines: {node: '>=14.0.0'}
+  kysely@0.28.2:
+    resolution: {integrity: sha512-4YAVLoF0Sf0UTqlhgQMFU9iQECdah7n+13ANkiuVfRvlK+uI0Etbgd7bVP36dKlG+NXWbhGua8vnGt+sdhvT7A==}
+    engines: {node: '>=18.0.0'}
 
   launch-editor@2.10.0:
     resolution: {integrity: sha512-D7dBRJo/qcGX9xlvt/6wUYzQxjh5G1RvZPgPv8vi4KRU99DVQL/oW7tnVOCCTm2HGeo3C5HvGE5Yrh6UBoZ0vA==}
@@ -20462,10 +20455,6 @@ snapshots:
     dependencies:
       '@types/node': 22.15.3
 
-  '@types/cron@2.4.3':
-    dependencies:
-      cron: 4.3.0
-
   '@types/datadog-metrics@0.6.1': {}
 
   '@types/dotenv@6.1.1':
@@ -25144,26 +25133,26 @@ snapshots:
 
   koalas@1.0.2: {}
 
-  kysely-codegen@0.17.0(kysely@0.27.6)(pg@8.15.6):
+  kysely-codegen@0.17.0(kysely@0.28.2)(pg@8.15.6):
     dependencies:
       chalk: 4.1.2
       dotenv: 16.5.0
       dotenv-expand: 11.0.7
       git-diff: 2.0.6
-      kysely: 0.27.6
+      kysely: 0.28.2
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
     optionalDependencies:
       pg: 8.15.6
 
-  kysely-ctl@0.12.2(kysely@0.27.6):
+  kysely-ctl@0.12.2(kysely@0.28.2):
     dependencies:
       c12: 2.0.4
       citty: 0.1.6
       consola: 3.4.2
       jiti: 2.4.2
-      kysely: 0.27.6
+      kysely: 0.28.2
       nypm: 0.5.4
       ofetch: 1.4.1
       pathe: 2.0.3
@@ -25172,7 +25161,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  kysely@0.27.6: {}
+  kysely@0.28.2: {}
 
   launch-editor@2.10.0:
     dependencies:
