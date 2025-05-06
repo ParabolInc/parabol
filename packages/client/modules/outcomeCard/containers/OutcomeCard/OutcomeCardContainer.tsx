@@ -75,7 +75,6 @@ const OutcomeCardContainer = memo((props: Props) => {
 
   const handleCardUpdate = () => {
     const isFocused = isTaskFocused()
-    if (isFocused) return
     if (editor.isEmpty && !isFocused) {
       DeleteTaskMutation(atmosphere, {taskId})
       return

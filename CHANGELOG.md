@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.3](https://github.com/ParabolInc/parabol/compare/v10.3.2...v10.3.3) (2025-05-06)
+
+
+### Fixed
+
+* await tick in chronos to not run it in parallel ([#11303](https://github.com/ParabolInc/parabol/issues/11303)) ([8168e2f](https://github.com/ParabolInc/parabol/commit/8168e2f6e037cb4ebda59b7b510f64d154bc3815))
+* db:start command created the dev folder with the current user ([#11242](https://github.com/ParabolInc/parabol/issues/11242)) ([43c7166](https://github.com/ParabolInc/parabol/commit/43c716693afb679022c8a56f3e03d284696c4d64))
+
+## [10.3.2](https://github.com/ParabolInc/parabol/compare/v10.3.1...v10.3.2) (2025-05-06)
+
+
+### Fixed
+
+* can push task card to integration ([#11275](https://github.com/ParabolInc/parabol/issues/11275)) ([91f85b9](https://github.com/ParabolInc/parabol/commit/91f85b9af894a8cefe8ea218631a5fb976da5b3f))
+* **Mattermost:** fix notifications ([#11299](https://github.com/ParabolInc/parabol/issues/11299)) ([96da6ab](https://github.com/ParabolInc/parabol/commit/96da6aba1f44bcfae57461d9b188452132a7ce62))
+* **Mattermost:** use x-application-authorization header ([#11297](https://github.com/ParabolInc/parabol/issues/11297)) ([a7db165](https://github.com/ParabolInc/parabol/commit/a7db165281d924e2a105323222faaa49beac8abc))
+
+## [10.3.1](https://github.com/ParabolInc/parabol/compare/v10.3.0...v10.3.1) (2025-05-06)
+
+
+### Fixed
+
+* do not bump parabol-client dependency in package.json ([#11294](https://github.com/ParabolInc/parabol/issues/11294)) ([3960282](https://github.com/ParabolInc/parabol/commit/3960282008274107088d2192fce5ea8db18bd9ee))
+
 ## [10.3.0](https://github.com/ParabolInc/parabol/compare/v10.2.0...v10.3.0) (2025-05-05)
 
 

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.3.0",
+  "version": "10.3.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -25,7 +25,7 @@
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
     "pg:generate": "bash -c 'set -a; source .env; set +a; ./node_modules/.bin/kysely-codegen --exclude-pattern \"(StripeQuantityMismatchLogging)\" --out-file ./packages/server/postgres/types/pg.d.ts --dialect postgres --url \"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" && prettier --write ./packages/server/postgres/types/pg.d.ts'",
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
-    "db:start": "docker compose -f docker/stacks/development/docker-compose.yml up -d",
+    "db:start": "mkdir -p dev && docker compose -f docker/stacks/development/docker-compose.yml up -d",
     "db:stop": "docker compose -f docker/stacks/development/docker-compose.yml down",
     "predeploy": "node dist/preDeploy.js",
     "dev": "bash -c 'set -a; source .env; set +a; PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon'",
@@ -36,7 +36,7 @@
     "stylecheck": "pnpm -r prettier:check",
     "codecheck": "concurrently --names \"lintcheck,stylecheck\" \"pnpm lintcheck\" \"pnpm stylecheck\" ",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "precommit": "pnpm -r precommit",
+    "precommit": "pnpm -r --workspace-concurrency=1 precommit",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
     "relay:build": "node scripts/generateGraphQLArtifacts.js",
