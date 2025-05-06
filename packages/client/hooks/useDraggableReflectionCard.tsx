@@ -427,8 +427,8 @@ const useCollapsePlaceholder = (
         style.height = '0'
         style.transition = `height ${Times.REFLECTION_DROP_DURATION}ms`
         requestAnimationFrame(() => {
-          const cardHeight = (firstElementChild as HTMLElement | null)?.offsetHeight ?? 0
-          style.height = `${cardHeight}px`
+          const cardElement = firstElementChild as HTMLElement
+          style.height = `${cardElement.offsetHeight}px`
           setTimeout(reset, Times.REFLECTION_DROP_DURATION)
         })
       } else {
