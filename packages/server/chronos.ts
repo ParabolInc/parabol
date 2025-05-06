@@ -127,7 +127,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
             name,
             async () => {
               Logger.log(`🌱 Chronos Job ${name}: TICK`)
-              onTick()
+              return onTick()
             },
             () => Logger.log(`🌱 Chronos Job ${name}: TICK SKIPPED (not leader)`)
           )
