@@ -3,6 +3,7 @@ import {useRef} from 'react'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import type {PageSharingQuery} from '../../__generated__/PageSharingQuery.graphql'
 import {Avatar} from '../../ui/Avatar/Avatar'
+import {Button} from '../../ui/Button/Button'
 
 interface Props {
   queryRef: PreloadedQuery<PageSharingQuery>
@@ -55,14 +56,11 @@ export const PageSharing = (props: Props) => {
   const {guests, users, teams, organizations} = access
   return (
     <div className='flex flex-col overflow-hidden'>
-      <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'>
-        <input
-          autoFocus
-          value={searchQuery}
-          className='w-full outline-hidden focus:ring-2'
-          ref={ref}
-        />
+      <form className='flex w-full min-w-44 items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'>
+        <input autoFocus className='w-full outline-hidden focus:ring-2' ref={ref} />
+        <Button variant='secondary'>Invite</Button>
       </form>
+      <div>Guests</div>
       <div className='grid w-96 auto-rows-[1px] grid-cols-[repeat(auto-fit,minmax(112px,1fr))] gap-x-1 overflow-auto'>
         {guests.map((guest, idx) => (
           <div

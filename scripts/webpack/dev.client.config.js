@@ -13,6 +13,18 @@ const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 const {PORT, SOCKET_PORT} = process.env
 
+class ResolveDebugPlugin {
+  apply(compiler) {
+    compiler.hooks.compilation.tap('ResolveDebugPlugin', (compilation) => {
+      compilation.hooks.buildModule.tap('ResolveDebugPlugin', (module) => {
+        if (module.request && module.request.includes('node:fs')) {
+          console.log('Module using crypto:', module.request, 'from', module.context)
+        }
+      })
+    })
+  }
+}
+
 const USE_REFRESH = false
 module.exports = {
   cache: {
@@ -73,6 +85,10 @@ module.exports = {
       }
     ]
   },
+  externals: {
+    'node:crypto': 'commonjs crypto',
+    'node:fs': false
+  },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
     ignored: /node_modules/
@@ -93,7 +109,8 @@ module.exports = {
     path: path.join(PROJECT_ROOT, 'build'),
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
-    publicPath: '/'
+    publicPath: '/',
+    assetModuleFilename: '[name][ext][query]'
   },
   resolve: {
     alias: {
@@ -111,6 +128,7 @@ module.exports = {
     unsafeCache: true
   },
   plugins: [
+    new ResolveDebugPlugin(),
     new webpack.DllReferencePlugin({
       manifest: vendors
     }),
@@ -220,7 +238,7 @@ module.exports = {
       },
       {
         test: /\.(eot|ttf|wav|mp3|woff|woff2|otf)$/,
-        use: ['file-loader']
+        type: 'asset/resource'
       },
       // https://github.com/graphql/graphiql/issues/1055#issuecomment-561353578
       {

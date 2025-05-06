@@ -37,7 +37,6 @@
     "webpack": "^5.99.6"
   },
   "dependencies": {
-    "parabol-client": "workspace:*",
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
     "@radix-ui/react-popover": "^1.1.2",
@@ -48,6 +47,8 @@
     "@tiptap/pm": "^2.11.7",
     "@tiptap/starter-kit": "^2.11.7",
     "mattermost-redux": "5.33.1",
+    "parabol-client": "workspace:*",
+    "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
     "react-redux": "^9.2.0",

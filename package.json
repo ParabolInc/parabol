@@ -68,7 +68,9 @@
     "axios": "^1.7.8",
     "prosemirror-model": "^1.24.1",
     "prosemirror-view": "^1.38.0",
-    "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df"
+    "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

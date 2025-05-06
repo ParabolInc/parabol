@@ -22,7 +22,7 @@ const PageAccess: PageAccessResolvers = {
       .selectFrom('PageExternalAccess')
       .select(['email', 'role'])
       .where('pageId', '=', id)
-      .where('email', 'is not', '*')
+      .where('email', '!=', '*')
       .execute()
     return access
   },
