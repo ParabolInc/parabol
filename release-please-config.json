@@ -47,18 +47,8 @@
     },
     {
       "type": "json",
-      "path": "packages/server/package.json",
-      "jsonpath": "$.dependencies['parabol-client']"
-    },
-    {
-      "type": "json",
       "path": "packages/mattermost-plugin/package.json",
       "jsonpath": "$.version"
-    },
-    {
-      "type": "json",
-      "path": "packages/mattermost-plugin/package.json",
-      "jsonpath": "$.dependencies['parabol-client']"
     }
   ]
 }
