@@ -93,7 +93,8 @@ module.exports = {
     path: path.join(PROJECT_ROOT, 'build'),
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
-    publicPath: '/'
+    publicPath: '/',
+    assetModuleFilename: '[name][ext][query]-[hash]'
   },
   resolve: {
     alias: {
@@ -220,7 +221,7 @@ module.exports = {
       },
       {
         test: /\.(eot|ttf|wav|mp3|woff|woff2|otf)$/,
-        use: ['file-loader']
+        type: 'asset/resource'
       },
       // https://github.com/graphql/graphiql/issues/1055#issuecomment-561353578
       {
