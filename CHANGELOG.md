@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.1](https://github.com/ParabolInc/parabol/compare/v10.3.0...v10.3.1) (2025-05-06)
+
+
+### Fixed
+
+* do not bump parabol-client dependency in package.json ([#11294](https://github.com/ParabolInc/parabol/issues/11294)) ([3960282](https://github.com/ParabolInc/parabol/commit/3960282008274107088d2192fce5ea8db18bd9ee))
+
 ## [10.3.0](https://github.com/ParabolInc/parabol/compare/v10.2.0...v10.3.0) (2025-05-05)
 
 
