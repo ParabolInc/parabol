@@ -13,18 +13,6 @@ const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
 const {PORT, SOCKET_PORT} = process.env
 
-class ResolveDebugPlugin {
-  apply(compiler) {
-    compiler.hooks.compilation.tap('ResolveDebugPlugin', (compilation) => {
-      compilation.hooks.buildModule.tap('ResolveDebugPlugin', (module) => {
-        if (module.request && module.request.includes('node:fs')) {
-          console.log('Module using crypto:', module.request, 'from', module.context)
-        }
-      })
-    })
-  }
-}
-
 const USE_REFRESH = false
 module.exports = {
   cache: {
@@ -85,10 +73,6 @@ module.exports = {
       }
     ]
   },
-  externals: {
-    'node:crypto': 'commonjs crypto',
-    'node:fs': false
-  },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
     ignored: /node_modules/
@@ -110,11 +94,7 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
     publicPath: '/',
-<<<<<<< HEAD
-    assetModuleFilename: '[name][ext][query]'
-=======
     assetModuleFilename: '[name][ext][query]-[hash]'
->>>>>>> feat/rbac
   },
   resolve: {
     alias: {
@@ -132,7 +112,6 @@ module.exports = {
     unsafeCache: true
   },
   plugins: [
-    new ResolveDebugPlugin(),
     new webpack.DllReferencePlugin({
       manifest: vendors
     }),
