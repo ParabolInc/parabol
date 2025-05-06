@@ -115,7 +115,7 @@
     "oauth-1.0a": "^2.2.6",
     "object-hash": "^3.0.0",
     "oy-vey": "^0.12.1",
-    "parabol-client": "10.3.0",
+    "parabol-client": "workspace:*",
     "pg": "^8.5.1",
     "prosemirror-model": "^1.25.1",
     "prosemirror-state": "^1.4.3",
