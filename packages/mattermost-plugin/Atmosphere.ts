@@ -33,7 +33,7 @@ const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Va
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
-          authorization: authToken ? `Bearer ${authToken}` : ''
+          'x-application-authorization': authToken ? `Bearer ${authToken}` : ''
         },
         body: JSON.stringify({
           docId: params.id,
