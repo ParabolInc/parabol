@@ -181,7 +181,7 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
             .$if(!!archived, (qb) => qb.where(sql<boolean>`'archived' = ANY(tags)`))
             .$if(!archived, (qb) => qb.where(sql<boolean>`'archived' != ALL(tags)`))
             .$if(!includeUnassigned, (qb) => qb.where('userId', 'is not', null))
-            .orderBy('updatedAt desc')
+            .orderBy('updatedAt', 'desc')
             .limit(first + 1)
             .execute()
           return {

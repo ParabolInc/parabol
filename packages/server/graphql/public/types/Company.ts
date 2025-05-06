@@ -132,7 +132,7 @@ const Company: CompanyResolvers = {
       .selectFrom('NewMeeting')
       .select('createdAt')
       .where('teamId', 'in', teamIds)
-      .orderBy('createdAt desc')
+      .orderBy('createdAt', 'desc')
       .limit(1)
       .executeTakeFirst()
     return lastMetAt?.createdAt ?? null

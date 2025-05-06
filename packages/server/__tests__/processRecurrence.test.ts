@@ -274,7 +274,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .selectFrom('NewMeeting')
     .selectAll()
     .where('meetingType', '=', 'teamPrompt')
-    .orderBy('createdAt desc')
+    .orderBy('createdAt', 'desc')
     .limit(1)
     .executeTakeFirst()
 
@@ -356,7 +356,7 @@ RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
     .selectFrom('NewMeeting')
     .selectAll()
     .where('meetingType', '=', 'retrospective')
-    .orderBy('createdAt desc')
+    .orderBy('createdAt', 'desc')
     .limit(1)
     .executeTakeFirst()
 

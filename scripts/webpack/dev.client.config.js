@@ -110,7 +110,11 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
     publicPath: '/',
+<<<<<<< HEAD
     assetModuleFilename: '[name][ext][query]'
+=======
+    assetModuleFilename: '[name][ext][query]-[hash]'
+>>>>>>> feat/rbac
   },
   resolve: {
     alias: {

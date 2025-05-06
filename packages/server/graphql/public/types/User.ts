@@ -100,7 +100,7 @@ const User: ReqResolvers<'User'> = {
       .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
       .where(sql<boolean>`'archived' = ANY(tags)`)
       .where(({eb, or}) => or([sql<boolean>`'private' != ALL(tags)`, eb('userId', '=', userId)]))
-      .orderBy('updatedAt desc')
+      .orderBy('updatedAt', 'desc')
       .limit(first + 1)
       .execute()
 
@@ -200,7 +200,7 @@ const User: ReqResolvers<'User'> = {
       .where('userId', '=', userId)
       .$if(hasTypes, (qb) => qb.where('type', 'in', types!))
       .$if(!!after, (qb) => qb.where('createdAt', '<', after!))
-      .orderBy('createdAt desc')
+      .orderBy('createdAt', 'desc')
       .limit(first + 1)
       .execute()
 
