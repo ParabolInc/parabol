@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.3](https://github.com/ParabolInc/parabol/compare/v10.3.2...v10.3.3) (2025-05-06)
+
+
+### Fixed
+
+* await tick in chronos to not run it in parallel ([#11303](https://github.com/ParabolInc/parabol/issues/11303)) ([8168e2f](https://github.com/ParabolInc/parabol/commit/8168e2f6e037cb4ebda59b7b510f64d154bc3815))
+* db:start command created the dev folder with the current user ([#11242](https://github.com/ParabolInc/parabol/issues/11242)) ([43c7166](https://github.com/ParabolInc/parabol/commit/43c716693afb679022c8a56f3e03d284696c4d64))
+
 ## [10.3.2](https://github.com/ParabolInc/parabol/compare/v10.3.1...v10.3.2) (2025-05-06)
 
 
