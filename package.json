@@ -36,7 +36,7 @@
     "stylecheck": "pnpm -r prettier:check",
     "codecheck": "concurrently --names \"lintcheck,stylecheck\" \"pnpm lintcheck\" \"pnpm stylecheck\" ",
     "ultrahook": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d \"'\") && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
-    "precommit": "pnpm -r precommit",
+    "precommit": "pnpm -r --workspace-concurrency=1 precommit",
     "postcheckout": "node scripts/generateGraphQLArtifacts.js &>/dev/null &",
     "prepare": "husky install",
     "relay:build": "node scripts/generateGraphQLArtifacts.js",
