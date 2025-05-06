@@ -77,6 +77,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .alterTable('Page')
       .addColumn('parentPageId', 'integer', (col) => col.references('Page.id').onDelete('cascade'))
       .addColumn('isParentLinked', 'boolean', (col) => col.defaultTo(true))
+      .addColumn('teamId', 'varchar(100)', (col) => col.references('Team.id').onDelete('cascade'))
       .execute()
   ])
 
@@ -122,7 +123,13 @@ export async function up(db: Kysely<any>): Promise<void> {
       .column('pageId')
       .execute(),
     db.schema.createIndex('idx_PageAccess_userId').on('PageAccess').column('userId').execute(),
-    db.schema.createIndex('idx_Page_parentPageId').on('Page').column('parentPageId').execute()
+    db.schema.createIndex('idx_Page_parentPageId').on('Page').column('parentPageId').execute(),
+    db.schema
+      .createIndex('idx_Page_teamId')
+      .on('Page')
+      .column('teamId')
+      .where('teamId', 'is not', null)
+      .execute()
   ])
 
   await sql`
@@ -439,6 +446,50 @@ CREATE TRIGGER trg_propagate_access_user
 AFTER INSERT OR UPDATE OR DELETE ON "PageOrganizationAccess"
 FOR EACH ROW
 EXECUTE FUNCTION "propagateAccessToChildPagesOrganization"();
+
+
+--- ADD ACCESS ON NEW PAGE
+CREATE OR REPLACE FUNCTION "addAccessOnNewPage"()
+RETURNS TRIGGER AS $$
+BEGIN
+INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
+VALUES (NEW."id", NEW."userId", 'owner');
+IF NEW."parentPageId" IS NOT NULL THEN
+  -- Copy PageUserAccess
+  INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
+  SELECT NEW."id", "userId", "role"
+  FROM "PageUserAccess"
+  WHERE "pageId" = NEW."parentPageId";
+
+  -- Copy PageExternalAccess
+  INSERT INTO "PageExternalAccess" ("pageId", "email", "role")
+  SELECT NEW."id", "email", "role"
+  FROM "PageExternalAccess"
+  WHERE "pageId" = NEW."parentPageId";
+
+  -- Copy PageTeamAccess
+  INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+  SELECT NEW."id", "teamId", "role"
+  FROM "PageTeamAccess"
+  WHERE "pageId" = NEW."parentPageId";
+
+  -- Copy PageOrganizationAccess
+  INSERT INTO "PageOrganizationAccess" ("pageId", "orgId", "role")
+  SELECT NEW."id", "orgId", "role"
+  FROM "PageOrganizationAccess"
+  WHERE "pageId" = NEW."parentPageId";
+ELSIF NEW."teamId" IS NOT NULL THEN
+  INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+  VALUES (NEW."id", NEW."teamId", 'editor');
+END IF;
+RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_add_access_on_new_page
+AFTER INSERT ON "Page"
+FOR EACH ROW
+EXECUTE FUNCTION "addAccessOnNewPage"();
 `.execute(db)
 }
 
@@ -449,13 +500,20 @@ export async function down(db: Kysely<any>): Promise<void> {
     db.schema.dropTable('PageTeamAccess').ifExists().execute(),
     db.schema.dropTable('PageOrganizationAccess').ifExists().execute(),
     db.schema.dropTable('PageAccess').ifExists().execute(),
-    db.schema.alterTable('Page').dropColumn('parentPageId').dropColumn('isParentLinked').execute()
+    db.schema
+      .alterTable('Page')
+      .dropColumn('parentPageId')
+      .dropColumn('isParentLinked')
+      .dropColumn('teamId')
+      .execute()
   ])
   await sql`
+    DROP TRIGGER IF EXISTS "trg_add_access_on_new_page" ON "Page";
     DROP TRIGGER IF EXISTS "trg_promote_external_access" ON "User";
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "addAccessOnNewPage";
     DROP FUNCTION IF EXISTS "propagateAccessToChildPagesExternal";
     DROP FUNCTION IF EXISTS "propagateAccessToChildPagesUser";
     DROP FUNCTION IF EXISTS "propagateAccessToChildPagesTeam";
