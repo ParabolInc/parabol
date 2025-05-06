@@ -38,7 +38,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup environment variables
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
@@ -47,13 +48,13 @@ jobs:
 
           DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}
           echo "DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL_DEV }}" >> $GITHUB_ENV
+          corepack enable
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version-file: package.json
-          # Caching yarn dir & running yarn install is too slow
-          # Instead, we aggressively cache node_modules below to avoid calling install
+          cache: "pnpm"
 
       - name: Get cached node modules
         id: cache
@@ -61,23 +62,26 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          key: node_modules-${{ runner.arch }}-${{ env.NODE_VERSION }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install node_modules
         if: steps.cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable
+        # pnpm has a bug that resolves git+https to ssh
+        run: |
+          git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+          pnpm install --frozen-lockfile
 
       - name: Build the DBs
         run: |
           cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
-          yarn kysely migrate:latest
-          yarn pg:build
-          yarn pg:generate
+          pnpm kysely migrate:latest
+          pnpm pg:build
+          pnpm pg:generate
 
       - name: Build for release
         env:
           NODE_OPTIONS: "--max_old_space_size=8192"
-        run: yarn build --no-deps
+        run: pnpm build --no-deps
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -127,7 +131,7 @@ jobs:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
           CDN_BUILD_URL: "https://action-files.parabol.co/production/build/"
         run: |
-          yarn datadog-ci sourcemaps upload ./build \
+          pnpm datadog-ci sourcemaps upload ./build \
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
             --minified-path-prefix=${{env.CDN_BUILD_URL}}
@@ -135,7 +139,7 @@ jobs:
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
         run: |
-          yarn datadog-ci sourcemaps upload ./dist \
+          pnpm datadog-ci sourcemaps upload ./dist \
             --service=web \
             --release-version=${{env.ACTION_VERSION}} \
             --minified-path-prefix="/home/node/parabol/dist/"

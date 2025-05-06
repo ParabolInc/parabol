@@ -14,8 +14,9 @@ const buildPath = path.join(PROJECT_ROOT, 'build')
 const normalizeName = (pathData) => {
   const name = pathData.chunk.name || pathData.chunk.id
   return name
-  .replace(/.*node_modules/g, "")
-  .trim().replace(/ +/g, "-")
+    .replace(/.*node_modules/g, '')
+    .trim()
+    .replace(/ +/g, '-')
 }
 
 const clientTransformRules = (pluginRoot) => {
@@ -38,7 +39,7 @@ const clientTransformRules = (pluginRoot) => {
                     artifactDirectory: path.join(pluginRoot, '__generated__')
                   }
                 }
-              ],
+              ]
               //'react-refresh/babel'
             ]
           }
@@ -57,17 +58,17 @@ const clientTransformRules = (pluginRoot) => {
 module.exports = (config) => {
   const minimize = config.minimize === 'true'
   return {
-    entry: "./index",
-    mode: "development",
-    devtool: "source-map",
+    entry: path.join(PLUGIN_ROOT, './index'),
+    mode: 'development',
+    devtool: 'source-map',
     devServer: {
-      allowedHosts: "all",
+      allowedHosts: 'all',
       //contentBase: path.join(__dirname, "dist"),
-      port: 3002,
+      port: 3002
     },
     output: {
       path: buildPath,
-      publicPath: "auto",
+      publicPath: 'auto',
       filename: 'mattermost-plugin_[name]_[contenthash].js',
       chunkFilename: (pathData) => {
         if (pathData.chunk.name === 'env') {
@@ -83,18 +84,18 @@ module.exports = (config) => {
         // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
         'react/jsx-runtime': require.resolve('react/jsx-runtime')
       },
-      extensions: [".ts", ".tsx", ".js"],
+      extensions: ['.ts', '.tsx', '.js']
     },
     module: {
       rules: [
         ...clientTransformRules(PLUGIN_ROOT),
         {
           test: /\.tsx?$/,
-          loader: "babel-loader",
+          loader: 'babel-loader',
           exclude: /node_modules/,
           options: {
-            presets: ["@babel/preset-react", "@babel/preset-typescript"],
-          },
+            presets: ['@babel/preset-react', '@babel/preset-typescript']
+          }
         },
         {
           test: /\.css$/,
@@ -104,15 +105,15 @@ module.exports = (config) => {
             {
               loader: 'css-loader',
               options: {
-                importLoaders: 1,
+                importLoaders: 1
               }
             },
             {
-              loader: 'postcss-loader',
-            },
-          ],
-        },
-      ],
+              loader: 'postcss-loader'
+            }
+          ]
+        }
+      ]
     },
     optimization: {
       minimize,
@@ -129,11 +130,11 @@ module.exports = (config) => {
     },
     plugins: [
       new webpack.container.ModuleFederationPlugin({
-        name: "parabol",
-        filename: "mattermost-plugin-entry.js",
+        name: 'parabol',
+        filename: 'mattermost-plugin-entry.js',
         exposes: {
-          "./plugin": "./index",
-        },
+          './plugin': path.join(PLUGIN_ROOT, './index')
+        }
         /*
         shared: {
           react: {
@@ -153,16 +154,16 @@ module.exports = (config) => {
       {
         apply: (compiler) => {
           compiler.hooks.afterEmit.tap('RenameEnvPlugin', (compilation) => {
-            const outputPath = compilation.outputOptions.path;
-            const original = path.join(outputPath, 'mattermost-plugin_env.js');
-            const renamed = path.join(outputPath, 'mattermost-plugin_envSkeleton.js');
+            const outputPath = compilation.outputOptions.path
+            const original = path.join(outputPath, 'mattermost-plugin_env.js')
+            const renamed = path.join(outputPath, 'mattermost-plugin_envSkeleton.js')
 
             if (fs.existsSync(original)) {
-              fs.renameSync(original, renamed);
+              fs.renameSync(original, renamed)
             } else {
-              console.warn('⚠️ mattermost-plugin_env.js not found to rename');
+              console.warn('⚠️ mattermost-plugin_env.js not found to rename')
             }
-          });
+          })
         }
       }
     ],
@@ -173,7 +174,7 @@ module.exports = (config) => {
       'react-redux': 'ReactRedux',
       'prop-types': 'PropTypes',
       'react-bootstrap': 'ReactBootstrap',
-      'react-router-dom': 'ReactRouterDom',
-    },
+      'react-router-dom': 'ReactRouterDom'
+    }
   }
 }

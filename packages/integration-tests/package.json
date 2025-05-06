@@ -2,16 +2,15 @@
   "name": "integration-tests",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.2.0",
+  "version": "10.3.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint tests --ext .ts",
+    "lint": "eslint tests",
     "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.34.3",
-    "lint-staged": "^12.3.3",
     "ts-app-env": "^1.4.2"
   }
 }

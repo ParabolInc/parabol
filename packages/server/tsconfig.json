@@ -6,6 +6,7 @@
     "paths": {
       "server/*": [""],
       "parabol-client/*": ["client/*"],
+      "parabol-server/*": [""],
       "~/*": ["client/*"]
     },
     "lib": ["esnext", "dom"]

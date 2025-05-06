@@ -11,7 +11,7 @@
 */
 import {defaultFieldResolver} from 'graphql'
 import {allow} from 'graphql-shield'
-import type {ShieldRule} from 'graphql-shield/dist/types'
+import type {ShieldRule} from 'graphql-shield/typings/types'
 import hash from 'object-hash'
 import {Logger} from '../utils/Logger'
 import {ResolverFn} from './private/resolverTypes'

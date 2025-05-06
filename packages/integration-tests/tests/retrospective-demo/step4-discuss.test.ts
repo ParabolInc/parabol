@@ -129,18 +129,18 @@ test.describe('retrospective-demo / discuss page', () => {
 
       // Emoji reactions do not appear on mobile devices
       if (!isMobile) {
-        for await (const emoji of emojis) {
+        for (const emoji of emojis) {
           await expect(page.locator(`text=${emoji}`)).toBeVisible()
         }
       }
 
-      for await (const task of tasks || []) {
+      for (const task of tasks || []) {
         await expect(page.locator(`:text('${task}')`)).toBeVisible({
           timeout: 30_000
         })
       }
 
-      for await (const comment of comments || []) {
+      for (const comment of comments || []) {
         await expect(page.locator(`:text('${comment}')`)).toBeVisible({
           timeout: 30_000
         })

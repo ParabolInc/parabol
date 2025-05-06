@@ -1,5 +1,5 @@
 import {and, not, or} from 'graphql-shield'
-import type {ShieldRule} from 'graphql-shield/dist/types'
+import type {ShieldRule} from 'graphql-shield/typings/types'
 import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import isAuthenticated from './rules/isAuthenticated'

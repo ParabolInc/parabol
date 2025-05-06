@@ -44,7 +44,7 @@ For all matters, please contact: support@parabol.co
 ### Prerequisites
 
 - [Node](https://nodejs.org/en/download/)
-- [Yarn](https://classic.yarnpkg.com/en/docs/cli/install/)
+- [pnpm](https://pnpm.io/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [Watchman](https://facebook.github.io/watchman/docs/install.html) (Development only)
 
@@ -54,20 +54,20 @@ For all matters, please contact: support@parabol.co
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
-$ yarn
-$ yarn db:start
-$ yarn dev
+$ pnpm
+$ pnpm db:start
+$ pnpm dev
 ```
 
 By default, the app will run at: http://localhost:3000/
 
-If `yarn db:start` failed and `localhost:5050` isn't working, a docker
+If `pnpm db:start` failed and `localhost:5050` isn't working, a docker
 container, volume or image may be corrupted and need to be pruned.
 
 Build for production and start application:
 
 ```bash
-$ yarn && yarn build && yarn start
+$ pnpm && pnpm build && pnpm start
 ```
 
 ### PostgreSQL

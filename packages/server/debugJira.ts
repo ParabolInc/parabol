@@ -1,4 +1,4 @@
-// call with yarn sucrase-node debugJira.ts
+// call with pnpm sucrase-node debugJira.ts
 import '../../scripts/webpack/utils/dotenv'
 import AtlassianServerManager from './utils/AtlassianServerManager'
 import {Logger} from './utils/Logger'

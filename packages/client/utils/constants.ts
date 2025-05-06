@@ -232,3 +232,6 @@ export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string | unde
 /* OpenAI */
 export const MAX_GPT_3_5_TOKENS = 4096 // https://platform.openai.com/docs/models/gpt-3-5
 export const AVG_CHARS_PER_TOKEN = 4 // 1 token ~= 4 chars https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
+
+// Fetch timeout used mainly in integrations
+export const MAX_REQUEST_TIME = 5000

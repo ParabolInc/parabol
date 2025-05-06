@@ -1,4 +1,4 @@
-import {keyframes} from '@emotion/core'
+import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
 import {useHistory} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'

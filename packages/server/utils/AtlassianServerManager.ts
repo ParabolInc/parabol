@@ -7,6 +7,7 @@ import AtlassianManager, {
   RateLimitError
 } from 'parabol-client/utils/AtlassianManager'
 import composeJQL from 'parabol-client/utils/composeJQL'
+import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
 import {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
@@ -345,15 +346,20 @@ class AtlassianServerManager extends AtlassianManager {
   }
 
   async getImage(imageUrl: string) {
-    const imageRes = await this.fetchWithTimeout(imageUrl, {
-      headers: {Authorization: this.headers.Authorization}
-    })
+    try {
+      const imageRes = await this.fetch(imageUrl, {
+        headers: {Authorization: this.headers.Authorization},
+        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      })
 
-    if (!imageRes || imageRes instanceof Error) return null
-    const arrayBuffer = await imageRes.arrayBuffer()
-    return {
-      imageBuffer: Buffer.from(arrayBuffer),
-      contentType: imageRes.headers.get('content-type')
+      if (!imageRes) return null
+      const arrayBuffer = await imageRes.arrayBuffer()
+      return {
+        imageBuffer: Buffer.from(arrayBuffer),
+        contentType: imageRes.headers.get('content-type')
+      }
+    } catch (error) {
+      return null
     }
   }
 

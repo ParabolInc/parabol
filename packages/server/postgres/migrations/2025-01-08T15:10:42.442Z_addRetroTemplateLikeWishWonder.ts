@@ -1,5 +1,5 @@
 import type {Kysely} from 'kysely'
-import getTemplateIllustrationUrl from 'parabol-server/graphql/mutations/helpers/getTemplateIllustrationUrl'
+import getTemplateIllustrationUrl from '../../graphql/mutations/helpers/getTemplateIllustrationUrl'
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db

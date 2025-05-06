@@ -17,5 +17,6 @@ module.exports = {
     _xGitHubURI: 'string'
   },
   noFutureProofEnums: true,
-  schema: path.join(__dirname, 'packages/server/graphql/public/schema.graphql')
+  schema: path.join(__dirname, 'packages/server/graphql/public/schema.graphql'),
+  excludes: ['**/node_modules/**', '**/__generated__/**']
 }

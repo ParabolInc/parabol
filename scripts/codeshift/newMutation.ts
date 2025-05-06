@@ -237,7 +237,7 @@ NAME
     newMutation - Create boilerplate for a new mutation
 
 SYNOPSIS
-    yarn newMutation <mutationName>
+    pnpm newMutation <mutationName>
 
 OPTIONS
     -s, --subscription <subscriptionChannel>
@@ -245,11 +245,11 @@ OPTIONS
 
     -p, --postgres
       If this mutation will affect postgres, this will create the SQL and query files
-      Once generated, you'll need to write the SQL and call 'yarn pg:build'.
+      Once generated, you'll need to write the SQL and call 'pnpm pg:build'.
       You may also need to rename the files depending on the mutation (upsert, remove, etc.)
 
 EXAMPLES
-    yarn newMutation startFun -s meeting`)
+    pnpm newMutation startFun -s meeting`)
     return
   }
   const rawMutationName = argv._[0]

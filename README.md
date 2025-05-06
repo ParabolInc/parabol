@@ -33,7 +33,7 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 ### Prerequisites
 
 - [Node](https://nodejs.org/en/download/)
-- [Yarn](https://classic.yarnpkg.com/en/docs/cli/install/)
+- [pnpm](https://pnpm.io/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - [Watchman](https://facebook.github.io/watchman/docs/install.html) (Development only)
 
@@ -43,14 +43,14 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 $ git clone https://github.com/ParabolInc/parabol.git
 $ cd parabol
 $ cp .env.example .env # Add your own vars here
-$ yarn
-$ yarn db:start
-$ yarn dev
+$ pnpm i
+$ pnpm db:start
+$ pnpm dev
 ```
 
 - By default, the app will run at: http://localhost:3000/
 
-- If `yarn db:start` failed and `localhost:5050` isn't working, a docker
+- If `pnpm db:start` failed and `localhost:5050` isn't working, a docker
   container, volume, or image may be corrupted and need to be pruned.
 
 ### Development
@@ -64,13 +64,15 @@ $ yarn dev
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
-- [VS Code Tips](.vscode/tips.md)
+- [VS Code Tips](.vscode/tips.md
 - [Tailwind CSS migration guide](./packages/client/README.md)
 
 ### Deploy
 
 ```bash
-$ yarn && yarn pg:build && yarn build && yarn predeploy && yarn start
+# There's a pesky bug in pnpm if you don't have an SSH key: https://github.com/pnpm/pnpm/issues/7243
+$ git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+$ pnpm && pnpm pg:build && pnpm build && pnpm predeploy && pnpm start
 ```
 
 - [How to Ship](./docs/deployment.md)

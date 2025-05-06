@@ -148,7 +148,7 @@ export default class StripeManager {
       payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'], // expand the payment intent so we can get the client_secret
       // Use this for testing invoice.created hooks
-      // run `yarn ultrahook` and subscribe
+      // run `pnpm ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
       // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
       metadata: {
@@ -171,7 +171,7 @@ export default class StripeManager {
       customer: customerId,
       proration_behavior: 'none',
       // Use this for testing invoice.created hooks
-      // run `yarn ultrahook` and subscribe
+      // run `pnpm ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
       // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
       metadata: {

@@ -43,24 +43,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug Prod",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["debug:prod"],
-      "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch via Yarn",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["debug"],
-      "port": 9229,
-      "skipFiles": ["<node_internals>/**"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Debug relay compiler",
       "program": "${workspaceFolder}/node_modules/.bin/relay-compiler",
       "args": [],
