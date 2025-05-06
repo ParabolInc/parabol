@@ -241,7 +241,7 @@ export const activeMeetingsByTeamId = foreignKeyLoaderMaker(
     return selectNewMeetings()
       .where('teamId', 'in', teamIds)
       .where('endedAt', 'is', null)
-      .orderBy('createdAt desc')
+      .orderBy('createdAt', 'desc')
       .execute()
   }
 )
@@ -252,7 +252,7 @@ export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
     return selectNewMeetings()
       .where('teamId', 'in', teamIds)
       .where('endedAt', 'is not', null)
-      .orderBy('endedAt desc')
+      .orderBy('endedAt', 'desc')
       .execute()
   }
 )
@@ -279,7 +279,7 @@ export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
   async (teamMemberIds) => {
     return selectMassInvitations()
       .where('teamMemberId', 'in', teamMemberIds)
-      .orderBy('expiration desc')
+      .orderBy('expiration', 'desc')
       .execute()
   }
 )
