@@ -89,13 +89,13 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const updatePG = async (pgTable: ValueOf<typeof tableLookup>) => {
     if (isRemove) {
       await pg
-        .updateTable(pgTable)
+        .updateTable(pg.dynamic.table(pgTable).as('t'))
         .set({reactjis: sql`array_remove("reactjis", (${reactji},${viewerId})::"Reactji")`})
         .where('id', '=', dbId)
         .execute()
     } else {
       await pg
-        .updateTable(pgTable)
+        .updateTable(pg.dynamic.table(pgTable).as('t'))
         .set({
           reactjis: sql`arr_append_uniq("reactjis", (${reactji},${viewerId})::"Reactji")`
         })
