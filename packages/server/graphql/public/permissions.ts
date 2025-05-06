@@ -83,7 +83,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     voterIds: isSuperUser
   },
   User: {
-    domains: or(isSuperUser, isUserViewer)
+    domains: or(isSuperUser, isUserViewer),
+    page: hasPageAccess('viewer')
   }
 }
 
