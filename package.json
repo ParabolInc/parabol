@@ -163,6 +163,7 @@
     "webpack": "^5.99.6",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "5.1.4",
+    "webpack-dev-server": "^5.2.1",
     "webpack-hot-middleware": "^2.26.1",
     "webpack-node-externals": "^3.0.0",
     "workbox-webpack-plugin": "^6.5.4",

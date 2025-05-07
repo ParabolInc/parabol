@@ -8,11 +8,11 @@ export const MenuLabelTrigger = forwardRef<HTMLDivElement, {children: ReactNode;
       <div
         {...rest}
         ref={ref}
-        className='flex cursor-pointer items-center justify-between rounded-md bg-white'
+        className='group flex cursor-pointer items-center justify-between rounded-md bg-white'
       >
         <div className='p-2 leading-4'>{children}</div>
         {icon || (
-          <ExpandMore className='text-slate-600 transition-transform in-data-[state=open]:rotate-180' />
+          <ExpandMore className='text-slate-600 transition-transform group-open:rotate-180 group-data-[state=open]:rotate-180' />
         )}
       </div>
     )

@@ -2,6 +2,7 @@ import type {
   PageRoleEnum,
   PageSubjectEnum
 } from '../__generated__/useUpdatePageAccessMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {useUpdatePageAccessMutation} from '../mutations/useUpdatePageAccessMutation'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
@@ -38,6 +39,8 @@ const pageRoles = [
 
 export const PageAccessCombobox = (props: Props) => {
   const {pageId, subjectId, subjectType, defaultRole} = props
+  const atmosphere = useAtmosphere()
+  const roleLabel = pageRoles.find((role) => role.value === defaultRole)!.label
   const [execute, submitting] = useUpdatePageAccessMutation()
   const toggleRole = (role: PageRoleEnum) => {
     if (submitting) return
@@ -48,12 +51,22 @@ export const PageAccessCombobox = (props: Props) => {
         subjectId,
         subjectType,
         unlinkApproved: false
+      },
+      onCompleted(_res, errors) {
+        const firstError = errors?.[0]?.message
+        if (firstError) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'PageAccessCombobox',
+            message: firstError,
+            autoDismiss: 5
+          })
+        }
       }
     })
   }
 
   return (
-    <Menu trigger={<MenuLabelTrigger>{defaultRole}</MenuLabelTrigger>}>
+    <Menu trigger={<MenuLabelTrigger>{roleLabel}</MenuLabelTrigger>} className='group'>
       <MenuContent align='end' sideOffset={4}>
         {pageRoles.map(({value, label, description}) => {
           return (

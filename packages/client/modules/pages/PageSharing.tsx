@@ -22,6 +22,7 @@ graphql`
         id
         preferredName
         email
+        picture
       }
       role
     }
@@ -36,6 +37,7 @@ graphql`
       organization {
         id
         name
+        picture
       }
       role
     }
@@ -74,10 +76,10 @@ export const PageSharing = (props: Props) => {
     <div className='w-full max-w-md space-y-4 bg-white p-4 text-slate-700'>
       <div className='flex items-center space-x-2'>
         <input
-          placeholder='Email or group, separated by commas'
-          className='flex-1 bg-slate-400 text-white'
+          placeholder='Email, user, team, or organization'
+          className='flex-1 rounded-sm border-2 border-slate-400 p-1 outline-sky-400'
         />
-        <Button variant='secondary' className='rounded-full bg-sky-500 px-2 py-1 hover:bg-sky-600'>
+        <Button variant='secondary' className='rounded-full bg-sky-500 px-3 py-1 hover:bg-sky-600'>
           Invite
         </Button>
       </div>
@@ -93,15 +95,15 @@ export const PageSharing = (props: Props) => {
 
       <div className='space-y-4'>
         {users.map(({role, user}) => {
-          const {id: userId, preferredName, email} = user
+          const {id: userId, preferredName, email, picture} = user
           const name = userId === viewerId ? `${preferredName} (You)` : preferredName
           return (
             <div className='flex items-center justify-between' key={userId}>
-              <div className='flex items-center gap-3'>
-                <Avatar className='h-8 w-8' picture={'https://placehold.co/32x32'} />
-                <div>
-                  <p className='text-sm font-medium'>{name}</p>
-                  <p className='text-zinc-400 text-xs'>{email}</p>
+              <div className='flex items-center gap-3 pr-2'>
+                <Avatar className='h-8 w-8' picture={picture} />
+                <div className='flex flex-col'>
+                  <div className='text-sm font-medium text-slate-700'>{name}</div>
+                  <div className='text-xs text-slate-800'>{email}</div>
                 </div>
               </div>
               <PageAccessCombobox
