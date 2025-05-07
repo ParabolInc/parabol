@@ -298,7 +298,7 @@ CREATE OR REPLACE FUNCTION "updateOrgPageAccessByOrgUser"()
 RETURNS TRIGGER AS $$
 DECLARE
   "_pageId" INT;
-  "_userId" INT := COALESCE(NEW."userId", OLD."userId");
+  "_userId" VARCHAR := COALESCE(NEW."userId", OLD."userId");
 BEGIN
   IF TG_OP != 'UPDATE' OR NEW."removedAt" != OLD."removedAt" THEN
     FOR "_pageId" IN
