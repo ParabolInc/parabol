@@ -7,4 +7,9 @@ type Page {
   createdAt: DateTime!
   updatedAt: DateTime!
   access: PageAccess!
+  parentPageId: ID
+  teamId: ID
+  parentPage: Page
+  team: Team
+  isParentLinked: Boolean!
 }

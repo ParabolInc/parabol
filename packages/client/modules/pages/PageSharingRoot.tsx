@@ -5,7 +5,7 @@ import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {PageSharing} from './PageSharing'
 
 interface Props {
-  pageId: number
+  pageId: string
 }
 
 export const PageSharingRoot = (props: Props) => {
@@ -13,11 +13,15 @@ export const PageSharingRoot = (props: Props) => {
   const queryRef = useQueryLoaderNow<PageSharingQuery>(
     pageSharingQuery,
     {
-      pageId: `page:${pageId}`
+      pageId
     },
     undefined,
     true
   )
 
-  return <Suspense fallback={''}>{queryRef && <PageSharing queryRef={queryRef} />}</Suspense>
+  return (
+    <Suspense fallback={''}>
+      {queryRef && <PageSharing queryRef={queryRef} pageId={pageId} />}
+    </Suspense>
+  )
 }

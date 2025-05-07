@@ -3,12 +3,14 @@ import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {feistelCipher} from '../../../utils/feistelCipher'
 import {GQLContext} from '../../graphql'
+import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const PAGE_ROLES = ['owner', 'editor', 'commenter', 'viewer'] as const
 
-export const hasPageAccess = (roleRequired: Pageroleenum) =>
+export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Pageroleenum) =>
   rule(`hasPageAccess-${roleRequired}`, {cache: 'strict'})(
-    async (_source, {pageId}, context: GQLContext) => {
+    async (source, args, context: GQLContext) => {
+      const pageId = getResolverDotPath(dotPath, source, args)
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
       const dbPageId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
@@ -17,7 +19,7 @@ export const hasPageAccess = (roleRequired: Pageroleenum) =>
         .load({pageId: dbPageId, userId: viewerId})
       if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
         return new Error(
-          `Access denied. User role: ${userRole || 'None'} Role required: ${roleRequired}`
+          `Access denied. PageId: ${pageId} User role: ${userRole || 'None'} Role required: ${roleRequired}`
         )
       }
       return true

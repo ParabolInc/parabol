@@ -15,7 +15,7 @@ export const Page = (props: Props) => {
   const {params} = match
   const {pageSlug} = params
   const pageIdIdx = pageSlug.lastIndexOf('-')
-  const pageId = Number(pageIdIdx === -1 ? pageSlug : pageSlug.slice(pageIdIdx + 1))
+  const pageId = `page:${Number(pageIdIdx === -1 ? pageSlug : pageSlug.slice(pageIdIdx + 1))}`
   const {editor} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
   if (!pageSlug) return <div>No page ID provided in route</div>
@@ -28,7 +28,7 @@ export const Page = (props: Props) => {
           </Popover.Trigger>
           <Popover.Portal>
             <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>
-              <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
+              <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
                 <PageSharingRoot pageId={pageId} />
               </div>
             </Popover.Content>
