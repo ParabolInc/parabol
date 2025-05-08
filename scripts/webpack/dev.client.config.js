@@ -1,6 +1,5 @@
 require('./utils/dotenv')
 const path = require('path')
-const nodeExternals = require('webpack-node-externals')
 const webpack = require('webpack')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
