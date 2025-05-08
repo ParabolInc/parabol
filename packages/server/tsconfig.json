@@ -13,7 +13,9 @@
   },
 
   "exclude": [
-    "**/node_modules",
+    "node_modules",
+    "../dist",
+    "../build",
     "types/githubTypes.ts",
     "postgres/migrations/**/*",
     "graphql/intranetSchema/sdl/resolverTypes.ts",
