@@ -1,6 +1,5 @@
 import stringify from 'fast-json-stable-stringify'
 import ms from 'ms'
-import {Unpromise} from 'parabol-client/types/generics'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import sleep from 'parabol-client/utils/sleep'
 import AtlassianServerManager, {JiraGetIssueRes} from '../AtlassianServerManager'
@@ -98,7 +97,7 @@ export const getIssue = async (
   extraFieldIds: string[] = [],
   extraExpand: string[] = []
 ) => {
-  return new Promise<Unpromise<ReturnType<(typeof manager)['getIssue']>>>((resolve) => {
+  return new Promise<Awaited<ReturnType<(typeof manager)['getIssue']>>>((resolve) => {
     const requests = {
       firstToResolve: resolve,
       cachedIssue: undefined
