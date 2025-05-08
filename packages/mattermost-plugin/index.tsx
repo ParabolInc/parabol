@@ -13,7 +13,7 @@ import rootReducer, {
   openPushPostAsReflection,
   openStartActivityModal
 } from './reducers'
-import {getAssetsUrl, getPluginServerRoute} from './selectors'
+import {getAssetsUrl, getPluginServerRoute, isAuthorized} from './selectors'
 import {ContextArgs, PluginRegistry} from './types/mattermost-webapp'
 
 import {createEnvironment} from './Atmosphere'
@@ -26,17 +26,6 @@ import commands from './plugin-commands.json'
 export const init = async (registry: PluginRegistry, store: Store<GlobalState, AnyAction>) => {
   const serverUrl = getPluginServerRoute(store.getState())
   const environment = createEnvironment(serverUrl, store)
-  registry.registerSlashCommandWillBePostedHook(async (message: string, args: ContextArgs) => {
-    const [command, subcommand] = message.split(/\s+/)
-    if (command === '/parabol') {
-      if (subcommand === 'connect') {
-        store.dispatch(connect({commands}) as any)
-        console.log(`${manifest.id} Updating commands`)
-        return {}
-      }
-    }
-    return {message, args}
-  })
 
   registry.registerReducer(rootReducer)
   registry.registerRootComponent(() => (
@@ -51,7 +40,7 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
       </Tooltip.Provider>
     </AtmosphereProvider>
   ))
-  const {toggleRHSPlugin} = registry.registerRightHandSidebarComponent(
+  const {toggleRHSPlugin, showRHSPlugin} = registry.registerRightHandSidebarComponent(
     () => (
       <AtmosphereProvider environment={environment}>
         <SidePanelRoot />
@@ -66,6 +55,30 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
     () => store.dispatch(toggleRHSPlugin),
     'Open Parabol Panel'
   )
+
+  registry.registerSlashCommandWillBePostedHook(async (message: string, args: ContextArgs) => {
+    const [command, subcommand] = message.split(/\s+/)
+    if (command === '/parabol') {
+      if (!isAuthorized(store.getState())) {
+        const loggedIn = await environment.login()
+        if (loggedIn) {
+          return {}
+        }
+        store.dispatch(showRHSPlugin)
+        return {
+          error: {
+            message: 'You are not logged in to Parabol. Please log in to Parabol and retry.'
+          }
+        }
+      }
+      if (subcommand === 'connect') {
+        store.dispatch(connect({commands}) as any)
+        environment.login()
+        return {}
+      }
+    }
+    return {message, args}
+  })
 
   registry.registerWebSocketEventHandler(`custom_${manifest.id}_start`, () => {
     store.dispatch(openStartActivityModal())

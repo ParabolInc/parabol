@@ -19,8 +19,15 @@ const SidePanelRoot = () => {
           <p className='py-4'>
             You are not logged in to Parabol.
             <br />
-            Please <a href={`${parabolUrl}/signin`}>sign in</a> or{' '}
-            <a href={`${parabolUrl}/create-account`}>create an account</a> and retry.
+            Please{' '}
+            <a href={`${parabolUrl}/signin`} target='_blank' rel='noopener noreferrer'>
+              sign in
+            </a>{' '}
+            or{' '}
+            <a href={`${parabolUrl}/create-account`} target='_blank' rel='noopener noreferrer'>
+              create an account
+            </a>{' '}
+            and retry.
           </p>
           <button className='btn btn-primary' onClick={atmosphere.login}>
             Retry
