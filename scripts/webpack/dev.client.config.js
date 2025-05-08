@@ -111,9 +111,6 @@ module.exports = {
     },
     unsafeCache: true
   },
-  externals: [
-    nodeExternals(),
-  ],
   plugins: [
     new webpack.DllReferencePlugin({
       manifest: vendors
