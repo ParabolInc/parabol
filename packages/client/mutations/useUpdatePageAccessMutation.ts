@@ -5,9 +5,7 @@ import {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__
 graphql`
   fragment useUpdatePageAccessMutation_payload on UpdatePageAccessPayload {
     page {
-      access {
-        ...PageSharing_access @relay(mask: false)
-      }
+      ...PageSharingAccessList_pageAccess @relay(mask: false)
     }
   }
 `
