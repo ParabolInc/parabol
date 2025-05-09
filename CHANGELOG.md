@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.5](https://github.com/ParabolInc/parabol/compare/v10.3.4...v10.3.5) (2025-05-09)
+
+
+### Fixed
+
+* gitlab name in summary ([#11320](https://github.com/ParabolInc/parabol/issues/11320)) ([2158778](https://github.com/ParabolInc/parabol/commit/21587780445dac786234acca3fea59734e430b8c))
+
+## [10.3.4](https://github.com/ParabolInc/parabol/compare/v10.3.3...v10.3.4) (2025-05-09)
+
+
+### Fixed
+
+* bump kysely ([#11308](https://github.com/ParabolInc/parabol/issues/11308)) ([9c62de2](https://github.com/ParabolInc/parabol/commit/9c62de20d57f4d1727f96e5e49248810c303fd7b))
+* Mattermost relay compiler in dev ([#11305](https://github.com/ParabolInc/parabol/issues/11305)) ([2c3f61f](https://github.com/ParabolInc/parabol/commit/2c3f61f72935f1368ad36bd0f6d03652654953e9))
+* show resource names in webpack dev build ([#11306](https://github.com/ParabolInc/parabol/issues/11306)) ([bec910d](https://github.com/ParabolInc/parabol/commit/bec910dafe1fe5dbe8d6b8e14fdf03bcb38875cb))
+
+
+### Changed
+
+* cleanup Mattermost webhook handler ([#11312](https://github.com/ParabolInc/parabol/issues/11312)) ([dbe200e](https://github.com/ParabolInc/parabol/commit/dbe200e9d9cab8802e88e87edec68f5388a9645b))
+* **Mattermost Plugin:** improve not logged in experience ([#11313](https://github.com/ParabolInc/parabol/issues/11313)) ([fcac5ac](https://github.com/ParabolInc/parabol/commit/fcac5ac8b40ea696d94b31ccefcdd0b76ce2b30c))
+
 ## [10.3.3](https://github.com/ParabolInc/parabol/compare/v10.3.2...v10.3.3) (2025-05-06)
 
 
