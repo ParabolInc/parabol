@@ -22,6 +22,7 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
           `Access denied. PageId: ${pageId} User role: ${userRole || 'None'} Role required: ${roleRequired}`
         )
       }
+      dataLoader.get('pageAccessByUserId').clearAll()
       return true
     }
   )

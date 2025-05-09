@@ -5,8 +5,9 @@ import {MenuLabelTrigger} from '~/ui/Menu/MenuLabelTrigger'
 import type {PageRoleEnum} from '../../__generated__/useUpdatePageAccessMutation.graphql'
 
 interface Props {
+  canRemove?: boolean
   defaultRole: PageRoleEnum
-  onClick: (role: PageRoleEnum) => void
+  onClick: (role: PageRoleEnum | null) => void
 }
 
 const pageRoles = [
@@ -31,14 +32,14 @@ const pageRoles = [
 ] as {value: PageRoleEnum; label: string; description?: string}[]
 
 export const PageAccessComboboxControl = (props: Props) => {
-  const {onClick, defaultRole} = props
+  const {onClick, defaultRole, canRemove} = props
   const roleLabel = pageRoles.find((role) => role.value === defaultRole)!.label
   return (
     <Menu
       trigger={<MenuLabelTrigger labelClassName={'pr-0'}>{roleLabel}</MenuLabelTrigger>}
       className='group'
     >
-      <MenuContent align='end' sideOffset={4}>
+      <MenuContent align='end' sideOffset={4} className='max-h-80'>
         {pageRoles.map(({value, label, description}) => {
           return (
             <MenuItem
@@ -54,6 +55,21 @@ export const PageAccessComboboxControl = (props: Props) => {
             </MenuItem>
           )
         })}
+        {canRemove && (
+          <>
+            <hr className={'my-1 h-0.25 bg-slate-500'}></hr>
+            <MenuItem
+              key={'remove'}
+              onClick={() => {
+                onClick(null)
+              }}
+            >
+              <div className='flex flex-col font-bold'>
+                <div>{'Remove'}</div>
+              </div>
+            </MenuItem>
+          </>
+        )}
       </MenuContent>
     </Menu>
   )

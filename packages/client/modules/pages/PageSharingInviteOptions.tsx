@@ -2,6 +2,7 @@ import CheckIcon from '@mui/icons-material/Check'
 import SendIcon from '@mui/icons-material/Send'
 import type {AutocompleteGroupedOption} from '@mui/material'
 import {Fragment} from 'react'
+import type {PageSubjectEnum} from '../../__generated__/useUpdatePageAccessMutation.graphql'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import {
   getOptionLabel,
@@ -17,10 +18,10 @@ interface Props {
 }
 
 const groupLabels = {
-  email: 'Keep typing an email to invite',
+  external: 'Keep typing an email to invite',
   user: 'Users',
   team: 'Teams',
-  org: 'Organizations'
+  organization: 'Organizations'
 } as const
 export const PageSharingInviteOptions = (props: Props) => {
   const {groupedOptions, getListboxProps, getOptionProps} = props
@@ -31,13 +32,12 @@ export const PageSharingInviteOptions = (props: Props) => {
       className='mt-0.5 mb-0 list-none overflow-y-auto rounded-sm bg-white p-0'
     >
       {(groupedOptions as AutocompleteGroupedOption<Option>[]).map((option) => {
-        const {group, options, index} = option
+        const {options, index} = option
+        const group = option.group as PageSubjectEnum
         return (
           <Fragment key={group}>
             <li>
-              <div className='text-xs font-bold text-slate-700'>
-                {groupLabels[group as keyof typeof groupLabels]}
-              </div>
+              <div className='text-xs font-bold text-slate-700'>{groupLabels[group]}</div>
             </li>
             {options.map((option, idx) => {
               const optionProps = getOptionProps({option, index: index + idx})
@@ -51,11 +51,11 @@ export const PageSharingInviteOptions = (props: Props) => {
                       'group flex w-full cursor-pointer items-center rounded-md px-3 py-1 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
                     }
                   >
-                    {type === 'email' && <SendIcon className='mr-2 flex h-6 w-6 shrink-0 p-1' />}
+                    {type === 'external' && <SendIcon className='mr-2 flex h-6 w-6 shrink-0 p-1' />}
                     {type === 'team' && (
                       <TeamAvatar teamId={option.teamId} teamName={option.name} />
                     )}
-                    {type === 'org' && !option.picture && (
+                    {type === 'organization' && !option.picture && (
                       <TeamAvatar teamId={option.orgId} teamName={option.name} />
                     )}
                     {'picture' in option && option.picture && (

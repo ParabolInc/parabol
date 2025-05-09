@@ -15,7 +15,7 @@ const mutation = graphql`
     $pageId: ID!
     $subjectType: PageSubjectEnum!
     $subjectId: ID!
-    $role: PageRoleEnum!
+    $role: PageRoleEnum
     $unlinkApproved: Boolean
   ) {
     updatePageAccess(

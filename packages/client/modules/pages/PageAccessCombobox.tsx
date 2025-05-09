@@ -17,7 +17,7 @@ export const PageAccessCombobox = (props: Props) => {
   const {pageId, subjectId, subjectType, defaultRole} = props
   const atmosphere = useAtmosphere()
   const [execute, submitting] = useUpdatePageAccessMutation()
-  const toggleRole = (role: PageRoleEnum) => {
+  const toggleRole = (role: PageRoleEnum | null) => {
     if (submitting) return
     execute({
       variables: {
@@ -39,5 +39,5 @@ export const PageAccessCombobox = (props: Props) => {
       }
     })
   }
-  return <PageAccessComboboxControl onClick={toggleRole} defaultRole={defaultRole} />
+  return <PageAccessComboboxControl onClick={toggleRole} defaultRole={defaultRole} canRemove />
 }

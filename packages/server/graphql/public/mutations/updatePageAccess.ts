@@ -59,7 +59,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     await trx
       .deleteFrom(trx.dynamic.table(table).as('t'))
       .where('pageId', '=', dbPageId)
-      .where(sql`${typeId}`, '=', subjectId)
+      .where(trx.dynamic.ref(typeId), '=', subjectId)
       .execute()
   } else {
     await trx
@@ -81,9 +81,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     .executeTakeFirst()
 
   if (atLeastOneOwner) {
-    trx.commit().execute()
+    await trx.commit().execute()
   } else {
-    trx.rollback().execute()
+    await trx.rollback().execute()
     throw new GraphQLError('A Page must have at least one owner')
   }
 

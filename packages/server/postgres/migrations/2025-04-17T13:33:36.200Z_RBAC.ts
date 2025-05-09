@@ -326,7 +326,8 @@ BEGIN
   IF TG_OP = 'DELETE' OR OLD.role > NEW.role THEN
     UPDATE "Page"
     SET "isParentLinked" = FALSE
-    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId");
+    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId")
+    AND "parentPageId" IS NOT NULL;
   END IF;
   RETURN NULL;
 END;

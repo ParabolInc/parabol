@@ -1,16 +1,18 @@
+import PublicIcon from '@mui/icons-material/Public'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {PageAccessCombobox} from '~/modules/pages/PageAccessCombobox'
 import type {PageSharingAccessList_page$key} from '../../__generated__/PageSharingAccessList_page.graphql'
 import Avatar from '../../components/Avatar/Avatar'
+import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {Button} from '../../ui/Button/Button'
 
 graphql`
   fragment PageSharingAccessList_pageAccess on Page {
     id
     isParentLinked
     access {
+      public
       guests {
         email
         role
@@ -63,9 +65,9 @@ export const PageSharingAccessList = (props: Props) => {
     pageRef
   )
   const {id: pageId, isParentLinked, access, parentPage} = page
-  const {users} = access
+  const {users, teams, organizations, guests} = access
   return (
-    <div className='pt-3 pb-4'>
+    <div className='overflow-y-auto pt-3 pb-4'>
       {!isParentLinked && (
         <div className='rounded-md border border-slate-700 p-2 text-sm text-slate-800'>
           Share settings on this page differ from the parent page{' '}
@@ -75,7 +77,25 @@ export const PageSharingAccessList = (props: Props) => {
         </div>
       )}
 
-      <div className='space-y-4'>
+      <div className='space-y-2'>
+        {guests.map(({role, email}) => {
+          return (
+            <div className='flex items-center justify-between' key={email}>
+              <div className='flex items-center gap-3 pr-2'>
+                <TeamAvatar className='h-8 w-8' teamId={email} teamName={email} />
+                <div className='flex flex-col'>
+                  <div className='text-sm font-medium text-slate-700'>{email}</div>
+                </div>
+              </div>
+              <PageAccessCombobox
+                defaultRole={role}
+                subjectId={email}
+                subjectType='external'
+                pageId={pageId}
+              />
+            </div>
+          )
+        })}
         {users.map(({role, user}) => {
           const {id: userId, preferredName, email, picture} = user
           const name = userId === viewerId ? `${preferredName} (You)` : preferredName
@@ -97,32 +117,64 @@ export const PageSharingAccessList = (props: Props) => {
             </div>
           )
         })}
-
-        {/* General Access */}
-        <div>
-          <p className='text-zinc-400 mb-1 text-xs'>General access</p>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3'>
-              <img src='https://placehold.co/32x32' alt='Parabol' className='h-8 w-8 rounded' />
-              <p className='text-sm'>Everyone at Parabol</p>
+        {teams.map(({role, team}) => {
+          const {id: teamId, name: teamName} = team
+          return (
+            <div className='flex items-center justify-between' key={teamId}>
+              <div className='flex items-center gap-3 pr-2'>
+                <TeamAvatar className='h-8 w-8' teamId={teamId} teamName={teamName} />
+                <div className='flex flex-col'>
+                  <div className='text-sm font-medium text-slate-700'>{teamName}</div>
+                </div>
+              </div>
+              <PageAccessCombobox
+                defaultRole={role}
+                subjectId={teamId}
+                subjectType='team'
+                pageId={pageId}
+              />
             </div>
-            {/* <AccessDropdown defaultValue='Full access' /> */}
+          )
+        })}
+        {organizations.map(({role, organization}) => {
+          const {id: orgId, name: orgName, picture} = organization
+          return (
+            <div className='flex items-center justify-between' key={orgId}>
+              <div className='flex items-center gap-3 pr-2'>
+                {picture ? (
+                  <Avatar className='h-8 w-8' picture={picture} />
+                ) : (
+                  <TeamAvatar className='h-8 w-8' teamId={orgId} teamName={orgName} />
+                )}
+                <div className='flex flex-col'>
+                  <div className='text-sm font-medium text-slate-700'>{orgName}</div>
+                </div>
+              </div>
+              <PageAccessCombobox
+                defaultRole={role}
+                subjectId={orgId}
+                subjectType='organization'
+                pageId={pageId}
+              />
+            </div>
+          )
+        })}
+        {access.public && (
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3 pr-2'>
+              <PublicIcon className='h-8 w-8' />
+              <div className='flex flex-col'>
+                <div className='text-sm font-medium text-slate-700'>{'Shared Publicly'}</div>
+              </div>
+            </div>
+            <PageAccessCombobox
+              defaultRole={access.public}
+              subjectId={'*'}
+              subjectType='external'
+              pageId={pageId}
+            />
           </div>
-        </div>
-      </div>
-
-      {/* Copy link button */}
-      <div className='border-zinc-700 flex items-center justify-between border-t pt-4'>
-        <a href='#' className='text-zinc-400 text-sm hover:underline'>
-          Learn about sharing
-        </a>
-        <Button
-          variant='outline'
-          className='border-zinc-700 bg-zinc-800 hover:bg-zinc-700 flex items-center gap-2 text-white'
-        >
-          {/* <Copy size={16} /> */}
-          Copy link
-        </Button>
+        )}
       </div>
     </div>
   )

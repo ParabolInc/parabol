@@ -19,13 +19,13 @@ export type Option =
       name: string
     }
   | {
-      type: 'org'
+      type: 'organization'
       orgId: string
       picture: string | null
       name: string
     }
   | {
-      type: 'email'
+      type: 'external'
       email: string
     }
 
@@ -152,7 +152,7 @@ export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete
       })
     const orgs = organizations
       .map((org) => ({
-        type: 'org' as const,
+        type: 'organization' as const,
         orgId: org.id,
         name: org.name,
         picture: org.picture || null
@@ -186,7 +186,7 @@ export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete
           const {parsedInvitees, invalidEmailExists} = res
           parsedInvitees.forEach((goodEmail) => {
             normalized.push({
-              type: 'email',
+              type: 'external',
               email: (goodEmail as emailAddresses.ParsedMailbox).address
             })
           })
@@ -215,10 +215,10 @@ export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete
       const autocompletedEmail = autocompleteEmail(params.inputValue, viewerDomain)
       const isAlreadyInvited = guests.some((guest) => guest.email === autocompletedEmail)
       if (inputValue.length > 0 && !isAlreadyInvited) {
-        filtered.unshift({type: 'email' as const, email: autocompletedEmail})
+        filtered.unshift({type: 'external' as const, email: autocompletedEmail})
       }
       return filtered
     }
   })
-  return {...controls, error, value}
+  return {...controls, error, value, setValue}
 }

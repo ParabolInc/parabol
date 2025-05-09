@@ -20,6 +20,7 @@ export const PageSharing = (props: Props) => {
           ...usePageSharingAutocomplete_viewer
           page(pageId: $pageId) {
             ...PageSharingAccessList_page
+            id
           }
         }
       }
@@ -37,11 +38,14 @@ export const PageSharing = (props: Props) => {
     groupedOptions,
     setAnchorEl,
     error,
-    value
+    value,
+    setValue
   } = usePageSharingAutocomplete(viewer)
   return (
     <div className='flex max-h-96 w-96 flex-col bg-white p-4 pb-0 text-slate-700'>
       <PageSharingInput
+        pageId={page.id}
+        setValue={setValue}
         getRootProps={getRootProps}
         getInputProps={getInputProps}
         getTagProps={getTagProps}
