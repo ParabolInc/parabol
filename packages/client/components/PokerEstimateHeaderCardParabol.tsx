@@ -63,8 +63,6 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
 
   if (!editor) return null
 
-  // In a real implementation, we would use Tailwind config to add these custom values
-  // But for this refactoring, we'll use inline styles for the specific values that don't match Tailwind defaults
   const editorMaxHeight = isExpanded ? '300px' : '38px'
 
   return (

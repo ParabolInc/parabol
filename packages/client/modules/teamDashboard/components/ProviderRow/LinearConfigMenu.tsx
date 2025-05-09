@@ -5,22 +5,17 @@ import {MenuProps} from '../../../../hooks/useMenu'
 import {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../../../../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../../../../types/constEnums'
-import LinearClientManager from '../../../../utils/LinearClientManager'
 
 interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
-  provider: any
 }
 
 const LinearConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, provider} = props
+  const {menuProps, mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
-  const openOAuth = () => {
-    LinearClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
-  }
 
   const removeLinearAuth = () => {
     if (submitting) return
@@ -36,7 +31,6 @@ const LinearConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={'Configure your Linear integration'} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
       <MenuItem label='Remove Linear' onClick={removeLinearAuth} />
     </Menu>
   )

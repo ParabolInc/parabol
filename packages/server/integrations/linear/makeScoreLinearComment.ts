@@ -1,4 +1,4 @@
-import {ExternalLinks} from '../../client/types/constEnums'
+import {ExternalLinks} from '../../../client/types/constEnums'
 
 // wrap anything that looks like an issue in ticks so it doesn't turn into a link to that issue
 const makeScoreLinearComment = (

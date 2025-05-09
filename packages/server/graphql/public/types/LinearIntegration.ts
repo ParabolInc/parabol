@@ -1,15 +1,10 @@
-import {DataLoaderWorker} from '../../graphql'
 import {LinearIntegrationResolvers} from '../resolverTypes'
-
-const fetchAuth = async (teamId: string, userId: string, dataLoader: DataLoaderWorker) => {
-  return dataLoader
-    .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-    .load({service: 'linear', teamId, userId})
-}
 
 const LinearIntegration: LinearIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
-    return fetchAuth(teamId, userId, dataLoader)
+    return dataLoader
+      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+      .load({service: 'linear', teamId, userId})
   },
 
   cloudProvider: async (_source, _args, {dataLoader}) => {

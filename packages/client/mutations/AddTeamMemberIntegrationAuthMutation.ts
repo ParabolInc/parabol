@@ -3,7 +3,7 @@ import {commitMutation} from 'react-relay'
 import {AddTeamMemberIntegrationAuthMutation as TAddTeamMemberIntegrationAuthMutation} from '../__generated__/AddTeamMemberIntegrationAuthMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
 
-export const mutation = graphql`
+const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
     $providerId: ID
     $service: IntegrationProviderServiceEnum

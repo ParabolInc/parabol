@@ -786,6 +786,7 @@ const User: ReqResolvers<'User'> = {
       .with('Model', (qc) =>
         qc
           .selectFrom(MODEL as any)
+          // @ts-ignore
           .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${MODEL}.embeddingsMetadataId`)
           .select([`${MODEL}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
           .where('objectType', '=', 'meetingTemplate')

@@ -25,11 +25,8 @@ export default class LinearManager extends OAuth2Manager {
     })
   }
 
-  async refresh(refreshToken: string): Promise<Error | OAuth2AuthorizeResponse> {
-    return this.fetchToken<OAuth2AuthorizeResponse>({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken
-    })
+  async refresh(_refreshToken: string): Promise<Error | OAuth2AuthorizeResponse> {
+    throw new Error('Linear does not support refresh tokens')
   }
 
   protected async fetchToken<TSuccess>(
@@ -48,8 +45,7 @@ export default class LinearManager extends OAuth2Manager {
     return authorizeOAuth2<TSuccess>({
       authUrl: authUrlObj.toString(),
       body,
-      contentType: 'application/x-www-form-urlencoded',
-      noRefreshToken: true
+      contentType: 'application/x-www-form-urlencoded'
     })
   }
 }

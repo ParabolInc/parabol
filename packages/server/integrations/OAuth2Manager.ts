@@ -20,7 +20,7 @@ export interface OAuth2PkceRefreshAuthorizationParams extends OAuth2RefreshAutho
 
 export type OAuth2AuthorizeResponse = {
   accessToken: string
-  refreshToken: string
+  refreshToken: string | undefined
   scopes: string
   expiresIn?: number
 }

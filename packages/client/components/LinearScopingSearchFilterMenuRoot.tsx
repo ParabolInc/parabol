@@ -103,10 +103,10 @@ const LinearScopingSearchFilterMenuContent = ({queryRef, menuProps, meetingId}: 
   const linearSearchQueryStoreObject = meeting?.linearSearchQuery
   const selectedProjectsIds = linearSearchQueryStoreObject?.selectedProjectsIds ?? []
 
-  const teamMemberRefForHook = fragmentData.viewer?.teamMember ?? null
+  const teamMember = fragmentData.viewer?.teamMember ?? null
   const {searchQuery, setSearchQuery, filteredProjectsAndTeams} =
-    useLinearProjectsAndTeams(teamMemberRefForHook)
-  if (!teamMemberRefForHook) {
+    useLinearProjectsAndTeams(teamMember)
+  if (!teamMember) {
     console.error('LinearScopingSearchFilterMenu: teamMember data is missing.')
     return <MockFieldList />
   }

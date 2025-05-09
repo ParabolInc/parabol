@@ -18,21 +18,24 @@ type LinearQuery = useLinearProjectsAndTeams_teamMember$data extends {
   ? Q
   : never
 
-type AllProjectEdges = LinearQuery extends {allProjects?: {edges?: infer E | null} | null}
-  ? E
-  : never
+export type Project = NonNullable<
+  NonNullable<
+    ArrayElement<LinearQuery extends {allProjects?: {edges?: infer E | null} | null} ? E : never>
+  >['node']
+>
 
-type TeamEdges = LinearQuery extends {teams?: {edges?: infer E | null} | null} ? E : never
-
-type ProjectEdge = NonNullable<ArrayElement<AllProjectEdges>>
-type TeamEdge = NonNullable<ArrayElement<TeamEdges>>
-
-export type Project = NonNullable<ProjectEdge['node']>
-export type Team = NonNullable<TeamEdge['node']>
+export type Team = NonNullable<
+  NonNullable<
+    ArrayElement<LinearQuery extends {teams?: {edges?: infer E | null} | null} ? E : never>
+  >['node']
+>
 
 export type LinearProjectOrTeam = Project | Team
 
-const getNodeId = (edge: ProjectEdge | TeamEdge) => {
+type InputEdgeForGetNodeId = {
+  node?: {readonly id: string} | null
+}
+const getNodeId = (edge: InputEdgeForGetNodeId) => {
   return edge?.node?.id
 }
 

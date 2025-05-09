@@ -10,4 +10,5 @@ enum IntegrationProviderServiceEnum {
   gcal
   azureDevOps
   msTeams
+  linear
 }

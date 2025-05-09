@@ -5,10 +5,7 @@ import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import {LinearScopingSearchResultsPaginationQuery} from '../__generated__/LinearScopingSearchResultsPaginationQuery.graphql'
 import {LinearScopingSearchResultsQuery} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
 import {LinearScopingSearchResults_meeting$key} from '../__generated__/LinearScopingSearchResults_meeting.graphql'
-import {
-  LinearScopingSearchResults_query$data,
-  LinearScopingSearchResults_query$key
-} from '../__generated__/LinearScopingSearchResults_query.graphql'
+import {LinearScopingSearchResults_query$key} from '../__generated__/LinearScopingSearchResults_query.graphql'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import LinearIssueId from '../shared/gqlIds/LinearIssueId'
@@ -26,16 +23,6 @@ interface Props {
   queryRef: PreloadedQuery<LinearScopingSearchResultsQuery>
   meetingRef: LinearScopingSearchResults_meeting$key
 }
-
-type LinearIssueEdge = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<
-        LinearScopingSearchResults_query$data['viewer']['teamMember']
-      >['integrations']['linear']['api']
-    >['query']
-  >['issues']['edges']
->[number]
 
 const LinearScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
@@ -168,7 +155,7 @@ const LinearScopingSearchResults = (props: Props) => {
   const nullableEdges = linear?.api?.query?.issues?.edges ?? null
   const issues = nullableEdges
     ? getNonNullEdges(nullableEdges)
-        .filter((edge: LinearIssueEdge) => edge.node.__typename === '_xLinearIssue')
+        .filter((edge) => edge.node.__typename === '_xLinearIssue')
         .map(({node}) => node as GQLType<typeof node, '_xLinearIssue'>)
     : null
   const [isEditing, setIsEditing] = useState(false)

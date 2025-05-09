@@ -18,7 +18,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 interface OAuth2Auth {
   accessToken: string
-  refreshToken: string
+  refreshToken: string | undefined
   scopes: string
   expiresAt?: Date | null
 }
@@ -84,9 +84,6 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined = undefined
   if (authStrategy === 'oauth2') {
-    console.log(
-      `Entering OAuth2 flow for service: ${service}. Code: ${oauthCodeOrPat}, Redirect URI: ${redirectUri}`
-    )
     if (!oauthCodeOrPat || !redirectUri)
       return {error: {message: 'Missing OAuth2 code or redirect URI'}}
     if (service === 'azureDevOps') {
@@ -104,18 +101,12 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     }
     let manager: GcalOAuth2Manager | LinearManager | GitLabOAuth2Manager | null = null
     const {clientId, clientSecret, serverBaseUrl} = integrationProvider
-    console.log(
-      `[Linear Auth Debug] Provider details - Client ID: ${clientId}, Server Base URL: ${serverBaseUrl}, Has Client Secret: ${!!clientSecret}`
-    )
 
     switch (service) {
       case 'gcal':
         manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
       case 'linear':
-        console.log(
-          `[Linear Auth Debug] Initializing LinearManager with code: ${oauthCodeOrPat}, redirect URI: ${redirectUri}`
-        )
         manager = new LinearManager(clientId, clientSecret, serverBaseUrl)
         break
       case 'gitlab':
@@ -125,15 +116,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
     if (manager) {
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-      console.log(
-        '[Linear Auth Debug] Raw authRes from LinearManager:',
-        JSON.stringify(authRes, null, 2)
-      )
       tokenMetadata = convertExpiresIn(authRes)
-      console.log(
-        '[Linear Auth Debug] Token metadata after convertExpiresIn:',
-        JSON.stringify(tokenMetadata, null, 2)
-      )
     }
   }
   if (authStrategy === 'oauth1') {
@@ -147,7 +130,6 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   }
 
   if (tokenMetadata instanceof Error) {
-    console.error('[Linear Auth Debug] Token metadata is an error:', tokenMetadata)
     return standardError(tokenMetadata, {
       userId: viewerId
     })
