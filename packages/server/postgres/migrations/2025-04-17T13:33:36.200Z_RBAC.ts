@@ -123,6 +123,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .column('pageId')
       .execute(),
     db.schema.createIndex('idx_PageAccess_userId').on('PageAccess').column('userId').execute(),
+    db.schema.createIndex('idx_PageAccess_pageId').on('PageAccess').column('pageId').execute(),
     db.schema.createIndex('idx_Page_parentPageId').on('Page').column('parentPageId').execute(),
     db.schema
       .createIndex('idx_Page_teamId')
@@ -325,7 +326,8 @@ BEGIN
   IF TG_OP = 'DELETE' OR OLD.role > NEW.role THEN
     UPDATE "Page"
     SET "isParentLinked" = FALSE
-    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId");
+    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId")
+    AND "parentPageId" IS NOT NULL;
   END IF;
   RETURN NULL;
 END;
