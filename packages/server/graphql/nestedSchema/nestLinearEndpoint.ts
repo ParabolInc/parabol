@@ -14,7 +14,6 @@ const defaultExecutor: Executor<{
   headers?: Record<string, string>
 }> = async (document, variables, endpointTimeout, context) => {
   const controller = new AbortController()
-  const {signal} = controller
   const {accessToken, baseUri, headers} = context
   const url = new URL(baseUri ?? 'https://linear.app')
   // We assume the baseUri handed to us contains the hostname used
@@ -27,7 +26,7 @@ const defaultExecutor: Executor<{
   }, endpointTimeout)
   try {
     const result = await fetch(apiEndpoint, {
-      signal: signal as any,
+      signal: AbortSignal.timeout(endpointTimeout),
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

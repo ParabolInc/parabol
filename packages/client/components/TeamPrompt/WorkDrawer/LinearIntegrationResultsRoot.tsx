@@ -13,7 +13,6 @@ interface Props {
   teamId: string
 }
 
-// Define the GraphQL Query right here
 const linearIntegrationResultsQuery = graphql`
   query LinearIntegrationResultsRootQuery(
     $teamId: ID!

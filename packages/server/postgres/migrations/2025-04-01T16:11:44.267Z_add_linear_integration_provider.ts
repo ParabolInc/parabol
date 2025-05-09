@@ -22,6 +22,12 @@ export async function up(db: Kysely<any>): Promise<void> {
 export async function down(db: Kysely<any>): Promise<void> {
   await sql`DROP TABLE public."LinearDimensionFieldMap"`.execute(db)
 
+  await sql`DELETE FROM public."TeamMemberIntegrationAuth" WHERE service = 'linear'`.execute(db)
+
+  await sql`DELETE FROM public."IntegrationSearchQuery" WHERE service = 'linear';`.execute(db)
+
+  await sql`DELETE FROM public."IntegrationProvider" WHERE service = 'linear';`.execute(db)
+
   await sql`ALTER TYPE public."IntegrationProviderServiceEnum" RENAME TO "IntegrationProviderServiceEnum_old"`.execute(
     db
   )

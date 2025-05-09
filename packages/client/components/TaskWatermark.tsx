@@ -13,7 +13,7 @@ interface WatermarkSVGProps {
   Icon: React.ComponentType
 }
 
-const WatermarkSVG: React.FC<WatermarkSVGProps> = ({Icon}) => (
+const WatermarkSVG = ({Icon}: WatermarkSVGProps) => (
   <div className='absolute right-[24px] bottom-[8px] scale-500 transform'>
     <Icon />
   </div>

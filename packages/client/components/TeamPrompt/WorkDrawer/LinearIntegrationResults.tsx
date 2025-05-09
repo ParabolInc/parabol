@@ -4,26 +4,10 @@ import {Link} from 'react-router-dom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import {LinearIntegrationResultsPaginationQuery} from '../../../__generated__/LinearIntegrationResultsPaginationQuery.graphql'
 import {LinearIntegrationResultsQuery} from '../../../__generated__/LinearIntegrationResultsQuery.graphql'
-import {
-  LinearIntegrationResults_query$data,
-  LinearIntegrationResults_query$key
-} from '../../../__generated__/LinearIntegrationResults_query.graphql'
+import {LinearIntegrationResults_query$key} from '../../../__generated__/LinearIntegrationResults_query.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import LinearObjectCard from './LinearObjectCard'
-
-type LinearIssueEdge = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<
-        LinearIntegrationResults_query$data['viewer']['teamMember']
-      >['integrations']['linear']['api']
-    >['query']
-  >['issues']['edges']
->[number]
-
-// Placeholder type for the issue node, replace with generated type later
-type LinearIssueNode = NonNullable<LinearIssueEdge>['node']
 
 interface Props {
   queryRef: PreloadedQuery<LinearIntegrationResultsQuery>
@@ -33,19 +17,15 @@ interface Props {
 const LinearIntegrationResults = (props: Props) => {
   const {queryRef, teamId} = props
 
-  // This query definition must match the one used to generate the queryRef in the parent component (LinearIntegrationResultsRoot)
-  // Assuming the filter variable passed down is a string intended for title search.
   const queryData = usePreloadedQuery<LinearIntegrationResultsQuery>(
     graphql`
       query LinearIntegrationResultsQuery($teamId: ID!, $filter: _xLinearIssueFilter) {
-        # Pass the filter string to the fragment
         ...LinearIntegrationResults_query @arguments(teamId: $teamId, filter: $filter)
       }
     `,
     queryRef
   )
 
-  // This fragment defines the data structure and pagination logic for Linear issues
   const paginationFragment = graphql`
     fragment LinearIntegrationResults_query on Query
     @argumentDefinitions(
@@ -55,7 +35,6 @@ const LinearIntegrationResults = (props: Props) => {
       filter: {type: "_xLinearIssueFilter"}
     )
     @refetchable(queryName: "LinearIntegrationResultsPaginationQuery") {
-      # The filter is applied directly to the 'issues' connection below
       viewer {
         teamMember(teamId: $teamId) {
           integrations {
@@ -89,7 +68,6 @@ const LinearIntegrationResults = (props: Props) => {
                           team {
                             displayName
                           }
-                          # Spread the fragment for LinearObjectCard
                           ...LinearObjectCard_issue
                         }
                       }
@@ -113,14 +91,14 @@ const LinearIntegrationResults = (props: Props) => {
   const {data, hasNext} = paginationRes
 
   const linear = data.viewer?.teamMember?.integrations.linear
-  const linearIssues = linear?.api?.query?.issues?.edges?.map((edge: LinearIssueEdge) => edge?.node)
+  const linearIssues = linear?.api?.query?.issues?.edges?.map((edge) => edge?.node)
   const errors = linear?.api?.errors ?? null
 
   return (
     <>
       <div className='flex h-full flex-col gap-y-2 overflow-auto px-4'>
         {linearIssues && linearIssues.length > 0 ? (
-          linearIssues.map((issue: LinearIssueNode) => {
+          linearIssues.map((issue) => {
             if (!issue) {
               return null
             }
@@ -128,7 +106,6 @@ const LinearIntegrationResults = (props: Props) => {
             return <LinearObjectCard key={issue.id} issueRef={issue} />
           })
         ) : (
-          // Empty or Error State
           <div className='-mt-14 flex h-full flex-col items-center justify-center text-center'>
             <img
               className='w-20'

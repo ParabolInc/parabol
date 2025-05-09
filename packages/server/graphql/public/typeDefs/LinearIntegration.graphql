@@ -13,12 +13,12 @@ type LinearIntegration {
   cloudProvider: IntegrationProviderOAuth2
 
   """
-  Composite key in ado:teamId:userId format
+  Composite key in linear:teamId:userId format
   """
   id: ID!
 
   """
-  An historical list of GitLab Sprint Poker search queries
+  An historical list of Linear Sprint Poker search queries
   """
   linearSearchQueries: [LinearSearchQuery!]!
 }

@@ -35,20 +35,18 @@ const updateLinearDimensionField: MutationResolvers['updateLinearDimensionField'
 
   // RESOLUTION
   try {
-    await pg.transaction().execute(async (trx) => {
-      await trx
-        .insertInto('LinearDimensionFieldMap')
-        .values({
-          teamId,
-          dimensionName,
-          repoId,
-          labelTemplate
-        })
-        .onConflict((oc) =>
-          oc.columns(['teamId', 'dimensionName', 'repoId']).doUpdateSet({labelTemplate})
-        )
-        .execute()
-    })
+    await pg
+      .insertInto('LinearDimensionFieldMap')
+      .values({
+        teamId,
+        dimensionName,
+        repoId,
+        labelTemplate
+      })
+      .onConflict((oc) =>
+        oc.columns(['teamId', 'dimensionName', 'repoId']).doUpdateSet({labelTemplate})
+      )
+      .execute()
   } catch (e) {
     Logger.log(e)
   }

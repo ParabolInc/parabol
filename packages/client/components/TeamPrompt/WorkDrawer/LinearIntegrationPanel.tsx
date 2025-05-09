@@ -43,7 +43,6 @@ const LinearIntegrationPanel = (props: Props) => {
                 }
               }
             }
-            # Spread the fragment required by the updated LinearProjectFilterBar
             ...LinearProjectFilterBar_teamMember
           }
         }

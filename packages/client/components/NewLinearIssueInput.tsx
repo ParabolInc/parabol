@@ -19,6 +19,7 @@ import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {DeepNonNullable} from '../types/generics'
 import {CompletedHandler} from '../types/relayMutations'
 import getUniqueEdges from '../utils/getUniqueEdges'
 import Legitity from '../validation/Legitity'
@@ -36,25 +37,17 @@ const validateIssue = (issue: string) => {
   return new Legitity(issue).trim().min(2, `C'mon, you call that an issue?`)
 }
 
-type ProjectEdge = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<NewLinearIssueInput_viewer$data['teamMember']>['integrations']['linear']['api']
-    >['query']
-  >['allProjects']['edges']
->[number]
+type LinearApiQueryFromViewer =
+  DeepNonNullable<NewLinearIssueInput_viewer$data>['teamMember']['integrations']['linear']['api']['query']
 
-type Project = NonNullable<ProjectEdge['node']>
+type ProjectEdge = LinearApiQueryFromViewer['allProjects']['edges'][number]
 
-type TeamEdge = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<NewLinearIssueInput_viewer$data['teamMember']>['integrations']['linear']['api']
-    >['query']
-  >['teams']['edges']
->[number]
+type Project = ProjectEdge['node']
 
-type Team = NonNullable<TeamEdge['node']>
+type TeamEdge = LinearApiQueryFromViewer['teams']['edges'][number]
+
+// Type for the Team node data.
+type Team = TeamEdge['node']
 
 const linearProjectNameWithTeam = (project: Project) => {
   const {name: projectName, teams} = project

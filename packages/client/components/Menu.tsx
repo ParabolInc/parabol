@@ -12,6 +12,7 @@ import {
 } from 'react'
 
 import * as React from 'react'
+import {twMerge} from 'tailwind-merge'
 import {PortalStatus} from '../hooks/usePortal'
 import MenuItemAnimation from './MenuItemAnimation'
 
@@ -50,8 +51,8 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const itemHandles = useRef<{onClick: (e?: React.MouseEvent | React.KeyboardEvent) => void}[]>([])
   const initialDefaultActiveIdxRef = useRef(activeIdx)
   useEffect(() => {
-    // support an active index that is async fetched or changes after initial render
-    if (defaultActiveIdx !== null && defaultActiveIdx !== initialDefaultActiveIdxRef.current) {
+    // support an active index that is async fetched
+    if (defaultActiveIdx !== null && initialDefaultActiveIdxRef.current === null) {
       setActiveIdx(defaultActiveIdx)
       // Update the ref if we explicitly set the state based on prop change
       initialDefaultActiveIdxRef.current = defaultActiveIdx
@@ -168,7 +169,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     <div
       role='menu'
       aria-label={ariaLabel}
-      className={`max-h-56 max-w-md outline-none select-none ${className || ''}`}
+      className={twMerge('max-h-56 max-w-md outline-none select-none', className)}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}

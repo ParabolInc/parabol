@@ -1,5 +1,3 @@
-console.log('[LinearClientManager] MODULE LOADED - Top of LinearClientManager.ts') // New global log
-
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
@@ -10,6 +8,8 @@ class LinearClientManager {
   static SCOPES = 'read,write'
   static AUTH_PATH = '/oauth/authorize'
   static REDIRECT_PATH = '/auth/linear'
+  static OAUTH_STORAGE_KEY = 'oauthData'
+  static POLLING_INTERVAL = 250
 
   static async openOAuth(
     atmosphere: Atmosphere,
@@ -19,43 +19,38 @@ class LinearClientManager {
   ) {
     const {id: providerId, clientId, serverBaseUrl} = provider
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
+
+    const hash = Math.random().toString(36).substring(5)
+    const providerState = btoa(
+      JSON.stringify({hash, origin: window.location.origin, service: 'linear'})
+    )
+
     const redirectUri = makeHref(LinearClientManager.REDIRECT_PATH)
-    const urlObj = new URL(LinearClientManager.AUTH_PATH, serverBaseUrl)
-    urlObj.searchParams.set('client_id', clientId)
-    urlObj.searchParams.set('scope', LinearClientManager.SCOPES)
-    urlObj.searchParams.set('state', providerState)
-    urlObj.searchParams.set('redirect_uri', redirectUri)
-    urlObj.searchParams.set('response_type', 'code')
-    urlObj.searchParams.set('actor', 'application')
-    const url = urlObj.toString()
 
-    // Open synchronously because of Safari
-    // const popup = window.open(
-    //   '',
-    //   'OAuth',
-    //   getOAuthPopupFeatures({width: 500, height: 750, top: 56})
-    // )
+    const url = new URL(LinearClientManager.AUTH_PATH, serverBaseUrl)
+    url.searchParams.set('client_id', clientId)
+    url.searchParams.set('scope', LinearClientManager.SCOPES)
+    url.searchParams.set('state', providerState)
+    url.searchParams.set('redirect_uri', redirectUri)
+    url.searchParams.set('response_type', 'code')
+    url.searchParams.set('actor', 'application')
 
-    // if (popup) {
-    //   popup.location.href = url
-    // }
-
-    // Try opening the URL directly
+    // Open the popup with the target URL directly
     const popup = window.open(
-      url, // Open the Linear auth URL directly
-      'OAuth',
+      url.toString(),
+      'LinearAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
-    console.log('[LinearClientManager] Popup object after window.open(url, ...):', popup)
 
-    const handler = (event: MessageEvent) => {
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        return
-      }
+    // Shared handler function for both message events and localStorage polling
+    const processOAuthData = (data: {code: string; state: string}) => {
+      if (submitting) return
 
-      const {code, state} = event.data
+      const {code, state} = data
       if (state !== providerState || typeof code !== 'string') return
+
+      localStorage.removeItem(LinearClientManager.OAUTH_STORAGE_KEY)
+
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
@@ -67,10 +62,49 @@ class LinearClientManager {
         },
         {onError, onCompleted}
       )
+
       popup && popup.close()
-      window.removeEventListener('message', handler)
+      window.removeEventListener('message', messageHandler)
+      if (pollingIntervalId) clearInterval(pollingIntervalId)
+      localStorage.removeItem(LinearClientManager.OAUTH_STORAGE_KEY)
     }
-    window.addEventListener('message', handler)
+
+    const messageHandler = (event: MessageEvent) => {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin) {
+        return
+      }
+
+      processOAuthData(event.data)
+    }
+
+    window.addEventListener('message', messageHandler)
+
+    const checkLocalStorage = () => {
+      try {
+        const storedData = localStorage.getItem(LinearClientManager.OAUTH_STORAGE_KEY)
+        if (!storedData) return
+
+        const data = JSON.parse(storedData)
+        processOAuthData(data)
+      } catch (error) {
+        console.error('Error checking localStorage for OAuth data:', error)
+      }
+    }
+
+    const pollingIntervalId = setInterval(checkLocalStorage, LinearClientManager.POLLING_INTERVAL)
+    checkLocalStorage()
+    const cleanup = () => {
+      if (pollingIntervalId) clearInterval(pollingIntervalId)
+      window.removeEventListener('message', messageHandler)
+    }
+    setTimeout(cleanup, 2 * 60 * 1000)
+
+    return {
+      cancel: () => {
+        cleanup()
+        popup && popup.close()
+      }
+    }
   }
 }
 
