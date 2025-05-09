@@ -1,3 +1,5 @@
+console.log('[LinearClientManager] MODULE LOADED - Top of LinearClientManager.ts') // New global log
+
 import Atmosphere from '../Atmosphere'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
@@ -29,15 +31,23 @@ class LinearClientManager {
     const url = urlObj.toString()
 
     // Open synchronously because of Safari
+    // const popup = window.open(
+    //   '',
+    //   'OAuth',
+    //   getOAuthPopupFeatures({width: 500, height: 750, top: 56})
+    // )
+
+    // if (popup) {
+    //   popup.location.href = url
+    // }
+
+    // Try opening the URL directly
     const popup = window.open(
-      '',
+      url, // Open the Linear auth URL directly
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 750, top: 56})
     )
-
-    if (popup) {
-      popup.location.href = url
-    }
+    console.log('[LinearClientManager] Popup object after window.open(url, ...):', popup)
 
     const handler = (event: MessageEvent) => {
       if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
