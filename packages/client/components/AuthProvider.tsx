@@ -5,9 +5,18 @@ import InviteDialog from './InviteDialog'
 import StyledError from './StyledError'
 
 const AuthProvider = () => {
+  console.log(
+    '[AuthProvider] Component function CALLED. Current URL in popup:',
+    window.location.href
+  )
   const [error, setError] = useState('')
   useEffect(() => {
+    console.log('[AuthProvider] useEffect hook ENTERED. window.opener in popup:', window.opener)
     const callOpener = async () => {
+      console.log(
+        '[AuthProvider] callOpener async function CALLED. window.opener in popup:',
+        window.opener
+      )
       const params = new URLSearchParams(window.location.search)
       if (window.opener) {
         // OAuth2
@@ -26,12 +35,17 @@ const AuthProvider = () => {
         setError('Error logging in')
       }
     }
-    callOpener().catch(() => {
-      /*ignore*/
+    callOpener().catch((err) => {
+      console.error('[AuthProvider] Error in callOpener catch block:', err)
+      setError('Error processing authentication')
     })
   }, [])
 
-  if (!error) return null
+  if (!error) {
+    console.log('[AuthProvider] No error set, rendering null.')
+    return null
+  }
+  console.log('[AuthProvider] Error IS set, rendering error dialog. Error:', error)
   return (
     <InviteDialog>
       <DialogTitle>{'Authentication Error'}</DialogTitle>

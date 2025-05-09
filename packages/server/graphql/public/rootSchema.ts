@@ -16,6 +16,7 @@ import permissions from './permissions'
 // Resolvers from SDL first definitions
 import {nestGitHub} from '../../utils/nestGitHub'
 import {nestGitLab} from './nestGitLab'
+import {nestLinear} from './nestLinear'
 import resolvers from './resolvers'
 
 // Schema from legacy TypeScript first definitions instead of SDL pattern
@@ -35,6 +36,7 @@ const parabolTypeDefs = mergeSchemas({
 
 const {schema: typeDefsWithGitHub, githubRequest} = nestGitHub(parabolTypeDefs)
 const {schema: typeDefsWithGitHubGitLab, gitlabRequest} = nestGitLab(typeDefsWithGitHub)
+const {schema: typeDefsWithGitHubGitLabLinear, linearRequest} = nestLinear(typeDefsWithGitHubGitLab)
 
 // IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
 // See https://github.com/ardatan/graphql-tools/issues/4367

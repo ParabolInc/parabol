@@ -12,6 +12,7 @@ import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import {typeDefs as privateTypeDefs} from '../graphql/private/importedTypeDefs'
 import {typeDefs} from '../graphql/public/importedTypeDefs'
 import {nestGitLab} from '../graphql/public/nestGitLab'
+import {nestLinear} from '../graphql/public/nestLinear'
 import {nestGitHub} from './nestGitHub'
 
 const writeIfChanged = async (dataPath: string, data: string) => {
@@ -34,7 +35,7 @@ const updateGQLSchema = async () => {
     typeDefs
   })
 
-  const publicSchema = nestGitLab(nestGitHub(publicTypeDefs).schema).schema
+  const publicSchema = nestLinear(nestGitLab(nestGitHub(publicTypeDefs).schema).schema).schema
   const privateSchema = mergeSchemas({schemas: [publicSchema], typeDefs: [privateTypeDefs]})
 
   await Promise.all([

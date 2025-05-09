@@ -61,10 +61,29 @@ const LinearProviderRow = (props: Props) => {
   const accessToken = linear?.auth?.accessToken ?? undefined
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
 
-  if (!provider) return null
+  console.log('[LinearProviderRow] linear data:', JSON.stringify(linear, null, 2))
+  console.log(
+    '[LinearProviderRow] provider data (linear.cloudProvider):',
+    JSON.stringify(provider, null, 2)
+  )
+
+  if (!provider) {
+    console.error(
+      '[LinearProviderRow] Provider data is missing. Rendering null. No "Connect" button will be shown for Linear.'
+    )
+    return null
+  }
 
   const openOAuth = async () => {
-    await LinearClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
+    console.log(
+      '[LinearProviderRow] openOAuth function called. About to call LinearClientManager.openOAuth.'
+    )
+    try {
+      await LinearClientManager.openOAuth(atmosphere, teamId, provider, mutationProps)
+      console.log('[LinearProviderRow] Successfully called LinearClientManager.openOAuth.')
+    } catch (error) {
+      console.error('[LinearProviderRow] Error calling LinearClientManager.openOAuth:', error)
+    }
   }
 
   return (
