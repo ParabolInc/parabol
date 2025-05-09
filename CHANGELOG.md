@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.5](https://github.com/ParabolInc/parabol/compare/v10.3.4...v10.3.5) (2025-05-09)
+
+
+### Fixed
+
+* gitlab name in summary ([#11320](https://github.com/ParabolInc/parabol/issues/11320)) ([2158778](https://github.com/ParabolInc/parabol/commit/21587780445dac786234acca3fea59734e430b8c))
+
 ## [10.3.4](https://github.com/ParabolInc/parabol/compare/v10.3.3...v10.3.4) (2025-05-09)
 
 
