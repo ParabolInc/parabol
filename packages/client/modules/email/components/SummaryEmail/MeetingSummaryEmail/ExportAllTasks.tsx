@@ -33,7 +33,7 @@ const integrationToServiceName: Record<TaskServiceEnum, string> = {
   jira: 'Jira',
   jiraServer: Providers.JIRA_SERVER_NAME,
   azureDevOps: Providers.AZUREDEVOPS_NAME,
-  gitlab: Providers.GITHUB_NAME
+  gitlab: Providers.GITLAB_NAME
 }
 
 interface Props {
