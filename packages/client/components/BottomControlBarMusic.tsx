@@ -9,31 +9,21 @@ import {
 } from './AtmosphereProvider/BackgroundMusicProvider/BackgroundMusicProvider'
 
 interface Props {
-  /** Whether the current user is the facilitator */
   isFacilitator: boolean
 }
 
-/**
- * A UI component that shows a music button in the meeting control bar,
- * allowing a facilitator to select a track, press play, pause, stop, and adjust volume.
- */
 const BottomControlBarMusic = ({isFacilitator}: Props) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  // Access background music manager from context
   const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
     useBackgroundMusic()
 
-  // For immediate UI feedback, we'll track the user's selected track in local state
   const [localSelectedTrack, setLocalSelectedTrack] = useState<string | null>(currentTrackSrc)
-
-  // Keep local UI state in sync with global background music state
   useEffect(() => {
     setLocalSelectedTrack(currentTrackSrc)
   }, [currentTrackSrc])
 
-  // If not the facilitator, hide the music controls
   if (!isFacilitator) return null
 
   return (
@@ -43,98 +33,90 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
           ref={buttonRef}
           aria-label='Background music'
           size='large'
-          onMouseDown={(e) => e.stopPropagation()} // prevent drag interactions
+          onMouseDown={(e) => e.stopPropagation()}
+          className='hover:!bg-gray-100 !rounded-full !bg-white !p-1 !shadow-none transition'
         >
-          <HeadphonesIcon />
+          <HeadphonesIcon className='text-gray-500' />
         </IconButton>
       </RadixPopover.Trigger>
-
       <RadixPopover.Portal>
         <RadixPopover.Content
           sideOffset={8}
-          style={{
-            backgroundColor: '#fff',
-            borderRadius: 6,
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15)'
-          }}
           className='background-music-popover z-50 data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
         >
-          <div className='flex min-w-[240px] flex-col gap-3 p-4'>
-            <div className='text-gray-700 font-semibold'>Background Music</div>
-
-            {/* Track selection list */}
-            <div className='flex flex-col gap-1'>
+          <div className='border-gray-100 flex min-w-[260px] flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
+            <div className='mb-1 flex items-center gap-2'>
+              <HeadphonesIcon className='text-blue-500' fontSize='small' />
+              <span className='text-gray-800 text-base font-semibold'>Background music</span>
+            </div>
+            <div className='flex flex-col gap-2'>
               {availableTracks.map((track: Track) => (
                 <button
                   key={track.src}
                   onClick={() => {
-                    console.log('Clicked track:', track.src)
                     setLocalSelectedTrack(track.src)
-                    selectTrack(track.src) // sets the track in the manager but doesn't auto-play
+                    selectTrack(track.src)
                   }}
-                  className={`rounded-md border px-2 py-1 text-left transition-all ${
+                  className={`group flex items-center gap-2 rounded-lg border px-3 py-2 transition-all ${
                     localSelectedTrack === track.src
-                      ? 'border-blue-600 text-blue-600 font-bold'
-                      : 'text-gray-800 border-transparent'
-                  }`}
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
+                      : 'hover:bg-gray-50 text-gray-700 border-transparent'
+                  } `}
                 >
-                  {track.name}
+                  <span className='flex-1 truncate'>{track.name}</span>
                   {localSelectedTrack === track.src && (
-                    <>{isPlaying ? ' (Playing)' : ' (Selected)'}</>
+                    <span className='bg-blue-100 text-blue-700 rounded px-2 py-0.5 text-xs font-medium'>
+                      {isPlaying ? 'Playing' : 'Selected'}
+                    </span>
                   )}
                 </button>
               ))}
             </div>
-
-            {/* Playback controls */}
-            <div className='flex items-center gap-2'>
+            <div className='mt-2 flex items-center justify-between gap-2'>
               <button
-                onClick={() => {
-                  console.log('Clicked play:', localSelectedTrack)
-                  if (localSelectedTrack) {
-                    playTrack(localSelectedTrack) // sets and plays the track
-                  }
-                }}
+                onClick={() => localSelectedTrack && playTrack(localSelectedTrack)}
                 disabled={!localSelectedTrack}
-                className='border-blue-600 text-blue-600 rounded border px-3 py-1 font-medium disabled:opacity-50'
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  !localSelectedTrack
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                } `}
               >
                 Play
               </button>
               <button
-                onClick={() => {
-                  console.log('Clicked pause')
-                  pause()
-                }}
+                onClick={pause}
                 disabled={!isPlaying}
-                className='border-blue-600 text-blue-600 rounded border px-3 py-1 font-medium disabled:opacity-50'
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  !isPlaying
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                } `}
               >
                 Pause
               </button>
               <button
-                onClick={() => {
-                  console.log('Clicked stop')
-                  stop()
-                }}
+                onClick={stop}
                 disabled={!localSelectedTrack}
-                className='border-blue-600 text-blue-600 rounded border px-3 py-1 font-medium disabled:opacity-50'
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  !localSelectedTrack
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                } `}
               >
                 Stop
               </button>
             </div>
-
-            {/* Volume control */}
-            <div className='flex items-center gap-2'>
-              <span className='text-gray-600 flex-grow'>Volume</span>
+            <div className='mt-2 flex items-center gap-3'>
+              <span className='text-gray-500 w-14 text-sm'>Volume</span>
               <input
                 type='range'
                 min='0'
                 max='1'
                 step='0.01'
                 value={volume}
-                onChange={(e) => {
-                  setVolume(parseFloat(e.target.value))
-                }}
-                className='w-[100px]'
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                className='accent-blue-500 h-2 flex-1'
               />
             </div>
           </div>
