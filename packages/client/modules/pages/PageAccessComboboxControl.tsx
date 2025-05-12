@@ -59,6 +59,7 @@ export const PageAccessComboboxControl = (props: Props) => {
           <>
             <hr className={'my-1 h-0.25 bg-slate-500'}></hr>
             <MenuItem
+              className={'hover:text-tomato-700'}
               key={'remove'}
               onClick={() => {
                 onClick(null)

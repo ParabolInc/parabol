@@ -21,11 +21,11 @@ export const Page = (props: Props) => {
   if (!pageSlug) return <div>No page ID provided in route</div>
   return (
     <div className='flex w-full flex-col items-center bg-slate-200 pt-2'>
-      <div className='flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-4'>
-        <div className='absolute top-0 right-48 flex'>
+      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-4'>
+        <div className='absolute top-0 right-12 flex'>
           <Popover.Root>
             <Popover.Trigger asChild>
-              <button className='cursor-pointer'>Share</button>
+              <button className='fixed cursor-pointer bg-white pt-1'>Share</button>
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>

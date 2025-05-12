@@ -33,20 +33,23 @@ const server = Server.configure({
     }
   },
   async onAuthenticate(data) {
-    const {documentName, requestParameters} = data
+    const {documentName, requestParameters, connection} = data
     const authTokenStr = requestParameters.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
 
     const [_entityName, entityId] = documentName.split(':')
     const dbId = feistelCipher.decrypt(Number(entityId))
-    // TODO implement RBAC to see if authToken.sub has permission to access entityId
-    const page = await getKysely()
-      .selectFrom('Page')
-      .where('id', '=', dbId)
-      .select('userId')
+    const pageAccess = await getKysely()
+      .selectFrom('PageAccess')
+      .select('role')
+      .where('pageId', '=', dbId)
+      .where('userId', '=', authToken.sub)
       .executeTakeFirst()
-    if (!page) throw new Error('Document does not exist')
-    if (page.userId !== authToken.sub) throw new Error('Unauthorized')
+    if (!pageAccess) throw new Error('Document does not exist or user is not authorized')
+    const {role} = pageAccess
+    if (role === 'viewer' || role === 'commenter') {
+      connection.readOnly = true
+    }
   },
   extensions: [
     new Database({

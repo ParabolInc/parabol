@@ -82,7 +82,7 @@ export const PageSharingAccessList = (props: Props) => {
           return (
             <div className='flex items-center justify-between' key={email}>
               <div className='flex items-center gap-3 pr-2'>
-                <TeamAvatar className='h-8 w-8' teamId={email} teamName={email} />
+                <TeamAvatar className='mr-0 h-8 w-8' teamId={email} teamName={email} />
                 <div className='flex flex-col'>
                   <div className='text-sm font-medium text-slate-700'>{email}</div>
                 </div>
@@ -122,7 +122,7 @@ export const PageSharingAccessList = (props: Props) => {
           return (
             <div className='flex items-center justify-between' key={teamId}>
               <div className='flex items-center gap-3 pr-2'>
-                <TeamAvatar className='h-8 w-8' teamId={teamId} teamName={teamName} />
+                <TeamAvatar className='mr-0 h-8 w-8' teamId={teamId} teamName={teamName} />
                 <div className='flex flex-col'>
                   <div className='text-sm font-medium text-slate-700'>{teamName}</div>
                 </div>
