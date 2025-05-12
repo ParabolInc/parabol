@@ -444,7 +444,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_propagate_access_user
+CREATE TRIGGER trg_propagate_access_org
 AFTER INSERT OR UPDATE OR DELETE ON "PageOrganizationAccess"
 FOR EACH ROW
 EXECUTE FUNCTION "propagateAccessToChildPagesOrganization"();
@@ -515,6 +515,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "unlinkFromParentPage";
     DROP FUNCTION IF EXISTS "addAccessOnNewPage";
     DROP FUNCTION IF EXISTS "propagateAccessToChildPagesExternal";
     DROP FUNCTION IF EXISTS "propagateAccessToChildPagesUser";
