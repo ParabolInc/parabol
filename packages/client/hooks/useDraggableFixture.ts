@@ -14,12 +14,14 @@ const makeDrag = (ref: HTMLDivElement, lastX: number) => ({
   width: 0
 })
 
-let drag: ReturnType<typeof makeDrag>
+let drag: ReturnType<typeof makeDrag> | undefined
 
 const noop = () => undefined
 const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: boolean) => {
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+
   const onMouseUp = useEventCallback((e: MouseEvent | TouchEvent) => {
+    if (!drag) return
     if (e.type === 'touchend') {
       drag.ref.removeEventListener('touchmove', onMouseMove)
     } else {
@@ -28,7 +30,7 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
   })
 
   const onMouseMove = useEventCallback((e: MouseEvent | TouchEvent) => {
-    // required to prevent address bar scrolling & other strange browser things on mobile view
+    if (!drag) return
     e.preventDefault()
     const isTouchMove = e.type === 'touchmove'
     const {clientX} = isTouchMove ? (e as TouchEvent).touches[0]! : (e as MouseEvent)
@@ -73,9 +75,11 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
   const onMouseDown = useEventCallback(
     (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
       const isTouchStart = e.type === 'touchstart'
+      const target = e.currentTarget as HTMLDivElement | null
+      if (!target) return
       if (isTouchStart) {
-        e.target.addEventListener('touchmove', onMouseMove as any)
-        e.target.addEventListener('touchend', onMouseUp as any)
+        target.addEventListener('touchmove', onMouseMove as any)
+        target.addEventListener('touchend', onMouseUp as any)
       } else {
         document.addEventListener('mousemove', onMouseMove)
         document.addEventListener('mouseup', onMouseUp)
@@ -83,11 +87,11 @@ const useDraggableFixture = (isLeftSidebarOpen: boolean, isRightDrawerOpen: bool
       const {clientX} = isTouchStart
         ? (e as React.TouchEvent<HTMLDivElement>).touches[0]!
         : (e as React.MouseEvent<HTMLDivElement>)
-      drag = makeDrag(e.currentTarget as HTMLDivElement, clientX)
+      drag = makeDrag(target, clientX)
     }
   )
   const onClickCapture = useEventCallback((e) => {
-    if (drag.isDrag) {
+    if (drag && drag.isDrag) {
       e.stopPropagation()
     }
   })
