@@ -18,7 +18,7 @@
     overLimitCopy,
     isRemoved,
     reasonRemoved,
-    rol,
+    rol
   )...)
 */
   INSERT INTO "User" (
@@ -39,7 +39,7 @@
     "overLimitCopy",
     "isRemoved",
     "reasonRemoved",
-    "rol",
+    "rol"
   ) VALUES :users
   ON CONFLICT (id) DO UPDATE SET
     "email" = EXCLUDED."email",
@@ -58,5 +58,5 @@
     "overLimitCopy" = EXCLUDED."overLimitCopy",
     "isRemoved" = EXCLUDED."isRemoved",
     "reasonRemoved" = EXCLUDED."reasonRemoved",
-    "rol" = EXCLUDED."rol",
+    "rol" = EXCLUDED."rol"
   ;
