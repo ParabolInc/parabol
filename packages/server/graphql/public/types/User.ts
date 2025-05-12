@@ -785,7 +785,8 @@ const User: ReqResolvers<'User'> = {
     const similarEmbeddings = await pg
       .with('Model', (qc) =>
         qc
-          .selectFrom(MODEL)
+          .selectFrom(MODEL as any)
+          // @ts-ignore
           .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${MODEL}.embeddingsMetadataId`)
           .select([`${MODEL}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
           .where('objectType', '=', 'meetingTemplate')

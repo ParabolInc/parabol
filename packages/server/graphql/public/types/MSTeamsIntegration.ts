@@ -9,7 +9,7 @@ export type MSTeamsIntegrationSource = {
 const loadActiveProvider = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const auths = await dataLoader
     .get('teamMemberIntegrationAuthsByTeamIdAndService')
-    .load({teamId, service: 'mattermost'})
+    .load({teamId, service: 'msTeams'})
   if (!auths || auths.length !== 1) return null
   const {providerId} = auths[0]!
   return await dataLoader.get('integrationProviders').loadNonNull(providerId)
@@ -33,7 +33,7 @@ const MSTeamsIntegration: MsTeamsIntegrationResolvers = {
   isActive: async ({teamId}, _args, {dataLoader}) => {
     const auths = await dataLoader
       .get('teamMemberIntegrationAuthsByTeamIdAndService')
-      .load({teamId, service: 'mattermost'})
+      .load({teamId, service: 'msTeams'})
     return auths && auths.length > 1
   },
 
