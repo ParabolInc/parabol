@@ -1,5 +1,4 @@
 import {GraphQLError} from 'graphql'
-import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {feistelCipher} from '../../../utils/feistelCipher'
 import {MutationResolvers} from '../resolverTypes'
@@ -38,7 +37,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         .selectFrom(pg.dynamic.table(table).as('t'))
         .select('role')
         .where('pageId', '=', dbPageId)
-        .where(sql`${typeId}`, '=', subjectId)
+        .where(pg.dynamic.ref(typeId), '=', subjectId)
         .executeTakeFirst()
       const oldRole = oldRoleRes?.role ?? undefined
       const isMoreRestrictive =

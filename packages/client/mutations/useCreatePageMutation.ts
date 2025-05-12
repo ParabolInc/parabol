@@ -3,8 +3,8 @@ import {useMutation, UseMutationConfig} from 'react-relay'
 import {useCreatePageMutation as TCreatePageMutation} from '../__generated__/useCreatePageMutation.graphql'
 
 const mutation = graphql`
-  mutation useCreatePageMutation {
-    createPage {
+  mutation useCreatePageMutation($parentPageId: ID, $teamId: ID) {
+    createPage(parentPageId: $parentPageId, teamId: $teamId) {
       page {
         id
       }

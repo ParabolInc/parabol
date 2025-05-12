@@ -8,7 +8,9 @@ const Page: PageResolvers = {
     if (!parentPageId) return null
     const parentPage = await dataLoader.get('pages').load(parentPageId)
     return parentPage || null
-  }
+  },
+  parentPageId: ({parentPageId}) =>
+    parentPageId ? `page:${feistelCipher.encrypt(parentPageId)}` : null
 }
 
 export default Page

@@ -57,6 +57,7 @@ export const PageSharingAccessList = (props: Props) => {
     graphql`
       fragment PageSharingAccessList_page on Page {
         ...PageSharingAccessList_pageAccess @relay(mask: false)
+        id
         parentPage {
           title
         }

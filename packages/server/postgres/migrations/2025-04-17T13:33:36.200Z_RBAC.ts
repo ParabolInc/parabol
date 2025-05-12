@@ -323,7 +323,7 @@ FOR EACH ROW EXECUTE FUNCTION "updateOrgPageAccessByOrgUser"();
 CREATE OR REPLACE FUNCTION "unlinkFromParentPage"()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF TG_OP = 'DELETE' OR OLD.role > NEW.role THEN
+  IF TG_OP = 'DELETE' OR OLD.role < NEW.role THEN
     UPDATE "Page"
     SET "isParentLinked" = FALSE
     WHERE "id" = COALESCE(OLD."pageId", NEW."pageId")
@@ -461,7 +461,8 @@ IF NEW."parentPageId" IS NOT NULL THEN
   INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
   SELECT NEW."id", "userId", "role"
   FROM "PageUserAccess"
-  WHERE "pageId" = NEW."parentPageId";
+  WHERE "pageId" = NEW."parentPageId"
+  AND "userId" != NEW."userId";
 
   -- Copy PageExternalAccess
   INSERT INTO "PageExternalAccess" ("pageId", "email", "role")
@@ -488,10 +489,31 @@ RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_add_access_on_new_page
+CREATE OR REPLACE TRIGGER trg_add_access_on_new_page
 AFTER INSERT ON "Page"
 FOR EACH ROW
 EXECUTE FUNCTION "addAccessOnNewPage"();
+
+
+--- REMOVE ACCESS ON DELETED PAGE
+CREATE OR REPLACE FUNCTION "removeAccessOnDeletePage"()
+RETURNS TRIGGER AS $$
+BEGIN
+  DELETE FROM "PageUserAccess"
+    WHERE "pageId" = OLD."pageId";
+  DELETE FROM "PageExternalAccess"
+    WHERE "pageId" = OLD."pageId";
+  DELETE FROM "PageTeamAccess"
+    WHERE "pageId" = OLD."pageId";
+  DELETE FROM "PageOrganizationAccess"
+    WHERE "pageId" = OLD."pageId";
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER trg_remove_access_on_del_page
+AFTER DELETE ON "Page"
+FOR EACH ROW
+EXECUTE FUNCTION "removeAccessOnDeletePage"();
 `.execute(db)
 }
 
@@ -510,11 +532,13 @@ export async function down(db: Kysely<any>): Promise<void> {
       .execute()
   ])
   await sql`
+    DROP TRIGGER IF EXISTS "trg_remove_access_on_del_page" ON "Page";
     DROP TRIGGER IF EXISTS "trg_add_access_on_new_page" ON "Page";
     DROP TRIGGER IF EXISTS "trg_promote_external_access" ON "User";
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "removeAccessOnDeletePage";
     DROP FUNCTION IF EXISTS "unlinkFromParentPage";
     DROP FUNCTION IF EXISTS "addAccessOnNewPage";
     DROP FUNCTION IF EXISTS "propagateAccessToChildPagesExternal";
