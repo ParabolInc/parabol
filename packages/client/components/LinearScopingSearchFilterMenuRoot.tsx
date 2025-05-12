@@ -5,12 +5,10 @@ import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {LinearScopingSearchFilterMenuRoot_query$key} from '../__generated__/LinearScopingSearchFilterMenuRoot_query.graphql'
 import {LinearScopingSearchFilterMenuRootQuery} from '../__generated__/LinearScopingSearchFilterMenuRootQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useLinearProjectsAndTeams, {
-  LinearProjectOrTeam,
-  Project
-} from '../hooks/useLinearProjectsAndTeams'
+import useLinearProjectsAndTeams, {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
 import {MenuProps} from '../hooks/useMenu'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
+import {getLinearRepoName} from '../utils/getLinearRepoName'
 import LinearSelectorMenu from './LinearSelectorMenu'
 import MockFieldList from './MockFieldList'
 
@@ -40,15 +38,9 @@ const LinearScopingSearchFilterMenuRootQueryNode = graphql`
   }
 `
 
-const linearProjectNameWithTeam = (project: Project): string => {
-  const {name: projectName, teams} = project
-  const teamName = teams?.nodes?.[0]?.displayName
-  return teamName ? `${teamName}/${projectName}` : projectName || 'Unknown Project'
-}
-
 const getItemLabel = (item: LinearProjectOrTeam): string => {
   if ('teams' in item && item.teams !== undefined) {
-    return linearProjectNameWithTeam(item)
+    return getLinearRepoName(item)
   }
   return item.name || 'Unknown Team'
 }

@@ -5,6 +5,7 @@ import {
   useLinearProjectsAndTeams_teamMember$data,
   useLinearProjectsAndTeams_teamMember$key
 } from '../__generated__/useLinearProjectsAndTeams_teamMember.graphql'
+import {getLinearRepoName} from '../utils/getLinearRepoName'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import getUniqueEdges from '../utils/getUniqueEdges'
 import {isNotNull} from '../utils/predicates'
@@ -39,14 +40,11 @@ const getNodeId = (edge: InputEdgeForGetNodeId) => {
   return edge?.node?.id
 }
 
-const linearProjectNameWithTeam = (project: Project): string => {
-  const {name: projectName, teams} = project
-  const teamName = teams?.nodes?.[0]?.displayName
-  return teamName ? `${teamName}/${projectName}` : projectName || 'Unknown Project'
-}
-
 const getItemName = (item: LinearProjectOrTeam): string => {
-  return 'teams' in item ? linearProjectNameWithTeam(item) : item.name || 'Unknown Team'
+  // If 'teams' is in item, it's a Project.
+  // The getLinearRepoName function handles Project types correctly.
+  // If not, it's a Team, and we fall back to item.name.
+  return 'teams' in item ? getLinearRepoName(item) : item.name || 'Unknown Team'
 }
 
 export interface UseLinearProjectsAndTeamsResult {

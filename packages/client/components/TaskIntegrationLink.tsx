@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
+import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
 import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
@@ -112,8 +113,7 @@ const TaskIntegrationLink = (props: Props) => {
       linearProject,
       url
     } = integration
-    const projectName = linearProject?.name
-    const nameWithTeam = projectName ? `${teamName}/${projectName}` : `${teamName}`
+    const nameWithTeam = getLinearRepoName(linearProject, teamName)
     return (
       <a
         href={url}

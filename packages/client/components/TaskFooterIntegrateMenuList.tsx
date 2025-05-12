@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
+import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
 import {MenuProps} from '../hooks/useMenu'
@@ -33,12 +34,6 @@ type Item = NonNullable<
 
 type LinearProjectItem = Item & {__typename: '_xLinearProject'}
 
-const linearTeamAndProjectName = (item: LinearProjectItem) => {
-  const {name: projectName, teams} = item
-  const {name: teamName} = teams?.nodes?.[0] ?? {}
-  return teamName ? `${teamName}/${projectName}` : `${projectName}`
-}
-
 const getValue = (item: Item) => {
   const {service} = item
   if (service === 'jira' || service === 'azureDevOps' || service === 'jiraServer')
@@ -47,7 +42,7 @@ const getValue = (item: Item) => {
   else if (service === 'gitlab') return item.fullPath ?? ''
   else if (service === 'linear' && item.__typename === '_xLinearTeam') return item.displayName ?? ''
   else if (service === 'linear' && item.__typename === '_xLinearProject')
-    return linearTeamAndProjectName(item as LinearProjectItem)
+    return getLinearRepoName(item as LinearProjectItem)
   return ''
 }
 
@@ -86,7 +81,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
         teams(first: 1) {
           nodes {
             id
-            name
+            displayName
           }
         }
       }
@@ -251,7 +246,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
           const {id: projectId, teams} = repoIntegration
           const {id: teamId} = teams?.nodes?.[0] ?? {}
           if (!teamId) return null
-          const nameWithTeam = linearTeamAndProjectName(repoIntegration as LinearProjectItem)
+          const nameWithTeam = getLinearRepoName(repoIntegration)
           const integrationRepoId = LinearProjectId.join(teamId, projectId)
           return (
             <TaskIntegrationMenuItem

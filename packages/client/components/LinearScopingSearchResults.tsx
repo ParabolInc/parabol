@@ -11,6 +11,7 @@ import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import LinearIssueId from '../shared/gqlIds/LinearIssueId'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {GQLType} from '../types/generics'
+import {getLinearRepoName} from '../utils/getLinearRepoName'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
@@ -194,15 +195,13 @@ const LinearScopingSearchResults = (props: Props) => {
         )}
         {issues.map((node) => {
           const {id: issueId, identifier, title, project, team, url} = node
-          const {id: projectId, name: projectName} = project ?? {
-            id: undefined,
-            projectName: undefined
-          }
+          const {id: projectId} = project ?? {id: undefined}
+          const teamName = team?.displayName ?? ''
+
+          const repoStr = getLinearRepoName(project, teamName)
+          const linkText = `${identifier} ${repoStr}`
           const repoId = LinearProjectId.join(team?.id ?? 'unknown-team-id', projectId)
           const serviceTaskId = LinearIssueId.join(repoId, issueId)
-          const teamName = team?.displayName ?? ''
-          const repoStr = projectName ? `${teamName}/${projectName}` : teamName
-          const linkText = `${identifier} ${repoStr}`
           return (
             <ScopingSearchResultItem
               key={issueId}

@@ -10,6 +10,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
+import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import getNonNullEdges from '~/utils/getNonNullEdges'
 import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
@@ -46,17 +47,9 @@ type Project = ProjectEdge['node']
 
 type TeamEdge = LinearApiQueryFromViewer['teams']['edges'][number]
 
-// Type for the Team node data.
 type Team = TeamEdge['node']
 
-const linearProjectNameWithTeam = (project: Project) => {
-  const {name: projectName, teams} = project
-  const {displayName: teamName} = teams?.nodes?.[0] ?? {}
-  return teamName ? `${teamName}/${projectName}` : `${projectName}`
-}
-
-const getProjectId = (item: Project | Team | null | undefined) => {
-  if (!item) return null
+const getProjectId = (item: Project | Team) => {
   if ('teams' in item) {
     const {id: teamId} = (item as Project).teams?.nodes?.[0] ?? {id: undefined}
     if (!teamId) return null
@@ -67,10 +60,8 @@ const getProjectId = (item: Project | Team | null | undefined) => {
   return LinearProjectId.join(teamId)
 }
 
-const getProjectName = (item: Project | Team | null | undefined) => {
-  const unknown = 'Unknown Project or Team'
-  if (!item) return unknown
-  return 'teams' in item ? linearProjectNameWithTeam(item) : item.name || unknown
+const getProjectName = (item: Project | Team) => {
+  return getLinearRepoName(item as Project, undefined)
 }
 
 const NewLinearIssueInput = (props: Props) => {
@@ -170,7 +161,10 @@ const NewLinearIssueInput = (props: Props) => {
   )
 
   const projectsAndIds = useMemo(
-    () => projectsAndTeams.map((node) => ({id: node.id, name: node.name})),
+    () =>
+      projectsAndTeams
+        .map((node) => ({id: getProjectId(node), name: getProjectName(node)}))
+        .filter((node) => node.id !== null) as {id: string; name: string}[],
     [teamMember]
   )
 
@@ -182,10 +176,10 @@ const NewLinearIssueInput = (props: Props) => {
       setCreateTaskError(undefined)
     }
   }, [isEditing])
-  const maybeProjectNode = projectsAndTeams?.[0]
+  const maybeProjectNode = projectsAndTeams[0]
   const [selectedProjectAndId, setSelectedProjectAndId] = useState({
-    id: getProjectId(maybeProjectNode),
-    name: getProjectName(maybeProjectNode)
+    id: maybeProjectNode ? getProjectId(maybeProjectNode) : null,
+    name: maybeProjectNode ? getProjectName(maybeProjectNode) : 'Unknown'
   })
   const {fields, onChange, validateField, setDirtyField} = useForm({
     newIssue: {

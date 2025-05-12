@@ -7,8 +7,9 @@ import {LinearObjectCard_issue$key} from '../../../__generated__/LinearObjectCar
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import {getLinearRepoName} from '../../../utils/getLinearRepoName'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import LinearSVG from '../../LinearSVG'
 
 interface Props {
@@ -85,8 +86,7 @@ const LinearObjectCard = memo((props: Props) => {
     project,
     team: {displayName: teamName}
   } = issue
-  const projectName = project?.name ?? undefined
-  const repoStr = projectName ? `${teamName}/${projectName}` : teamName
+  const repoStr = getLinearRepoName(project, teamName)
   const repoUrl = project?.url
 
   return (

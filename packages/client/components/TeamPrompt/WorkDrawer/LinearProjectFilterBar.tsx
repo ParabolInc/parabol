@@ -5,23 +5,17 @@ import {useFragment} from 'react-relay'
 import {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useLinearProjectsAndTeams, {
-  LinearProjectOrTeam,
-  Project
+  LinearProjectOrTeam
 } from '../../../hooks/useLinearProjectsAndTeams'
 import useMenu from '../../../hooks/useMenu'
 import {PortalStatus} from '../../../hooks/usePortal'
+import {getLinearRepoName} from '../../../utils/getLinearRepoName'
 import plural from '../../../utils/plural'
 import LinearSelectorMenu from '../../LinearSelectorMenu'
 
-const linearProjectNameWithTeam = (project: Project): string => {
-  const {name: projectName, teams} = project
-  const teamName = teams?.nodes?.[0]?.displayName
-  return teamName ? `${teamName}/${projectName}` : projectName || 'Unknown Project'
-}
-
 const getItemLabel = (item: LinearProjectOrTeam): string => {
   if ('teams' in item && item.teams !== undefined) {
-    return linearProjectNameWithTeam(item)
+    return getLinearRepoName(item)
   }
   return item.name || 'Unknown Team'
 }
