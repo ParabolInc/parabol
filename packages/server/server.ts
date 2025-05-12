@@ -1,4 +1,3 @@
-import tracer from 'dd-trace'
 import uws from 'uWebSockets.js'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
@@ -8,7 +7,6 @@ import createSSR from './createSSR'
 import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
 import './hocusPocus'
-import './initSentry'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
@@ -24,19 +22,6 @@ import {yoga} from './yoga'
 export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
   : 60_000 // ms
-
-tracer.init({
-  service: `web`,
-  appsec: process.env.DD_APPSEC_ENABLED === 'true',
-  plugins: false,
-  version: __APP_VERSION__
-})
-tracer
-  .use('ioredis')
-  .use('http', {
-    blocklist: ['/health', '/ready']
-  })
-  .use('pg')
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(

@@ -1,5 +1,5 @@
 import {handleStreamOrSingleExecutionResult, type ExecutionArgs} from '@envelop/core'
-import {useOnResolve} from '@envelop/on-resolve'
+import {useOnResolve, type Resolver} from '@envelop/on-resolve'
 import tracer, {type opentelemetry, type Span} from 'dd-trace'
 import {defaultFieldResolver, getNamedType, getOperationAST, type GraphQLResolveInfo} from 'graphql'
 import type {ExecutionResult} from 'graphql-ws'
@@ -45,7 +45,9 @@ interface Config {
   }
 }
 
-export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerContext> => {
+type PluginContext = DDContext & ServerContext
+type WrappableResolver = Resolver<any> & {[ddSymbol]?: true}
+export const useDatadogTracing = (config: Config): Plugin<PluginContext> => {
   if (process.env.DD_TRACE_ENABLED !== 'true') return {}
   return {
     // Removing resolve-level tracing to see if we can measure executions without OOMs
@@ -53,7 +55,7 @@ export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerCont
       addPlugin(
         useOnResolve(({info, context, args, replaceResolver, resolver}) => {
           // Ignore anything without a custom resolver since it's basically an identity function
-          if (resolver === defaultFieldResolver) return
+          if (resolver === defaultFieldResolver || (resolver as WrappableResolver)[ddSymbol]) return
           const path = getPath(info, config)
           const computedPathString = path.join('.')
           const ddContext = context[ddSymbol]
@@ -71,6 +73,7 @@ export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerCont
           const fieldSpan = tracer.startSpan('graphql.resolve', {
             childOf: parentSpan,
             tags: {
+              'service.name': 'web-graphql',
               'resource.name': `${info.fieldName}:${returnType}`,
               'span.type': 'graphql',
               'graphql.resolver.fieldName': fieldName,
@@ -81,7 +84,10 @@ export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerCont
             }
           })
           fields[computedPathString] = {span: fieldSpan}
-          replaceResolver((...args) => tracer.scope().activate(fieldSpan, () => resolver(...args)))
+          const wrapped: WrappableResolver = (...args) =>
+            tracer.scope().activate(fieldSpan, () => resolver(...args))
+          wrapped[ddSymbol] = true
+          replaceResolver(wrapped)
           return ({result}) => {
             markSpanError(fieldSpan, result)
             fieldSpan.finish()
