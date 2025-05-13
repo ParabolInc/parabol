@@ -18,6 +18,7 @@ const pgtypedConfig = {
   ],
   srcDir: 'packages/server/postgres/queries/src',
   camelCaseColumnNames: false,
+  failOnError: true,
   db: {
     dbName: process.env.POSTGRES_DB,
     user: process.env.POSTGRES_USER,

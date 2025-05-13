@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.3.6](https://github.com/ParabolInc/parabol/compare/v10.3.5...v10.3.6) (2025-05-13)
+
+
+### Fixed
+
+* mark wrapped resolvers ([#11325](https://github.com/ParabolInc/parabol/issues/11325)) ([7cd2e93](https://github.com/ParabolInc/parabol/commit/7cd2e935e33a4d4b8b78beb82176909f600e7efa))
+* **MS Teams:** Updates incorrect service name from `mattermost` to `msTeams` ([#11314](https://github.com/ParabolInc/parabol/issues/11314)) ([03c20d0](https://github.com/ParabolInc/parabol/commit/03c20d06371b6e2b18514d930d18be004cdeeaeb))
+* **orgAdmin:** enable org admins to rename & update scope of meeting templates ([#11326](https://github.com/ParabolInc/parabol/issues/11326)) ([c6b0f0a](https://github.com/ParabolInc/parabol/commit/c6b0f0a754de78979fee0af2480267af38b4e336))
+
+
+### Changed
+
+* fail on pgtyped errors ([#11324](https://github.com/ParabolInc/parabol/issues/11324)) ([33a676d](https://github.com/ParabolInc/parabol/commit/33a676ddcfc52499da91cbdd73cd73d91eebc077))
+
 ## [10.3.5](https://github.com/ParabolInc/parabol/compare/v10.3.4...v10.3.5) (2025-05-09)
 
 

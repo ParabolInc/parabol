@@ -183,6 +183,7 @@ export const teamMemberIntegrationAuthsByTeamIdAndService = (parent: RootDataLoa
             keys.map(({teamId, service}) => tuple(teamId, service))
           )
         )
+        .where('isActive', '=', true)
         .execute()) as unknown as TeamMemberIntegrationAuth[]
 
       return keys.map((key) =>
