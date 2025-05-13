@@ -12,12 +12,8 @@ const renameMeetingTemplate = {
   description: 'Rename a meeting template',
   type: RenameMeetingTemplatePayload,
   args: {
-    templateId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString)
-    }
+    templateId: {type: new GraphQLNonNull(GraphQLID)},
+    name: {type: new GraphQLNonNull(GraphQLString)}
   },
   async resolve(
     _source: unknown,
