@@ -15,36 +15,9 @@ export const isSuperUser = (authToken: AuthToken) => {
   return userId ? authToken.rol === 'su' : false
 }
 
-export function isTeamMember(authToken: AuthToken, teamId: string): boolean
-export function isTeamMember(
-  authToken: AuthToken,
-  teamId: string,
-  dataLoader: DataLoaderWorker
-): boolean
-export function isTeamMember(
-  authToken: AuthToken,
-  teamId: string,
-  dataLoader?: DataLoaderWorker
-): boolean {
-  // Original team member check
+export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   const {tms} = authToken
-  const isDirectTeamMember = Array.isArray(tms) && tms.includes(teamId)
-
-  // If no dataLoader provided or user is already a team member, return synchronously
-  if (!dataLoader || isDirectTeamMember) {
-    return isDirectTeamMember
-  }
-
-  // Start async check for org admin status
-  const userId = getUserId(authToken)
-  void (async () => {
-    const team = await dataLoader.get('teams').load(teamId)
-    if (!team) return false
-    return await isUserOrgAdmin(userId, team.orgId, dataLoader)
-  })()
-
-  // Return false for now - the async check will update permissions later if needed
-  return false
+  return Array.isArray(tms) && tms.includes(teamId)
 }
 
 interface Options {
