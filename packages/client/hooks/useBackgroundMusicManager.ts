@@ -9,7 +9,8 @@ export const availableTracks: Track[] = [
   {name: 'Lo-fi Hip Hop Night', src: '/static/sounds/lofi-hip-hop-night.mp3'},
   {name: 'Lo-fi Coffee', src: '/static/sounds/coffee-lofi.mp3'},
   {name: 'Lo-fi Quiet', src: '/static/sounds/quiet-lofi.mp3'},
-  {name: 'Lo-fi Tokyo', src: '/static/sounds/tokyo-lofi.mp3'}
+  {name: 'Lo-fi Tokyo', src: '/static/sounds/tokyo-lofi.mp3'},
+  {name: 'Lo-fi Ambient', src: '/static/sounds/lofi-ambient.mp3'}
 ]
 
 interface UseBackgroundMusicManagerProps {
