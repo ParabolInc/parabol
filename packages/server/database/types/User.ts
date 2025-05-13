@@ -1,8 +1,6 @@
 import {AuthTokenRole} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
-import {TierEnum} from '../../graphql/public/resolverTypes'
 import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
-import {defaultTier} from '../../utils/defaultTier'
 import AuthIdentity from './AuthIdentity'
 
 interface Input {
@@ -20,7 +18,6 @@ interface Input {
   createdAt?: Date
   pseudoId?: string | null
   sendSummaryEmail?: boolean
-  tier?: TierEnum
   tms?: string[]
 }
 
@@ -42,7 +39,6 @@ export default class User {
   createdAt: Date
   pseudoId?: string
   sendSummaryEmail?: boolean
-  tier: TierEnum
   tms: string[]
   reasonRemoved?: string
   rol?: AuthTokenRole.SUPER_USER
@@ -63,7 +59,6 @@ export default class User {
       preferredName,
       pseudoId,
       sendSummaryEmail,
-      tier
     } = input
     const now = new Date()
     this.id = id ?? `local|${generateUID()}`
@@ -81,6 +76,5 @@ export default class User {
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     this.pseudoId = pseudoId ?? undefined
     this.sendSummaryEmail = sendSummaryEmail ?? true
-    this.tier = tier ?? defaultTier
   }
 }

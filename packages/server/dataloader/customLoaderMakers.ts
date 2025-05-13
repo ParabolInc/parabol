@@ -44,6 +44,7 @@ import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
+import {TierEnum} from '../postgres/queries/generated/TierEnum'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -1022,6 +1023,28 @@ export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
+    }
+  )
+}
+
+export const highestTierForUserId = (parent: RootDataLoader) => {
+  return new DataLoader<string, TierEnum, string>(
+    async (keys) => {
+      const pg = getKysely()
+      const highestTiers = await pg
+        .selectFrom('OrganizationUser')
+        .innerJoin('Organization', 'Organization.id', 'OrganizationUser.orgId')
+        .select((eb) => [
+          'userId',
+          eb.fn.max('tier').as('highestTier')
+        ])
+        .where('userId', 'in', keys)
+        .execute()
+
+      return normalizeResults(keys, highestTiers, 'userId').map((user) => user?.highestTier ?? 'starter')
+    },
+    {
+      ...parent.dataLoaderOptions,
     }
   )
 }

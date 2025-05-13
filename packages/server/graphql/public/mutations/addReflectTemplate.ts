@@ -37,7 +37,8 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   if (!viewerTeam) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
-  if (getFeatureTier(viewerTeam) === 'starter' && viewer.freeCustomRetroTemplatesRemaining === 0) {
+  const org = await dataLoader.get('organizations').loadNonNull(viewerTeam.orgId)
+  if (getFeatureTier(org) === 'starter' && viewer.freeCustomRetroTemplatesRemaining === 0) {
     return standardError(new Error('You have reached the limit of free custom templates.'), {
       userId: viewerId
     })

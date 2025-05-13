@@ -1,6 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -17,15 +16,12 @@ const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLo
   }
 
   // RESOLUTION
-  await Promise.all([
-    pg.updateTable('Organization').set({trialStartDate: null}).where('id', '=', orgId).execute(),
-    pg.updateTable('Team').set({trialStartDate: null}).where('orgId', '=', orgId).execute()
-  ])
+  await pg.updateTable('Organization').set({trialStartDate: null}).where('id', '=', orgId).execute()
 
   const initialTrialStartDate = organization.trialStartDate
   organization.trialStartDate = null
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   return {orgId, trialStartDate: initialTrialStartDate}
 }

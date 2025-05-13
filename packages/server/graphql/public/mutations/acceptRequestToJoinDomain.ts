@@ -10,10 +10,10 @@ import {Logger} from '../../../utils/Logger'
 import RedisLock from '../../../utils/RedisLock'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
+import {analytics} from '../../../utils/analytics/analytics'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
@@ -113,7 +113,12 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       } catch (e) {
         Logger.log(e)
       }
-      await setUserTierForUserIds([userId])
+      const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
+      analytics.identify({
+        userId,
+        email: user.email,
+        highestTier
+      })
     }
   }
   dataLoader.clearAll(['users', 'teamMembers'])

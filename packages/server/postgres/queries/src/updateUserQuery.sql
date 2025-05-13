@@ -7,7 +7,6 @@ UPDATE "User" SET
   inactive = COALESCE(:inactive, "inactive"),
   "lastSeenAt" = GREATEST("lastSeenAt", COALESCE(:lastSeenAt, "lastSeenAt")),
   "preferredName" = COALESCE(:preferredName, "preferredName"),
-  tier = COALESCE(:tier, "tier"),
   picture = COALESCE(:picture, "picture"),
   "pseudoId" = COALESCE(:pseudoId, "pseudoId"),
   "isRemoved" = COALESCE(:isRemoved, "isRemoved"),

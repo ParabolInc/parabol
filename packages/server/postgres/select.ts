@@ -91,15 +91,12 @@ export const selectTeams = () =>
       'id',
       'isArchived',
       'isOnboardTeam',
-      'isPaid',
       'kudosEmojiUnicode',
       'lastMeetingType',
       'lockMessageHTML',
       'name',
       'orgId',
       'qualAIMeetingsCount',
-      'tier',
-      'trialStartDate',
       'isPublic',
       'updatedAt'
     ])
@@ -134,6 +131,7 @@ export const selectOrganizations = () =>
       'id',
       'activeDomain',
       'isActiveDomainTouched',
+      'isPaid',
       'createdAt',
       'name',
       'periodEnd',

@@ -49,7 +49,6 @@ describe('isTeamActive', () => {
         name: 'Test Team',
         isArchived: false,
         orgId: mockOrgId,
-        tier: 'team',
         createdAt: new Date(),
         updatedAt: new Date()
       })

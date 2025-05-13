@@ -9,7 +9,7 @@ const canAccessAI = async (team: Team, dataLoader: DataLoaderWorker) => {
 
   if (!org.useAI) return false
 
-  if (getFeatureTier(team) !== 'starter') return true
+  if (getFeatureTier(org) !== 'starter') return true
   return qualAIMeetingsCount < Threshold.MAX_QUAL_AI_MEETINGS
 }
 

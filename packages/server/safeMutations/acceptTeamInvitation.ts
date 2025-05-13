@@ -8,7 +8,7 @@ import {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
 import {Team} from '../postgres/types'
 import {Logger} from '../utils/Logger'
-import setUserTierForUserIds from '../utils/setUserTierForUserIds'
+import {analytics} from '../utils/analytics/analytics'
 
 const handleFirstAcceptedInvitation = async (
   team: Team,
@@ -111,7 +111,13 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
     } catch (e) {
       Logger.log(e)
     }
-    await setUserTierForUserIds([userId])
+
+    const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
+    analytics.identify({
+      userId,
+      email: user.email,
+      highestTier
+    })
   }
   const invitationNotificationIds = invitationNotifications.map(({id}) => id)
   // if accepted to team, don't count it towards the global denial count

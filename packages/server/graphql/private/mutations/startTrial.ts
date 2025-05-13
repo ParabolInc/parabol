@@ -1,7 +1,6 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -29,12 +28,11 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
       .set({trialStartDate: now, tierLimitExceededAt: null, scheduledLockAt: null, lockedAt: null})
       .where('id', '=', orgId)
       .execute(),
-    pg.updateTable('Team').set({trialStartDate: now}).where('orgId', '=', orgId).execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
   organization.trialStartDate = now
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   return {orgId}
 }

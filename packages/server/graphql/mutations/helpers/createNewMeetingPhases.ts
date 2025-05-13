@@ -84,11 +84,12 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
     getPastStageDurations(teamId, dataLoader),
     dataLoader.get('teams').loadNonNull(teamId)
   ])
+  const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
   const {phaseTypes} = meetingSettings
   const facilitatorTeamMemberId = toTeamMemberId(teamId, facilitatorUserId)
   const inserts = [] as InsertQueryBuilder<DB, any, any>[]
 
-  const tier = getFeatureTier(team)
+  const tier = getFeatureTier(org)
   const phases = (await Promise.all(
     phaseTypes.filter(isPhaseAvailable(tier)).map(async (phaseType) => {
       const durations = stageDurations[phaseType]

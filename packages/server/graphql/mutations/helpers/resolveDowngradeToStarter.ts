@@ -1,10 +1,8 @@
 import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {analytics} from '../../../utils/analytics/analytics'
+import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
 import {Logger} from '../../../utils/Logger'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import {ReasonToDowngradeEnum} from '../../public/resolverTypes'
 
@@ -41,16 +39,9 @@ const resolveDowngradeToStarter = async (
       .set({metadata: null, metadataURL: null, lastUpdatedBy: user.id})
       .where('orgId', '=', orgId)
       .execute(),
-    updateTeamByOrgId(
-      {
-        tier: 'starter',
-        isPaid: true
-      },
-      orgId
-    )
   ])
   dataLoader.get('organizations').clear(orgId)
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await identifyHighestUserTierForOrgId(orgId, dataLoader)
   analytics.organizationDowngraded(user, {
     orgId,
     domain: org.activeDomain || undefined,

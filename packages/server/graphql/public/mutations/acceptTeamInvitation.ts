@@ -14,8 +14,8 @@ import publish from '../../../utils/publish'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
 import {MutationResolvers} from '../resolverTypes'
-import getIsAnyViewerTeamLocked from './helpers/getIsAnyViewerTeamLocked'
-import getIsUserIdApprovedByOrg from './helpers/getIsUserIdApprovedByOrg'
+import {getIsAnyUserOrgLocked} from './helpers/getIsAnyUserOrgLocked'
+import {getIsUserIdApprovedByOrg} from './helpers/getIsUserIdApprovedByOrg'
 
 const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   _source,
@@ -74,7 +74,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
 
   const [approvalError, isAnyViewerTeamLocked] = await Promise.all([
     getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken),
-    getIsAnyViewerTeamLocked(viewer.tms, dataLoader)
+    getIsAnyUserOrgLocked(viewerId, dataLoader)
   ])
   if (approvalError instanceof Error) {
     await redisLock.unlock()
