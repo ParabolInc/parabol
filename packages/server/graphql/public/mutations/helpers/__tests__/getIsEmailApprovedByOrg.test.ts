@@ -2,7 +2,7 @@ import '../../../../../../../scripts/webpack/utils/dotenv'
 import {createPGTables} from '../../../../../__tests__/common'
 import {getNewDataLoader} from '../../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../../postgres/getKysely'
-import getIsEmailApprovedByOrg from '../getIsEmailApprovedByOrg'
+import {getIsEmailApprovedByOrg} from '../getIsEmailApprovedByOrg'
 
 const TEST_DB = 'getIsEmailApprovedByOrgTest'
 

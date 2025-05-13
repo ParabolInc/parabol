@@ -22,19 +22,15 @@ const moveToOrg = async (
   // AUTH
   const su = isSuperUser(authToken)
   // VALIDATION
-  const [org, team, isPaidResult] = await Promise.all([
-    dataLoader.get('organizations').loadNonNull(orgId),
-    dataLoader.get('teams').load(teamId),
-    pg
-      .selectFrom('Team')
-      .select('isPaid')
-      .where('orgId', '=', orgId)
-      .where('isArchived', '!=', true)
-      .limit(1)
-      .executeTakeFirst()
+  const [org, team] = await Promise.all([
+    dataLoader.get('organizations').load(orgId),
+    dataLoader.get('teams').load(teamId)
   ])
   if (!team) {
     return standardError(new Error('Did not find the team'))
+  }
+  if (!org) {
+    return standardError(new Error('Did not find the organization'))
   }
   const {orgId: currentOrgId} = team
   if (!su) {
@@ -68,13 +64,6 @@ const moveToOrg = async (
   }
 
   // RESOLUTION
-  const updates = {
-    orgId,
-    isPaid: isPaidResult?.isPaid ?? true,
-    tier: org.tier,
-    trialStartDate: org.trialStartDate,
-    updatedAt: new Date()
-  }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const teamMemberUserIds = teamMembers.map(({userId}) => userId)
   const orgUserKeys = teamMemberUserIds.map((userId) => ({userId, orgId}))
@@ -96,7 +85,10 @@ const moveToOrg = async (
       qb.updateTable('MeetingTemplate').set({orgId}).where('orgId', '=', currentOrgId)
     )
     .updateTable('Team')
-    .set(updates)
+    .set({
+        orgId,
+        updatedAt: new Date()
+    })
     .where('id', '=', teamId)
     .execute()
   dataLoader.clearAll('teams')

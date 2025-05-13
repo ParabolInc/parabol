@@ -32,7 +32,6 @@ export default async function createNewOrg(
       orgId,
       userId: leaderUserId,
       role: 'BILLING_LEADER',
-      tier: org.tier
     })
     .execute()
 }

@@ -5,12 +5,11 @@ import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
 import {MutationResolvers} from '../resolverTypes'
+import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
 
 // included here to codegen has access to it
 export type UpgradeToTeamTierSuccessSource = {
@@ -78,20 +77,11 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       })
       .where('id', '=', orgId)
       .execute(),
-    pg
-      .updateTable('Team')
-      .set({
-        isPaid: true,
-        tier: 'team',
-        trialStartDate: null
-      })
-      .where('orgId', '=', orgId)
-      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
   organization.tier = 'team'
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   await pg
     .updateTable('OrganizationUser')

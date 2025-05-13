@@ -3,10 +3,10 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
-import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToStarter from './resolveDowngradeToStarter'
+import {analytics} from '../../../utils/analytics/analytics'
 
 const removeFromOrg = async (
   userId: string,
@@ -86,7 +86,13 @@ const removeFromOrg = async (
   } catch (e) {
     Logger.log(e)
   }
-  await setUserTierForUserIds([userId])
+  const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
+  analytics.identify({
+    userId,
+    email: user.email,
+    highestTier
+  })
+
   return {
     tms: user?.tms ?? [],
     taskIds,

@@ -19,15 +19,14 @@ const insertStripeQuantityMismatchLogging = async (
       eventType,
       stripePreviousQuantity,
       stripeNextQuantity,
-      orgUsers: orgUsers.map(({id, inactive, joinedAt, removedAt, userId, role, tier}) => {
+      orgUsers: orgUsers.map(({id, inactive, joinedAt, removedAt, userId, role}) => {
         return {
           id,
           inactive,
           joinedAt: joinedAt.toJSON(),
           removedAt: removedAt ? removedAt.toJSON() : '',
           userId,
-          role,
-          tier
+          role
         }
       })
     },

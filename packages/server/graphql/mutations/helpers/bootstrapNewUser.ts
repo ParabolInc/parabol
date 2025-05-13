@@ -20,7 +20,7 @@ const bootstrapNewUser = async (
   isOrganic: boolean,
   dataLoader: DataLoaderWorker
 ) => {
-  const {id: userId, createdAt, preferredName, email, tier, pseudoId, identities} = newUser
+  const {id: userId, createdAt, preferredName, email, pseudoId, identities} = newUser
   // email is checked by the caller
   const domain = email.split('@')[1]!
   const [isCompanyDomain, organizations] = await Promise.all([
@@ -52,6 +52,16 @@ const bootstrapNewUser = async (
       .execute()
   ])
 
+  const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
+  const highestTier = organizations.reduce((highestTier, {tier}) => {
+    if (!teamsWithAutoJoin.some((team) => team.orgId === tier)) return highestTier
+
+    if (tier === 'enterprise') return tier
+    if (highestTier === 'enterprise') return highestTier
+    if (tier === 'team') return tier
+    return highestTier
+  }, 'starter')
+
   // Identify the user so user properties are set before any events are sent
   analytics.identify({
     userId,
@@ -59,12 +69,11 @@ const bootstrapNewUser = async (
     email,
     name: preferredName,
     isActive: true,
-    highestTier: tier,
+    highestTier,
     isPatient0,
     anonymousId: pseudoId
   })
 
-  const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
   const tms = [] as string[]
   if (!isOrganic) {
     const nonOrganicActions = [

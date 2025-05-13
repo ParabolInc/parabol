@@ -6,13 +6,13 @@ const suOrgCount: QueryResolvers['suOrgCount'] = async (_source, {minOrgSize, ti
   const result = await pg
     .with('BigOrgs', (qb) =>
       qb
-        .selectFrom('OrganizationUser')
-        .select(({fn}) => fn.count('id').as('orgSize'))
+        .selectFrom('Organization')
+        .innerJoin('OrganizationUser as ou', 'Organization.id', 'ou.orgId')
+        .select(({fn}) => fn.count('ou.id').as('orgSize'))
         .where('tier', '=', tier)
-        .where('inactive', '=', false)
-        .where('removedAt', 'is', null)
-        .groupBy('orgId')
-        .having(({eb, fn}) => eb(fn.count('id'), '>=', minOrgSize))
+        .where('ou.inactive', '=', false)
+        .where('ou.removedAt', 'is', null)
+        .where(({eb, fn}) => eb(fn.count('ou.id'), '>=', minOrgSize))
     )
     .selectFrom('BigOrgs')
     .select(({fn}) => fn.count<number>('orgSize').as('count'))
