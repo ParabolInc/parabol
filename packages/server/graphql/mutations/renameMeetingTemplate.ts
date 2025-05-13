@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import updateMeetingTemplateName from '../../postgres/queries/updateMeetingTemplateName'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -12,12 +12,8 @@ const renameMeetingTemplate = {
   description: 'Rename a meeting template',
   type: RenameMeetingTemplatePayload,
   args: {
-    templateId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString)
-    }
+    templateId: {type: new GraphQLNonNull(GraphQLID)},
+    name: {type: new GraphQLNonNull(GraphQLString)}
   },
   async resolve(
     _source: unknown,
@@ -33,8 +29,13 @@ const renameMeetingTemplate = {
     if (!template || !template.isActive) {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
-    if (!isTeamMember(authToken, template.teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+    if (
+      !isTeamMember(authToken, template.teamId) &&
+      !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
+    ) {
+      return standardError(new Error('You are not authorized to rename this template'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
