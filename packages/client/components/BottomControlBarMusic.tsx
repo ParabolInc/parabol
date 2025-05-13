@@ -26,6 +26,15 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
 
   if (!isFacilitator) return null
 
+  const longestTrackLabel = availableTracks.reduce(
+    (longest, track) => (track.name.length > longest.length ? track.name : longest),
+    ''
+  )
+  const widthEstimate = Math.min(Math.max(longestTrackLabel.length * 0.75 + 160, 280), 360)
+
+  const playEnabled = !!localSelectedTrack && !isPlaying
+  const stopEnabled = !!localSelectedTrack && isPlaying
+
   return (
     <RadixPopover.Root open={open} onOpenChange={setOpen}>
       <RadixPopover.Trigger asChild>
@@ -42,13 +51,15 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
       <RadixPopover.Portal>
         <RadixPopover.Content
           sideOffset={8}
+          style={{width: widthEstimate, minWidth: widthEstimate, maxWidth: widthEstimate}}
           className='background-music-popover z-50 data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
         >
-          <div className='border-gray-100 flex min-w-[260px] flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
+          <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
               <span className='text-gray-800 text-base font-semibold'>Background music</span>
             </div>
+            {/* Track selection */}
             <div className='flex flex-col gap-2'>
               {availableTracks.map((track: Track) => (
                 <button
@@ -62,51 +73,58 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
                       ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
                       : 'hover:bg-gray-50 text-gray-700 border-transparent'
                   } `}
+                  style={{width: '100%'}}
                 >
                   <span className='flex-1 truncate'>{track.name}</span>
-                  {localSelectedTrack === track.src && (
-                    <span className='bg-blue-100 text-blue-700 rounded px-2 py-0.5 text-xs font-medium'>
-                      {isPlaying ? 'Playing' : 'Selected'}
-                    </span>
-                  )}
                 </button>
               ))}
             </div>
+            {/* Controls */}
             <div className='mt-2 flex items-center justify-between gap-2'>
               <button
+                type='button'
                 onClick={() => localSelectedTrack && playTrack(localSelectedTrack)}
-                disabled={!localSelectedTrack}
+                disabled={!playEnabled}
+                aria-disabled={!playEnabled}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  !localSelectedTrack
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  playEnabled
+                    ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
+                    : 'cursor-not-allowed bg-jade-100 text-jade-300'
                 } `}
+                style={{minWidth: 72}}
               >
                 Play
               </button>
               <button
+                type='button'
                 onClick={pause}
                 disabled={!isPlaying}
+                aria-disabled={!isPlaying}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  !isPlaying
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                  isPlaying
+                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 } `}
+                style={{minWidth: 72}}
               >
                 Pause
               </button>
               <button
+                type='button'
                 onClick={stop}
-                disabled={!localSelectedTrack}
+                disabled={!stopEnabled}
+                aria-disabled={!stopEnabled}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  !localSelectedTrack
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  stopEnabled
+                    ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
+                    : 'cursor-not-allowed bg-tomato-100 text-tomato-400'
                 } `}
+                style={{minWidth: 72}}
               >
                 Stop
               </button>
             </div>
+            {/* Volume */}
             <div className='mt-2 flex items-center gap-3'>
               <span className='text-gray-500 w-14 text-sm'>Volume</span>
               <input
