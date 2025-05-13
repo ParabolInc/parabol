@@ -8,7 +8,6 @@ import {
   useBackgroundMusic
 } from './AtmosphereProvider/BackgroundMusicProvider/BackgroundMusicProvider'
 import BottomNavControl from './BottomNavControl'
-import BottomNavIconLabel from './BottomNavIconLabel'
 
 interface Props {
   isFacilitator: boolean
@@ -48,7 +47,10 @@ const BottomControlBarMusic = ({
           aria-label='Background music'
           onClick={() => setOpen((prev) => !prev)}
         >
-          <BottomNavIconLabel icon='headphones' iconColor='midGray' label='Music' />
+          <span className='flex flex-col items-center justify-center'>
+            <HeadphonesIcon className='text-gray-500' fontSize='medium' />
+            <span className='mt-0.5 text-xs font-medium text-slate-600'>Music</span>
+          </span>
         </BottomNavControl>
       </RadixPopover.Trigger>
       <RadixPopover.Portal>
@@ -141,6 +143,9 @@ const BottomControlBarMusic = ({
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
                 className='accent-blue-500 h-2 flex-1'
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
               />
             </div>
           </div>
