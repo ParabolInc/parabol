@@ -3,11 +3,7 @@ import * as RadixPopover from '@radix-ui/react-popover'
 import clsx from 'clsx'
 import {useEffect, useRef, useState} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
-import {
-  availableTracks,
-  Track,
-  useBackgroundMusic
-} from './AtmosphereProvider/BackgroundMusicProvider/BackgroundMusicProvider'
+import useBackgroundMusicManager, {availableTracks, Track} from '../hooks/useBackgroundMusicManager'
 import BottomNavControl from './BottomNavControl'
 
 interface Props {
@@ -27,7 +23,13 @@ const BottomControlBarMusic = ({
   const [atBottom, setAtBottom] = useState(false)
 
   const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
-    useBackgroundMusic()
+    useBackgroundMusicManager({
+      meetingId: null,
+      isFacilitator,
+      initialTrackUrl: null,
+      initialIsPlaying: false,
+      initialVolume: 0.5
+    })
 
   const [localSelectedTrack, setLocalSelectedTrack] = useState<string | null>(currentTrackSrc)
   useEffect(() => {
