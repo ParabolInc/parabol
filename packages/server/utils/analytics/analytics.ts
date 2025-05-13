@@ -148,6 +148,7 @@ export type AnalyticsEvent =
   | 'Page Created'
   // insight
   | 'Insight Generated'
+  | 'Page Insights Generated'
   // user
   | 'Account Created'
   | 'Account Removed'
@@ -569,6 +570,10 @@ class Analytics {
   // insight
   insightGenerated = (user: AnalyticsUser, insightId: number, teamId: string) => {
     this.track(user, 'Insight Generated', {insightId, teamId})
+  }
+
+  pageInsightsGenerated = (user: AnalyticsUser, insightId: number, teamId: string) => {
+    this.track(user, 'Page Insights Generated', {insightId, teamId})
   }
 
   // user
