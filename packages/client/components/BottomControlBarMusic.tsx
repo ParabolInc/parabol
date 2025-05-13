@@ -1,18 +1,26 @@
 import HeadphonesIcon from '@mui/icons-material/Headphones'
-import IconButton from '@mui/material/IconButton'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useEffect, useRef, useState} from 'react'
+import {TransitionStatus} from '~/hooks/useTransition'
 import {
   availableTracks,
   Track,
   useBackgroundMusic
 } from './AtmosphereProvider/BackgroundMusicProvider/BackgroundMusicProvider'
+import BottomNavControl from './BottomNavControl'
+import BottomNavIconLabel from './BottomNavIconLabel'
 
 interface Props {
   isFacilitator: boolean
+  status?: TransitionStatus
+  onTransitionEnd?: () => void
 }
 
-const BottomControlBarMusic = ({isFacilitator}: Props) => {
+const BottomControlBarMusic = ({
+  isFacilitator,
+  status = TransitionStatus.ENTERED,
+  onTransitionEnd
+}: Props) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -26,40 +34,40 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
 
   if (!isFacilitator) return null
 
-  const longestTrackLabel = availableTracks.reduce(
-    (longest, track) => (track.name.length > longest.length ? track.name : longest),
-    ''
-  )
-  const widthEstimate = Math.min(Math.max(longestTrackLabel.length * 0.75 + 160, 280), 360)
-
   const playEnabled = !!localSelectedTrack && !isPlaying
   const stopEnabled = !!localSelectedTrack && isPlaying
 
   return (
     <RadixPopover.Root open={open} onOpenChange={setOpen}>
       <RadixPopover.Trigger asChild>
-        <IconButton
+        <BottomNavControl
           ref={buttonRef}
+          status={status}
+          onTransitionEnd={onTransitionEnd}
+          className='meeting-control-bar-button flex flex-col items-center justify-center'
           aria-label='Background music'
-          size='large'
-          onMouseDown={(e) => e.stopPropagation()}
-          className='hover:!bg-gray-100 !rounded-full !bg-white !p-1 !shadow-none transition'
+          onClick={() => setOpen((prev) => !prev)}
         >
-          <HeadphonesIcon className='text-gray-500' />
-        </IconButton>
+          <BottomNavIconLabel icon='headphones' iconColor='midGray' label='Music' />
+        </BottomNavControl>
       </RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
           sideOffset={8}
-          style={{width: widthEstimate, minWidth: widthEstimate, maxWidth: widthEstimate}}
           className='background-music-popover z-50 data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'
+          style={{
+            width: 260,
+            minWidth: 220,
+            maxWidth: 320,
+            padding: 0,
+            margin: 0
+          }}
         >
           <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
               <span className='text-gray-800 text-base font-semibold'>Background music</span>
             </div>
-            {/* Track selection */}
             <div className='flex flex-col gap-2'>
               {availableTracks.map((track: Track) => (
                 <button
@@ -79,7 +87,6 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
                 </button>
               ))}
             </div>
-            {/* Controls */}
             <div className='mt-2 flex items-center justify-between gap-2'>
               <button
                 type='button'
@@ -124,7 +131,6 @@ const BottomControlBarMusic = ({isFacilitator}: Props) => {
                 Stop
               </button>
             </div>
-            {/* Volume */}
             <div className='mt-2 flex items-center gap-3'>
               <span className='text-gray-500 w-14 text-sm'>Volume</span>
               <input
