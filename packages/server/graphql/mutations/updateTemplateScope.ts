@@ -8,6 +8,7 @@ import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SharingScopeEnum, {SharingScopeEnumType} from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
@@ -42,7 +43,10 @@ const updateTemplateScope = {
       !isTeamMember(authToken, teamId) &&
       !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
     ) {
-      return {error: {message: `You are not authorized to update the scope of this template`}}
+      return standardError(
+        new Error('You are not authorized to update the scope of this template'),
+        {userId: viewerId}
+      )
     }
 
     // VALIDATION
