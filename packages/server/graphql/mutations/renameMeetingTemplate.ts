@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingTemplate from '../../database/types/MeetingTemplate'
 import updateMeetingTemplateName from '../../postgres/queries/updateMeetingTemplateName'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMemberOrOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
@@ -33,8 +33,9 @@ const renameMeetingTemplate = {
     if (!template || !template.isActive) {
       return standardError(new Error('Template not found'), {userId: viewerId})
     }
-    if (!isTeamMember(authToken, template.teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId})
+    const isAuthorized = await isTeamMemberOrOrgAdmin(authToken, template.teamId, dataLoader)
+    if (!isAuthorized) {
+      return standardError(new Error('Unauthorized: requires team membership or org admin status'), {userId: viewerId})
     }
 
     // VALIDATION

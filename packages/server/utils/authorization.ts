@@ -62,3 +62,18 @@ export const isUserInOrg = async (userId: string, orgId: string, dataLoader: Dat
     .load({userId, orgId})
   return !!organizationUser
 }
+
+export const isTeamMemberOrOrgAdmin = async (
+  authToken: AuthToken,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+) => {
+  const viewerId = getUserId(authToken)
+  // First check if they're a team member (faster check)
+  if (isTeamMember(authToken, teamId)) return true
+
+  // If not, check if they're an org admin
+  const team = await dataLoader.get('teams').load(teamId)
+  if (!team) return false
+  return isUserOrgAdmin(viewerId, team.orgId, dataLoader)
+}
