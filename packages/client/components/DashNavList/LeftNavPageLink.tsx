@@ -3,12 +3,17 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import DescriptionIcon from '@mui/icons-material/Description'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
+import {ConnectionHandler, useFragment} from 'react-relay'
+import {useHistory, useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
+import safePutNodeInConn from '../../mutations/handlers/safePutNodeInConn'
+import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {toSlug} from '../../shared/toSlug'
 import {cn} from '../../ui/cn'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {SubPagesRoot} from './SubPagesRoot'
 interface Props {
   pageRef: LeftNavPageLink_page$key
@@ -34,6 +39,31 @@ export const LeftNavPageLink = (props: Props) => {
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
+  const history = useHistory()
+  const [execute, submitting] = useCreatePageMutation()
+  const addChildPage = () => {
+    if (submitting) return
+    execute({
+      variables: {parentPageId: id},
+      updater: (store) => {
+        const viewer = store.getRoot().getLinkedRecord('viewer')
+        if (!viewer) return
+        const conn = ConnectionHandler.getConnection(viewer, 'SubPages_pages', {
+          parentPageId: id
+        })
+        if (!conn) return
+        const node = store.getRootField('createPage')?.getLinkedRecord('page')
+        safePutNodeInConn(conn, node, store, 'sortOrder', false)
+      },
+      onCompleted: (response) => {
+        const {createPage} = response
+        const {page} = createPage
+        const {id} = page
+        const [_, pageId] = id.split(':')
+        history.push(`/pages/${pageId}`)
+      }
+    })
+  }
   return (
     <div className='mx-1'>
       <Link to={`/pages/${slug}`} key={slug} className='my-0.5 flex'>
@@ -58,7 +88,12 @@ export const LeftNavPageLink = (props: Props) => {
           </div>
           <div className='flex flex-1 items-center justify-end'>
             <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
-              <AddIcon className='hidden size-5 group-hover:block' />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AddIcon className='hidden size-5 group-hover:block' onClick={addChildPage} />
+                </TooltipTrigger>
+                <TooltipContent side={'bottom'}>{'Add a page inside'}</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>

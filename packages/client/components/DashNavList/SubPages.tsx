@@ -6,7 +6,7 @@ import {LeftNavPageLink} from './LeftNavPageLink'
 graphql`
   query SubPagesQuery($parentPageId: ID!) {
     viewer {
-      pages(first: 100, parentPageId: $parentPageId) {
+      pages(first: 100, parentPageId: $parentPageId) @connection(key: "SubPages_pages") {
         edges {
           node {
             ...LeftNavPageLink_page

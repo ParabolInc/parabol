@@ -7,6 +7,7 @@ const mutation = graphql`
     createPage(parentPageId: $parentPageId, teamId: $teamId) {
       page {
         id
+        title
       }
     }
   }
