@@ -106,8 +106,7 @@ export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
 export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
-// isPrivate is provided by the User.pages query for performance
-export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages> & {isPrivate?: boolean}
+export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages>
 export type PageExternalAccess = Selectable<PageExternalAccessPG>
 export type PageAccessUser = Omit<Selectable<PageUserAccessPG>, 'pageId'>
 export type PageAccessTeam = Omit<Selectable<PageTeamAccessPG>, 'pageId'>

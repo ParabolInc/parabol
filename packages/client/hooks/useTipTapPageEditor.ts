@@ -12,7 +12,8 @@ import Underline from '@tiptap/extension-underline'
 import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import type {History} from 'history'
+import {useMemo} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
@@ -34,6 +35,19 @@ import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
+const updateUrlWithSlug = (
+  headerBlock: Y.XmlText | Y.XmlElement,
+  pageIdNum: number,
+  history: History
+) => {
+  const plaintext = generateText(
+    generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
+    serverTipTapExtensions
+  )
+  const slug = toSlug(plaintext)
+  const prefix = slug ? `${slug}-` : ''
+  history.replace(`/pages/${prefix}${pageIdNum}`)
+}
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 let socket: TiptapCollabProviderWebsocket
 const makeHocusPocusSocket = (authToken: string | null) => {
@@ -69,8 +83,11 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
-  const pageIdNum = pageId.split(':')[1]
-  const [document] = useState(() => {
+  const pageIdNum = Number(pageId.split(':')[1])
+
+  // Connect to your Collaboration server
+  const provider = useMemo(() => {
+    if (!pageId) return undefined
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
     // update the URL to match the title
@@ -81,29 +98,25 @@ export const useTipTapPageEditor = (
         for (const delta of event.delta) {
           if (delta.insert || delta.retain || delta.delete) {
             if (event.target === headerBlock) {
-              const plaintext = generateText(
-                generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
-                serverTipTapExtensions
-              )
-              const slug = toSlug(plaintext)
-              const prefix = slug ? `${slug}-` : ''
-              history.replace(`/pages/${prefix}${pageIdNum}`)
+              updateUrlWithSlug(headerBlock, pageIdNum, history)
             }
           }
         }
       }
     })
-    return doc
-  })
-  // Connect to your Collaboration server
-  const [provider] = useState(() => {
-    if (!pageId) return
-    return new TiptapCollabProvider({
+    const nextProvider = new TiptapCollabProvider({
       websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
       name: pageId,
-      document
+      document: doc
     })
-  })
+    nextProvider.on('synced', () => {
+      const docBlock = frag.get(0)
+      const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
+      updateUrlWithSlug(headerBlock, pageIdNum, history)
+    })
+    return nextProvider
+  }, [pageId, atmosphere.authToken])
+
   const editor = useEditor(
     {
       content: '',
@@ -148,7 +161,7 @@ export const useTipTapPageEditor = (
         }),
         SearchAndReplace.configure(),
         Collaboration.configure({
-          document
+          document: provider?.document
         }),
         CollaborationCursor.configure({
           provider,
@@ -169,7 +182,7 @@ export const useTipTapPageEditor = (
       autofocus: true,
       editable: true
     },
-    []
+    [provider]
   )
   return {editor}
 }
