@@ -7,6 +7,7 @@ import isValid from '../graphql/isValid'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
+import {TierEnum} from '../postgres/queries/generated/TierEnum'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -44,7 +45,6 @@ import NullableDataLoader from './NullableDataLoader'
 import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
-import {TierEnum} from '../postgres/queries/generated/TierEnum'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -1034,17 +1034,17 @@ export const highestTierForUserId = (parent: RootDataLoader) => {
       const highestTiers = await pg
         .selectFrom('OrganizationUser')
         .innerJoin('Organization', 'Organization.id', 'OrganizationUser.orgId')
-        .select((eb) => [
-          'userId',
-          eb.fn.max('tier').as('highestTier')
-        ])
+        .select((eb) => ['userId', eb.fn.max('tier').as('highestTier')])
         .where('userId', 'in', keys)
+        .groupBy('userId')
         .execute()
 
-      return normalizeResults(keys, highestTiers, 'userId').map((user) => user?.highestTier ?? 'starter')
+      return normalizeResults(keys, highestTiers, 'userId').map(
+        (user) => user?.highestTier ?? 'starter'
+      )
     },
     {
-      ...parent.dataLoaderOptions,
+      ...parent.dataLoaderOptions
     }
   )
 }
