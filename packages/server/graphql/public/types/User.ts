@@ -872,14 +872,11 @@ const User: ReqResolvers<'User'> = {
 
     const pagesPlusOne = await selectPages()
       .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
-      .innerJoin('PageAccess as paa', 'paa.pageId', 'Page.id')
-      .select(sql<boolean>`COUNT(DISTINCT paa."userId") = 1`.as('isPrivate'))
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .where('PageAccess.userId', '=', viewerId)
       .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
-      .groupBy('Page.id')
       .limit(first + 1)
       .execute()
 

@@ -313,6 +313,7 @@ export const selectPages = () =>
     'createdAt',
     'id',
     'isParentLinked',
+    'isPrivate',
     'parentPageId',
     'teamId',
     'title',

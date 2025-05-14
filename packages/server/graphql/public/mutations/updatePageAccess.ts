@@ -96,7 +96,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     await trx.rollback().execute()
     throw new GraphQLError('A Page must have at least one owner')
   }
-
+  dataLoader.get('pages').clear(dbPageId)
   return {pageId: dbPageId}
 }
 

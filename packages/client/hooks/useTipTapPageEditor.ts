@@ -14,12 +14,13 @@ import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import type {History} from 'history'
 import {useMemo} from 'react'
-import {readInlineData} from 'relay-runtime'
+import {commitLocalUpdate, readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
 import {Markdown} from 'tiptap-markdown'
 import * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
+import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
@@ -38,7 +39,8 @@ import useRouter from './useRouter'
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText | Y.XmlElement,
   pageIdNum: number,
-  history: History
+  history: History,
+  atmosphere: Atmosphere
 ) => {
   const plaintext = generateText(
     generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
@@ -47,6 +49,10 @@ const updateUrlWithSlug = (
   const slug = toSlug(plaintext)
   const prefix = slug ? `${slug}-` : ''
   history.replace(`/pages/${prefix}${pageIdNum}`)
+  commitLocalUpdate(atmosphere, (store) => {
+    const title = plaintext.slice(0, 255)
+    store.get(`page:${pageIdNum}`)?.setValue(title, 'title')
+  })
 }
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 let socket: TiptapCollabProviderWebsocket
@@ -98,7 +104,7 @@ export const useTipTapPageEditor = (
         for (const delta of event.delta) {
           if (delta.insert || delta.retain || delta.delete) {
             if (event.target === headerBlock) {
-              updateUrlWithSlug(headerBlock, pageIdNum, history)
+              updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
             }
           }
         }
@@ -112,7 +118,7 @@ export const useTipTapPageEditor = (
     nextProvider.on('synced', () => {
       const docBlock = frag.get(0)
       const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
-      updateUrlWithSlug(headerBlock, pageIdNum, history)
+      updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
     })
     return nextProvider
   }, [pageId, atmosphere.authToken])
