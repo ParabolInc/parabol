@@ -1,6 +1,6 @@
 import {Link} from '@mui/icons-material'
 import {BubbleMenu, Editor} from '@tiptap/react'
-import clsx from 'clsx'
+import {cn} from '../../ui/cn'
 import {BubbleMenuButton} from './BubbleMenuButton'
 import isTextSelected from './isTextSelected'
 
@@ -29,7 +29,7 @@ export const StandardBubbleMenu = (props: Props) => {
         shouldShow={shouldShowBubbleMenu}
       >
         <div
-          className={clsx(
+          className={cn(
             'items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]',
             shouldShow ? 'flex' : 'hidden' // hide this if not active or dnd height gets screwed up
           )}
