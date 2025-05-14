@@ -29,7 +29,7 @@ import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
@@ -723,7 +723,7 @@ const User: ReqResolvers<'User'> = {
         )
       }
     } else if (parabolActivities!.length + allUserActivities.length > 1000) {
-      sendToSentry(new Error('User.activities exceeds 1000 activities'), {
+      logError(new Error('User.activities exceeds 1000 activities'), {
         userId,
         extras: {numActivities: parabolActivities!.length + allUserActivities.length}
       })

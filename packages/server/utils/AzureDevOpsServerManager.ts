@@ -20,8 +20,8 @@ import {
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import {TeamMemberIntegrationAuth} from '../postgres/types'
+import logError from './logError'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
-import sendToSentry from './sendToSentry'
 
 export interface AzureDevOpsUser {
   // self: string
@@ -311,7 +311,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       return json
     } catch (error) {
       if (error instanceof Error) {
-        sendToSentry(error)
+        logError(error)
         return error
       }
       return new Error('Azure DevOps is down')
@@ -332,7 +332,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       return json
     } catch (error) {
       if (error instanceof Error) {
-        sendToSentry(error)
+        logError(error)
         return error
       }
       return new Error('Azure DevOps is down')
@@ -357,7 +357,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       return json
     } catch (error) {
       if (error instanceof Error) {
-        sendToSentry(error)
+        logError(error)
         return error
       }
       return new Error('Azure DevOps is down')

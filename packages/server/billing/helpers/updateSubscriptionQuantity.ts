@@ -1,7 +1,7 @@
 import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import RedisLockQueue from '../../utils/RedisLockQueue'
-import sendToSentry from '../../utils/sendToSentry'
+import logError from '../../utils/logError'
 import {getStripeManager} from '../../utils/stripe'
 
 /**
@@ -60,7 +60,7 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
           orgUserCount,
           []
         )
-        sendToSentry(new Error('Stripe Quantity Mismatch'), {
+        logError(new Error('Stripe Quantity Mismatch'), {
           tags: {
             quantity: orgUserCount,
             subscriptionQuantity: teamSubscription.quantity,
