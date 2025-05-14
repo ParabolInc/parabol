@@ -17,7 +17,12 @@ import {
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
-import {selectNewMeetings, selectNotifications, selectTasks} from '../../../postgres/select'
+import {
+  selectNewMeetings,
+  selectNotifications,
+  selectPages,
+  selectTasks
+} from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import {feistelCipher} from '../../../utils/feistelCipher'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -855,6 +860,42 @@ const User: ReqResolvers<'User'> = {
     const page = await dataLoader.get('pages').load(dbId)
     if (!page) throw new GraphQLError('Page not found')
     return page
+  },
+  pages: async (_source, {parentPageId, teamId, first, after}, {authToken}) => {
+    if (parentPageId && teamId) {
+      throw new GraphQLError('Can only provider either parentPageId OR teamId')
+    }
+    const viewerId = getUserId(authToken)
+    const dbParentPageId = parentPageId
+      ? feistelCipher.decrypt(Number(parentPageId.split(':')[1]))
+      : null
+
+    const pagesPlusOne = await selectPages()
+      .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
+      .innerJoin('PageAccess as paa', 'paa.pageId', 'Page.id')
+      .select(sql<boolean>`COUNT(DISTINCT paa."userId") = 1`.as('isPrivate'))
+      .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
+      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
+      .where('PageAccess.userId', '=', viewerId)
+      .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
+      .groupBy('Page.id')
+      .limit(first + 1)
+      .execute()
+
+    const hasNextPage = pagesPlusOne.length > first
+    const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+    return {
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage: false,
+        startCursor: pages.at(0)?.updatedAt,
+        endCursor: pages.at(-1)?.updatedAt
+      },
+      edges: pages.map((page) => ({
+        node: page,
+        cursor: page.updatedAt
+      }))
+    }
   }
 }
 

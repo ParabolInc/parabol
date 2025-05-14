@@ -1,14 +1,17 @@
 import styled from '@emotion/styled'
 import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
+import type {DashNavList_viewer$key} from '../../__generated__/DashNavList_viewer.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import sortByTier from '../../utils/sortByTier'
 import DashNavListTeams from './DashNavListTeams'
 import EmptyTeams from './EmptyTeams'
+import {LeftNavPagesSection} from './LeftNavPagesSection'
 
 const StyledIcon = styled(ManageAccounts)({
   height: 18,
@@ -17,11 +20,12 @@ const StyledIcon = styled(ManageAccounts)({
 
 interface Props {
   organizationsRef: DashNavList_organization$key
+  viewerRef: DashNavList_viewer$key
   onClick?: () => void
 }
 
 const DashNavList = (props: Props) => {
-  const {onClick, organizationsRef} = props
+  const {onClick, organizationsRef, viewerRef} = props
   const organizations = useFragment(
     graphql`
       fragment DashNavList_organization on Organization @relay(plural: true) {
@@ -39,7 +43,31 @@ const DashNavList = (props: Props) => {
     organizationsRef
   )
 
+  const viewer = useFragment(
+    graphql`
+      fragment DashNavList_viewer on User {
+        pages(first: 100) {
+          edges {
+            node {
+              ...LeftNavPagesSection_page
+              isPrivate
+            }
+          }
+        }
+      }
+    `,
+    viewerRef
+  )
+  const {pages} = viewer
+  const {edges} = pages
   const sortedOrgs = sortByTier(organizations)
+
+  const [sharedPages, privatePages] = useMemo(() => {
+    const allPages = edges.map((e) => e.node)
+    const sharedPages = allPages.filter((page) => !page.isPrivate)
+    const privatePages = allPages.filter((page) => page.isPrivate)
+    return [sharedPages, privatePages]
+  }, [edges])
 
   return (
     <div className='w-full p-3 pt-4 pb-0'>
@@ -67,6 +95,10 @@ const DashNavList = (props: Props) => {
           {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />}
         </div>
       ))}
+      <div>
+        <LeftNavPagesSection title={'Shared Pages'} pageRef={sharedPages} />
+        <LeftNavPagesSection title={'Private Pages'} pageRef={privatePages} />
+      </div>
     </div>
   )
 }

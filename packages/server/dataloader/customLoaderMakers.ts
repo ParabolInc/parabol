@@ -1050,3 +1050,23 @@ export const pageAccessByUserId = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const pagePrivacy = (parent: RootDataLoader) => {
+  return new DataLoader<number, boolean, string>(
+    async (pageIds) => {
+      const res = await getKysely()
+        .selectFrom('PageAccess')
+        .select(['pageId', (eb) => eb(eb.fn.count('pageId'), '=', 1).as('isPrivate')])
+        .where('pageId', 'in', pageIds)
+        .groupBy('pageId')
+        .execute()
+      return pageIds.map((pageId) => {
+        const result = res.find((row) => row.pageId === pageId)?.isPrivate
+        return typeof result === 'undefined' ? true : Boolean(result)
+      })
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
