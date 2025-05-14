@@ -215,6 +215,7 @@
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpdateMeetingTemplateSuccess": "./types/UpdateMeetingTemplateSuccess#UpdateMeetingTemplateSuccessSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
+          "UpdatePageAccessPayload": "./types/UpdatePageAccessPayload#UpdatePageAccessPayloadSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",

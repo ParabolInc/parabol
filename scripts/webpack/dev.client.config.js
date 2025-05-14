@@ -108,8 +108,7 @@ module.exports = {
     fallback: {
       assert: false,
       os: false
-    },
-    unsafeCache: true
+    }
   },
   plugins: [
     new webpack.DllReferencePlugin({
