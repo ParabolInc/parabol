@@ -29,7 +29,7 @@ export const PageSharingInviteOptions = (props: Props) => {
   return (
     <ul
       {...getListboxProps()}
-      className='mt-0.5 mb-0 list-none overflow-y-auto rounded-sm bg-white p-0'
+      className='mt-0.5 mb-0 list-none overflow-y-auto rounded-sm bg-white p-0 pb-2'
     >
       {(groupedOptions as AutocompleteGroupedOption<Option>[]).map((option) => {
         const {options, index} = option
