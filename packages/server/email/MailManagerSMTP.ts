@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import sendToSentry from '../utils/sendToSentry'
+import logError from '../utils/logError'
 import MailManager, {MailManagerOptions} from './MailManager'
 
 export default class MailManagerSMTP extends MailManager {
@@ -38,7 +38,7 @@ export default class MailManagerSMTP extends MailManager {
       })
     } catch (e) {
       const error = e instanceof Error ? e : new Error('SMTP nodemailer error')
-      sendToSentry(error, {
+      logError(error, {
         tags: {to: JSON.stringify(to)}
       })
       return false

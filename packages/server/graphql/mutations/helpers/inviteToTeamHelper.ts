@@ -15,8 +15,8 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getBestInvitationMeeting from '../../../utils/getBestInvitationMeeting'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
@@ -67,7 +67,7 @@ const inviteToTeamHelper = async (
         const isValidEmail = await getMailManager().validateEmail(invitee)
         if (!isValidEmail) {
           const error = new Error(`Unable to send invite to ${invitee} because it is invalid`)
-          sendToSentry(error, {tags: {invitee}})
+          logError(error, {tags: {invitee}})
           return null
         }
         return invitee

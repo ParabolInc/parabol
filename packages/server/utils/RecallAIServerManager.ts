@@ -4,7 +4,7 @@ import {ExternalLinks} from '../../client/types/constEnums'
 import appOrigin from '../appOrigin'
 import {TranscriptBlock} from '../postgres/types'
 import {Logger} from './Logger'
-import sendToSentry from './sendToSentry'
+import logError from './logError'
 
 const sdk = api('@recallai/v1.6#536jnqlf7d6blh')
 
@@ -69,7 +69,7 @@ class RecallAIServerManager {
         err instanceof Error
           ? err
           : new Error(`Unable to create Recall bot with video meeting URL: ${videoMeetingURL}`)
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -108,7 +108,7 @@ class RecallAIServerManager {
     } catch (err) {
       const error =
         err instanceof Error ? err : new Error(`Unable to get bot transcript with botId: ${botId}`)
-      sendToSentry(error)
+      logError(error)
       return
     }
   }

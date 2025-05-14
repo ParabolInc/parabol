@@ -1,6 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import sendToSentry from './sendToSentry'
+import logError from './logError'
 
 interface TenorResponse {
   results: ResponseObject[]
@@ -60,7 +60,7 @@ export class TenorManager {
       return resJSON as T
     } catch (error) {
       if (error instanceof Error) {
-        sendToSentry(error)
+        logError(error)
         return error
       }
       return new Error('Tenor is not responding')
