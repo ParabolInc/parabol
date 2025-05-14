@@ -1,6 +1,6 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
-import clsx from 'clsx'
 import {forwardRef} from 'react'
+import {cn} from '../cn'
 
 export const AvatarFallback = forwardRef<
   HTMLSpanElement,
@@ -8,7 +8,7 @@ export const AvatarFallback = forwardRef<
 >(({className, ...props}, ref) => (
   <AvatarPrimitive.Fallback
     ref={ref}
-    className={clsx(
+    className={cn(
       'bg-muted flex h-full w-full items-center justify-center rounded-full',
       className
     )}

@@ -1,5 +1,5 @@
-import clsx from 'clsx'
 import * as React from 'react'
+import {cn} from '../../../ui/cn'
 
 interface Props {
   className?: string
@@ -9,7 +9,7 @@ interface Props {
 const ActivityDetailsBadge = (props: Props) => {
   const {className, children} = props
   return (
-    <div className={clsx('w-max rounded-full px-3 py-1 text-xs font-semibold', className)}>
+    <div className={cn('w-max rounded-full px-3 py-1 text-xs font-semibold', className)}>
       {children}
     </div>
   )

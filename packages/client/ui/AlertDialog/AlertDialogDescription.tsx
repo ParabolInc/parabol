@@ -1,6 +1,6 @@
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
-import clsx from 'clsx'
 import * as React from 'react'
+import {cn} from '../cn'
 
 const AlertDialogDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -8,7 +8,7 @@ const AlertDialogDescription = React.forwardRef<
 >(({className, ...props}, ref) => (
   <AlertDialogPrimitive.Description
     ref={ref}
-    className={clsx('text-muted-foreground text-sm', className)}
+    className={cn('text-muted-foreground text-sm', className)}
     {...props}
   />
 ))

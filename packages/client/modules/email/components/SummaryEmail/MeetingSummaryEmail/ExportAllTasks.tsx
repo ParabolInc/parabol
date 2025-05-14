@@ -1,6 +1,5 @@
 import {Loop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {
@@ -17,6 +16,7 @@ import useMenu from '../../../../../hooks/useMenu'
 import useMutationProps, {getOnCompletedError} from '../../../../../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../../../../../mutations/CreateTaskIntegrationMutation'
 import {Providers} from '../../../../../types/constEnums'
+import {cn} from '../../../../../ui/cn'
 import SendClientSideEvent from '../../../../../utils/SendClientSideEvent'
 import lazyPreload from '../../../../../utils/lazyPreload'
 
@@ -156,11 +156,11 @@ const ExportAllTasks = (props: Props) => {
   return (
     <>
       {submitting ? (
-        <button className={clsx(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
+        <button className={cn(BUTTON_CLASSES, 'cursor-wait bg-slate-300')}>
           <Loop style={{width: '14px', height: '14px'}} /> Syncing in Progress...
         </button>
       ) : filteredTasks.length === 0 ? (
-        <button className={clsx(BUTTON_CLASSES, 'bg-slate-200')}>
+        <button className={cn(BUTTON_CLASSES, 'bg-slate-200')}>
           {taskServices.length === 1 ? (
             <>
               {integrationSvgLookup[taskServices[0] as TaskServiceEnum]}
@@ -174,7 +174,7 @@ const ExportAllTasks = (props: Props) => {
         </button>
       ) : (
         <button
-          className={clsx(BUTTON_CLASSES, 'cursor-pointer bg-white hover:bg-slate-100')}
+          className={cn(BUTTON_CLASSES, 'cursor-pointer bg-white hover:bg-slate-100')}
           onClick={togglePortal}
           ref={originRef}
           onMouseEnter={ExportAllTasksMenuRoot.preload}
