@@ -30,10 +30,10 @@ const getSuggestedTierOrganizations = async (
   // Super users are also allowed to see all organizations
   const isViewerAllowedToSeeAll =
     isSuperUser(authToken) ||
-    organizations.some(({id, tier}) => tier === 'enterprise' && allOrganizationUsers.some(({orgId}) => orgId === id)) ||
-    allOrganizationUsers.some(
-      ({suggestedTier}) => suggestedTier === 'enterprise'
-    )
+    organizations.some(
+      ({id, tier}) => tier === 'enterprise' && allOrganizationUsers.some(({orgId}) => orgId === id)
+    ) ||
+    allOrganizationUsers.some(({suggestedTier}) => suggestedTier === 'enterprise')
   if (isViewerAllowedToSeeAll) return organizations
   // Pro-qualified or unqualified users can only see orgs that they are apart of
   const allowedOrgIds = allOrganizationUsers.map(({orgId}) => orgId)

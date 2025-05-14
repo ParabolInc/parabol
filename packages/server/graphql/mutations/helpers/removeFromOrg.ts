@@ -2,11 +2,11 @@ import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
+import {analytics} from '../../../utils/analytics/analytics'
 import {Logger} from '../../../utils/Logger'
 import {DataLoaderWorker} from '../../graphql'
 import removeTeamMember from './removeTeamMember'
 import resolveDowngradeToStarter from './resolveDowngradeToStarter'
-import {analytics} from '../../../utils/analytics/analytics'
 
 const removeFromOrg = async (
   userId: string,

@@ -58,7 +58,7 @@ export default class User {
       isWatched,
       preferredName,
       pseudoId,
-      sendSummaryEmail,
+      sendSummaryEmail
     } = input
     const now = new Date()
     this.id = id ?? `local|${generateUID()}`

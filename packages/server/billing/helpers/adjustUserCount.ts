@@ -64,7 +64,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
     return {
       id: generateUID(),
       orgId,
-      userId,
+      userId
     }
   })
   dataLoader.clearAll('organizationUsers')
@@ -77,7 +77,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
         removedAt: null,
         inactive: false,
         role: null,
-        suggestedTier: null,
+        suggestedTier: null
       })
     )
     .execute()

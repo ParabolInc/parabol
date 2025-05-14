@@ -38,7 +38,7 @@ const resolveDowngradeToStarter = async (
       .updateTable('SAML')
       .set({metadata: null, metadataURL: null, lastUpdatedBy: user.id})
       .where('orgId', '=', orgId)
-      .execute(),
+      .execute()
   ])
   dataLoader.get('organizations').clear(orgId)
   await identifyHighestUserTierForOrgId(orgId, dataLoader)
