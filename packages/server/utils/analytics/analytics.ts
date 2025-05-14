@@ -572,8 +572,8 @@ class Analytics {
     this.track(user, 'Insight Generated', {insightId, teamId})
   }
 
-  pageInsightsGenerated = (user: AnalyticsUser, insightId: number, teamId: string) => {
-    this.track(user, 'Page Insights Generated', {insightId, teamId})
+  pageInsightsGenerated = (user: AnalyticsUser) => {
+    this.track(user, 'Page Insights Generated')
   }
 
   // user
