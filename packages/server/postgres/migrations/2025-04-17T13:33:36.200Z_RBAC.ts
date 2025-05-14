@@ -76,8 +76,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     db.schema
       .alterTable('Page')
       .addColumn('parentPageId', 'integer', (col) => col.references('Page.id').onDelete('cascade'))
-      .addColumn('isParentLinked', 'boolean', (col) => col.defaultTo(true))
+      .addColumn('isParentLinked', 'boolean', (col) => col.defaultTo(true).notNull())
       .addColumn('teamId', 'varchar(100)', (col) => col.references('Team.id').onDelete('cascade'))
+      .addColumn('isPrivate', 'boolean', (col) => col.defaultTo(true).notNull())
       .execute()
   ])
 
@@ -134,6 +135,27 @@ export async function up(db: Kysely<any>): Promise<void> {
   ])
 
   await sql`
+-- UPDATE Page.isPrivate
+CREATE OR REPLACE FUNCTION "maybeMarkPrivate"("_pageId" INT)
+RETURNS VOID AS $$
+DECLARE
+  "_willBePrivate" BOOLEAN;
+BEGIN
+  SELECT COUNT(*) = 1 INTO "_willBePrivate"
+  FROM (
+    SELECT 1 FROM "PageUserAccess" WHERE "pageId" = "_pageId"
+    UNION ALL
+    SELECT 1 FROM "PageExternalAccess" WHERE "pageId" = "_pageId"
+  ) AS access;
+
+  UPDATE "Page"
+  SET "isPrivate" = "_willBePrivate"
+  WHERE id = "_pageId"
+    AND "isPrivate" <> "_willBePrivate";
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- FUNCTION TO UPDATE CACHED TABLE
 CREATE OR REPLACE FUNCTION "updatePageAccess"("_userId" VARCHAR, "_pageId" INT) RETURNS VOID AS $$
 DECLARE
@@ -167,10 +189,12 @@ BEGIN
     -- User lost access
     DELETE FROM "PageAccess"
     WHERE "userId" = "_userId" AND "pageId" = "_pageId";
+    PERFORM "maybeMarkPrivate"("_pageId");
   ELSIF "_currentRole" IS NULL THEN
     -- New access
     INSERT INTO "PageAccess" ("userId", "pageId", role)
     VALUES ("_userId", "_pageId", "_strongestRole");
+    PERFORM "maybeMarkPrivate"("_pageId");
   ELSIF "_strongestRole" != "_currentRole" THEN
     -- Changed access
     UPDATE "PageAccess"
@@ -251,6 +275,18 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER trg_org_page_access
 AFTER INSERT OR UPDATE OR DELETE ON "PageOrganizationAccess"
 FOR EACH ROW EXECUTE FUNCTION "updateOrganizationPageAccess"();
+
+-- UPDATE Page.isPrivate when external is added/removed
+CREATE OR REPLACE FUNCTION "updateExternalPageAccess"() RETURNS TRIGGER AS $$
+BEGIN
+  PERFORM "maybeMarkPrivate"(COALESCE(NEW."pageId", OLD."pageId"));
+  RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_external_page_access
+AFTER INSERT OR DELETE ON "PageExternalAccess"
+FOR EACH ROW EXECUTE FUNCTION "updateExternalPageAccess"();
 
 
 -- HANDLE JOIN/LEAVE TEAM
@@ -529,6 +565,7 @@ export async function down(db: Kysely<any>): Promise<void> {
       .dropColumn('parentPageId')
       .dropColumn('isParentLinked')
       .dropColumn('teamId')
+      .dropColumn('isPrivate')
       .execute()
   ])
   await sql`
@@ -538,6 +575,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "maybeMarkPrivate";
     DROP FUNCTION IF EXISTS "removeAccessOnDeletePage";
     DROP FUNCTION IF EXISTS "unlinkFromParentPage";
     DROP FUNCTION IF EXISTS "addAccessOnNewPage";
@@ -549,6 +587,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP FUNCTION IF EXISTS "updateUserPageAccess";
     DROP FUNCTION IF EXISTS "updateTeamPageAccess";
     DROP FUNCTION IF EXISTS "updateOrganizationPageAccess";
+    DROP FUNCTION IF EXISTS "updateExternalPageAccess";
     DROP FUNCTION IF EXISTS "updateTeamPageAccessByTeamMember";
     DROP FUNCTION IF EXISTS "removePageAccessOnTeamArchive";
     DROP FUNCTION IF EXISTS "updateOrgPageAccessByOrgUser";`.execute(db)
