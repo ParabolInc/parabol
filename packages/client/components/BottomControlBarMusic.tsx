@@ -24,7 +24,6 @@ const BottomControlBarMusic = ({
 
   const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
     useBackgroundMusicManager({
-      meetingId: null,
       isFacilitator,
       initialTrackUrl: null,
       initialIsPlaying: false,

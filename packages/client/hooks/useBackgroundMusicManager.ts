@@ -14,7 +14,6 @@ export const availableTracks: Track[] = [
 ]
 
 interface UseBackgroundMusicManagerProps {
-  meetingId: string | null
   isFacilitator: boolean
   initialTrackUrl?: string | null
   initialIsPlaying?: boolean
@@ -35,13 +34,7 @@ export interface BackgroundMusicControls {
 const useBackgroundMusicManager = (
   props: UseBackgroundMusicManagerProps
 ): BackgroundMusicControls => {
-  const {
-    meetingId,
-    isFacilitator,
-    initialTrackUrl = null,
-    initialIsPlaying = false,
-    initialVolume = 0.5
-  } = props
+  const {initialTrackUrl = null, initialIsPlaying = false, initialVolume = 0.5} = props
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(initialTrackUrl)
@@ -54,7 +47,6 @@ const useBackgroundMusicManager = (
       audioRef.current = new Audio()
       audioRef.current.volume = volume
       audioRef.current.setAttribute('playsinline', 'true')
-      audioRef.current.crossOrigin = 'anonymous'
     }
     return () => {
       audioRef.current?.pause()
@@ -74,7 +66,6 @@ const useBackgroundMusicManager = (
     if (currentTrackSrc) {
       if (audioRef.current.src !== currentTrackSrc) {
         audioRef.current.src = currentTrackSrc
-        // If resuming from pause, set currentTime
         if (pausedAt !== null) {
           audioRef.current.currentTime = pausedAt
         }
@@ -97,86 +88,38 @@ const useBackgroundMusicManager = (
     }
   }, [currentTrackSrc, isPlaying])
 
-  const handleSetMeetingMusic = useCallback(
-    (
-      newTrackSrc: string | null,
-      newIsPlaying: boolean,
-      newVolume: number,
-      newPausedAt?: number | null
-    ) => {
-      if (!meetingId || !isFacilitator) {
-        setCurrentTrackSrc(newTrackSrc)
-        setIsPlaying(newIsPlaying)
-        setVolumeState(newVolume)
-        setPausedAt(newPausedAt ?? null)
-        return
-      }
-      setCurrentTrackSrc(newTrackSrc)
-      setIsPlaying(newIsPlaying)
-      setVolumeState(newVolume)
-      setPausedAt(newPausedAt ?? null)
-    },
-    [meetingId, isFacilitator]
-  )
-
   const playTrack = useCallback(
     (trackSrc: string) => {
-      if (isFacilitator) {
-        handleSetMeetingMusic(trackSrc, true, volume, pausedAt)
-      } else {
-        setCurrentTrackSrc(trackSrc)
-        setIsPlaying(true)
-        if (pausedAt !== null) setPausedAt(pausedAt)
-      }
+      setCurrentTrackSrc(trackSrc)
+      setIsPlaying(true)
+      if (pausedAt !== null) setPausedAt(pausedAt)
     },
-    [handleSetMeetingMusic, isFacilitator, volume, pausedAt]
+    [pausedAt]
   )
 
   const pause = useCallback(() => {
     if (audioRef.current) {
       setPausedAt(audioRef.current.currentTime)
     }
-    if (isFacilitator) {
-      handleSetMeetingMusic(currentTrackSrc, false, volume, audioRef.current?.currentTime ?? null)
-    } else {
-      setIsPlaying(false)
-    }
-  }, [handleSetMeetingMusic, isFacilitator, currentTrackSrc, volume])
+    setIsPlaying(false)
+  }, [])
 
   const stop = useCallback(() => {
-    if (isFacilitator) {
-      handleSetMeetingMusic(null, false, volume, null)
-    } else {
-      setCurrentTrackSrc(null)
-      setIsPlaying(false)
-      setPausedAt(null)
-    }
-  }, [handleSetMeetingMusic, isFacilitator, volume])
+    setCurrentTrackSrc(null)
+    setIsPlaying(false)
+    setPausedAt(null)
+  }, [])
 
-  const setVolume = useCallback(
-    (newVolume: number) => {
-      const clamped = Math.max(0, Math.min(1, newVolume))
-      if (isFacilitator) {
-        handleSetMeetingMusic(currentTrackSrc, isPlaying, clamped, pausedAt)
-      } else {
-        setVolumeState(clamped)
-      }
-    },
-    [handleSetMeetingMusic, isFacilitator, currentTrackSrc, isPlaying, pausedAt]
-  )
+  const setVolume = useCallback((newVolume: number) => {
+    const clamped = Math.max(0, Math.min(1, newVolume))
+    setVolumeState(clamped)
+  }, [])
 
-  const selectTrack = useCallback(
-    (trackSrc: string) => {
-      if (isFacilitator) {
-        handleSetMeetingMusic(trackSrc, false, volume, null)
-      } else {
-        setCurrentTrackSrc(trackSrc)
-        setIsPlaying(false)
-        setPausedAt(null)
-      }
-    },
-    [handleSetMeetingMusic, isFacilitator, volume]
-  )
+  const selectTrack = useCallback((trackSrc: string) => {
+    setCurrentTrackSrc(trackSrc)
+    setIsPlaying(false)
+    setPausedAt(null)
+  }, [])
 
   return {
     playTrack,
