@@ -4,7 +4,7 @@ import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitOb
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
-import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
+import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'

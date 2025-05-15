@@ -9,10 +9,13 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db
     .updateTable('Organization')
     .set((eb) => ({
-      isPaid: eb
-        .selectFrom('Team')
-        .select(({fn}) => fn('bool_and', ['isPaid']).as('isPaid'))
-        .whereRef('Organization.id', '=', 'orgId')
+      isPaid: eb.fn.coalesce(
+        eb
+          .selectFrom('Team')
+          .select(({fn}) => fn('bool_and', ['isPaid']).as('isPaid'))
+          .whereRef('Organization.id', '=', 'orgId'),
+        eb.val(true)
+      )
     }))
     .execute()
 

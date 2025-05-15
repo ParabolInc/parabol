@@ -1,7 +1,13 @@
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import {analytics} from './analytics/analytics'
 
-const identifyHighestUserTierForOrgId = async (orgId: string, dataLoader: DataLoaderInstance) => {
+/*
+ * Update the highest tier for all users in the organization in analytics
+ */
+export const identifyHighestUserTierForOrgId = async (
+  orgId: string,
+  dataLoader: DataLoaderInstance
+) => {
   const orgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
   const userIds = orgUsers.map(({userId}) => userId)
   await Promise.all(
@@ -19,5 +25,3 @@ const identifyHighestUserTierForOrgId = async (orgId: string, dataLoader: DataLo
     })
   )
 }
-
-export default identifyHighestUserTierForOrgId

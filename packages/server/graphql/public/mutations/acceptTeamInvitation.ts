@@ -72,7 +72,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     }
   }
 
-  const [approvalError, isAnyViewerTeamLocked] = await Promise.all([
+  const [approvalError, isAnyViewerOrgLocked] = await Promise.all([
     getIsUserIdApprovedByOrg(viewerId, orgId, dataLoader, invitationToken),
     getIsAnyUserOrgLocked(viewerId, dataLoader)
   ])
@@ -80,7 +80,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     await redisLock.unlock()
     return {error: {message: approvalError.message}}
   }
-  if (isAnyViewerTeamLocked) {
+  if (isAnyViewerOrgLocked) {
     analytics.lockedUserAttemptToJoinTeam(viewer, orgId)
     return {
       error: {
