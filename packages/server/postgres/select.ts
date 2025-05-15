@@ -305,3 +305,20 @@ export const selectTasks = () =>
 
 export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()
+
+export const selectPages = () =>
+  getKysely().selectFrom('Page').select([
+    // do not select plaintextContent or yDoc.
+    // yDoc is large and can't be sent via graphql
+    'createdAt',
+    'id',
+    'isParentLinked',
+    'isPrivate',
+    'parentPageId',
+    'teamId',
+    'title',
+    'updatedAt',
+    'Page.userId'
+  ])
+
+export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()

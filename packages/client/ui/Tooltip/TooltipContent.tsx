@@ -3,11 +3,11 @@ import {cn} from '../cn'
 import {forwardRadix} from '../forwardRadix'
 
 export const TooltipContent = forwardRadix<typeof Content>(
-  ({className, children, ...props}, ref) => (
+  ({className, children, side, ...props}, ref) => (
     <Portal>
       <Content
         ref={ref}
-        side='top'
+        side={side || 'top'}
         align='center'
         sideOffset={2}
         className={cn(

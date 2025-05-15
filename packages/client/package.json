@@ -44,8 +44,7 @@
     "@types/sanitize-html": "^2.11.0",
     "@types/stripe-v2": "^2.0.1",
     "debug": "^4.1.1",
-    "strict-event-emitter-types": "^2.0.0",
-    "webpack-dev-server": "^5.0.4"
+    "strict-event-emitter-types": "^2.0.0"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "2.2.3",

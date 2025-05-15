@@ -2,6 +2,7 @@ import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/typings/types'
 import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
+import {hasPageAccess} from './rules/hasPageAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isOrgTier} from './rules/isOrgTier'
@@ -62,6 +63,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    updatePageAccess: and(
+      hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
+      // limit looking up users by email
+      rateLimit({perMinute: 50, perHour: 100})
+    ),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },
@@ -81,7 +87,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     voterIds: isSuperUser
   },
   User: {
-    domains: or(isSuperUser, isUserViewer)
+    domains: or(isSuperUser, isUserViewer),
+    page: hasPageAccess<'User.page'>('args.pageId', 'viewer')
+  },
+  Page: {
+    parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')
   }
 }
 
