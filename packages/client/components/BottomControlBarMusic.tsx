@@ -62,7 +62,7 @@ const BottomControlBarMusic = ({
       <RadixPopover.Portal>
         <RadixPopover.Content
           sideOffset={8}
-          className={`background-music-popover m-0 w-64 max-w-md min-w-[14rem] p-0`}
+          className={`background-music-popover z-10 m-0 w-64 max-w-md min-w-[14rem] p-0`}
         >
           <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
             <div className='mb-1 flex items-center gap-2'>
