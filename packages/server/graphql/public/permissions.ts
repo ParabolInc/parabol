@@ -63,7 +63,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
-    updatePageAccess: hasPageAccess('owner'),
+    updatePageAccess: hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },
@@ -83,7 +83,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     voterIds: isSuperUser
   },
   User: {
-    domains: or(isSuperUser, isUserViewer)
+    domains: or(isSuperUser, isUserViewer),
+    page: hasPageAccess<'User.page'>('args.pageId', 'viewer')
+  },
+  Page: {
+    parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')
   }
 }
 

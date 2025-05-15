@@ -51,7 +51,7 @@ const makeHocusPocusSocket = (authToken: string | null) => {
 }
 
 export const useTipTapPageEditor = (
-  pageId: number,
+  pageId: string,
   options: {
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
@@ -69,6 +69,7 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
+  const pageIdNum = pageId.split(':')[1]
   const [document] = useState(() => {
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
@@ -86,7 +87,7 @@ export const useTipTapPageEditor = (
               )
               const slug = toSlug(plaintext)
               const prefix = slug ? `${slug}-` : ''
-              history.replace(`/pages/${prefix}${pageId}`)
+              history.replace(`/pages/${prefix}${pageIdNum}`)
             }
           }
         }
@@ -99,7 +100,7 @@ export const useTipTapPageEditor = (
     if (!pageId) return
     return new TiptapCollabProvider({
       websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      name: `page:${pageId}`,
+      name: pageId,
       document
     })
   })

@@ -1,5 +1,4 @@
 import {GraphQLError} from 'graphql'
-import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {feistelCipher} from '../../../utils/feistelCipher'
 import {MutationResolvers} from '../resolverTypes'
@@ -38,7 +37,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         .selectFrom(pg.dynamic.table(table).as('t'))
         .select('role')
         .where('pageId', '=', dbPageId)
-        .where(sql`${typeId}`, '=', subjectId)
+        .where(pg.dynamic.ref(typeId), '=', subjectId)
         .executeTakeFirst()
       const oldRole = oldRoleRes?.role ?? undefined
       const isMoreRestrictive =
@@ -54,14 +53,15 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   }
 
   // all access for child pages and child unlinking is performed within PG via triggers
+  const trx = await pg.startTransaction().execute()
   if (!role) {
-    await pg
-      .deleteFrom(pg.dynamic.table(table).as('t'))
+    await trx
+      .deleteFrom(trx.dynamic.table(table).as('t'))
       .where('pageId', '=', dbPageId)
-      .where(sql`${typeId}`, '=', subjectId)
+      .where(trx.dynamic.ref(typeId), '=', subjectId)
       .execute()
   } else {
-    await pg
+    await trx
       .insertInto(table)
       .values({
         pageId: dbPageId,
@@ -70,6 +70,20 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       })
       .onConflict((oc) => oc.columns(['pageId', typeId]).doUpdateSet({role}))
       .execute()
+  }
+  const atLeastOneOwner = await trx
+    .selectFrom('PageAccess')
+    .select('role')
+    .where('pageId', '=', dbPageId)
+    .where('role', '=', 'owner')
+    .limit(1)
+    .executeTakeFirst()
+
+  if (atLeastOneOwner) {
+    await trx.commit().execute()
+  } else {
+    await trx.rollback().execute()
+    throw new GraphQLError('A Page must have at least one owner')
   }
 
   return {pageId: dbPageId}

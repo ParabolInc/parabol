@@ -308,11 +308,14 @@ export const selectNotifications = () =>
 
 export const selectPages = () =>
   getKysely().selectFrom('Page').select([
-    // do not select plaintextContent or yDoc. yDoc is large and can't be sent via graphql
+    // do not select plaintextContent or yDoc.
+    // yDoc is large and can't be sent via graphql
     'createdAt',
     'id',
     'isParentLinked',
     'parentPageId',
+    'sortOrder',
+    'teamId',
     'title',
     'updatedAt',
     'userId'
