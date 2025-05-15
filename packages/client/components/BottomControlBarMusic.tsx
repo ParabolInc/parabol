@@ -1,9 +1,9 @@
 import HeadphonesIcon from '@mui/icons-material/Headphones'
 import * as RadixPopover from '@radix-ui/react-popover'
-import clsx from 'clsx'
-import {useEffect, useRef, useState} from 'react'
+import {useRef, useState} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useBackgroundMusicManager, {availableTracks, Track} from '../hooks/useBackgroundMusicManager'
+import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
 
 interface Props {
@@ -30,15 +30,10 @@ const BottomControlBarMusic = ({
       initialVolume: 0.5
     })
 
-  const [localSelectedTrack, setLocalSelectedTrack] = useState<string | null>(currentTrackSrc)
-  useEffect(() => {
-    setLocalSelectedTrack(currentTrackSrc)
-  }, [currentTrackSrc])
-
   if (!isFacilitator) return null
 
-  const playEnabled = !!localSelectedTrack && !isPlaying
-  const stopEnabled = !!localSelectedTrack && isPlaying
+  const playEnabled = !!currentTrackSrc && !isPlaying
+  const stopEnabled = !!currentTrackSrc && isPlaying
 
   const showFade = availableTracks.length > 3 && !atBottom
 
@@ -68,10 +63,7 @@ const BottomControlBarMusic = ({
       <RadixPopover.Portal>
         <RadixPopover.Content
           sideOffset={8}
-          className={clsx(
-            'background-music-popover z-50 data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up',
-            'm-0 w-64 max-w-md min-w-[14rem] p-0'
-          )}
+          className={`background-music-popover m-0 w-64 max-w-md min-w-[14rem] p-0`}
         >
           <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
             <div className='mb-1 flex items-center gap-2'>
@@ -82,7 +74,7 @@ const BottomControlBarMusic = ({
               <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className={clsx(
+                className={cn(
                   'scrollbar-thin flex flex-col gap-2 overflow-y-auto',
                   availableTracks.length > 3 ? 'max-h-[200px] pr-1 pb-4' : ''
                 )}
@@ -91,12 +83,11 @@ const BottomControlBarMusic = ({
                   <button
                     key={track.src}
                     onClick={() => {
-                      setLocalSelectedTrack(track.src)
                       selectTrack(track.src)
                     }}
-                    className={clsx(
+                    className={cn(
                       'group flex w-full cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 transition-all',
-                      localSelectedTrack === track.src
+                      currentTrackSrc === track.src
                         ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
                         : 'hover:bg-gray-50 text-gray-700 border-transparent'
                     )}
@@ -112,10 +103,10 @@ const BottomControlBarMusic = ({
             <div className='mt-2 flex items-center justify-between gap-2'>
               <button
                 type='button'
-                onClick={() => localSelectedTrack && playTrack(localSelectedTrack)}
+                onClick={() => currentTrackSrc && playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 aria-disabled={!playEnabled}
-                className={clsx(
+                className={cn(
                   'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
                   playEnabled
                     ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
@@ -129,7 +120,7 @@ const BottomControlBarMusic = ({
                 onClick={pause}
                 disabled={!isPlaying}
                 aria-disabled={!isPlaying}
-                className={clsx(
+                className={cn(
                   'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
                   isPlaying
                     ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
@@ -143,7 +134,7 @@ const BottomControlBarMusic = ({
                 onClick={stop}
                 disabled={!stopEnabled}
                 aria-disabled={!stopEnabled}
-                className={clsx(
+                className={cn(
                   'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
                   stopEnabled
                     ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'

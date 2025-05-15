@@ -13,13 +13,13 @@ export const availableTracks: Track[] = [
   {name: 'Lo-fi Ambient', src: '/static/sounds/lofi-ambient.mp3'}
 ]
 
-interface UseBackgroundMusicManagerProps {
+type Props = {
   isFacilitator: boolean
   initialTrackUrl?: string | null
   initialIsPlaying?: boolean
   initialVolume?: number
 }
-export interface BackgroundMusicControls {
+type BackgroundMusicControls = {
   playTrack: (trackSrc: string) => void
   pause: () => void
   stop: () => void
@@ -31,9 +31,7 @@ export interface BackgroundMusicControls {
   availableTracks: Track[]
 }
 
-const useBackgroundMusicManager = (
-  props: UseBackgroundMusicManagerProps
-): BackgroundMusicControls => {
+const useBackgroundMusicManager = (props: Props): BackgroundMusicControls => {
   const {initialTrackUrl = null, initialIsPlaying = false, initialVolume = 0.5} = props
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
