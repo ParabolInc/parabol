@@ -3,7 +3,6 @@ import updateNotification from '../../graphql/public/mutations/helpers/updateNot
 import getKysely from '../../postgres/getKysely'
 
 const removeTeamsLimitObjects = async (orgId: string, dataLoader: DataLoaderWorker) => {
-  // TODO do isPaid stuff
   const operationId = dataLoader.share()
   const subOptions = {operationId}
 

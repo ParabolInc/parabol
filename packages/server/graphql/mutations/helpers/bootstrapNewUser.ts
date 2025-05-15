@@ -53,8 +53,8 @@ const bootstrapNewUser = async (
   ])
 
   const teamsWithAutoJoin = teamsWithAutoJoinRes.flat().filter(isValid)
-  const highestTier = organizations.reduce((highestTier, {tier}) => {
-    if (!teamsWithAutoJoin.some((team) => team.orgId === tier)) return highestTier
+  const highestTier = organizations.reduce((highestTier, {id, tier}) => {
+    if (!teamsWithAutoJoin.some((team) => team.orgId === id)) return highestTier
 
     if (tier === 'enterprise') return tier
     if (highestTier === 'enterprise') return highestTier

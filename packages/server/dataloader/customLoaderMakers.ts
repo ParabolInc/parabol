@@ -1034,7 +1034,7 @@ export const highestTierForUserId = (parent: RootDataLoader) => {
       const highestTiers = await pg
         .selectFrom('OrganizationUser')
         .innerJoin('Organization', 'Organization.id', 'OrganizationUser.orgId')
-        .select((eb) => ['userId', eb.fn.max('tier').as('highestTier')])
+        .select(({fn}) => ['userId', fn.max('tier').as('highestTier')])
         .where('userId', 'in', keys)
         .groupBy('userId')
         .execute()

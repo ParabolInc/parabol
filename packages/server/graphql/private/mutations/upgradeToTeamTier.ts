@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
+import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
@@ -67,6 +67,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       .updateTable('Organization')
       .set({
         creditCard: toCreditCard(creditCard),
+        isPaid: true,
         tier: 'team',
         tierLimitExceededAt: null,
         scheduledLockAt: null,

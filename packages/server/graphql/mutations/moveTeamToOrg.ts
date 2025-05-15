@@ -86,8 +86,7 @@ const moveToOrg = async (
     )
     .updateTable('Team')
     .set({
-      orgId,
-      updatedAt: new Date()
+      orgId
     })
     .where('id', '=', teamId)
     .execute()

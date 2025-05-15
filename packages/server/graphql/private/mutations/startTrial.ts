@@ -1,6 +1,6 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
-import identifyHighestUserTierForOrgId from '../../../utils/identifyHighestUserTierForOrgId'
+import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
