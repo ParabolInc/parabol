@@ -1,3 +1,4 @@
+import {datadogRum} from '@datadog/browser-rum'
 import * as Sentry from '@sentry/browser'
 import {Component, ErrorInfo, ReactNode} from 'react'
 import Atmosphere from '~/Atmosphere'
@@ -56,6 +57,12 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
         isOldBrowserErr
       })
     })
+
+    const renderingError = new Error(error.message)
+    renderingError.name = 'ReactRenderingError'
+    renderingError.stack = errorInfo.componentStack
+    renderingError.cause = error
+    datadogRum.addError(renderingError)
   }
 
   render() {
