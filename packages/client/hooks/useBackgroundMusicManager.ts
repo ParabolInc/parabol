@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 export interface Track {
   name: string
@@ -14,11 +14,11 @@ export const availableTracks: Track[] = [
 ]
 
 type Props = {
-  isFacilitator: boolean
   initialTrackUrl?: string | null
   initialIsPlaying?: boolean
   initialVolume?: number
 }
+
 type BackgroundMusicControls = {
   playTrack: (trackSrc: string) => void
   pause: () => void
@@ -86,38 +86,34 @@ const useBackgroundMusicManager = (props: Props): BackgroundMusicControls => {
     }
   }, [currentTrackSrc, isPlaying])
 
-  const playTrack = useCallback(
-    (trackSrc: string) => {
-      setCurrentTrackSrc(trackSrc)
-      setIsPlaying(true)
-      if (pausedAt !== null) setPausedAt(pausedAt)
-    },
-    [pausedAt]
-  )
+  const playTrack = (trackSrc: string) => {
+    setCurrentTrackSrc(trackSrc)
+    setIsPlaying(true)
+  }
 
-  const pause = useCallback(() => {
+  const pause = () => {
     if (audioRef.current) {
       setPausedAt(audioRef.current.currentTime)
     }
     setIsPlaying(false)
-  }, [])
+  }
 
-  const stop = useCallback(() => {
+  const stop = () => {
     setCurrentTrackSrc(null)
     setIsPlaying(false)
     setPausedAt(null)
-  }, [])
+  }
 
-  const setVolume = useCallback((newVolume: number) => {
+  const setVolume = (newVolume: number) => {
     const clamped = Math.max(0, Math.min(1, newVolume))
     setVolumeState(clamped)
-  }, [])
+  }
 
-  const selectTrack = useCallback((trackSrc: string) => {
+  const selectTrack = (trackSrc: string) => {
     setCurrentTrackSrc(trackSrc)
     setIsPlaying(false)
     setPausedAt(null)
-  }, [])
+  }
 
   return {
     playTrack,
