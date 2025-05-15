@@ -1032,10 +1032,11 @@ export const highestTierForUserId = (parent: RootDataLoader) => {
     async (keys) => {
       const pg = getKysely()
       const highestTiers = await pg
-        .selectFrom('OrganizationUser')
-        .innerJoin('Organization', 'Organization.id', 'OrganizationUser.orgId')
+        .selectFrom('OrganizationUser as ou')
+        .innerJoin('Organization as o', 'o.id', 'ou.orgId')
         .select(({fn}) => ['userId', fn.max('tier').as('highestTier')])
         .where('userId', 'in', keys)
+        .where('ou.removedAt', 'is', null)
         .groupBy('userId')
         .execute()
 

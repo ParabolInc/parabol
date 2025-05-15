@@ -106,11 +106,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         return massInvitation
       }
     },
-    isPaid: {
-      type: GraphQLBoolean,
-      description:
-        'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
-    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the team'
