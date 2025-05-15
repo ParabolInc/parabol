@@ -5,9 +5,10 @@ query getProjects($first: Int, $after: String, $ids: [ID!]) {
         __typename
         id
         name
-        teams {
+        teams(first: 1) {
           nodes {
             id
+            displayName
             name
             key
           }

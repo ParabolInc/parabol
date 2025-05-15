@@ -16488,7 +16488,7 @@ export type GetProjectsQueryVariables = Exact<{
 }>;
 
 
-export type GetProjectsQuery = { __typename?: 'Query', projects: { __typename?: 'ProjectConnection', edges: Array<{ __typename?: 'ProjectEdge', node: { __typename: 'Project', id: string, name: string, teams: { __typename?: 'TeamConnection', nodes: Array<{ __typename?: 'Team', id: string, name: string, key: string }> } } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
+export type GetProjectsQuery = { __typename?: 'Query', projects: { __typename?: 'ProjectConnection', edges: Array<{ __typename?: 'ProjectEdge', node: { __typename: 'Project', id: string, name: string, teams: { __typename?: 'TeamConnection', nodes: Array<{ __typename?: 'Team', id: string, displayName: string, name: string, key: string }> } } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } };
 
 export type GetTeamsAndProjectsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']['input']>;

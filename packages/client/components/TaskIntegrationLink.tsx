@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
+import {twMerge} from 'tailwind-merge'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
 import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
@@ -51,7 +52,10 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
-        className={`block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline ${className || ''}`}
+        className={twMerge(
+          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          className
+        )}
       >
         {`Issue #${issueKey}`}
         {children}
@@ -70,7 +74,10 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitHub Issue #${number} on ${nameWithOwner}`}
-        className={`block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline ${className || ''}`}
+        className={twMerge(
+          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          className
+        )}
       >
         {`Issue #${number}`}
         {children}
@@ -85,7 +92,10 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitLab Issue #${iid} on ${fullPath}`}
-        className={`block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline ${className || ''}`}
+        className={twMerge(
+          'focus:underline, block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline',
+          className
+        )}
       >
         {`Issue #${iid}`}
         {children}
@@ -100,7 +110,10 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Azure Item #${id} on ${teamProject}`}
-        className={`block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline ${className || ''}`}
+        className={twMerge(
+          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          className
+        )}
       >
         {`${integrationType} #${id}`}
         {children}
@@ -120,7 +133,10 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Linear Issue #${identifier} on ${nameWithTeam}`}
-        className={`block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline ${className || ''}`}
+        className={twMerge(
+          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          className
+        )}
       >
         {`Issue #${identifier}`}
         {children}
