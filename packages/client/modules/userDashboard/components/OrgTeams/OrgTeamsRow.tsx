@@ -38,21 +38,19 @@ const OrgTeamsRow = (props: Props) => {
     <tr className='hover:bg-slate-50 border-b border-slate-300'>
       <td className='p-3'>
         <div className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'>
-          <div className='flex flex-1 items-center'>
+          <div className='flex items-center gap-2'>
             {isLead || isOrgAdmin ? <EditableTeamName team={team} /> : <span>{teamName}</span>}
             {isLead && (
-              <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+              <span className='rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
                 Team Lead
               </span>
             )}
             {isMember && (
-              <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
-                Member
-              </span>
+              <span className='rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>Member</span>
             )}
           </div>
           <Link to={`teams/${teamId}`}>
-            <ChevronRight className='ml-2 text-slate-600' />
+            <ChevronRight className='ml-auto text-slate-600' />
           </Link>
         </div>
       </td>

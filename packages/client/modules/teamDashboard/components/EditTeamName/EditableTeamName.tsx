@@ -57,16 +57,15 @@ const EditableTeamName = (props: Props) => {
   }
 
   return (
-    <div className='font-sans text-lg leading-8'>
-      <EditableText
-        error={error as string}
-        handleSubmit={handleSubmit}
-        initialValue={teamName}
-        maxLength={50}
-        validate={validate}
-        placeholder={'Team Name'}
-      />
-    </div>
+    <EditableText
+      error={error as string}
+      handleSubmit={handleSubmit}
+      initialValue={teamName}
+      maxLength={50}
+      validate={validate}
+      placeholder={'Team Name'}
+      className='inline-flex items-center'
+    />
   )
 }
 
