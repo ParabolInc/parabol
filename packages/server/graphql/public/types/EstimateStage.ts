@@ -3,7 +3,7 @@ import {SprintPokerDefaults} from '../../../../client/types/constEnums'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import isValid from '../../isValid'
 import {EstimateStageResolvers} from '../resolverTypes'
 
@@ -142,7 +142,7 @@ const EstimateStage: EstimateStageResolvers = {
       const [issueData, issueError] = await manager.getIssue({gid})
       if (issueError) {
         const userId = getUserId(authToken)
-        sendToSentry(issueError, {userId, tags: {teamId, gid}})
+        logError(issueError, {userId, tags: {teamId, gid}})
         return NULL_FIELD
       }
       const {issue} = issueData

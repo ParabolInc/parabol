@@ -14,7 +14,7 @@ import AzureDevOpsServerManager, {
 } from '../utils/AzureDevOpsServerManager'
 import {Logger} from '../utils/Logger'
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
-import sendToSentry from '../utils/sendToSentry'
+import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -525,7 +525,7 @@ export const azureDevOpsWorkItem = (
             parseInt(workItemId)
           ])
           if (workItemDataResponse instanceof Error) {
-            sendToSentry(workItemDataResponse, {userId, tags: {instanceId, workItemId, teamId}})
+            logError(workItemDataResponse, {userId, tags: {instanceId, workItemId, teamId}})
             return null
           }
           const {workItems: returnedWorkItems} = workItemDataResponse
@@ -659,7 +659,7 @@ const getMappedAzureDevOpsWorkItem = async (
   const {error: projectResultError, projectTemplate} = projectResult
   if (!!projectResultError) {
     const workItemId = returnedWorkItem.id.toString()
-    sendToSentry(projectResultError, {userId, tags: {instanceId, workItemId, teamId}})
+    logError(projectResultError, {userId, tags: {instanceId, workItemId, teamId}})
   } else {
     azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
   }

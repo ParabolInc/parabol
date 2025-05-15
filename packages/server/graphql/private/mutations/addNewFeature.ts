@@ -1,8 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import getRedis from '../../../utils/getRedis'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
-import sendToSentry from '../../../utils/sendToSentry'
 import {MutationResolvers} from '../resolverTypes'
 
 const addNewFeature: MutationResolvers['addNewFeature'] = async (
@@ -49,7 +49,7 @@ const addNewFeature: MutationResolvers['addNewFeature'] = async (
   await new Promise((resolve, reject) => {
     stream.on('end', resolve)
     stream.on('error', (e) => {
-      sendToSentry(e)
+      logError(e)
       reject(e)
     })
   })

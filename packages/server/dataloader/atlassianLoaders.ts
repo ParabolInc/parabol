@@ -21,8 +21,8 @@ import AtlassianServerManager, {
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
+import logError from '../utils/logError'
 import publish from '../utils/publish'
-import sendToSentry from '../utils/sendToSentry'
 import type RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -67,7 +67,7 @@ export const freshAtlassianAuth = (
           if (!decodedToken || decodedToken.exp < inAMinute) {
             const oauthRes = await AtlassianServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
-              sendToSentry(oauthRes)
+              logError(oauthRes)
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
@@ -155,7 +155,7 @@ export const jiraRemoteProject = (
           const manager = new AtlassianServerManager(accessToken)
           const projectRes = await manager.getProject(cloudId, projectKey)
           if (projectRes instanceof Error) {
-            sendToSentry(projectRes, {userId, tags: {teamId, projectKey}})
+            logError(projectRes, {userId, tags: {teamId, projectKey}})
             return null
           }
           return projectRes
@@ -290,7 +290,7 @@ export const jiraIssue = (
             ['names', 'schema']
           )
           if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
-            sendToSentry(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
+            logError(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
             return null
           }
           const res = await cacheImagesUpdateEstimates(issueRes)
@@ -322,7 +322,7 @@ export const atlassianCloudNameLookup = (
           const manager = new AtlassianServerManager(accessToken)
           const result = await manager.getCloudNameLookup()
           if (result instanceof Error) {
-            sendToSentry(result, {userId, tags: {teamId}})
+            logError(result, {userId, tags: {teamId}})
             return {}
           }
           return result
