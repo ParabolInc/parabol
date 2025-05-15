@@ -85,7 +85,7 @@ const BottomControlBarMusic = ({
                       selectTrack(track.src)
                     }}
                     className={cn(
-                      'group flex w-full cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 transition-all',
+                      'flex w-full cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 transition-all',
                       currentTrackSrc === track.src
                         ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
                         : 'hover:bg-gray-50 text-gray-700 border-transparent'
@@ -104,7 +104,6 @@ const BottomControlBarMusic = ({
                 type='button'
                 onClick={() => currentTrackSrc && playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
-                aria-disabled={!playEnabled}
                 className={cn(
                   'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
                   playEnabled
@@ -118,7 +117,6 @@ const BottomControlBarMusic = ({
                 type='button'
                 onClick={pause}
                 disabled={!isPlaying}
-                aria-disabled={!isPlaying}
                 className={cn(
                   'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
                   isPlaying
@@ -132,7 +130,6 @@ const BottomControlBarMusic = ({
                 type='button'
                 onClick={stop}
                 disabled={!stopEnabled}
-                aria-disabled={!stopEnabled}
                 className={cn(
                   'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
                   stopEnabled
