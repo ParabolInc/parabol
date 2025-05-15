@@ -24,7 +24,6 @@ const BottomControlBarMusic = ({
 
   const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
     useBackgroundMusicManager({
-      isFacilitator,
       initialTrackUrl: null,
       initialIsPlaying: false,
       initialVolume: 0.5
@@ -154,9 +153,7 @@ const BottomControlBarMusic = ({
                 value={volume}
                 onChange={(e) => setVolume(parseFloat(e.target.value))}
                 className='accent-blue-500 h-2 flex-1 cursor-pointer'
-                onPointerDown={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
               />
             </div>
           </div>
