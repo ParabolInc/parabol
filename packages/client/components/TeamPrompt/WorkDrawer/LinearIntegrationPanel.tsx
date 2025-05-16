@@ -8,7 +8,7 @@ import linearSVG from '../../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../../utils/LinearClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
-import LinearProjectFilterBar from './LinearProjectFilterBar' // Corrected import name
+import LinearProjectFilterBar from './LinearProjectFilterBar'
 
 interface Props {
   meetingRef: LinearIntegrationPanel_meeting$key

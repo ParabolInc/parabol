@@ -1,3 +1,4 @@
+import {CircularProgress} from '@mui/material'
 import {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
 import {MenuProps} from '../hooks/useMenu'
 import Checkbox from './Checkbox'
@@ -39,8 +40,6 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
 
   const {portalStatus, isDropdown} = menuProps
 
-  // TODO: Add loading state indicator if isLoading is true
-
   return (
     <Menu
       className='max-w-full'
@@ -54,13 +53,19 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
         onChange={(e) => onSearchQueryChange(e.target.value)}
         value={searchQuery}
       />
-      {items.length === 0 && !isLoading && (
-        <EmptyDropdownMenuItemLabel key='no-results'>
-          {emptyStateMessage}
-        </EmptyDropdownMenuItemLabel>
-      )}
+      {items.length === 0 &&
+        (isLoading ? (
+          <EmptyDropdownMenuItemLabel key='results-loading'>
+            <CircularProgress />
+          </EmptyDropdownMenuItemLabel>
+        ) : (
+          <EmptyDropdownMenuItemLabel key='no-results'>
+            {emptyStateMessage}
+          </EmptyDropdownMenuItemLabel>
+        ))}
       {items.map((item) => {
         const itemId = getItemId(item)
+        console.log('GEORG itemId', itemId)
         const itemLabel = getItemLabel(item)
         const isSelected = selectedItemIds.includes(itemId)
 

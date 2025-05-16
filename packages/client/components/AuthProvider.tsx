@@ -4,6 +4,8 @@ import DialogTitle from './DialogTitle'
 import InviteDialog from './InviteDialog'
 import StyledError from './StyledError'
 
+export const OAUTH_LOCAL_STORAGE_KEY = 'oauthData'
+
 const AuthProvider = () => {
   const [error, setError] = useState('')
   useEffect(() => {
@@ -15,7 +17,7 @@ const AuthProvider = () => {
       if (state && code) {
         if (window.opener) return window.opener.postMessage({state, code}, window.location.origin)
         else {
-          localStorage.setItem('oauthData', JSON.stringify({state, code}))
+          localStorage.setItem(OAUTH_LOCAL_STORAGE_KEY, JSON.stringify({state, code}))
           return window.close()
         }
       }
@@ -26,7 +28,7 @@ const AuthProvider = () => {
         if (window.opener)
           return window.opener.postMessage({oauthToken, oauthVerifier}, window.location.origin)
         else {
-          localStorage.setItem('oauthData', JSON.stringify({oauthToken, oauthVerifier}))
+          localStorage.setItem(OAUTH_LOCAL_STORAGE_KEY, JSON.stringify({oauthToken, oauthVerifier}))
           return window.close()
         }
       }

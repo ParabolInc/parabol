@@ -1400,7 +1400,7 @@ type Mutation {
   Add an integration authorization for a specific team member
   """
   addTeamMemberIntegrationAuth(
-    providerId: ID # Make optional
+    providerId: ID!
     service: IntegrationProviderServiceEnum # Add optional service enum
     teamId: ID!
 

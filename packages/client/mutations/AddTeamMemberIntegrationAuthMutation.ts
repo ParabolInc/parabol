@@ -5,7 +5,7 @@ import {StandardMutation} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
-    $providerId: ID
+    $providerId: ID!
     $service: IntegrationProviderServiceEnum
     $oauthCodeOrPat: ID
     $oauthVerifier: ID

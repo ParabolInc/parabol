@@ -51,10 +51,6 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
   }
 
-  if (!providerId) {
-    return {error: {message: 'providerId is required'}}
-  }
-
   const providerDbId = IntegrationProviderId.split(providerId)
   const [integrationProvider, viewer] = await Promise.all([
     dataLoader.get('integrationProviders').load(providerDbId),

@@ -1,4 +1,5 @@
 import Atmosphere from '../Atmosphere'
+import {OAUTH_LOCAL_STORAGE_KEY} from '../components/AuthProvider'
 import {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
@@ -8,7 +9,6 @@ class LinearClientManager {
   static SCOPES = 'read,write'
   static AUTH_PATH = '/oauth/authorize'
   static REDIRECT_PATH = '/auth/linear'
-  static OAUTH_STORAGE_KEY = 'oauthData'
   static POLLING_INTERVAL = 250
 
   static async openOAuth(
@@ -49,7 +49,7 @@ class LinearClientManager {
       const {code, state} = data
       if (state !== providerState || typeof code !== 'string') return
 
-      localStorage.removeItem(LinearClientManager.OAUTH_STORAGE_KEY)
+      localStorage.removeItem(OAUTH_LOCAL_STORAGE_KEY)
 
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
@@ -66,7 +66,7 @@ class LinearClientManager {
       popup && popup.close()
       window.removeEventListener('message', messageHandler)
       if (pollingIntervalId) clearInterval(pollingIntervalId)
-      localStorage.removeItem(LinearClientManager.OAUTH_STORAGE_KEY)
+      localStorage.removeItem(OAUTH_LOCAL_STORAGE_KEY)
     }
 
     const messageHandler = (event: MessageEvent) => {
@@ -81,7 +81,7 @@ class LinearClientManager {
 
     const checkLocalStorage = () => {
       try {
-        const storedData = localStorage.getItem(LinearClientManager.OAUTH_STORAGE_KEY)
+        const storedData = localStorage.getItem(OAUTH_LOCAL_STORAGE_KEY)
         if (!storedData) return
 
         const data = JSON.parse(storedData)
