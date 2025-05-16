@@ -12,9 +12,6 @@ export default async function setIsEnterprise() {
   const pg = getKysely()
   await Promise.all([
     pg.updateTable('Organization').set({tier: 'enterprise'}).execute(),
-    pg.updateTable('OrganizationUser').set({tier: 'enterprise'}).execute(),
-    pg.updateTable('User').set({tier: 'enterprise'}).execute(),
-    pg.updateTable('Team').set({tier: 'enterprise'}).execute()
   ])
 
   Logger.log('Finished updating tiers.')

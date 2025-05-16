@@ -38,7 +38,10 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   const userId = getUserId(authToken)
 
   // RESOLUTION
-  const user = await dataLoader.get('users').load(userId)
+  const [user, highestTier] = await Promise.all([
+    dataLoader.get('users').load(userId),
+    dataLoader.get('highestTierForUserId').load(userId)
+  ])
   if (!user) {
     throw new Error('User does not exist')
   }
@@ -82,7 +85,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
     userId,
     email: user.email,
     isActive: true,
-    highestTier: user.tier,
+    highestTier,
     isPatient0: user.isPatient0
   })
   return user
