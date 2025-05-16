@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import * as React from 'react'
 import {PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,6 +8,7 @@ import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {cn} from '../../ui/cn'
 import {upperFirst} from '../../utils/upperFirst'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
@@ -126,9 +126,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
           <div className='truncate pb-1 text-lg leading-5 text-slate-800'>{title}</div>
-          <div className={clsx('font-semibold italic', `${theme.text}`)}>
-            {upperFirst(category)}
-          </div>
+          <div className={cn('font-semibold italic', `${theme.text}`)}>{upperFirst(category)}</div>
         </div>
       )}
     </div>

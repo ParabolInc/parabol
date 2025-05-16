@@ -1,6 +1,6 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
-import clsx from 'clsx'
 import {forwardRef} from 'react'
+import {cn} from '../cn'
 
 export const AvatarImage = forwardRef<
   HTMLImageElement,
@@ -8,7 +8,7 @@ export const AvatarImage = forwardRef<
 >(({className, ...props}, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={clsx('aspect-square h-full w-full', className)}
+    className={cn('aspect-square h-full w-full', className)}
     {...props}
   />
 ))

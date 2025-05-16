@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GCalIntegrationPanel_meeting$key} from '../../../__generated__/GCalIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import gcalSVG from '../../../styles/theme/images/graphics/google-calendar.svg'
+import {cn} from '../../../ui/cn'
 import GcalClientManager from '../../../utils/GcalClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GCalIntegrationResultsRoot from './GCalIntegrationResultsRoot'
@@ -99,7 +99,7 @@ const GCalPanel = (props: Props) => {
             {GCAL_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}
-                className={clsx(
+                className={cn(
                   'w-1/2 cursor-pointer rounded-full px-3 py-3 text-center text-sm leading-3 text-slate-800',
                   tab.key === eventRangeKey
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'

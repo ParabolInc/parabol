@@ -1,10 +1,10 @@
-import clsx from 'clsx'
 import * as React from 'react'
 import {forwardRef} from 'react'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {Avatar as AvatarRoot} from '../../ui/Avatar/Avatar'
 import {AvatarFallback} from '../../ui/Avatar/AvatarFallback'
 import {AvatarImage} from '../../ui/Avatar/AvatarImage'
+import {cn} from '../../ui/cn'
 
 interface Props {
   alt?: string
@@ -23,7 +23,7 @@ const Avatar = forwardRef<HTMLDivElement, Props>((props, ref) => {
       onTransitionEnd={onTransitionEnd}
       onMouseEnter={onMouseEnter}
       ref={ref}
-      className={clsx(`${onClick && 'cursor-pointer'}`, className)}
+      className={cn(`${onClick && 'cursor-pointer'}`, className)}
     >
       <AvatarImage src={picture || defaultUserAvatar} alt={alt || 'Avatar'} />
       <AvatarFallback delayMs={200}>

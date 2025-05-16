@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import action from '../../../static/images/illustrations/action.png'
@@ -20,6 +19,7 @@ import {TransitionStatus} from '../hooks/useTransition'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
@@ -302,7 +302,7 @@ const MeetingCard = (props: Props) => {
             <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
             {isRecurring && (
               <span
-                className={clsx(
+                className={cn(
                   'absolute top-2 right-2 rounded-[64px] px-2 py-1 text-[11px] leading-3 font-medium',
                   RECURRING_LABEL_COLORS[meetingType]
                 )}

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import clsx from 'clsx'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RenameMeetingTemplateMutation from '../../../mutations/RenameMeetingTemplateMutation'
+import {cn} from '../../../ui/cn'
 import Legitity from '../../../validation/Legitity'
 
 interface Props {
@@ -53,7 +53,7 @@ const EditableTemplateName = (props: Props) => {
 
   return (
     <InheritedStyles>
-      <div className={clsx('leading-6', className)}>
+      <div className={cn('leading-6', className)}>
         <EditableText
           autoFocus={autoFocus}
           disabled={!isOwner}

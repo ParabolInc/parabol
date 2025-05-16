@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {AvatarListUser_user$key} from '../__generated__/AvatarListUser_user.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {BezierCurve} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import Avatar from './Avatar/Avatar'
 
 const Wrapper = styled('div')<{offset: number; isColumn?: boolean}>(({offset, isColumn}) => ({
@@ -65,7 +65,7 @@ const AvatarListUser = (props: Props) => {
       onMouseLeave={closeTooltip}
     >
       <Avatar
-        className={clsx(
+        className={cn(
           `border-solid border-[${borderColor || '#fff'}] duration-300 ease-out ${isAnimating ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`,
           className
         )}

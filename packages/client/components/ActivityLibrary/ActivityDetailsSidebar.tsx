@@ -1,7 +1,6 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
@@ -18,6 +17,7 @@ import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
+import {cn} from '../../ui/cn'
 import sortByTier from '../../utils/sortByTier'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
@@ -215,7 +215,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           </div>
 
           <div
-            className={clsx(
+            className={cn(
               'transition-max-height duration-300 ease-in-out',
               isMinimized
                 ? 'max-h-0 opacity-0 lg:max-h-[100vh] lg:opacity-100'
