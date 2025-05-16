@@ -1,6 +1,7 @@
 import {CircularProgress} from '@mui/material'
 import {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
 import {MenuProps} from '../hooks/useMenu'
+import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -9,6 +10,17 @@ import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
 
+const getItemId = (item: LinearProjectOrTeam): string => {
+  const typeName = item.__typename ?? 'UnknownType'
+  return `${typeName}:${item.id}`
+}
+
+const getItemLabel = (item: LinearProjectOrTeam): string => {
+  if ('teams' in item && item.teams !== undefined) {
+    return getLinearRepoName(item)
+  }
+  return item.name || 'Unknown Team'
+}
 export interface LinearSelectorMenuProps {
   items: ReadonlyArray<LinearProjectOrTeam>
   selectedItemIds: ReadonlyArray<string>
@@ -19,8 +31,6 @@ export interface LinearSelectorMenuProps {
   isLoading?: boolean
   placeholder?: string
   emptyStateMessage?: string
-  getItemId: (item: LinearProjectOrTeam) => string
-  getItemLabel: (item: LinearProjectOrTeam) => string
 }
 
 const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
@@ -33,9 +43,7 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
     menuProps,
     isLoading = false,
     placeholder = 'Search items',
-    emptyStateMessage = 'No items found!',
-    getItemId,
-    getItemLabel
+    emptyStateMessage = 'No items found!'
   } = props
 
   const {portalStatus, isDropdown} = menuProps

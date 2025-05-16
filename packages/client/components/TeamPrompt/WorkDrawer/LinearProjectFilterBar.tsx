@@ -4,26 +4,11 @@ import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
-import useLinearProjectsAndTeams, {
-  LinearProjectOrTeam
-} from '../../../hooks/useLinearProjectsAndTeams'
+import useLinearProjectsAndTeams from '../../../hooks/useLinearProjectsAndTeams'
 import useMenu from '../../../hooks/useMenu'
 import {PortalStatus} from '../../../hooks/usePortal'
-import {getLinearRepoName} from '../../../utils/getLinearRepoName'
 import plural from '../../../utils/plural'
 import LinearSelectorMenu from '../../LinearSelectorMenu'
-
-const getItemLabel = (item: LinearProjectOrTeam): string => {
-  if ('teams' in item && item.teams !== undefined) {
-    return getLinearRepoName(item)
-  }
-  return item.name || 'Unknown Team'
-}
-
-const getItemId = (item: LinearProjectOrTeam): string => {
-  const typeName = item.__typename ?? 'UnknownType'
-  return `${typeName}:${item.id}`
-}
 
 interface Props {
   teamMemberRef: LinearProjectFilterBar_teamMember$key
@@ -101,8 +86,6 @@ const LinearProjectFilterBar = (props: Props) => {
           menuProps={menuProps}
           placeholder='Search Linear projects or teams'
           emptyStateMessage='No projects or teams found!'
-          getItemId={getItemId}
-          getItemLabel={getItemLabel}
         />
       )}
     </>

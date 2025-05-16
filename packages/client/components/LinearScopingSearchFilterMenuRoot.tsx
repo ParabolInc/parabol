@@ -5,10 +5,9 @@ import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {LinearScopingSearchFilterMenuRoot_query$key} from '../__generated__/LinearScopingSearchFilterMenuRoot_query.graphql'
 import {LinearScopingSearchFilterMenuRootQuery} from '../__generated__/LinearScopingSearchFilterMenuRootQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useLinearProjectsAndTeams, {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
+import useLinearProjectsAndTeams from '../hooks/useLinearProjectsAndTeams'
 import {MenuProps} from '../hooks/useMenu'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import {getLinearRepoName} from '../utils/getLinearRepoName'
 import LinearSelectorMenu from './LinearSelectorMenu'
 import MockFieldList from './MockFieldList'
 
@@ -37,19 +36,6 @@ const LinearScopingSearchFilterMenuRootQueryNode = graphql`
     ...LinearScopingSearchFilterMenuRoot_query @arguments(teamId: $teamId, meetingId: $meetingId)
   }
 `
-
-const getItemLabel = (item: LinearProjectOrTeam): string => {
-  if ('teams' in item && item.teams !== undefined) {
-    return getLinearRepoName(item)
-  }
-  return item.name || 'Unknown Team'
-}
-
-const getItemId = (item: LinearProjectOrTeam): string => {
-  const typeName = item.__typename ?? 'UnknownType'
-  return `${typeName}:${item.id}`
-}
-
 interface Props {
   menuProps: MenuProps
   teamId: string
@@ -137,8 +123,6 @@ const LinearScopingSearchFilterMenuContent = ({queryRef, menuProps, meetingId}: 
       menuProps={menuProps}
       placeholder='Search Linear projects or teams'
       emptyStateMessage='No projects or teams found!'
-      getItemId={getItemId}
-      getItemLabel={getItemLabel}
     />
   )
 }
