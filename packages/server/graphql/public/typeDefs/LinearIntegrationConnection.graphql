@@ -1,0 +1,19 @@
+"""
+A connection to a list of items.
+"""
+type LinearIntegrationConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  A list of edges.
+  """
+  edges: [LinearIntegrationEdge!]!
+
+  """
+  An error with the connection, if any
+  """
+  error: StandardMutationError
+}
