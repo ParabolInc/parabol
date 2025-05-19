@@ -459,7 +459,6 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   async executeWiqlQuery(instanceId: string, query: string) {
     return tracer.trace('AzureDevOpsServerManager.executeWiqlQuery', async () => {
       const workItemReferences = [] as WorkItemReference[]
-      let firstError: Error | undefined
       const payload = {
         query: query
       }
@@ -468,9 +467,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         payload
       )
       if (res instanceof Error) {
-        if (!firstError) {
-          firstError = res
-        }
+        return {error: res, workItems: null}
       } else {
         const workItems = res.workItems.map((workItem) => {
           const {id, url} = workItem
@@ -481,11 +478,11 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         })
         workItemReferences.push(...workItems)
       }
-      return {error: firstError, workItems: workItemReferences}
+      return {error: null, workItems: workItemReferences}
     })
   }
 
-  async getWorkItems(
+  private async getWorkItems(
     instanceId: string,
     queryString: string | null,
     projectKeyFilters: string[] | null,

@@ -32,21 +32,26 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
       return connectionFromTasks([], 0, err)
     }
-    const allUserWorkItems = await dataLoader
-      .get('azureDevOpsAllWorkItems')
-      .load({teamId, userId, queryString, projectKeyFilters, isWIQL})
-    if (!allUserWorkItems) {
-      return connectionFromTasks([], 0, undefined)
-    } else {
-      const workItems = Array.from(
-        allUserWorkItems.map((userWorkItem) => {
-          return {
-            ...userWorkItem,
-            updatedAt: new Date()
-          }
-        })
-      )
-      return connectionFromTasks(workItems, first, undefined)
+    try {
+      const allUserWorkItems = await dataLoader
+        .get('azureDevOpsAllWorkItems')
+        .load({teamId, userId, queryString, projectKeyFilters, isWIQL})
+      if (allUserWorkItems instanceof Error) {
+        return connectionFromTasks([], 0, allUserWorkItems)
+      } else {
+        const workItems = Array.from(
+          allUserWorkItems.map((userWorkItem) => {
+            return {
+              ...userWorkItem,
+              updatedAt: new Date()
+            }
+          })
+        )
+        return connectionFromTasks(workItems, first, undefined)
+      }
+    } catch (err) {
+      const error = new Error('GEORG really here in the catch Error fetching work items')
+      return connectionFromTasks([], 0, error)
     }
   },
 
