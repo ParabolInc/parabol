@@ -73,7 +73,6 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
         ))}
       {items.map((item) => {
         const itemId = getItemId(item)
-        console.log('GEORG itemId', itemId)
         const itemLabel = getItemLabel(item)
         const isSelected = selectedItemIds.includes(itemId)
 
