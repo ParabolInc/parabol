@@ -1,4 +1,7 @@
 import HeadphonesIcon from '@mui/icons-material/Headphones'
+import PauseIcon from '@mui/icons-material/Pause'
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useRef, useState} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
@@ -105,39 +108,42 @@ const BottomControlBarMusic = ({
                 onClick={() => currentTrackSrc && playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 className={cn(
-                  'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
+                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
                   playEnabled
                     ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
                     : 'cursor-not-allowed bg-jade-100 text-jade-300'
                 )}
+                aria-label='Play'
               >
-                Play
+                <PlayArrowIcon />
               </button>
               <button
                 type='button'
                 onClick={pause}
                 disabled={!isPlaying}
                 className={cn(
-                  'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
+                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
                   isPlaying
                     ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 )}
+                aria-label='Pause'
               >
-                Pause
+                <PauseIcon />
               </button>
               <button
                 type='button'
                 onClick={stop}
                 disabled={!stopEnabled}
                 className={cn(
-                  'min-w-[72px] rounded-full px-4 py-2 text-sm font-semibold transition',
+                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
                   stopEnabled
                     ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
                     : 'cursor-not-allowed bg-tomato-100 text-tomato-400'
                 )}
+                aria-label='Stop'
               >
-                Stop
+                <StopIcon />
               </button>
             </div>
             <div className='mt-2 flex items-center gap-3'>
