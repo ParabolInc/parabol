@@ -5,6 +5,7 @@ import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import LinearSVG from './LinearSVG'
 import MenuItem from './MenuItem'
 import MenuItemAvatar from './MenuItemAvatar'
 import MenuItemLabel from './MenuItemLabel'
@@ -24,7 +25,8 @@ export const integrationSvgLookup: Record<TaskServiceEnum, JSX.Element> = {
   azureDevOps: <AzureDevOpsSVG />,
   github: <GitHubSVG />,
   jira: <JiraSVG />,
-  PARABOL: <ParabolLogoSVG />
+  PARABOL: <ParabolLogoSVG />,
+  linear: <LinearSVG />
 }
 
 const TaskIntegrationMenuItem = forwardRef((props: Props, ref: any) => {

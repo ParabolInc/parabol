@@ -28,6 +28,7 @@ interface PossibleJob {
 
 const {SERVER_ID} = process.env
 if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
+const CHRONOS_DEBUG = process.env.CHRONOS_DEBUG === 'true'
 
 const runningJobs: CronJob[] = []
 
@@ -126,10 +127,16 @@ const chronos = (leaderRunner: LeaderRunner) => {
           leaderRunner.runLocked(
             name,
             async () => {
-              Logger.log(`🌱 Chronos Job ${name}: TICK`)
+              if (CHRONOS_DEBUG) {
+                Logger.log(`🌱 Chronos Job ${name}: TICK`)
+              }
               return onTick()
             },
-            () => Logger.log(`🌱 Chronos Job ${name}: TICK SKIPPED (not leader)`)
+            () => {
+              if (CHRONOS_DEBUG) {
+                Logger.log(`🌱 Chronos Job ${name}: TICK SKIPPED (not leader)`)
+              }
+            }
           )
       })
       runningJobs.push(job)

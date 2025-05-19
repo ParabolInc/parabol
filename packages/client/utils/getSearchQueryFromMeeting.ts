@@ -27,6 +27,14 @@ const getSearchQueryFromMeeting = (meeting: PokerScopeMeeting, service: TaskServ
         searchQueryString: jiraQueryString,
         searchQueryFilters: projectKeyFilters.concat()
       }
+    case 'linear':
+      const {linearSearchQuery} = meeting
+      const {queryString: linearQueryString, selectedProjectsIds: linearSelectedProjectIds} =
+        linearSearchQuery
+      return {
+        searchQueryString: linearQueryString,
+        searchQueryFilters: linearSelectedProjectIds?.concat()
+      }
   }
   return undefined
 }

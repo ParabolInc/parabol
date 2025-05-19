@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.4.0](https://github.com/ParabolInc/parabol/compare/v10.3.6...v10.4.0) (2025-05-16)
+
+
+### Added
+
+* adds the Linear integration ([#11217](https://github.com/ParabolInc/parabol/issues/11217)) ([18f7457](https://github.com/ParabolInc/parabol/commit/18f7457720d09f929e54f6cf19b054135441078e))
+* **orgAdmin:** org admin can rename a team in org teams view ([#11331](https://github.com/ParabolInc/parabol/issues/11331)) ([81c63e0](https://github.com/ParabolInc/parabol/commit/81c63e062617f4ea301c9ca0449c3624f9e73bee))
+
+
+### Fixed
+
+* **metrics:** add metric for page insights generated ([#11332](https://github.com/ParabolInc/parabol/issues/11332)) ([8af9230](https://github.com/ParabolInc/parabol/commit/8af92304999918f877c18e5cf4dd80d0994df36a))
+
+
+### Changed
+
+* make chronos debug output optional ([#11334](https://github.com/ParabolInc/parabol/issues/11334)) ([6745673](https://github.com/ParabolInc/parabol/commit/6745673a2e0dfb9097ce7b93b12a27e7ec4a037b))
+
 ## [10.3.6](https://github.com/ParabolInc/parabol/compare/v10.3.5...v10.3.6) (2025-05-13)
 
 

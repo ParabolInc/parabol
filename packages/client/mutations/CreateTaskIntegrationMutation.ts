@@ -55,11 +55,26 @@ graphql`
           title
           url
         }
+        ... on _xLinearIssue {
+          __typename
+          id
+          description
+          identifier
+          title
+          linearProject: project {
+            name
+          }
+          team {
+            name
+          }
+          url
+        }
         ...TaskIntegrationLinkIntegrationGitHub
         ...TaskIntegrationLinkIntegrationJira
         ...TaskIntegrationLinkIntegrationJiraServer
         ...TaskIntegrationLinkIntegrationGitLab
         ...TaskIntegrationLinkIntegrationAzure
+        ...TaskIntegrationLinkIntegrationLinear
       }
       updatedAt
       teamId
@@ -115,7 +130,7 @@ const jiraTaskIntegrationOptimisticUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const githubTaskIntegrationOptimisitcUpdater = (
+const githubTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -141,7 +156,7 @@ const githubTaskIntegrationOptimisitcUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const gitlabTaskIntegrationOptimisitcUpdater = (
+const gitlabTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -192,7 +207,7 @@ const jiraServerTaskIntegrationOptimisticUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
-const azureTaskIntegrationOptimisitcUpdater = (
+const azureTaskIntegrationOptimisticUpdater = (
   store: RecordSourceSelectorProxy,
   variables: TCreateTaskIntegrationMutation['variables']
 ) => {
@@ -217,6 +232,37 @@ const azureTaskIntegrationOptimisitcUpdater = (
   task.setLinkedRecord(integration, 'integration')
 }
 
+const linearTaskIntegrationOptimisticUpdater = (
+  store: RecordSourceSelectorProxy,
+  variables: TCreateTaskIntegrationMutation['variables']
+) => {
+  const {taskId} = variables
+  const now = new Date()
+  const task = store.get(taskId)
+  if (!task) return
+  const contentStr = task.getValue('content') as string
+  if (!contentStr) return
+  const integrationProject = createProxyRecord(store, '_xLinearProject', {
+    name: '?'
+  })
+  const integrationTeam = createProxyRecord(store, '_xLinearTeam', {
+    name: '?'
+  })
+  const {title, bodyContent} = splitTipTapContent(JSON.parse(contentStr))
+  const description = generateHTML(bodyContent, serverTipTapExtensions)
+  const optimisticIntegration = {
+    id: '?',
+    description,
+    identifier: '?',
+    title,
+    updatedAt: now.toJSON()
+  } as const
+  const integration = createProxyRecord(store, '_xLinearIssue', optimisticIntegration)
+  integration.setLinkedRecord(integrationProject, 'project')
+  integration.setLinkedRecord(integrationTeam, 'team')
+  task.setLinkedRecord(integration, 'integration')
+}
+
 const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMutation> = (
   atmosphere,
   variables,
@@ -231,13 +277,15 @@ const CreateTaskIntegrationMutation: StandardMutation<TCreateTaskIntegrationMuta
       if (integrationProviderService === 'jira') {
         jiraTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'github') {
-        githubTaskIntegrationOptimisitcUpdater(store, variables)
+        githubTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'jiraServer') {
         jiraServerTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'gitlab') {
-        gitlabTaskIntegrationOptimisitcUpdater(store, variables)
+        gitlabTaskIntegrationOptimisticUpdater(store, variables)
       } else if (integrationProviderService === 'azureDevOps') {
-        azureTaskIntegrationOptimisitcUpdater(store, variables)
+        azureTaskIntegrationOptimisticUpdater(store, variables)
+      } else if (integrationProviderService === 'linear') {
+        linearTaskIntegrationOptimisticUpdater(store, variables)
       }
     },
     onCompleted: (data, errors) => {

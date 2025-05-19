@@ -60,6 +60,15 @@ const defaults = [
       queryString: '',
       selectedProjectsIds: [] as string[]
     }
+  },
+  {
+    service: 'linear',
+    meetingPropName: 'linearSearchQuery',
+    type: 'LinearSearchQuery',
+    defaultQuery: {
+      queryString: '',
+      selectedProjectsIds: [] as string[]
+    }
   }
 ] as const
 

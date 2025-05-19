@@ -1,6 +1,8 @@
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
+import LinearProjectId from '../../../../client/shared/gqlIds/LinearProjectId'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import LinearServerManager from '../../../integrations/linear/LinearServerManager'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import sendToSentry from '../../../utils/sendToSentry'
@@ -12,7 +14,11 @@ const EstimateStage: EstimateStageResolvers = {
   serviceField: async ({dimensionRefIdx, meetingId, teamId, taskId}, _args, context, info) => {
     const {dataLoader, authToken} = context
     const viewerId = getUserId(authToken)
-    const NULL_FIELD = {name: SprintPokerDefaults.SERVICE_FIELD_NULL, type: 'string'}
+    const NULL_FIELD = {
+      __typename: 'ServiceField' as const,
+      name: SprintPokerDefaults.SERVICE_FIELD_NULL,
+      type: 'string'
+    }
     const task = await dataLoader.get('tasks').load(taskId)
     if (!task) return NULL_FIELD
     const {integration} = task
@@ -53,12 +59,17 @@ const EstimateStage: EstimateStageResolvers = {
       const dimensionField = dimensionFields.find(({fieldId}) => validFieldIds.includes(fieldId))
       if (dimensionField) {
         return {
-          name: dimensionField.fieldName,
+          __typename: 'ServiceField' as const,
+          name: dimensionField.fieldName ?? '',
           type: dimensionField.fieldType
         }
       }
 
-      return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+      return {
+        __typename: 'ServiceField' as const,
+        name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+        type: 'string'
+      }
     }
     if (service === 'jiraServer') {
       const {providerId, repositoryId: projectId, issueId, accessUserId} = integration
@@ -75,11 +86,16 @@ const EstimateStage: EstimateStageResolvers = {
         .load({providerId, projectId, issueType, teamId, dimensionName})
       if (existingDimensionField) {
         return {
-          name: existingDimensionField.fieldName,
+          __typename: 'ServiceField' as const,
+          name: existingDimensionField.fieldName ?? '',
           type: existingDimensionField.fieldType
         }
       }
-      return {name: SprintPokerDefaults.SERVICE_FIELD_COMMENT, type: 'string'}
+      return {
+        __typename: 'ServiceField' as const,
+        name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+        type: 'string'
+      }
     }
     if (service === 'azureDevOps') {
       const {instanceId, projectKey, issueKey, accessUserId} = integration
@@ -103,11 +119,13 @@ const EstimateStage: EstimateStageResolvers = {
 
       if (azureDevOpsDimensionFieldMapEntry) {
         return {
-          name: azureDevOpsDimensionFieldMapEntry.fieldName,
+          __typename: 'ServiceField' as const,
+          name: azureDevOpsDimensionFieldMapEntry.fieldName ?? '',
           type: azureDevOpsDimensionFieldMapEntry.fieldType
         }
       }
       return {
+        __typename: 'ServiceField' as const,
         name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
         type: 'string'
       }
@@ -121,11 +139,13 @@ const EstimateStage: EstimateStageResolvers = {
         .load({teamId, dimensionName, nameWithOwner})
       if (githubFieldMap) {
         return {
-          name: githubFieldMap.labelTemplate,
+          __typename: 'ServiceField' as const,
+          name: githubFieldMap.labelTemplate ?? '',
           type: 'string'
         }
       }
       return {
+        __typename: 'ServiceField' as const,
         name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
         type: 'string'
       }
@@ -155,15 +175,66 @@ const EstimateStage: EstimateStageResolvers = {
         .load({teamId, dimensionName, projectId, providerId})
       if (gitlabFieldMap) {
         return {
-          name: gitlabFieldMap.labelTemplate,
+          __typename: 'ServiceField' as const,
+          name: gitlabFieldMap.labelTemplate ?? '',
           type: 'string'
         }
       }
       return {
+        __typename: 'ServiceField' as const,
         name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
         type: 'string'
       }
     }
+
+    if (service === 'linear') {
+      const {issueId, accessUserId} = integration
+
+      // Load issue from Linear API
+      const {dataLoader} = context
+      const auth = await dataLoader
+        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+        .load({service: 'linear', teamId, userId: accessUserId})
+
+      if (!auth?.accessToken) return NULL_FIELD
+
+      const manager = new LinearServerManager(auth, context, info)
+      const [issueData, issueError] = await manager.getIssue({id: issueId})
+      if (issueError) {
+        const userId = getUserId(authToken)
+        sendToSentry(issueError, {userId, tags: {teamId, id: issueId}})
+        return NULL_FIELD
+      }
+      const {issue} = issueData
+      if (!issue) return NULL_FIELD
+      const {
+        team: {id: linearTeamId},
+        project
+      } = issue
+      const linearProjectId = project?.id
+      if (!linearTeamId) return NULL_FIELD
+      const calcRepoId = LinearProjectId.join(linearTeamId, linearProjectId)
+
+      const dimensionName = await getDimensionName(meetingId)
+
+      const linearFieldMap = await dataLoader
+        .get('linearDimensionFieldMaps')
+        .load({teamId, dimensionName, repoId: calcRepoId})
+
+      if (linearFieldMap) {
+        return {
+          __typename: 'ServiceField' as const,
+          name: linearFieldMap.labelTemplate ?? '',
+          type: 'string'
+        }
+      }
+      return {
+        __typename: 'ServiceField' as const,
+        name: SprintPokerDefaults.SERVICE_FIELD_COMMENT,
+        type: 'string'
+      }
+    }
+
     return NULL_FIELD
   },
 

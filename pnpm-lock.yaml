@@ -1059,8 +1059,8 @@ importers:
         specifier: ^1.11.2
         version: 1.11.2
       nest-graphql-endpoint:
-        specifier: 0.8.1
-        version: 0.8.1(graphql@16.11.0)
+        specifier: ^0.8.3
+        version: 0.8.3(graphql@16.11.0)
       node-env-flag:
         specifier: 0.1.0
         version: 0.1.0
@@ -10593,8 +10593,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  nest-graphql-endpoint@0.8.1:
-    resolution: {integrity: sha512-l3P6qozmrSzId0o7CpnFHdbBleqFSsTwyIAyK6VB8MnzSR/IkugYiQnTCcCef0P+gI/UJnTSLBc3kRRjN5rWaw==}
+  nest-graphql-endpoint@0.8.3:
+    resolution: {integrity: sha512-CI3eYLBtmywFQp2x93Pvh4advy8eUqQ/fDTA3kxzVWEdu8bPSvfyWxUZ7PqGD3jHVNNQHpKzRRpF+Fti8wVVgQ==}
     peerDependencies:
       graphql: ^16
 
@@ -25919,7 +25919,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nest-graphql-endpoint@0.8.1(graphql@16.11.0):
+  nest-graphql-endpoint@0.8.3(graphql@16.11.0):
     dependencies:
       '@graphql-tools/schema': 10.0.23(graphql@16.11.0)
       '@graphql-tools/wrap': 10.0.35(graphql@16.11.0)

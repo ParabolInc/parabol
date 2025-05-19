@@ -6,6 +6,7 @@ import {
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import renderMarkdown from '../utils/renderMarkdown'
 import PokerEstimateHeaderCardContent, {
   PokerEstimateHeaderCardContentProps
 } from './PokerEstimateHeaderCardContent'
@@ -59,13 +60,23 @@ const getHeaderFields = (
         linkText: `#${workItemId}`
       }
     case '_xGitLabIssue':
-      const {iid, title, descriptionHtml, webUrl} = integration
+      const {iid, title: gitlabTitle, descriptionHtml, webUrl} = integration
       return {
-        cardTitle: title,
+        cardTitle: gitlabTitle,
         descriptionHTML: descriptionHtml ?? '',
         url: webUrl,
         linkTitle: `GitLab Issue #${iid}`,
         linkText: `#${iid}`
+      }
+    case '_xLinearIssue':
+      const {identifier, title: linearTitle, description, url} = integration
+      const linearDescHTML = renderMarkdown(description ?? '_no description found_')
+      return {
+        cardTitle: linearTitle,
+        descriptionHTML: linearDescHTML ?? '',
+        url: url,
+        linkTitle: `Linear Issue #${identifier}`,
+        linkText: `#${identifier}`
       }
   }
   return null
@@ -119,6 +130,13 @@ const PokerEstimateHeaderCard = (props: Props) => {
               title
               webUrl
               iid
+            }
+            ... on _xLinearIssue {
+              __typename
+              description
+              title
+              url
+              identifier
             }
           }
         }
