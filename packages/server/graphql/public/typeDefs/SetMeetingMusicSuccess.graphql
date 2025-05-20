@@ -1,0 +1,6 @@
+type SetMeetingMusicSuccess {
+  meetingId: ID!
+  trackSrc: String
+  isPlaying: Boolean!
+  timestamp: Float
+}

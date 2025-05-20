@@ -126,6 +126,9 @@ const subscription = graphql`
       StartDraggingReflectionPayload {
         ...StartDraggingReflectionMutation_meeting @relay(mask: false)
       }
+      SetMeetingMusicSuccess {
+        ...SetMeetingMusicMutation_meeting @relay(mask: false)
+      }
       SetTaskHighlightSuccess {
         ...SetTaskHighlightMutation_meeting @relay(mask: false)
       }
