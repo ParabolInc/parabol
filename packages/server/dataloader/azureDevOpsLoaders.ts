@@ -28,6 +28,7 @@ export interface AzureDevOpsAllUserWorkItemsKey {
   queryString: string | null
   projectKeyFilters: string[] | null
   isWIQL: boolean
+  limit?: number
 }
 
 export interface AzureDevOpsAccessibleOrgsKey {
@@ -197,7 +198,7 @@ export const azureDevOpsAllWorkItems = (parent: RootDataLoader) => {
   return new DataLoader<AzureDevOpsAllUserWorkItemsKey, AzureDevOpsWorkItem[] | Error, string>(
     async (keys) => {
       const results = await Promise.allSettled(
-        keys.map(async ({userId, teamId, queryString, projectKeyFilters, isWIQL}) => {
+        keys.map(async ({userId, teamId, queryString, projectKeyFilters, isWIQL, limit}) => {
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return new Error('Failed to fetch a new access token, try re-authenticating')
@@ -211,7 +212,8 @@ export const azureDevOpsAllWorkItems = (parent: RootDataLoader) => {
           const restResult = await manager.getAllUserWorkItems(
             queryString,
             projectKeyFilters,
-            isWIQL
+            isWIQL,
+            limit
           )
 
           const {error, workItems} = restResult

@@ -456,14 +456,14 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     })
   }
 
-  async executeWiqlQuery(instanceId: string, query: string) {
+  async executeWiqlQuery(instanceId: string, query: string, limit?: number) {
     return tracer.trace('AzureDevOpsServerManager.executeWiqlQuery', async () => {
       const workItemReferences = [] as WorkItemReference[]
       const payload = {
         query: query
       }
       const res = await this.post<WorkItemQueryResult>(
-        `https://${instanceId}/_apis/wit/wiql?api-version=6.0`,
+        `https://${instanceId}/_apis/wit/wiql?api-version=6.0${limit ? `&$top=${limit}` : ''}`,
         payload
       )
       if (res instanceof Error) {
@@ -486,7 +486,8 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     instanceId: string,
     queryString: string | null,
     projectKeyFilters: string[] | null,
-    isWIQL: boolean
+    isWIQL: boolean,
+    limit?: number
   ) {
     return tracer.trace('AzureDevOpsServerManager.getWorkItems', async () => {
       let projectFilter = ''
@@ -506,14 +507,15 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
         const queryFilter = queryString ? `AND [System.Title] contains '${queryString}'` : ''
         customQueryString = `Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] IN('User Story', 'Task', 'Issue', 'Bug', 'Feature', 'Epic') AND [State] <> 'Closed' ${queryFilter} ${projectFilter} AND [State] <> 'Removed' order by [Microsoft.VSTS.Common.Priority] asc, [System.CreatedDate] desc`
       }
-      return await this.executeWiqlQuery(instanceId, customQueryString)
+      return await this.executeWiqlQuery(instanceId, customQueryString, limit)
     })
   }
 
   async getAllUserWorkItems(
     queryString: string | null,
     projectKeyFilters: string[] | null,
-    isWIQL: boolean
+    isWIQL: boolean,
+    limit?: number
   ) {
     return tracer.trace('AzureDevOpsServerManager.getAllUserWorkItems', async () => {
       const allWorkItems = [] as WorkItem[]
@@ -535,7 +537,8 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
             instanceId,
             queryString,
             projectKeyFilters,
-            isWIQL
+            isWIQL,
+            limit
           )
           if (!!workItemsError) {
             if (!firstError) {
