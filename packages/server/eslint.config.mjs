@@ -21,6 +21,7 @@ export default [
       '**/generated/',
       '**/*/githubTypes.ts',
       '**/*/gitlabTypes.ts',
+      '**/*/linearTypes.ts',
       '**/*/resolverTypes.ts',
       '**/*/githubSchema.graphql',
       '**/*/gitlabSchema.graphql',

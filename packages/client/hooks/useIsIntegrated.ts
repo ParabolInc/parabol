@@ -9,6 +9,7 @@ type IntegrationLookup = {
   hasGitLab: boolean
   hasJiraServer: boolean
   hasAzureDevOps: boolean
+  hasLinear: boolean
 }
 
 graphql`
@@ -42,14 +43,22 @@ graphql`
     }
   }
 `
+graphql`
+  fragment useIsIntegratedLinearIntegration on LinearIntegration {
+    auth {
+      isActive
+    }
+  }
+`
 
 export const makePlaceholder = (integrationLookup: IntegrationLookup) => {
-  const {hasGitHub, hasAtlassian, hasGitLab, hasAzureDevOps} = integrationLookup
+  const {hasGitHub, hasAtlassian, hasGitLab, hasAzureDevOps, hasLinear} = integrationLookup
   const names = [] as string[]
   if (hasGitHub) names.push('GitHub')
   if (hasAtlassian) names.push('Jira')
   if (hasGitLab) names.push('GitLab')
   if (hasAzureDevOps) names.push('Azure DevOps')
+  if (hasLinear) names.push('Linear')
   return `Search ${names.join(' & ')}`
 }
 
@@ -72,6 +81,9 @@ export const useIsIntegrated = (integrationsRef?: useIsIntegrated_integrations$k
         azureDevOps {
           ...useIsIntegratedAzureDevOpsIntegration @relay(mask: false)
         }
+        linear {
+          ...useIsIntegratedLinearIntegration @relay(mask: false)
+        }
       }
     `,
     integrationsRef ?? null
@@ -79,19 +91,21 @@ export const useIsIntegrated = (integrationsRef?: useIsIntegrated_integrations$k
   if (!integrations) {
     return null
   }
-  const {atlassian, github, jiraServer, gitlab, azureDevOps} = integrations
+  const {atlassian, github, jiraServer, gitlab, azureDevOps, linear} = integrations
   const hasAtlassian = atlassian?.isActive ?? false
   const hasGitHub = github?.isActive ?? false
   const hasGitLab = gitlab?.auth?.isActive ?? false
   const hasJiraServer = jiraServer?.auth?.isActive ?? false
   const hasAzureDevOps = azureDevOps?.auth?.isActive ?? false
-  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps
+  const hasLinear = linear?.auth?.isActive ?? false
+  return hasAtlassian || hasGitHub || hasJiraServer || hasGitLab || hasAzureDevOps || hasLinear
     ? {
         hasAtlassian,
         hasGitHub,
         hasJiraServer,
         hasGitLab,
-        hasAzureDevOps
+        hasAzureDevOps,
+        hasLinear
       }
     : null
 }

@@ -1,0 +1,24 @@
+"""
+Represents the Linear integration details for a team member.
+"""
+type LinearIntegration {
+  """
+  The team member's authentication details for this integration
+  """
+  auth: TeamMemberIntegrationAuthOAuth2
+
+  """
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """
+  Composite key in linear:teamId:userId format
+  """
+  id: ID!
+
+  """
+  An historical list of Linear Sprint Poker search queries
+  """
+  linearSearchQueries: [LinearSearchQuery!]!
+}

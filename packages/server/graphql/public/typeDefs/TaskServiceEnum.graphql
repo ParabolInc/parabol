@@ -8,4 +8,5 @@ enum TaskServiceEnum {
   jiraServer
   gitlab
   azureDevOps
+  linear
 }
