@@ -7,13 +7,6 @@ export type AzureDevOpsIntegrationSource = {
   teamId: string
   userId: string
 }
-type WorkItemArgs = {
-  first: number
-  after?: string
-  queryString: string | null
-  projectKeyFilters: string[] | null
-  isWIQL: boolean
-}
 
 const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {
@@ -24,29 +17,45 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
 
   id: ({teamId, userId}) => `ado:${teamId}:${userId}`,
 
-  workItems: async ({teamId, userId}, args, {authToken, dataLoader}) => {
-    const {first, queryString, projectKeyFilters, isWIQL} = args as WorkItemArgs
+  workItems: async (
+    {teamId, userId},
+    {first, queryString, projectKeyFilters, isWIQL},
+    {authToken, dataLoader}
+  ) => {
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
       const err = new Error("Cannot access another team member's user stories")
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
       return connectionFromTasks([], 0, err)
     }
-    const allUserWorkItems = await dataLoader
-      .get('azureDevOpsAllWorkItems')
-      .load({teamId, userId, queryString, projectKeyFilters, isWIQL})
-    if (!allUserWorkItems) {
-      return connectionFromTasks([], 0, undefined)
-    } else {
-      const workItems = Array.from(
-        allUserWorkItems.map((userWorkItem) => {
-          return {
-            ...userWorkItem,
-            updatedAt: new Date()
-          }
-        })
+    try {
+      const allUserWorkItems = await dataLoader.get('azureDevOpsAllWorkItems').load({
+        teamId,
+        userId,
+        queryString: queryString ?? null,
+        projectKeyFilters,
+        isWIQL,
+        limit: first
+      })
+      if (allUserWorkItems instanceof Error) {
+        return connectionFromTasks([], 0, allUserWorkItems)
+      } else {
+        const workItems = Array.from(
+          allUserWorkItems.map((userWorkItem) => {
+            return {
+              ...userWorkItem,
+              updatedAt: new Date()
+            }
+          })
+        )
+        return connectionFromTasks(workItems, first, undefined)
+      }
+    } catch (error) {
+      return connectionFromTasks(
+        [],
+        0,
+        error instanceof Error ? error : new Error('Failed to fetch work items')
       )
-      return connectionFromTasks(workItems, first, undefined)
     }
   },
 

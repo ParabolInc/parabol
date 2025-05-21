@@ -183,21 +183,23 @@ const ScopePhaseArea = (props: Props) => {
     <div
       className={`flex flex-col rounded-lg bg-white ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-md`}
     >
-      <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded max-w-full overflow-hidden overflow-x-auto shadow-[inset_0_-1px_0_#C3C0D8]'>
-        <Tabs activeIdx={activeIdx}>
-          {tabs.map((tab, idx) => (
-            <Tab
-              key={tab.label}
-              label={
-                <div className='flex min-w-20 items-center justify-center whitespace-nowrap'>
-                  <div className='mx-1 h-6 w-6'>{tab.icon}</div>
-                  {tab.label}
-                </div>
-              }
-              onClick={() => selectIdx(idx)}
-            />
-          ))}
-        </Tabs>
+      <div className='max-w-full'>
+        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-b border-solid border-slate-300'>
+          <Tabs activeIdx={activeIdx} className='max-w-sm'>
+            {tabs.map((tab, idx) => (
+              <Tab
+                key={tab.label}
+                label={
+                  <div className='flex min-w-20 items-center justify-center whitespace-nowrap'>
+                    <div className='mx-1 h-6 w-6'>{tab.icon}</div>
+                    {tab.label}
+                  </div>
+                }
+                onClick={() => selectIdx(idx)}
+              />
+            ))}
+          </Tabs>
+        </div>
       </div>
       <SwipeableViews
         enableMouseEvents={false} // disable because this works even if a modal is on top of it

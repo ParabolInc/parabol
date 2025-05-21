@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.4.1](https://github.com/ParabolInc/parabol/compare/v10.4.0...v10.4.1) (2025-05-21)
+
+
+### Fixed
+
+* limit the Azure DevOps work items fetched ([#11345](https://github.com/ParabolInc/parabol/issues/11345)) ([6a11049](https://github.com/ParabolInc/parabol/commit/6a110495ab9839bc09b9e26a7687137cf7278269))
+* ScopePhaseArea styling ([#11349](https://github.com/ParabolInc/parabol/issues/11349)) ([d8fcdd0](https://github.com/ParabolInc/parabol/commit/d8fcdd0daa567c1d6733f32cf34e318af6db6927))
+
+
+### Changed
+
+* Remove leftover debug output ([#11346](https://github.com/ParabolInc/parabol/issues/11346)) ([a5254ab](https://github.com/ParabolInc/parabol/commit/a5254abfa7de0f4ca2476203e5ee22b449e64b7b))
+
 ## [10.4.0](https://github.com/ParabolInc/parabol/compare/v10.3.6...v10.4.0) (2025-05-16)
 
 
