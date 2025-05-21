@@ -1,5 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
@@ -18,6 +19,7 @@ import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings, selectNotifications, selectTasks} from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
+import {feistelCipher} from '../../../utils/feistelCipher'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
@@ -847,7 +849,13 @@ const User: ReqResolvers<'User'> = {
   },
   billingTier: ({tier}) => tier,
   pageInsights,
-  aiPrompts
+  aiPrompts,
+  page: async (_source, {pageId}, {dataLoader}) => {
+    const dbId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
+    const page = await dataLoader.get('pages').load(dbId)
+    if (!page) throw new GraphQLError('Page not found')
+    return page
+  }
 }
 
 export default User

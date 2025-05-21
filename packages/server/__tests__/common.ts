@@ -98,6 +98,12 @@ const SIGNUP_WITH_PASSWORD_MUTATION = `
         picture
         preferredName
         createdAt
+        teams {
+          id
+        }
+        organizations {
+          id
+        }
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
@@ -145,14 +151,18 @@ export const signUpWithEmail = async (emailInput: string) => {
       }
     }
   })
-  const userId = signUp.data.signUpWithPassword.user.id
-  const authToken = signUp.data.signUpWithPassword.authToken
-
+  const {signUpWithPassword} = signUp.data
+  const {authToken, user} = signUpWithPassword
+  const {id: userId, teams, organizations} = user
+  const teamId = teams[0]!.id
+  const orgId = organizations[0]!.id
   return {
     userId,
     email,
     password,
-    authToken
+    authToken,
+    teamId,
+    orgId
   }
 }
 

@@ -516,4 +516,6 @@ type User {
     """
     before: DateTime!
   ): MeetingConnection!
+
+  page(pageId: ID!): Page!
 }
