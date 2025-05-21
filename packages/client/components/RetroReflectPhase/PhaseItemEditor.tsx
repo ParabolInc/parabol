@@ -153,7 +153,7 @@ const PhaseItemEditor = (props: Props) => {
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
-      placeholder: 'My reflection… (press enter to add)',
+      placeholder: 'Add your reflection and press enter.\n\nTry /image for gifs or : for emoji',
       teamId,
       readOnly: !!readOnly,
       onEnter: handleSubmit
@@ -250,7 +250,7 @@ const PhaseItemEditor = (props: Props) => {
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
         <TipTapEditor
           className={cn(
-            'flex max-h-41 min-h-6 overflow-auto px-4 pt-3',
+            'flex max-h-41 min-h-[6rem] overflow-auto px-4 pt-3',
             disableAnonymity ? 'pb-0' : 'pb-3'
           )}
           editor={editor}
