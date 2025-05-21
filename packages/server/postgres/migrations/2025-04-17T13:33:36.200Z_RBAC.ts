@@ -74,13 +74,31 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('role', sql`"PageRoleEnum"`, (col) => col.notNull())
       .execute(),
     db.schema
+      .createTable('PageUserSortOrder')
+      .addColumn('pageId', 'serial', (col) =>
+        col.references('Page.id').onDelete('cascade').notNull()
+      )
+      .addColumn('userId', 'varchar(100)', (col) =>
+        col.references('User.id').onDelete('cascade').notNull()
+      )
+      .addColumn('sortOrder', 'varchar(128)', (col) => col.modifyFront(sql`COLLATE pg_catalog."C"`))
+      .addPrimaryKeyConstraint('PageUserSortOrder_pk', ['pageId', 'userId'])
+      .execute(),
+    db.schema
       .alterTable('Page')
       .addColumn('parentPageId', 'integer', (col) => col.references('Page.id').onDelete('cascade'))
       .addColumn('isParentLinked', 'boolean', (col) => col.defaultTo(true).notNull())
       .addColumn('teamId', 'varchar(100)', (col) => col.references('Team.id').onDelete('cascade'))
       .addColumn('isPrivate', 'boolean', (col) => col.defaultTo(true).notNull())
+      .addColumn('sortOrder', 'varchar(128)', (col) => col.modifyFront(sql`COLLATE pg_catalog."C"`))
       .execute()
   ])
+
+  await db.updateTable('Page').set({sortOrder: ' '}).execute()
+  await db.schema
+    .alterTable('Page')
+    .alterColumn('sortOrder', (ab) => ab.setNotNull())
+    .execute()
 
   await Promise.all([
     db.schema
@@ -125,6 +143,16 @@ export async function up(db: Kysely<any>): Promise<void> {
       .execute(),
     db.schema.createIndex('idx_PageAccess_userId').on('PageAccess').column('userId').execute(),
     db.schema.createIndex('idx_PageAccess_pageId').on('PageAccess').column('pageId').execute(),
+    db.schema
+      .createIndex('idx_PageUserSortOrder_userId')
+      .on('PageUserSortOrder')
+      .column('userId')
+      .execute(),
+    db.schema
+      .createIndex('idx_PageUserSortOrder_pageId')
+      .on('PageUserSortOrder')
+      .column('pageId')
+      .execute(),
     db.schema.createIndex('idx_Page_parentPageId').on('Page').column('parentPageId').execute(),
     db.schema
       .createIndex('idx_Page_teamId')
@@ -550,25 +578,92 @@ CREATE OR REPLACE TRIGGER trg_remove_access_on_del_page
 AFTER DELETE ON "Page"
 FOR EACH ROW
 EXECUTE FUNCTION "removeAccessOnDeletePage"();
+
+-- Fractional Indexing helper
+CREATE OR REPLACE FUNCTION position_before(pos text)
+RETURNS text AS $$
+DECLARE
+  i int;
+  cur_char text;
+  cur_code int;
+  result text;
+BEGIN
+  FOR i IN reverse length(pos)..1 LOOP
+    cur_char := substr(pos, i, 1);
+    cur_code := ascii(cur_char);
+
+    IF cur_code > 33 THEN  -- START_CHAR_CODE + 1
+      RETURN substr(pos, 1, i - 1) || chr(cur_code - 1);
+    END IF;
+  END LOOP;
+
+  -- fallback: shorten pos and append two chars
+  result := substr(pos, 1, length(pos) - 1) || chr(32) || chr(126);
+  RETURN result;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Create shared sortOrder
+CREATE OR REPLACE FUNCTION "addSharedPageSortOrder"() RETURNS TRIGGER AS $$
+DECLARE
+  "_wasShared" BOOLEAN := (OLD."teamId" IS NULL AND OLD."parentPageId" IS NULL AND OLD."isPrivate" = false);
+  "_isShared" BOOLEAN := (NEW."teamId" IS NULL AND NEW."parentPageId" IS NULL AND NEW."isPrivate" = false);
+  "_userId" VARCHAR;
+BEGIN
+  IF "_wasShared" != "_isShared" THEN
+    IF "_isShared" THEN
+      FOR "_userId" IN
+        SELECT "userId"
+        FROM "PageAccess"
+        WHERE "pageId" = NEW."id"
+      LOOP
+        INSERT INTO "PageUserSortOrder" ("userId", "pageId", "sortOrder")
+        VALUES (
+          "_userId",
+          NEW.id,
+          position_before(
+            COALESCE(
+              (SELECT "sortOrder"
+              FROM "PageUserSortOrder"
+              WHERE "userId" = "_userId"
+              ORDER BY "sortOrder"
+              LIMIT 1),
+              ' '
+            )
+          )
+        );
+      END LOOP;
+    ELSE
+      DELETE FROM "PageUserSortOrder" WHERE "pageId" = NEW.id;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trg_page_shared_sort_order
+AFTER UPDATE OF "teamId", "parentPageId", "isPrivate" ON "Page"
+FOR EACH ROW
+EXECUTE FUNCTION "addSharedPageSortOrder"();
 `.execute(db)
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await Promise.all([
-    db.schema.dropTable('PageExternalAccess').ifExists().execute(),
-    db.schema.dropTable('PageUserAccess').ifExists().execute(),
-    db.schema.dropTable('PageTeamAccess').ifExists().execute(),
-    db.schema.dropTable('PageOrganizationAccess').ifExists().execute(),
-    db.schema.dropTable('PageAccess').ifExists().execute(),
-    db.schema
-      .alterTable('Page')
-      .dropColumn('parentPageId')
-      .dropColumn('isParentLinked')
-      .dropColumn('teamId')
-      .dropColumn('isPrivate')
-      .execute()
-  ])
   await sql`
+    DROP TABLE IF EXISTS "PageExternalAccess";
+    DROP TABLE IF EXISTS "PageUserAccess";
+    DROP TABLE IF EXISTS "PageTeamAccess";
+    DROP TABLE IF EXISTS "PageOrganizationAccess";
+    DROP TABLE IF EXISTS "PageAccess";
+    DROP TABLE IF EXISTS "PageUserSortOrder";
+    ALTER TABLE "Page"
+      DROP COLUMN IF EXISTS "parentPageId" CASCADE,
+      DROP COLUMN IF EXISTS "isParentLinked" CASCADE,
+      DROP COLUMN IF EXISTS "teamId" CASCADE,
+      DROP COLUMN IF EXISTS "isPrivate" CASCADE,
+      DROP COLUMN IF EXISTS "sortOrder" CASCADE;
+    DROP TYPE IF EXISTS "PageRoleEnum" CASCADE;
+    DROP TRIGGER IF EXISTS "trg_page_shared_sort_order" ON "Page";
     DROP TRIGGER IF EXISTS "trg_remove_access_on_del_page" ON "Page";
     DROP TRIGGER IF EXISTS "trg_add_access_on_new_page" ON "Page";
     DROP TRIGGER IF EXISTS "trg_promote_external_access" ON "User";
@@ -590,6 +685,8 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP FUNCTION IF EXISTS "updateExternalPageAccess";
     DROP FUNCTION IF EXISTS "updateTeamPageAccessByTeamMember";
     DROP FUNCTION IF EXISTS "removePageAccessOnTeamArchive";
+    DROP FUNCTION IF EXISTS "position_before";
+    DROP FUNCTION IF EXISTS "addSharedPageSortOrder";
     DROP FUNCTION IF EXISTS "updateOrgPageAccessByOrgUser";`.execute(db)
   await db.schema.dropType('PageRoleEnum').ifExists().execute()
 }

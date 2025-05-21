@@ -315,6 +315,7 @@ export const selectPages = () =>
     'isParentLinked',
     'isPrivate',
     'parentPageId',
+    'sortOrder',
     'teamId',
     'title',
     'updatedAt',

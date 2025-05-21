@@ -13,4 +13,5 @@ type Page {
   team: Team
   isParentLinked: Boolean!
   isPrivate: Boolean!
+  sortOrder: String!
 }
