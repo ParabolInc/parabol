@@ -2,7 +2,7 @@ import {memo} from 'react'
 
 const JiraServerSVG = memo(() => {
   return (
-    <svg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'>
+    <svg width='24' height='24' viewBox='4 4 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
       <path
         d='M26.9143 15.337L16.5718 4.99448L15.5773 4L7.82044 11.7569L4.27348 15.3039C3.90884 15.6685 3.90884 16.2652 4.27348 16.663L11.3674 23.7569L15.5773 28L23.3342 20.2431L23.4668 20.1105L26.9143 16.663C27.279 16.2983 27.279 15.7017 26.9143 15.337ZM15.5773 19.547L12.0304 16L15.5773 12.453L19.1243 16L15.5773 19.547Z'
         fill='#2684FF'
