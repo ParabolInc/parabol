@@ -7,13 +7,18 @@ import {SubPages} from './SubPages'
 
 interface Props {
   parentPageId: string
+  depth: number
 }
 
 export const SubPagesRoot = (props: Props) => {
-  const {parentPageId} = props
+  const {parentPageId, depth} = props
   const queryRef = useQueryLoaderNow<SubPagesQuery>(query, {
     parentPageId
   })
 
-  return <Suspense fallback={<Loader />}>{queryRef && <SubPages queryRef={queryRef} />}</Suspense>
+  return (
+    <Suspense fallback={<Loader />}>
+      {queryRef && <SubPages queryRef={queryRef} depth={depth} />}
+    </Suspense>
+  )
 }

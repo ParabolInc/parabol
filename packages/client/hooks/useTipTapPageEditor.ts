@@ -117,6 +117,7 @@ export const useTipTapPageEditor = (
     })
     nextProvider.on('synced', () => {
       const docBlock = frag.get(0)
+      if (!docBlock) return
       const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
       updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
     })

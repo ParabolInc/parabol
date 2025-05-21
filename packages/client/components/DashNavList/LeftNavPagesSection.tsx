@@ -25,7 +25,7 @@ export const LeftNavPagesSection = (props: Props) => {
       </div>
       {pageArray.map((page) => {
         const {id} = page
-        return <LeftNavPageLink key={id} pageRef={page} />
+        return <LeftNavPageLink key={id} pageRef={page} depth={0} />
       })}
     </div>
   )

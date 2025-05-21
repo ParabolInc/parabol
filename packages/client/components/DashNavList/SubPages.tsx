@@ -20,10 +20,11 @@ graphql`
 `
 interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
+  depth: number
 }
 
 export const SubPages = (props: Props) => {
-  const {queryRef} = props
+  const {depth, queryRef} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {pages} = viewer
@@ -37,7 +38,7 @@ export const SubPages = (props: Props) => {
       {edges.map((edge) => {
         const {node} = edge
         const {id} = node
-        return <LeftNavPageLink key={id} pageRef={node} />
+        return <LeftNavPageLink key={id} pageRef={node} depth={depth + 1} />
       })}
     </div>
   )
