@@ -12,8 +12,10 @@ const connectionFromTasks = <T extends {updatedAt: Date} = Task>(
     node
   }))
   const firstEdge = edges[0]
+  // If we return a real error, yoga will thow and mask it
+  const sanitizedError = error instanceof Error ? {message: error.message} : error
   return {
-    error,
+    error: sanitizedError,
     edges,
     pageInfo: {
       startCursor: firstEdge && firstEdge.cursor,
