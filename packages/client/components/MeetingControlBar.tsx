@@ -78,6 +78,7 @@ const MeetingControlBar = (props: Props) => {
         ...BottomControlBarReady_meeting @relay(mask: false)
         ...BottomControlBarTips_meeting
         ...StageTimerControl_meeting
+        ...BottomControlBarMusic_meeting
         id
         endedAt
         facilitatorStageId
@@ -170,7 +171,13 @@ const MeetingControlBar = (props: Props) => {
           }
           switch (key) {
             case 'music':
-              return <BottomControlBarMusic {...tranProps} isFacilitator={isFacilitating} />
+              return (
+                <BottomControlBarMusic
+                  {...tranProps}
+                  isFacilitator={isFacilitating}
+                  meeting={meeting}
+                />
+              )
             case 'tips':
               return (
                 <BottomControlBarTips
