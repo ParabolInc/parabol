@@ -56,7 +56,6 @@ graphql`
         name
         ...DashNavList_organization
       }
-      ...DashNavListTeam
       ...PublicTeamsFrag_team
     }
     meeting {

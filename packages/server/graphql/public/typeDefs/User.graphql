@@ -517,5 +517,23 @@ type User {
     before: DateTime!
   ): MeetingConnection!
 
+  """
+  A single page accessible by the User
+  """
   page(pageId: ID!): Page!
+  """
+  All the pages accessible by a user
+  """
+  pages(
+    parentPageId: ID
+    teamId: ID
+    """
+    The first n records to return
+    """
+    first: Int!
+    """
+    The pagination cursor, if any
+    """
+    after: DateTime
+  ): PageConnection!
 }

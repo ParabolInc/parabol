@@ -63,7 +63,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
-    updatePageAccess: hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
+    updatePageAccess: and(
+      hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
+      // limit looking up users by email
+      rateLimit({perMinute: 50, perHour: 100})
+    ),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },

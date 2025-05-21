@@ -313,12 +313,13 @@ export const selectPages = () =>
     'createdAt',
     'id',
     'isParentLinked',
+    'isPrivate',
     'parentPageId',
     'sortOrder',
     'teamId',
     'title',
     'updatedAt',
-    'userId'
+    'Page.userId'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
