@@ -12,4 +12,5 @@ type Page {
   parentPage: Page
   team: Team
   isParentLinked: Boolean!
+  sortOrder: String!
 }
