@@ -323,7 +323,6 @@ export const allAzureDevOpsProjects = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const resultReferences = [] as TeamProjectReference[]
           const auth = await parent.get('freshAzureDevOpsAuth').load({teamId, userId})
           if (!auth) {
             return []
@@ -341,6 +340,7 @@ export const allAzureDevOpsProjects = (parent: RootDataLoader) => {
             Logger.log(error)
             return []
           }
+          const resultReferences = [] as TeamProjectReference[]
           if (projects !== null) resultReferences.push(...projects)
           return resultReferences.map((project) => {
             const instanceId = getInstanceId(project.url)

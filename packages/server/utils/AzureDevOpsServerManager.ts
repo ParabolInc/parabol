@@ -423,7 +423,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const {instanceId, projectKey} = integration
     const comment = makeCreateAzureTaskComment(viewerName, assigneeName, teamName, teamDashboardUrl)
     const res = await this.post<WorkItemAddCommentResponse>(
-      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${issueId}/comments?api-version=7.1-preview.3`,
+      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${issueId}/comments?api-version=7.1`,
       {text: comment}
     )
     return res instanceof Error ? res : res.url
@@ -433,7 +433,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     return tracer.trace('AzureDevOpsServerManager.getWorkItemData', async () => {
       const workItems = [] as WorkItem[]
       let firstError: Error | undefined
-      const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1-preview.1`
+      const uri = `https://${instanceId}/_apis/wit/workitemsbatch?api-version=7.1`
       // we can fetch at most 200 items at once VS403474
       for (let i = 0; i < workItemIds.length; i += 200) {
         const ids = workItemIds.slice(i, i + 200)
@@ -569,7 +569,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     let azureDevOpsUser: AzureDevOpsUser | undefined
     let firstError: Error | undefined
     const result = await this.get<AzureDevOpsUser>(
-      `https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.1-preview.3`
+      `https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.1`
     )
 
     if (result instanceof Error) {
@@ -584,7 +584,6 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
   async getAllUserProjects() {
     return tracer.trace('AzureDevOpsServerManager.getAllUserProjects', async () => {
-      const teamProjectReferences = [] as TeamProjectReference[]
       let firstError: Error | undefined
       const meResult = await this.getMe()
       const {error: meError, azureDevOpsUser} = meResult
@@ -594,6 +593,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
       if (!!accessibleError) return {error: accessibleError, projects: null}
 
+      const teamProjectReferences = [] as TeamProjectReference[]
       for (const resource of accessibleOrgs) {
         const {error: accountProjectsError, accountProjects} = await this.getAccountProjects(
           resource.accountName
@@ -669,7 +669,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const teamProjectReferences = [] as TeamProjectReference[]
     let firstError: Error | undefined
     const result = await this.get<AccountProjects>(
-      `https://dev.azure.com/${accountName}/_apis/projects?api-version=7.1-preview.4`
+      `https://dev.azure.com/${accountName}/_apis/projects?api-version=7.1`
     )
     if (result instanceof Error) {
       if (!firstError) {
@@ -690,7 +690,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     const accessibleOrgs = [] as Resource[]
     let firstError: Error | undefined
     const result = await this.get<AccessibleResources>(
-      `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userAccountId}&api-version=7.1-preview.1`
+      `https://app.vssps.visualstudio.com/_apis/accounts?memberId=${userAccountId}&api-version=7.1`
     )
 
     if (result instanceof Error) {
@@ -755,7 +755,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     <div>Powered by <a href='${ExternalLinks.GETTING_STARTED_SPRINT_POKER}'>Parabol</a></div>`
 
     const res = await this.post<WorkItemAddCommentResponse>(
-      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${remoteIssueId}/comments?api-version=7.1-preview.3`,
+      `https://${instanceId}/${projectKey}/_apis/wit/workItems/${remoteIssueId}/comments?api-version=7.1`,
       {
         text: comment
       }
@@ -776,7 +776,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     projectKey: string
   ) {
     return await this.patch<WorkItemAddFieldResponse>(
-      `https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1-preview.3`,
+      `https://${instanceId}/${projectKey}/_apis/wit/workitems/${remoteIssueId}?api-version=7.1`,
       [
         {
           op: 'add',
