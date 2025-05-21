@@ -29,16 +29,14 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
       return connectionFromTasks([], 0, err)
     }
     try {
-      const allUserWorkItems = await dataLoader
-        .get('azureDevOpsAllWorkItems')
-        .load({
-          teamId,
-          userId,
-          queryString: queryString ?? null,
-          projectKeyFilters,
-          isWIQL,
-          limit: first
-        })
+      const allUserWorkItems = await dataLoader.get('azureDevOpsAllWorkItems').load({
+        teamId,
+        userId,
+        queryString: queryString ?? null,
+        projectKeyFilters,
+        isWIQL,
+        limit: first
+      })
       if (allUserWorkItems instanceof Error) {
         return connectionFromTasks([], 0, allUserWorkItems)
       } else {
