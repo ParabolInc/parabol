@@ -9,31 +9,17 @@ import {useFragment} from 'react-relay'
 import {BottomControlBarMusic_meeting$key} from '~/__generated__/BottomControlBarMusic_meeting.graphql'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useMeetingMusicSync, {Track} from '../hooks/useMeetingMusicSync'
+import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
 
-const meetingFragment = graphql`
-  fragment BottomControlBarMusic_meeting on NewMeeting {
-    id
-    facilitatorUserId
-    musicSettings {
-      trackSrc
-      isPlaying
-      volume
-    }
-  }
-`
-
 interface Props {
-  isFacilitator: boolean
   status?: TransitionStatus
   onTransitionEnd?: () => void
-  meeting?: BottomControlBarMusic_meeting$key
+  meeting: BottomControlBarMusic_meeting$key | null
 }
 
 const BottomControlBarMusic = ({
-  isFacilitator,
   status = TransitionStatus.ENTERED,
   onTransitionEnd,
   meeting: meetingRef
@@ -45,9 +31,22 @@ const BottomControlBarMusic = ({
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const meeting = useFragment(meetingFragment, meetingRef ?? null)
-  const meetingId = meeting?.id
-  const isMeetingFacilitator = meeting?.facilitatorUserId === viewerId
+  const meeting = useFragment(
+    graphql`
+      fragment BottomControlBarMusic_meeting on NewMeeting {
+        id
+        facilitatorUserId
+        musicSettings {
+          trackSrc
+          isPlaying
+          volume
+        }
+      }
+    `,
+    meetingRef
+  )
+
+  const isFacilitator = meeting?.facilitatorUserId === viewerId
 
   const {
     playTrack,
@@ -60,8 +59,19 @@ const BottomControlBarMusic = ({
     volume,
     availableTracks
   } = useMeetingMusicSync({
-    meeting,
-    isFacilitator: isMeetingFacilitator
+    meeting: meeting
+      ? {
+          id: meeting.id,
+          facilitatorUserId: meeting.facilitatorUserId,
+          musicSettings: meeting.musicSettings
+            ? {
+                trackSrc: meeting.musicSettings.trackSrc ?? null,
+                isPlaying: meeting.musicSettings.isPlaying ?? null,
+                volume: meeting.musicSettings.volume ?? null
+              }
+            : null
+        }
+      : null
   })
 
   const playEnabled = !!currentTrackSrc && !isPlaying
@@ -118,7 +128,7 @@ const BottomControlBarMusic = ({
                   availableTracks.length > 3 ? 'max-h-[200px] pr-1 pb-4' : ''
                 )}
               >
-                {availableTracks.map((track: Track) => {
+                {availableTracks.map((track) => {
                   const isSelected = currentTrackSrc === track.src
                   const isCurrentlyPlaying = isSelected && isPlaying
 
@@ -126,10 +136,8 @@ const BottomControlBarMusic = ({
                     <button
                       key={track.src}
                       onClick={() => {
-                        if (isSelected && isPlaying) {
+                        if (isSelected) {
                           pause()
-                        } else if (isSelected && !isPlaying) {
-                          playTrack(track.src)
                         } else {
                           selectTrack(track.src)
                         }
@@ -144,13 +152,6 @@ const BottomControlBarMusic = ({
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>
-                      {isSelected && (
-                        <span
-                          className={`text-xs ${isCurrentlyPlaying ? 'text-green-500' : 'text-blue-500'}`}
-                        >
-                          {isCurrentlyPlaying ? 'Playing' : 'Selected'}
-                        </span>
-                      )}
                     </button>
                   )
                 })}
@@ -226,7 +227,7 @@ const BottomControlBarMusic = ({
               />
             </div>
 
-            {!isMeetingFacilitator && (
+            {!isFacilitator && (
               <div className='text-gray-600 mt-2 text-center text-xs italic'>
                 Note: Only the facilitator can control music for everyone
               </div>

@@ -18,21 +18,15 @@ export const availableTracks: Track[] = [
 ]
 
 interface MeetingMusicSyncProps {
-  meeting:
-    | {
-        id: string
-        musicSettings?:
-          | {
-              trackSrc: string | null | undefined
-              isPlaying: boolean | null | undefined
-              volume: number | null | undefined
-            }
-          | null
-          | undefined
-      }
-    | null
-    | undefined
-  isFacilitator: boolean
+  meeting: {
+    id: string
+    facilitatorUserId: string
+    musicSettings?: {
+      trackSrc: string | null
+      isPlaying: boolean | null
+      volume: number | null
+    } | null
+  } | null
 }
 
 const subscription = graphql`
@@ -50,10 +44,12 @@ const subscription = graphql`
 `
 
 const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
-  const {meeting, isFacilitator} = props
+  const {meeting} = props
   const atmosphere = useAtmosphere()
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const {viewerId} = atmosphere
   const meetingId = meeting?.id
+  const isFacilitator = meeting?.facilitatorUserId === viewerId
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
@@ -238,19 +234,6 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     [atmosphere, meetingId, isFacilitator]
   )
 
-  const playTrack = useCallback(
-    (trackSrc: string) => {
-      setCurrentTrackSrc(trackSrc)
-      setIsPlaying(true)
-      setPausedAt(null)
-
-      if (isFacilitator) {
-        syncMusicState(trackSrc, true)
-      }
-    },
-    [syncMusicState, isFacilitator]
-  )
-
   const pause = useCallback(() => {
     if (audioRef.current) {
       setPausedAt(audioRef.current.currentTime)
@@ -271,6 +254,23 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       syncMusicState(null, false)
     }
   }, [syncMusicState, isFacilitator])
+
+  const playTrack = useCallback(
+    (trackSrc: string) => {
+      if (trackSrc === currentTrackSrc && pausedAt !== null) {
+        setIsPlaying(true)
+      } else {
+        setCurrentTrackSrc(trackSrc)
+        setIsPlaying(true)
+        setPausedAt(null)
+      }
+
+      if (isFacilitator) {
+        syncMusicState(trackSrc, true)
+      }
+    },
+    [currentTrackSrc, pausedAt, syncMusicState, isFacilitator]
+  )
 
   const selectTrack = useCallback(
     (trackSrc: string) => {
