@@ -23,6 +23,7 @@ import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutat
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -184,7 +185,27 @@ const updateHandlers = {
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
-  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater
+  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater,
+  SetMeetingMusicSuccess: ((payload, {store}) => {
+    const meetingId = payload.getValue('meetingId')
+    const trackSrc = payload.getValue('trackSrc')
+    const isPlaying = payload.getValue('isPlaying')
+    const timestamp = payload.getValue('timestamp')
+    console.log('🚀 ~ timestamp <><><><><><><:', timestamp)
+
+    const meeting = store.get(meetingId)
+    if (!meeting) return
+
+    let musicSettings = meeting.getLinkedRecord('musicSettings')
+    if (!musicSettings) {
+      musicSettings = store.create(meetingId + '.musicSettings', 'MusicSettings')
+      meeting.setLinkedRecord(musicSettings, 'musicSettings')
+    }
+
+    musicSettings.setValue(trackSrc, 'trackSrc')
+    musicSettings.setValue(isPlaying, 'isPlaying')
+    musicSettings.setValue(timestamp, 'timestamp')
+  }) as SharedUpdater<any>
 } as const
 
 const MeetingSubscription = (

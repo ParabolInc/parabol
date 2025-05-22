@@ -1,16 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {Environment} from 'relay-runtime'
+import {SetMeetingMusicMutation as TSetMeetingMusicMutation} from '../__generated__/SetMeetingMusicMutation.graphql'
 import {StandardMutation} from '../types/relayMutations'
-
-graphql`
-  fragment SetMeetingMusicMutation_meeting on SetMeetingMusicSuccess {
-    meetingId
-    trackSrc
-    isPlaying
-    timestamp
-  }
-`
 
 const mutation = graphql`
   mutation SetMeetingMusicMutation(
@@ -35,16 +27,42 @@ const mutation = graphql`
   }
 `
 
-const SetMeetingMusicMutation: StandardMutation<any> = (
+graphql`
+  fragment SetMeetingMusicMutation_meeting on SetMeetingMusicSuccess {
+    meetingId
+    trackSrc
+    isPlaying
+    timestamp
+  }
+`
+
+const SetMeetingMusicMutation: StandardMutation<TSetMeetingMusicMutation> = (
   atmosphere: Environment,
   variables,
   {onError, onCompleted}
 ) => {
-  return commitMutation<any>(atmosphere, {
+  return commitMutation<TSetMeetingMusicMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
-    onError
+    onError,
+    optimisticUpdater: (store) => {
+      const {meetingId, trackSrc, isPlaying} = variables
+      console.log('🚀 ~ variables___:', variables)
+
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+
+      let musicSettings = meeting.getLinkedRecord('musicSettings')
+      if (!musicSettings) {
+        musicSettings = store.create(meetingId + '.musicSettings', 'MusicSettings')
+        meeting.setLinkedRecord(musicSettings, 'musicSettings')
+      }
+
+      musicSettings.setValue(trackSrc, 'trackSrc')
+      musicSettings.setValue(isPlaying, 'isPlaying')
+      musicSettings.setValue(variables.timestamp, 'timestamp')
+    }
   })
 }
 

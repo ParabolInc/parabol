@@ -4,13 +4,12 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
-import {useRef, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {BottomControlBarMusic_meeting$key} from '~/__generated__/BottomControlBarMusic_meeting.graphql'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useBackgroundMusicManager, {availableTracks, Track} from '../hooks/useBackgroundMusicManager'
-import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
+import useMeetingMusicSync, {Track} from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
 
@@ -18,6 +17,11 @@ const meetingFragment = graphql`
   fragment BottomControlBarMusic_meeting on NewMeeting {
     id
     facilitatorUserId
+    musicSettings {
+      trackSrc
+      isPlaying
+      volume
+    }
   }
 `
 
@@ -41,27 +45,44 @@ const BottomControlBarMusic = ({
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
+  console.log('🚀 ~ viewerId:_____', viewerId)
   const meeting = useFragment(meetingFragment, meetingRef ?? null)
   const meetingId = meeting?.id
   const isMeetingFacilitator = meeting?.facilitatorUserId === viewerId
 
-  const localAudioManager = useBackgroundMusicManager({
-    initialTrackUrl: null,
-    initialIsPlaying: false,
-    initialVolume: 0.5
+  console.log('[MusicComponent] Meeting data:', {
+    meetingId,
+    isMeetingFacilitator,
+    musicSettings: meeting?.musicSettings
   })
 
-  const syncedAudioManager = useMeetingMusicSync({
-    meetingId: meetingId ?? '',
-    isFacilitator: isMeetingFacilitator ?? false
+  // Use our combined music hook for all audio management
+  const {
+    playTrack,
+    pause,
+    stop,
+    setVolume,
+    selectTrack,
+    currentTrackSrc,
+    isPlaying,
+    volume,
+    availableTracks
+  } = useMeetingMusicSync({
+    meetingId: meetingId || '',
+    isFacilitator: isMeetingFacilitator
   })
 
-  const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
-    isMeetingFacilitator ? syncedAudioManager : localAudioManager
+  // Debug: log state changes
+  useEffect(() => {
+    console.log('[DEBUG] MusicState:', {
+      currentTrackSrc,
+      isPlaying,
+      isMeetingFacilitator
+    })
+  }, [currentTrackSrc, isPlaying, isMeetingFacilitator])
 
   const playEnabled = !!currentTrackSrc && !isPlaying
   const stopEnabled = !!currentTrackSrc && isPlaying
-
   const showFade = availableTracks.length > 3 && !atBottom
 
   const handleScroll = () => {
@@ -69,6 +90,13 @@ const BottomControlBarMusic = ({
     if (!el) return
     setAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
   }
+
+  const handleVolumeChange = useCallback(
+    (newVolume: number) => {
+      setVolume(newVolume)
+    },
+    [setVolume]
+  )
 
   return (
     <RadixPopover.Root open={open} onOpenChange={setOpen}>
@@ -106,28 +134,52 @@ const BottomControlBarMusic = ({
                   availableTracks.length > 3 ? 'max-h-[200px] pr-1 pb-4' : ''
                 )}
               >
-                {availableTracks.map((track: Track) => (
-                  <button
-                    key={track.src}
-                    onClick={() => {
-                      if (isMeetingFacilitator) {
-                        selectTrack(track.src)
-                      } else {
-                        localAudioManager.selectTrack(track.src)
-                      }
-                    }}
-                    className={cn(
-                      'flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition-all',
-                      currentTrackSrc === track.src
-                        ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                        : isMeetingFacilitator
-                          ? 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
-                          : 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
-                    )}
-                  >
-                    <span className='flex-1 truncate'>{track.name}</span>
-                  </button>
-                ))}
+                {availableTracks.map((track: Track) => {
+                  const isSelected = currentTrackSrc === track.src
+                  const isCurrentlyPlaying = isSelected && isPlaying
+
+                  return (
+                    <button
+                      key={track.src}
+                      onClick={() => {
+                        if (!isMeetingFacilitator) return
+
+                        // If already selected and playing, pause it
+                        if (isSelected && isPlaying) {
+                          pause()
+                        }
+                        // If already selected but not playing, play it
+                        else if (isSelected && !isPlaying) {
+                          playTrack(track.src)
+                        }
+                        // If not selected, just select it (don't play yet)
+                        else {
+                          selectTrack(track.src)
+                        }
+                      }}
+                      disabled={!isMeetingFacilitator}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition-all',
+                        isSelected
+                          ? isCurrentlyPlaying
+                            ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
+                            : 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
+                          : isMeetingFacilitator
+                            ? 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
+                            : 'text-gray-500 cursor-default border-transparent'
+                      )}
+                    >
+                      <span className='flex-1 truncate'>{track.name}</span>
+                      {isSelected && (
+                        <span
+                          className={`text-xs ${isCurrentlyPlaying ? 'text-green-500' : 'text-blue-500'}`}
+                        >
+                          {isCurrentlyPlaying ? 'Playing' : 'Selected'}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
               </div>
               {showFade && (
                 <div className='pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t from-white to-transparent' />
@@ -138,12 +190,13 @@ const BottomControlBarMusic = ({
               <button
                 type='button'
                 onClick={() => {
-                  currentTrackSrc && playTrack(currentTrackSrc)
+                  if (!isMeetingFacilitator || !currentTrackSrc) return
+                  playTrack(currentTrackSrc)
                 }}
-                disabled={!playEnabled}
+                disabled={!playEnabled || !isMeetingFacilitator}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  playEnabled
+                  playEnabled && isMeetingFacilitator
                     ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
                     : 'cursor-not-allowed bg-jade-100 text-jade-300'
                 )}
@@ -153,11 +206,14 @@ const BottomControlBarMusic = ({
               </button>
               <button
                 type='button'
-                onClick={pause}
-                disabled={!isPlaying}
+                onClick={() => {
+                  if (!isMeetingFacilitator) return
+                  pause()
+                }}
+                disabled={!isPlaying || !isMeetingFacilitator}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  isPlaying
+                  isPlaying && isMeetingFacilitator
                     ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 )}
@@ -167,11 +223,14 @@ const BottomControlBarMusic = ({
               </button>
               <button
                 type='button'
-                onClick={stop}
-                disabled={!stopEnabled}
+                onClick={() => {
+                  if (!isMeetingFacilitator) return
+                  stop()
+                }}
+                disabled={!stopEnabled || !isMeetingFacilitator}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  stopEnabled
+                  stopEnabled && isMeetingFacilitator
                     ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
                     : 'cursor-not-allowed bg-tomato-100 text-tomato-400'
                 )}
@@ -189,7 +248,7 @@ const BottomControlBarMusic = ({
                 max='1'
                 step='0.01'
                 value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
                 className='accent-blue-500 h-2 flex-1 cursor-pointer'
                 onMouseDown={(e) => e.stopPropagation()}
               />
