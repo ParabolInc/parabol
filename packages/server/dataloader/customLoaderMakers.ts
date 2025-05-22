@@ -24,6 +24,7 @@ import getMeetingTaskEstimates, {
 import {
   selectMeetingSettings,
   selectNewMeetings,
+  selectPageAccess,
   selectTasks,
   selectTeams
 } from '../postgres/select'
@@ -36,7 +37,7 @@ import {
   Team
 } from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
-import {TeamMeetingTemplate} from '../postgres/types/pg'
+import {TeamMeetingTemplate, type Pageroleenum} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
@@ -1022,6 +1023,30 @@ export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
+    }
+  )
+}
+
+export const pageAccessByUserId = (parent: RootDataLoader) => {
+  return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
+    async (keys) => {
+      const res = await selectPageAccess()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('pageId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.pageId, key.userId))
+          )
+        )
+        .execute()
+      return keys.map((key) => {
+        const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
+        return rule?.role ?? null
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
     }
   )
 }

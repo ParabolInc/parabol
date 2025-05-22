@@ -2,6 +2,7 @@ import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/typings/types'
 import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
+import {hasPageAccess} from './rules/hasPageAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isOrgTier} from './rules/isOrgTier'
@@ -62,6 +63,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    updatePageAccess: hasPageAccess('owner'),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },

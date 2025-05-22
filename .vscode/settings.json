@@ -30,10 +30,16 @@
     "*.css": "tailwindcss"
   },
   "search.exclude": {
-    "**/__generated__": true,
+    "**/__generated__/**": true,
     "**/graphql/private/schema.graphql": true,
     "**/graphql/public/schema.graphql": true,
     "**/resolverTypes.ts": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/build/**": true,
+    "**/dist/**": true,
+    "**/dev/**": true
   },
   "tailwindCSS.experimental.classRegex": [["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]]
 }
