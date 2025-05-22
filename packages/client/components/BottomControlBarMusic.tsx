@@ -4,7 +4,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {BottomControlBarMusic_meeting$key} from '~/__generated__/BottomControlBarMusic_meeting.graphql'
 import {TransitionStatus} from '~/hooks/useTransition'
@@ -45,18 +45,10 @@ const BottomControlBarMusic = ({
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  console.log('🚀 ~ viewerId:_____', viewerId)
   const meeting = useFragment(meetingFragment, meetingRef ?? null)
   const meetingId = meeting?.id
   const isMeetingFacilitator = meeting?.facilitatorUserId === viewerId
 
-  console.log('[MusicComponent] Meeting data:', {
-    meetingId,
-    isMeetingFacilitator,
-    musicSettings: meeting?.musicSettings
-  })
-
-  // Use our combined music hook for all audio management
   const {
     playTrack,
     pause,
@@ -72,15 +64,6 @@ const BottomControlBarMusic = ({
     isFacilitator: isMeetingFacilitator
   })
 
-  // Debug: log state changes
-  useEffect(() => {
-    console.log('[DEBUG] MusicState:', {
-      currentTrackSrc,
-      isPlaying,
-      isMeetingFacilitator
-    })
-  }, [currentTrackSrc, isPlaying, isMeetingFacilitator])
-
   const playEnabled = !!currentTrackSrc && !isPlaying
   const stopEnabled = !!currentTrackSrc && isPlaying
   const showFade = availableTracks.length > 3 && !atBottom
@@ -93,7 +76,8 @@ const BottomControlBarMusic = ({
 
   const handleVolumeChange = useCallback(
     (newVolume: number) => {
-      setVolume(newVolume)
+      const roundedVolume = Math.round(newVolume * 100) / 100
+      setVolume(roundedVolume)
     },
     [setVolume]
   )
@@ -142,16 +126,11 @@ const BottomControlBarMusic = ({
                     <button
                       key={track.src}
                       onClick={() => {
-                        // If already selected and playing, pause it
                         if (isSelected && isPlaying) {
                           pause()
-                        }
-                        // If already selected but not playing, play it
-                        else if (isSelected && !isPlaying) {
+                        } else if (isSelected && !isPlaying) {
                           playTrack(track.src)
-                        }
-                        // If not selected, just select it (don't play yet)
-                        else {
+                        } else {
                           selectTrack(track.src)
                         }
                       }}
@@ -242,7 +221,7 @@ const BottomControlBarMusic = ({
                 step='0.01'
                 value={volume}
                 onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                className='accent-blue-500 h-2 flex-1 cursor-pointer'
+                className='accent-blue-500 h-2 flex-1 cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100'
                 onMouseDown={(e) => e.stopPropagation()}
               />
             </div>
@@ -250,12 +229,6 @@ const BottomControlBarMusic = ({
             {!isMeetingFacilitator && (
               <div className='text-gray-600 mt-2 text-center text-xs italic'>
                 Note: Only the facilitator can control music for everyone
-              </div>
-            )}
-
-            {!isMeetingFacilitator && currentTrackSrc && !isPlaying && (
-              <div className='text-blue-600 mt-2 text-center text-xs'>
-                Click anywhere on the page to start playing the music
               </div>
             )}
           </div>
