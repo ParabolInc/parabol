@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {requestSubscription} from 'react-relay'
+import {useLazyLoadQuery} from 'react-relay'
+import {useMeetingMusicSyncQuery} from '../__generated__/useMeetingMusicSyncQuery.graphql'
 import SetMeetingMusicMutation from '../mutations/SetMeetingMusicMutation'
 import useAtmosphere from './useAtmosphere'
 
@@ -18,36 +19,32 @@ export const availableTracks: Track[] = [
 ]
 
 interface MeetingMusicSyncProps {
-  meeting: {
-    id: string
-    facilitatorUserId: string
-    musicSettings?: {
-      trackSrc: string | null
-      isPlaying: boolean | null
-      volume: number | null
-    } | null
-  } | null
+  meetingId: string
 }
 
-const subscription = graphql`
-  subscription useMeetingMusicSyncSubscription($meetingId: ID!) {
-    meetingSubscription(meetingId: $meetingId) {
-      fieldName
-      SetMeetingMusicSuccess {
-        meetingId
-        trackSrc
-        isPlaying
-        timestamp
+const query = graphql`
+  query useMeetingMusicSyncQuery($meetingId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) {
+        id
+        facilitatorUserId
+        musicSettings {
+          trackSrc
+          isPlaying
+          volume
+        }
       }
     }
   }
 `
 
 const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
-  const {meeting} = props
+  const {meetingId} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const meetingId = meeting?.id
+  const data = useLazyLoadQuery<useMeetingMusicSyncQuery>(query, {meetingId: meetingId || ''})
+  const meeting = data.viewer?.meeting
+  console.log('🚀 ~ meeting:', meeting)
   const isFacilitator = meeting?.facilitatorUserId === viewerId
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -61,56 +58,20 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
   useEffect(() => {
     if (!meetingId) return
 
-    const subscriptionConfig = {
-      subscription,
-      variables: {meetingId},
-      onNext: (data: any) => {
-        if (data?.meetingSubscription) {
-          const {fieldName, SetMeetingMusicSuccess} = data.meetingSubscription
-
-          if (fieldName === 'SetMeetingMusicSuccess' && SetMeetingMusicSuccess) {
-            const {trackSrc, isPlaying: shouldPlay, timestamp} = SetMeetingMusicSuccess
-
-            if (trackSrc) {
-              setCurrentTrackSrc(trackSrc)
-
-              if (shouldPlay) {
-                setIsPlaying(true)
-
-                if (audioRef.current) {
-                  audioRef.current.muted = true
-                  audioRef.current
-                    .play()
-                    .then(() => {
-                      audioRef.current!.muted = false
-                      audioRef.current!.volume = volume
-                    })
-                    .catch(() => {
-                      pendingPlay.current = {trackSrc, timestamp}
-                    })
-                }
-              } else {
-                setIsPlaying(false)
-              }
-            } else if (!trackSrc) {
-              setCurrentTrackSrc(null)
-              setIsPlaying(false)
-              setPausedAt(null)
-            }
-          }
-        }
-      },
-      onError: (error: Error) => {
-        console.error('[MusicSync] Subscription error:', error)
+    const {musicSettings} = meeting || {}
+    if (musicSettings) {
+      const {trackSrc, isPlaying: shouldPlay, volume: newVolume} = musicSettings
+      if (trackSrc !== currentTrackSrc) {
+        setCurrentTrackSrc(trackSrc ?? null)
+      }
+      if (shouldPlay !== isPlaying) {
+        setIsPlaying(shouldPlay ?? false)
+      }
+      if (newVolume !== null && newVolume !== undefined && newVolume !== volume) {
+        setVolume(newVolume)
       }
     }
-
-    const {dispose} = requestSubscription(atmosphere, subscriptionConfig)
-
-    return () => {
-      dispose()
-    }
-  }, [atmosphere, meetingId, volume])
+  }, [meeting, currentTrackSrc, isPlaying, volume])
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !audioRef.current) {
@@ -234,6 +195,23 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     [atmosphere, meetingId, isFacilitator]
   )
 
+  const playTrack = useCallback(
+    (trackSrc: string) => {
+      if (trackSrc === currentTrackSrc && pausedAt !== null) {
+        setIsPlaying(true)
+      } else {
+        setCurrentTrackSrc(trackSrc)
+        setIsPlaying(true)
+        setPausedAt(null)
+      }
+
+      if (isFacilitator) {
+        syncMusicState(trackSrc, true)
+      }
+    },
+    [currentTrackSrc, pausedAt, syncMusicState, isFacilitator]
+  )
+
   const pause = useCallback(() => {
     if (audioRef.current) {
       setPausedAt(audioRef.current.currentTime)
@@ -254,23 +232,6 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       syncMusicState(null, false)
     }
   }, [syncMusicState, isFacilitator])
-
-  const playTrack = useCallback(
-    (trackSrc: string) => {
-      if (trackSrc === currentTrackSrc && pausedAt !== null) {
-        setIsPlaying(true)
-      } else {
-        setCurrentTrackSrc(trackSrc)
-        setIsPlaying(true)
-        setPausedAt(null)
-      }
-
-      if (isFacilitator) {
-        syncMusicState(trackSrc, true)
-      }
-    },
-    [currentTrackSrc, pausedAt, syncMusicState, isFacilitator]
-  )
 
   const selectTrack = useCallback(
     (trackSrc: string) => {

@@ -3,12 +3,8 @@ import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
-import graphql from 'babel-plugin-relay/macro'
 import {useCallback, useRef, useState} from 'react'
-import {useFragment} from 'react-relay'
-import {BottomControlBarMusic_meeting$key} from '~/__generated__/BottomControlBarMusic_meeting.graphql'
 import {TransitionStatus} from '~/hooks/useTransition'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
@@ -16,37 +12,18 @@ import BottomNavControl from './BottomNavControl'
 interface Props {
   status?: TransitionStatus
   onTransitionEnd?: () => void
-  meeting: BottomControlBarMusic_meeting$key | null
+  meetingId: string
 }
 
 const BottomControlBarMusic = ({
   status = TransitionStatus.ENTERED,
   onTransitionEnd,
-  meeting: meetingRef
+  meetingId
 }: Props) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
-
-  const meeting = useFragment(
-    graphql`
-      fragment BottomControlBarMusic_meeting on NewMeeting {
-        id
-        facilitatorUserId
-        musicSettings {
-          trackSrc
-          isPlaying
-          volume
-        }
-      }
-    `,
-    meetingRef
-  )
-
-  const isFacilitator = meeting?.facilitatorUserId === viewerId
 
   const {
     playTrack,
@@ -59,19 +36,7 @@ const BottomControlBarMusic = ({
     volume,
     availableTracks
   } = useMeetingMusicSync({
-    meeting: meeting
-      ? {
-          id: meeting.id,
-          facilitatorUserId: meeting.facilitatorUserId,
-          musicSettings: meeting.musicSettings
-            ? {
-                trackSrc: meeting.musicSettings.trackSrc ?? null,
-                isPlaying: meeting.musicSettings.isPlaying ?? null,
-                volume: meeting.musicSettings.volume ?? null
-              }
-            : null
-        }
-      : null
+    meetingId
   })
 
   const playEnabled = !!currentTrackSrc && !isPlaying
@@ -226,12 +191,6 @@ const BottomControlBarMusic = ({
                 onMouseDown={(e) => e.stopPropagation()}
               />
             </div>
-
-            {!isFacilitator && (
-              <div className='text-gray-600 mt-2 text-center text-xs italic'>
-                Note: Only the facilitator can control music for everyone
-              </div>
-            )}
           </div>
           <RadixPopover.Arrow className='fill-white' />
         </RadixPopover.Content>
