@@ -68,7 +68,8 @@ const BottomControlBarMusic = ({
     volume,
     availableTracks
   } = useMeetingMusicSync({
-    meeting
+    meeting,
+    isFacilitator: isMeetingFacilitator
   })
 
   // Debug: log state changes
@@ -141,8 +142,6 @@ const BottomControlBarMusic = ({
                     <button
                       key={track.src}
                       onClick={() => {
-                        if (!isMeetingFacilitator) return
-
                         // If already selected and playing, pause it
                         if (isSelected && isPlaying) {
                           pause()
@@ -156,16 +155,13 @@ const BottomControlBarMusic = ({
                           selectTrack(track.src)
                         }
                       }}
-                      disabled={!isMeetingFacilitator}
                       className={cn(
                         'flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition-all',
                         isSelected
                           ? isCurrentlyPlaying
                             ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
                             : 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                          : isMeetingFacilitator
-                            ? 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
-                            : 'text-gray-500 cursor-default border-transparent'
+                          : 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>
@@ -189,13 +185,13 @@ const BottomControlBarMusic = ({
               <button
                 type='button'
                 onClick={() => {
-                  if (!isMeetingFacilitator || !currentTrackSrc) return
+                  if (!currentTrackSrc) return
                   playTrack(currentTrackSrc)
                 }}
-                disabled={!playEnabled || !isMeetingFacilitator}
+                disabled={!playEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  playEnabled && isMeetingFacilitator
+                  playEnabled
                     ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
                     : 'cursor-not-allowed bg-jade-100 text-jade-300'
                 )}
@@ -206,13 +202,12 @@ const BottomControlBarMusic = ({
               <button
                 type='button'
                 onClick={() => {
-                  if (!isMeetingFacilitator) return
                   pause()
                 }}
-                disabled={!isPlaying || !isMeetingFacilitator}
+                disabled={!isPlaying}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  isPlaying && isMeetingFacilitator
+                  isPlaying
                     ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 )}
@@ -223,13 +218,12 @@ const BottomControlBarMusic = ({
               <button
                 type='button'
                 onClick={() => {
-                  if (!isMeetingFacilitator) return
                   stop()
                 }}
-                disabled={!stopEnabled || !isMeetingFacilitator}
+                disabled={!stopEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  stopEnabled && isMeetingFacilitator
+                  stopEnabled
                     ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
                     : 'cursor-not-allowed bg-tomato-100 text-tomato-400'
                 )}
@@ -255,7 +249,7 @@ const BottomControlBarMusic = ({
 
             {!isMeetingFacilitator && (
               <div className='text-gray-600 mt-2 text-center text-xs italic'>
-                Note: Only the facilitator can select music for everyone
+                Note: Only the facilitator can control music for everyone
               </div>
             )}
 

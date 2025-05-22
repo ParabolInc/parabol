@@ -21,14 +21,18 @@ interface MeetingMusicSyncProps {
   meeting:
     | {
         id: string
-        musicSettings?: {
-          trackSrc: string | null
-          isPlaying: boolean
-          volume?: number
-        } | null
+        musicSettings?:
+          | {
+              trackSrc: string | null | undefined
+              isPlaying: boolean | null | undefined
+              volume: number | null | undefined
+            }
+          | null
+          | undefined
       }
     | null
     | undefined
+  isFacilitator: boolean
 }
 
 const subscription = graphql`
@@ -46,7 +50,7 @@ const subscription = graphql`
 `
 
 const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
-  const {meeting} = props
+  const {meeting, isFacilitator} = props
   const atmosphere = useAtmosphere()
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const meetingId = meeting?.id
@@ -273,7 +277,7 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
   // Sync music state to the server when facilitator makes changes
   const syncMusicState = useCallback(
     (trackSrc: string | null, shouldPlay: boolean) => {
-      if (!meetingId) return
+      if (!meetingId || !isFacilitator) return
 
       console.log(`[MusicSync] Facilitator syncing music: track=${trackSrc}, playing=${shouldPlay}`)
 
@@ -293,7 +297,7 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
         }
       )
     },
-    [atmosphere, meetingId]
+    [atmosphere, meetingId, isFacilitator]
   )
 
   // Music control functions
@@ -304,10 +308,12 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       setIsPlaying(true)
       setPausedAt(null)
 
-      // If facilitator, sync to everyone
-      syncMusicState(trackSrc, true)
+      // Only sync to everyone if facilitator
+      if (isFacilitator) {
+        syncMusicState(trackSrc, true)
+      }
     },
-    [syncMusicState]
+    [syncMusicState, isFacilitator]
   )
 
   const pause = useCallback(() => {
@@ -317,9 +323,11 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     }
     setIsPlaying(false)
 
-    // If facilitator, sync to everyone
-    syncMusicState(currentTrackSrc, false)
-  }, [currentTrackSrc, syncMusicState])
+    // Only sync to everyone if facilitator
+    if (isFacilitator) {
+      syncMusicState(currentTrackSrc, false)
+    }
+  }, [currentTrackSrc, syncMusicState, isFacilitator])
 
   const stop = useCallback(() => {
     console.log(`[MusicSync] stop called`)
@@ -327,9 +335,11 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     setIsPlaying(false)
     setPausedAt(null)
 
-    // If facilitator, sync to everyone
-    syncMusicState(null, false)
-  }, [syncMusicState])
+    // Only sync to everyone if facilitator
+    if (isFacilitator) {
+      syncMusicState(null, false)
+    }
+  }, [syncMusicState, isFacilitator])
 
   const selectTrack = useCallback(
     (trackSrc: string) => {
@@ -338,10 +348,12 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       setIsPlaying(false)
       setPausedAt(null)
 
-      // If facilitator, sync to everyone
-      syncMusicState(trackSrc, false)
+      // Only sync to everyone if facilitator
+      if (isFacilitator) {
+        syncMusicState(trackSrc, false)
+      }
     },
-    [syncMusicState]
+    [syncMusicState, isFacilitator]
   )
 
   const setVolumeLevel = useCallback((newVolume: number) => {
