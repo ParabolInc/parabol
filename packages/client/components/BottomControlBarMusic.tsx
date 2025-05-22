@@ -68,8 +68,7 @@ const BottomControlBarMusic = ({
     volume,
     availableTracks
   } = useMeetingMusicSync({
-    meetingId: meetingId || '',
-    isFacilitator: isMeetingFacilitator
+    meeting
   })
 
   // Debug: log state changes
@@ -257,6 +256,12 @@ const BottomControlBarMusic = ({
             {!isMeetingFacilitator && (
               <div className='text-gray-600 mt-2 text-center text-xs italic'>
                 Note: Only the facilitator can select music for everyone
+              </div>
+            )}
+
+            {!isMeetingFacilitator && currentTrackSrc && !isPlaying && (
+              <div className='text-blue-600 mt-2 text-center text-xs'>
+                Click anywhere on the page to start playing the music
               </div>
             )}
           </div>

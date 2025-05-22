@@ -18,8 +18,17 @@ export const availableTracks: Track[] = [
 ]
 
 interface MeetingMusicSyncProps {
-  meetingId: string
-  isFacilitator: boolean
+  meeting:
+    | {
+        id: string
+        musicSettings?: {
+          trackSrc: string | null
+          isPlaying: boolean
+          volume?: number
+        } | null
+      }
+    | null
+    | undefined
 }
 
 const subscription = graphql`
@@ -37,103 +46,25 @@ const subscription = graphql`
 `
 
 const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
-  const {meetingId, isFacilitator} = props
+  const {meeting} = props
   const atmosphere = useAtmosphere()
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const meetingId = meeting?.id
 
-  // Shared state for both facilitator and non-facilitator
+  // Track state locally for UI responsiveness
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [volume, setVolume] = useState<number>(0.5)
   const [pausedAt, setPausedAt] = useState<number | null>(null)
 
-  const receivedUpdate = useRef(false)
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
 
-  // Initialize the audio player
+  // Set up subscription for music updates
   useEffect(() => {
-    if (typeof window !== 'undefined' && !audioRef.current) {
-      console.log(`[MusicSync] Initializing audio player, volume: ${volume}`)
-      audioRef.current = new Audio()
-      audioRef.current.volume = volume
-      audioRef.current.setAttribute('playsinline', 'true')
-
-      audioRef.current.addEventListener('play', () => {
-        console.log(`[MusicSync] HTML5 Audio play event fired`)
-      })
-
-      audioRef.current.addEventListener('pause', () => {
-        console.log(`[MusicSync] HTML5 Audio pause event fired`)
-      })
-
-      audioRef.current.addEventListener('error', (e) => {
-        console.error(`[MusicSync] HTML5 Audio error:`, e)
-      })
-    }
-
-    return () => {
-      console.log(`[MusicSync] Cleanup - stopping audio`)
-      audioRef.current?.pause()
-      audioRef.current = null
-    }
-  }, [])
-
-  // Update volume when it changes
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume
-    }
-  }, [volume])
-
-  // Handle audio playback state changes
-  useEffect(() => {
-    if (!audioRef.current) return
-
-    if (currentTrackSrc) {
-      if (audioRef.current.src !== currentTrackSrc) {
-        console.log(`[MusicSync] Setting track src: ${currentTrackSrc}`)
-        audioRef.current.src = currentTrackSrc
-        audioRef.current.load() // Force preload of the audio
-        if (pausedAt !== null) {
-          console.log(`[MusicSync] Resuming from: ${pausedAt}`)
-          audioRef.current.currentTime = pausedAt
-        }
-      }
-
-      if (isPlaying) {
-        if (pausedAt !== null) {
-          console.log(`[MusicSync] Playing from pause point: ${pausedAt}`)
-          audioRef.current.currentTime = pausedAt
-        }
-        console.log(`[MusicSync] Playing audio: ${currentTrackSrc}`)
-        const playPromise = audioRef.current.play()
-        if (playPromise !== undefined) {
-          playPromise.catch((err) => {
-            console.error('[MusicSync] Error playing audio:', err)
-            // If there was an autoplay error, try once more after user interaction
-            if (err.name === 'NotAllowedError') {
-              console.log('[MusicSync] Autoplay blocked, will try again after user interaction')
-              pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
-            }
-          })
-        }
-      } else {
-        console.log(`[MusicSync] Pausing audio: ${currentTrackSrc}`)
-        audioRef.current.pause()
-      }
-    } else {
-      console.log(`[MusicSync] No track selected, stopping audio`)
-      audioRef.current.pause()
-    }
-  }, [currentTrackSrc, isPlaying, pausedAt])
-
-  // For non-facilitators, subscribe to music updates via GraphQL
-  useEffect(() => {
-    if (isFacilitator) return
+    if (!meetingId) return
 
     console.log(`[MusicSync] Setting up subscription for meeting ${meetingId}`)
 
-    // Using Relay's built-in subscription mechanism
     const subscriptionConfig = {
       subscription,
       variables: {meetingId},
@@ -142,15 +73,14 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
         if (data?.meetingSubscription) {
           const {fieldName, SetMeetingMusicSuccess} = data.meetingSubscription
 
-          if (fieldName === 'SetMeetingMusicPayload' && SetMeetingMusicSuccess) {
-            receivedUpdate.current = true
+          if (fieldName === 'SetMeetingMusicSuccess' && SetMeetingMusicSuccess) {
             const {trackSrc, isPlaying: shouldPlay, timestamp} = SetMeetingMusicSuccess
 
             console.log(
               `[MusicSync] Processing music update: track=${trackSrc}, play=${shouldPlay}, timestamp=${timestamp}`
             )
 
-            // Only non-facilitators follow server state directly
+            // Update local state to match the subscription
             if (trackSrc) {
               console.log(`[MusicSync] Setting track: ${trackSrc}`)
               setCurrentTrackSrc(trackSrc)
@@ -159,9 +89,22 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
                 setIsPlaying(true)
                 console.log('[MusicSync] Playing track from subscription')
 
-                // For autoplay issues, try again on user interaction
-                if (!document.hasFocus()) {
-                  pendingPlay.current = {trackSrc, timestamp}
+                // Try to play muted immediately when we get the subscription
+                if (audioRef.current) {
+                  console.log('[MusicSync] Attempting muted autoplay on subscription')
+                  audioRef.current.muted = true
+                  audioRef.current
+                    .play()
+                    .then(() => {
+                      console.log('[MusicSync] Muted autoplay successful, unmuting')
+                      audioRef.current!.muted = false
+                      audioRef.current!.volume = volume
+                    })
+                    .catch((err) => {
+                      console.log('[MusicSync] Muted autoplay failed:', err)
+                      // If autoplay fails, store for later user interaction
+                      pendingPlay.current = {trackSrc, timestamp}
+                    })
                 }
               } else {
                 setIsPlaying(false)
@@ -187,7 +130,109 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       console.log('[MusicSync] Disposing subscription')
       dispose()
     }
-  }, [atmosphere, meetingId, isFacilitator])
+  }, [atmosphere, meetingId, volume])
+
+  // Initialize the audio player
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !audioRef.current) {
+      console.log(`[MusicSync] Initializing audio player, volume: ${volume}`)
+      audioRef.current = new Audio()
+      audioRef.current.volume = 0 // Start muted
+      audioRef.current.setAttribute('playsinline', 'true')
+      audioRef.current.muted = true // Ensure it's muted
+
+      // Try to play something muted immediately to get autoplay permission
+      audioRef.current.src = '/static/sounds/quiet-lofi.mp3'
+      audioRef.current.load()
+      audioRef.current
+        .play()
+        .then(() => {
+          console.log('[MusicSync] Initial muted autoplay successful')
+          audioRef.current!.pause()
+        })
+        .catch((err) => {
+          console.log('[MusicSync] Initial muted autoplay failed:', err)
+        })
+
+      audioRef.current.addEventListener('play', () => {
+        console.log(`[MusicSync] HTML5 Audio play event fired`)
+        // Once playing, unmute if we have a pending play
+        if (pendingPlay.current) {
+          console.log('[MusicSync] Unmuting audio after successful play')
+          audioRef.current!.muted = false
+          audioRef.current!.volume = volume
+        }
+      })
+
+      audioRef.current.addEventListener('pause', () => {
+        console.log(`[MusicSync] HTML5 Audio pause event fired`)
+      })
+
+      audioRef.current.addEventListener('error', (e) => {
+        console.error(`[MusicSync] HTML5 Audio error:`, e)
+      })
+    }
+
+    return () => {
+      console.log(`[MusicSync] Cleanup - stopping audio`)
+      audioRef.current?.pause()
+      audioRef.current = null
+    }
+  }, [volume])
+
+  // Handle audio playback state changes
+  useEffect(() => {
+    if (!audioRef.current) return
+
+    if (currentTrackSrc) {
+      if (audioRef.current.src !== currentTrackSrc) {
+        console.log(`[MusicSync] Setting track src: ${currentTrackSrc}`)
+        audioRef.current.src = currentTrackSrc
+        audioRef.current.load() // Force preload of the audio
+        if (pausedAt !== null) {
+          console.log(`[MusicSync] Resuming from: ${pausedAt}`)
+          audioRef.current.currentTime = pausedAt
+        }
+      }
+
+      if (isPlaying) {
+        console.log(`[MusicSync] Attempting to play audio: ${currentTrackSrc}`)
+        // Try to play muted first
+        audioRef.current.muted = true
+        const playPromise = audioRef.current.play()
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('[MusicSync] Audio playback started successfully')
+              // Once playing, unmute
+              audioRef.current!.muted = false
+              audioRef.current!.volume = volume
+            })
+            .catch((err) => {
+              console.error('[MusicSync] Error playing audio:', err)
+              // If there was an autoplay error, try again on user interaction
+              if (err.name === 'NotAllowedError') {
+                console.log('[MusicSync] Autoplay blocked, will try again after user interaction')
+                pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
+              }
+            })
+        }
+      } else {
+        console.log(`[MusicSync] Pausing audio: ${currentTrackSrc}`)
+        audioRef.current.pause()
+      }
+    } else {
+      console.log(`[MusicSync] No track selected, stopping audio`)
+      audioRef.current.pause()
+    }
+  }, [currentTrackSrc, isPlaying, pausedAt, volume])
+
+  // Update volume when it changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
 
   // Add a document click listener to help with autoplay
   useEffect(() => {
@@ -198,8 +243,17 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
         console.log('[MusicSync] User interacted with page, playing pending track:', trackSrc)
 
         if (currentTrackSrc === trackSrc) {
+          // Try playing muted first
+          audioRef.current.muted = true
           const playPromise = audioRef.current.play()
-          playPromise.catch((err) => console.error('[MusicSync] Error playing after click:', err))
+          playPromise
+            .then(() => {
+              console.log('[MusicSync] Audio started after user interaction')
+              // Once playing, unmute
+              audioRef.current!.muted = false
+              audioRef.current!.volume = volume
+            })
+            .catch((err) => console.error('[MusicSync] Error playing after click:', err))
         } else {
           setCurrentTrackSrc(trackSrc)
           setIsPlaying(true)
@@ -214,12 +268,12 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     return () => {
       document.removeEventListener('click', handleDocumentClick)
     }
-  }, [currentTrackSrc])
+  }, [currentTrackSrc, volume])
 
   // Sync music state to the server when facilitator makes changes
   const syncMusicState = useCallback(
     (trackSrc: string | null, shouldPlay: boolean) => {
-      if (!isFacilitator || !meetingId) return
+      if (!meetingId) return
 
       console.log(`[MusicSync] Facilitator syncing music: track=${trackSrc}, playing=${shouldPlay}`)
 
@@ -239,7 +293,7 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
         }
       )
     },
-    [atmosphere, meetingId, isFacilitator]
+    [atmosphere, meetingId]
   )
 
   // Music control functions
@@ -251,11 +305,9 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       setPausedAt(null)
 
       // If facilitator, sync to everyone
-      if (isFacilitator) {
-        syncMusicState(trackSrc, true)
-      }
+      syncMusicState(trackSrc, true)
     },
-    [isFacilitator, syncMusicState]
+    [syncMusicState]
   )
 
   const pause = useCallback(() => {
@@ -266,10 +318,8 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     setIsPlaying(false)
 
     // If facilitator, sync to everyone
-    if (isFacilitator && currentTrackSrc) {
-      syncMusicState(currentTrackSrc, false)
-    }
-  }, [isFacilitator, currentTrackSrc, syncMusicState])
+    syncMusicState(currentTrackSrc, false)
+  }, [currentTrackSrc, syncMusicState])
 
   const stop = useCallback(() => {
     console.log(`[MusicSync] stop called`)
@@ -278,10 +328,8 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
     setPausedAt(null)
 
     // If facilitator, sync to everyone
-    if (isFacilitator) {
-      syncMusicState(null, false)
-    }
-  }, [isFacilitator, syncMusicState])
+    syncMusicState(null, false)
+  }, [syncMusicState])
 
   const selectTrack = useCallback(
     (trackSrc: string) => {
@@ -291,11 +339,9 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       setPausedAt(null)
 
       // If facilitator, sync to everyone
-      if (isFacilitator) {
-        syncMusicState(trackSrc, false)
-      }
+      syncMusicState(trackSrc, false)
     },
-    [isFacilitator, syncMusicState]
+    [syncMusicState]
   )
 
   const setVolumeLevel = useCallback((newVolume: number) => {
