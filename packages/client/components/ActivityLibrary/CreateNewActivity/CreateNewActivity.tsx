@@ -1,6 +1,5 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import * as React from 'react'
 import {ComponentPropsWithoutRef, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -16,6 +15,7 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import useRouter from '../../../hooks/useRouter'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
 import BaseButton from '../../BaseButton'
@@ -30,7 +30,7 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
 
   return (
-    <span className={clsx('font-semibold text-slate-800', className)} {...rest}>
+    <span className={cn('font-semibold text-slate-800', className)} {...rest}>
       {children}
     </span>
   )
@@ -264,7 +264,7 @@ export const CreateNewActivity = (props: Props) => {
                   {activity.includedCategories.map((badge) => (
                     <ActivityBadge
                       key={badge}
-                      className={clsx('text-white', `${CATEGORY_THEMES[badge].primary}`)}
+                      className={cn('text-white', `${CATEGORY_THEMES[badge].primary}`)}
                     >
                       {CATEGORY_ID_TO_NAME[badge]}
                     </ActivityBadge>

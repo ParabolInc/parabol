@@ -1,5 +1,5 @@
 import {Edit as EditIcon} from '@mui/icons-material'
-import clsx from 'clsx'
+import {cn} from '../../ui/cn'
 import Avatar from '../Avatar/Avatar'
 
 interface Props {
@@ -14,7 +14,7 @@ const EditableAvatar = (props: Props) => {
     <div className='relative cursor-pointer' onClick={onClick} aria-label='click to update photo'>
       <Avatar
         picture={picture}
-        className={clsx(`h-16 w-16 border-4 border-solid border-slate-200`, className)}
+        className={cn(`h-16 w-16 border-4 border-solid border-slate-200`, className)}
       />
       <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full bg-slate-400 text-sm font-semibold text-slate-800 opacity-0 transition-opacity duration-300 hover:opacity-75'>
         EDIT

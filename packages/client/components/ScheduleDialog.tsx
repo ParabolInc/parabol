@@ -1,7 +1,6 @@
 import {EventRepeat, ExpandMore} from '@mui/icons-material'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import * as React from 'react'
 import {ChangeEvent, useState} from 'react'
@@ -18,6 +17,7 @@ import GcalSettings, {
 import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
 import logo from '../styles/theme/images/graphics/google.svg'
 import {DialogActions} from '../ui/Dialog/DialogActions'
+import {cn} from '../ui/cn'
 import GcalClientManager from '../utils/GcalClientManager'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import plural from '../utils/plural'
@@ -168,7 +168,7 @@ export const ScheduleDialog = (props: Props) => {
                 {gcalInput.invitees.length > 0 &&
                   `, ${gcalInput.invitees.length} ${plural(gcalInput.invitees.length, 'invitee')}`}
               </div>
-              <ExpandMore className={clsx(openGcalEvent && 'rotate-180')} />
+              <ExpandMore className={cn(openGcalEvent && 'rotate-180')} />
             </Collapsible.Trigger>
             <Collapsible.Content className='space-y-4'>
               <GcalSettings teamRef={team} settings={gcalInput} onSettingsChanged={setGcalInput} />
@@ -195,7 +195,7 @@ export const ScheduleDialog = (props: Props) => {
                 ? toHumanReadable(rrule, {useShortNames: true, shortDayNameAfter: 1})
                 : 'Does not restart'}
             </div>
-            <ExpandMore className={clsx(openRecurrence && 'rotate-180')} />
+            <ExpandMore className={cn(openRecurrence && 'rotate-180')} />
           </Collapsible.Trigger>
           <Collapsible.Content className='space-y-4'>
             <RecurrenceSettings

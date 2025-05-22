@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import {cn} from '../ui/cn'
 
 interface Props {
   bgColor: string
@@ -19,7 +19,7 @@ const GlobalBanner = (props: Props) => {
           container wrapping <Switch /> in Action.tsx.
           Meanwhile the main div here is postion: fixed. */}
       <div
-        className={clsx(
+        className={cn(
           'bg-jade-600',
           'block',
           'fixed',

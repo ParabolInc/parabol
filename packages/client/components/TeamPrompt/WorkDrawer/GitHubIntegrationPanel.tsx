@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
+import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
@@ -98,7 +98,7 @@ const GitHubIntegrationPanel = (props: Props) => {
             {GITHUB_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}
-                className={clsx(
+                className={cn(
                   'w-1/2 cursor-pointer rounded-full px-4 py-2 text-center text-sm leading-3 text-slate-800',
                   tab.key === githubType
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'

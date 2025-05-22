@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import dayjs, {Dayjs} from 'dayjs'
 import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
@@ -8,6 +7,7 @@ import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import {fromRRuleDateTime, toRRuleDateTime} from '../../shared/rruleUtil'
+import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
 import DropdownMenuToggle from '../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -81,7 +81,7 @@ const Label = ({
   ...rest
 }: PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) => {
   return (
-    <label className={clsx('text-sm font-semibold text-slate-800', className)} {...rest}>
+    <label className={cn('text-sm font-semibold text-slate-800', className)} {...rest}>
       {children}
     </label>
   )
@@ -107,13 +107,13 @@ const Input = ({
 
   const hasLabel = !!label
   if (!hasLabel)
-    return <input className={clsx(className, baseStyles, focusStyles, activeStyles)} {...rest} />
+    return <input className={cn(className, baseStyles, focusStyles, activeStyles)} {...rest} />
 
   return (
     <div>
       {label}
       <input
-        className={clsx(
+        className={cn(
           'mt-1',
           baseStyles,
           focusStyles,
@@ -135,7 +135,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={clsx('text-sm break-words text-slate-600 italic', className)} {...rest}>
+    <div className={cn('text-sm break-words text-slate-600 italic', className)} {...rest}>
       {children}
     </div>
   )

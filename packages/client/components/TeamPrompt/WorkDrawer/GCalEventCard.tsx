@@ -1,6 +1,5 @@
 import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import ms from 'ms'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
@@ -8,6 +7,7 @@ import {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_even
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
+import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 
@@ -121,9 +121,7 @@ const GCalEventCard = (props: Props) => {
   return (
     <div className='group'>
       <div
-        className={clsx(
-          'rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'
-        )}
+        className={cn('rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600')}
       >
         <div>
           <a

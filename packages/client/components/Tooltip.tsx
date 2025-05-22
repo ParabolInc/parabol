@@ -1,7 +1,7 @@
-import clsx from 'clsx'
 import {ReactNode} from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
+import {cn} from '../ui/cn'
 
 interface Props {
   text: ReactNode
@@ -19,7 +19,7 @@ const Tooltip = (props: Props) => {
     <div
       onMouseEnter={openTooltip}
       onMouseLeave={closeTooltip}
-      className={clsx('cursor-pointer', className)}
+      className={cn('cursor-pointer', className)}
       ref={originRef}
     >
       {children}
