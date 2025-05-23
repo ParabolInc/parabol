@@ -12,6 +12,7 @@ graphql`
         tier
       }
       tier
+      isPaid
       billingTier
       isBillingLeader
       isOrgAdmin
@@ -20,7 +21,6 @@ graphql`
       updatedAt
       lockedAt
       teams {
-        isPaid
         tier
       }
     }

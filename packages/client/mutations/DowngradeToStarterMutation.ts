@@ -8,8 +8,8 @@ graphql`
     organization {
       tier
       billingTier
+      isPaid
       teams {
-        isPaid
         tier
       }
     }

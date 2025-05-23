@@ -166,8 +166,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     id: userId,
     email,
     preferredName,
-    picture,
-    tier: 'enterprise'
+    picture
   })
 
   // find orgs specified in the SAML claim

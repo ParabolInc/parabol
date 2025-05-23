@@ -20,7 +20,9 @@ const isMeetingLocked = async (
   ])
 
   if (hasNoMeetingHistoryLimit) return false
-  const {tier, trialStartDate, isPaid, orgId, isArchived} = team
+  const {orgId, isArchived} = team
+  const org = await dataLoader.get('organizations').loadNonNull(orgId)
+  const {tier, trialStartDate, isPaid} = org
 
   if ((tier !== 'starter' && isPaid) || trialStartDate) {
     return false

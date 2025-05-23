@@ -61,10 +61,11 @@ const DashNavListTeams = (props: Props) => {
   return (
     <div>
       {viewerTeams.map((team) => {
+        const {organization} = team
         return (
           <StyledLeftDashNavItem
             key={team.id}
-            icon={getIcon(team.organization.lockedAt, team.isPaid)}
+            icon={getIcon(organization.lockedAt, organization.isPaid)}
             href={team.isViewerOnTeam ? `/team/${team.id}` : `/team/${team.id}/requestToJoin`}
             label={team.name}
             onClick={onClick}

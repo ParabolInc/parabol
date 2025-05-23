@@ -8,20 +8,12 @@ graphql`
     stripeSubscriptionClientSecret
     organization {
       id
+      isPaid
       creditCard {
         brand
         last4
         expiry
       }
-      updatedAt
-    }
-  }
-`
-
-graphql`
-  fragment UpdateCreditCardMutation_team on UpdateCreditCardSuccess {
-    teamsUpdated {
-      isPaid
       updatedAt
     }
   }
@@ -36,7 +28,6 @@ const mutation = graphql`
         }
       }
       ...UpdateCreditCardMutation_organization @relay(mask: false)
-      ...UpdateCreditCardMutation_team @relay(mask: false)
     }
   }
 `

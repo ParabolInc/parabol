@@ -423,8 +423,11 @@ type User {
     """
     id: ID!
   ): Boolean!
-  tier: TierEnum!
-  billingTier: TierEnum!
+
+  """
+  The highest tier of all the user's organizations
+  """
+  highestTier: TierEnum!
 
   """
   A connection of activities available to the user

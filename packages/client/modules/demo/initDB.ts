@@ -294,6 +294,7 @@ const initDemoOrg = () => {
     name: 'Demo Organization',
     tier: 'team',
     billingTier: 'team',
+    isPaid: true,
     orgUserCount: {
       activeUserCount: 5,
       inactiveUserCount: 0
@@ -315,7 +316,6 @@ const initDemoTeam = (
     __typename: 'Team',
     id: demoTeamId,
     isArchived: false,
-    isPaid: true,
     activeMeetings: [newMeeting],
     agendaItems: [],
     massInviteToken: '42',

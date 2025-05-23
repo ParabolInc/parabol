@@ -7,6 +7,7 @@ import isValid from '../graphql/isValid'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
+import {TierEnum} from '../postgres/queries/generated/TierEnum'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -1022,6 +1023,29 @@ export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
+    }
+  )
+}
+
+export const highestTierForUserId = (parent: RootDataLoader) => {
+  return new DataLoader<string, TierEnum, string>(
+    async (keys) => {
+      const pg = getKysely()
+      const highestTiers = await pg
+        .selectFrom('OrganizationUser as ou')
+        .innerJoin('Organization as o', 'o.id', 'ou.orgId')
+        .select(({fn}) => ['userId', fn.max('tier').as('highestTier')])
+        .where('userId', 'in', keys)
+        .where('ou.removedAt', 'is', null)
+        .groupBy('userId')
+        .execute()
+
+      return normalizeResults(keys, highestTiers, 'userId').map(
+        (user) => user?.highestTier ?? 'starter'
+      )
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

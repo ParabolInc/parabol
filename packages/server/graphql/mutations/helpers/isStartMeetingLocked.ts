@@ -5,11 +5,15 @@ const isStartMeetingLocked = async (teamId: string, dataLoader: DataLoaderWorker
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
 
-  const {lockedAt: organizationLockedAt, name: organizationName} = organization
-  const {isPaid, lockMessageHTML} = team
+  const {
+    isPaid,
+    unpaidMessageHTML,
+    lockedAt: organizationLockedAt,
+    name: organizationName
+  } = organization
 
   if (!isPaid) {
-    return lockMessageHTML
+    return unpaidMessageHTML
       ? 'Wow, you’re determined to use Parabol! That’s awesome! Do you want to keep sneaking over the gate, or walk through the door with our Sales team?'
       : 'Sorry! We are unable to start your meeting because your team has an overdue payment'
   } else if (organizationLockedAt) {

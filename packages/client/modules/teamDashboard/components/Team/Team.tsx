@@ -62,8 +62,8 @@ const Team = (props: Props) => {
     graphql`
       fragment Team_team on Team {
         id
-        isPaid
         organization {
+          isPaid
           lockedAt
         }
         ...EditableTeamName_team
@@ -73,8 +73,8 @@ const Team = (props: Props) => {
   )
   const teamId = team?.id
   if (!team || !teamId) return null
-  const {isPaid, organization} = team
-  const {lockedAt} = organization
+  const {organization} = team
+  const {lockedAt, isPaid} = organization
 
   const goToTeamDashboard = () => {
     history.push(`/team/${teamId}/`)

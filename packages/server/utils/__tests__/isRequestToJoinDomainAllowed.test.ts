@@ -40,8 +40,7 @@ const addOrg = async (
     ...member,
     inactive: member.inactive ?? false,
     role: member.role ?? null,
-    removedAt: member.removedAt ?? null,
-    tier: 'starter' as const
+    removedAt: member.removedAt ?? null
   }))
   await getKysely()
     .with('Org', (qc) => qc.insertInto('Organization').values(org))

@@ -24,12 +24,15 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   if (!team) {
     return standardError(new Error('Team not found'))
   }
-  const isOrgAdmin = await isUserOrgAdmin(viewerId, team.orgId, dataLoader)
+  const [isOrgAdmin, org] = await Promise.all([
+    isUserOrgAdmin(viewerId, team.orgId, dataLoader),
+    dataLoader.get('organizations').loadNonNull(team.orgId)
+  ])
   if (!teamMember.isLead && !isOrgAdmin) {
     return standardError(new Error('Not team lead or org admin'))
   }
 
-  if (team.isPublic && team.tier === 'starter') {
+  if (team.isPublic && org.tier === 'starter') {
     return standardError(new Error('Cannot make a public team private on the starter tier'))
   }
 

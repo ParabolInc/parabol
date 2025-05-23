@@ -33,8 +33,7 @@ const addOrg = async (activeDomain: string | null, members: TestOrganizationUser
     ...member,
     inactive: member.inactive ?? false,
     role: member.role ?? null,
-    removedAt: member.removedAt ?? null,
-    tier: 'starter' as const
+    removedAt: member.removedAt ?? null
   }))
 
   const pg = getKysely()

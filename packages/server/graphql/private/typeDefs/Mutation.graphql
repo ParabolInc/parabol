@@ -220,21 +220,22 @@ type Mutation {
   ): DeleteUserPayload!
 
   """
-  Lock/Unlock teams, flagging them as unpaid/paid. Return true if successful
+  Lock an organization with a message by setting isPaid to false. Returns true if successful.
+  Organizations are automatically unlocked by successful payments.
   """
-  lockTeams(
+  lockOrganizations(
     """
-    List of teams to target
+    The organizations to lock or unlock
     """
-    teamIds: [ID!]!
+    orgIds: [ID!]!
 
     """
-    true to unlock the teams, false to lock
+    Can be set to `true` to manually unlock organizations, `false` to lock it.
     """
     isPaid: Boolean!
 
     """
-    The HTML to show if isPaid is false
+    The HTML to show while the org is unpaid
     """
     message: String
   ): Boolean!
