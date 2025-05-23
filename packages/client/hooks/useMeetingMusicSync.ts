@@ -202,25 +202,30 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
 
   const playTrack = useCallback(
     (trackSrc: string) => {
-      if (trackSrc === currentTrackSrc && pausedAt !== null) {
-        setIsPlaying(true)
-        setIsLocallyPaused(false)
-      } else {
-        if (isFacilitator) {
+      if (isFacilitator) {
+        if (trackSrc === currentTrackSrc && pausedAt !== null) {
+          setIsPlaying(true)
+          setIsLocallyPaused(false)
+        } else {
           setCurrentTrackSrc(trackSrc)
+          setIsPlaying(true)
+          setIsLocallyPaused(false)
+          setPausedAt(null)
+        }
+        syncMusicState(trackSrc, true)
+      } else {
+        if (trackSrc === (localTrackSrc || currentTrackSrc) && pausedAt !== null) {
+          setIsPlaying(true)
+          setIsLocallyPaused(false)
         } else {
           setLocalTrackSrc(trackSrc)
+          setIsPlaying(true)
+          setIsLocallyPaused(false)
+          setPausedAt(null)
         }
-        setIsPlaying(true)
-        setIsLocallyPaused(false)
-        setPausedAt(null)
-      }
-
-      if (isFacilitator) {
-        syncMusicState(trackSrc, true)
       }
     },
-    [currentTrackSrc, pausedAt, syncMusicState, isFacilitator]
+    [currentTrackSrc, localTrackSrc, pausedAt, syncMusicState, isFacilitator]
   )
 
   const pause = useCallback(() => {
@@ -241,13 +246,13 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
       syncMusicState(null, false)
     } else {
       setLocalTrackSrc(null)
+      setIsLocallyPaused(true)
       if (audioRef.current) {
         audioRef.current.pause()
       }
     }
     setIsPlaying(false)
     setPausedAt(null)
-    setIsLocallyPaused(false)
   }, [syncMusicState, isFacilitator])
 
   const selectTrack = useCallback(
@@ -261,10 +266,10 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
           audioRef.current.src = trackSrc
           audioRef.current.load()
         }
+        setIsLocallyPaused(true)
       }
       setIsPlaying(false)
       setPausedAt(null)
-      setIsLocallyPaused(false)
     },
     [syncMusicState, isFacilitator]
   )
