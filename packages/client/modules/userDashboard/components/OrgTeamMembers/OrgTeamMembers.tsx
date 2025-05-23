@@ -8,6 +8,7 @@ import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvata
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import {ORGANIZATIONS} from '../../../../utils/constants'
+import EditableTeamName from '../../../teamDashboard/components/EditTeamName/EditableTeamName'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
 
 interface Props {
@@ -32,6 +33,7 @@ const query = graphql`
           ...InviteTeamMemberAvatar_teamMembers
         }
         tier
+        ...EditableTeamName_team
       }
     }
   }
@@ -61,7 +63,7 @@ export const OrgTeamMembers = (props: Props) => {
             <ArrowBack />
           </Link>
         </Button>
-        <h1 className='flex-1 text-2xl leading-7 font-semibold'>{team.name}</h1>
+        <EditableTeamName team={team} />
         <div className='ml-auto flex items-center'>
           <InviteTeamMemberAvatar teamId={team.id} teamMembers={teamMembers} />
           {showDeleteButton && (
