@@ -93,7 +93,6 @@ export const selectTeams = () =>
       'isOnboardTeam',
       'kudosEmojiUnicode',
       'lastMeetingType',
-      'lockMessageHTML',
       'name',
       'orgId',
       'qualAIMeetingsCount',
@@ -146,6 +145,7 @@ export const selectOrganizations = () =>
       'scheduledLockAt',
       'lockedAt',
       'useAI',
+      'unpaidMessageHTML',
       'updatedAt'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])

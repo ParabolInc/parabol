@@ -5,6 +5,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable('Organization')
     .addColumn('isPaid', 'boolean', (col) => col.defaultTo(true).notNull())
+    .addColumn('unpaidMessageHTML', 'text')
     .execute()
   await db
     .updateTable('Organization')
@@ -15,7 +16,15 @@ export async function up(db: Kysely<any>): Promise<void> {
           .select(({fn}) => fn('bool_and', ['isPaid']).as('isPaid'))
           .whereRef('Organization.id', '=', 'orgId'),
         eb.val(true)
-      )
+      ),
+      unpaidMessageHTML: eb
+        .selectFrom('Team')
+        .select('lockMessageHTML')
+        .whereRef('Organization.id', '=', 'orgId')
+        .where('lockMessageHTML', 'is not', null)
+        .where('isPaid', '=', false)
+        .orderBy('updatedAt', 'desc')
+        .limit(1)
     }))
     .execute()
 
@@ -30,6 +39,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .dropColumn('tier')
     .dropColumn('trialStartDate')
     .dropColumn('isPaid')
+    .dropColumn('lockMessageHTML')
     .execute()
 }
 
@@ -82,6 +92,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     .addColumn('tier', sql`"TierEnum"`) // no default, not null
     .addColumn('trialStartDate', sql`timestamp with time zone`)
     .addColumn('isPaid', 'boolean', (col) => col.defaultTo(true).notNull())
+    .addColumn('lockMessageHTML', 'text')
     .execute()
   await db
     .updateTable('Team')
@@ -94,6 +105,10 @@ export async function down(db: Kysely<any>): Promise<void> {
       isPaid: eb
         .selectFrom('Organization')
         .select('isPaid')
+        .whereRef('Organization.id', '=', 'orgId'),
+      lockMessageHTML: eb
+        .selectFrom('Organization')
+        .select('unpaidMessageHTML')
         .whereRef('Organization.id', '=', 'orgId')
     }))
     .execute()
@@ -102,5 +117,9 @@ export async function down(db: Kysely<any>): Promise<void> {
     .alterColumn('tier', (ac) => ac.setNotNull())
     .execute()
 
-  await db.schema.alterTable('Organization').dropColumn('isPaid').execute()
+  await db.schema
+    .alterTable('Organization')
+    .dropColumn('isPaid')
+    .dropColumn('unpaidMessageHTML')
+    .execute()
 }

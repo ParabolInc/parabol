@@ -25,7 +25,6 @@ export default class Team {
   createdBy: string
   isArchived: boolean
   lastMeetingType: MeetingTypeEnum
-  lockMessageHTML?: string | null
   orgId: string
   isOnboardTeam: boolean
   qualAIMeetingsCount: number

@@ -37,11 +37,6 @@ type Team implements Node {
   lastMetAt: DateTime
 
   """
-  The HTML message to show if isPaid is false
-  """
-  lockMessageHTML: String
-
-  """
   The hash and expiration for a token that allows anyone with it to join the team
   """
   massInvitation(
@@ -52,9 +47,9 @@ type Team implements Node {
   ): MassInvitation!
 
   """
-  true if the underlying org has a validUntil date greater than now. if false, subs do not work
+  false if the Organization was explicitly marked as not paid manually or by stripe
   """
-  isPaid: Boolean
+  isPaid: Boolean @deprecated(reason: "Use Organization.isPaid instead")
 
   """
   The name of the team
