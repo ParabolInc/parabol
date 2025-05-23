@@ -8,6 +8,8 @@ import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvata
 import {Button} from '../../../../ui/Button/Button'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import {ORGANIZATIONS} from '../../../../utils/constants'
+import plural from '../../../../utils/plural'
+import EditableTeamName from '../../../teamDashboard/components/EditTeamName/EditableTeamName'
 import {OrgTeamMembersRow} from './OrgTeamMembersRow'
 
 interface Props {
@@ -32,6 +34,7 @@ const query = graphql`
           ...InviteTeamMemberAvatar_teamMembers
         }
         tier
+        ...EditableTeamName_team
       }
     }
   }
@@ -50,8 +53,8 @@ export const OrgTeamMembers = (props: Props) => {
   } = useDialogState()
 
   if (!team) return null
-  const {isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
-  const showDeleteButton = isViewerLead || isViewerOrgAdmin
+  const {name: teamName, isViewerLead, isOrgAdmin: isViewerOrgAdmin, teamMembers} = team
+  const canEditTeam = isViewerLead || isViewerOrgAdmin
 
   return (
     <div className='max-w-4xl pb-4'>
@@ -61,10 +64,12 @@ export const OrgTeamMembers = (props: Props) => {
             <ArrowBack />
           </Link>
         </Button>
-        <h1 className='flex-1 text-2xl leading-7 font-semibold'>{team.name}</h1>
+        <div className='text-gray-700 hover:text-gray-900 text-lg font-bold'>
+          {canEditTeam ? <EditableTeamName team={team} /> : {teamName}}
+        </div>
         <div className='ml-auto flex items-center'>
           <InviteTeamMemberAvatar teamId={team.id} teamMembers={teamMembers} />
-          {showDeleteButton && (
+          {canEditTeam && (
             <div className='group mx-1.5 cursor-pointer' onClick={openDeleteTeamDialog}>
               <div className='flex h-7 justify-center'>
                 <span className='h-6 w-6 self-center text-slate-500 group-hover:text-slate-600'>
@@ -82,7 +87,9 @@ export const OrgTeamMembers = (props: Props) => {
       <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
         <div className='bg-slate-100 px-4 py-2'>
           <div className='flex w-full justify-between'>
-            <div className='flex items-center font-bold'>{teamMembers.length} Active</div>
+            <div className='flex items-center font-bold'>
+              {teamMembers.length} {plural(teamMembers.length, 'User')}
+            </div>
           </div>
         </div>
         {teamMembers.map((teamMember) => (
