@@ -46,6 +46,7 @@ const DashNavList = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment DashNavList_viewer on User {
+        draggingPageId
         pages(first: 100) {
           edges {
             node {
@@ -58,7 +59,7 @@ const DashNavList = (props: Props) => {
     `,
     viewerRef
   )
-  const {pages} = viewer
+  const {draggingPageId, pages} = viewer
   const {edges} = pages
   const sortedOrgs = sortByTier(organizations)
 
@@ -96,8 +97,16 @@ const DashNavList = (props: Props) => {
         </div>
       ))}
       <div>
-        <LeftNavPagesSection title={'Shared Pages'} pageRef={sharedPages} />
-        <LeftNavPagesSection title={'Private Pages'} pageRef={privatePages} />
+        <LeftNavPagesSection
+          title={'Shared Pages'}
+          pageRef={sharedPages}
+          draggingPageId={draggingPageId}
+        />
+        <LeftNavPagesSection
+          title={'Private Pages'}
+          pageRef={privatePages}
+          draggingPageId={draggingPageId}
+        />
       </div>
     </div>
   )

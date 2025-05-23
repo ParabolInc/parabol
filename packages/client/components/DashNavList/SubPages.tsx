@@ -20,11 +20,12 @@ graphql`
 `
 interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
-  depth: number
+  pageAncestors: string[]
+  draggingPageId: string | null | undefined
 }
 
 export const SubPages = (props: Props) => {
-  const {depth, queryRef} = props
+  const {pageAncestors, queryRef, draggingPageId} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {pages} = viewer
@@ -34,12 +35,20 @@ export const SubPages = (props: Props) => {
     return <div className='pl-8 text-sm font-medium text-slate-500'>{'No pages inside'}</div>
   }
   return (
-    <div>
-      {edges.map((edge) => {
+    <>
+      {edges.map((edge, idx) => {
         const {node} = edge
         const {id} = node
-        return <LeftNavPageLink key={id} pageRef={node} depth={depth + 1} />
+        return (
+          <LeftNavPageLink
+            key={id}
+            pageRef={node}
+            pageAncestors={pageAncestors}
+            draggingPageId={draggingPageId}
+            isFirstChild={idx === 0}
+          />
+        )
       })}
-    </div>
+    </>
   )
 }

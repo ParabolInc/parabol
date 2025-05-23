@@ -76,6 +76,12 @@ extend type User {
   pageName: String
   # The team we should default to in team pickers, etc.
   preferredTeamId: ID
+  # The ID of the Page that is currently being dragged
+  draggingPageId: ID
+}
+
+extend type Page {
+  isDraggingFirstChild: Boolean
 }
 
 extend type Task {
