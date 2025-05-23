@@ -5,12 +5,7 @@ import {useMeetingMusicSyncQuery} from '../__generated__/useMeetingMusicSyncQuer
 import SetMeetingMusicMutation from '../mutations/SetMeetingMusicMutation'
 import useAtmosphere from './useAtmosphere'
 
-export interface Track {
-  name: string
-  src: string
-}
-
-export const availableTracks: Track[] = [
+export const availableTracks = [
   {name: 'Lo-fi Hip Hop Night', src: '/static/sounds/lofi-hip-hop-night.mp3'},
   {name: 'Lo-fi Coffee', src: '/static/sounds/coffee-lofi.mp3'},
   {name: 'Lo-fi Quiet', src: '/static/sounds/quiet-lofi.mp3'},
@@ -18,7 +13,7 @@ export const availableTracks: Track[] = [
   {name: 'Lo-fi Ambient', src: '/static/sounds/lofi-ambient.mp3'}
 ]
 
-interface MeetingMusicSyncProps {
+type Props = {
   meetingId: string
 }
 
@@ -38,7 +33,7 @@ const query = graphql`
   }
 `
 
-const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
+const useMeetingMusicSync = (props: Props) => {
   const {meetingId} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -266,24 +261,24 @@ const useMeetingMusicSync = (props: MeetingMusicSyncProps) => {
           audioRef.current.src = trackSrc
           audioRef.current.load()
         }
-        setIsLocallyPaused(true)
       }
       setIsPlaying(false)
       setPausedAt(null)
+      setIsLocallyPaused(false)
     },
     [syncMusicState, isFacilitator]
   )
 
-  const setVolumeLevel = useCallback((newVolume: number) => {
-    const clamped = Math.max(0, Math.min(1, newVolume))
-    setVolume(clamped)
-  }, [])
+  const handleVolumeChange = (newVolume: number) => {
+    const roundedVolume = Math.round(newVolume * 100) / 100
+    setVolume(roundedVolume)
+  }
 
   return {
     playTrack,
     pause,
     stop,
-    setVolume: setVolumeLevel,
+    handleVolumeChange,
     selectTrack,
     currentTrackSrc: localTrackSrc || currentTrackSrc,
     isPlaying,

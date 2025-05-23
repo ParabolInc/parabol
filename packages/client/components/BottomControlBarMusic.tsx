@@ -3,7 +3,7 @@ import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
-import {useCallback, useRef, useState} from 'react'
+import {useRef, useState} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
 import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
@@ -30,6 +30,7 @@ const BottomControlBarMusic = ({
     pause,
     stop,
     setVolume,
+    handleVolumeChange,
     selectTrack,
     currentTrackSrc,
     isPlaying,
@@ -48,14 +49,6 @@ const BottomControlBarMusic = ({
     if (!el) return
     setAtBottom(el.scrollTop + el.clientHeight >= el.scrollHeight - 2)
   }
-
-  const handleVolumeChange = useCallback(
-    (newVolume: number) => {
-      const roundedVolume = Math.round(newVolume * 100) / 100
-      setVolume(roundedVolume)
-    },
-    [setVolume]
-  )
 
   return (
     <RadixPopover.Root open={open} onOpenChange={setOpen}>

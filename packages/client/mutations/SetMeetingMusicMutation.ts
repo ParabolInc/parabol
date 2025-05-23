@@ -48,7 +48,6 @@ const SetMeetingMusicMutation: StandardMutation<TSetMeetingMusicMutation> = (
     onError,
     optimisticUpdater: (store) => {
       const {meetingId, trackSrc, isPlaying} = variables
-      console.log('🚀 ~ variables___:', variables)
 
       const meeting = store.get(meetingId)
       if (!meeting) return
