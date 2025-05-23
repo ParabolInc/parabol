@@ -47,11 +47,6 @@ type Team implements Node {
   ): MassInvitation!
 
   """
-  false if the Organization was explicitly marked as not paid manually or by stripe
-  """
-  isPaid: Boolean @deprecated(reason: "Use Organization.isPaid instead")
-
-  """
   The name of the team
   """
   name: String!

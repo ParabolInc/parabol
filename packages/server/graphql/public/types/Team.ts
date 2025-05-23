@@ -63,11 +63,6 @@ const Team: TeamResolvers = {
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
-  },
-  isPaid: async ({orgId}, _args, {dataLoader}) => {
-    const org = await dataLoader.get('organizations').loadNonNull(orgId)
-    const {isPaid} = org
-    return isPaid
   }
 }
 
