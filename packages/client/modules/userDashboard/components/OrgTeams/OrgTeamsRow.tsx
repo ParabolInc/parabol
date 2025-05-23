@@ -33,7 +33,7 @@ const OrgTeamsRow = (props: Props) => {
 
   return (
     <tr className='hover:bg-slate-50 border-b border-slate-300'>
-      <td className='p-3'>
+      <td className='flex items-center p-3'>
         <Link
           to={`teams/${teamId}`}
           className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'
