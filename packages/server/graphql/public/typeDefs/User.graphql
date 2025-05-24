@@ -534,6 +534,6 @@ type User {
     """
     The pagination cursor, if any
     """
-    after: DateTime
+    after: String
   ): PageConnection!
 }

@@ -47,7 +47,7 @@ const DashNavList = (props: Props) => {
     graphql`
       fragment DashNavList_viewer on User {
         draggingPageId
-        pages(first: 100) {
+        pages(first: 500) @connection(key: "User_pages") {
           edges {
             node {
               ...LeftNavPagesSection_page

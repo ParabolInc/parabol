@@ -1,4 +1,3 @@
-import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {feistelCipher} from '../../../utils/feistelCipher'
 import {PageResolvers} from '../resolverTypes'
@@ -16,19 +15,14 @@ const Page: PageResolvers = {
   sortOrder: async (
     {id: pageId, isPrivate, teamId, parentPageId, sortOrder},
     _args,
-    {authToken}
+    {authToken, dataLoader}
   ) => {
     const isTopLevelShared = !teamId && !parentPageId && !isPrivate
     if (!isTopLevelShared) return sortOrder
     const viewerId = getUserId(authToken)
-    const userSortOrder = await getKysely()
-      .selectFrom('PageUserSortOrder')
-      .select('sortOrder')
-      .where('userId', '=', viewerId)
-      .where('pageId', '=', pageId)
-      .executeTakeFirst()
+    const userSortOrder = await dataLoader.get('pageUserSortOrder').load({pageId, userId: viewerId})
     // should never be null, but just in case
-    return userSortOrder?.sortOrder ?? ' '
+    return userSortOrder || ' '
   }
 }
 

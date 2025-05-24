@@ -323,3 +323,4 @@ export const selectPages = () =>
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
+export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()

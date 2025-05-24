@@ -6,5 +6,5 @@ type PageEdge {
   The item at the end of the edge
   """
   node: Page!
-  cursor: DateTime!
+  cursor: String!
 }

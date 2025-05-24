@@ -1,6 +1,4 @@
 import AddIcon from '@mui/icons-material/Add'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import DescriptionIcon from '@mui/icons-material/Description'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {ConnectionHandler, useFragment} from 'react-relay'
@@ -15,15 +13,18 @@ import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {SubPagesRoot} from './SubPagesRoot'
 interface Props {
   pageRef: LeftNavPageLink_page$key
   pageAncestors: string[]
   draggingPageId: string | null | undefined
   isFirstChild: boolean
+  isLastChild: boolean
+  nextPeerId: string | null
 }
 export const LeftNavPageLink = (props: Props) => {
-  const {pageRef, pageAncestors, draggingPageId, isFirstChild} = props
+  const {pageRef, pageAncestors, draggingPageId, isFirstChild, isLastChild, nextPeerId} = props
   const depth = pageAncestors.length - 1
   const page = useFragment(
     graphql`
@@ -32,11 +33,13 @@ export const LeftNavPageLink = (props: Props) => {
         title
         parentPageId
         isDraggingFirstChild
+        isDraggingLastChild
+        sortOrder # used implicityly in store traveral by useDraggingPage
       }
     `,
     pageRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild} = page
+  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild} = page
   const pageIdNum = id.split(':')[1]
   const titleSlug = toSlug(title || '')
   const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
@@ -48,7 +51,7 @@ export const LeftNavPageLink = (props: Props) => {
   }
   const history = useHistory()
   const [execute, submitting] = useCreatePageMutation()
-  const {onPointerDown, ref} = useDraggablePage(id, parentPageId, isFirstChild)
+  const {onPointerDown, ref} = useDraggablePage(id, parentPageId, isFirstChild, isLastChild)
   const addChildPage = () => {
     if (submitting) return
     execute({
@@ -74,47 +77,51 @@ export const LeftNavPageLink = (props: Props) => {
     })
   }
   const nextPageAncestors = [...pageAncestors, id]
-  const isSourceDragParent = draggingPageId ? nextPageAncestors.includes(draggingPageId) : false
-  const canDropIn =
-    draggingPageId && !isSourceDragParent && draggingPageId !== id && !isDraggingFirstChild
+  const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
+  const isSelf = draggingPageId === id
+  const isNextPeer = draggingPageId === nextPeerId
+  const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild
   const canDropBelow =
-    draggingPageId && !nextPageAncestors.includes(draggingPageId) && !isDraggingFirstChild
+    draggingPageId && !isSourceDragParent && !isSelf && !isDraggingFirstChild && !isNextPeer
   return (
     <div className='relative rounded-md' ref={ref}>
       <div
         onPointerDown={onPointerDown}
         data-highlighted={isActive ? '' : undefined}
         style={{paddingLeft: depth * 8}}
-        data-drop-in={canDropIn ? '' : undefined}
-        className={
-          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900 data-[drop-in]:hover:bg-sky-300/70'
-        }
+        data-drop-in={canDropIn ? id : undefined}
+        className={cn(
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-sm leading-8 text-slate-700 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          // when in dragging mode, hide hover/focus/active slate background so you only see blue
+          !draggingPageId &&
+            'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
+          draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-grabbing')
+        )}
       >
         <div
-          className='absolute -bottom-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex'
-          data-drop-below={canDropBelow ? '' : undefined}
+          className={cn(
+            'absolute -bottom-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
+          )}
+          data-drop-below={canDropBelow ? id : undefined}
+          aria-expanded={showChildren}
         ></div>
         <Link
           draggable={false}
           to={`/pages/${slug}`}
           key={slug}
-          className={cn(
-            'flex w-full cursor-pointer items-center',
-            // this is so a drop on itself does not result in a click. draggingPageId in an onClick will be null before
-            // we can call preventDefault
-            draggingPageId && 'pointer-events-none'
-          )}
+          className={'ml-1 flex w-full cursor-pointer items-center'}
+          onClick={(e) => {
+            if (draggingPageId) {
+              e.preventDefault()
+            }
+          }}
         >
-          <div className='flex size-6 items-center justify-center rounded-sm bg-slate-200 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300 hover:bg-slate-400'>
-            <DescriptionIcon className='size-5 group-hover:hidden no-hover:hidden' />
-            <ChevronRightIcon
-              className={cn(
-                'sm hidden size-5 transition-transform group-hover:block no-hover:block',
-                showChildren && 'rotate-90'
-              )}
-              onClick={expandChildPages}
-            />
-          </div>
+          <ExpandPageChildrenButton
+            showChildren={showChildren}
+            expandChildPages={expandChildPages}
+            draggingPageId={draggingPageId}
+          />
           <div className='flex flex-col text-sm font-medium'>
             <span>{title || '<Untitled>'}</span>
           </div>
@@ -131,7 +138,7 @@ export const LeftNavPageLink = (props: Props) => {
         </Link>
       </div>
       {showChildren && (
-        <div className={cn(canDropIn && 'peer-hover:bg-sky-200/70')}>
+        <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
           <SubPagesRoot
             parentPageId={id}
             pageAncestors={nextPageAncestors}

@@ -82,6 +82,7 @@ extend type User {
 
 extend type Page {
   isDraggingFirstChild: Boolean
+  isDraggingLastChild: Boolean
 }
 
 extend type Task {

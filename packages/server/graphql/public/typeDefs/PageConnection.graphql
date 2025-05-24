@@ -5,7 +5,7 @@ type PageConnection {
   """
   Page info with cursors as strings
   """
-  pageInfo: PageInfoDateCursor!
+  pageInfo: PageInfo!
 
   """
   A list of edges.

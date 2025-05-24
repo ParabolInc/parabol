@@ -6,7 +6,7 @@ import {LeftNavPageLink} from './LeftNavPageLink'
 graphql`
   query SubPagesQuery($parentPageId: ID!) {
     viewer {
-      pages(first: 100, parentPageId: $parentPageId) @connection(key: "SubPages_pages") {
+      pages(first: 500, parentPageId: $parentPageId) @connection(key: "User_pages") {
         edges {
           node {
             ...LeftNavPageLink_page
@@ -30,9 +30,13 @@ export const SubPages = (props: Props) => {
   const {viewer} = data
   const {pages} = viewer
   const {edges} = pages
-
+  const depth = pageAncestors.length
   if (edges.length === 0) {
-    return <div className='pl-8 text-sm font-medium text-slate-500'>{'No pages inside'}</div>
+    return (
+      <div style={{paddingLeft: depth * 8 + 8}} className='text-sm font-medium text-slate-500'>
+        {'No pages inside'}
+      </div>
+    )
   }
   return (
     <>
@@ -46,6 +50,8 @@ export const SubPages = (props: Props) => {
             pageAncestors={pageAncestors}
             draggingPageId={draggingPageId}
             isFirstChild={idx === 0}
+            isLastChild={idx === edges.length - 1}
+            nextPeerId={edges[idx + 1]?.node.id || null}
           />
         )
       })}

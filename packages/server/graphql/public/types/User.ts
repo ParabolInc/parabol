@@ -876,7 +876,8 @@ const User: ReqResolvers<'User'> = {
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .where('PageAccess.userId', '=', viewerId)
-      .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
+      .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .orderBy('sortOrder')
       .limit(first + 1)
       .execute()
 
@@ -886,12 +887,12 @@ const User: ReqResolvers<'User'> = {
       pageInfo: {
         hasNextPage,
         hasPreviousPage: false,
-        startCursor: pages.at(0)?.updatedAt,
-        endCursor: pages.at(-1)?.updatedAt
+        startCursor: pages.at(0)?.sortOrder,
+        endCursor: pages.at(-1)?.sortOrder
       },
       edges: pages.map((page) => ({
         node: page,
-        cursor: page.updatedAt
+        cursor: page.sortOrder
       }))
     }
   }

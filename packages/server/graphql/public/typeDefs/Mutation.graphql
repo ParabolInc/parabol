@@ -2092,4 +2092,23 @@ type Mutation {
     """
     unlinkApproved: Boolean
   ): UpdatePageAccessPayload
+
+  updatePage(
+    """
+    The ID of the page to update
+    """
+    pageId: ID!
+    """
+    The new sort order, as a fractional index
+    """
+    sortOrder: String!
+    """
+    The new parent If null, and no teamId, it will be top-level
+    """
+    parentPageId: ID
+    """
+    The new teamId, if moved to a team
+    """
+    teamId: ID
+  ): UpdatePagePayload
 }
