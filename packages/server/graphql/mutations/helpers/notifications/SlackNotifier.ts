@@ -17,7 +17,7 @@ import {AnyNotification} from '../../../../postgres/types/Notification'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
-import sendToSentry from '../../../../utils/sendToSentry'
+import logError from '../../../../utils/logError'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import {DataLoaderWorker} from '../../../graphql'
 import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
@@ -54,14 +54,12 @@ const handleError = async (
         error: new Error('channel_not_found')
       }
     } else if (error === 'not_in_channel' || error === 'invalid_auth') {
-      sendToSentry(
-        new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`)
-      )
+      logError(new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`))
       return {
         error: new Error(error)
       }
     } else {
-      sendToSentry(new Error(error))
+      logError(new Error(error))
       return {
         error: new Error(error)
       }

@@ -9,7 +9,7 @@ import IUser from '../../../../postgres/types/IUser'
 import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
-import sendToSentry from '../../../../utils/sendToSentry'
+import logError from '../../../../utils/logError'
 import {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 import {SlackNotificationEventEnum} from '../../../public/resolverTypes'
@@ -27,7 +27,7 @@ const notifyMSTeams = async (
   const manager = new MSTeamsServerManager(webhookUrl)
   const result = await manager.post(textOrAttachmentsArray)
   if (result instanceof Error) {
-    sendToSentry(result, {userId: user.id, tags: {teamId, event, webhookUrl}})
+    logError(result, {userId: user.id, tags: {teamId, event, webhookUrl}})
     return {
       error: result
     }

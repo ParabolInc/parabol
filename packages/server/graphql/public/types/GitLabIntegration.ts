@@ -1,6 +1,6 @@
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import {GetProjectIssuesQuery, IssuableState, IssueSort} from '../../../types/gitlabTypes'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import fetchGitLabProjects from '../../queries/helpers/fetchGitLabProjects'
 import {GitLabIntegrationResolvers} from '../resolverTypes'
 
@@ -66,7 +66,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       first: 50 // if no project filters have been selected, get the 50 most recently used projects
     })
     if (projectsErr) {
-      sendToSentry(new Error('Unable to get GitLab projects in projectsIssues query'), {userId})
+      logError(new Error('Unable to get GitLab projects in projectsIssues query'), {userId})
       return emptyConnection
     }
     const projectsFullPaths = new Set<string>()
@@ -79,7 +79,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
     try {
       parsedAfter = after.length ? JSON.parse(after) : null
     } catch (e) {
-      sendToSentry(new Error('Error parsing after'), {userId, tags: {after}})
+      logError(new Error('Error parsing after'), {userId, tags: {after}})
       return emptyConnection
     }
     const isValidJSON = parsedAfter?.every(
@@ -87,7 +87,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
         typeof cursorsDetails.cursor === 'string' && typeof cursorsDetails.fullPath === 'string'
     )
     if (isValidJSON === false) {
-      sendToSentry(new Error('after arg has an invalid JSON structure'), {
+      logError(new Error('after arg has an invalid JSON structure'), {
         userId,
         tags: {after}
       })
@@ -113,7 +113,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
       const [projectIssuesData, err] = res
       if (err) {
         errors.push(err)
-        sendToSentry(err, {userId})
+        logError(err, {userId})
         continue
       }
       const {project} = projectIssuesData

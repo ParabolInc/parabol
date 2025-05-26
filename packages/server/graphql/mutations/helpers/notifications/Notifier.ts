@@ -1,6 +1,6 @@
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {SlackNotification} from '../../../../postgres/types'
-import sendToSentry from '../../../../utils/sendToSentry'
+import logError from '../../../../utils/logError'
 import {DataLoaderWorker} from '../../../graphql'
 import {NotificationIntegration, NotifyResponse} from './NotificationIntegrationHelper'
 
@@ -64,7 +64,7 @@ const fireAndForget = (
 ) => {
   notifiers.forEach((notifier) => {
     call(notifier)?.catch((e) => {
-      sendToSentry(e)
+      logError(e)
     })
   })
 }

@@ -13,7 +13,7 @@ export interface SentryOptions {
 }
 
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
-const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
+const logError = async (error: Error, options: SentryOptions = {}) => {
   const {sampleRate, tags, extras, userId, ip} = options
   Logger.log('SEND TO SENTRY', error || JSON.stringify(error), {tags})
   if (sampleRate && Math.random() > sampleRate) return
@@ -36,4 +36,4 @@ const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
   })
 }
 
-export default sendToSentry
+export default logError

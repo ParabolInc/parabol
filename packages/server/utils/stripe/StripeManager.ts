@@ -1,7 +1,7 @@
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import {Logger} from '../Logger'
-import sendToSentry from '../sendToSentry'
+import logError from '../logError'
 
 export default class StripeManager {
   static TEAM_PRICE_APP_ID = 'parabol-pro-800' // $8/seat/mo
@@ -204,7 +204,7 @@ export default class StripeManager {
     // we only include one subscription item in our subscriptions
     if (allSubscriptionItems.data.length > 1) {
       // sanity check
-      sendToSentry(new Error(`${subscriptionId} contains more than one subscription item`))
+      logError(new Error(`${subscriptionId} contains more than one subscription item`))
     }
     return allSubscriptionItems.data[0]
   }
