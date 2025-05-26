@@ -1,7 +1,7 @@
 // call with pnpm sucrase-node hubSpot/backfillHubSpot.ts
 import {fetch} from '@whatwg-node/fetch'
 import '../../../scripts/webpack/utils/dotenv'
-import {getUsersByEmails} from '../postgres/queries/getUsersByEmails'
+import getKeysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
 
 const contactKeys = {
@@ -56,7 +56,14 @@ const upsertHubspotContact = async (
 
 const backfillHubSpot = async () => {
   const emails = process.argv.slice(2)
-  const users = await getUsersByEmails(emails)
+  const pg = getKeysely()
+  const users = await pg
+    .selectFrom('User as u')
+    .innerJoin('OrganizationUser as ou', 'u.id', 'ou.userId')
+    .innerJoin('Organization as o', 'ou.orgId', 'o.id')
+    .select(['u.id as id', 'u.email as email', 'o.tier as tier'])
+    .where('u.email', 'in', emails)
+    .execute()
 
   await Promise.all(
     users.map(async ({email, id, tier}) => {

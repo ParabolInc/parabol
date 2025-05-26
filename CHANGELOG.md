@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.5.0](https://github.com/ParabolInc/parabol/compare/v10.4.1...v10.5.0) (2025-05-26)
+
+
+### Added
+
+* **chore:** update the placeholder text for reflections ([#11351](https://github.com/ParabolInc/parabol/issues/11351)) ([95280b8](https://github.com/ParabolInc/parabol/commit/95280b86d262cfed6d6b68c343e5b99b25b293c3))
+
+
+### Fixed
+
+* disable unsafe webpack cache ([#11361](https://github.com/ParabolInc/parabol/issues/11361)) ([ebaf9dd](https://github.com/ParabolInc/parabol/commit/ebaf9dd379356564571f52cfadc7df9dcfa3a625))
+* integration logo sizing ([#11354](https://github.com/ParabolInc/parabol/issues/11354)) ([d7e8056](https://github.com/ParabolInc/parabol/commit/d7e80568c3ef8cbd2475aab819e64cf4fc6cffa7))
+* return missing Organization.isPaid field ([#11360](https://github.com/ParabolInc/parabol/issues/11360)) ([7f61578](https://github.com/ParabolInc/parabol/commit/7f6157830e85ec6e9262ec5f7e38eb382bc6ed72))
+
+
+### Changed
+
+* **deps:** bump samlify from 2.9.1 to 2.10.0 ([#11350](https://github.com/ParabolInc/parabol/issues/11350)) ([b0b841d](https://github.com/ParabolInc/parabol/commit/b0b841d0f596761c23d94c970ef7163b2aee938a))
+* Normalize tier in Postgres ([#11024](https://github.com/ParabolInc/parabol/issues/11024)) ([32f6983](https://github.com/ParabolInc/parabol/commit/32f6983838a5bae6e5da94a54f61cb551c999829))
+
 ## [10.4.1](https://github.com/ParabolInc/parabol/compare/v10.4.0...v10.4.1) (2025-05-21)
 
 

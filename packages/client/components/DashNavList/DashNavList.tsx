@@ -74,13 +74,13 @@ const DashNavList = (props: Props) => {
 graphql`
   fragment DashNavListTeam on Team {
     id
-    isPaid
     name
     isViewerOnTeam
     tier
     organization {
       id
       name
+      isPaid
       lockedAt
     }
   }

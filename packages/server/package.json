@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.4.1",
+  "version": "10.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -124,7 +124,7 @@
     "redlock": "^5.0.0-beta.2",
     "relay-runtime": "^14.1.0",
     "rrule-rust": "^2.0.2",
-    "samlify": "^2.8.2",
+    "samlify": "^2.10.0",
     "sanitize-html": "^2.13.0",
     "sharp": "^0.34.1",
     "string-similarity": "^3.0.0",
