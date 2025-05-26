@@ -1,5 +1,5 @@
 import {createGraphiQLFetcher} from '@graphiql/toolkit'
-import GraphiQL from 'graphiql/dist'
+import GraphiQL from 'graphiql'
 import 'graphiql/graphiql.css'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
