@@ -249,7 +249,9 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         if (!isTeamMember(authToken, teamId)) {
           return {
             id: orgId,
-            name: organization.name
+            name: organization.name,
+            isPaid: organization.isPaid,
+            unpaidMessageHTML: organization.unpaidMessageHTML
           }
         }
         return organization
