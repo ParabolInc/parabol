@@ -9,10 +9,10 @@ graphql`
     team {
       id
       name
-      isPaid
       organization {
         id
         name
+        isPaid
       }
       ...PublicTeamsFrag_team
     }

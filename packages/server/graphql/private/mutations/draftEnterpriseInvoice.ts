@@ -4,8 +4,7 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {fromEpochSeconds} from '../../../utils/epochTime'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
+import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
 import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -133,19 +132,10 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
       })
       .where('id', '=', orgId)
       .execute(),
-    pg
-      .updateTable('Team')
-      .set({
-        isPaid: true,
-        tier: 'enterprise',
-        trialStartDate: null
-      })
-      .where('orgId', '=', orgId)
-      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await identifyHighestUserTierForOrgId(orgId, dataLoader)
   analytics.organizationUpgraded(user, {
     orgId,
     domain: org.activeDomain || undefined,

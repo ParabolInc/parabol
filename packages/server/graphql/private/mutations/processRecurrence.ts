@@ -158,16 +158,13 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
           if (seriesTeam.isArchived || !facilitatorTeamMember.isNotRemoved) {
             return await stopMeetingSeries(meetingSeries)
           }
-          if (!seriesTeam.isPaid) {
-            return
-          }
 
           const [seriesOrg, lastMeeting] = await Promise.all([
             dataLoader.get('organizations').loadNonNull(seriesTeam.orgId),
             dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId)
           ])
 
-          if (seriesOrg.lockedAt) {
+          if (!seriesOrg.isPaid || seriesOrg.lockedAt) {
             return
           }
 

@@ -39,10 +39,10 @@ const query = graphql`
   query UnpaidTeamModalQuery($teamId: ID!) {
     viewer {
       team(teamId: $teamId) {
-        lockMessageHTML
         organization {
           id
           lockedAt
+          unpaidMessageHTML
           name
           billingLeaders {
             user {
@@ -81,9 +81,9 @@ const UnpaidTeamModal = (props: Props) => {
   }, [])
 
   if (!team) return null
-  const {name: teamName, organization, lockMessageHTML} = team
+  const {name: teamName, organization} = team
 
-  const {name: organizationName} = organization
+  const {name: organizationName, unpaidMessageHTML} = organization
 
   const {id: orgId, billingLeaders, name: orgName} = organization
   const [firstBillingLeader] = billingLeaders
@@ -129,10 +129,10 @@ const UnpaidTeamModal = (props: Props) => {
     )
   }
 
-  if (lockMessageHTML) {
+  if (unpaidMessageHTML) {
     return (
       <DashModal>
-        <div dangerouslySetInnerHTML={{__html: lockMessageHTML}} />
+        <div dangerouslySetInnerHTML={{__html: unpaidMessageHTML}} />
       </DashModal>
     )
   }

@@ -4,9 +4,8 @@ import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
@@ -68,6 +67,7 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       .updateTable('Organization')
       .set({
         creditCard: toCreditCard(creditCard),
+        isPaid: true,
         tier: 'team',
         tierLimitExceededAt: null,
         scheduledLockAt: null,
@@ -78,20 +78,11 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
       })
       .where('id', '=', orgId)
       .execute(),
-    pg
-      .updateTable('Team')
-      .set({
-        isPaid: true,
-        tier: 'team',
-        trialStartDate: null
-      })
-      .where('orgId', '=', orgId)
-      .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)
   ])
   organization.tier = 'team'
 
-  await Promise.all([setUserTierForOrgId(orgId), setTierForOrgUsers(orgId)])
+  await identifyHighestUserTierForOrgId(orgId, dataLoader)
 
   await pg
     .updateTable('OrganizationUser')

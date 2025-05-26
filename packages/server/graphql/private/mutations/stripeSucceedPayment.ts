@@ -1,4 +1,4 @@
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
+import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import {MutationResolvers} from '../resolverTypes'
@@ -8,8 +8,6 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   {invoiceId},
   {authToken, dataLoader}
 ) => {
-  const now = new Date()
-
   // AUTH
   if (!isSuperUser(authToken)) {
     throw new Error('Don’t be rude.')
@@ -42,11 +40,16 @@ const stripeSucceedPayment: MutationResolvers['stripeSucceedPayment'] = async (
   }
 
   // RESOLUTION
-  const teamUpdates = {
-    isPaid: true,
-    updatedAt: now
-  }
-  await Promise.all([updateTeamByOrgId(teamUpdates, orgId)])
+  const pg = getKysely()
+  await pg
+    .updateTable('Organization')
+    .set({
+      isPaid: true
+    })
+    .where('id', '=', orgId)
+    .execute()
+
+  org.isPaid = true
   return true
 }
 

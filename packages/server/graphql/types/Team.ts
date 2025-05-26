@@ -55,10 +55,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
       type: new GraphQLNonNull(MeetingTypeEnum),
       description: 'The type of the last meeting run'
     },
-    lockMessageHTML: {
-      type: GraphQLString,
-      description: 'The HTML message to show if isPaid is false'
-    },
     massInvitation: {
       type: new GraphQLNonNull(MassInvitation),
       args: {
@@ -105,11 +101,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         dataLoader.get('massInvitationsByTeamMemberId').clear(teamMemberId)
         return massInvitation
       }
-    },
-    isPaid: {
-      type: GraphQLBoolean,
-      description:
-        'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
