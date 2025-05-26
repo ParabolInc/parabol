@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
+import {lazy, Suspense, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -11,6 +11,13 @@ import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import PrimaryButton from './PrimaryButton'
+
+const UnpaidTeamModalRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'UnpaidTeamModalRoot' */ '../modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot'
+    )
+)
 
 interface Props {
   meetingRef: MeetingLockedOverlay_meeting$key
@@ -84,9 +91,11 @@ const MeetingLockedOverlay = (props: Props) => {
       fragment MeetingLockedOverlay_meeting on NewMeeting {
         id
         locked
+        teamId
         organization {
           id
           name
+          isPaid
           viewerOrganizationUser {
             id
           }
@@ -95,8 +104,8 @@ const MeetingLockedOverlay = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, locked, organization} = meeting
-  const {id: orgId, name: orgName, viewerOrganizationUser} = organization
+  const {id: meetingId, teamId, locked, organization} = meeting
+  const {id: orgId, name: orgName, viewerOrganizationUser, isPaid} = organization
   const canUpgrade = !!viewerOrganizationUser
 
   const atmosphere = useAtmosphere()
@@ -133,6 +142,14 @@ const MeetingLockedOverlay = (props: Props) => {
   }
 
   if (!locked) return null
+
+  if (!isPaid) {
+    return (
+      <Suspense fallback={''}>
+        <UnpaidTeamModalRoot teamId={teamId} />
+      </Suspense>
+    )
+  }
 
   return (
     <DialogOverlay>
