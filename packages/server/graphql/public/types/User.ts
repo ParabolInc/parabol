@@ -861,10 +861,21 @@ const User: ReqResolvers<'User'> = {
     if (!page) throw new GraphQLError('Page not found')
     return page
   },
-  pages: async (_source, {parentPageId, teamId, first, after}, {authToken}) => {
+  pages: async (
+    _source,
+    {parentPageId, teamId, isPrivate, first, after},
+    {authToken, dataLoader}
+  ) => {
+    // TODO is isPrivate the right move here? 2 connections on the client vs. 1
+    // Instead, what about 1 connection like before, just with fixed cursors
+
     if (parentPageId && teamId) {
       throw new GraphQLError('Can only provider either parentPageId OR teamId')
     }
+    if (isPrivate && (parentPageId || teamId)) {
+      throw new GraphQLError('isPrivate cannot be true if teamId or parentPageId is not null')
+    }
+    const isTopLevel = !parentPageId && !teamId
     const viewerId = getUserId(authToken)
     const dbParentPageId = parentPageId
       ? feistelCipher.decrypt(Number(parentPageId.split(':')[1]))
@@ -876,6 +887,7 @@ const User: ReqResolvers<'User'> = {
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .where('PageAccess.userId', '=', viewerId)
+      .$if(isTopLevel, (qb) => qb.where('isPrivate', '=', !!isPrivate))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
       .orderBy('sortOrder')
       .limit(first + 1)
@@ -883,6 +895,18 @@ const User: ReqResolvers<'User'> = {
 
     const hasNextPage = pagesPlusOne.length > first
     const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+
+    if (isTopLevel && !isPrivate) {
+      // for shared pages, we need a user-specific sortOrder
+      await Promise.all(
+        pages.map(async (page) => {
+          const userSortOrder = await dataLoader
+            .get('pageUserSortOrder')
+            .load({pageId: page.id, userId: viewerId})
+          page.sortOrder = userSortOrder ?? page.sortOrder
+        })
+      )
+    }
     return {
       pageInfo: {
         hasNextPage,

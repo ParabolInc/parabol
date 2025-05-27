@@ -83,7 +83,7 @@ export const useDraggablePage = (
       }
       const isExpanded = dropTarget.getAttribute('aria-expanded')
       if (isExpanded === 'true') {
-        // when parent is expanded, drop it as the first child
+        // when target is expanded, drop it as the first child
         const connId = ConnectionHandler.getConnectionID(atmosphere.viewerId, 'User_pages', {
           parentPageId: dropTargetBelowPageId
         })
@@ -106,6 +106,7 @@ export const useDraggablePage = (
           newParentPageId: dropTargetBelowPageId
         })
       } else {
+        // when target is collapsed, drop it as a peer
         const targetPeerBelow = source.get(dropTargetBelowPageId)
         const targetParentPageId = targetPeerBelow?.parentPageId as string | undefined
         const connId = ConnectionHandler.getConnectionID(atmosphere.viewerId, 'User_pages', {
@@ -174,7 +175,6 @@ export const useDraggablePage = (
     if (!drag.isDrag) {
       const deltaY = Math.abs(e.clientY - drag.startY!)
       if (deltaY < 3) return
-      // el.setPointerCapture(drag.pointerId!)
       const bbox = el.getBoundingClientRect()
       // clip quick drags so the cursor is guaranteed to be inside the card
       drag.cardOffsetY = Math.min(e.clientY - bbox.top, bbox.height)

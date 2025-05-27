@@ -106,6 +106,7 @@ const DashNavList = (props: Props) => {
           title={'Private Pages'}
           pageRef={privatePages}
           draggingPageId={draggingPageId}
+          canAdd
         />
       </div>
     </div>

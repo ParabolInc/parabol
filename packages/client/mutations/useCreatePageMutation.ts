@@ -8,6 +8,10 @@ const mutation = graphql`
       page {
         id
         title
+        isPrivate
+        sortOrder
+        teamId
+        parentPageId
       }
     }
   }

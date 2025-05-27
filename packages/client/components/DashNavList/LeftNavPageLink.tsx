@@ -39,7 +39,7 @@ export const LeftNavPageLink = (props: Props) => {
     `,
     pageRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild} = page
+  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild, sortOrder} = page
   const pageIdNum = id.split(':')[1]
   const titleSlug = toSlug(title || '')
   const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
@@ -59,12 +59,12 @@ export const LeftNavPageLink = (props: Props) => {
       updater: (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         if (!viewer) return
-        const conn = ConnectionHandler.getConnection(viewer, 'SubPages_pages', {
+        const conn = ConnectionHandler.getConnection(viewer, 'User_pages', {
           parentPageId: id
         })
         if (!conn) return
         const node = store.getRootField('createPage')?.getLinkedRecord('page')
-        safePutNodeInConn(conn, node, store, 'sortOrder', false)
+        safePutNodeInConn(conn, node, store, 'sortOrder', true)
       },
       onCompleted: (response) => {
         const {createPage} = response
@@ -123,7 +123,9 @@ export const LeftNavPageLink = (props: Props) => {
             draggingPageId={draggingPageId}
           />
           <div className='flex flex-col text-sm font-medium'>
-            <span>{title || '<Untitled>'}</span>
+            <span>
+              {title || '<Untitled>'} {sortOrder} {id.slice(-3)}
+            </span>
           </div>
           <div className='flex flex-1 items-center justify-end'>
             <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
