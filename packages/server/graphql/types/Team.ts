@@ -198,20 +198,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         return availableScales.filter(isValid).flat()
       }
     },
-    activeMeetings: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeeting))),
-      description: 'a list of meetings that are currently in progress',
-      resolve: async (
-        {id: teamId}: {id: string},
-        _args: unknown,
-        {authToken, dataLoader}: GQLContext
-      ) => {
-        if (!isTeamMember(authToken, teamId)) return []
-        // this is by team, not by meeting member, which caused an err in dev, not sure about prod
-        // we need better perms for people to view/not view a meeting that happened before they joined the team
-        return dataLoader.get('activeMeetingsByTeamId').load(teamId)
-      }
-    },
     qualAIMeetingsCount: {
       type: new GraphQLNonNull(GraphQLInt),
       description:
