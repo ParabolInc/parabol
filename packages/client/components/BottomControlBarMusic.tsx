@@ -29,7 +29,6 @@ const BottomControlBarMusic = ({
     playTrack,
     pause,
     stop,
-    setVolume,
     handleVolumeChange,
     selectTrack,
     currentTrackSrc,
@@ -122,10 +121,7 @@ const BottomControlBarMusic = ({
             <div className='mt-2 flex items-center justify-between gap-2'>
               <button
                 type='button'
-                onClick={() => {
-                  if (!currentTrackSrc) return
-                  playTrack(currentTrackSrc)
-                }}
+                onClick={() => playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
@@ -139,9 +135,7 @@ const BottomControlBarMusic = ({
               </button>
               <button
                 type='button'
-                onClick={() => {
-                  pause()
-                }}
+                onClick={pause}
                 disabled={!isPlaying}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
@@ -155,9 +149,7 @@ const BottomControlBarMusic = ({
               </button>
               <button
                 type='button'
-                onClick={() => {
-                  stop()
-                }}
+                onClick={stop}
                 disabled={!stopEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',

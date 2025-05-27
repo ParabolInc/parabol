@@ -200,7 +200,8 @@ const useMeetingMusicSync = (props: Props) => {
   )
 
   const playTrack = useCallback(
-    (trackSrc: string) => {
+    (trackSrc: string | null) => {
+      if (!trackSrc) return
       if (isFacilitator) {
         if (trackSrc === currentTrackSrc && pausedAt !== null) {
           setIsPlaying(true)
