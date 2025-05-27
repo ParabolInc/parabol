@@ -1,3 +1,4 @@
+import {usePrometheus} from '@graphql-yoga/plugin-prometheus'
 import {Counter, Gauge, Histogram, Registry, collectDefaultMetrics} from 'prom-client'
 import {HttpResponse} from 'uWebSockets.js'
 import {activeClients} from './activeClients'
@@ -103,9 +104,9 @@ let lastEventLoopCheck = 0
 const EVENT_LOOP_CHECK_INTERVAL = 1000
 
 // GraphQL Yoga Prometheus plugin configuration
-// export const graphqlPrometheusPlugin = usePrometheus({
-//   registry: register
-// })
+export const graphqlPrometheusPlugin = usePrometheus({
+  registry: register
+})
 
 const updateWebSocketMetrics = () => {
   wsConnections.set({port: PORT.toString()}, activeClients.size)
