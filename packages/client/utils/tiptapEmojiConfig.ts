@@ -14,12 +14,17 @@ export const tiptapEmojiConfig: Partial<MentionOptions<any, MentionNodeAttrs>> =
     pluginKey: new PluginKey('emoji'),
     char: ':',
     items: async ({query}) => {
-      // for classic emoticons like :), we need to include the : in the search
+      // because : is the search prefix, it could also represent the eyes of an emoticon in which case we need to include the character in the search
+
+      // if the query does not start with a letter, it is for sure an emoticon and we should omit the text search to avoid :disappointment: for :)
       const isEmoticon = /^[^a-zA-Z0-9_]/.test(query)
-      const searchQuery = isEmoticon ? `:${query}` : query
-      const emojis: Emoji[] = await SearchIndex.search(searchQuery || '')
-      if (!emojis) return []
-      return emojis.map((emoji) => ({
+      const [emoticons, emojis] = await Promise.all([
+        SearchIndex.search((query && `:${query}`) || ''),
+        (!isEmoticon && SearchIndex.search(query || '')) || []
+      ])
+      const combined: Emoji[] = [...(emoticons ?? []), ...(emojis ?? [])]
+      if (!combined) return []
+      return combined.map((emoji) => ({
         id: emoji.id,
         native: emoji.skins[0]!.native
       }))
