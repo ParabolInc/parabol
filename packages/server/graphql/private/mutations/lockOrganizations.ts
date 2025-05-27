@@ -5,7 +5,7 @@ const lockOrganizations: MutationResolvers['lockOrganizations'] = async (
   _source,
   {orgIds, isPaid, message}
 ) => {
-  const unpaidMessageHTML = isPaid ? (message ?? null) : null
+  const unpaidMessageHTML = !isPaid ? (message ?? null) : null
 
   // RESOLUTION
   const pg = getKysely()
