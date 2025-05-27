@@ -159,6 +159,16 @@ type Organization {
   billingTier: TierEnum!
 
   """
+  false if the Organization was explicitly marked as not paid manually or by stripe
+  """
+  isPaid: Boolean!
+
+  """
+  Message to show if the organization is unpaid
+  """
+  unpaidMessageHTML: String
+
+  """
   When the trial started, iff there is a trial active
   """
   trialStartDate: DateTime

@@ -47,13 +47,13 @@ graphql`
       ...MeetingsDashActiveMeetings
       id
       name
-      isPaid
       activeMeetings {
         id
       }
       organization {
         id
         name
+        isPaid
         ...DashNavList_organization
       }
       ...DashNavListTeam

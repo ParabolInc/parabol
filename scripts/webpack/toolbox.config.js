@@ -36,8 +36,7 @@ module.exports = {
       'parabol-server': SERVER_ROOT,
       'parabol-client': CLIENT_ROOT
     },
-    extensions: ['.js', '.json', '.ts', '.tsx'],
-    unsafeCache: true
+    extensions: ['.js', '.json', '.ts', '.tsx']
   },
   target: 'node',
   externals: [

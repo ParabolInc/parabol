@@ -1,6 +1,6 @@
 import {DataLoaderWorker} from '../../../graphql'
 
-const getIsEmailApprovedByOrg = async (
+export const getIsEmailApprovedByOrg = async (
   email: string,
   orgId: string,
   dataLoader: DataLoaderWorker
@@ -23,5 +23,3 @@ const getIsEmailApprovedByOrg = async (
   }
   return undefined
 }
-
-export default getIsEmailApprovedByOrg

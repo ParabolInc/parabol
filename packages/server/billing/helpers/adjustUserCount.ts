@@ -60,16 +60,11 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
 
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
-  const rawOrganizations = await dataLoader.get('organizations').loadMany(orgIds)
-  const organizations = rawOrganizations.filter(isValid)
   const docs = orgIds.map((orgId) => {
-    const organization = organizations.find((organization) => organization.id === orgId)!
-    // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
     return {
       id: generateUID(),
       orgId,
-      userId,
-      tier: organization.tier
+      userId
     }
   })
   dataLoader.clearAll('organizationUsers')
@@ -82,8 +77,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
         removedAt: null,
         inactive: false,
         role: null,
-        suggestedTier: null,
-        tier: (eb) => eb.ref('excluded.tier')
+        suggestedTier: null
       })
     )
     .execute()
