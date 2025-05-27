@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.5.1](https://github.com/ParabolInc/parabol/compare/v10.5.0...v10.5.1) (2025-05-26)
+
+
+### Fixed
+
+* set message in lockOrganizations ([#11363](https://github.com/ParabolInc/parabol/issues/11363)) ([1ef583c](https://github.com/ParabolInc/parabol/commit/1ef583c008cd0e1dfb5416505a1315834cc2ca2e))
+
 ## [10.5.0](https://github.com/ParabolInc/parabol/compare/v10.4.1...v10.5.0) (2025-05-26)
 
 
