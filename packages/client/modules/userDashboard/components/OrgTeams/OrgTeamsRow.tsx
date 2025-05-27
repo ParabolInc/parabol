@@ -4,6 +4,7 @@ import {format} from 'date-fns'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
+import EditableTeamName from '../../../teamDashboard/components/EditTeamName/EditableTeamName'
 
 type Props = {
   teamRef: OrgTeamsRow_team$key
@@ -21,11 +22,13 @@ const OrgTeamsRow = (props: Props) => {
           isLead
         }
         lastMetAt
+        isOrgAdmin
+        ...EditableTeamName_team
       }
     `,
     teamRef
   )
-  const {id: teamId, teamMembers, name, lastMetAt} = team
+  const {id: teamId, teamMembers, name: teamName, lastMetAt, isOrgAdmin} = team
   const teamMembersCount = teamMembers.length
   const viewerTeamMember = teamMembers.find((m) => m.isSelf)
   const isLead = viewerTeamMember?.isLead
@@ -34,25 +37,22 @@ const OrgTeamsRow = (props: Props) => {
   return (
     <tr className='hover:bg-slate-50 border-b border-slate-300'>
       <td className='p-3'>
-        <Link
-          to={`teams/${teamId}`}
-          className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'
-        >
-          <div className='flex flex-1 items-center'>
-            {name}
+        <div className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'>
+          <div className='flex items-center gap-2'>
+            {isLead || isOrgAdmin ? <EditableTeamName team={team} /> : <span>{teamName}</span>}
             {isLead && (
-              <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+              <span className='rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
                 Team Lead
               </span>
             )}
             {isMember && (
-              <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
-                Member
-              </span>
+              <span className='rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>Member</span>
             )}
           </div>
-          <ChevronRight className='ml-2 text-slate-600' />
-        </Link>
+          <Link to={`teams/${teamId}`}>
+            <ChevronRight className='ml-auto text-slate-600' />
+          </Link>
+        </div>
       </td>
       <td className='text-gray-600 p-3'>{teamMembersCount}</td>
       <td className='text-gray-600 p-3'>

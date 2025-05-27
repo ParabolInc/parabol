@@ -6,6 +6,7 @@ import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manage
 import JiraServerOAuth1Manager, {
   OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
+import LinearManager from '../../../integrations/linear/LinearManager'
 import getKysely from '../../../postgres/getKysely'
 import {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
@@ -17,7 +18,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 interface OAuth2Auth {
   accessToken: string
-  refreshToken: string
+  refreshToken: string | undefined
   scopes: string
   expiresAt?: Date | null
 }
@@ -81,12 +82,6 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   if (authStrategy === 'oauth2') {
     if (!oauthCodeOrPat || !redirectUri)
       return {error: {message: 'Missing OAuth2 code or redirect URI'}}
-    if (service === 'gitlab') {
-      const {clientId, clientSecret, serverBaseUrl} = integrationProvider
-      const manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
-      const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-      tokenMetadata = convertExpiresIn(authRes)
-    }
     if (service === 'azureDevOps') {
       if (!oauthVerifier) {
         return {
@@ -100,9 +95,22 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
       tokenMetadata = convertExpiresIn(authRes)
     }
-    if (service === 'gcal') {
-      const {clientId, clientSecret, serverBaseUrl} = integrationProvider
-      const manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+    let manager: GcalOAuth2Manager | LinearManager | GitLabOAuth2Manager | null = null
+    const {clientId, clientSecret, serverBaseUrl} = integrationProvider
+
+    switch (service) {
+      case 'gcal':
+        manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
+      case 'linear':
+        manager = new LinearManager(clientId, clientSecret, serverBaseUrl)
+        break
+      case 'gitlab':
+        manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
+    }
+
+    if (manager) {
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
       tokenMetadata = convertExpiresIn(authRes)
     }

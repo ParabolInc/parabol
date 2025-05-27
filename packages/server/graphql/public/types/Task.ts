@@ -2,6 +2,7 @@ import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
+import LinearServerManager from '../../../integrations/linear/LinearServerManager'
 import {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getSimilarTaskEstimate from '../../../postgres/queries/getSimilarTaskEstimate'
 import insertTaskEstimate from '../../../postgres/queries/insertTaskEstimate'
@@ -200,6 +201,28 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
         sendToSentry(error, {userId: accessUserId})
       }
       return data
+    } else if (integration.service === 'linear') {
+      const {accessUserId} = integration
+      const linearAuth = await dataLoader
+        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+        .load({service: 'linear', teamId, userId: accessUserId})
+      if (!linearAuth?.accessToken) return null
+      const {issueId} = integration
+      const query = `
+          query {
+            issue(id: "${issueId}"){
+              ...info
+            }
+          }
+        `
+      const manager = new LinearServerManager(linearAuth, context, info)
+      const linearRequest = manager.getLinearRequest(info, context)
+      const [data, error] = await linearRequest(query, {})
+      if (error) {
+        sendToSentry(error, {userId: accessUserId})
+      }
+      // Ensure the returned object has a standard prototype
+      return data ? {...data} : null
     }
     return null
   },

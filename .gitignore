@@ -6,8 +6,10 @@
 .npmrc
 .DS_Store
 .awcache/
+.clinerules-code
 .history/
 .idea/
+.roomodes
 .nx/
 .yarn/
 pgBackup/

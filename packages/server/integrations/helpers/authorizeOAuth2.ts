@@ -72,7 +72,10 @@ export const authorizeOAuth2 = async <
   }
   const tokenJson = (await oauth2Response.json()) as OAuth2Response
   if ('error' in tokenJson) {
-    const errorMessage = tokenJson.error || `Received null OAuth2 Error from ${authUrl}`
+    // Log the detailed error from the OAuth provider
+    console.error(`OAuth2 Error from ${authUrl}:`, tokenJson)
+    const errorMessage =
+      tokenJson.error_description || tokenJson.error || `Received OAuth2 Error from ${authUrl}`
     return new Error(errorMessage)
   }
   const {
@@ -81,10 +84,11 @@ export const authorizeOAuth2 = async <
     scope,
     expires_in: expiresIn
   } = tokenJson
-  return {
+  const result = {
     accessToken,
     expiresIn,
     refreshToken: oauthRefreshToken,
     scopes: scope
-  } as unknown as TSuccess
+  }
+  return result as TSuccess
 }

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.3.5",
+  "version": "10.4.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -107,7 +107,7 @@
     "md-to-adf": "^0.6.4",
     "mime-types": "^2.1.16",
     "msgpackr": "^1.11.2",
-    "nest-graphql-endpoint": "0.8.1",
+    "nest-graphql-endpoint": "^0.8.3",
     "node-env-flag": "0.1.0",
     "node-html-markdown-cloudflare": "^1.3.0",
     "nodemailer": "^6.9.9",

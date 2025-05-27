@@ -135,6 +135,7 @@ export const enum ExternalLinks {
   INTEGRATIONS_GITHUB = 'https://www.parabol.co/integrations/github',
   INTEGRATIONS_MATTERMOST = 'https://www.parabol.co/integrations/mattermost',
   INTEGRATIONS_GITLAB = 'https://www.parabol.co/integrations/gitlab',
+  INTEGRATIONS_LINEAR = 'https://www.parabol.co/integrations/linear',
   INTEGRATIONS_JIRASERVER = 'https://www.parabol.co/integrations/jira-server',
   INTEGRATIONS_SLACK = 'https://www.parabol.co/integrations/slack',
   INTEGRATIONS_MSTEAMS = 'https://www.parabol.co/integrations/msteams',
@@ -311,7 +312,9 @@ export const enum Providers {
   AZUREDEVOPS_NAME = 'Azure DevOps',
   AZUREDEVOPS_DESC = 'Use Azure DevOps Issues from within Parabol.',
   MSTEAMS_NAME = 'Microsoft Teams',
-  MSTEAMS_DESC = 'Push notifications to Microsoft Teams'
+  MSTEAMS_DESC = 'Push notifications to Microsoft Teams',
+  LINEAR_NAME = 'Linear',
+  LINEAR_DESC = 'Use Linear Issues from within Parabol.'
 }
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
@@ -489,6 +492,11 @@ export const enum SprintPokerDefaults {
   SERVICE_FIELD_NULL = '',
   SERVICE_FIELD_NULL_LABEL = 'Do Not Update',
   GITHUB_DEFAULT_QUERY = 'is:issue is:open sort:updated involves:@me',
+  LINEAR_FIELD_ESTIMATE = '__estimate',
+  LINEAR_FIELD_ESTIMATE_LABEL = 'Estimate',
+  LINEAR_FIELD_PRIORITY = '__priority',
+  LINEAR_FIELD_PRIORITY_LABEL = 'Priority',
+  LINEAR_DEFAULT_QUERY = '',
   JIRA_FIELD_UPDATE_ERROR = 'Couldn\'t fix the missing field! In Jira, use "Find my field" to determine the error',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION = 'Please enable estimation feature in your Jira project settings',
   JIRA_FIELD_UPDATE_ERROR_ESTIMATION_TIMETRACKING = 'Please enable estimation feature in your Jira project settings and add Time tracking field to the issue type',

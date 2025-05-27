@@ -6,8 +6,9 @@ import ReflectTemplate from '../../database/types/ReflectTemplate'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../utils/authorization'
+import {getUserId, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
+import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import SharingScopeEnum, {SharingScopeEnumType} from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
@@ -16,14 +17,8 @@ const updateTemplateScope = {
   type: new GraphQLNonNull(UpdateTemplateScopePayload),
   description: `Change the scope of a template`,
   args: {
-    templateId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The id of the template'
-    },
-    scope: {
-      type: new GraphQLNonNull(SharingScopeEnum),
-      description: 'the new scope'
-    }
+    templateId: {type: new GraphQLNonNull(GraphQLID), description: 'The id of the template'},
+    scope: {type: new GraphQLNonNull(SharingScopeEnum), description: 'the new scope'}
   },
   resolve: async (
     _source: unknown,
@@ -44,8 +39,14 @@ const updateTemplateScope = {
       return {error: {message: `Template not found`}}
     }
     const {name, teamId, orgId, scope} = template
-    if (!isTeamMember(authToken, teamId)) {
-      return {error: {message: `Not a member of the team`}}
+    if (
+      !isTeamMember(authToken, teamId) &&
+      !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
+    ) {
+      return standardError(
+        new Error('You are not authorized to update the scope of this template'),
+        {userId: viewerId}
+      )
     }
 
     // VALIDATION

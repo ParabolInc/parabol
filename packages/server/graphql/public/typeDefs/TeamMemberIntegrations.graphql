@@ -28,6 +28,10 @@ type TeamMemberIntegrations {
   gitlab: GitLabIntegration!
 
   """
+  All things associated with a Linear integration for a team member
+  """
+  linear: LinearIntegration!
+  """
   All things associated with a Mattermost integration for a team member
   """
   mattermost: MattermostIntegration!

@@ -5,6 +5,51 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.4.1](https://github.com/ParabolInc/parabol/compare/v10.4.0...v10.4.1) (2025-05-21)
+
+
+### Fixed
+
+* limit the Azure DevOps work items fetched ([#11345](https://github.com/ParabolInc/parabol/issues/11345)) ([6a11049](https://github.com/ParabolInc/parabol/commit/6a110495ab9839bc09b9e26a7687137cf7278269))
+* ScopePhaseArea styling ([#11349](https://github.com/ParabolInc/parabol/issues/11349)) ([d8fcdd0](https://github.com/ParabolInc/parabol/commit/d8fcdd0daa567c1d6733f32cf34e318af6db6927))
+
+
+### Changed
+
+* Remove leftover debug output ([#11346](https://github.com/ParabolInc/parabol/issues/11346)) ([a5254ab](https://github.com/ParabolInc/parabol/commit/a5254abfa7de0f4ca2476203e5ee22b449e64b7b))
+
+## [10.4.0](https://github.com/ParabolInc/parabol/compare/v10.3.6...v10.4.0) (2025-05-16)
+
+
+### Added
+
+* adds the Linear integration ([#11217](https://github.com/ParabolInc/parabol/issues/11217)) ([18f7457](https://github.com/ParabolInc/parabol/commit/18f7457720d09f929e54f6cf19b054135441078e))
+* **orgAdmin:** org admin can rename a team in org teams view ([#11331](https://github.com/ParabolInc/parabol/issues/11331)) ([81c63e0](https://github.com/ParabolInc/parabol/commit/81c63e062617f4ea301c9ca0449c3624f9e73bee))
+
+
+### Fixed
+
+* **metrics:** add metric for page insights generated ([#11332](https://github.com/ParabolInc/parabol/issues/11332)) ([8af9230](https://github.com/ParabolInc/parabol/commit/8af92304999918f877c18e5cf4dd80d0994df36a))
+
+
+### Changed
+
+* make chronos debug output optional ([#11334](https://github.com/ParabolInc/parabol/issues/11334)) ([6745673](https://github.com/ParabolInc/parabol/commit/6745673a2e0dfb9097ce7b93b12a27e7ec4a037b))
+
+## [10.3.6](https://github.com/ParabolInc/parabol/compare/v10.3.5...v10.3.6) (2025-05-13)
+
+
+### Fixed
+
+* mark wrapped resolvers ([#11325](https://github.com/ParabolInc/parabol/issues/11325)) ([7cd2e93](https://github.com/ParabolInc/parabol/commit/7cd2e935e33a4d4b8b78beb82176909f600e7efa))
+* **MS Teams:** Updates incorrect service name from `mattermost` to `msTeams` ([#11314](https://github.com/ParabolInc/parabol/issues/11314)) ([03c20d0](https://github.com/ParabolInc/parabol/commit/03c20d06371b6e2b18514d930d18be004cdeeaeb))
+* **orgAdmin:** enable org admins to rename & update scope of meeting templates ([#11326](https://github.com/ParabolInc/parabol/issues/11326)) ([c6b0f0a](https://github.com/ParabolInc/parabol/commit/c6b0f0a754de78979fee0af2480267af38b4e336))
+
+
+### Changed
+
+* fail on pgtyped errors ([#11324](https://github.com/ParabolInc/parabol/issues/11324)) ([33a676d](https://github.com/ParabolInc/parabol/commit/33a676ddcfc52499da91cbdd73cd73d91eebc077))
+
 ## [10.3.5](https://github.com/ParabolInc/parabol/compare/v10.3.4...v10.3.5) (2025-05-09)
 
 

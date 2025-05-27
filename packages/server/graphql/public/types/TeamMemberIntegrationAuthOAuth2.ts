@@ -3,7 +3,7 @@ import TeamMemberIntegrationAuthId from '../../../../client/shared/gqlIds/TeamMe
 import {TeamMemberIntegrationAuthOAuth2Resolvers} from '../resolverTypes'
 
 const TeamMemberIntegrationAuthOAuth2: TeamMemberIntegrationAuthOAuth2Resolvers = {
-  __isTypeOf: ({accessToken, refreshToken, scopes}) => !!(accessToken && refreshToken && scopes),
+  __isTypeOf: ({accessToken, scopes}) => !!(accessToken && scopes),
   id: ({id}) => TeamMemberIntegrationAuthId.join(id),
   providerId: ({providerId}) => IntegrationProviderId.join(providerId),
   provider: async ({providerId}, _args, {dataLoader}) => {

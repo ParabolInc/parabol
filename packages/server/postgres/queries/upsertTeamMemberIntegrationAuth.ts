@@ -18,7 +18,7 @@ export interface ITeamMemberIntegrationAuthOAuth1Input extends ITeamMemberIntegr
 
 export interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegrationAuthBaseInput {
   accessToken: string
-  refreshToken: string
+  refreshToken: string | undefined
   scopes: string
   expiresAt: Date | null
 }

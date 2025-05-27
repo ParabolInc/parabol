@@ -4,6 +4,7 @@ import {sql} from 'kysely'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {USER_AI_TOKENS_MONTHLY_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
@@ -16,6 +17,7 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   if (meetingIds.length > 500) {
     throw new GraphQLError('Too many meetings to summarize. Max 500')
   }
@@ -143,6 +145,7 @@ Your response should be in markdown format. Do not use horizontal rules to separ
         yield content
       } else if (chunk.usage) {
         const tokenCost = chunk.usage?.total_tokens ?? 10_000
+        analytics.pageInsightsGenerated(viewer)
         await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
       }
     }
