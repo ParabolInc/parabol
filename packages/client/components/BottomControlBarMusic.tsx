@@ -35,9 +35,7 @@ const BottomControlBarMusic = ({
     isPlaying,
     volume,
     availableTracks
-  } = useMeetingMusicSync({
-    meetingId
-  })
+  } = useMeetingMusicSync(meetingId)
 
   const playEnabled = !!currentTrackSrc && !isPlaying
   const stopEnabled = !!currentTrackSrc && isPlaying
