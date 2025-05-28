@@ -211,6 +211,7 @@ const MeetingCard = (props: Props) => {
         id
         name
         meetingType
+        endedAt
         phases {
           phaseType
           stages {
@@ -236,7 +237,7 @@ const MeetingCard = (props: Props) => {
     `,
     meetingRef
   )
-  const {name, team, id: meetingId, meetingType, phases, meetingSeries} = meeting
+  const {name, team, id: meetingId, meetingType, phases, meetingSeries, endedAt} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
@@ -270,6 +271,7 @@ const MeetingCard = (props: Props) => {
   const {id: teamId, name: teamName} = team
 
   const isRecurring = !!(meetingSeries && !meetingSeries.cancelledAt)
+  const isCompleted = !!endedAt
   const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
 
   return (
@@ -300,16 +302,30 @@ const MeetingCard = (props: Props) => {
           <MeetingImgWrapper>
             <MeetingImgBackground meetingType={meetingType} />
             <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
-            {isRecurring && (
-              <span
-                className={clsx(
-                  'absolute top-2 right-2 rounded-[64px] px-2 py-1 text-[11px] leading-3 font-medium',
-                  RECURRING_LABEL_COLORS[meetingType]
-                )}
-              >
-                Recurring
-              </span>
-            )}
+            <div className='absolute top-2 right-2 flex items-center gap-1'>
+              {isRecurring && (
+                <>
+                  {isCompleted && (
+                    <span
+                      className={clsx(
+                        'rounded-[64px] px-2 py-1 text-[11px] leading-3 font-medium',
+                        RECURRING_LABEL_COLORS[meetingType]
+                      )}
+                    >
+                      Completed
+                    </span>
+                  )}
+                  <span
+                    className={clsx(
+                      'rounded-[64px] px-2 py-1 text-[11px] leading-3 font-medium',
+                      RECURRING_LABEL_COLORS[meetingType]
+                    )}
+                  >
+                    Recurring
+                  </span>
+                </>
+              )}
+            </div>
             <Link to={meetingLink}>
               <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
             </Link>

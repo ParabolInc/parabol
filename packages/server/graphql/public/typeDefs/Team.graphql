@@ -102,9 +102,14 @@ type Team implements Node {
   scales: [TemplateScale!]!
 
   """
-  a list of meetings that are currently in progress
+  list of meetings that are currently in progress including active meetings of activeMeetingSeries
   """
   activeMeetings: [NewMeeting!]!
+
+  """
+  list of all active meeting series, a series can be active without having an active meeting
+  """
+  activeMeetingSeries: [MeetingSeries!]!
 
   """
   Whether the team has a feature flag enabled or not
