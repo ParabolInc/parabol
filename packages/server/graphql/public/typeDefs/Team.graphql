@@ -210,4 +210,17 @@ type Team implements Node {
   Whether the team is visible to everyone in the org and anyone can join it without an invitation
   """
   isPublic: Boolean!
+  """
+  All the pages owned by a team
+  """
+  pages(
+    """
+    The first n records to return
+    """
+    first: Int!
+    """
+    The pagination cursor, if any
+    """
+    after: String
+  ): PageConnection!
 }

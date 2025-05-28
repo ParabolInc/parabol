@@ -34,6 +34,13 @@ const DashNavListTeams = (props: Props) => {
           ...PublicTeamsModal_team
           isViewerOnTeam
           isPublic
+          pages(first: 500) @connection(key: "Team_pages") {
+            edges {
+              node {
+                id
+              }
+            }
+          }
         }
       }
     `,

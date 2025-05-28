@@ -22,10 +22,12 @@ interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
   pageAncestors: string[]
   draggingPageId: string | null | undefined
+  draggingPageIsPrivate: boolean | null
 }
 
 export const SubPages = (props: Props) => {
-  const {pageAncestors, queryRef, draggingPageId} = props
+  const connectionKey = 'User_pages'
+  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {pages} = viewer
@@ -49,9 +51,11 @@ export const SubPages = (props: Props) => {
             pageRef={node}
             pageAncestors={pageAncestors}
             draggingPageId={draggingPageId}
-            isFirstChild={idx === 0}
+            dropIdx={idx}
             isLastChild={idx === edges.length - 1}
             nextPeerId={edges[idx + 1]?.node.id || null}
+            connectionKey={connectionKey}
+            draggingPageIsPrivate={draggingPageIsPrivate}
           />
         )
       })}

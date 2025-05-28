@@ -391,12 +391,53 @@ FOR EACH ROW EXECUTE FUNCTION "updateOrgPageAccessByOrgUser"();
 --- UNLINK FROM PARENT WHEN MORE RESTRICTIVE
 CREATE OR REPLACE FUNCTION "unlinkFromParentPage"()
 RETURNS TRIGGER AS $$
+DECLARE
+  "_parentRole" "PageRoleEnum";
+  "_parentPageId" INT;
 BEGIN
-  IF TG_OP = 'DELETE' OR OLD.role < NEW.role THEN
-    UPDATE "Page"
-    SET "isParentLinked" = FALSE
-    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId")
-    AND "parentPageId" IS NOT NULL;
+  -- Only proceed if the role was downgraded or deleted
+  IF TG_OP = 'DELETE' OR OLD."role" < NEW."role" THEN
+    SELECT "parentPageId" INTO "_parentPageId"
+      FROM "Page"
+      WHERE "id" = OLD."pageId";
+
+    -- Skip if no parent
+    IF "_parentPageId" IS NULL THEN
+      RETURN NULL;
+    END IF;
+
+    -- Fetch parent role based on access type
+    IF TG_TABLE_NAME = 'PageUserAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageUserAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "userId" = OLD."userId";
+
+    ELSIF TG_TABLE_NAME = 'PageTeamAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageTeamAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "teamId" = OLD."teamId";
+
+    ELSIF TG_TABLE_NAME = 'PageOrganizationAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageOrganizationAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "orgId" = OLD."orgId";
+
+    ELSIF TG_TABLE_NAME = 'PageExternalAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageExternalAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "email" = OLD."email";
+    END IF;
+
+    -- Unlink if the child role exceeds the parent's
+    IF "_parentRole" IS NOT NULL AND (TG_OP = 'DELETE' OR "_parentRole" < NEW."role") THEN
+      UPDATE "Page"
+      SET "isParentLinked" = FALSE
+      WHERE "id" = OLD."pageId";
+    END IF;
   END IF;
   RETURN NULL;
 END;
@@ -579,18 +620,25 @@ FOR EACH ROW
 EXECUTE FUNCTION "addAccessOnNewPage"();
 
 
+CREATE OR REPLACE FUNCTION "revokeAccess"("_pageId" INT)
+RETURNS VOID AS $$
+BEGIN
+  DELETE FROM "PageUserAccess"
+    WHERE "pageId" = "_pageId";
+  DELETE FROM "PageExternalAccess"
+    WHERE "pageId" = "_pageId";
+  DELETE FROM "PageTeamAccess"
+    WHERE "pageId" = "_pageId";
+  DELETE FROM "PageOrganizationAccess"
+    WHERE "pageId" = "_pageId";
+END;
+$$ LANGUAGE plpgsql;
+
 --- REMOVE ACCESS ON DELETED PAGE
 CREATE OR REPLACE FUNCTION "removeAccessOnDeletePage"()
 RETURNS TRIGGER AS $$
 BEGIN
-  DELETE FROM "PageUserAccess"
-    WHERE "pageId" = OLD."pageId";
-  DELETE FROM "PageExternalAccess"
-    WHERE "pageId" = OLD."pageId";
-  DELETE FROM "PageTeamAccess"
-    WHERE "pageId" = OLD."pageId";
-  DELETE FROM "PageOrganizationAccess"
-    WHERE "pageId" = OLD."pageId";
+  PERFORM "revokeAccess"(OLD."pageId");
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
@@ -682,15 +730,22 @@ BEGIN
     ELSIF NEW."parentPageId" IS NOT NULL THEN
       PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
     END IF;
-  ELSIF NEW."parentPageId" IS NOT NULL AND NEW."parentPageId" IS DISTINCT FROM OLD."parentPageId" THEN
+  ELSIF NEW."parentPageId" IS DISTINCT FROM OLD."parentPageId" THEN
+    IF NEW."parentPageId" IS NOT NULL OR NEW."isPrivate" = TRUE THEN
+      -- There is a new parent or it is now a top-level shared page
+      PERFORM "revokeAccess"(NEW.id);
+    END IF;
     IF NEW."isParentLinked" = FALSE THEN
-      NEW."isParentLinked" := TRUE;
+      UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
     ELSE
       PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
     END IF;
-  ELSIF NEW."teamId" IS NOT NULL AND NEW."teamId" IS DISTINCT FROM OLD."teamId" THEN
+  ELSIF NEW."teamId" IS DISTINCT FROM OLD."teamId" THEN
+    IF NEW."teamId" IS NOT NULL THEN
+      PERFORM "revokeAccess"(NEW.id);
+    END IF;
     IF NEW."isParentLinked" = FALSE THEN
-      NEW."isParentLinked" := TRUE;
+      UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
     ELSE
       INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
       VALUES (NEW.id, NEW."teamId", 'editor')
@@ -704,7 +759,7 @@ $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE TRIGGER trg_handle_page_hierarchy_change
-BEFORE UPDATE OF "teamId", "parentPageId", "isParentLinked" ON "Page"
+AFTER UPDATE OF "teamId", "parentPageId", "isParentLinked" ON "Page"
 FOR EACH ROW
 EXECUTE FUNCTION "handlePageHierarchyChange"();
 
@@ -734,6 +789,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "revokeAccess";
     DROP FUNCTION IF EXISTS "cloneParentAccess";
     DROP FUNCTION IF EXISTS "handlePageHierarchyChange";
     DROP FUNCTION IF EXISTS "maybeMarkPrivate";

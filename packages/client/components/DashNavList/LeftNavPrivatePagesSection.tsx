@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {ConnectionHandler, useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import type {LeftNavPagesSection_page$key} from '../../__generated__/LeftNavPagesSection_page.graphql'
+import type {LeftNavPrivatePagesSection_viewer$key} from '../../__generated__/LeftNavPrivatePagesSection_viewer.graphql'
 import safePutNodeInConn from '../../mutations/handlers/safePutNodeInConn'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
@@ -13,24 +13,33 @@ import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {LeftNavPageLink} from './LeftNavPageLink'
 
 interface Props {
-  title: string
-  pageRef: LeftNavPagesSection_page$key
-  draggingPageId: string | null | undefined
-  canAdd?: boolean
+  viewerRef: LeftNavPrivatePagesSection_viewer$key
 }
-export const LeftNavPagesSection = (props: Props) => {
-  const {title, pageRef, draggingPageId, canAdd} = props
-  const pageArray = useFragment(
+export const LeftNavPrivatePagesSection = (props: Props) => {
+  const {viewerRef} = props
+  const connectionKey = 'User_privatePages'
+  const viewer = useFragment(
     graphql`
-      fragment LeftNavPagesSection_page on Page @relay(plural: true) {
-        ...LeftNavPageLink_page
-        id
-        title
+      fragment LeftNavPrivatePagesSection_viewer on User {
+        draggingPageId
+        draggingPageIsPrivate
+        privatePages: pages(first: 500, isPrivate: true) @connection(key: "User_privatePages") {
+          edges {
+            node {
+              ...LeftNavPageLink_page
+              id
+              title
+              isPrivate
+            }
+          }
+        }
       }
     `,
-    pageRef
+    viewerRef
   )
-  const firstPageId = pageArray[0]?.id
+  const {draggingPageId, draggingPageIsPrivate, privatePages} = viewer
+  const {edges} = privatePages
+  const firstPageId = edges[0]?.node.id
   const canDropBelow = draggingPageId && draggingPageId !== firstPageId
   const [execute, submitting] = useCreatePageMutation()
   const history = useHistory()
@@ -43,7 +52,7 @@ export const LeftNavPagesSection = (props: Props) => {
       updater: (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         if (!viewer) return
-        const conn = ConnectionHandler.getConnection(viewer, 'User_pages')
+        const conn = ConnectionHandler.getConnection(viewer, connectionKey, {isPrivate: true})
         const node = store.getRootField('createPage')?.getLinkedRecord('page')
         safePutNodeInConn(conn, node, store, 'sortOrder', true)
       },
@@ -67,9 +76,9 @@ export const LeftNavPagesSection = (props: Props) => {
         className='group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold hover:bg-slate-300'
       >
         <div className='flex flex-col text-sm font-medium'>
-          <span>{title}</span>
+          <span>{'Private Pages'}</span>
         </div>
-        <div className={cn('hidden flex-1 items-center justify-end', canAdd && 'flex')}>
+        <div className={'flex flex-1 items-center justify-end'}>
           <div className='mr-1 flex size-5 items-center justify-center rounded-sm hover:bg-slate-400'>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -83,25 +92,32 @@ export const LeftNavPagesSection = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className={cn('relative hidden', showChildren && 'block')}>
+      <div
+        className={cn('relative hidden', showChildren && 'block')}
+        data-pages-connection={'User_privatePages'}
+      >
         <div
           className={cn(
             'absolute -top-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
           )}
           data-drop-below={canDropBelow ? '' : undefined}
+          data-drop-idx={-1}
         ></div>
-        {pageArray.map((page, idx) => {
-          const {id} = page
+        {edges.map((edge, idx) => {
+          const {node} = edge
+          const {id} = node
           return (
             <LeftNavPageLink
               key={id}
-              pageRef={page}
-              pageAncestors={[page.id]}
+              pageRef={node}
+              pageAncestors={[node.id]}
               draggingPageId={draggingPageId}
-              isFirstChild={idx === 0}
-              isLastChild={idx === pageArray.length - 1}
-              nextPeerId={pageArray[idx + 1]?.id || null}
+              isLastChild={idx === edges.length - 1}
+              dropIdx={idx}
+              nextPeerId={edges[idx + 1]?.node.id || null}
+              connectionKey={connectionKey}
+              draggingPageIsPrivate={draggingPageIsPrivate || null}
             />
           )
         })}

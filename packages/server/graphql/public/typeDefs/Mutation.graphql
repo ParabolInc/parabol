@@ -2101,7 +2101,7 @@ type Mutation {
     """
     The new sort order, as a fractional index
     """
-    sortOrder: String
+    sortOrder: String!
     """
     The new parent If null, and no teamId, it will be top-level
     """
@@ -2111,7 +2111,7 @@ type Mutation {
     """
     teamId: ID
     """
-    true to remove all sharing
+    true to revoke access for all but the mutator
     """
     makePrivate: Boolean
   ): UpdatePagePayload

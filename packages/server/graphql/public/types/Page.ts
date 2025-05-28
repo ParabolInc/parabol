@@ -22,7 +22,7 @@ const Page: PageResolvers = {
     const viewerId = getUserId(authToken)
     const userSortOrder = await dataLoader.get('pageUserSortOrder').load({pageId, userId: viewerId})
     // should never be null, but just in case
-    return userSortOrder || ' '
+    return userSortOrder || '!'
   }
 }
 

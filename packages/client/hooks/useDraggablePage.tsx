@@ -1,7 +1,12 @@
 import * as React from 'react'
 import {useRef} from 'react'
 import {commitLocalUpdate, ConnectionHandler} from 'relay-runtime'
-import {useUpdatePageMutation} from '../mutations/useUpdatePageMutation'
+import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
+import {
+  isPrivatePageConnectionLookup,
+  useUpdatePageMutation
+} from '../mutations/useUpdatePageMutation'
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
@@ -10,7 +15,6 @@ const makeDragRef = () => ({
   startY: null as number | null,
   clientY: null as number | null,
   isDrag: false,
-  // pointerId: null as number | null,
   cardOffsetY: null as number | null,
   cardOffsetX: null as number | null,
   waitingForMovement: false,
@@ -18,9 +22,43 @@ const makeDragRef = () => ({
   clone: null as HTMLElement | null
 })
 
+const getCursor = (source: RecordSource, edgeKey: string | null | undefined) => {
+  if (!edgeKey) return null
+  return source.get(edgeKey)?.cursor as string
+}
+const getSortOrder = (source: RecordSource, connectionId: string, idx: number | null) => {
+  const edges = (source.get(connectionId)?.edges as {__refs?: string[]})?.__refs
+  // Dropping into a page that was never expanded. we don't know what's in it, put it at the end
+  if (!edges) return __END__
+  // Dropping into a page, but we know the children. Put it after the last
+  if (idx === null) {
+    const lastEdgeKey = edges.at(-1)
+    const lastEdgeSortOrder = getCursor(source, lastEdgeKey)
+    return positionAfter(lastEdgeSortOrder || ' ')
+  }
+  // Dropped on a bar at the top of a list. Put it before the first
+  if (idx === -1) {
+    // dropped on a bar at the top of the list
+    const firstEdgeKey = edges[0]
+    const topEdgeSortOrder = getCursor(source, firstEdgeKey)
+    return positionBefore(topEdgeSortOrder || ' ')
+  }
+  // Dropped on a bar in the middle or end. Put it below the bar
+  const afterEdgeKey = edges[idx]!
+  const beforeEdgeKey = edges[idx + 1]
+  const afterEdgeSortOrder = getCursor(source, afterEdgeKey)!
+  const beforeEdgeSortOrder = getCursor(source, beforeEdgeKey)
+  return beforeEdgeSortOrder
+    ? positionBetween(afterEdgeSortOrder, beforeEdgeSortOrder)
+    : positionAfter(afterEdgeSortOrder)
+}
+
 export const useDraggablePage = (
   pageId: string,
-  parentPageId: string | null | undefined,
+  isPageIdPrivate: boolean,
+  sourceParentPageId: string | null,
+  _sourceTeamId: string | null | undefined,
+  sourceConnectionKey: PageConnectionKey,
   isFirstChild: boolean,
   isLastChild: boolean
 ) => {
@@ -57,113 +95,37 @@ export const useDraggablePage = (
       cleanupDrag()
       return
     }
-    const source = atmosphere.getStore().getSource()
     const isDropBelow = dropTarget.hasAttribute('data-drop-below')
-    if (isDropBelow) {
-      const dropTargetBelowPageId = dropTarget.getAttribute('data-drop-below')
-      if (!dropTargetBelowPageId) {
-        // drop target is the top-level top bar
-        const connId = ConnectionHandler.getConnectionID(atmosphere.viewerId, 'User_pages')
-        const edges = (source.get(connId)?.edges as {__refs: string[]})?.__refs
-        const topEdgeKey = edges[0]
-        const topEdgeSortOrder = topEdgeKey ? (source.get(topEdgeKey)?.cursor as string) : null
-        const sortOrder = topEdgeSortOrder ? positionBefore(topEdgeSortOrder) : ' '
-        execute({
-          variables: {
-            pageId,
-            sortOrder,
-            parentPageId: null
-          },
-          pageId,
-          oldParentPageId: parentPageId,
-          newParentPageId: null
-        })
-        cleanupDrag()
-        return
-      }
-      const isExpanded = dropTarget.getAttribute('aria-expanded')
-      if (isExpanded === 'true') {
-        // when target is expanded, drop it as the first child
-        const connId = ConnectionHandler.getConnectionID(atmosphere.viewerId, 'User_pages', {
-          parentPageId: dropTargetBelowPageId
-        })
-        const firstEdgeId = (source.get(connId)?.edges as {__refs?: string[]})?.__refs?.[0]
-        const firstNodeId = firstEdgeId
-          ? (source.get(firstEdgeId)?.node as {__ref?: string}).__ref
-          : null
-        const firstChildSortOrder = firstNodeId
-          ? (source.get(firstNodeId)?.sortOrder as string)
-          : null
-        const sortOrder = firstChildSortOrder ? positionBefore(firstChildSortOrder) : ' '
-        execute({
-          variables: {
-            pageId,
-            sortOrder,
-            parentPageId: dropTargetBelowPageId
-          },
-          pageId,
-          oldParentPageId: parentPageId,
-          newParentPageId: dropTargetBelowPageId
-        })
-      } else {
-        // when target is collapsed, drop it as a peer
-        const targetPeerBelow = source.get(dropTargetBelowPageId)
-        const targetParentPageId = targetPeerBelow?.parentPageId as string | undefined
-        const connId = ConnectionHandler.getConnectionID(atmosphere.viewerId, 'User_pages', {
-          parentPageId: targetParentPageId
-        })
-        const edges = connId ? (source.get(connId)?.edges as {__refs: string[]})?.__refs : []
-
-        const edgeIdx = edges.findIndex((edgeName: string) => {
-          const edgeRecord = source.get(edgeName)
-          return (edgeRecord?.node as {__ref: string}).__ref === dropTargetBelowPageId
-        })!
-        const edgeSortOrder = source.get(edges[edgeIdx]!)?.cursor as string
-        const nextEdge = edges[edgeIdx + 1]
-        const nextEdgeSortOrder = nextEdge ? (source.get(nextEdge)?.cursor as string) : null
-        const sortOrder = nextEdgeSortOrder
-          ? positionBetween(edgeSortOrder, nextEdgeSortOrder)
-          : positionAfter(edgeSortOrder)
-        execute({
-          variables: {
-            pageId,
-            sortOrder,
-            parentPageId: targetParentPageId
-          },
-          pageId,
-          oldParentPageId: parentPageId,
-          newParentPageId: targetParentPageId
-        })
-      }
-    } else {
-      const dropTargetInPageId = dropTarget.getAttribute('data-drop-in')
-      // if we're dropping in, we put it at the end of the children
-      const connId = ConnectionHandler.getConnectionID(atmosphere.viewerId, 'User_pages', {
-        parentPageId: dropTargetInPageId
-      })
-      // edges is null if the target has never been expanded
-      const edges = (source.get(connId)?.edges as {__refs: string[]} | null)?.__refs
-      const lastEdgeId = edges?.at(-1)
-      const lastNodeId = lastEdgeId
-        ? (source.get(lastEdgeId)?.node as {__ref?: string}).__ref
-        : null
-      const lastChildSortOrder = lastNodeId ? (source.get(lastNodeId)?.sortOrder as string) : null
-      const sortOrder = lastChildSortOrder
-        ? positionAfter(lastChildSortOrder)
-        : edges
-          ? ' '
-          : __END__
-      execute({
-        variables: {
-          pageId,
-          sortOrder,
-          parentPageId: dropTargetInPageId
-        },
+    const section = dropTarget.closest('[data-pages-connection]')
+    if (!section) throw new Error('data-pages-connection not found in DOMTree')
+    const topLevelConnectionKey = section.getAttribute('data-pages-connection') as PageConnectionKey
+    const targetParentPageId = isDropBelow
+      ? dropTarget.getAttribute('data-drop-below') || null
+      : dropTarget.getAttribute('data-drop-in')
+    const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
+    const targetConnectionKey = targetParentPageId ? 'User_pages' : topLevelConnectionKey
+    const {viewerId} = atmosphere
+    const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey]
+    const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey, {
+      isPrivate,
+      parentPageId: targetParentPageId
+    })
+    const source = atmosphere.getStore().getSource()
+    const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
+    execute({
+      variables: {
         pageId,
-        oldParentPageId: parentPageId,
-        newParentPageId: dropTargetInPageId
-      })
-    }
+        sortOrder,
+        parentPageId: targetParentPageId,
+        makePrivate:
+          !targetParentPageId &&
+          targetConnectionKey === 'User_privatePages' &&
+          sourceConnectionKey !== targetConnectionKey
+      },
+      sourceParentPageId,
+      sourceConnectionKey,
+      targetConnectionKey
+    })
     cleanupDrag()
   })
 
@@ -184,8 +146,13 @@ export const useDraggablePage = (
       drag.waitingForMovement = false
       startVisualDragImage(e)
       commitLocalUpdate(atmosphere, (store) => {
-        store.getRoot().getLinkedRecord('viewer')?.setValue(pageId, 'draggingPageId')
-        const parent = parentPageId ? store.get(parentPageId) : null
+        store
+          .getRoot()
+          .getLinkedRecord('viewer')
+          ?.setValue(pageId, 'draggingPageId')
+          .setValue(isPageIdPrivate, 'draggingPageIsPrivate')
+        const parent = sourceParentPageId ? store.get(sourceParentPageId) : null
+        console.log('setting isDraggingLastChild', isLastChild, sourceParentPageId)
         parent
           ?.setValue(isFirstChild, 'isDraggingFirstChild')
           .setValue(isLastChild, 'isDraggingLastChild')
@@ -238,8 +205,12 @@ export const useDraggablePage = (
     // in a set timeout for the <Link/> onClick handler to fire while draggingPageId is still set
     setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {
-        store.getRoot().getLinkedRecord('viewer')?.setValue(null, 'draggingPageId')
-        const parent = parentPageId ? store.get(parentPageId) : null
+        store
+          .getRoot()
+          .getLinkedRecord('viewer')
+          ?.setValue(null, 'draggingPageId')
+          .setValue(null, 'draggingPageIsPrivate')
+        const parent = sourceParentPageId ? store.get(sourceParentPageId) : null
         parent?.setValue(null, 'isDraggingFirstChild').setValue(null, 'isDraggingLastChild')
       })
     })

@@ -9,10 +9,11 @@ interface Props {
   parentPageId: string
   pageAncestors: string[]
   draggingPageId: string | null | undefined
+  draggingPageIsPrivate: boolean | null
 }
 
 export const SubPagesRoot = (props: Props) => {
-  const {parentPageId, pageAncestors, draggingPageId} = props
+  const {parentPageId, pageAncestors, draggingPageId, draggingPageIsPrivate} = props
   const queryRef = useQueryLoaderNow<SubPagesQuery>(query, {
     parentPageId
   })
@@ -24,6 +25,7 @@ export const SubPagesRoot = (props: Props) => {
           queryRef={queryRef}
           pageAncestors={pageAncestors}
           draggingPageId={draggingPageId}
+          draggingPageIsPrivate={draggingPageIsPrivate}
         />
       )}
     </Suspense>

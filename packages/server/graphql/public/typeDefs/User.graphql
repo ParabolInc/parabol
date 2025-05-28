@@ -526,7 +526,6 @@ type User {
   """
   pages(
     parentPageId: ID
-    teamId: ID
     """
     The first n records to return
     """
@@ -535,5 +534,9 @@ type User {
     The pagination cursor, if any
     """
     after: String
+    """
+    true to query top-level private pages. false to query top-level shard pages. ignored if parentPageId or teamId is present
+    """
+    isPrivate: Boolean
   ): PageConnection!
 }

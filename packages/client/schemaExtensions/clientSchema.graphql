@@ -78,6 +78,8 @@ extend type User {
   preferredTeamId: ID
   # The ID of the Page that is currently being dragged
   draggingPageId: ID
+  # True if the page being dragged is private (private pages cannot be dragged to top-level shared)
+  draggingPageIsPrivate: Boolean
 }
 
 extend type Page {

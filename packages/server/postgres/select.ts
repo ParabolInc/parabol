@@ -316,7 +316,7 @@ export const selectPages = () =>
     'isPrivate',
     'parentPageId',
     'sortOrder',
-    'teamId',
+    'Page.teamId',
     'title',
     'updatedAt',
     'Page.userId'

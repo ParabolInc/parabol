@@ -15,16 +15,33 @@ import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {SubPagesRoot} from './SubPagesRoot'
+
+export type PageConnectionKey =
+  | 'User_privatePages'
+  | 'User_sharedPages'
+  | 'Team_pages'
+  | 'User_pages'
 interface Props {
   pageRef: LeftNavPageLink_page$key
   pageAncestors: string[]
   draggingPageId: string | null | undefined
-  isFirstChild: boolean
+  draggingPageIsPrivate: boolean | null
+  dropIdx: number
   isLastChild: boolean
   nextPeerId: string | null
+  connectionKey: PageConnectionKey
 }
 export const LeftNavPageLink = (props: Props) => {
-  const {pageRef, pageAncestors, draggingPageId, isFirstChild, isLastChild, nextPeerId} = props
+  const {
+    pageRef,
+    pageAncestors,
+    draggingPageId,
+    draggingPageIsPrivate,
+    dropIdx,
+    isLastChild,
+    nextPeerId,
+    connectionKey
+  } = props
   const depth = pageAncestors.length - 1
   const page = useFragment(
     graphql`
@@ -32,6 +49,8 @@ export const LeftNavPageLink = (props: Props) => {
         id
         title
         parentPageId
+        teamId
+        isPrivate
         isDraggingFirstChild
         isDraggingLastChild
         sortOrder # used implicityly in store traveral by useDraggingPage
@@ -39,7 +58,16 @@ export const LeftNavPageLink = (props: Props) => {
     `,
     pageRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild, sortOrder} = page
+  const {
+    title,
+    id,
+    parentPageId,
+    isDraggingFirstChild,
+    isDraggingLastChild,
+    sortOrder,
+    teamId,
+    isPrivate
+  } = page
   const pageIdNum = id.split(':')[1]
   const titleSlug = toSlug(title || '')
   const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
@@ -51,7 +79,15 @@ export const LeftNavPageLink = (props: Props) => {
   }
   const history = useHistory()
   const [execute, submitting] = useCreatePageMutation()
-  const {onPointerDown, ref} = useDraggablePage(id, parentPageId, isFirstChild, isLastChild)
+  const {onPointerDown, ref} = useDraggablePage(
+    id,
+    isPrivate,
+    parentPageId || null,
+    teamId,
+    connectionKey,
+    dropIdx === 0,
+    isLastChild
+  )
   const addChildPage = () => {
     if (submitting) return
     execute({
@@ -79,10 +115,17 @@ export const LeftNavPageLink = (props: Props) => {
   const nextPageAncestors = [...pageAncestors, id]
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const isSelf = draggingPageId === id
-  const isNextPeer = draggingPageId === nextPeerId
+  const isNextPeer = draggingPageId === nextPeerId && !showChildren
+  const isTopLevelShared = connectionKey === 'User_sharedPages'
+  const isPrivateToTopLevelShared = isTopLevelShared && draggingPageIsPrivate
   const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild
   const canDropBelow =
-    draggingPageId && !isSourceDragParent && !isSelf && !isDraggingFirstChild && !isNextPeer
+    draggingPageId &&
+    !isSourceDragParent &&
+    !isSelf &&
+    !isDraggingFirstChild &&
+    !isNextPeer &&
+    !isPrivateToTopLevelShared
   return (
     <div className='relative rounded-md' ref={ref}>
       <div
@@ -103,7 +146,8 @@ export const LeftNavPageLink = (props: Props) => {
             'absolute -bottom-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
           )}
-          data-drop-below={canDropBelow ? id : undefined}
+          data-drop-below={canDropBelow ? (showChildren ? id : parentPageId || '') : undefined}
+          data-drop-idx={showChildren ? -1 : dropIdx}
           aria-expanded={showChildren}
         ></div>
         <Link
@@ -145,6 +189,7 @@ export const LeftNavPageLink = (props: Props) => {
             parentPageId={id}
             pageAncestors={nextPageAncestors}
             draggingPageId={draggingPageId}
+            draggingPageIsPrivate={draggingPageIsPrivate}
           />
         </div>
       )}

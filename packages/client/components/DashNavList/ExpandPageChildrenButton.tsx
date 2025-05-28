@@ -44,7 +44,10 @@ export const ExpandPageChildrenButton = memo((props: Props) => {
           'sm hidden size-5 transition-transform group-hover:block no-hover:block',
           showChildren && 'rotate-90'
         )}
-        onClick={expandChildPages}
+        onClick={(e) => {
+          e.preventDefault()
+          expandChildPages()
+        }}
       />
     </div>
   )

@@ -44,21 +44,22 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     const {parentPageId} = page
     if (parentPageId) {
       // get the existing role for this
-      const oldRoleRes = await pg
+      const parentRoleRes = await pg
         .selectFrom(pg.dynamic.table(table).as('t'))
         .select('role')
-        .where('pageId', '=', dbPageId)
+        .where('pageId', '=', parentPageId)
         .where(pg.dynamic.ref(typeId), '=', nextSubjectId)
         .executeTakeFirst()
-      const oldRole = oldRoleRes?.role ?? undefined
-      const isMoreRestrictive =
-        !role || (oldRole && PAGE_ROLES.indexOf(role) > PAGE_ROLES.indexOf(oldRole))
-      if (isMoreRestrictive) {
-        throw new GraphQLError('This will unlink the page permissions from the parent', {
-          extensions: {
-            code: 'UNAPPROVED_UNLINK'
-          }
-        })
+      if (parentRoleRes) {
+        const isMoreRestrictive =
+          !role || PAGE_ROLES.indexOf(role) > PAGE_ROLES.indexOf(parentRoleRes.role)
+        if (isMoreRestrictive) {
+          throw new GraphQLError('This will unlink the page permissions from the parent', {
+            extensions: {
+              code: 'UNAPPROVED_UNLINK'
+            }
+          })
+        }
       }
     }
   }
