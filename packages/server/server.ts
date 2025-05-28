@@ -10,6 +10,7 @@ import './hocusPocus'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import {metricsHandler} from './metricsHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
@@ -23,6 +24,9 @@ export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
   : 60_000 // ms
 
+const ENABLE_METRICS = process.env.ENABLE_METRICS?.toLowerCase() === 'true'
+const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : 9090
+
 process.on('SIGTERM', async (signal) => {
   Logger.log(
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
@@ -35,7 +39,7 @@ process.on('SIGTERM', async (signal) => {
 })
 
 const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
-uws
+const app = uws
   .App()
   .get('/favicon.ico', PWAHandler)
   .get('/sw.js', PWAHandler)
@@ -57,5 +61,25 @@ uws
   })
   .post('/saml/:domain', SAMLHandler)
   .ws('/*', wsHandler)
-  .any('/*', createSSR)
-  .listen(PORT, listenHandler)
+
+if (ENABLE_METRICS) {
+  if (METRICS_PORT !== PORT) {
+    uws
+      .App()
+      .get('/metrics', metricsHandler)
+      .get('/health', (res) => {
+        res.writeStatus('200 OK')
+        res.writeHeader('Content-Type', 'text/plain')
+        res.end('OK')
+      })
+      .listen(METRICS_PORT, (token) => {
+        if (token) {
+          Logger.log(`Metrics server listening on port ${METRICS_PORT}`)
+        } else {
+          Logger.log(`Failed to start metrics server on port ${METRICS_PORT}`)
+        }
+      })
+  }
+}
+
+app.any('/*', createSSR).listen(PORT, listenHandler)
