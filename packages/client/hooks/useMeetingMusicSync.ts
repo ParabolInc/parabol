@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
 import {useMeetingMusicSyncQuery} from '../__generated__/useMeetingMusicSyncQuery.graphql'
 import SetMeetingMusicMutation from '../mutations/SetMeetingMusicMutation'
@@ -58,7 +58,6 @@ const useMeetingMusicSync = (props: Props) => {
     if (musicSettings) {
       const {trackSrc, isPlaying: shouldPlay, volume: newVolume} = musicSettings
 
-      // Only update track and play state from subscription if we're not handling local playback
       if (!isLocallyPaused && !localTrackSrc) {
         if (trackSrc !== currentTrackSrc) {
           setCurrentTrackSrc(trackSrc ?? null)
@@ -69,7 +68,6 @@ const useMeetingMusicSync = (props: Props) => {
         }
       }
 
-      // Always update volume from subscription
       if (newVolume !== null && newVolume !== undefined && newVolume !== volume) {
         setVolume(newVolume)
       }
@@ -178,57 +176,51 @@ const useMeetingMusicSync = (props: Props) => {
     }
   }, [currentTrackSrc, volume])
 
-  const syncMusicState = useCallback(
-    (trackSrc: string | null, shouldPlay: boolean) => {
-      if (!meetingId || !isFacilitator) return
+  const syncMusicState = (trackSrc: string | null, shouldPlay: boolean) => {
+    if (!meetingId || !isFacilitator) return
 
-      SetMeetingMusicMutation(
-        atmosphere,
-        {
-          meetingId,
-          trackSrc,
-          isPlaying: shouldPlay,
-          timestamp: shouldPlay && trackSrc ? Date.now() : null
-        },
-        {
-          onError: (err) => console.error('[MusicSync] Error syncing music:', err),
-          onCompleted: () => {}
-        }
-      )
-    },
-    [atmosphere, meetingId, isFacilitator]
-  )
-
-  const playTrack = useCallback(
-    (trackSrc: string | null) => {
-      if (!trackSrc) return
-      if (isFacilitator) {
-        if (trackSrc === currentTrackSrc && pausedAt !== null) {
-          setIsPlaying(true)
-          setIsLocallyPaused(false)
-        } else {
-          setCurrentTrackSrc(trackSrc)
-          setIsPlaying(true)
-          setIsLocallyPaused(false)
-          setPausedAt(null)
-        }
-        syncMusicState(trackSrc, true)
-      } else {
-        if (trackSrc === (localTrackSrc || currentTrackSrc) && pausedAt !== null) {
-          setIsPlaying(true)
-          setIsLocallyPaused(false)
-        } else {
-          setLocalTrackSrc(trackSrc)
-          setIsPlaying(true)
-          setIsLocallyPaused(false)
-          setPausedAt(null)
-        }
+    SetMeetingMusicMutation(
+      atmosphere,
+      {
+        meetingId,
+        trackSrc,
+        isPlaying: shouldPlay,
+        timestamp: shouldPlay && trackSrc ? Date.now() : null
+      },
+      {
+        onError: (err) => console.error('[MusicSync] Error syncing music:', err),
+        onCompleted: () => {}
       }
-    },
-    [currentTrackSrc, localTrackSrc, pausedAt, syncMusicState, isFacilitator]
-  )
+    )
+  }
 
-  const pause = useCallback(() => {
+  const playTrack = (trackSrc: string | null) => {
+    if (!trackSrc) return
+    if (isFacilitator) {
+      if (trackSrc === currentTrackSrc && pausedAt !== null) {
+        setIsPlaying(true)
+        setIsLocallyPaused(false)
+      } else {
+        setCurrentTrackSrc(trackSrc)
+        setIsPlaying(true)
+        setIsLocallyPaused(false)
+        setPausedAt(null)
+      }
+      syncMusicState(trackSrc, true)
+    } else {
+      if (trackSrc === (localTrackSrc || currentTrackSrc) && pausedAt !== null) {
+        setIsPlaying(true)
+        setIsLocallyPaused(false)
+      } else {
+        setLocalTrackSrc(trackSrc)
+        setIsPlaying(true)
+        setIsLocallyPaused(false)
+        setPausedAt(null)
+      }
+    }
+  }
+
+  const pause = () => {
     if (audioRef.current) {
       setPausedAt(audioRef.current.currentTime)
     }
@@ -238,9 +230,9 @@ const useMeetingMusicSync = (props: Props) => {
     if (isFacilitator) {
       syncMusicState(currentTrackSrc, false)
     }
-  }, [currentTrackSrc, syncMusicState, isFacilitator])
+  }
 
-  const stop = useCallback(() => {
+  const stop = () => {
     if (isFacilitator) {
       setCurrentTrackSrc(null)
       syncMusicState(null, false)
@@ -253,26 +245,23 @@ const useMeetingMusicSync = (props: Props) => {
     }
     setIsPlaying(false)
     setPausedAt(null)
-  }, [syncMusicState, isFacilitator])
+  }
 
-  const selectTrack = useCallback(
-    (trackSrc: string) => {
-      if (isFacilitator) {
-        setCurrentTrackSrc(trackSrc)
-        syncMusicState(trackSrc, false)
-      } else {
-        setLocalTrackSrc(trackSrc)
-        if (audioRef.current) {
-          audioRef.current.src = trackSrc
-          audioRef.current.load()
-        }
-        setIsPlaying(false)
-        setPausedAt(null)
-        setIsLocallyPaused(false)
+  const selectTrack = (trackSrc: string) => {
+    if (isFacilitator) {
+      setCurrentTrackSrc(trackSrc)
+      syncMusicState(trackSrc, false)
+    } else {
+      setLocalTrackSrc(trackSrc)
+      if (audioRef.current) {
+        audioRef.current.src = trackSrc
+        audioRef.current.load()
       }
-    },
-    [syncMusicState, isFacilitator]
-  )
+      setIsPlaying(false)
+      setPausedAt(null)
+      setIsLocallyPaused(false)
+    }
+  }
 
   const handleVolumeChange = (newVolume: number) => {
     const roundedVolume = Math.round(newVolume * 100) / 100
