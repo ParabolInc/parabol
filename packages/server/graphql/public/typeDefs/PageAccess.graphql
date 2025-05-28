@@ -1,4 +1,5 @@
 type PageAccess {
+  viewer: PageRoleEnum
   public: PageRoleEnum
   guests: [PageAccessGuest!]!
   users: [PageAccessUser!]!

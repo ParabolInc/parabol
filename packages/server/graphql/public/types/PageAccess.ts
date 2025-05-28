@@ -1,4 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
+import {getUserId} from '../../../utils/authorization'
 import {PageAccessResolvers} from '../resolverTypes'
 
 export type PageAccessSource = {
@@ -6,11 +7,22 @@ export type PageAccessSource = {
 }
 
 const PageAccess: PageAccessResolvers = {
+  viewer: async ({id}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    const pg = getKysely()
+    const access = await pg
+      .selectFrom('PageAccess')
+      .select('role')
+      .where('pageId', '=', id)
+      .where('userId', '=', viewerId)
+      .executeTakeFirst()
+    return access?.role ?? null
+  },
   public: async ({id}) => {
     const pg = getKysely()
     const access = await pg
       .selectFrom('PageExternalAccess')
-      .select(['email', 'role'])
+      .select('role')
       .where('pageId', '=', id)
       .where('email', '=', '*')
       .executeTakeFirst()

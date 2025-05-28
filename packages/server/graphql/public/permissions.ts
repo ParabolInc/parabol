@@ -64,7 +64,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
-    updatePage: and(hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer')),
+    updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
+    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
     updatePageAccess: and(
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
       // limit looking up users by email

@@ -41,8 +41,8 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   if (!unlinkApproved) {
     const page = await dataLoader.get('pages').load(dbPageId)
     if (!page) throw new GraphQLError('Page not found')
-    const {parentPageId} = page
-    if (parentPageId) {
+    const {parentPageId, isParentLinked} = page
+    if (parentPageId && isParentLinked) {
       // get the existing role for this
       const parentRoleRes = await pg
         .selectFrom(pg.dynamic.table(table).as('t'))

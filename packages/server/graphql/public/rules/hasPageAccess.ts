@@ -17,7 +17,9 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
       }
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
-      const dbPageId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
+      const dbPageId = dotPath.startsWith('source')
+        ? pageId
+        : feistelCipher.decrypt(Number(pageId.split(':')[1]))
       const userRole = await dataLoader
         .get('pageAccessByUserId')
         .load({pageId: dbPageId, userId: viewerId})
