@@ -77,7 +77,7 @@ const useMeetingMusicSync = (props: Props) => {
   useEffect(() => {
     if (typeof window !== 'undefined' && !audioRef.current) {
       audioRef.current = new Audio()
-      audioRef.current.volume = 0
+      audioRef.current.volume = volume
       audioRef.current.setAttribute('playsinline', 'true')
       audioRef.current.muted = true
 
@@ -102,7 +102,7 @@ const useMeetingMusicSync = (props: Props) => {
       audioRef.current?.pause()
       audioRef.current = null
     }
-  }, [volume])
+  }, [])
 
   useEffect(() => {
     if (!audioRef.current) return
@@ -138,7 +138,7 @@ const useMeetingMusicSync = (props: Props) => {
     } else {
       audioRef.current.pause()
     }
-  }, [currentTrackSrc, localTrackSrc, isPlaying, pausedAt, volume, isLocallyPaused])
+  }, [currentTrackSrc, localTrackSrc, isPlaying, pausedAt, isLocallyPaused])
 
   useEffect(() => {
     if (audioRef.current) {
