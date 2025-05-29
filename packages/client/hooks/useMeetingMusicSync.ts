@@ -60,15 +60,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     const hasLocalPause = pausedAt !== null
     const hasLocalTrackOverride = !isFacilitator && currentTrackSrc !== trackSrc
-    const serverStateChanged = trackSrc !== currentTrackSrc || shouldPlay !== isPlaying
-
-    console.log('🚀 ~ Sync conditions:', {
-      hasLocalPause,
-      hasLocalTrackOverride,
-      serverStateChanged,
-      shouldPlay,
-      isPlaying
-    })
 
     // Allow play/pause sync even with track override, but not when non-facilitator is playing their own track
     const shouldSyncPlayState =
@@ -79,11 +70,15 @@ const useMeetingMusicSync = (meetingId: string) => {
     const shouldSyncTrackForPlay =
       !hasLocalPause && !isFacilitator && shouldPlay && !currentTrackSrc && trackSrc
 
+    // Special case: if facilitator stops (trackSrc becomes null), always sync to stop non-facilitators
+    const shouldSyncTrackForStop =
+      !hasLocalPause && !isFacilitator && trackSrc === null && currentTrackSrc !== null
+
     if (shouldSyncPlayState) {
       setIsPlaying(shouldPlay ?? false)
     }
 
-    if (shouldSyncTrack || shouldSyncTrackForPlay) {
+    if (shouldSyncTrack || shouldSyncTrackForPlay || shouldSyncTrackForStop) {
       setCurrentTrackSrc(trackSrc ?? null)
     }
   }, [meeting, currentTrackSrc, isPlaying, volume, pausedAt, isFacilitator])
@@ -159,7 +154,6 @@ const useMeetingMusicSync = (meetingId: string) => {
           })
       }
     } else {
-      console.log('🚀 ~ Pausing playback')
       audioRef.current.pause()
     }
   }, [currentTrackSrc, isPlaying, pausedAt])
@@ -219,30 +213,20 @@ const useMeetingMusicSync = (meetingId: string) => {
   const playTrack = (trackSrc: string | null) => {
     if (!trackSrc) return
 
-    console.log('🚀 ~ Playing track:', {trackSrc, currentTrackSrc, pausedAt})
-
     const isResumingSameTrack = trackSrc === currentTrackSrc && pausedAt !== null
-    console.log('🚀 ~ isResumingSameTrack:', isResumingSameTrack)
-
     setIsPlaying(true)
 
-    if (isFacilitator) {
-      if (!isResumingSameTrack) {
-        setCurrentTrackSrc(trackSrc)
-        setPausedAt(null)
-      }
+    if (!isResumingSameTrack) {
+      setCurrentTrackSrc(trackSrc)
+      setPausedAt(null)
+    }
 
+    if (isFacilitator) {
       syncMusicState(trackSrc, true)
-    } else {
-      if (!isResumingSameTrack) {
-        setCurrentTrackSrc(trackSrc)
-        setPausedAt(null)
-      }
     }
   }
 
   const pause = () => {
-    console.log('🚀 ~ Pausing at:', audioRef.current?.currentTime)
     if (audioRef.current) {
       setPausedAt(audioRef.current.currentTime)
     }
@@ -254,31 +238,31 @@ const useMeetingMusicSync = (meetingId: string) => {
   }
 
   const stop = () => {
+    setCurrentTrackSrc(null)
+    setIsPlaying(false)
+    setPausedAt(null)
+
     if (isFacilitator) {
-      setCurrentTrackSrc(null)
       syncMusicState(null, false)
     } else {
-      setCurrentTrackSrc(null)
       if (audioRef.current) {
         audioRef.current.pause()
       }
     }
-    setIsPlaying(false)
-    setPausedAt(null)
   }
 
   const selectTrack = (trackSrc: string) => {
+    setCurrentTrackSrc(trackSrc)
+    setIsPlaying(false)
+    setPausedAt(null)
+
     if (isFacilitator) {
-      setCurrentTrackSrc(trackSrc)
       syncMusicState(trackSrc, false)
     } else {
-      setCurrentTrackSrc(trackSrc)
       if (audioRef.current) {
         audioRef.current.src = trackSrc
         audioRef.current.load()
       }
-      setIsPlaying(false)
-      setPausedAt(null)
     }
   }
 
