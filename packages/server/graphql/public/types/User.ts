@@ -861,10 +861,12 @@ const User: ReqResolvers<'User'> = {
     if (!page) throw new GraphQLError('Page not found')
     return page
   },
-  pages: async (_source, {parentPageId, teamId, first, after}, {authToken}) => {
-    if (parentPageId && teamId) {
-      throw new GraphQLError('Can only provider either parentPageId OR teamId')
+  pages: async (_source, {parentPageId, isPrivate, first, after}, {authToken, dataLoader}) => {
+    const isPrivateDefined = typeof isPrivate === 'boolean'
+    if (parentPageId && isPrivateDefined) {
+      throw new GraphQLError('isPrivate and parentPageId are mutually exclusive')
     }
+    const isTopLevel = !parentPageId
     const viewerId = getUserId(authToken)
     const dbParentPageId = parentPageId
       ? feistelCipher.decrypt(Number(parentPageId.split(':')[1]))
@@ -872,26 +874,39 @@ const User: ReqResolvers<'User'> = {
 
     const pagesPlusOne = await selectPages()
       .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
-      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
-      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .where('PageAccess.userId', '=', viewerId)
-      .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
+      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+      .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .orderBy('sortOrder')
       .limit(first + 1)
       .execute()
 
     const hasNextPage = pagesPlusOne.length > first
     const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+
+    if (isTopLevel && !isPrivate) {
+      // for shared pages, we need a user-specific sortOrder
+      await Promise.all(
+        pages.map(async (page) => {
+          const userSortOrder = await dataLoader
+            .get('pageUserSortOrder')
+            .load({pageId: page.id, userId: viewerId})
+          page.sortOrder = userSortOrder ?? page.sortOrder
+        })
+      )
+    }
     return {
       pageInfo: {
         hasNextPage,
         hasPreviousPage: false,
-        startCursor: pages.at(0)?.updatedAt,
-        endCursor: pages.at(-1)?.updatedAt
+        startCursor: pages.at(0)?.sortOrder,
+        endCursor: pages.at(-1)?.sortOrder
       },
       edges: pages.map((page) => ({
         node: page,
-        cursor: page.updatedAt
+        cursor: page.sortOrder
       }))
     }
   }

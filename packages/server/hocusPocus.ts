@@ -73,8 +73,9 @@ const server = Server.configure({
         const docText = generateText(doc, serverTipTapExtensions)
         const delimiter = '\n\n'
         const titleBreakIdx = docText.indexOf(delimiter)
-        const title = docText.slice(0, titleBreakIdx).slice(0, 255)
-        const plaintextContent = docText.slice(titleBreakIdx + delimiter.length)
+        const safeTitleBreakIdx = titleBreakIdx === -1 ? docText.length : titleBreakIdx
+        const title = docText.slice(0, safeTitleBreakIdx).slice(0, 255)
+        const plaintextContent = docText.slice(safeTitleBreakIdx + delimiter.length)
         const [_entityName, entityId] = documentName.split(':')
         const dbId = feistelCipher.decrypt(Number(entityId))
         const pg = getKysely()

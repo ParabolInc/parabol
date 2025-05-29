@@ -6,7 +6,7 @@ import {LeftNavPageLink} from './LeftNavPageLink'
 graphql`
   query SubPagesQuery($parentPageId: ID!) {
     viewer {
-      pages(first: 100, parentPageId: $parentPageId) @connection(key: "SubPages_pages") {
+      pages(first: 500, parentPageId: $parentPageId) @connection(key: "User_pages") {
         edges {
           node {
             ...LeftNavPageLink_page
@@ -20,26 +20,45 @@ graphql`
 `
 interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
-  depth: number
+  pageAncestors: string[]
+  draggingPageId: string | null | undefined
+  draggingPageIsPrivate: boolean | null
 }
 
 export const SubPages = (props: Props) => {
-  const {depth, queryRef} = props
+  const connectionKey = 'User_pages'
+  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {pages} = viewer
   const {edges} = pages
-
+  const depth = pageAncestors.length
   if (edges.length === 0) {
-    return <div className='pl-8 text-sm font-medium text-slate-500'>{'No pages inside'}</div>
+    return (
+      <div style={{paddingLeft: depth * 8 + 8}} className='text-sm font-medium text-slate-500'>
+        {'No pages inside'}
+      </div>
+    )
   }
   return (
-    <div>
-      {edges.map((edge) => {
+    <>
+      {edges.map((edge, idx) => {
         const {node} = edge
         const {id} = node
-        return <LeftNavPageLink key={id} pageRef={node} depth={depth + 1} />
+        return (
+          <LeftNavPageLink
+            key={id}
+            pageRef={node}
+            pageAncestors={pageAncestors}
+            draggingPageId={draggingPageId}
+            dropIdx={idx}
+            isLastChild={idx === edges.length - 1}
+            nextPeerId={edges[idx + 1]?.node.id || null}
+            connectionKey={connectionKey}
+            draggingPageIsPrivate={draggingPageIsPrivate}
+          />
+        )
       })}
-    </div>
+    </>
   )
 }

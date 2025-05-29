@@ -25,6 +25,7 @@ import {
   selectMeetingSettings,
   selectNewMeetings,
   selectPageAccess,
+  selectPageUserSortOrder,
   selectTasks,
   selectTeams
 } from '../postgres/select'
@@ -1042,6 +1043,30 @@ export const pageAccessByUserId = (parent: RootDataLoader) => {
       return keys.map((key) => {
         const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
         return rule?.role ?? null
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
+    }
+  )
+}
+
+export const pageUserSortOrder = (parent: RootDataLoader) => {
+  return new DataLoader<{pageId: number; userId: string}, string | null, string>(
+    async (keys) => {
+      const res = await selectPageUserSortOrder()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('pageId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.pageId, key.userId))
+          )
+        )
+        .execute()
+      return keys.map((key) => {
+        const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
+        return rule?.sortOrder ?? null
       })
     },
     {

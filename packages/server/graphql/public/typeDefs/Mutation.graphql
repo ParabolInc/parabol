@@ -2092,4 +2092,43 @@ type Mutation {
     """
     unlinkApproved: Boolean
   ): UpdatePageAccessPayload
+
+  """
+  Update the page sortOrder, teamId, or parentPageId and adjust access accordingly
+  """
+  updatePage(
+    """
+    The ID of the page to update
+    """
+    pageId: ID!
+    """
+    The new sort order, as a fractional index
+    """
+    sortOrder: String!
+    """
+    The new parent If null, and no teamId, it will be top-level
+    """
+    parentPageId: ID
+    """
+    The new teamId, if moved to a team
+    """
+    teamId: ID
+    """
+    true to revoke access for all but the mutator
+    """
+    makePrivate: Boolean
+  ): UpdatePagePayload
+  """
+  link or unlink a page to its parent
+  """
+  updatePageParentLink(
+    """
+    The ID of the page to update
+    """
+    pageId: ID!
+    """
+    True to re-link, false to unlink
+    """
+    isParentLinked: Boolean!
+  ): UpdatePagePayload
 }

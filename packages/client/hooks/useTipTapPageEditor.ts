@@ -31,13 +31,14 @@ import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
+import type {FirstParam} from '../types/generics'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
 const updateUrlWithSlug = (
-  headerBlock: Y.XmlText | Y.XmlElement,
+  headerBlock: Y.XmlText,
   pageIdNum: number,
   history: History,
   atmosphere: Atmosphere
@@ -97,29 +98,35 @@ export const useTipTapPageEditor = (
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
     // update the URL to match the title
-    frag.observeDeep((events) => {
-      const docBlock = frag.get(0)
-      const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
-      for (const event of events) {
-        for (const delta of event.delta) {
-          if (delta.insert || delta.retain || delta.delete) {
-            if (event.target === headerBlock) {
-              updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
-            }
-          }
-        }
-      }
-    })
     const nextProvider = new TiptapCollabProvider({
       websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
       name: pageId,
       document: doc
     })
-    nextProvider.on('synced', () => {
-      const docBlock = frag.get(0)
-      if (!docBlock) return
-      const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
+
+    const observeHeader = (headerBlock: Y.XmlText) => {
       updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
+      headerBlock.observe(() => {
+        updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
+      })
+    }
+    const observeFragForHeader: FirstParam<Y.AbstractType<Y.YXmlEvent>['observeDeep']> = () => {
+      const headerElement = frag.get(0) as Y.XmlElement | null
+      const headerText = headerElement?.get(0) as Y.XmlText
+      if (headerText) {
+        observeHeader(headerText)
+        frag.unobserveDeep(observeFragForHeader)
+      }
+    }
+    nextProvider.on('synced', () => {
+      const headerElement = frag.get(0) as Y.XmlElement | null
+      const headerText = headerElement?.get(0) as Y.XmlText
+      if (headerText) {
+        observeHeader(headerText)
+      } else {
+        // header doesn't exist yet, observe the whole doc
+        frag.observeDeep(observeFragForHeader)
+      }
     })
     return nextProvider
   }, [pageId, atmosphere.authToken])

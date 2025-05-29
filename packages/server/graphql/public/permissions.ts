@@ -7,6 +7,7 @@ import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
+import {isTeamMember} from './rules/isTeamMember'
 import isUserViewer from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
@@ -63,6 +64,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
+    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
     updatePageAccess: and(
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
       // limit looking up users by email
@@ -85,6 +88,9 @@ const permissionMap: PermissionMap<Resolvers> = {
   RetroReflectionGroup: {
     smartTitle: isSuperUser,
     voterIds: isSuperUser
+  },
+  Team: {
+    pages: or(isSuperUser, isTeamMember<'Team.id'>('source.id'))
   },
   User: {
     domains: or(isSuperUser, isUserViewer),

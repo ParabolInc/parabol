@@ -1,5 +1,6 @@
 import {InsightId} from '../../../../client/shared/gqlIds/InsightId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import {selectPages} from '../../../postgres/select'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {TeamResolvers} from '../resolverTypes'
@@ -57,6 +58,29 @@ const Team: TeamResolvers = {
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
+  },
+  pages: async ({id: teamId}, {first, after}) => {
+    const pagesPlusOne = await selectPages()
+      .innerJoin('PageTeamAccess', 'PageTeamAccess.pageId', 'Page.id')
+      .where('PageTeamAccess.teamId', '=', teamId)
+      .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .orderBy('sortOrder')
+      .limit(first + 1)
+      .execute()
+    const hasNextPage = pagesPlusOne.length > first
+    const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+    return {
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage: false,
+        startCursor: pages.at(0)?.sortOrder,
+        endCursor: pages.at(-1)?.sortOrder
+      },
+      edges: pages.map((page) => ({
+        node: page,
+        cursor: page.sortOrder
+      }))
+    }
   }
 }
 

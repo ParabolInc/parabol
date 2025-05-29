@@ -1,17 +1,21 @@
 import PublicIcon from '@mui/icons-material/Public'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Link} from 'react-router-dom'
 import {PageAccessCombobox} from '~/modules/pages/PageAccessCombobox'
 import type {PageSharingAccessList_page$key} from '../../__generated__/PageSharingAccessList_page.graphql'
 import Avatar from '../../components/Avatar/Avatar'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {useUpdatePageParentLinkMutation} from '../../mutations/useUpdatePageParentLinkMutation'
+import {cn} from '../../ui/cn'
 
 graphql`
   fragment PageSharingAccessList_pageAccess on Page {
     id
     isParentLinked
     access {
+      viewer
       public
       guests {
         email
@@ -58,23 +62,40 @@ export const PageSharingAccessList = (props: Props) => {
       fragment PageSharingAccessList_page on Page {
         ...PageSharingAccessList_pageAccess @relay(mask: false)
         id
-        parentPage {
-          title
-        }
+        parentPageId
       }
     `,
     pageRef
   )
-  const {id: pageId, isParentLinked, access, parentPage} = page
-  const {users, teams, organizations, guests} = access
+  const {id: pageId, isParentLinked, access, parentPageId} = page
+  const {users, teams, organizations, guests, viewer: viewerRole} = access
+  const [execute] = useUpdatePageParentLinkMutation()
+  const relink = () => {
+    execute({
+      variables: {
+        pageId,
+        isParentLinked: true
+      }
+    })
+  }
   return (
     <div className='overflow-y-auto pt-3 pb-4'>
-      {!isParentLinked && (
-        <div className='rounded-md border border-slate-700 p-2 text-sm text-slate-800'>
-          Share settings on this page differ from the parent page{' '}
-          <a href='#' className='text-slate-700 underline hover:text-sky-400'>
-            {parentPage?.title}
-          </a>
+      {!isParentLinked && parentPageId && (
+        <div className='mb-2 rounded-md border border-slate-700 p-2 text-sm text-slate-800'>
+          {'Share settings on this page differ from its '}
+          <Link
+            to={`/pages/${parentPageId.split(':')[1]}`}
+            className='font-semibold hover:text-sky-500'
+          >
+            {'parent page'}
+          </Link>
+          {'.'}
+          <span className={cn('hidden', viewerRole === 'owner' && 'inline')}>
+            {' To re-link and inherit parent access, '}
+            <span className='cursor-pointer font-semibold hover:text-sky-500' onClick={relink}>
+              {'Click here'}
+            </span>
+          </span>
         </div>
       )}
 

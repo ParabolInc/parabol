@@ -93,6 +93,11 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('sortOrder', 'varchar(128)', (col) => col.modifyFront(sql`COLLATE pg_catalog."C"`))
       .execute()
   ])
+  await sql`
+  ALTER TABLE "Page"
+    ADD CONSTRAINT team_or_parent_null CHECK (
+      "teamId" IS NULL OR "parentPageId" IS NULL
+    );`.execute(db)
 
   await db.updateTable('Page').set({sortOrder: ' '}).execute()
   await db.schema
@@ -171,7 +176,7 @@ DECLARE
 BEGIN
   SELECT COUNT(*) = 1 INTO "_willBePrivate"
   FROM (
-    SELECT 1 FROM "PageUserAccess" WHERE "pageId" = "_pageId"
+    SELECT 1 FROM "PageAccess" WHERE "pageId" = "_pageId"
     UNION ALL
     SELECT 1 FROM "PageExternalAccess" WHERE "pageId" = "_pageId"
   ) AS access;
@@ -386,12 +391,54 @@ FOR EACH ROW EXECUTE FUNCTION "updateOrgPageAccessByOrgUser"();
 --- UNLINK FROM PARENT WHEN MORE RESTRICTIVE
 CREATE OR REPLACE FUNCTION "unlinkFromParentPage"()
 RETURNS TRIGGER AS $$
+DECLARE
+  "_parentRole" "PageRoleEnum";
+  "_parentPageId" INT;
+  "_isParentLinked" BOOLEAN;
 BEGIN
-  IF TG_OP = 'DELETE' OR OLD.role < NEW.role THEN
-    UPDATE "Page"
-    SET "isParentLinked" = FALSE
-    WHERE "id" = COALESCE(OLD."pageId", NEW."pageId")
-    AND "parentPageId" IS NOT NULL;
+  -- Only proceed if the role was downgraded or deleted
+  IF TG_OP = 'DELETE' OR OLD."role" < NEW."role" THEN
+    SELECT "parentPageId", "isParentLinked" INTO "_parentPageId", "_isParentLinked"
+      FROM "Page"
+      WHERE "id" = OLD."pageId";
+
+    -- Skip if no parent
+    IF "_parentPageId" IS NULL OR "_isParentLinked" = FALSE THEN
+      RETURN NULL;
+    END IF;
+
+    -- Fetch parent role based on access type
+    IF TG_TABLE_NAME = 'PageUserAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageUserAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "userId" = OLD."userId";
+
+    ELSIF TG_TABLE_NAME = 'PageTeamAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageTeamAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "teamId" = OLD."teamId";
+
+    ELSIF TG_TABLE_NAME = 'PageOrganizationAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageOrganizationAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "orgId" = OLD."orgId";
+
+    ELSIF TG_TABLE_NAME = 'PageExternalAccess' THEN
+      SELECT "role" INTO "_parentRole"
+      FROM "PageExternalAccess"
+      WHERE "pageId" = "_parentPageId"
+        AND "email" = OLD."email";
+    END IF;
+
+    -- Unlink if the child role exceeds the parent's
+    IF "_parentRole" IS NOT NULL AND (TG_OP = 'DELETE' OR "_parentRole" < NEW."role") THEN
+      UPDATE "Page"
+      SET "isParentLinked" = FALSE
+      WHERE "id" = OLD."pageId";
+    END IF;
   END IF;
   RETURN NULL;
 END;
@@ -515,41 +562,56 @@ EXECUTE FUNCTION "propagateAccessToChildPagesOrganization"();
 
 
 --- ADD ACCESS ON NEW PAGE
+CREATE OR REPLACE FUNCTION "cloneParentAccess"("_parentPageId" INT, "_pageId" INT)
+RETURNS VOID AS $$
+BEGIN
+  -- Upsert PageUserAccess
+  INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
+  SELECT "_pageId", "userId", "role"
+  FROM "PageUserAccess"
+  WHERE "pageId" = "_parentPageId"
+  ON CONFLICT ("pageId", "userId") DO UPDATE
+  SET "role" = EXCLUDED."role";
+
+  -- Upsert PageTeamAccess
+  INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+  SELECT "_pageId", "teamId", "role"
+  FROM "PageTeamAccess"
+  WHERE "pageId" = "_parentPageId"
+  ON CONFLICT ("pageId", "teamId") DO UPDATE
+  SET "role" = EXCLUDED."role";
+
+  -- Upsert PageOrganizationAccess
+  INSERT INTO "PageOrganizationAccess" ("pageId", "orgId", "role")
+  SELECT "_pageId", "orgId", "role"
+  FROM "PageOrganizationAccess"
+  WHERE "pageId" = "_parentPageId"
+  ON CONFLICT ("pageId", "orgId") DO UPDATE
+  SET "role" = EXCLUDED."role";
+
+  -- Upsert PageExternalAccess
+  INSERT INTO "PageExternalAccess" ("pageId", "email", "role")
+  SELECT "_pageId", "email", "role"
+  FROM "PageExternalAccess"
+  WHERE "pageId" = "_parentPageId"
+  ON CONFLICT ("pageId", "email") DO UPDATE
+  SET "role" = EXCLUDED."role";
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION "addAccessOnNewPage"()
 RETURNS TRIGGER AS $$
 BEGIN
-INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
-VALUES (NEW."id", NEW."userId", 'owner');
-IF NEW."parentPageId" IS NOT NULL THEN
-  -- Copy PageUserAccess
   INSERT INTO "PageUserAccess" ("pageId", "userId", "role")
-  SELECT NEW."id", "userId", "role"
-  FROM "PageUserAccess"
-  WHERE "pageId" = NEW."parentPageId"
-  AND "userId" != NEW."userId";
-
-  -- Copy PageExternalAccess
-  INSERT INTO "PageExternalAccess" ("pageId", "email", "role")
-  SELECT NEW."id", "email", "role"
-  FROM "PageExternalAccess"
-  WHERE "pageId" = NEW."parentPageId";
-
-  -- Copy PageTeamAccess
-  INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
-  SELECT NEW."id", "teamId", "role"
-  FROM "PageTeamAccess"
-  WHERE "pageId" = NEW."parentPageId";
-
-  -- Copy PageOrganizationAccess
-  INSERT INTO "PageOrganizationAccess" ("pageId", "orgId", "role")
-  SELECT NEW."id", "orgId", "role"
-  FROM "PageOrganizationAccess"
-  WHERE "pageId" = NEW."parentPageId";
-ELSIF NEW."teamId" IS NOT NULL THEN
-  INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
-  VALUES (NEW."id", NEW."teamId", 'editor');
-END IF;
-RETURN NULL;
+  VALUES (NEW."id", NEW."userId", 'owner');
+  IF NEW."parentPageId" IS NOT NULL THEN
+    PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
+  ELSIF NEW."teamId" IS NOT NULL THEN
+    INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+    VALUES (NEW."id", NEW."teamId", 'editor');
+  END IF;
+  RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -559,18 +621,25 @@ FOR EACH ROW
 EXECUTE FUNCTION "addAccessOnNewPage"();
 
 
+CREATE OR REPLACE FUNCTION "revokeAccess"("_pageId" INT)
+RETURNS VOID AS $$
+BEGIN
+  DELETE FROM "PageUserAccess"
+    WHERE "pageId" = "_pageId";
+  DELETE FROM "PageExternalAccess"
+    WHERE "pageId" = "_pageId";
+  DELETE FROM "PageTeamAccess"
+    WHERE "pageId" = "_pageId";
+  DELETE FROM "PageOrganizationAccess"
+    WHERE "pageId" = "_pageId";
+END;
+$$ LANGUAGE plpgsql;
+
 --- REMOVE ACCESS ON DELETED PAGE
 CREATE OR REPLACE FUNCTION "removeAccessOnDeletePage"()
 RETURNS TRIGGER AS $$
 BEGIN
-  DELETE FROM "PageUserAccess"
-    WHERE "pageId" = OLD."pageId";
-  DELETE FROM "PageExternalAccess"
-    WHERE "pageId" = OLD."pageId";
-  DELETE FROM "PageTeamAccess"
-    WHERE "pageId" = OLD."pageId";
-  DELETE FROM "PageOrganizationAccess"
-    WHERE "pageId" = OLD."pageId";
+  PERFORM "revokeAccess"(OLD."pageId");
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
@@ -645,6 +714,87 @@ CREATE OR REPLACE TRIGGER trg_page_shared_sort_order
 AFTER UPDATE OF "teamId", "parentPageId", "isPrivate" ON "Page"
 FOR EACH ROW
 EXECUTE FUNCTION "addSharedPageSortOrder"();
+
+
+-- Update access on changed parent
+CREATE OR REPLACE FUNCTION "handlePageHierarchyChange"()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Only proceed if teamId or parentPageId changed
+  IF NEW."isParentLinked" = TRUE AND OLD."isParentLinked" = FALSE THEN
+    IF NEW."teamId" IS NOT NULL THEN
+      -- Make the whole new team at least an editor
+      INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+      VALUES (NEW.id, NEW."teamId", 'editor')
+      ON CONFLICT ("pageId", "teamId") DO UPDATE
+      SET "role" = LEAST(EXCLUDED."role", 'editor');
+    ELSIF NEW."parentPageId" IS NOT NULL THEN
+      PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
+    END IF;
+  ELSIF (NEW."parentPageId" IS NOT NULL OR NEW."teamId" IS NOT NULL) AND (NEW."parentPageId" IS DISTINCT FROM OLD."parentPageId" OR NEW."teamId" IS DISTINCT FROM OLD."teamId") THEN
+    -- get rid of all old access unless it was a child of a shared page
+    PERFORM "revokeAccess"(NEW.id);
+    IF NEW."parentPageId" IS NOT NULL THEN
+      PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
+    ELSE
+      INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
+      VALUES (NEW.id, NEW."teamId", 'editor')
+      ON CONFLICT ("pageId", "teamId") DO UPDATE
+      SET "role" = LEAST(EXCLUDED."role", 'editor');
+    END IF;
+    UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE TRIGGER trg_handle_page_hierarchy_change
+AFTER UPDATE OF "teamId", "parentPageId", "isParentLinked" ON "Page"
+FOR EACH ROW
+EXECUTE FUNCTION "handlePageHierarchyChange"();
+
+
+-- Ensure parentPageId does not create a circular ref
+CREATE OR REPLACE FUNCTION "preventCircularParent"()
+RETURNS TRIGGER AS $$
+DECLARE
+  foundLoop BOOLEAN;
+BEGIN
+  -- If the parentPageId isn't changing, no need to check
+  IF NEW."parentPageId" IS NULL OR NEW."parentPageId" = OLD."parentPageId" THEN
+    RETURN NEW;
+  END IF;
+
+  -- Recursive CTE to walk up the tree from the new parent
+  WITH RECURSIVE ancestors AS (
+    SELECT "id", "parentPageId"
+    FROM "Page"
+    WHERE "id" = NEW."parentPageId"
+
+    UNION ALL
+
+    SELECT p."id", p."parentPageId"
+    FROM "Page" p
+    INNER JOIN ancestors a ON a."parentPageId" = p."id"
+  )
+  SELECT TRUE INTO foundLoop
+  FROM ancestors
+  WHERE "id" = NEW."id" -- Cycle detected
+  LIMIT 1;
+
+  IF foundLoop THEN
+    RAISE EXCEPTION 'Circular parentPageId detected: cannot set % as a parent of %', NEW."parentPageId", NEW."id";
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_page_prevent_circular_parent
+BEFORE UPDATE OF "parentPageId" ON "Page"
+FOR EACH ROW
+EXECUTE FUNCTION "preventCircularParent"();
 `.execute(db)
 }
 
@@ -663,6 +813,8 @@ export async function down(db: Kysely<any>): Promise<void> {
       DROP COLUMN IF EXISTS "isPrivate" CASCADE,
       DROP COLUMN IF EXISTS "sortOrder" CASCADE;
     DROP TYPE IF EXISTS "PageRoleEnum" CASCADE;
+    DROP TRIGGER IF EXISTS "trg_page_prevent_circular_parent" ON "Page";
+    DROP TRIGGER IF EXISTS "trg_handle_page_hierarchy_change" ON "Page";
     DROP TRIGGER IF EXISTS "trg_page_shared_sort_order" ON "Page";
     DROP TRIGGER IF EXISTS "trg_remove_access_on_del_page" ON "Page";
     DROP TRIGGER IF EXISTS "trg_add_access_on_new_page" ON "Page";
@@ -670,6 +822,10 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "preventCircularParent";
+    DROP FUNCTION IF EXISTS "revokeAccess";
+    DROP FUNCTION IF EXISTS "cloneParentAccess";
+    DROP FUNCTION IF EXISTS "handlePageHierarchyChange";
     DROP FUNCTION IF EXISTS "maybeMarkPrivate";
     DROP FUNCTION IF EXISTS "removeAccessOnDeletePage";
     DROP FUNCTION IF EXISTS "unlinkFromParentPage";

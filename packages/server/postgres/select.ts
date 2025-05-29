@@ -316,10 +316,11 @@ export const selectPages = () =>
     'isPrivate',
     'parentPageId',
     'sortOrder',
-    'teamId',
+    'Page.teamId',
     'title',
     'updatedAt',
     'Page.userId'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
+export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()

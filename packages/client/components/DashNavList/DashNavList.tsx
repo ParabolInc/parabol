@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
 import type {DashNavList_viewer$key} from '../../__generated__/DashNavList_viewer.graphql'
@@ -11,7 +10,8 @@ import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import sortByTier from '../../utils/sortByTier'
 import DashNavListTeams from './DashNavListTeams'
 import EmptyTeams from './EmptyTeams'
-import {LeftNavPagesSection} from './LeftNavPagesSection'
+import {LeftNavPrivatePagesSection} from './LeftNavPrivatePagesSection'
+import {LeftNavSharedPagesSection} from './LeftNavSharedPagesSection'
 
 const StyledIcon = styled(ManageAccounts)({
   height: 18,
@@ -46,29 +46,14 @@ const DashNavList = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment DashNavList_viewer on User {
-        pages(first: 100) {
-          edges {
-            node {
-              ...LeftNavPagesSection_page
-              isPrivate
-            }
-          }
-        }
+        featureFlag(featureName: "Pages")
+        ...LeftNavPrivatePagesSection_viewer
+        ...LeftNavSharedPagesSection_viewer
       }
     `,
     viewerRef
   )
-  const {pages} = viewer
-  const {edges} = pages
   const sortedOrgs = sortByTier(organizations)
-
-  const [sharedPages, privatePages] = useMemo(() => {
-    const allPages = edges.map((e) => e.node)
-    const sharedPages = allPages.filter((page) => !page.isPrivate)
-    const privatePages = allPages.filter((page) => page.isPrivate)
-    return [sharedPages, privatePages]
-  }, [edges])
-
   return (
     <div className='w-full p-3 pt-4 pb-0'>
       {sortedOrgs.map((org) => (
@@ -95,10 +80,12 @@ const DashNavList = (props: Props) => {
           {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />}
         </div>
       ))}
-      <div>
-        <LeftNavPagesSection title={'Shared Pages'} pageRef={sharedPages} />
-        <LeftNavPagesSection title={'Private Pages'} pageRef={privatePages} />
-      </div>
+      {viewer.featureFlag && (
+        <div>
+          <LeftNavSharedPagesSection viewerRef={viewer} />
+          <LeftNavPrivatePagesSection viewerRef={viewer} />
+        </div>
+      )}
     </div>
   )
 }

@@ -11,9 +11,15 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
   rule(`hasPageAccess-${roleRequired}`, {cache: 'strict'})(
     async (source, args, context: GQLContext) => {
       const pageId = getResolverDotPath(dotPath, source, args)
+      if (!pageId) {
+        // may access the page if it doesn't exist. e.g. a parentPage where parentPageId is null
+        return true
+      }
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
-      const dbPageId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
+      const dbPageId = dotPath.startsWith('source')
+        ? pageId
+        : feistelCipher.decrypt(Number(pageId.split(':')[1]))
       const userRole = await dataLoader
         .get('pageAccessByUserId')
         .load({pageId: dbPageId, userId: viewerId})
