@@ -1,6 +1,5 @@
 import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import * as React from 'react'
 import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -20,6 +19,7 @@ import TemplatePromptList from '../../../modules/meeting/components/TemplateProm
 import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import {cn} from '../../../ui/cn'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
@@ -215,7 +215,7 @@ export const TemplateDetails = (props: Props) => {
           {isOwner && (
             <div className='flex items-center justify-between'>
               <div
-                className={clsx(
+                className={cn(
                   'w-max',
                   isEditing && 'rounded-full border border-solid border-slate-400 pl-3'
                 )}

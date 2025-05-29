@@ -1,11 +1,11 @@
 import {ExpandMore, FilterList} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {GitHubRepoFilterBar_teamMember$key} from '../../../__generated__/GitHubRepoFilterBar_teamMember.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PortalStatus} from '../../../hooks/usePortal'
+import {cn} from '../../../ui/cn'
 import plural from '../../../utils/plural'
 import GitHubRepoSearchFilterMenu from '../../GitHubRepoSearchFilterMenu'
 
@@ -40,7 +40,7 @@ const GitHubRepoFilterBar = (props: Props) => {
   return (
     <>
       <button
-        className={clsx(
+        className={cn(
           'mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-solid bg-white px-3 py-0.5 text-left transition',
           isMenuOpen
             ? 'border-sky-400 hover:border-sky-500'
@@ -58,7 +58,7 @@ const GitHubRepoFilterBar = (props: Props) => {
               'repositories'
             )} selected`}
         <ExpandMore
-          className={clsx(
+          className={cn(
             'ml-auto rounded-full transition duration-300',
             isMenuOpen ? 'rotate-180' : '',
             selectedRepos.length > 0 && !isMenuOpen ? 'bg-sky-500 text-white' : ''

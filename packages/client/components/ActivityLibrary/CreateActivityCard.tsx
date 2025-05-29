@@ -1,6 +1,6 @@
 import {Add as AddIcon} from '@mui/icons-material'
-import clsx from 'clsx'
 import {Link} from 'react-router-dom'
+import {cn} from '../../ui/cn'
 
 import {ActivityCard} from './ActivityCard'
 import {AllCategoryID, CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from './Categories'
@@ -15,7 +15,7 @@ const CreateActivityCard = (props: Props) => {
 
   return (
     <Link
-      className={clsx('flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500', className)}
+      className={cn('flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500', className)}
       to={`/activity-library/new-activity/${category}`}
     >
       <ActivityCard className={'flex-1 cursor-pointer'} theme={CATEGORY_THEMES[category]}>

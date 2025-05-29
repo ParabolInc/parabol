@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useEffect, useState} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
@@ -7,6 +6,7 @@ import {Link} from 'react-router-dom'
 import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
+import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
@@ -139,7 +139,7 @@ const ActivityDetails = (props: Props) => {
           />
         </div>
       </div>
-      <div className={clsx('lg:hidden', isEditing && 'hidden')}>
+      <div className={cn('lg:hidden', isEditing && 'hidden')}>
         <ActivityDetailsSidebar
           selectedTemplateRef={activity}
           teamsRef={teams}
