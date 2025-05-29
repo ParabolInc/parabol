@@ -13,8 +13,6 @@ graphql`
       parentPageId
       isPrivate
       isParentLinked
-      # TODO: remove and verify that this value isn't cached, since it will go stale
-      ...PageSharingAccessList_pageAccess @relay(mask: false)
     }
   }
 `

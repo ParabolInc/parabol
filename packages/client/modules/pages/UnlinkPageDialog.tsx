@@ -11,7 +11,6 @@ interface Props {
 
 export const UnlinkPageDialog = (props: Props) => {
   const {approveUnlink, closeDialog} = props
-  console.log('unlink')
   return (
     <Dialog isOpen={true}>
       <DialogContent className='z-10 md:max-w-80'>

@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useUpdatePageAccessMutation} from '~/mutations/useUpdatePageAccessMutation'
 import type {
@@ -19,16 +19,17 @@ export const PageAccessCombobox = (props: Props) => {
   const {pageId, subjectId, subjectType, defaultRole} = props
   const atmosphere = useAtmosphere()
   const [execute, submitting] = useUpdatePageAccessMutation()
-  const [unlinkApproved, setUnlinkApproved] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [attemptedRole, setAttemptedRole] = useState<PageRoleEnum | null>(null)
+  const unlinkApprovedRef = useRef(false)
+
   const closeDialog = () => {
-    setIsDialogOpen(false)
+    setAttemptedRole(null)
   }
+
   const approveUnlink = () => {
-    closeDialog()
-    setUnlinkApproved(true)
+    unlinkApprovedRef.current = true
     toggleRole(attemptedRole)
+    closeDialog()
   }
 
   const toggleRole = (role: PageRoleEnum | null) => {
@@ -39,13 +40,12 @@ export const PageAccessCombobox = (props: Props) => {
         role,
         subjectId,
         subjectType,
-        unlinkApproved
+        unlinkApproved: unlinkApprovedRef.current
       },
       onCompleted(_res, errors) {
         const firstError = errors?.[0]
         if (firstError) {
           if ((firstError as any).extensions?.code === 'UNAPPROVED_UNLINK') {
-            setIsDialogOpen(true)
             setAttemptedRole(role)
             return
           }
@@ -61,7 +61,9 @@ export const PageAccessCombobox = (props: Props) => {
   return (
     <>
       <PageAccessComboboxControl onClick={toggleRole} defaultRole={defaultRole} canRemove />
-      {isDialogOpen && <UnlinkPageDialog approveUnlink={approveUnlink} closeDialog={closeDialog} />}
+      {attemptedRole && (
+        <UnlinkPageDialog approveUnlink={approveUnlink} closeDialog={closeDialog} />
+      )}
     </>
   )
 }

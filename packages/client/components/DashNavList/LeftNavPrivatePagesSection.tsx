@@ -93,7 +93,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         </div>
       </div>
       <div
-        className={cn('relative hidden', showChildren && 'block')}
+        className={cn('relative hidden min-h-1', showChildren && 'block')}
         data-pages-connection={'User_privatePages'}
       >
         <div

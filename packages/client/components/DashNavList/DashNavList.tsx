@@ -46,6 +46,7 @@ const DashNavList = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment DashNavList_viewer on User {
+        featureFlag(featureName: "Pages")
         ...LeftNavPrivatePagesSection_viewer
         ...LeftNavSharedPagesSection_viewer
       }
@@ -79,10 +80,12 @@ const DashNavList = (props: Props) => {
           {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />}
         </div>
       ))}
-      <div>
-        <LeftNavSharedPagesSection viewerRef={viewer} />
-        <LeftNavPrivatePagesSection viewerRef={viewer} />
-      </div>
+      {viewer.featureFlag && (
+        <div>
+          <LeftNavSharedPagesSection viewerRef={viewer} />
+          <LeftNavPrivatePagesSection viewerRef={viewer} />
+        </div>
+      )}
     </div>
   )
 }
