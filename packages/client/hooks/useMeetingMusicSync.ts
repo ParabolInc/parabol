@@ -54,24 +54,39 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     const {trackSrc, isPlaying: shouldPlay, volume: newVolume} = musicSettings
 
-    console.log('🚀 ~ Server state:', {trackSrc, shouldPlay, currentTrackSrc, isPlaying, pausedAt})
-
     if (newVolume && newVolume !== volume) {
       setVolume(newVolume)
     }
 
-    // Don't sync if we have a local pause position (unless we're facilitator receiving updates)
-    if (pausedAt !== null) {
-      console.log('🚀 ~ Blocking sync due to pausedAt')
-      return
-    }
+    const hasLocalPause = pausedAt !== null
+    const hasLocalTrackOverride = !isFacilitator && currentTrackSrc !== trackSrc
+    const serverStateChanged = trackSrc !== currentTrackSrc || shouldPlay !== isPlaying
 
-    if (trackSrc !== currentTrackSrc || shouldPlay !== isPlaying) {
-      console.log('🚀 ~ Syncing server state to local')
-      setCurrentTrackSrc(trackSrc ?? null)
+    console.log('🚀 ~ Sync conditions:', {
+      hasLocalPause,
+      hasLocalTrackOverride,
+      serverStateChanged,
+      shouldPlay,
+      isPlaying
+    })
+
+    // Allow play/pause sync even with track override, but not when non-facilitator is playing their own track
+    const shouldSyncPlayState =
+      !hasLocalPause && shouldPlay !== isPlaying && !(hasLocalTrackOverride && isPlaying)
+    const shouldSyncTrack = !hasLocalPause && !hasLocalTrackOverride && trackSrc !== currentTrackSrc
+
+    // Special case: if facilitator starts playing and non-facilitator has no track, sync the track
+    const shouldSyncTrackForPlay =
+      !hasLocalPause && !isFacilitator && shouldPlay && !currentTrackSrc && trackSrc
+
+    if (shouldSyncPlayState) {
       setIsPlaying(shouldPlay ?? false)
     }
-  }, [meeting, currentTrackSrc, isPlaying, volume, pausedAt])
+
+    if (shouldSyncTrack || shouldSyncTrackForPlay) {
+      setCurrentTrackSrc(trackSrc ?? null)
+    }
+  }, [meeting, currentTrackSrc, isPlaying, volume, pausedAt, isFacilitator])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
