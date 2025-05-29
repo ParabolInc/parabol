@@ -47,41 +47,57 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
 
-  // Sync server music settings to local state
+  // Sync volume from server to local state
+  useEffect(() => {
+    const newVolume = meeting?.musicSettings?.volume
+    if (newVolume && newVolume !== volume) {
+      setVolume(newVolume)
+    }
+  }, [meeting?.musicSettings?.volume])
+
+  // Sync local volume state to audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
+
+  // Sync play state from server
   useEffect(() => {
     const {musicSettings} = meeting || {}
     if (!musicSettings) return
 
-    const {trackSrc, isPlaying: shouldPlay, volume: newVolume} = musicSettings
-
-    if (newVolume && newVolume !== volume) {
-      setVolume(newVolume)
-    }
-
+    const {isPlaying: shouldPlay} = musicSettings
     const hasLocalPause = pausedAt !== null
-    const hasLocalTrackOverride = !isFacilitator && currentTrackSrc !== trackSrc
+    const hasLocalTrackOverride = !isFacilitator && currentTrackSrc !== musicSettings.trackSrc
 
-    // Allow play/pause sync even with track override, but not when non-facilitator is playing their own track
-    const shouldSyncPlayState =
+    const shouldSync =
       !hasLocalPause && shouldPlay !== isPlaying && !(hasLocalTrackOverride && isPlaying)
-    const shouldSyncTrack = !hasLocalPause && !hasLocalTrackOverride && trackSrc !== currentTrackSrc
 
-    // Special case: if facilitator starts playing and non-facilitator has no track, sync the track
-    const shouldSyncTrackForPlay =
-      !hasLocalPause && !isFacilitator && shouldPlay && !currentTrackSrc && trackSrc
-
-    // Special case: if facilitator stops (trackSrc becomes null), always sync to stop non-facilitators
-    const shouldSyncTrackForStop =
-      !hasLocalPause && !isFacilitator && trackSrc === null && currentTrackSrc !== null
-
-    if (shouldSyncPlayState) {
+    if (shouldSync) {
       setIsPlaying(shouldPlay ?? false)
     }
+  }, [meeting?.musicSettings, isPlaying, pausedAt, isFacilitator, currentTrackSrc])
 
-    if (shouldSyncTrack || shouldSyncTrackForPlay || shouldSyncTrackForStop) {
+  // Sync track from server
+  useEffect(() => {
+    const {musicSettings} = meeting || {}
+    if (!musicSettings) return
+
+    const {trackSrc, isPlaying: shouldPlay} = musicSettings
+    const hasLocalPause = pausedAt !== null
+    const hasLocalTrackOverride = !isFacilitator && currentTrackSrc !== trackSrc
+    const nonFacilitatorNeedsTrackToPlay =
+      !isFacilitator && shouldPlay && !currentTrackSrc && trackSrc
+
+    const shouldSync =
+      (!hasLocalPause && !hasLocalTrackOverride && trackSrc !== currentTrackSrc) ||
+      nonFacilitatorNeedsTrackToPlay
+
+    if (shouldSync) {
       setCurrentTrackSrc(trackSrc ?? null)
     }
-  }, [meeting, currentTrackSrc, isPlaying, volume, pausedAt, isFacilitator])
+  }, [meeting?.musicSettings, currentTrackSrc, pausedAt, isFacilitator])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
@@ -118,9 +134,7 @@ const useMeetingMusicSync = (meetingId: string) => {
   useEffect(() => {
     if (!audioRef.current) return
 
-    console.log('🚀 ~ Playback effect:', {currentTrackSrc, isPlaying, pausedAt})
-
-    if (!currentTrackSrc) {
+    if (!currentTrackSrc || !isPlaying) {
       audioRef.current.pause()
       return
     }
@@ -130,41 +144,25 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current.load()
     }
 
-    if (isPlaying) {
-      // Set resume position if we have one, but only when starting to play
-      if (pausedAt !== null) {
-        console.log('🚀 ~ Setting currentTime to:', pausedAt)
-        audioRef.current.currentTime = pausedAt
-        // Clear pausedAt immediately after setting position
-        setPausedAt(null)
-      }
+    if (pausedAt !== null) {
+      audioRef.current.currentTime = pausedAt
+      setPausedAt(null)
+    }
 
-      console.log('🚀 ~ Starting playback')
-      audioRef.current.muted = true
-      const playPromise = audioRef.current.play()
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            audioRef.current!.muted = false
-          })
-          .catch((err) => {
-            if (err.name === 'NotAllowedError') {
-              pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
-            }
-          })
-      }
-    } else {
-      audioRef.current.pause()
+    audioRef.current.muted = true
+    const playPromise = audioRef.current.play()
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          audioRef.current!.muted = false
+        })
+        .catch((err) => {
+          if (err.name === 'NotAllowedError') {
+            pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
+          }
+        })
     }
   }, [currentTrackSrc, isPlaying, pausedAt])
-
-  // Update audio volume immediately when volume state changes
-  // Volume can change from user input, server sync, or initial setup
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume
-    }
-  }, [volume])
 
   // Handle autoplay restrictions by waiting for user interaction
   useEffect(() => {
