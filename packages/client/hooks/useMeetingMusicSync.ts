@@ -17,7 +17,7 @@ export const availableTracks = [
 const useMeetingMusicSync = (meetingId: string) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {onError, onCompleted, submitMutation} = useMutationProps()
   const data = useLazyLoadQuery<useMeetingMusicSyncQuery>(
     graphql`
       query useMeetingMusicSyncQuery($meetingId: ID!) {
@@ -41,7 +41,6 @@ const useMeetingMusicSync = (meetingId: string) => {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(null)
-  const [localTrackSrc, setLocalTrackSrc] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [volume, setVolume] = useState<number>(0.5)
   const [pausedAt, setPausedAt] = useState<number | null>(null)
@@ -60,13 +59,13 @@ const useMeetingMusicSync = (meetingId: string) => {
       setVolume(newVolume)
     }
 
-    if (isLocallyPaused || localTrackSrc) return
+    if (isLocallyPaused) return
 
     if (trackSrc !== currentTrackSrc || shouldPlay !== isPlaying) {
       setCurrentTrackSrc(trackSrc ?? null)
       setIsPlaying(shouldPlay ?? false)
     }
-  }, [meeting, currentTrackSrc, isPlaying, volume, isLocallyPaused, localTrackSrc])
+  }, [meeting, currentTrackSrc, isPlaying, volume, isLocallyPaused])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
@@ -103,14 +102,13 @@ const useMeetingMusicSync = (meetingId: string) => {
   useEffect(() => {
     if (!audioRef.current) return
 
-    const trackToPlay = localTrackSrc || currentTrackSrc
-    if (!trackToPlay) {
+    if (!currentTrackSrc) {
       audioRef.current.pause()
       return
     }
 
-    if (audioRef.current.src !== trackToPlay) {
-      audioRef.current.src = trackToPlay
+    if (audioRef.current.src !== currentTrackSrc) {
+      audioRef.current.src = currentTrackSrc
       audioRef.current.load()
       if (pausedAt !== null) {
         audioRef.current.currentTime = pausedAt
@@ -131,7 +129,7 @@ const useMeetingMusicSync = (meetingId: string) => {
           .catch((err) => {
             // If browser blocks autoplay, save for later user interaction
             if (err.name === 'NotAllowedError') {
-              pendingPlay.current = {trackSrc: trackToPlay, timestamp: null}
+              pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
             }
           })
       }
@@ -139,7 +137,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       // Should be paused - stop playback
       audioRef.current.pause()
     }
-  }, [currentTrackSrc, localTrackSrc, isPlaying, pausedAt, isLocallyPaused])
+  }, [currentTrackSrc, isPlaying, pausedAt, isLocallyPaused])
 
   // Update audio volume immediately when volume state changes
   // Volume can change from user input, server sync, or initial setup
@@ -209,11 +207,10 @@ const useMeetingMusicSync = (meetingId: string) => {
 
       syncMusicState(trackSrc, true)
     } else {
-      const isResumingSameTrack =
-        trackSrc === (localTrackSrc || currentTrackSrc) && pausedAt !== null
+      const isResumingSameTrack = trackSrc === currentTrackSrc && pausedAt !== null
 
       if (!isResumingSameTrack) {
-        setLocalTrackSrc(trackSrc)
+        setCurrentTrackSrc(trackSrc)
         setPausedAt(null)
       }
     }
@@ -236,7 +233,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       setCurrentTrackSrc(null)
       syncMusicState(null, false)
     } else {
-      setLocalTrackSrc(null)
+      setCurrentTrackSrc(null)
       setIsLocallyPaused(true)
       if (audioRef.current) {
         audioRef.current.pause()
@@ -251,7 +248,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       setCurrentTrackSrc(trackSrc)
       syncMusicState(trackSrc, false)
     } else {
-      setLocalTrackSrc(trackSrc)
+      setCurrentTrackSrc(trackSrc)
       if (audioRef.current) {
         audioRef.current.src = trackSrc
         audioRef.current.load()
@@ -273,7 +270,7 @@ const useMeetingMusicSync = (meetingId: string) => {
     stop,
     handleVolumeChange,
     selectTrack,
-    currentTrackSrc: localTrackSrc || currentTrackSrc,
+    currentTrackSrc,
     isPlaying,
     volume,
     availableTracks
