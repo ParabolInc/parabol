@@ -191,7 +191,6 @@ const updateHandlers = {
     const trackSrc = payload.getValue('trackSrc')
     const isPlaying = payload.getValue('isPlaying')
     const timestamp = payload.getValue('timestamp')
-    console.log('🚀 ~ timestamp <><><><><><><:', timestamp)
 
     const meeting = store.get(meetingId)
     if (!meeting) return

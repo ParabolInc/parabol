@@ -7,7 +7,6 @@ export type MusicSettingsSource = {
 }
 
 const MusicSettings: MusicSettingsResolvers = {
-  // Simple pass-through resolvers
   trackSrc: ({trackSrc}) => trackSrc,
   isPlaying: ({isPlaying}) => isPlaying,
   volume: ({volume}) => volume
