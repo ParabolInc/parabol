@@ -394,15 +394,16 @@ RETURNS TRIGGER AS $$
 DECLARE
   "_parentRole" "PageRoleEnum";
   "_parentPageId" INT;
+  "_isParentLinked" BOOLEAN;
 BEGIN
   -- Only proceed if the role was downgraded or deleted
   IF TG_OP = 'DELETE' OR OLD."role" < NEW."role" THEN
-    SELECT "parentPageId" INTO "_parentPageId"
+    SELECT "parentPageId", "isParentLinked" INTO "_parentPageId", "_isParentLinked"
       FROM "Page"
       WHERE "id" = OLD."pageId";
 
     -- Skip if no parent
-    IF "_parentPageId" IS NULL THEN
+    IF "_parentPageId" IS NULL OR "_isParentLinked" = FALSE THEN
       RETURN NULL;
     END IF;
 
@@ -720,9 +721,9 @@ CREATE OR REPLACE FUNCTION "handlePageHierarchyChange"()
 RETURNS TRIGGER AS $$
 BEGIN
   -- Only proceed if teamId or parentPageId changed
-  IF NEW."isParentLinked" = TRUE AND OLD."isParentLinked" != TRUE THEN
+  IF NEW."isParentLinked" = TRUE AND OLD."isParentLinked" = FALSE THEN
     IF NEW."teamId" IS NOT NULL THEN
-      -- Make the whole nw team at least an editor
+      -- Make the whole new team at least an editor
       INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
       VALUES (NEW.id, NEW."teamId", 'editor')
       ON CONFLICT ("pageId", "teamId") DO UPDATE
@@ -730,28 +731,18 @@ BEGIN
     ELSIF NEW."parentPageId" IS NOT NULL THEN
       PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
     END IF;
-  ELSIF NEW."parentPageId" IS DISTINCT FROM OLD."parentPageId" THEN
-    IF NEW."parentPageId" IS NOT NULL OR NEW."isPrivate" = TRUE THEN
-      -- There is a new parent or it is now a top-level shared page
-      PERFORM "revokeAccess"(NEW.id);
-    END IF;
-    IF NEW."isParentLinked" = FALSE THEN
-      UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
-    ELSE
+  ELSIF (NEW."parentPageId" IS NOT NULL OR NEW."teamId" IS NOT NULL) AND (NEW."parentPageId" IS DISTINCT FROM OLD."parentPageId" OR NEW."teamId" IS DISTINCT FROM OLD."teamId") THEN
+    -- get rid of all old access unless it was a child of a shared page
+    PERFORM "revokeAccess"(NEW.id);
+    IF NEW."parentPageId" IS NOT NULL THEN
       PERFORM "cloneParentAccess"(NEW."parentPageId", NEW.id);
-    END IF;
-  ELSIF NEW."teamId" IS DISTINCT FROM OLD."teamId" THEN
-    IF NEW."teamId" IS NOT NULL THEN
-      PERFORM "revokeAccess"(NEW.id);
-    END IF;
-    IF NEW."isParentLinked" = FALSE THEN
-      UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
     ELSE
       INSERT INTO "PageTeamAccess" ("pageId", "teamId", "role")
       VALUES (NEW.id, NEW."teamId", 'editor')
       ON CONFLICT ("pageId", "teamId") DO UPDATE
       SET "role" = LEAST(EXCLUDED."role", 'editor');
     END IF;
+    UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
   END IF;
   RETURN NEW;
 END;
@@ -763,6 +754,47 @@ AFTER UPDATE OF "teamId", "parentPageId", "isParentLinked" ON "Page"
 FOR EACH ROW
 EXECUTE FUNCTION "handlePageHierarchyChange"();
 
+
+-- Ensure parentPageId does not create a circular ref
+CREATE OR REPLACE FUNCTION "preventCircularParent"()
+RETURNS TRIGGER AS $$
+DECLARE
+  foundLoop BOOLEAN;
+BEGIN
+  -- If the parentPageId isn't changing, no need to check
+  IF NEW."parentPageId" IS NULL OR NEW."parentPageId" = OLD."parentPageId" THEN
+    RETURN NEW;
+  END IF;
+
+  -- Recursive CTE to walk up the tree from the new parent
+  WITH RECURSIVE ancestors AS (
+    SELECT "id", "parentPageId"
+    FROM "Page"
+    WHERE "id" = NEW."parentPageId"
+
+    UNION ALL
+
+    SELECT p."id", p."parentPageId"
+    FROM "Page" p
+    INNER JOIN ancestors a ON a."parentPageId" = p."id"
+  )
+  SELECT TRUE INTO foundLoop
+  FROM ancestors
+  WHERE "id" = NEW."id" -- Cycle detected
+  LIMIT 1;
+
+  IF foundLoop THEN
+    RAISE EXCEPTION 'Circular parentPageId detected: cannot set % as a parent of %', NEW."parentPageId", NEW."id";
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_page_prevent_circular_parent
+BEFORE UPDATE OF "parentPageId" ON "Page"
+FOR EACH ROW
+EXECUTE FUNCTION "preventCircularParent"();
 `.execute(db)
 }
 
@@ -781,6 +813,7 @@ export async function down(db: Kysely<any>): Promise<void> {
       DROP COLUMN IF EXISTS "isPrivate" CASCADE,
       DROP COLUMN IF EXISTS "sortOrder" CASCADE;
     DROP TYPE IF EXISTS "PageRoleEnum" CASCADE;
+    DROP TRIGGER IF EXISTS "trg_page_prevent_circular_parent" ON "Page";
     DROP TRIGGER IF EXISTS "trg_handle_page_hierarchy_change" ON "Page";
     DROP TRIGGER IF EXISTS "trg_page_shared_sort_order" ON "Page";
     DROP TRIGGER IF EXISTS "trg_remove_access_on_del_page" ON "Page";
@@ -789,6 +822,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     DROP TRIGGER IF EXISTS "trg_team_member_update_team_page_access" ON "TeamMember";
     DROP TRIGGER IF EXISTS "trg_org_user_update_org_page_access" ON "OrganizationUser";
     DROP TRIGGER IF EXISTS "trg_team_archived_remove_page_access" ON "Team";
+    DROP FUNCTION IF EXISTS "preventCircularParent";
     DROP FUNCTION IF EXISTS "revokeAccess";
     DROP FUNCTION IF EXISTS "cloneParentAccess";
     DROP FUNCTION IF EXISTS "handlePageHierarchyChange";

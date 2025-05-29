@@ -138,13 +138,13 @@ export const LeftNavPageLink = (props: Props) => {
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
             'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
-          draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-grabbing')
+          draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-pointer')
         )}
       >
         <div
           className={cn(
             'absolute -bottom-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
-            canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
+            canDropBelow && 'cursor-pointer'
           )}
           data-drop-below={canDropBelow ? (showChildren ? id : parentPageId || '') : undefined}
           data-drop-idx={showChildren ? -1 : dropIdx}
@@ -154,7 +154,7 @@ export const LeftNavPageLink = (props: Props) => {
           draggable={false}
           to={`/pages/${slug}`}
           key={slug}
-          className={'ml-1 flex w-full cursor-pointer items-center'}
+          className={'ml-1 flex w-full items-center'}
           onClick={(e) => {
             if (draggingPageId) {
               e.preventDefault()
@@ -164,7 +164,7 @@ export const LeftNavPageLink = (props: Props) => {
           <ExpandPageChildrenButton
             showChildren={showChildren}
             expandChildPages={expandChildPages}
-            draggingPageId={draggingPageId}
+            draggingPageId={isSelf ? null : draggingPageId}
           />
           <div className='flex flex-col text-sm font-medium'>
             <span>
