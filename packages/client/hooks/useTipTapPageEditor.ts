@@ -37,6 +37,7 @@ import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
+let currentPrefix: string | undefined = undefined
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText,
   pageIdNum: number,
@@ -49,6 +50,8 @@ const updateUrlWithSlug = (
   )
   const slug = toSlug(plaintext)
   const prefix = slug ? `${slug}-` : ''
+  if (prefix === currentPrefix) return
+  currentPrefix = prefix
   history.replace(`/pages/${prefix}${pageIdNum}`)
   commitLocalUpdate(atmosphere, (store) => {
     const title = plaintext.slice(0, 255)

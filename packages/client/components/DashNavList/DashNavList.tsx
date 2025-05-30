@@ -62,7 +62,15 @@ const DashNavList = (props: Props) => {
   const sortedOrgs = sortByTier(organizations)
   return (
     <div className='w-full p-3 pt-4 pb-0'>
-      {hasPages && <LeftNavTeamsSection viewerRef={viewer} />}
+      {hasPages && (
+        <>
+          <LeftNavTeamsSection viewerRef={viewer} />
+          <div className='pt-2'>
+            <LeftNavSharedPagesSection viewerRef={viewer} />
+            <LeftNavPrivatePagesSection viewerRef={viewer} />
+          </div>
+        </>
+      )}
       {!hasPages &&
         sortedOrgs.map((org) => (
           <div key={org.id} className='w-full pb-4'>
@@ -88,12 +96,6 @@ const DashNavList = (props: Props) => {
             {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />}
           </div>
         ))}
-      {hasPages && (
-        <div>
-          <LeftNavSharedPagesSection viewerRef={viewer} />
-          <LeftNavPrivatePagesSection viewerRef={viewer} />
-        </div>
-      )}
     </div>
   )
 }

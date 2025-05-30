@@ -174,13 +174,12 @@ RETURNS VOID AS $$
 DECLARE
   "_willBePrivate" BOOLEAN;
 BEGIN
-  SELECT COUNT(*) = 1 INTO "_willBePrivate"
-  FROM (
-    SELECT 1 FROM "PageAccess" WHERE "pageId" = "_pageId"
-    UNION ALL
-    SELECT 1 FROM "PageExternalAccess" WHERE "pageId" = "_pageId"
-  ) AS access;
-
+  SELECT (
+  (SELECT COUNT(*) FROM "PageUserAccess"         WHERE "pageId" = _pageId LIMIT 2) = 1 AND
+  NOT EXISTS (SELECT 1 FROM "PageTeamAccess"         WHERE "pageId" = _pageId LIMIT 1) AND
+  NOT EXISTS (SELECT 1 FROM "PageOrganizationAccess" WHERE "pageId" = _pageId LIMIT 1) AND
+  NOT EXISTS (SELECT 1 FROM "PageExternalAccess"     WHERE "pageId" = _pageId LIMIT 1)
+) INTO "_willBePrivate";
   UPDATE "Page"
   SET "isPrivate" = "_willBePrivate"
   WHERE id = "_pageId"

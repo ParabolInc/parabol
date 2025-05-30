@@ -35,6 +35,7 @@ BEGIN
       '!'
     )
   );
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -104,7 +105,7 @@ EXECUTE FUNCTION set_team_member_sort_order();
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.alterTable('TeamMember').dropColumn('sortOrder').execute()
   await sql`
-    DROP TRIGGER IF EXISTS "trg_set_team_member_sort_order";
+    DROP TRIGGER IF EXISTS "trg_set_team_member_sort_order" ON "TeamMember";
     DROP FUNCTION IF EXISTS "set_team_member_sort_order";
   `.execute(db)
 }
