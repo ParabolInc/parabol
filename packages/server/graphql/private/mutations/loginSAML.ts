@@ -56,12 +56,22 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const doc = await dataLoader.get('saml').load(normalizedName)
   dataLoader.get('saml').clear(normalizedName)
 
-  if (!doc)
+  if (!doc) {
+    // Often the SAML Domain is confused with the email domain, so let's check that and give a helpful error
+    const saml = await dataLoader.get('samlByDomain').load(normalizedName)
+    if (saml) {
+      return {
+        error: {
+          message: `SSO is enabled for ${normalizedName} but the SAML Entity IDs do not match. Please check your IdP's settings.`
+        }
+      }
+    }
     return {
       error: {
         message: `Ask customer service to enable SSO for ${normalizedName}.`
       }
     }
+  }
   const {
     domains,
     metadata: existingMetadata,
@@ -166,8 +176,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     id: userId,
     email,
     preferredName,
-    picture,
-    tier: 'enterprise'
+    picture
   })
 
   // find orgs specified in the SAML claim

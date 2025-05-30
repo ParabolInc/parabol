@@ -1,5 +1,3 @@
-import styled from '@emotion/styled'
-
 import {
   Children,
   cloneElement,
@@ -14,19 +12,13 @@ import {
 } from 'react'
 
 import * as React from 'react'
+import {twMerge} from 'tailwind-merge'
 import {PortalStatus} from '../hooks/usePortal'
 import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick
 const REACT_ELEMENT = Symbol.for('react.element')
 const isReactElement = (child: any) => child && child.$$typeof === REACT_ELEMENT
-
-const MenuStyles = styled('div')({
-  maxHeight: 224,
-  maxWidth: 400,
-  outline: 0,
-  userSelect: 'none'
-})
 
 interface Props {
   ariaLabel: string
@@ -60,8 +52,10 @@ const Menu = forwardRef((props: Props, ref: any) => {
   const initialDefaultActiveIdxRef = useRef(activeIdx)
   useEffect(() => {
     // support an active index that is async fetched
-    if (defaultActiveIdx && !initialDefaultActiveIdxRef.current) {
+    if (defaultActiveIdx !== null && initialDefaultActiveIdxRef.current === null) {
       setActiveIdx(defaultActiveIdx)
+      // Update the ref if we explicitly set the state based on prop change
+      initialDefaultActiveIdxRef.current = defaultActiveIdx
     }
   }, [defaultActiveIdx])
   useImperativeHandle(ref, () => ({
@@ -172,17 +166,17 @@ const Menu = forwardRef((props: Props, ref: any) => {
   )
 
   return (
-    <MenuStyles
+    <div
       role='menu'
       aria-label={ariaLabel}
-      className={className}
+      className={twMerge('max-h-56 max-w-md outline-none select-none', className)}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
       ref={menuRef}
     >
       {makeSmartChildren(children)}
-    </MenuStyles>
+    </div>
   )
 })
 

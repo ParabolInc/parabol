@@ -1,6 +1,7 @@
 import {handleStreamOrSingleExecutionResult, type ExecutionArgs} from '@envelop/core'
+import {useOnResolve, type Resolver} from '@envelop/on-resolve'
 import tracer, {type opentelemetry, type Span} from 'dd-trace'
-import {getOperationAST, type GraphQLResolveInfo} from 'graphql'
+import {defaultFieldResolver, getNamedType, getOperationAST, type GraphQLResolveInfo} from 'graphql'
 import type {ExecutionResult} from 'graphql-ws'
 import type {Plugin} from 'graphql-yoga'
 import {Path} from 'graphql/jsutils/Path'
@@ -44,50 +45,56 @@ interface Config {
   }
 }
 
-export const useDatadogTracing = (config: Config): Plugin<DDContext & ServerContext> => {
+type PluginContext = DDContext & ServerContext
+type WrappableResolver = Resolver<any> & {[ddSymbol]?: true}
+export const useDatadogTracing = (config: Config): Plugin<PluginContext> => {
   if (process.env.DD_TRACE_ENABLED !== 'true') return {}
   return {
     // Removing resolve-level tracing to see if we can measure executions without OOMs
-    // onPluginInit({addPlugin}) {
-    //   addPlugin(
-    //     useOnResolve(({info, context, args, replaceResolver, resolver}) => {
-    //       // Ignore anything without a custom resolver since it's basically an identity function
-    //       if (resolver === defaultFieldResolver) return
-    //       const path = getPath(info, config)
-    //       const computedPathString = path.join('.')
-    //       const ddContext = context[ddSymbol]
-    //       // context is set in onExecute or onSubscribe, depending on the parent operation
-    //       // if the parent operation did not set context, then the resolver has no parent & we cannot continue
-    //       if (!ddContext) return
-    //       const {rootSpan, fields} = ddContext
-    //       // if collapsed, we just measure the first item in a list
-    //       if (config.collapse && fields[computedPathString]) return
+    onPluginInit({addPlugin}) {
+      addPlugin(
+        useOnResolve(({info, context, args, replaceResolver, resolver}) => {
+          // Ignore anything without a custom resolver since it's basically an identity function
+          if (resolver === defaultFieldResolver || (resolver as WrappableResolver)[ddSymbol]) return
+          const path = getPath(info, config)
+          const computedPathString = path.join('.')
+          const ddContext = context[ddSymbol]
+          // context is set in onExecute or onSubscribe, depending on the parent operation
+          // if the parent operation did not set context, then the resolver has no parent & we cannot continue
+          if (!ddContext) return
+          const {rootSpan, fields} = ddContext
+          // if collapsed, we just measure the first item in a list
+          if (config.collapse && fields[computedPathString]) return
 
-    //       const parentSpan = getParentSpan(path, fields) ?? rootSpan
-    //       const {fieldName, returnType, parentType} = info
-    //       const returnTypeName = getNamedType(info.returnType).name
-    //       const parentTypeName = getNamedType(parentType).name
-    //       const fieldSpan = tracer.startSpan('graphql.resolve', {
-    //         childOf: parentSpan,
-    //         tags: {
-    //           'resource.name': `${info.fieldName}:${returnType}`,
-    //           'span.type': 'graphql',
-    //           'graphql.resolver.fieldName': fieldName,
-    //           'graphql.resolver.typeName': parentTypeName,
-    //           'graphql.resolver.returnType': returnTypeName,
-    //           'graphql.resolver.fieldPath': computedPathString,
-    //           ...makeVariables(config.excludeArgs, args, fieldName)
-    //         }
-    //       })
-    //       fields[computedPathString] = {span: fieldSpan}
-    //       replaceResolver((...args) => tracer.scope().activate(fieldSpan, () => resolver(...args)))
-    //       return ({result}) => {
-    //         markSpanError(fieldSpan, result)
-    //         fieldSpan.finish()
-    //       }
-    //     })
-    //   )
-    // },
+          const parentSpan = getParentSpan(path, fields) ?? rootSpan
+          const {fieldName, returnType, parentType} = info
+          const returnTypeName = getNamedType(info.returnType).name
+          const parentTypeName = getNamedType(parentType).name
+          const fieldSpan = tracer.startSpan('graphql.resolve', {
+            childOf: parentSpan,
+            tags: {
+              'service.name': 'web-graphql',
+              'resource.name': `${info.fieldName}:${returnType}`,
+              'span.type': 'graphql',
+              'graphql.resolver.fieldName': fieldName,
+              'graphql.resolver.typeName': parentTypeName,
+              'graphql.resolver.returnType': returnTypeName,
+              'graphql.resolver.fieldPath': computedPathString,
+              ...makeVariables(config.excludeArgs, args, fieldName)
+            }
+          })
+          fields[computedPathString] = {span: fieldSpan}
+          const wrapped: WrappableResolver = (...args) =>
+            tracer.scope().activate(fieldSpan, () => resolver(...args))
+          wrapped[ddSymbol] = true
+          replaceResolver(wrapped)
+          return ({result}) => {
+            markSpanError(fieldSpan, result)
+            fieldSpan.finish()
+          }
+        })
+      )
+    },
     onExecute({args, extendContext, executeFn, setExecuteFn}) {
       const operationAst = getOperationAST(args.document, args.operationName)!
       const operationType = operationAst.operation

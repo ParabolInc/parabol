@@ -1,23 +1,15 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {EditableTeamName_team$key} from '../../../../__generated__/EditableTeamName_team.graphql'
 import EditableText from '../../../../components/EditableText'
 import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
-import {FONT_FAMILY} from '../../../../styles/typographyV2'
 import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 
 interface Props extends WithMutationProps {
   team: EditableTeamName_team$key
 }
-
-const InheritedStyles = styled('div')({
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 24,
-  lineHeight: '32px'
-})
 
 const EditableTeamName = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -65,16 +57,15 @@ const EditableTeamName = (props: Props) => {
   }
 
   return (
-    <InheritedStyles>
-      <EditableText
-        error={error as string}
-        handleSubmit={handleSubmit}
-        initialValue={teamName}
-        maxLength={50}
-        validate={validate}
-        placeholder={'Team Name'}
-      />
-    </InheritedStyles>
+    <EditableText
+      error={error as string}
+      handleSubmit={handleSubmit}
+      initialValue={teamName}
+      maxLength={50}
+      validate={validate}
+      placeholder={'Team Name'}
+      className='inline-flex items-center'
+    />
   )
 }
 

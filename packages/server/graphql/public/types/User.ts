@@ -36,7 +36,6 @@ import {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
-import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {aiPrompts} from '../fields/aiPrompts'
 import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
@@ -483,11 +482,8 @@ const User: ReqResolvers<'User'> = {
   },
 
   overLimitCopy: async ({id: userId, overLimitCopy}, _args, {dataLoader}) => {
-    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-    const isAnyMemberOfPaidOrg = organizationUsers.some(
-      (organizationUser) => organizationUser.tier !== 'starter'
-    )
-    if (isAnyMemberOfPaidOrg) return null
+    const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
+    if (highestTier !== 'starter') return null
     return overLimitCopy
   },
 
@@ -799,7 +795,8 @@ const User: ReqResolvers<'User'> = {
     const similarEmbeddings = await pg
       .with('Model', (qc) =>
         qc
-          .selectFrom(MODEL)
+          .selectFrom(MODEL as any)
+          // @ts-ignore
           .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${MODEL}.embeddingsMetadataId`)
           .select([`${MODEL}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
           .where('objectType', '=', 'meetingTemplate')
@@ -856,10 +853,10 @@ const User: ReqResolvers<'User'> = {
       picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
     return dataLoader.get('fileStoreAsset').load(rasterPicture)
   },
-  tier: ({tier, trialStartDate}) => {
-    return getFeatureTier({tier, trialStartDate})
+  highestTier: async ({id: userId}, _args, {dataLoader}) => {
+    const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
+    return highestTier
   },
-  billingTier: ({tier}) => tier,
   pageInsights,
   aiPrompts,
   page: async (_source, {pageId}, {dataLoader}) => {

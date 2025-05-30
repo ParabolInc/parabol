@@ -69,6 +69,7 @@ const login = (state: State) => async () => {
   )
   const body = await response.json()
   store.dispatch(onLogin(body.authToken))
+  return !!body.authToken
 }
 
 const relayFieldLogger: RelayFieldLogger = (event) => {
@@ -85,7 +86,7 @@ export type ResolverContext = {
 
 export class Atmosphere extends Environment {
   state: State
-  login: () => Promise<void>
+  login: () => Promise<boolean>
 
   constructor(serverUrl: string, reduxStore: Store<GlobalState, AnyAction>) {
     const state = {

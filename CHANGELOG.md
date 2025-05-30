@@ -5,6 +5,100 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.5.1](https://github.com/ParabolInc/parabol/compare/v10.5.0...v10.5.1) (2025-05-26)
+
+
+### Fixed
+
+* set message in lockOrganizations ([#11363](https://github.com/ParabolInc/parabol/issues/11363)) ([1ef583c](https://github.com/ParabolInc/parabol/commit/1ef583c008cd0e1dfb5416505a1315834cc2ca2e))
+
+## [10.5.0](https://github.com/ParabolInc/parabol/compare/v10.4.1...v10.5.0) (2025-05-26)
+
+
+### Added
+
+* **chore:** update the placeholder text for reflections ([#11351](https://github.com/ParabolInc/parabol/issues/11351)) ([95280b8](https://github.com/ParabolInc/parabol/commit/95280b86d262cfed6d6b68c343e5b99b25b293c3))
+
+
+### Fixed
+
+* disable unsafe webpack cache ([#11361](https://github.com/ParabolInc/parabol/issues/11361)) ([ebaf9dd](https://github.com/ParabolInc/parabol/commit/ebaf9dd379356564571f52cfadc7df9dcfa3a625))
+* integration logo sizing ([#11354](https://github.com/ParabolInc/parabol/issues/11354)) ([d7e8056](https://github.com/ParabolInc/parabol/commit/d7e80568c3ef8cbd2475aab819e64cf4fc6cffa7))
+* return missing Organization.isPaid field ([#11360](https://github.com/ParabolInc/parabol/issues/11360)) ([7f61578](https://github.com/ParabolInc/parabol/commit/7f6157830e85ec6e9262ec5f7e38eb382bc6ed72))
+
+
+### Changed
+
+* **deps:** bump samlify from 2.9.1 to 2.10.0 ([#11350](https://github.com/ParabolInc/parabol/issues/11350)) ([b0b841d](https://github.com/ParabolInc/parabol/commit/b0b841d0f596761c23d94c970ef7163b2aee938a))
+* Normalize tier in Postgres ([#11024](https://github.com/ParabolInc/parabol/issues/11024)) ([32f6983](https://github.com/ParabolInc/parabol/commit/32f6983838a5bae6e5da94a54f61cb551c999829))
+
+## [10.4.1](https://github.com/ParabolInc/parabol/compare/v10.4.0...v10.4.1) (2025-05-21)
+
+
+### Fixed
+
+* limit the Azure DevOps work items fetched ([#11345](https://github.com/ParabolInc/parabol/issues/11345)) ([6a11049](https://github.com/ParabolInc/parabol/commit/6a110495ab9839bc09b9e26a7687137cf7278269))
+* ScopePhaseArea styling ([#11349](https://github.com/ParabolInc/parabol/issues/11349)) ([d8fcdd0](https://github.com/ParabolInc/parabol/commit/d8fcdd0daa567c1d6733f32cf34e318af6db6927))
+
+
+### Changed
+
+* Remove leftover debug output ([#11346](https://github.com/ParabolInc/parabol/issues/11346)) ([a5254ab](https://github.com/ParabolInc/parabol/commit/a5254abfa7de0f4ca2476203e5ee22b449e64b7b))
+
+## [10.4.0](https://github.com/ParabolInc/parabol/compare/v10.3.6...v10.4.0) (2025-05-16)
+
+
+### Added
+
+* adds the Linear integration ([#11217](https://github.com/ParabolInc/parabol/issues/11217)) ([18f7457](https://github.com/ParabolInc/parabol/commit/18f7457720d09f929e54f6cf19b054135441078e))
+* **orgAdmin:** org admin can rename a team in org teams view ([#11331](https://github.com/ParabolInc/parabol/issues/11331)) ([81c63e0](https://github.com/ParabolInc/parabol/commit/81c63e062617f4ea301c9ca0449c3624f9e73bee))
+
+
+### Fixed
+
+* **metrics:** add metric for page insights generated ([#11332](https://github.com/ParabolInc/parabol/issues/11332)) ([8af9230](https://github.com/ParabolInc/parabol/commit/8af92304999918f877c18e5cf4dd80d0994df36a))
+
+
+### Changed
+
+* make chronos debug output optional ([#11334](https://github.com/ParabolInc/parabol/issues/11334)) ([6745673](https://github.com/ParabolInc/parabol/commit/6745673a2e0dfb9097ce7b93b12a27e7ec4a037b))
+
+## [10.3.6](https://github.com/ParabolInc/parabol/compare/v10.3.5...v10.3.6) (2025-05-13)
+
+
+### Fixed
+
+* mark wrapped resolvers ([#11325](https://github.com/ParabolInc/parabol/issues/11325)) ([7cd2e93](https://github.com/ParabolInc/parabol/commit/7cd2e935e33a4d4b8b78beb82176909f600e7efa))
+* **MS Teams:** Updates incorrect service name from `mattermost` to `msTeams` ([#11314](https://github.com/ParabolInc/parabol/issues/11314)) ([03c20d0](https://github.com/ParabolInc/parabol/commit/03c20d06371b6e2b18514d930d18be004cdeeaeb))
+* **orgAdmin:** enable org admins to rename & update scope of meeting templates ([#11326](https://github.com/ParabolInc/parabol/issues/11326)) ([c6b0f0a](https://github.com/ParabolInc/parabol/commit/c6b0f0a754de78979fee0af2480267af38b4e336))
+
+
+### Changed
+
+* fail on pgtyped errors ([#11324](https://github.com/ParabolInc/parabol/issues/11324)) ([33a676d](https://github.com/ParabolInc/parabol/commit/33a676ddcfc52499da91cbdd73cd73d91eebc077))
+
+## [10.3.5](https://github.com/ParabolInc/parabol/compare/v10.3.4...v10.3.5) (2025-05-09)
+
+
+### Fixed
+
+* gitlab name in summary ([#11320](https://github.com/ParabolInc/parabol/issues/11320)) ([2158778](https://github.com/ParabolInc/parabol/commit/21587780445dac786234acca3fea59734e430b8c))
+
+## [10.3.4](https://github.com/ParabolInc/parabol/compare/v10.3.3...v10.3.4) (2025-05-09)
+
+
+### Fixed
+
+* bump kysely ([#11308](https://github.com/ParabolInc/parabol/issues/11308)) ([9c62de2](https://github.com/ParabolInc/parabol/commit/9c62de20d57f4d1727f96e5e49248810c303fd7b))
+* Mattermost relay compiler in dev ([#11305](https://github.com/ParabolInc/parabol/issues/11305)) ([2c3f61f](https://github.com/ParabolInc/parabol/commit/2c3f61f72935f1368ad36bd0f6d03652654953e9))
+* show resource names in webpack dev build ([#11306](https://github.com/ParabolInc/parabol/issues/11306)) ([bec910d](https://github.com/ParabolInc/parabol/commit/bec910dafe1fe5dbe8d6b8e14fdf03bcb38875cb))
+
+
+### Changed
+
+* cleanup Mattermost webhook handler ([#11312](https://github.com/ParabolInc/parabol/issues/11312)) ([dbe200e](https://github.com/ParabolInc/parabol/commit/dbe200e9d9cab8802e88e87edec68f5388a9645b))
+* **Mattermost Plugin:** improve not logged in experience ([#11313](https://github.com/ParabolInc/parabol/issues/11313)) ([fcac5ac](https://github.com/ParabolInc/parabol/commit/fcac5ac8b40ea696d94b31ccefcdd0b76ce2b30c))
+
 ## [10.3.3](https://github.com/ParabolInc/parabol/compare/v10.3.2...v10.3.3) (2025-05-06)
 
 

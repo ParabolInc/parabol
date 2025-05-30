@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,8 +5,6 @@ import SwipeableViews from 'react-swipeable-views'
 import {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
@@ -15,12 +12,14 @@ import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
 import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import LinearSVG from './LinearSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
 import ScopePhaseAreaGitHub from './ScopePhaseAreaGitHub'
 import ScopePhaseAreaGitLab from './ScopePhaseAreaGitLab'
 import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
+import ScopePhaseAreaLinear from './ScopePhaseAreaLinear'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
@@ -28,56 +27,6 @@ import Tabs from './Tabs/Tabs'
 interface Props {
   meeting: ScopePhaseArea_meeting$key
 }
-
-const ScopingArea = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  background: '#fff',
-  borderRadius: 8,
-  display: 'flex',
-  flexDirection: 'column',
-  margin: isDesktop ? undefined : '0 auto',
-  width: isDesktop ? '80%' : 'calc(100% - 16px)',
-  maxWidth: 1040,
-  height: '70%',
-  boxShadow: Elevation.Z3
-}))
-
-const StyledTabsBar = styled(Tabs)({
-  boxShadow: `inset 0 -1px 0 ${PALETTE.SLATE_300}`,
-  maxWidth: '100%',
-  overflow: 'hidden',
-  overflowX: 'auto',
-  '&::-webkit-scrollbar': {
-    webkitAppearance: 'none',
-    width: '6px',
-    height: '4px'
-  },
-  '&::-webkit-scrollbar-thumb': {
-    borderRadius: '3px',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)'
-  }
-})
-
-const TabIcon = styled('div')({
-  height: 24,
-  width: 24,
-  margin: '0px 4px'
-})
-
-const TabLabel = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  minWidth: 80,
-  whiteSpace: 'nowrap'
-})
-
-const TabContents = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  position: 'relative',
-  overflow: 'hidden'
-})
 
 const containerStyle = {height: '100%'}
 const innerStyle = {width: '100%', height: '100%'}
@@ -95,6 +44,7 @@ const ScopePhaseArea = (props: Props) => {
         ...ScopePhaseAreaJiraServer_meeting
         ...ScopePhaseAreaParabolScoping_meeting
         ...ScopePhaseAreaAzureDevOps_meeting
+        ...ScopePhaseAreaLinear_meeting
         endedAt
         localPhase {
           ...ScopePhaseArea_phase @relay(mask: false)
@@ -130,6 +80,11 @@ const ScopePhaseArea = (props: Props) => {
                   id
                 }
               }
+              linear {
+                cloudProvider {
+                  clientId
+                }
+              }
             }
           }
         }
@@ -142,12 +97,14 @@ const ScopePhaseArea = (props: Props) => {
   const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
   const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
+  const linearIntegration = viewerMeetingMember?.teamMember.integrations.linear
   const allowAzureDevOps =
     !!azureDevOpsIntegration?.sharedProviders.length || !!azureDevOpsIntegration?.cloudProvider
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
   const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
+  const isLinearProviderAvailable = !!linearIntegration?.cloudProvider?.clientId
 
   const baseTabs = [
     {
@@ -185,6 +142,12 @@ const ScopePhaseArea = (props: Props) => {
       label: 'Azure DevOps',
       allow: allowAzureDevOps,
       Component: ScopePhaseAreaAzureDevOps
+    },
+    {
+      icon: <LinearSVG />,
+      label: 'Linear',
+      allow: isLinearProviderAvailable,
+      Component: ScopePhaseAreaLinear
     }
   ] as const
 
@@ -217,21 +180,27 @@ const ScopePhaseArea = (props: Props) => {
   }
 
   return (
-    <ScopingArea isDesktop={isDesktop}>
-      <StyledTabsBar activeIdx={activeIdx}>
-        {tabs.map((tab, idx) => (
-          <Tab
-            key={tab.label}
-            label={
-              <TabLabel>
-                <TabIcon>{tab.icon}</TabIcon>
-                {tab.label}
-              </TabLabel>
-            }
-            onClick={() => selectIdx(idx)}
-          />
-        ))}
-      </StyledTabsBar>
+    <div
+      className={`flex flex-col rounded-lg bg-white ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-md`}
+    >
+      <div className='max-w-full'>
+        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-b border-solid border-slate-300'>
+          <Tabs activeIdx={activeIdx} className='max-w-sm'>
+            {tabs.map((tab, idx) => (
+              <Tab
+                key={tab.label}
+                label={
+                  <div className='flex min-w-20 items-center justify-center whitespace-nowrap'>
+                    <div className='mx-1 h-6 w-6'>{tab.icon}</div>
+                    {tab.label}
+                  </div>
+                }
+                onClick={() => selectIdx(idx)}
+              />
+            ))}
+          </Tabs>
+        </div>
+      </div>
       <SwipeableViews
         enableMouseEvents={false} // disable because this works even if a modal is on top of it
         index={activeIdx}
@@ -241,16 +210,16 @@ const ScopePhaseArea = (props: Props) => {
       >
         {/* swipeable views won't ignore null children: https://github.com/oliviertassinari/react-swipeable-views/issues/271 */}
         {tabs.map(({label, Component}) => (
-          <TabContents key={label}>
+          <div className='relative flex h-full flex-col overflow-hidden' key={label}>
             <Component
               meetingRef={meeting}
               isActive={isTabActive(label)}
               gotoParabol={gotoParabol}
             />
-          </TabContents>
+          </div>
         ))}
       </SwipeableViews>
-    </ScopingArea>
+    </div>
   )
 }
 

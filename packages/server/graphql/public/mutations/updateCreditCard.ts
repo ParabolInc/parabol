@@ -3,11 +3,9 @@ import Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
-import updateTeamByOrgId from '../../../postgres/queries/updateTeamByOrgId'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
+import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
-import setTierForOrgUsers from '../../../utils/setTierForOrgUsers'
-import setUserTierForOrgId from '../../../utils/setUserTierForOrgId'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import {stripeCardToDBCard} from '../../mutations/helpers/stripeCardToDBCard'
@@ -56,27 +54,19 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   if (stripeCard instanceof Error) return standardError(stripeCard, {userId: viewerId})
   const creditCard = stripeCardToDBCard(stripeCard)
 
-  await Promise.all([
-    getKysely()
-      .updateTable('Organization')
-      .set({
-        creditCard: toCreditCard(creditCard),
-        tier: 'team',
-        stripeId: customer.id,
-        tierLimitExceededAt: null,
-        scheduledLockAt: null,
-        lockedAt: null
-      })
-      .where('id', '=', orgId)
-      .execute(),
-    updateTeamByOrgId(
-      {
-        isPaid: true,
-        tier: 'team'
-      },
-      orgId
-    )
-  ])
+  await getKysely()
+    .updateTable('Organization')
+    .set({
+      creditCard: toCreditCard(creditCard),
+      isPaid: true,
+      tier: 'team',
+      stripeId: customer.id,
+      tierLimitExceededAt: null,
+      scheduledLockAt: null,
+      lockedAt: null
+    })
+    .where('id', '=', orgId)
+    .execute()
   dataLoader.get('organizations').clear(orgId)
 
   // If there are unpaid open invoices, try to process them
@@ -97,8 +87,7 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   }
   await Promise.all([
     removeTeamsLimitObjects(orgId, dataLoader),
-    setUserTierForOrgId(orgId),
-    setTierForOrgUsers(orgId)
+    identifyHighestUserTierForOrgId(orgId, dataLoader)
   ])
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)

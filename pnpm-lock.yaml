@@ -1061,8 +1061,8 @@ importers:
         specifier: ^1.11.2
         version: 1.11.2
       nest-graphql-endpoint:
-        specifier: 0.8.1
-        version: 0.8.1(graphql@16.11.0)
+        specifier: ^0.8.3
+        version: 0.8.3(graphql@16.11.0)
       node-env-flag:
         specifier: 0.1.0
         version: 0.1.0
@@ -1112,8 +1112,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       samlify:
-        specifier: ^2.8.2
-        version: 2.9.1
+        specifier: ^2.10.0
+        version: 2.10.0
       sanitize-html:
         specifier: ^2.13.0
         version: 2.16.0
@@ -6527,6 +6527,10 @@ packages:
     resolution: {integrity: sha512-ydxzH1iox9AzLe+uaX9jjyVFkQO+h15j+JClropw0P4Vz+ES4+xTZVu5leUsWW8AYTVZBFkiC0iHl/PwFZ+Q1Q==}
     engines: {node: '>=18.0.0'}
 
+  '@xmldom/is-dom-node@1.0.1':
+    resolution: {integrity: sha512-CJDxIgE5I0FH+ttq/Fxy6nRpxP70+e2O048EPe85J2use3XKdatVM7dDVvFNjQudd9B49NPoZ+8PG49zj4Er8Q==}
+    engines: {node: '>= 16'}
+
   '@xmldom/xmldom@0.8.10':
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
     engines: {node: '>=10.0.0'}
@@ -10595,8 +10599,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  nest-graphql-endpoint@0.8.1:
-    resolution: {integrity: sha512-l3P6qozmrSzId0o7CpnFHdbBleqFSsTwyIAyK6VB8MnzSR/IkugYiQnTCcCef0P+gI/UJnTSLBc3kRRjN5rWaw==}
+  nest-graphql-endpoint@0.8.3:
+    resolution: {integrity: sha512-CI3eYLBtmywFQp2x93Pvh4advy8eUqQ/fDTA3kxzVWEdu8bPSvfyWxUZ7PqGD3jHVNNQHpKzRRpF+Fti8wVVgQ==}
     peerDependencies:
       graphql: ^16
 
@@ -12214,8 +12218,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  samlify@2.9.1:
-    resolution: {integrity: sha512-VFite2x9RLrz4zJ0rfhJU2CSPbV/V2o6I0EdRfoa8AJVsM/dQlVF9ibbR2TJ3nKSHqf2tpCy/AZZ2O/+tynnbQ==}
+  samlify@2.10.0:
+    resolution: {integrity: sha512-IIFg193YPn9IpTd2jCWVvLLC9xdWz/eLn1rtF9YMSwK/B1rt2OM2zAuP99cw3MPYyYsm+I9rlvYgq9FuJ9JqSA==}
 
   sanitize-html@2.16.0:
     resolution: {integrity: sha512-0s4caLuHHaZFVxFTG74oW91+j6vW7gKbGD6CD2+miP73CE6z6YtOBN0ArtLd2UGyi4IC7K47v3ENUbQX4jV3Mg==}
@@ -13726,9 +13730,9 @@ packages:
   x-path@0.0.2:
     resolution: {integrity: sha512-zQ4WFI0XfJN1uEkkrB19Y4TuXOlHqKSxUJo0Yt+axPjRm8tCG6SJ6+Wo3/+Kjg4c2c8IvBXuJ0uYoshxNn4qMw==}
 
-  xml-crypto@3.2.1:
-    resolution: {integrity: sha512-0GUNbPtQt+PLMsC5HoZRONX+K6NBJEqpXe/lsvrFj0EqfpGPpVfJKGE7a5jCg8s2+Wkrf/2U1G41kIH+zC9eyQ==}
-    engines: {node: '>=4.0.0'}
+  xml-crypto@6.1.2:
+    resolution: {integrity: sha512-leBOVQdVi8FvPJrMYoum7Ici9qyxfE4kVi+AkpUoYCSXaQF4IlBm1cneTK9oAxR61LpYxTx7lNcsnBIeRpGW2w==}
+    engines: {node: '>=16'}
 
   xml-escape@1.1.0:
     resolution: {integrity: sha512-B/T4sDK8Z6aUh/qNr7mjKAwwncIljFuUP+DO/D5hloYFj+90O88z8Wf7oSucZTHxBAsC1/CTP4rtx/x1Uf72Mg==}
@@ -13753,6 +13757,10 @@ packages:
 
   xpath@0.0.32:
     resolution: {integrity: sha512-rxMJhSIoiO8vXcWvSifKqhvV96GjiD5wYb8/QHdoRyQvraTpp4IEv944nhGausZZ3u7dhQXteZuZbaqfpB7uYw==}
+    engines: {node: '>=0.6.0'}
+
+  xpath@0.0.33:
+    resolution: {integrity: sha512-NNXnzrkDrAzalLhIUc01jO2mOzXGXh1JwPgkihcLLzw98c0WgYDmmjSh1Kl3wzaxSVWMuA+fe0WTWOBDWCBmNA==}
     engines: {node: '>=0.6.0'}
 
   xtend@4.0.2:
@@ -21030,6 +21038,8 @@ snapshots:
       '@whatwg-node/promise-helpers': 1.3.1
       tslib: 2.8.1
 
+  '@xmldom/is-dom-node@1.0.1': {}
+
   '@xmldom/xmldom@0.8.10': {}
 
   '@xtuc/ieee754@1.2.0': {}
@@ -25917,7 +25927,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nest-graphql-endpoint@0.8.1(graphql@16.11.0):
+  nest-graphql-endpoint@0.8.3(graphql@16.11.0):
     dependencies:
       '@graphql-tools/schema': 10.0.23(graphql@16.11.0)
       '@graphql-tools/wrap': 10.0.35(graphql@16.11.0)
@@ -27807,7 +27817,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  samlify@2.9.1:
+  samlify@2.10.0:
     dependencies:
       '@authenio/xml-encryption': 2.0.2
       '@xmldom/xmldom': 0.8.10
@@ -27817,7 +27827,7 @@ snapshots:
       pako: 1.0.11
       uuid: 8.3.2
       xml: 1.0.1
-      xml-crypto: 3.2.1
+      xml-crypto: 6.1.2
       xml-escape: 1.1.0
       xpath: 0.0.32
 
@@ -29532,10 +29542,11 @@ snapshots:
     dependencies:
       path-extra: 1.0.3
 
-  xml-crypto@3.2.1:
+  xml-crypto@6.1.2:
     dependencies:
+      '@xmldom/is-dom-node': 1.0.1
       '@xmldom/xmldom': 0.8.10
-      xpath: 0.0.32
+      xpath: 0.0.33
 
   xml-escape@1.1.0: {}
 
@@ -29553,6 +29564,8 @@ snapshots:
   xmlchars@2.2.0: {}
 
   xpath@0.0.32: {}
+
+  xpath@0.0.33: {}
 
   xtend@4.0.2: {}
 

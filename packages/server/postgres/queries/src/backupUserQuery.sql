@@ -8,7 +8,6 @@
     inactive,
     lastSeenAt,
     preferredName,
-    tier,
     picture,
     tms,
     lastSeenAtURLs,
@@ -18,7 +17,7 @@
     overLimitCopy,
     isRemoved,
     reasonRemoved,
-    rol,
+    rol
   )...)
 */
   INSERT INTO "User" (
@@ -29,7 +28,6 @@
     "inactive",
     "lastSeenAt",
     "preferredName",
-    "tier",
     "picture",
     "tms",
     "lastSeenAtURLs",
@@ -39,7 +37,7 @@
     "overLimitCopy",
     "isRemoved",
     "reasonRemoved",
-    "rol",
+    "rol"
   ) VALUES :users
   ON CONFLICT (id) DO UPDATE SET
     "email" = EXCLUDED."email",
@@ -48,7 +46,6 @@
     "inactive" = EXCLUDED."inactive",
     "lastSeenAt" = EXCLUDED."lastSeenAt",
     "preferredName" = EXCLUDED."preferredName",
-    "tier" = EXCLUDED."tier",
     "picture" = EXCLUDED."picture",
     "tms" = EXCLUDED."tms",
     "lastSeenAtURLs" = EXCLUDED."lastSeenAtURLs",
@@ -58,5 +55,5 @@
     "overLimitCopy" = EXCLUDED."overLimitCopy",
     "isRemoved" = EXCLUDED."isRemoved",
     "reasonRemoved" = EXCLUDED."reasonRemoved",
-    "rol" = EXCLUDED."rol",
+    "rol" = EXCLUDED."rol"
   ;

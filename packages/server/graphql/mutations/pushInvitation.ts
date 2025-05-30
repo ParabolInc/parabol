@@ -6,7 +6,7 @@ import {getUserId, isAuthenticated} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
-import getIsUserIdApprovedByOrg from '../public/mutations/helpers/getIsUserIdApprovedByOrg'
+import {getIsUserIdApprovedByOrg} from '../public/mutations/helpers/getIsUserIdApprovedByOrg'
 import rateLimit from '../rateLimit'
 import PushInvitationPayload from '../types/PushInvitationPayload'
 

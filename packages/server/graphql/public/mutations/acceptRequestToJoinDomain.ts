@@ -8,9 +8,9 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
 import {Logger} from '../../../utils/Logger'
 import RedisLock from '../../../utils/RedisLock'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import setUserTierForUserIds from '../../../utils/setUserTierForUserIds'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import {MutationResolvers} from '../resolverTypes'
@@ -113,7 +113,12 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       } catch (e) {
         Logger.log(e)
       }
-      await setUserTierForUserIds([userId])
+      const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
+      analytics.identify({
+        userId,
+        email: user.email,
+        highestTier
+      })
     }
   }
   dataLoader.clearAll(['users', 'teamMembers'])

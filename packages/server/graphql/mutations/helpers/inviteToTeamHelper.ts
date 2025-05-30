@@ -20,7 +20,7 @@ import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
-import getIsEmailApprovedByOrg from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
+import {getIsEmailApprovedByOrg} from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 

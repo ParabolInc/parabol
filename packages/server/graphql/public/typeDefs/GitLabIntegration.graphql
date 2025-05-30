@@ -16,6 +16,10 @@ type GitLabIntegration {
   The non-global providers shared with the team or organization
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
+
+  """
+  An historical list of GitLab Sprint Poker search queries
+  """
   gitlabSearchQueries: [GitLabSearchQuery!]!
 
   """

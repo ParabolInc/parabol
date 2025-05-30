@@ -38,7 +38,7 @@ import {
   Team
 } from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
-import {type Pageroleenum} from '../postgres/types/pg'
+import {Tierenum as TierEnum, type Pageroleenum} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
@@ -986,6 +986,29 @@ export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.ownerId}:${key.scope}`
+    }
+  )
+}
+
+export const highestTierForUserId = (parent: RootDataLoader) => {
+  return new DataLoader<string, TierEnum, string>(
+    async (keys) => {
+      const pg = getKysely()
+      const highestTiers = await pg
+        .selectFrom('OrganizationUser as ou')
+        .innerJoin('Organization as o', 'o.id', 'ou.orgId')
+        .select(({fn}) => ['userId', fn.max('tier').as('highestTier')])
+        .where('userId', 'in', keys)
+        .where('ou.removedAt', 'is', null)
+        .groupBy('userId')
+        .execute()
+
+      return normalizeResults(keys, highestTiers, 'userId').map(
+        (user) => user?.highestTier ?? 'starter'
+      )
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }

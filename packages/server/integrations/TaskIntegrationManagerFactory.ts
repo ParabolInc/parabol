@@ -12,6 +12,7 @@ import GitHubServerManager from './github/GitHubServerManager'
 import GitLabServerManager from './gitlab/GitLabServerManager'
 import JiraIntegrationManager from './jira/JiraIntegrationManager'
 import JiraServerRestManager from './jiraServer/JiraServerRestManager'
+import LinearServerManager from './linear/LinearServerManager'
 
 export type CreateTaskResponse =
   | {
@@ -56,6 +57,7 @@ export default class TaskIntegrationManagerFactory {
     | JiraServerRestManager
     | GitLabServerManager
     | AzureDevOpsServerManager
+    | LinearServerManager
     | null
   > {
     if (service === 'jira') {
@@ -101,6 +103,18 @@ export default class TaskIntegrationManagerFactory {
       const provider = await dataLoader.get('integrationProviders').loadNonNull(auth.providerId)
 
       return new AzureDevOpsServerManager(auth, provider as IntegrationProviderAzureDevOps)
+    }
+
+    if (service === 'linear') {
+      const auth = await dataLoader
+        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
+        .load({service: 'linear', teamId, userId})
+
+      if (!auth) {
+        return null
+      }
+
+      return new LinearServerManager(auth, context, info)
     }
 
     return null

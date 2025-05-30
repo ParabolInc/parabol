@@ -1,11 +1,9 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {marked} from 'marked'
 import {useFragment} from 'react-relay'
-import sanitizeHtml from 'sanitize-html'
 import {TeamInsightContent_team$key} from '../../../../__generated__/TeamInsightContent_team.graphql'
-
+import renderMarkdown from '../../../../utils/renderMarkdown'
 interface Props {
   teamName: string
   insightRef: TeamInsightContent_team$key
@@ -26,32 +24,6 @@ const TeamInsightContent = (props: Props) => {
     insightRef
   )
   const {meetingsCount, wins, challenges} = insight
-
-  const renderMarkdown = (text: string) => {
-    const renderedText = marked(text, {
-      gfm: true,
-      breaks: true
-    }) as string
-    return sanitizeHtml(renderedText, {
-      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['a']),
-      allowedAttributes: {
-        ...sanitizeHtml.defaults.allowedAttributes,
-        a: ['href', 'target', 'rel']
-      },
-      transformTags: {
-        a: (tagName, attribs) => {
-          return {
-            tagName,
-            attribs: {
-              ...attribs,
-              target: '_blank',
-              rel: 'noopener noreferrer'
-            }
-          }
-        }
-      }
-    })
-  }
 
   const formatDateRange = (start: string, end: string) => {
     const startDate = dayjs(start)

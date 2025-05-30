@@ -14,10 +14,16 @@ const Team: TeamResolvers = {
     return teamMember
   },
   isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),
-  tier: ({tier, trialStartDate}) => {
+  tier: async ({orgId}, _args, {dataLoader}) => {
+    const org = await dataLoader.get('organizations').loadNonNull(orgId)
+    const {tier, trialStartDate} = org
     return getFeatureTier({tier, trialStartDate})
   },
-  billingTier: ({tier}) => tier,
+  billingTier: async ({orgId}, _args, {dataLoader}) => {
+    const org = await dataLoader.get('organizations').loadNonNull(orgId)
+    const {tier} = org
+    return tier
+  },
   isOrgAdmin: async ({orgId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     const organizationUser = await dataLoader

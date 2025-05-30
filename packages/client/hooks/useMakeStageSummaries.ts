@@ -49,6 +49,11 @@ graphql`
           title
           iid
         }
+        ... on _xLinearIssue {
+          __typename
+          title
+          identifier
+        }
       }
     }
   }
@@ -116,6 +121,11 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
           return {
             title: integration.title,
             subtitle: `#${integration.iid}`
+          }
+        } else if (integration.__typename === '_xLinearIssue') {
+          return {
+            title: integration.title,
+            subtitle: `${integration.identifier}`
           }
         }
         return {

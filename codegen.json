@@ -104,6 +104,7 @@
           "JiraServerIntegration": "./types/JiraServerIntegration#JiraServerIntegrationSource",
           "JiraServerIssue": "./types/JiraServerIssue#JiraServerIssueSource",
           "JiraServerRemoteProject": "../../dataloader/jiraServerLoaders#JiraServerProject",
+          "LinearIntegration": "./types/LinearIntegration#LinearIntegrationSource",
           "JoinTeamSuccess": "./types/JoinTeamSuccess#JoinTeamSuccessSource",
           "MSTeamsIntegration": "./types/MSTeamsIntegration#MSTeamsIntegrationSource",
           "MattermostIntegration": "./types/MattermostIntegration#MattermostIntegrationSource",
@@ -231,7 +232,8 @@
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/IUser#default as IUser",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
-          "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject"
+          "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject",
+          "_xLinearTeam": "./types/_xLinearTeam#_xLinearTeamSource as _xLinearProject"
         },
         "showUnusedMappers": false
       },
@@ -252,6 +254,15 @@
       ],
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql"
+    },
+    "packages/server/types/linearTypes.ts": {
+      "config": {"assumeValidSDL": true},
+      "documents": [
+        "packages/server/graphql/nestedSchema/Linear/queries/*.graphql",
+        "packages/server/graphql/nestedSchema/Linear/mutations/*.graphql"
+      ],
+      "plugins": ["typescript", "typescript-operations", "add"],
+      "schema": "packages/server/graphql/nestedSchema/Linear/linearSchema.graphql"
     }
   }
 }

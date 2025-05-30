@@ -1,12 +1,12 @@
 import {Favorite} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {ActivityCardFavorite_user$key} from '../../__generated__/ActivityCardFavorite_user.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleFavoriteTemplateMutation from '../../mutations/ToggleFavoriteTemplateMutation'
+import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -44,7 +44,7 @@ const ActivityCardFavorite = (props: Props) => {
   return (
     <Tooltip>
       <div
-        className={clsx(
+        className={cn(
           className,
           `flex h-10 w-10 items-center justify-center rounded-full bg-white`
         )}

@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
@@ -18,6 +17,7 @@ import {
   HistoryMaybeLocalHandler,
   StandardMutation
 } from '../../types/relayMutations'
+import {cn} from '../../ui/cn'
 import {humanReadableCountdown} from '../../utils/date/relativeDate'
 import DialogContainer from '../DialogContainer'
 
@@ -131,7 +131,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
       </div>
       <div className='flex justify-end gap-2.5'>
         <button
-          className={clsx(
+          className={cn(
             'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-100',
             ACTION_BUTTON_CLASSES
           )}
@@ -140,7 +140,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
           Cancel
         </button>
         <button
-          className={clsx('bg-sky-500 text-white hover:bg-sky-600', ACTION_BUTTON_CLASSES)}
+          className={cn('bg-sky-500 text-white hover:bg-sky-600', ACTION_BUTTON_CLASSES)}
           onClick={onConfirm}
         >
           Confirm
