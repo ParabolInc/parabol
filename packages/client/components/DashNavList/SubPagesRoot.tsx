@@ -6,16 +6,18 @@ import {Loader} from '../../utils/relay/renderLoader'
 import {SubPages} from './SubPages'
 
 interface Props {
-  parentPageId: string
+  parentPageId?: string
+  teamId?: string
   pageAncestors: string[]
   draggingPageId: string | null | undefined
   draggingPageIsPrivate: boolean | null
 }
 
 export const SubPagesRoot = (props: Props) => {
-  const {parentPageId, pageAncestors, draggingPageId, draggingPageIsPrivate} = props
+  const {parentPageId, pageAncestors, draggingPageId, draggingPageIsPrivate, teamId} = props
   const queryRef = useQueryLoaderNow<SubPagesQuery>(query, {
-    parentPageId
+    parentPageId,
+    teamId
   })
 
   return (

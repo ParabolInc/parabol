@@ -223,4 +223,8 @@ type Team implements Node {
     """
     after: String
   ): PageConnection!
+  """
+  The viewer-specific sort order index. Present in User.teams
+  """
+  sortOrder: String!
 }

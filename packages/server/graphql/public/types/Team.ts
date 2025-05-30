@@ -81,6 +81,15 @@ const Team: TeamResolvers = {
         cursor: page.sortOrder
       }))
     }
+  },
+  sortOrder: (source, _args) => {
+    if ('sortOrder' in source) {
+      return source.sortOrder as string
+    }
+    console.warn(
+      'sortOrder is not being pre-calculated! Did you call teamsWithUserSort dataloader?'
+    )
+    return '!'
   }
 }
 

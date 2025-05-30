@@ -72,6 +72,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       rateLimit({perMinute: 50, perHour: 100})
     ),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },
   Query: {

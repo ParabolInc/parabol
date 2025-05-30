@@ -12,6 +12,7 @@ import DashNavListTeams from './DashNavListTeams'
 import EmptyTeams from './EmptyTeams'
 import {LeftNavPrivatePagesSection} from './LeftNavPrivatePagesSection'
 import {LeftNavSharedPagesSection} from './LeftNavSharedPagesSection'
+import {LeftNavTeamsSection} from './LeftNavTeamsSection'
 
 const StyledIcon = styled(ManageAccounts)({
   height: 18,
@@ -46,41 +47,48 @@ const DashNavList = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment DashNavList_viewer on User {
-        featureFlag(featureName: "Pages")
+        hasPages: featureFlag(featureName: "Pages")
         ...LeftNavPrivatePagesSection_viewer
         ...LeftNavSharedPagesSection_viewer
+        ...LeftNavTeamsSection_viewer
+        teams {
+          id
+        }
       }
     `,
     viewerRef
   )
+  const {hasPages} = viewer
   const sortedOrgs = sortByTier(organizations)
   return (
     <div className='w-full p-3 pt-4 pb-0'>
-      {sortedOrgs.map((org) => (
-        <div key={org.id} className='w-full pb-4'>
-          <div className='mb-1 flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-            <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
-              {org.name}
-            </span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <a
-                  className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-300'
-                  href={`/me/organizations/${org.id}/billing`}
-                >
-                  <StyledIcon />
-                </a>
-              </TooltipTrigger>
-              <TooltipContent side='bottom' align='center' sideOffset={4}>
-                {'Settings & Members'}
-              </TooltipContent>
-            </Tooltip>
+      {hasPages && <LeftNavTeamsSection viewerRef={viewer} />}
+      {!hasPages &&
+        sortedOrgs.map((org) => (
+          <div key={org.id} className='w-full pb-4'>
+            <div className='mb-1 flex min-w-0 flex-1 flex-wrap items-center justify-between'>
+              <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
+                {org.name}
+              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-slate-300'
+                    href={`/me/organizations/${org.id}/billing`}
+                  >
+                    <StyledIcon />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side='bottom' align='center' sideOffset={4}>
+                  {'Settings & Members'}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <DashNavListTeams onClick={onClick} organizationRef={org} />
+            {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />}
           </div>
-          <DashNavListTeams onClick={onClick} organizationRef={org} />
-          {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />}
-        </div>
-      ))}
-      {viewer.featureFlag && (
+        ))}
+      {hasPages && (
         <div>
           <LeftNavSharedPagesSection viewerRef={viewer} />
           <LeftNavPrivatePagesSection viewerRef={viewer} />

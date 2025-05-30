@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import {Selectable, SqlBool, sql} from 'kysely'
+import {SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
@@ -38,7 +38,7 @@ import {
   Team
 } from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
-import {TeamMeetingTemplate, type Pageroleenum} from '../postgres/types/pg'
+import {type Pageroleenum} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
@@ -406,23 +406,6 @@ export const meetingTemplatesByType = (parent: RootDataLoader, dependsOn: Regist
   )
 }
 
-export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
-  return new DataLoader<string, Selectable<TeamMeetingTemplate>[], string>(
-    async (teamIds) => {
-      const pg = getKysely()
-      const teamMeetingTemplates = await pg
-        .selectFrom('TeamMeetingTemplate')
-        .selectAll()
-        .where('teamId', 'in', teamIds)
-        .execute()
-      return normalizeArrayResults(teamIds, teamMeetingTemplates, 'teamId')
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
 export const meetingTemplatesByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingTemplates')
   return new DataLoader<string, MeetingTemplate[], string>(
@@ -498,27 +481,6 @@ export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterD
         })
       )
       return meetingStatsByOrgId
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const teamStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('teams')
-  return new DataLoader<string, {id: string; createdAt: Date}[], string>(
-    async (orgIds) => {
-      const teamStatsByOrgId = await Promise.all(
-        orgIds.map(async (orgId) => {
-          const teams = await parent.get('teamsByOrgIds').load(orgId)
-          return teams.map((team) => ({
-            id: `ts:${team.createdAt.getTime()}`,
-            createdAt: team.createdAt
-          }))
-        })
-      )
-      return teamStatsByOrgId
     },
     {
       ...parent.dataLoaderOptions

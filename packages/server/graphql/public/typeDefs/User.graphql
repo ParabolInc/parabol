@@ -525,6 +525,7 @@ type User {
   All the pages accessible by a user
   """
   pages(
+    teamId: ID
     parentPageId: ID
     """
     The first n records to return

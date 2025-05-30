@@ -4,9 +4,10 @@ import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graph
 import {LeftNavPageLink} from './LeftNavPageLink'
 
 graphql`
-  query SubPagesQuery($parentPageId: ID!) {
+  query SubPagesQuery($parentPageId: ID, $teamId: ID) {
     viewer {
-      pages(first: 500, parentPageId: $parentPageId) @connection(key: "User_pages") {
+      pages(first: 500, parentPageId: $parentPageId, teamId: $teamId)
+        @connection(key: "User_pages") {
         edges {
           node {
             ...LeftNavPageLink_page

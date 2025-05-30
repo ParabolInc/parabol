@@ -99,7 +99,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       "teamId" IS NULL OR "parentPageId" IS NULL
     );`.execute(db)
 
-  await db.updateTable('Page').set({sortOrder: ' '}).execute()
+  await db.updateTable('Page').set({sortOrder: '!'}).execute()
   await db.schema
     .alterTable('Page')
     .alterColumn('sortOrder', (ab) => ab.setNotNull())

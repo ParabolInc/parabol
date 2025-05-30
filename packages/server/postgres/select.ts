@@ -85,23 +85,23 @@ export const selectTeams = () =>
   getKysely()
     .selectFrom('Team')
     .select([
-      'autoJoin',
-      'createdAt',
-      'createdBy',
-      'id',
-      'isArchived',
-      'isOnboardTeam',
-      'isPaid',
-      'kudosEmojiUnicode',
-      'lastMeetingType',
-      'lockMessageHTML',
-      'name',
-      'orgId',
-      'qualAIMeetingsCount',
-      'tier',
-      'trialStartDate',
-      'isPublic',
-      'updatedAt'
+      'Team.autoJoin',
+      'Team.createdAt',
+      'Team.createdBy',
+      'Team.id',
+      'Team.isArchived',
+      'Team.isOnboardTeam',
+      'Team.isPaid',
+      'Team.kudosEmojiUnicode',
+      'Team.lastMeetingType',
+      'Team.lockMessageHTML',
+      'Team.name',
+      'Team.orgId',
+      'Team.qualAIMeetingsCount',
+      'Team.tier',
+      'Team.trialStartDate',
+      'Team.isPublic',
+      'Team.updatedAt'
     ])
     .select(({fn}) => [
       fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')

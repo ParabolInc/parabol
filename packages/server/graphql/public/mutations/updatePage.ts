@@ -72,7 +72,6 @@ const updatePage: MutationResolvers['updatePage'] = async (
       .orderBy('sortOrder', 'desc')
       .limit(1)
       .executeTakeFirst()
-    console.log('got last sort order', lastSortOrder, dbParentPageId)
     nextSortOrder = positionAfter(lastSortOrder?.sortOrder ?? ' ')
   }
 

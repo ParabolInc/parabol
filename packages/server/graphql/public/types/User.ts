@@ -601,8 +601,15 @@ const User: ReqResolvers<'User'> = {
     const teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
-    const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-    teams.sort((a, b) => (a.name > b.name ? 1 : -1))
+    const teams = (
+      await Promise.all(
+        teamIds.map((teamId) =>
+          dataLoader.get('teamsWithUserSort').load({teamId, userId: viewerId})
+        )
+      )
+    )
+      .filter(isValid)
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
     return teams
   },
 
@@ -861,10 +868,17 @@ const User: ReqResolvers<'User'> = {
     if (!page) throw new GraphQLError('Page not found')
     return page
   },
-  pages: async (_source, {parentPageId, isPrivate, first, after}, {authToken, dataLoader}) => {
+  pages: async (
+    _source,
+    {parentPageId, isPrivate, first, after, teamId},
+    {authToken, dataLoader}
+  ) => {
     const isPrivateDefined = typeof isPrivate === 'boolean'
-    if (parentPageId && isPrivateDefined) {
-      throw new GraphQLError('isPrivate and parentPageId are mutually exclusive')
+    if ((parentPageId || teamId) && isPrivateDefined) {
+      throw new GraphQLError('isPrivate and parentPageId/teamId are mutually exclusive')
+    }
+    if (parentPageId && teamId) {
+      throw new GraphQLError('parentPageId and teamId are mutually exclusive')
     }
     const isTopLevel = !parentPageId
     const viewerId = getUserId(authToken)
@@ -876,8 +890,10 @@ const User: ReqResolvers<'User'> = {
       .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .where('PageAccess.userId', '=', viewerId)
-      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
       .orderBy('sortOrder')
       .limit(first + 1)

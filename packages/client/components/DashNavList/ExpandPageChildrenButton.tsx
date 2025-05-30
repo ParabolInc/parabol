@@ -7,12 +7,13 @@ interface Props {
   expandChildPages: () => void
   showChildren: boolean
   draggingPageId: string | null | undefined
+  icon?: typeof DescriptionIcon
 }
 export const ExpandPageChildrenButton = memo((props: Props) => {
-  const {draggingPageId, showChildren, expandChildPages} = props
+  const {draggingPageId, showChildren, expandChildPages, icon} = props
   const timeoutRef = useRef<number | null>(null)
   const isDraggingOverExpandButton = useRef(false)
-
+  const DefaultIcon = icon ?? DescriptionIcon
   const handleDragExpandEnter = useEventCallback(() => {
     if (!draggingPageId || isDraggingOverExpandButton.current || showChildren) return
     isDraggingOverExpandButton.current = true
@@ -38,7 +39,7 @@ export const ExpandPageChildrenButton = memo((props: Props) => {
         draggingPageId && 'bg-inherit group-hover:bg-sky-300 hover:bg-sky-300'
       )}
     >
-      <DescriptionIcon className='size-5 group-hover:hidden no-hover:hidden' />
+      <DefaultIcon className='size-5 group-hover:hidden no-hover:hidden' />
       <ChevronRightIcon
         className={cn(
           'sm hidden size-5 transition-transform group-hover:block no-hover:block',

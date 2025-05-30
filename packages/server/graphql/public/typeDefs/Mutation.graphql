@@ -2131,4 +2131,11 @@ type Mutation {
     """
     isParentLinked: Boolean!
   ): UpdatePagePayload
+  updateTeamSortOrder(
+    teamId: ID!
+    """
+    The new sort order as a fractional index
+    """
+    sortOrder: String!
+  ): UpdateTeamSortOrderPayload
 }

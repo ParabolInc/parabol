@@ -1,14 +1,13 @@
 import AddIcon from '@mui/icons-material/Add'
+import GroupIcon from '@mui/icons-material/Group'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {ConnectionHandler, useFragment} from 'react-relay'
 import {useHistory, useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
-import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
-import {useDraggablePage} from '../../hooks/useDraggablePage'
+import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
 import safePutNodeInConn from '../../mutations/handlers/safePutNodeInConn'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
-import {toSlug} from '../../shared/toSlug'
 import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -16,76 +15,42 @@ import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {SubPagesRoot} from './SubPagesRoot'
 
-export type PageConnectionKey = 'User_privatePages' | 'User_sharedPages' | 'User_pages'
 interface Props {
-  pageRef: LeftNavPageLink_page$key
-  pageAncestors: string[]
-  draggingPageId: string | null | undefined
-  draggingPageIsPrivate: boolean | null
-  dropIdx: number
-  isLastChild: boolean
-  nextPeerId: string | null
-  connectionKey: PageConnectionKey
+  teamRef: LeftNavTeamLink_team$key
+  draggingPageId: string | null
 }
-export const LeftNavPageLink = (props: Props) => {
-  const {
-    pageRef,
-    pageAncestors,
-    draggingPageId,
-    draggingPageIsPrivate,
-    dropIdx,
-    isLastChild,
-    nextPeerId,
-    connectionKey
-  } = props
-  const depth = pageAncestors.length - 1
-  const page = useFragment(
+export const LeftNavTeamLink = (props: Props) => {
+  const {teamRef, draggingPageId} = props
+  const team = useFragment(
     graphql`
-      fragment LeftNavPageLink_page on Page {
+      fragment LeftNavTeamLink_team on Team {
         id
-        title
-        parentPageId
-        teamId
-        isPrivate
+        name
         isDraggingFirstChild
         isDraggingLastChild
-        sortOrder # used implicityly in store traveral by useDraggingPage
       }
     `,
-    pageRef
+    teamRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild, teamId, isPrivate} =
-    page
-  const pageIdNum = id.split(':')[1]
-  const titleSlug = toSlug(title || '')
-  const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
-  const match = useRouteMatch(`/pages/:slug(.*)${pageIdNum}`)
-  const isActive = match?.isExact ?? false
+  const {name: teamName, id: teamId, isDraggingFirstChild, isDraggingLastChild} = team
+  const match = useRouteMatch(`/team/${teamId}`)
+  const isActive = match ?? false
   const [showChildren, setShowChildren] = useState(false)
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
   const history = useHistory()
   const [execute, submitting] = useCreatePageMutation()
-  const {onPointerDown, ref} = useDraggablePage(
-    id,
-    isPrivate,
-    parentPageId || null,
-    teamId,
-    connectionKey,
-    dropIdx === 0,
-    isLastChild
-  )
   const addChildPage = (e: React.MouseEvent) => {
     e.preventDefault()
     if (submitting) return
     execute({
-      variables: {parentPageId: id},
+      variables: {teamId},
       updater: (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         if (!viewer) return
         const conn = ConnectionHandler.getConnection(viewer, 'User_pages', {
-          parentPageId: id
+          teamId
         })
         if (!conn) return
         const node = store.getRootField('createPage')?.getLinkedRecord('page')
@@ -101,33 +66,19 @@ export const LeftNavPageLink = (props: Props) => {
       }
     })
   }
-  const nextPageAncestors = [...pageAncestors, id]
-  const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
-  const isSelf = draggingPageId === id
-  const isNextPeer = draggingPageId === nextPeerId && !showChildren
-  const isTopLevelShared = connectionKey === 'User_sharedPages'
-  const isPrivateToTopLevelShared = isTopLevelShared && draggingPageIsPrivate
-  const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild
-  const canDropBelow =
-    draggingPageId &&
-    !isSourceDragParent &&
-    !isSelf &&
-    !isDraggingFirstChild &&
-    !isNextPeer &&
-    !isPrivateToTopLevelShared
+  const canDropIn = draggingPageId && (showChildren ? !isDraggingLastChild : true)
+  const canDropBelow = draggingPageId && showChildren && !isDraggingFirstChild
   return (
-    <div className='relative rounded-md' ref={ref}>
+    <div className='relative rounded-md'>
       <div
-        onPointerDown={onPointerDown}
         data-highlighted={isActive ? '' : undefined}
-        style={{paddingLeft: depth * 8}}
-        data-drop-in={canDropIn ? id : undefined}
+        data-drop-in={canDropIn ? teamId : undefined}
         className={cn(
           'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-sm leading-8 text-slate-700 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
             'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
-          draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-pointer')
+          draggingPageId && 'cursor-pointer'
         )}
       >
         <div
@@ -135,16 +86,13 @@ export const LeftNavPageLink = (props: Props) => {
             'absolute -bottom-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow && 'cursor-pointer'
           )}
-          data-drop-below={
-            canDropBelow ? (showChildren ? id : parentPageId || teamId || '') : undefined
-          }
-          data-drop-idx={showChildren ? -1 : dropIdx}
+          data-drop-below={canDropBelow ? teamId || '' : undefined}
+          data-drop-idx={-1}
           aria-expanded={showChildren}
         ></div>
         <Link
           draggable={false}
-          to={`/pages/${slug}`}
-          key={slug}
+          to={`/team/${teamId}`}
           className={'ml-1 flex w-full items-center'}
           onClick={(e) => {
             if (draggingPageId) {
@@ -155,10 +103,11 @@ export const LeftNavPageLink = (props: Props) => {
           <ExpandPageChildrenButton
             showChildren={showChildren}
             expandChildPages={expandChildPages}
-            draggingPageId={isSelf ? null : draggingPageId}
+            draggingPageId={draggingPageId}
+            icon={GroupIcon}
           />
           <div className='flex flex-col text-sm font-medium'>
-            <span>{title || '<Untitled>'}</span>
+            <span>{teamName}</span>
           </div>
           <div className='flex flex-1 items-center justify-end'>
             <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
@@ -175,10 +124,10 @@ export const LeftNavPageLink = (props: Props) => {
       {showChildren && (
         <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
           <SubPagesRoot
-            parentPageId={id}
-            pageAncestors={nextPageAncestors}
+            teamId={teamId}
+            pageAncestors={['', teamId]}
             draggingPageId={draggingPageId}
-            draggingPageIsPrivate={draggingPageIsPrivate}
+            draggingPageIsPrivate={null}
           />
         </div>
       )}

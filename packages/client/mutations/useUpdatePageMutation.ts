@@ -82,19 +82,17 @@ export const useUpdatePageMutation = () => {
         const payload = store.getRootField('updatePage')
         if (!payload) return
         const newPage = payload.getLinkedRecord('page')
-
-        const sourceParent = store.get(sourceTeamId || viewerId)!
-        const targetParent = store.get(targetTeamId || viewerId)!
+        const connParent = store.get(viewerId)!
         const isSourcePrivate = isPrivatePageConnectionLookup[sourceConnectionKey]
         const isTargetPrivate = isPrivatePageConnectionLookup[targetConnectionKey]
-        const sourceConn = ConnectionHandler.getConnection(sourceParent!, sourceConnectionKey, {
+        const sourceConn = ConnectionHandler.getConnection(connParent, sourceConnectionKey, {
           parentPageId: sourceParentPageId || undefined,
           teamId: sourceTeamId || undefined,
           isPrivate: isSourcePrivate
         })!
         ConnectionHandler.deleteNode(sourceConn, pageId)
 
-        const targetConn = ConnectionHandler.getConnection(targetParent!, targetConnectionKey, {
+        const targetConn = ConnectionHandler.getConnection(connParent, targetConnectionKey, {
           parentPageId: targetParentPageId || undefined,
           teamId: targetTeamId || undefined,
           isPrivate: isTargetPrivate

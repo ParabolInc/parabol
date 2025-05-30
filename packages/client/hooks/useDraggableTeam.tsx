@@ -97,10 +97,8 @@ export const useDraggablePage = (
     }
     const isDropBelow = dropTarget.hasAttribute('data-drop-below')
     const section = dropTarget.closest('[data-pages-connection]')
-    // if (!section) throw new Error('data-pages-connection not found in DOMTree')
-    const topLevelConnectionKey = section
-      ? (section.getAttribute('data-pages-connection') as PageConnectionKey)
-      : 'User_pages'
+    if (!section) throw new Error('data-pages-connection not found in DOMTree')
+    const topLevelConnectionKey = section.getAttribute('data-pages-connection') as PageConnectionKey
     const targetParentPageIdOrTeamId = isDropBelow
       ? dropTarget.getAttribute('data-drop-below') || null
       : dropTarget.getAttribute('data-drop-in')
@@ -113,8 +111,8 @@ export const useDraggablePage = (
     const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
     const targetConnectionKey = targetParentPageIdOrTeamId ? 'User_pages' : topLevelConnectionKey
     const {viewerId} = atmosphere
-    const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey!]
-    const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey!, {
+    const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey]
+    const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey, {
       isPrivate,
       parentPageId: targetParentPageId,
       teamId: targetTeamId
@@ -156,15 +154,14 @@ export const useDraggablePage = (
       drag.isDrag = true
       drag.waitingForMovement = false
       startVisualDragImage(e)
-
       commitLocalUpdate(atmosphere, (store) => {
         store
           .getRoot()
           .getLinkedRecord('viewer')
           ?.setValue(pageId, 'draggingPageId')
           .setValue(isPageIdPrivate, 'draggingPageIsPrivate')
-        const parentId = sourceParentPageId || sourceTeamId
-        const parent = parentId ? store.get(parentId) : null
+        const parent = sourceParentPageId ? store.get(sourceParentPageId) : null
+        console.log('setting isDraggingLastChild', isLastChild, sourceParentPageId)
         parent
           ?.setValue(isFirstChild, 'isDraggingFirstChild')
           .setValue(isLastChild, 'isDraggingLastChild')
@@ -222,8 +219,7 @@ export const useDraggablePage = (
           .getLinkedRecord('viewer')
           ?.setValue(null, 'draggingPageId')
           .setValue(null, 'draggingPageIsPrivate')
-        const parentId = sourceParentPageId || sourceTeamId
-        const parent = parentId ? store.get(parentId) : null
+        const parent = sourceParentPageId ? store.get(sourceParentPageId) : null
         parent?.setValue(null, 'isDraggingFirstChild').setValue(null, 'isDraggingLastChild')
       })
     })

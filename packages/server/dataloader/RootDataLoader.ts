@@ -11,6 +11,7 @@ import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
+import * as teamLoaderMakers from './teamLoaderMakers'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -18,6 +19,7 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
+  ...teamLoaderMakers,
   ...primaryKeyLoaderMakers,
   ...foreignKeyLoaderMakers,
   ...customLoaderMakers,
