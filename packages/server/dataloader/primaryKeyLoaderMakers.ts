@@ -16,6 +16,7 @@ import {
   selectNewMeetings,
   selectNotifications,
   selectOrganizations,
+  selectPages,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
@@ -177,4 +178,8 @@ export const teamNotificationSettings = primaryKeyLoaderMaker((ids: readonly num
       .where('id', 'in', ids)
       .execute()
   )
+})
+
+export const pages = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectPages().where('id', 'in', ids).execute()
 })

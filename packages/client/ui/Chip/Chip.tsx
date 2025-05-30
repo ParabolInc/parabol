@@ -1,6 +1,6 @@
 import {Close} from '@mui/icons-material'
 import * as React from 'react'
-import {twMerge} from 'tailwind-merge'
+import {cn} from '../cn'
 
 interface Props {
   label: string
@@ -15,12 +15,12 @@ export const Chip = (props: Props) => {
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'inline-flex h-8 cursor-default items-center justify-start gap-2 rounded-sm bg-slate-100 px-2 py-2',
         className
       )}
     >
-      {icon && icon}
+      {icon}
       {picture && (
         <div className='relative h-6 w-6 rounded-sm border border-slate-100'>
           <div

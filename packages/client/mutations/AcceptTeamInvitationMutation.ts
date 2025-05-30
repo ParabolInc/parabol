@@ -56,7 +56,6 @@ graphql`
         isPaid
         ...DashNavList_organization
       }
-      ...DashNavListTeam
       ...PublicTeamsFrag_team
     }
     meeting {

@@ -11,7 +11,9 @@ const safePutNodeInConn = (
 ) => {
   const nodeId = node.getDataID()
   if (conn && !getNodeById(nodeId, conn)) {
-    const newEdge = ConnectionHandler.createEdge(store, conn, node, 'TaskEdge')
+    const type = node.getType()
+    const edgeType = `${type}Edge`
+    const newEdge = ConnectionHandler.createEdge(store, conn, node, edgeType)
     newEdge.setValue(node.getValue(sortValue), 'cursor')
     const options = {isAscending}
     insertEdgeAfter(conn, newEdge, sortValue, options)

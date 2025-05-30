@@ -1,5 +1,9 @@
-// Using a cypher here so the serial ID in the database is (somewhat) obfuscated from the client
-// So users can't figure
+// Using a cipher here so the serial ID in the database is (somewhat) obfuscated from the client
+// So users can't figure out how many rows are in our DB tables
+// Even though PG now offers UUIDv7, INTs are still faster, make for denser pages, and are smaller foreign keys
+// Yep, even with a CMEQ SIMD instruction that can compare 128-bit vectors like UUIDs, INTs still make sense in most cases
+// Because UUIDv7s are not guaranteed to be _serial_, which reduces page density
+
 class FeistelCipher {
   private readonly key: number
   private readonly rounds: number

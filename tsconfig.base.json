@@ -28,5 +28,6 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "noErrorTruncation": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "dev", "build"]
 }

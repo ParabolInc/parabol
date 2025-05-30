@@ -2,10 +2,12 @@ import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/typings/types'
 import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
+import {hasPageAccess} from './rules/hasPageAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
+import {isTeamMember} from './rules/isTeamMember'
 import isUserViewer from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
@@ -62,7 +64,15 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
+    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    updatePageAccess: and(
+      hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
+      // limit looking up users by email
+      rateLimit({perMinute: 50, perHour: 100})
+    ),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
   },
   Query: {
@@ -81,7 +91,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     voterIds: isSuperUser
   },
   User: {
-    domains: or(isSuperUser, isUserViewer)
+    domains: or(isSuperUser, isUserViewer),
+    page: hasPageAccess<'User.page'>('args.pageId', 'viewer')
+  },
+  Page: {
+    parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')
   }
 }
 
