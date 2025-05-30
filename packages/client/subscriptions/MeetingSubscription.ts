@@ -21,9 +21,9 @@ import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDe
 import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
+import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
-import {SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -186,25 +186,7 @@ const updateHandlers = {
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
   UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater,
-  SetMeetingMusicSuccess: ((payload, {store}) => {
-    const meetingId = payload.getValue('meetingId')
-    const trackSrc = payload.getValue('trackSrc')
-    const isPlaying = payload.getValue('isPlaying')
-    const timestamp = payload.getValue('timestamp')
-
-    const meeting = store.get(meetingId)
-    if (!meeting) return
-
-    let musicSettings = meeting.getLinkedRecord('musicSettings')
-    if (!musicSettings) {
-      musicSettings = store.create(meetingId + '.musicSettings', 'MusicSettings')
-      meeting.setLinkedRecord(musicSettings, 'musicSettings')
-    }
-
-    musicSettings.setValue(trackSrc, 'trackSrc')
-    musicSettings.setValue(isPlaying, 'isPlaying')
-    musicSettings.setValue(timestamp, 'timestamp')
-  }) as SharedUpdater<any>
+  SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater
 } as const
 
 const MeetingSubscription = (

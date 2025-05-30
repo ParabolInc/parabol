@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {Environment} from 'relay-runtime'
 import {SetMeetingMusicMutation as TSetMeetingMusicMutation} from '../__generated__/SetMeetingMusicMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import {SetMeetingMusicMutation_meeting$data} from '../__generated__/SetMeetingMusicMutation_meeting.graphql'
+import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import createProxyRecord from '../utils/relay/createProxyRecord'
 
 const mutation = graphql`
   mutation SetMeetingMusicMutation(
@@ -36,32 +37,48 @@ graphql`
   }
 `
 
+export const setMeetingMusicMeetingUpdater: SharedUpdater<SetMeetingMusicMutation_meeting$data> = (
+  payload,
+  {store}
+) => {
+  const meetingId = payload.getValue('meetingId')
+  const trackSrc = payload.getValue('trackSrc')
+  const isPlaying = payload.getValue('isPlaying')
+  const timestamp = payload.getValue('timestamp')
+
+  const meeting = store.get(meetingId)
+  if (!meeting) return
+
+  const musicSettingsRecord = meeting.getLinkedRecord('musicSettings')
+  if (!musicSettingsRecord) {
+    const musicSettingsData = {
+      trackSrc,
+      isPlaying,
+      timestamp
+    }
+    const musicSettings = createProxyRecord(store, 'MusicSettings', musicSettingsData)
+    meeting.setLinkedRecord(musicSettings, 'musicSettings')
+  } else {
+    musicSettingsRecord.setValue(trackSrc, 'trackSrc')
+    musicSettingsRecord.setValue(isPlaying, 'isPlaying')
+    musicSettingsRecord.setValue(timestamp, 'timestamp')
+  }
+}
+
 const SetMeetingMusicMutation: StandardMutation<TSetMeetingMusicMutation> = (
-  atmosphere: Environment,
+  atmosphere,
   variables,
   {onError, onCompleted}
 ) => {
   return commitMutation<TSetMeetingMusicMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('setMeetingMusic')
+      setMeetingMusicMeetingUpdater(payload as any, {atmosphere, store})
+    },
     onCompleted,
-    onError,
-    optimisticUpdater: (store) => {
-      const {meetingId, trackSrc, isPlaying} = variables
-
-      const meeting = store.get(meetingId)
-      if (!meeting) return
-
-      let musicSettings = meeting.getLinkedRecord('musicSettings')
-      if (!musicSettings) {
-        musicSettings = store.create(meetingId + '.musicSettings', 'MusicSettings')
-        meeting.setLinkedRecord(musicSettings, 'musicSettings')
-      }
-
-      musicSettings.setValue(trackSrc, 'trackSrc')
-      musicSettings.setValue(isPlaying, 'isPlaying')
-      musicSettings.setValue(variables.timestamp, 'timestamp')
-    }
+    onError
   })
 }
 
