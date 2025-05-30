@@ -1,10 +1,9 @@
 import AddIcon from '@mui/icons-material/Add'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {ConnectionHandler, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import type {LeftNavPrivatePagesSection_viewer$key} from '../../__generated__/LeftNavPrivatePagesSection_viewer.graphql'
-import safePutNodeInConn from '../../mutations/handlers/safePutNodeInConn'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
@@ -49,13 +48,6 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
     if (submitting) return
     execute({
       variables: {},
-      updater: (store) => {
-        const viewer = store.getRoot().getLinkedRecord('viewer')
-        if (!viewer) return
-        const conn = ConnectionHandler.getConnection(viewer, connectionKey, {isPrivate: true})
-        const node = store.getRootField('createPage')?.getLinkedRecord('page')
-        safePutNodeInConn(conn, node, store, 'sortOrder', true)
-      },
       onCompleted: (response) => {
         const {createPage} = response
         const {page} = createPage

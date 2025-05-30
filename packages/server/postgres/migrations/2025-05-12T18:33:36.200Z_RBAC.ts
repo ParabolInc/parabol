@@ -175,10 +175,10 @@ DECLARE
   "_willBePrivate" BOOLEAN;
 BEGIN
   SELECT (
-  (SELECT COUNT(*) FROM "PageUserAccess"         WHERE "pageId" = _pageId LIMIT 2) = 1 AND
-  NOT EXISTS (SELECT 1 FROM "PageTeamAccess"         WHERE "pageId" = _pageId LIMIT 1) AND
-  NOT EXISTS (SELECT 1 FROM "PageOrganizationAccess" WHERE "pageId" = _pageId LIMIT 1) AND
-  NOT EXISTS (SELECT 1 FROM "PageExternalAccess"     WHERE "pageId" = _pageId LIMIT 1)
+  (SELECT COUNT(*) = 1 FROM "PageUserAccess"         WHERE "pageId" = "_pageId" LIMIT 2) AND
+  NOT EXISTS (SELECT 1 FROM "PageTeamAccess"         WHERE "pageId" = "_pageId" LIMIT 1) AND
+  NOT EXISTS (SELECT 1 FROM "PageOrganizationAccess" WHERE "pageId" = "_pageId" LIMIT 1) AND
+  NOT EXISTS (SELECT 1 FROM "PageExternalAccess"     WHERE "pageId" = "_pageId" LIMIT 1)
 ) INTO "_willBePrivate";
   UPDATE "Page"
   SET "isPrivate" = "_willBePrivate"
@@ -741,7 +741,9 @@ BEGIN
       ON CONFLICT ("pageId", "teamId") DO UPDATE
       SET "role" = LEAST(EXCLUDED."role", 'editor');
     END IF;
-    UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
+    IF NEW."isParentLinked" = FALSE THEN
+      UPDATE "Page" SET "isParentLinked" = TRUE WHERE id = NEW.id;
+    END IF;
   END IF;
   RETURN NEW;
 END;

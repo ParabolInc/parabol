@@ -7,7 +7,7 @@ import {generateText, type JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from '../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from './postgres/getKysely'
 import {isAuthenticated} from './utils/authorization'
-import {feistelCipher} from './utils/feistelCipher'
+import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
@@ -36,9 +36,7 @@ const server = Server.configure({
     const {documentName, requestParameters, connection} = data
     const authTokenStr = requestParameters.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
-
-    const [_entityName, entityId] = documentName.split(':')
-    const dbId = feistelCipher.decrypt(Number(entityId))
+    const [dbId] = CipherId.fromClient(documentName)
     const pageAccess = await getKysely()
       .selectFrom('PageAccess')
       .select('role')
@@ -55,8 +53,7 @@ const server = Server.configure({
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({documentName}) => {
-        const [_entityName, entityId] = documentName.split(':')
-        const dbId = feistelCipher.decrypt(Number(entityId))
+        const [dbId] = CipherId.fromClient(documentName)
         const pg = getKysely()
         const res = await pg
           .selectFrom('Page')
@@ -76,8 +73,7 @@ const server = Server.configure({
         const safeTitleBreakIdx = titleBreakIdx === -1 ? docText.length : titleBreakIdx
         const title = docText.slice(0, safeTitleBreakIdx).slice(0, 255)
         const plaintextContent = docText.slice(safeTitleBreakIdx + delimiter.length)
-        const [_entityName, entityId] = documentName.split(':')
-        const dbId = feistelCipher.decrypt(Number(entityId))
+        const [dbId] = CipherId.fromClient(documentName)
         const pg = getKysely()
         await pg
           .updateTable('Page')

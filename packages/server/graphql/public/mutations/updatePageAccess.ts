@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import {feistelCipher} from '../../../utils/feistelCipher'
+import {CipherId} from '../../../utils/CipherId'
 import {MutationResolvers} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
 
@@ -11,7 +11,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   {dataLoader}
 ) => {
   const pg = getKysely()
-  const dbPageId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
+  const [dbPageId] = CipherId.fromClient(pageId)
   const tableMap = {
     user: 'PageUserAccess',
     team: 'PageTeamAccess',

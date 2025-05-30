@@ -24,7 +24,7 @@ import {
   selectTasks
 } from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
-import {feistelCipher} from '../../../utils/feistelCipher'
+import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
@@ -860,7 +860,7 @@ const User: ReqResolvers<'User'> = {
   pageInsights,
   aiPrompts,
   page: async (_source, {pageId}, {dataLoader}) => {
-    const dbId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
+    const [dbId] = CipherId.fromClient(pageId)
     const page = await dataLoader.get('pages').load(dbId)
     if (!page) throw new GraphQLError('Page not found')
     return page
@@ -879,9 +879,7 @@ const User: ReqResolvers<'User'> = {
     }
     const isTopLevel = !parentPageId
     const viewerId = getUserId(authToken)
-    const dbParentPageId = parentPageId
-      ? feistelCipher.decrypt(Number(parentPageId.split(':')[1]))
-      : null
+    const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
 
     const pagesPlusOne = await selectPages()
       .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')

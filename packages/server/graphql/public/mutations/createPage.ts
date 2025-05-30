@@ -3,7 +3,7 @@ import {positionBefore} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {feistelCipher} from '../../../utils/feistelCipher'
+import {CipherId} from '../../../utils/CipherId'
 import {MutationResolvers} from '../resolverTypes'
 
 const createPage: MutationResolvers['createPage'] = async (
@@ -16,9 +16,7 @@ const createPage: MutationResolvers['createPage'] = async (
   }
   const viewerId = getUserId(authToken)
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const dbParentPageId = parentPageId
-    ? feistelCipher.decrypt(Number(parentPageId.split(':')[1]))
-    : undefined
+  const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : undefined
 
   const pg = getKysely()
   const topPage = await pg

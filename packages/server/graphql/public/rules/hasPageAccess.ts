@@ -1,7 +1,7 @@
 import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
-import {feistelCipher} from '../../../utils/feistelCipher'
+import {CipherId} from '../../../utils/CipherId'
 import {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -17,9 +17,7 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
       }
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
-      const dbPageId = dotPath.startsWith('source')
-        ? pageId
-        : feistelCipher.decrypt(Number(pageId.split(':')[1]))
+      const dbPageId = dotPath.startsWith('source') ? pageId : CipherId.fromClient(pageId)[0]
       const userRole = await dataLoader
         .get('pageAccessByUserId')
         .load({pageId: dbPageId, userId: viewerId})

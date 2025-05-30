@@ -1,12 +1,11 @@
 import AddIcon from '@mui/icons-material/Add'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {ConnectionHandler, useFragment} from 'react-relay'
+import {useFragment} from 'react-relay'
 import {useHistory, useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
-import safePutNodeInConn from '../../mutations/handlers/safePutNodeInConn'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {toSlug} from '../../shared/toSlug'
 import {cn} from '../../ui/cn'
@@ -81,16 +80,6 @@ export const LeftNavPageLink = (props: Props) => {
     if (submitting) return
     execute({
       variables: {parentPageId: id},
-      updater: (store) => {
-        const viewer = store.getRoot().getLinkedRecord('viewer')
-        if (!viewer) return
-        const conn = ConnectionHandler.getConnection(viewer, 'User_pages', {
-          parentPageId: id
-        })
-        if (!conn) return
-        const node = store.getRootField('createPage')?.getLinkedRecord('page')
-        safePutNodeInConn(conn, node, store, 'sortOrder', true)
-      },
       onCompleted: (response) => {
         const {createPage} = response
         const {page} = createPage

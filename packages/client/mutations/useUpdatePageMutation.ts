@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ConnectionHandler, useMutation, UseMutationConfig} from 'react-relay'
-import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {useUpdatePageMutation as TuseUpdatePageMutation} from '../__generated__/useUpdatePageMutation.graphql'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import useAtmosphere from '../hooks/useAtmosphere'
+import safePutNodeInConn from './handlers/safePutNodeInConn'
 
 graphql`
   fragment useUpdatePageMutation_payload on UpdatePagePayload {
@@ -42,20 +42,6 @@ export const isPrivatePageConnectionLookup = {
   User_sharedPages: false
 } as Record<PageConnectionKey, boolean>
 
-export const putPageInConn = (
-  store: RecordSourceSelectorProxy,
-  targetConn: RecordProxy,
-  page: RecordProxy<{sortOrder: string}>
-) => {
-  const sortOrder = page.getValue('sortOrder')
-  const newEdge = ConnectionHandler.createEdge(store, targetConn, page, 'PageEdge')
-  newEdge.setValue(sortOrder, 'cursor')
-  const edges = targetConn.getLinkedRecords<[{cursor: string}]>('edges')!
-  const nextIdx = edges.findIndex((edge) => edge.getValue('cursor') > sortOrder)
-  const safeNextIdx = nextIdx === -1 ? edges.length : nextIdx
-  const nextEdges = [...edges.slice(0, safeNextIdx), newEdge, ...edges.slice(safeNextIdx)]
-  targetConn.setLinkedRecords(nextEdges, 'edges')
-}
 export const useUpdatePageMutation = () => {
   const atmosphere = useAtmosphere()
   const [commit, submitting] = useMutation<TuseUpdatePageMutation>(mutation)
@@ -101,7 +87,7 @@ export const useUpdatePageMutation = () => {
           // is the target is not expanded, no connection exists yet
           return
         }
-        putPageInConn(store, targetConn, newPage)
+        safePutNodeInConn(targetConn, newPage, store, 'sortOrder', true)
       },
       variables,
       ...rest

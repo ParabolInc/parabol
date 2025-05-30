@@ -132,6 +132,16 @@ export const useDraggablePage = (
           targetConnectionKey === 'User_privatePages' &&
           sourceConnectionKey !== targetConnectionKey
       },
+      onCompleted(_res, errors) {
+        const firstError = errors?.[0]?.message
+        if (firstError) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'PageSharingInput',
+            message: firstError,
+            autoDismiss: 5
+          })
+        }
+      },
       sourceTeamId,
       sourceParentPageId,
       sourceConnectionKey,

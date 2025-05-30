@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {ConnectionHandler, useMutation, UseMutationConfig} from 'react-relay'
 import {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__generated__/useUpdatePageAccessMutation.graphql'
 import findNodeInConn from '../utils/relay/findNodeInConn'
-import {putPageInConn} from './useUpdatePageMutation'
+import safePutNodeInConn from './handlers/safePutNodeInConn'
 
 graphql`
   fragment useUpdatePageAccessMutation_payload on UpdatePageAccessPayload {
@@ -62,7 +62,7 @@ export const useUpdatePageAccessMutation = () => {
         if (inTarget) return
         const sourceConn = isPrivate ? sharedConn : privateConn
         ConnectionHandler.deleteNode(sourceConn, pageId)
-        putPageInConn(store, targetConn, page)
+        safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
       },
       ...config
     })

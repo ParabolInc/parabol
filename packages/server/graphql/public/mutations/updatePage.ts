@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {__END__, positionAfter} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import {feistelCipher} from '../../../utils/feistelCipher'
+import {CipherId} from '../../../utils/CipherId'
 import {MutationResolvers} from '../resolverTypes'
 
 const updatePage: MutationResolvers['updatePage'] = async (
@@ -12,10 +12,8 @@ const updatePage: MutationResolvers['updatePage'] = async (
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
-  const dbPageId = feistelCipher.decrypt(Number(pageId.split(':')[1]))
-  const dbParentPageId = parentPageId
-    ? feistelCipher.decrypt(Number(parentPageId.split(':')[1]))
-    : null
+  const [dbPageId] = CipherId.fromClient(pageId)
+  const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
   if (teamId && parentPageId) {
     throw new GraphQLError('Can only provider either parentPageId OR teamId')
   }
@@ -36,6 +34,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
       throw new GraphQLError('You must be an owner to move the page to a different parent')
     }
   }
+
   if (makePrivate && !page.isPrivate) {
     await pg
       // don't delete the user record because the insert will see the same snapshot as this CTE, so it must do nothing if it exists
@@ -96,6 +95,8 @@ const updatePage: MutationResolvers['updatePage'] = async (
     .where('id', '=', dbPageId)
     .execute()
 
+  // This isn't very intuitive, but changing the teamId/parentPageId could revoke access in a trigger,
+  // so we ensure access for the viewer here. Alternatively, we could store the lastAdminUserId on the Page to obviate this
   await trx
     .insertInto('PageUserAccess')
     .values({

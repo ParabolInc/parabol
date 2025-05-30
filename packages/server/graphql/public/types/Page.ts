@@ -1,17 +1,16 @@
 import {getUserId} from '../../../utils/authorization'
-import {feistelCipher} from '../../../utils/feistelCipher'
+import {CipherId} from '../../../utils/CipherId'
 import {PageResolvers} from '../resolverTypes'
 
 const Page: PageResolvers = {
-  id: ({id}) => `page:${feistelCipher.encrypt(id)}`,
+  id: ({id}) => CipherId.toClient(id, 'page'),
   access: ({id}) => ({id}),
   parentPage: async ({parentPageId}, _args, {dataLoader}) => {
     if (!parentPageId) return null
     const parentPage = await dataLoader.get('pages').load(parentPageId)
     return parentPage || null
   },
-  parentPageId: ({parentPageId}) =>
-    parentPageId ? `page:${feistelCipher.encrypt(parentPageId)}` : null,
+  parentPageId: ({parentPageId}) => (parentPageId ? CipherId.toClient(parentPageId, 'page') : null),
   sortOrder: async (
     {id: pageId, isPrivate, teamId, parentPageId, sortOrder},
     _args,
