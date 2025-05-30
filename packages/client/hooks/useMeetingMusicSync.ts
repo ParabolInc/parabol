@@ -47,13 +47,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
 
-  // Sync local volume state to audio element
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume
-    }
-  }, [volume])
-
   // Sync play state and track from server
   useEffect(() => {
     const {musicSettings} = meeting || {}
@@ -237,6 +230,9 @@ const useMeetingMusicSync = (meetingId: string) => {
   const handleVolumeChange = (newVolume: number) => {
     const roundedVolume = Math.round(newVolume * 100) / 100
     setVolume(roundedVolume)
+    if (audioRef.current) {
+      audioRef.current.volume = roundedVolume
+    }
   }
 
   return {
