@@ -28,7 +28,7 @@ const useMeetingMusicSync = (meetingId: string) => {
             musicSettings {
               trackSrc
               isPlaying
-              volume
+              timestamp
             }
           }
         }
@@ -46,14 +46,6 @@ const useMeetingMusicSync = (meetingId: string) => {
   const [pausedAt, setPausedAt] = useState<number | null>(null)
 
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
-
-  // Sync volume from server to local state
-  useEffect(() => {
-    const newVolume = meeting?.musicSettings?.volume
-    if (newVolume && newVolume !== volume) {
-      setVolume(newVolume)
-    }
-  }, [meeting?.musicSettings?.volume])
 
   // Sync local volume state to audio element
   useEffect(() => {

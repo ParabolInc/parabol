@@ -1,7 +1,7 @@
 interface MusicSettings {
   trackSrc: String
   isPlaying: Boolean
-  volume: Float
+  timestamp: Float
 }
 
 extend interface NewMeeting {
