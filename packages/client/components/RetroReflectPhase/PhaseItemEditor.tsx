@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {ArrowUpward} from '@mui/icons-material'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
@@ -12,9 +13,9 @@ import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
-import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
+import PlainButton from '../PlainButton/PlainButton'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
@@ -33,21 +34,6 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
     zIndex: ZIndex.REFLECTION_IN_FLIGHT
   })
 )
-
-const EnterHint = styled('div')<{visible: boolean}>(({visible}) => ({
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  fontStyle: 'italic',
-  fontWeight: 400,
-  lineHeight: '20px',
-  paddingLeft: 16,
-  cursor: 'pointer',
-  visibility: visible ? undefined : 'hidden',
-  opacity: visible ? 1 : 0,
-  height: visible ? 28 : 0,
-  overflow: 'hidden',
-  transition: 'height 300ms, opacity 300ms'
-}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -153,10 +139,10 @@ const PhaseItemEditor = (props: Props) => {
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
-      placeholder: 'Add your reflection and press enter.\n\nTry /image for gifs or : for emoji',
+      placeholder: 'Share your thoughts, press / for commands',
       teamId,
-      readOnly: !!readOnly,
-      onEnter: handleSubmit
+      readOnly: !!readOnly
+      //onEnter: handleSubmit
     }
   )
   const [isEditing, setIsEditing] = useState(false)
@@ -167,33 +153,6 @@ const PhaseItemEditor = (props: Props) => {
       window.clearTimeout(idleTimerIdRef.current)
     }
   }, [idleTimerIdRef])
-
-  const knowsHowToEnter = (viewerMeetingMember?.user?.timeline?.edges?.length ?? 0) > 1
-  const [isFocused, setIsFocused] = useState(false)
-  const [enterHint, setEnterHint] = useState('')
-  const hintTimerRef = useRef<number>()
-  const hintCharacterCountRef = useRef(0)
-  useEffect(() => {
-    const showHint = !knowsHowToEnter && !isEditing && !editor?.isEmpty
-    const characterCount = editor?.storage.characterCount.characters()
-
-    if (characterCount !== hintCharacterCountRef.current) {
-      hintCharacterCountRef.current = characterCount
-      setEnterHint('')
-    }
-
-    if (showHint) {
-      const newEnterHint = isFocused
-        ? 'Press enter to add'
-        : 'Forgot to press enter? Click here to add 👆'
-      hintTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 1000)
-      return () => {
-        window.clearTimeout(hintTimerRef.current)
-      }
-    } else {
-      return undefined
-    }
-  }, [isFocused, isEditing, editor?.storage.characterCount.characters()])
 
   const ensureNotEditing = () => {
     if (!isEditing) return
@@ -223,14 +182,13 @@ const PhaseItemEditor = (props: Props) => {
     }, 5000)
   }
   const onFocus = () => {
-    setIsFocused(true)
     ensureEditing()
     return null
   }
   const onBlur = () => {
-    setIsFocused(false)
     ensureNotEditing()
   }
+  const showFooter = isEditing || !editor?.isEmpty
 
   const removeCardInFlight = (content: string) => () => {
     const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
@@ -249,22 +207,29 @@ const PhaseItemEditor = (props: Props) => {
     <>
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
         <TipTapEditor
-          className={cn(
-            'flex max-h-41 min-h-[6rem] overflow-auto px-4 pt-3',
-            disableAnonymity ? 'pb-0' : 'pb-3'
-          )}
+          className={'flex max-h-41 min-h-[6rem] overflow-auto px-4 pt-3'}
           editor={editor}
           onBlur={onBlur}
           onFocus={onFocus}
         />
-        {disableAnonymity && (
-          <div className='pb-3'>
-            <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
+        <div
+          className={cn('flex items-center justify-between pr-2 pb-2 transition-all', {
+            'h-0 overflow-hidden pb-0': !showFooter
+          })}
+        >
+          <div>
+            {disableAnonymity && (
+              <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
+            )}
           </div>
-        )}
-        <EnterHint visible={!!enterHint} onClick={handleSubmit}>
-          {enterHint}
-        </EnterHint>
+          <PlainButton
+            className='align-self-end flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500'
+            onClick={handleSubmit}
+            disabled={readOnly || editor.isEmpty}
+          >
+            <ArrowUpward />
+          </PlainButton>
+        </div>
       </ReflectionCardRoot>
       {portal(
         <>
