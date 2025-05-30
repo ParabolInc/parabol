@@ -1,10 +1,10 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
-import {Component} from 'react'
 import {DECELERATE, fadeIn} from '../../styles/animation'
 import {Elevation} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ElementWidth} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
 import TinyLabel from '../TinyLabel'
 
@@ -16,7 +16,6 @@ interface Props {
 const CHIT_MARGIN = 4
 const CHIT_GUTTER = 8
 const CHITS_PER_ROW = 8
-const MAX_ROWS = 4
 const CHIT_WIDTH =
   (ElementWidth.REFLECTION_CARD_PADDED - CHIT_GUTTER * (CHITS_PER_ROW - 1)) / CHITS_PER_ROW
 const CHIT_HEIGHT = 16
@@ -32,15 +31,15 @@ const shiftColor = (idx: number) => keyframes`
   0% {
     background-position: ${idx * OFFSET}px;
   }
-	${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100)}% {
-	  background-position: ${PROGRESS_WIDTH}px;
-	}
-	${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100) + 0.0001}% {
-	  background-position: 0px;
-	}
-	100% {
-	  background-position: ${idx === 0 ? PROGRESS_WIDTH : idx * OFFSET}px;
-	}
+  ${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100)}% {
+    background-position: ${PROGRESS_WIDTH}px;
+  }
+  ${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100) + 0.0001}% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: ${idx === 0 ? PROGRESS_WIDTH : idx * OFFSET}px;
+  }
 `
 
 const Chit = styled('div')({
@@ -73,13 +72,6 @@ const ChitWrap = styled('div')({
   flexShrink: 0
 })
 
-const ChitArea = styled('div')({
-  display: 'grid',
-  gridGap: CHIT_GUTTER,
-  gridTemplateColumns: `repeat(${CHITS_PER_ROW}, ${CHIT_WIDTH}px)`,
-  width: ElementWidth.REFLECTION_CARD_PADDED
-})
-
 const ChitAreaLabel = styled(TinyLabel)({
   margin: '0 0 1em'
 })
@@ -97,31 +89,53 @@ const getStatus = (count: number, editorCount: number) => {
   return ''
 }
 
-class PhaseItemChits extends Component<Props> {
-  render() {
-    const {count, editorCount} = this.props
-    const chitCount = Math.min(count, MAX_ROWS * CHITS_PER_ROW)
-    const chits = [...Array(chitCount).keys()]
-    const activeChits = [...Array(editorCount).keys()]
-    return (
-      <ChitWrap>
-        <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
-        <ChitArea>
-          {chits.map((idx) => (
-            <Chit key={idx} />
-          ))}
+const overflowStyles = [
+  'rotate-2 brightness-95',
+  '-rotate-3 brightness-90',
+  '-rotate-2 brightness-85'
+]
+const overflowTops = [4, 2, -2]
+const overflowLefts = [4, 6, 4]
 
-          {activeChits.map((idx) => (
-            <Chit key={idx}>
-              <ActiveChitMask>
-                <ActiveChit idx={activeChits.length - 1 - idx} />
-              </ActiveChitMask>
-            </Chit>
-          ))}
-        </ChitArea>
-      </ChitWrap>
-    )
-  }
+const PhaseItemChits = (props: Props) => {
+  const {count, editorCount} = props
+  const totalCount = count + editorCount
+  const chitCount = Math.min(totalCount, CHITS_PER_ROW + overflowStyles.length)
+
+  const chitList = Array.from({length: chitCount})
+    .map((_, idx) => {
+      const isOverflow = idx >= CHITS_PER_ROW
+      const overflowIdx = idx - CHITS_PER_ROW
+      return (
+        <Chit
+          key={totalCount - idx}
+          className={cn(
+            'absolute transition-[left] transition-[top] transition-all duration-300',
+            isOverflow ? overflowStyles[overflowIdx] : ''
+          )}
+          style={{
+            top: !isOverflow ? '0px' : `${overflowTops[overflowIdx]!}px`,
+            left: !isOverflow
+              ? `${idx * (CHIT_WIDTH + CHIT_GUTTER)}px`
+              : `${(CHITS_PER_ROW - 1) * (CHIT_WIDTH + CHIT_GUTTER) + overflowLefts[overflowIdx]!}px`
+          }}
+        >
+          {idx < editorCount && (
+            <ActiveChitMask>
+              <ActiveChit idx={idx} />
+            </ActiveChitMask>
+          )}
+        </Chit>
+      )
+    })
+    .reverse()
+
+  return (
+    <ChitWrap>
+      <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
+      <div className='relative w-full'>{chitList}</div>
+    </ChitWrap>
+  )
 }
 
 export default PhaseItemChits
