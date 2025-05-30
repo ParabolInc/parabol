@@ -201,19 +201,6 @@ type Team implements Node {
   """
   isPublic: Boolean!
   """
-  All the pages owned by a team
-  """
-  pages(
-    """
-    The first n records to return
-    """
-    first: Int!
-    """
-    The pagination cursor, if any
-    """
-    after: String
-  ): PageConnection!
-  """
   The viewer-specific sort order index. Present in User.teams
   """
   sortOrder: String!

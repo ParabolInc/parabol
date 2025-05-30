@@ -599,9 +599,7 @@ const User: ReqResolvers<'User'> = {
       : activeTeamIds
     const teams = (
       await Promise.all(
-        teamIds.map((teamId) =>
-          dataLoader.get('teamsWithUserSort').load({teamId, userId: viewerId})
-        )
+        teamIds.map((teamId) => dataLoader.get('teamsWithUserSort').load({teamId, userId}))
       )
     )
       .filter(isValid)

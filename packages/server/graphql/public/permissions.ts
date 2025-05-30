@@ -90,9 +90,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     smartTitle: isSuperUser,
     voterIds: isSuperUser
   },
-  Team: {
-    pages: or(isSuperUser, isTeamMember<'Team.id'>('source.id'))
-  },
   User: {
     domains: or(isSuperUser, isUserViewer),
     page: hasPageAccess<'User.page'>('args.pageId', 'viewer')
