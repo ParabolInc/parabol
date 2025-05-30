@@ -65,28 +65,16 @@ const useMeetingMusicSync = (meetingId: string) => {
   // Sync play state and track from server
   useEffect(() => {
     const {musicSettings} = meeting || {}
-    if (!musicSettings) return
+    if (!musicSettings || pausedAt !== null) return
 
     const {trackSrc, isPlaying: shouldPlay} = musicSettings
-    const hasLocalPause = pausedAt !== null
-    const hasLocalTrackOverride = !isFacilitator && currentTrackSrc !== trackSrc
-    const nonFacilitatorNeedsTrackToPlay =
-      !isFacilitator && shouldPlay && !currentTrackSrc && trackSrc
 
-    const shouldSyncPlay =
-      !hasLocalPause && shouldPlay !== isPlaying && !(hasLocalTrackOverride && isPlaying)
+    const shouldSyncTrack = isFacilitator
+      ? trackSrc !== currentTrackSrc
+      : shouldPlay && !currentTrackSrc && trackSrc
 
-    const shouldSyncTrack =
-      (!hasLocalPause && !hasLocalTrackOverride && trackSrc !== currentTrackSrc) ||
-      nonFacilitatorNeedsTrackToPlay
-
-    if (shouldSyncPlay) {
-      setIsPlaying(shouldPlay ?? false)
-    }
-
-    if (shouldSyncTrack) {
-      setCurrentTrackSrc(trackSrc ?? null)
-    }
+    if (shouldPlay !== isPlaying) setIsPlaying(shouldPlay ?? false)
+    if (shouldSyncTrack) setCurrentTrackSrc(trackSrc ?? null)
   }, [meeting?.musicSettings, currentTrackSrc, pausedAt, isFacilitator])
 
   // Initialize audio element and prepare for autoplay restrictions
