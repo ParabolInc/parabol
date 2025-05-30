@@ -56,7 +56,7 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     const shouldSyncTrack = isFacilitator
       ? trackSrc !== currentTrackSrc
-      : shouldPlay && !currentTrackSrc && trackSrc
+      : shouldPlay && trackSrc !== currentTrackSrc
 
     if (shouldPlay !== isPlaying) setIsPlaying(shouldPlay ?? false)
     if (shouldSyncTrack) setCurrentTrackSrc(trackSrc ?? null)
