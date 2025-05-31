@@ -49,18 +49,30 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   // Sync play state and track from server
   useEffect(() => {
+    if (isFacilitator || pausedAt !== null) return
+
     const {musicSettings} = meeting || {}
-    if (!musicSettings || pausedAt !== null) return
+    if (!musicSettings || !audioRef.current) return
 
     const {trackSrc, isPlaying: shouldPlay} = musicSettings
 
-    const shouldSyncTrack = isFacilitator
-      ? trackSrc !== currentTrackSrc
-      : shouldPlay && trackSrc !== currentTrackSrc
+    // Handle track changes
+    if (trackSrc !== currentTrackSrc && trackSrc) {
+      playTrack(trackSrc)
+      return
+    }
 
-    if (shouldPlay !== isPlaying) setIsPlaying(shouldPlay ?? false)
-    if (shouldSyncTrack) setCurrentTrackSrc(trackSrc ?? null)
-  }, [meeting?.musicSettings, currentTrackSrc, pausedAt, isFacilitator])
+    // Handle play/pause state changes for same track
+    if (shouldPlay && !isPlaying && currentTrackSrc) {
+      setIsPlaying(true)
+      audioRef.current.play().catch(() => {
+        pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
+      })
+    } else if (!shouldPlay && isPlaying) {
+      audioRef.current.pause()
+      setIsPlaying(false)
+    }
+  }, [meeting?.musicSettings, isFacilitator, pausedAt, isPlaying, currentTrackSrc])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
@@ -92,40 +104,6 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current = null
     }
   }, [])
-
-  // Control audio playback based on state changes
-  useEffect(() => {
-    if (!audioRef.current) return
-
-    if (!currentTrackSrc || !isPlaying) {
-      audioRef.current.pause()
-      return
-    }
-
-    if (audioRef.current.src !== currentTrackSrc) {
-      audioRef.current.src = currentTrackSrc
-      audioRef.current.load()
-    }
-
-    if (pausedAt !== null) {
-      audioRef.current.currentTime = pausedAt
-      setPausedAt(null)
-    }
-
-    audioRef.current.muted = true
-    const playPromise = audioRef.current.play()
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          audioRef.current!.muted = false
-        })
-        .catch((err) => {
-          if (err.name === 'NotAllowedError') {
-            pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
-          }
-        })
-    }
-  }, [currentTrackSrc, isPlaying, pausedAt])
 
   // Handle autoplay restrictions by waiting for user interaction
   useEffect(() => {
@@ -172,15 +150,34 @@ const useMeetingMusicSync = (meetingId: string) => {
   }
 
   const playTrack = (trackSrc: string | null) => {
-    if (!trackSrc) return
+    if (!trackSrc || !audioRef.current) return
 
     const isResumingSameTrack = trackSrc === currentTrackSrc && pausedAt !== null
-    setIsPlaying(true)
 
     if (!isResumingSameTrack) {
+      audioRef.current.src = trackSrc
       setCurrentTrackSrc(trackSrc)
       setPausedAt(null)
     }
+
+    if (pausedAt !== null) {
+      audioRef.current.currentTime = pausedAt
+      setPausedAt(null)
+    }
+
+    setIsPlaying(true)
+
+    audioRef.current.muted = true
+    audioRef.current
+      .play()
+      .then(() => {
+        audioRef.current!.muted = false
+      })
+      .catch((err) => {
+        if (err.name === 'NotAllowedError') {
+          pendingPlay.current = {trackSrc, timestamp: null}
+        }
+      })
 
     if (isFacilitator) {
       syncMusicState(trackSrc, true)
@@ -188,9 +185,10 @@ const useMeetingMusicSync = (meetingId: string) => {
   }
 
   const pause = () => {
-    if (audioRef.current) {
-      setPausedAt(audioRef.current.currentTime)
-    }
+    if (!audioRef.current) return
+
+    setPausedAt(audioRef.current.currentTime)
+    audioRef.current.pause()
     setIsPlaying(false)
 
     if (isFacilitator) {
@@ -199,31 +197,29 @@ const useMeetingMusicSync = (meetingId: string) => {
   }
 
   const stop = () => {
+    if (!audioRef.current) return
+
+    audioRef.current.pause()
     setCurrentTrackSrc(null)
     setIsPlaying(false)
     setPausedAt(null)
 
     if (isFacilitator) {
       syncMusicState(null, false)
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
     }
   }
 
   const selectTrack = (trackSrc: string) => {
+    if (!audioRef.current) return
+
+    audioRef.current.src = trackSrc
+    audioRef.current.load()
     setCurrentTrackSrc(trackSrc)
     setIsPlaying(false)
     setPausedAt(null)
 
     if (isFacilitator) {
       syncMusicState(trackSrc, false)
-    } else {
-      if (audioRef.current) {
-        audioRef.current.src = trackSrc
-        audioRef.current.load()
-      }
     }
   }
 
