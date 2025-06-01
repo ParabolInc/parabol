@@ -46,6 +46,7 @@ const useMeetingMusicSync = (meetingId: string) => {
   const [pausedAt, setPausedAt] = useState<number | null>(null)
   const [localOverride, setLocalOverride] = useState(false)
 
+  // Stores track info when autoplay is blocked by browser, waits for user interaction to play
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
 
   // Sync music state from server for non-facilitators
