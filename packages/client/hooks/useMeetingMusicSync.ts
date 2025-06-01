@@ -44,35 +44,35 @@ const useMeetingMusicSync = (meetingId: string) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [volume, setVolume] = useState<number>(0.5)
   const [pausedAt, setPausedAt] = useState<number | null>(null)
+  const [localOverride, setLocalOverride] = useState(false)
 
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
 
-  // Sync play state and track from server
+  // Sync music state from server for non-facilitators
   useEffect(() => {
-    if (isFacilitator || pausedAt !== null) return
+    if (isFacilitator || localOverride) return
 
     const {musicSettings} = meeting || {}
-    if (!musicSettings || !audioRef.current) return
+    if (!musicSettings) return
 
     const {trackSrc, isPlaying: shouldPlay} = musicSettings
 
-    // Handle track changes
-    if (trackSrc !== currentTrackSrc && trackSrc) {
-      playTrack(trackSrc)
-      return
-    }
+    const trackChanged = trackSrc !== currentTrackSrc && trackSrc
+    const shouldStartPlaying = shouldPlay && !isPlaying
+    const shouldStopPlaying = !shouldPlay && isPlaying
 
-    // Handle play/pause state changes for same track
-    if (shouldPlay && !isPlaying && currentTrackSrc) {
-      setIsPlaying(true)
-      audioRef.current.play().catch(() => {
-        pendingPlay.current = {trackSrc: currentTrackSrc, timestamp: null}
-      })
-    } else if (!shouldPlay && isPlaying) {
-      audioRef.current.pause()
-      setIsPlaying(false)
+    if (shouldStartPlaying || (trackChanged && shouldPlay)) {
+      playTrack(trackSrc || currentTrackSrc)
+    } else if (shouldStopPlaying) {
+      pause()
+    } else if (trackChanged) {
+      if (audioRef.current && trackSrc) {
+        audioRef.current.src = trackSrc
+        audioRef.current.load()
+        setCurrentTrackSrc(trackSrc)
+      }
     }
-  }, [meeting?.musicSettings, isFacilitator, pausedAt, isPlaying, currentTrackSrc])
+  }, [meeting?.musicSettings, isFacilitator, localOverride])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
@@ -110,28 +110,18 @@ const useMeetingMusicSync = (meetingId: string) => {
     const handleDocumentClick = () => {
       if (pendingPlay.current && audioRef.current) {
         const {trackSrc} = pendingPlay.current
-
         if (currentTrackSrc === trackSrc) {
-          audioRef.current.muted = true
-          const playPromise = audioRef.current.play()
-          playPromise
-            .then(() => {
-              audioRef.current!.muted = false
-              audioRef.current!.volume = volume
-            })
-            .catch(() => {})
-        } else {
-          setCurrentTrackSrc(trackSrc)
-          setIsPlaying(true)
+          audioRef.current.play().then(() => {
+            audioRef.current!.muted = false
+          })
         }
-
         pendingPlay.current = null
       }
     }
 
     document.addEventListener('click', handleDocumentClick)
     return () => document.removeEventListener('click', handleDocumentClick)
-  }, [currentTrackSrc, volume])
+  }, [currentTrackSrc])
 
   const syncMusicState = (trackSrc: string | null, shouldPlay: boolean) => {
     if (!meetingId || !isFacilitator) return
@@ -160,9 +150,11 @@ const useMeetingMusicSync = (meetingId: string) => {
       setPausedAt(null)
     }
 
-    if (pausedAt !== null) {
+    if (pausedAt !== null && trackSrc === currentTrackSrc) {
       audioRef.current.currentTime = pausedAt
       setPausedAt(null)
+    } else {
+      audioRef.current.currentTime = 0
     }
 
     setIsPlaying(true)
@@ -200,12 +192,15 @@ const useMeetingMusicSync = (meetingId: string) => {
     if (!audioRef.current) return
 
     audioRef.current.pause()
-    setCurrentTrackSrc(null)
+    audioRef.current.currentTime = 0
     setIsPlaying(false)
     setPausedAt(null)
 
     if (isFacilitator) {
+      setCurrentTrackSrc(null)
       syncMusicState(null, false)
+    } else {
+      setLocalOverride(true)
     }
   }
 
@@ -220,6 +215,8 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     if (isFacilitator) {
       syncMusicState(trackSrc, false)
+    } else {
+      setLocalOverride(true)
     }
   }
 
