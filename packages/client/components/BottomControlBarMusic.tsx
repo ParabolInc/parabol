@@ -5,38 +5,40 @@ import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useRef, useState} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
-import useBackgroundMusicManager, {availableTracks, Track} from '../hooks/useBackgroundMusicManager'
+import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
 
 interface Props {
-  isFacilitator: boolean
   status?: TransitionStatus
   onTransitionEnd?: () => void
+  meetingId: string
 }
 
 const BottomControlBarMusic = ({
-  isFacilitator,
   status = TransitionStatus.ENTERED,
-  onTransitionEnd
+  onTransitionEnd,
+  meetingId
 }: Props) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
 
-  const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
-    useBackgroundMusicManager({
-      initialTrackUrl: null,
-      initialIsPlaying: false,
-      initialVolume: 0.5
-    })
-
-  if (!isFacilitator) return null
+  const {
+    playTrack,
+    pause,
+    stop,
+    handleVolumeChange,
+    selectTrack,
+    currentTrackSrc,
+    isPlaying,
+    volume,
+    availableTracks
+  } = useMeetingMusicSync(meetingId)
 
   const playEnabled = !!currentTrackSrc && !isPlaying
   const stopEnabled = !!currentTrackSrc && isPlaying
-
   const showFade = availableTracks.length > 3 && !atBottom
 
   const handleScroll = () => {
@@ -81,31 +83,43 @@ const BottomControlBarMusic = ({
                   availableTracks.length > 3 ? 'max-h-[200px] pr-1 pb-4' : ''
                 )}
               >
-                {availableTracks.map((track: Track) => (
-                  <button
-                    key={track.src}
-                    onClick={() => {
-                      selectTrack(track.src)
-                    }}
-                    className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 transition-all',
-                      currentTrackSrc === track.src
-                        ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                        : 'hover:bg-gray-50 text-gray-700 border-transparent'
-                    )}
-                  >
-                    <span className='flex-1 truncate'>{track.name}</span>
-                  </button>
-                ))}
+                {availableTracks.map((track) => {
+                  const isSelected = currentTrackSrc === track.src
+                  const isCurrentlyPlaying = isSelected && isPlaying
+
+                  return (
+                    <button
+                      key={track.src}
+                      onClick={() => {
+                        if (isSelected) {
+                          pause()
+                        } else {
+                          selectTrack(track.src)
+                        }
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition-all',
+                        isSelected
+                          ? isCurrentlyPlaying
+                            ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
+                            : 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
+                          : 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
+                      )}
+                    >
+                      <span className='flex-1 truncate'>{track.name}</span>
+                    </button>
+                  )
+                })}
               </div>
               {showFade && (
                 <div className='pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t from-white to-transparent' />
               )}
             </div>
+
             <div className='mt-2 flex items-center justify-between gap-2'>
               <button
                 type='button'
-                onClick={() => currentTrackSrc && playTrack(currentTrackSrc)}
+                onClick={() => playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
@@ -146,6 +160,7 @@ const BottomControlBarMusic = ({
                 <StopIcon />
               </button>
             </div>
+
             <div className='mt-2 flex items-center gap-3'>
               <span className='text-gray-500 w-14 text-sm'>Volume</span>
               <input
@@ -154,8 +169,8 @@ const BottomControlBarMusic = ({
                 max='1'
                 step='0.01'
                 value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className='accent-blue-500 h-2 flex-1 cursor-pointer'
+                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                className='accent-blue-500 h-2 flex-1 cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100'
                 onMouseDown={(e) => e.stopPropagation()}
               />
             </div>

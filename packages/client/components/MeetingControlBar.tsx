@@ -170,7 +170,7 @@ const MeetingControlBar = (props: Props) => {
           }
           switch (key) {
             case 'music':
-              return <BottomControlBarMusic {...tranProps} isFacilitator={isFacilitating} />
+              return <BottomControlBarMusic {...tranProps} meetingId={meetingId} />
             case 'tips':
               return (
                 <BottomControlBarTips
