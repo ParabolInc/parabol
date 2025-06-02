@@ -154,15 +154,17 @@ const PhaseItemEditor = (props: Props) => {
     }
   }, [idleTimerIdRef])
 
-  const ensureNotEditing = () => {
+  const ensureNotEditing = useEventCallback(() => {
     if (!isEditing) return
+    // some delay in case the user just submitted the reflection, otherwise the update on other clients will remove and add a card which doesn't look good
     window.clearTimeout(idleTimerIdRef.current)
-    idleTimerIdRef.current = undefined
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
-    setIsEditing(false)
-  }
+    idleTimerIdRef.current = window.setTimeout(() => {
+      EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+      setIsEditing(false)
+    }, 500)
+  })
 
-  const ensureEditing = () => {
+  const ensureEditing = useEventCallback(() => {
     if (!isEditing) {
       EditReflectionMutation(atmosphere, {
         isEditing: true,
@@ -180,14 +182,25 @@ const PhaseItemEditor = (props: Props) => {
       })
       setIsEditing(false)
     }, 5000)
-  }
-  const onFocus = () => {
-    ensureEditing()
-    return null
-  }
-  const onBlur = () => {
-    ensureNotEditing()
-  }
+  })
+
+  const editorUpdating = useEventCallback(() => {
+    if (editor && !editor.isEmpty) {
+      ensureEditing()
+    }
+  })
+
+  useEffect(() => {
+    editor?.on('update', editorUpdating)
+    editor?.on('focus', ensureEditing)
+    editor?.on('blur', ensureNotEditing)
+    return () => {
+      editor?.off('update', editorUpdating)
+      editor?.off('focus', ensureEditing)
+      editor?.off('blur', ensureNotEditing)
+    }
+  }, [editor, editorUpdating, ensureEditing, ensureNotEditing])
+
   const showFooter = isEditing || !editor?.isEmpty
 
   const removeCardInFlight = (content: string) => () => {
@@ -209,8 +222,6 @@ const PhaseItemEditor = (props: Props) => {
         <TipTapEditor
           className={'flex max-h-41 min-h-[6rem] overflow-auto px-4 pt-3'}
           editor={editor}
-          onBlur={onBlur}
-          onFocus={onFocus}
         />
         <div
           className={cn('flex items-center justify-between pr-2 pb-2 transition-all', {
