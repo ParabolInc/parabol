@@ -28,6 +28,7 @@ const createPage: MutationResolvers['createPage'] = async (
     .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
     .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
     .$if(!teamId, (qb) => qb.where('isPrivate', '=', true))
+    // purposefully not excluding deleted docs because if they get restored then it could be a duplicate sortOrder
     .orderBy('sortOrder')
     .limit(1)
     .executeTakeFirst()

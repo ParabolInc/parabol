@@ -68,6 +68,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
       .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
       .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .where('PageAccess.userId', '=', viewerId)
+      // purposefully not excluding deleted docs because if they get restored then it could be a duplicate sortOrder
       .orderBy('sortOrder', 'desc')
       .limit(1)
       .executeTakeFirst()

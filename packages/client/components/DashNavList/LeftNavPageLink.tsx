@@ -1,18 +1,14 @@
-import AddIcon from '@mui/icons-material/Add'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory, useRouteMatch} from 'react-router'
+import {useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
-import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {toSlug} from '../../shared/toSlug'
 import {cn} from '../../ui/cn'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
+import {PageActions} from './PageActions'
 import {SubPagesRoot} from './SubPagesRoot'
 
 export type PageConnectionKey = 'User_privatePages' | 'User_sharedPages' | 'User_pages'
@@ -41,6 +37,7 @@ export const LeftNavPageLink = (props: Props) => {
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {
+        ...PageActions_page
         id
         title
         parentPageId
@@ -64,8 +61,6 @@ export const LeftNavPageLink = (props: Props) => {
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
-  const history = useHistory()
-  const [execute, submitting] = useCreatePageMutation()
   const {onPointerDown, ref} = useDraggablePage(
     id,
     isPrivate,
@@ -75,21 +70,6 @@ export const LeftNavPageLink = (props: Props) => {
     dropIdx === 0,
     isLastChild
   )
-  const addChildPage = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (submitting) return
-    execute({
-      variables: {parentPageId: id},
-      onCompleted: (response) => {
-        const {createPage} = response
-        const {page} = createPage
-        const {id} = page
-        const [_, pageId] = id.split(':')
-        history.push(`/pages/${pageId}`)
-        setShowChildren(true)
-      }
-    })
-  }
   const nextPageAncestors = [...pageAncestors, id]
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const isSelf = draggingPageId === id
@@ -149,16 +129,7 @@ export const LeftNavPageLink = (props: Props) => {
           <div className='flex flex-col text-sm font-medium'>
             <span>{title || '<Untitled>'}</span>
           </div>
-          <div className='flex flex-1 items-center justify-end'>
-            <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <AddIcon className='hidden size-5 group-hover:block' onClick={addChildPage} />
-                </TooltipTrigger>
-                <TooltipContent side={'bottom'}>{'Add a page inside'}</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
+          <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>
       </div>
       {showChildren && (
