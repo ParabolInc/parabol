@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.5.3](https://github.com/ParabolInc/parabol/compare/v10.5.2...v10.5.3) (2025-06-03)
+
+
+### Changed
+
+* lock all meetings of unpaid orgs ([#11365](https://github.com/ParabolInc/parabol/issues/11365)) ([fdbe122](https://github.com/ParabolInc/parabol/commit/fdbe122d9b08e43def839c255428def05f67f14f))
+
 ## [10.5.2](https://github.com/ParabolInc/parabol/compare/v10.5.1...v10.5.2) (2025-06-02)
 
 
