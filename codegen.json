@@ -220,6 +220,7 @@
           "UpdateMeetingPromptSuccess": "./types/UpdateMeetingPromptSuccess#UpdateMeetingPromptSuccessSource",
           "UpdateMeetingTemplateSuccess": "./types/UpdateMeetingTemplateSuccess#UpdateMeetingTemplateSuccessSource",
           "UpdateOrgPayload": "./types/UpdateOrgPayload#UpdateOrgPayloadSource",
+          "ArchivePagePayload": "./types/ArchivePagePayload#ArchivePagePayloadSource",
           "UpdatePagePayload": "./types/UpdatePagePayload#UpdatePagePayloadSource",
           "UpdatePageAccessPayload": "./types/UpdatePageAccessPayload#UpdatePageAccessPayloadSource",
           "UpdateTeamSortOrderPayload": "./types/UpdateTeamSortOrderPayload#UpdateTeamSortOrderPayloadSource",

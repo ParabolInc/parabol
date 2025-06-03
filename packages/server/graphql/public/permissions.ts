@@ -66,6 +66,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
     updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
     updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
     updatePageAccess: and(
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
       // limit looking up users by email

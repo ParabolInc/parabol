@@ -542,5 +542,9 @@ type User {
     true to query top-level private pages. false to query top-level shard pages. ignored if parentPageId or teamId is present
     """
     isPrivate: Boolean
+    """
+    true is the page has been archived and is ready for deletion
+    """
+    isArchived: Boolean
   ): PageConnection!
 }

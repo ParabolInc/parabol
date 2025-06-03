@@ -10,6 +10,7 @@ import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as linearLoaders from './linearLoaders'
+import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import * as teamLoaderMakers from './teamLoaderMakers'
@@ -20,6 +21,7 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
+  ...pageLoaderMakers,
   ...teamLoaderMakers,
   ...primaryKeyLoaderMakers,
   ...foreignKeyLoaderMakers,

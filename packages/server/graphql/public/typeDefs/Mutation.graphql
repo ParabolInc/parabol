@@ -2169,4 +2169,14 @@ type Mutation {
     """
     sortOrder: String!
   ): UpdateTeamSortOrderPayload
+  """
+  Move a page to the trash
+  """
+  archivePage(
+    pageId: ID!
+    """
+    The action to take on the page
+    """
+    action: ArchivePageActionEnum!
+  ): ArchivePagePayload
 }
