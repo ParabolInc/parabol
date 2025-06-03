@@ -11,6 +11,7 @@ import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {LeftNavTeamLink} from './LeftNavTeamLink'
+import PublicTeamsOverflow from './PublicTeamsOverflow'
 
 interface Props {
   viewerRef: LeftNavTeamsSection_viewer$key
@@ -20,6 +21,7 @@ export const LeftNavTeamsSection = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment LeftNavTeamsSection_viewer on User {
+        ...PublicTeamsOverflow_viewer
         draggingPageId
         draggingPageIsPrivate
         teams {
@@ -101,6 +103,7 @@ export const LeftNavTeamsSection = (props: Props) => {
                   )
                 })}
                 {provided.placeholder}
+                <PublicTeamsOverflow viewerRef={viewer} />
               </div>
             )
           }}

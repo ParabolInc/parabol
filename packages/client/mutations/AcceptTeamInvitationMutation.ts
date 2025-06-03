@@ -35,6 +35,7 @@ graphql`
     }
     team {
       name
+      sortOrder
     }
   }
 `
