@@ -163,16 +163,18 @@ const BottomControlBarMusic = ({
 
             <div className='mt-2 flex items-center gap-3'>
               <span className='text-gray-500 w-14 text-sm'>Volume</span>
-              <input
-                type='range'
-                min='0'
-                max='1'
-                step='0.01'
-                value={volume}
-                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                className='accent-blue-500 h-2 flex-1 cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100'
-                onMouseDown={(e) => e.stopPropagation()}
-              />
+              <div className='min-w-0 flex-1'>
+                <input
+                  type='range'
+                  min='0'
+                  max='1'
+                  step='0.01'
+                  value={volume}
+                  onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                  className='accent-blue-500 h-2 w-full cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100'
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+              </div>
             </div>
           </div>
           <RadixPopover.Arrow className='fill-white' />
