@@ -48,6 +48,7 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   // Stores track info when autoplay is blocked by browser, waits for user interaction to play
   const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
+  const musicSettings = meeting?.musicSettings
 
   // Sync music state from server for non-facilitators
   useEffect(() => {
@@ -73,7 +74,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current.load()
       setCurrentTrackSrc(trackSrc)
     }
-  }, [meeting?.musicSettings, isFacilitator, localOverride])
+  }, [musicSettings?.trackSrc, musicSettings?.isPlaying, isFacilitator, localOverride])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
