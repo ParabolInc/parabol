@@ -3,6 +3,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {LeftNavSharedPagesSection_viewer$key} from '../../__generated__/LeftNavSharedPagesSection_viewer.graphql'
 import {cn} from '../../ui/cn'
+import {LeftNavHeader} from './LeftNavHeader'
 import {LeftNavPageLink} from './LeftNavPageLink'
 
 interface Props {
@@ -41,19 +42,16 @@ export const LeftNavSharedPagesSection = (props: Props) => {
     setShowChildren(!showChildren)
   }
   return (
-    <div className='min-h-9'>
+    <div className='min-h-9' data-pages-connection={'User_sharedPages'}>
       <div
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
-        data-pages-connection={'User_sharedPages'}
         className={cn(
           'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold data-[drop-in]:hover:bg-sky-300/70',
           !draggingPageId && 'hover:bg-slate-300'
         )}
       >
-        <div className='flex flex-col text-sm font-medium'>
-          <span>{'Shared Pages'}</span>
-        </div>
+        <LeftNavHeader>{'Shared Pages'}</LeftNavHeader>
       </div>
       <div className={cn('relative hidden', showChildren && 'block')}>
         <div

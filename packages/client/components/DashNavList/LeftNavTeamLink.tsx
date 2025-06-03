@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add'
 import GroupIcon from '@mui/icons-material/Group'
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -8,10 +9,10 @@ import {Link} from 'react-router-dom'
 import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
+import {LeftNavItem} from './LeftNavItem'
+import {LeftNavItemButton} from './LeftNavItemButton'
+import {LeftNavItemButtons} from './LeftNavItemButtons'
 import {SubPagesRoot} from './SubPagesRoot'
 
 interface Props {
@@ -27,11 +28,12 @@ export const LeftNavTeamLink = (props: Props) => {
         name
         isDraggingFirstChild
         isDraggingLastChild
+        orgId
       }
     `,
     teamRef
   )
-  const {name: teamName, id: teamId, isDraggingFirstChild, isDraggingLastChild} = team
+  const {name: teamName, id: teamId, isDraggingFirstChild, isDraggingLastChild, orgId} = team
   const match = useRouteMatch(`/team/${teamId}`)
   const isActive = match ?? false
   const [showChildren, setShowChildren] = useState(false)
@@ -95,19 +97,20 @@ export const LeftNavTeamLink = (props: Props) => {
             draggingPageId={draggingPageId}
             icon={GroupIcon}
           />
-          <div className='flex flex-col text-sm font-medium'>
+          <LeftNavItem>
             <span>{teamName}</span>
-          </div>
-          <div className='flex flex-1 items-center justify-end'>
-            <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <AddIcon className='hidden size-5 group-hover:block' onClick={addChildPage} />
-                </TooltipTrigger>
-                <TooltipContent side={'bottom'}>{'Add a page inside'}</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
+          </LeftNavItem>
+          <LeftNavItemButtons>
+            <LeftNavItemButton
+              Icon={ManageAccountsIcon}
+              onClick={(e) => {
+                e.preventDefault()
+                history.push(`/me/organizations/${orgId}/teams/${teamId}`)
+              }}
+              tooltip='Manage team'
+            />
+            <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
+          </LeftNavItemButtons>
         </Link>
       </div>
       {showChildren && (

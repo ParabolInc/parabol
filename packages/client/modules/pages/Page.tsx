@@ -20,8 +20,8 @@ export const Page = (props: Props) => {
   if (!editor) return <div>No editor</div>
   if (!pageSlug) return <div>No page ID provided in route</div>
   return (
-    <div className='flex w-full flex-col items-center bg-slate-200 pt-2'>
-      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-4'>
+    <div className='flex w-full flex-col items-center bg-white pt-2'>
+      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
         <div className='absolute top-0 right-12 flex'>
           <Popover.Root>
             <Popover.Trigger asChild>

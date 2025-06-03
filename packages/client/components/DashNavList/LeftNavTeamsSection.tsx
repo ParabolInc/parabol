@@ -2,14 +2,14 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import graphql from 'babel-plugin-relay/macro'
 import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {useHistory} from 'react-router'
 import type {LeftNavTeamsSection_viewer$key} from '../../__generated__/LeftNavTeamsSection_viewer.graphql'
 import useEventCallback from '../../hooks/useEventCallback'
 import {useUpdateTeamSortOrderMutation} from '../../mutations/useUpdateTeamSortOrderMutation'
 import {getSortOrder} from '../../shared/sortOrder'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {LeftNavHeader} from './LeftNavHeader'
+import {LeftNavHeaderButton} from './LeftNavHeaderButton'
+import {LeftNavItemButtons} from './LeftNavItemButtons'
 import {LeftNavTeamLink} from './LeftNavTeamLink'
 import PublicTeamsOverflow from './PublicTeamsOverflow'
 
@@ -53,28 +53,21 @@ export const LeftNavTeamsSection = (props: Props) => {
     const sortOrder = getSortOrder(teams, source.index, destination.index)
     execute({variables: {teamId: sourceItem.id, sortOrder}})
   })
-
+  const history = useHistory()
   return (
     <div>
-      <div className='group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold hover:bg-slate-300'>
-        <div className='flex flex-col text-sm font-medium'>
-          <span>{'Teams'}</span>
-        </div>
-        <div className={'flex flex-1 items-center justify-end'}>
-          <div className='mr-1 flex size-5 items-center justify-center rounded-sm hover:bg-slate-400'>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  className='hidden size-4 cursor-pointer group-hover:block'
-                  to={`/me/organizations`}
-                >
-                  <ManageAccountsIcon className={'size-5'} />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side={'bottom'}>{'Manage Teams'}</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
+      <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold hover:bg-slate-300'>
+        <LeftNavHeader>{'Teams'}</LeftNavHeader>
+        <LeftNavItemButtons>
+          <LeftNavHeaderButton
+            Icon={ManageAccountsIcon}
+            onClick={(e) => {
+              e.preventDefault()
+              history.push('/me/organizations')
+            }}
+            tooltip={'Manage Teams'}
+          />
+        </LeftNavItemButtons>
       </div>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={'Team'}>

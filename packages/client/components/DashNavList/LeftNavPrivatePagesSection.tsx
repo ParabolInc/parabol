@@ -6,9 +6,9 @@ import {useHistory} from 'react-router'
 import type {LeftNavPrivatePagesSection_viewer$key} from '../../__generated__/LeftNavPrivatePagesSection_viewer.graphql'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {LeftNavHeader} from './LeftNavHeader'
+import {LeftNavHeaderButton} from './LeftNavHeaderButton'
+import {LeftNavItemButtons} from './LeftNavItemButtons'
 import {LeftNavPageLink} from './LeftNavPageLink'
 
 interface Props {
@@ -64,34 +64,25 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
     setShowChildren(!showChildren)
   }
   return (
-    <div>
+    <div data-pages-connection={'User_privatePages'}>
       <div
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
-        data-pages-connection={'User_privatePages'}
         className={cn(
           'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold data-[drop-in]:hover:bg-sky-300/70',
           !draggingPageId && 'hover:bg-slate-300'
         )}
       >
-        <div className='flex flex-col text-sm font-medium'>
-          <span>{'Private Pages'}</span>
-        </div>
-        <div className={'flex flex-1 items-center justify-end'}>
-          <div className='mr-1 flex size-5 items-center justify-center rounded-sm hover:bg-slate-400'>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <AddIcon
-                  className='hidden size-4 cursor-pointer group-hover:block'
-                  onClick={addPrivatePage}
-                />
-              </TooltipTrigger>
-              <TooltipContent side={'bottom'}>{'Add a private page'}</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
+        <LeftNavHeader>{'Private Pages'}</LeftNavHeader>
+        <LeftNavItemButtons>
+          <LeftNavHeaderButton
+            Icon={AddIcon}
+            onClick={addPrivatePage}
+            tooltip={'Add a private page'}
+          />
+        </LeftNavItemButtons>
       </div>
-      <div className={cn('relative hidden min-h-1', showChildren && 'block')}>
+      <div className={cn('relative hidden min-h-1 pb-4', showChildren && 'block')}>
         <div
           className={cn(
             'absolute -top-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',

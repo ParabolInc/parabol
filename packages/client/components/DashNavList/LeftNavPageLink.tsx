@@ -9,10 +9,10 @@ import {useDraggablePage} from '../../hooks/useDraggablePage'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {toSlug} from '../../shared/toSlug'
 import {cn} from '../../ui/cn'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
+import {LeftNavItem} from './LeftNavItem'
+import {LeftNavItemButton} from './LeftNavItemButton'
+import {LeftNavItemButtons} from './LeftNavItemButtons'
 import {SubPagesRoot} from './SubPagesRoot'
 
 export type PageConnectionKey = 'User_privatePages' | 'User_sharedPages' | 'User_pages'
@@ -112,7 +112,7 @@ export const LeftNavPageLink = (props: Props) => {
         style={{paddingLeft: depth * 8}}
         data-drop-in={canDropIn ? id : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-max min-w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-sm leading-8 text-slate-700 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'peer group relative my-0.5 flex w-max min-w-full cursor-pointer items-center space-x-2 rounded-md py-1 pl-1 text-sm leading-8 text-slate-700 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
             'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
@@ -146,19 +146,12 @@ export const LeftNavPageLink = (props: Props) => {
             expandChildPages={expandChildPages}
             draggingPageId={isSelf ? null : draggingPageId}
           />
-          <div className='flex flex-col text-sm font-medium'>
+          <LeftNavItem>
             <span>{title || '<Untitled>'}</span>
-          </div>
-          <div className='flex flex-1 items-center justify-end'>
-            <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <AddIcon className='hidden size-5 group-hover:block' onClick={addChildPage} />
-                </TooltipTrigger>
-                <TooltipContent side={'bottom'}>{'Add a page inside'}</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
+          </LeftNavItem>
+          <LeftNavItemButtons>
+            <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
+          </LeftNavItemButtons>
         </Link>
       </div>
       {showChildren && (
