@@ -1,5 +1,6 @@
 import {Link} from '@mui/icons-material'
 import {BubbleMenu, Editor} from '@tiptap/react'
+import {cn} from '../../ui/cn'
 import {BubbleMenuButton} from './BubbleMenuButton'
 import isTextSelected from './isTextSelected'
 
@@ -17,6 +18,8 @@ export const StandardBubbleMenu = (props: Props) => {
     editor.emit('linkStateChange', {editor, linkState: 'edit'})
   }
 
+  const shouldShow = shouldShowBubbleMenu()
+
   // wrapping in div is necessary, https://github.com/ueberdosis/tiptap/issues/3784
   return (
     <div>
@@ -25,7 +28,12 @@ export const StandardBubbleMenu = (props: Props) => {
         tippyOptions={{duration: 100, role: 'dialog'}}
         shouldShow={shouldShowBubbleMenu}
       >
-        <div className='flex items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]'>
+        <div
+          className={cn(
+            'items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]',
+            shouldShow ? 'flex' : 'hidden' // hide this if not active or dnd height gets screwed up
+          )}
+        >
           <BubbleMenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive('bold')}
