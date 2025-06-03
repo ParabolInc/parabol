@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.5.2](https://github.com/ParabolInc/parabol/compare/v10.5.1...v10.5.2) (2025-06-02)
+
+
+### Fixed
+
+* fix suUserCount after DB schema migration ([#11376](https://github.com/ParabolInc/parabol/issues/11376)) ([c58a54c](https://github.com/ParabolInc/parabol/commit/c58a54caf5805a364e0ac912f95a33914427ec2e))
+* **orgAdmin:** move editable team name component to the team members page ([#11357](https://github.com/ParabolInc/parabol/issues/11357)) ([0a4002c](https://github.com/ParabolInc/parabol/commit/0a4002c3d6140f8fd456efd8d11600cebbce05fa))
+* show correct emoji suggestion for :) and :( ([#11368](https://github.com/ParabolInc/parabol/issues/11368)) ([120b0fd](https://github.com/ParabolInc/parabol/commit/120b0fd91182143bcf5b66d78a985189ceea5119))
+
+
+### Changed
+
+* improve SAML error message for wrong IdP settings ([#11372](https://github.com/ParabolInc/parabol/issues/11372)) ([604a1f1](https://github.com/ParabolInc/parabol/commit/604a1f1956fa53811f23ca3e9d8096d0b830da1e))
+* replace clsx with cn ([#11336](https://github.com/ParabolInc/parabol/issues/11336)) ([3167f2a](https://github.com/ParabolInc/parabol/commit/3167f2a4308809236c6364256de4753dc22359f2))
+
 ## [10.5.1](https://github.com/ParabolInc/parabol/compare/v10.5.0...v10.5.1) (2025-05-26)
 
 
