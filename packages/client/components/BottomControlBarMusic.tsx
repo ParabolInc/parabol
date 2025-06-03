@@ -1,5 +1,4 @@
 import HeadphonesIcon from '@mui/icons-material/Headphones'
-import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
@@ -27,7 +26,6 @@ const BottomControlBarMusic = ({
 
   const {
     playTrack,
-    pause,
     stop,
     handleVolumeChange,
     selectTrack,
@@ -92,7 +90,7 @@ const BottomControlBarMusic = ({
                       key={track.src}
                       onClick={() => {
                         if (isSelected) {
-                          pause()
+                          stop()
                         } else {
                           selectTrack(track.src)
                         }
@@ -116,7 +114,7 @@ const BottomControlBarMusic = ({
               )}
             </div>
 
-            <div className='mt-2 flex items-center justify-between gap-2'>
+            <div className='mt-2 flex items-center justify-center gap-4'>
               <button
                 type='button'
                 onClick={() => playTrack(currentTrackSrc)}
@@ -130,20 +128,6 @@ const BottomControlBarMusic = ({
                 aria-label='Play'
               >
                 <PlayArrowIcon />
-              </button>
-              <button
-                type='button'
-                onClick={pause}
-                disabled={!isPlaying}
-                className={cn(
-                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  isPlaying
-                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                )}
-                aria-label='Pause'
-              >
-                <PauseIcon />
               </button>
               <button
                 type='button'

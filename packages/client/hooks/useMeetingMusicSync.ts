@@ -43,11 +43,10 @@ const useMeetingMusicSync = (meetingId: string) => {
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [volume, setVolume] = useState<number>(0.5)
-  const [pausedAt, setPausedAt] = useState<number | null>(null)
   const [localOverride, setLocalOverride] = useState(false)
 
   // Stores track info when autoplay is blocked by browser, waits for user interaction to play
-  const pendingPlay = useRef<{trackSrc: string; timestamp: number | null} | null>(null)
+  const pendingPlay = useRef<{trackSrc: string} | null>(null)
   const musicSettings = meeting?.musicSettings
 
   // Sync music state from server for non-facilitators
@@ -144,17 +143,9 @@ const useMeetingMusicSync = (meetingId: string) => {
   const playTrack = (trackSrc: string | null) => {
     if (!trackSrc || !audioRef.current) return
 
-    const isResumingSameTrack = trackSrc === currentTrackSrc && pausedAt !== null
-
-    if (isResumingSameTrack) {
-      audioRef.current.currentTime = pausedAt
-    } else {
-      audioRef.current.src = trackSrc
-      setCurrentTrackSrc(trackSrc)
-      audioRef.current.currentTime = 0
-    }
-
-    setPausedAt(null)
+    audioRef.current.src = trackSrc
+    setCurrentTrackSrc(trackSrc)
+    audioRef.current.currentTime = 0
     setIsPlaying(true)
 
     audioRef.current.muted = true
@@ -165,24 +156,12 @@ const useMeetingMusicSync = (meetingId: string) => {
       })
       .catch((err) => {
         if (err.name === 'NotAllowedError') {
-          pendingPlay.current = {trackSrc, timestamp: null}
+          pendingPlay.current = {trackSrc}
         }
       })
 
     if (isFacilitator) {
       syncMusicState(trackSrc, true)
-    }
-  }
-
-  const pause = () => {
-    if (!audioRef.current) return
-
-    setPausedAt(audioRef.current.currentTime)
-    audioRef.current.pause()
-    setIsPlaying(false)
-
-    if (isFacilitator) {
-      syncMusicState(currentTrackSrc, false)
     }
   }
 
@@ -192,11 +171,9 @@ const useMeetingMusicSync = (meetingId: string) => {
     audioRef.current.pause()
     audioRef.current.currentTime = 0
     setIsPlaying(false)
-    setPausedAt(null)
 
     if (isFacilitator) {
-      setCurrentTrackSrc(null)
-      syncMusicState(null, false)
+      syncMusicState(currentTrackSrc, false)
     } else {
       setLocalOverride(true)
     }
@@ -209,7 +186,6 @@ const useMeetingMusicSync = (meetingId: string) => {
     audioRef.current.load()
     setCurrentTrackSrc(trackSrc)
     setIsPlaying(false)
-    setPausedAt(null)
 
     if (isFacilitator) {
       syncMusicState(trackSrc, false)
@@ -228,7 +204,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   return {
     playTrack,
-    pause,
     stop,
     handleVolumeChange,
     selectTrack,
