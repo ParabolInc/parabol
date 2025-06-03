@@ -22,10 +22,15 @@ import {yoga} from './yoga'
 
 export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
-  : 60_000 // ms
+  : 60_000
 
-const ENABLE_METRICS = process.env.ENABLE_METRICS?.toLowerCase() === 'true'
-const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : 9090
+export const ENABLE_METRICS = process.env.ENABLE_METRICS === 'true'
+
+export const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : NaN
+
+if (ENABLE_METRICS && isNaN(METRICS_PORT)) {
+  throw new Error('ENABLE_METRICS is true but METRICS_PORT is invalid')
+}
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
@@ -72,11 +77,12 @@ if (ENABLE_METRICS) {
         res.writeHeader('Content-Type', 'text/plain')
         res.end('OK')
       })
-      .listen(METRICS_PORT, (token) => {
-        if (token) {
-          Logger.log(`Metrics server listening on port ${METRICS_PORT}`)
+      .listen(METRICS_PORT, (socket) => {
+        if (socket) {
+          console.log(`Metrics server listening on port ${METRICS_PORT}`)
         } else {
-          Logger.log(`Failed to start metrics server on port ${METRICS_PORT}`)
+          console.error(`Failed to bind metrics server on port ${METRICS_PORT}`)
+          process.exit(1)
         }
       })
   }

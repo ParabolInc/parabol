@@ -151,26 +151,22 @@ const updateNodeMetrics = () => {
   nodeActiveHandles.set(activeResources.length)
 }
 
-if (process.env.ENABLE_METRICS?.toLowerCase() === 'true') {
-  setInterval(() => {
-    updateWebSocketMetrics()
-    updateNodeMetrics()
-  }, 30000)
-}
-
 export const metricsHandler = async (res: HttpResponse) => {
   let aborted = false
   res.onAborted(() => {
     aborted = true
   })
 
-  if (process.env.ENABLE_METRICS?.toLowerCase() !== 'true') {
+  if (process.env.ENABLE_METRICS !== 'true') {
     if (!aborted) {
       res.writeStatus('404 Not Found')
       res.end()
     }
     return
   }
+
+  updateWebSocketMetrics()
+  updateNodeMetrics()
 
   try {
     const metrics = await register.metrics()
