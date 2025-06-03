@@ -97,7 +97,6 @@ export const useDraggablePage = (
     }
     const isDropBelow = dropTarget.hasAttribute('data-drop-below')
     const section = dropTarget.closest('[data-pages-connection]')
-    // if (!section) throw new Error('data-pages-connection not found in DOMTree')
     const topLevelConnectionKey = section
       ? (section.getAttribute('data-pages-connection') as PageConnectionKey)
       : 'User_pages'

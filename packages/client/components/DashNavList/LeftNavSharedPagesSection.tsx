@@ -34,6 +34,8 @@ export const LeftNavSharedPagesSection = (props: Props) => {
   const {edges} = sharedPages
   const firstPageId = edges[0]?.node.id
   const canDropBelow = draggingPageId && draggingPageId !== firstPageId && !draggingPageIsPrivate
+  const lastPageId = edges.at(-1)?.node.id
+  const canDropIn = draggingPageId && draggingPageId !== lastPageId && !draggingPageIsPrivate
   const [showChildren, setShowChildren] = useState(true)
   const toggleChildren = () => {
     setShowChildren(!showChildren)
@@ -42,16 +44,18 @@ export const LeftNavSharedPagesSection = (props: Props) => {
     <div className='min-h-9'>
       <div
         onClick={toggleChildren}
-        className='group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold hover:bg-slate-300'
+        data-drop-in={canDropIn ? '' : undefined}
+        data-pages-connection={'User_sharedPages'}
+        className={cn(
+          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold data-[drop-in]:hover:bg-sky-300/70',
+          !draggingPageId && 'hover:bg-slate-300'
+        )}
       >
         <div className='flex flex-col text-sm font-medium'>
           <span>{'Shared Pages'}</span>
         </div>
       </div>
-      <div
-        className={cn('relative hidden', showChildren && 'block')}
-        data-pages-connection={'User_sharedPages'}
-      >
+      <div className={cn('relative hidden', showChildren && 'block')}>
         <div
           className={cn(
             'absolute -top-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
