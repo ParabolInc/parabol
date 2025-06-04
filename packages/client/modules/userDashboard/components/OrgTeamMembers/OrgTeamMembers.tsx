@@ -65,7 +65,7 @@ export const OrgTeamMembers = (props: Props) => {
           </Link>
         </Button>
         <div className='text-gray-700 hover:text-gray-900 text-lg font-bold'>
-          {canEditTeam ? <EditableTeamName team={team} /> : {teamName}}
+          {canEditTeam ? <EditableTeamName team={team} /> : teamName}
         </div>
         <div className='ml-auto flex items-center'>
           <InviteTeamMemberAvatar teamId={team.id} teamMembers={teamMembers} />

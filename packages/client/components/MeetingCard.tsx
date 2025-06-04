@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {Lock} from '@mui/icons-material'
 import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -163,10 +164,6 @@ const MeetingImg = styled('img')({
   height: '180px'
 })
 
-const TopLine = styled('div')({
-  position: 'relative',
-  display: 'flex'
-})
 const Options = styled(CardButton)({
   position: 'absolute',
   top: 0,
@@ -211,6 +208,7 @@ const MeetingCard = (props: Props) => {
         id
         name
         meetingType
+        locked
         phases {
           phaseType
           stages {
@@ -220,6 +218,7 @@ const MeetingCard = (props: Props) => {
         team {
           id
           name
+          orgId
         }
         meetingMembers {
           user {
@@ -236,7 +235,7 @@ const MeetingCard = (props: Props) => {
     `,
     meetingRef
   )
-  const {name, team, id: meetingId, meetingType, phases, meetingSeries} = meeting
+  const {name, team, id: meetingId, meetingType, phases, meetingSeries, locked} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const meetingPhase = getMeetingPhase(phases)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
@@ -267,7 +266,7 @@ const MeetingCard = (props: Props) => {
     Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
     return null
   }
-  const {id: teamId, name: teamName} = team
+  const {id: teamId, name: teamName, orgId} = team
 
   const isRecurring = !!(meetingSeries && !meetingSeries.cancelledAt)
   const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
@@ -315,14 +314,19 @@ const MeetingCard = (props: Props) => {
             </Link>
           </MeetingImgWrapper>
           <MeetingInfo>
-            <TopLine>
+            <div className='relative flex items-center'>
+              {locked && (
+                <Link to={`/me/organizations/${orgId}/billing`}>
+                  <Lock className='text-tomato-500' />
+                </Link>
+              )}
               <Link to={meetingLink}>
                 <Name>{isRecurring ? meetingSeries.title : name}</Name>
               </Link>
               <Options ref={originRef} onClick={togglePortal}>
                 <IconLabel ref={tooltipRef} icon='more_vert' />
               </Options>
-            </TopLine>
+            </div>
             <Link to={meetingLink}>
               <Meta>
                 {teamName} • {meetingPhaseLabel}
