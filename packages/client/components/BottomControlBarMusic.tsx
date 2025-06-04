@@ -96,7 +96,7 @@ const BottomControlBarMusic = ({
                         }
                       }}
                       className={cn(
-                        'flex w-full items-center gap-2 rounded-lg border px-3 py-2',
+                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border px-3 py-2 text-base leading-tight font-normal outline-none focus:outline-none',
                         isSelected
                           ? isCurrentlyPlaying
                             ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
