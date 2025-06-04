@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.5.4](https://github.com/ParabolInc/parabol/compare/v10.5.3...v10.5.4) (2025-06-03)
+
+
+### Fixed
+
+* fix in OrgTeamMembers where {teamName} is not a valid HTML ([#11383](https://github.com/ParabolInc/parabol/issues/11383)) ([2ecd59e](https://github.com/ParabolInc/parabol/commit/2ecd59e8663d2506a2c62edfa7785d97d89e9b6d))
+* ungrouped reflection layout issue on kanban ([#11311](https://github.com/ParabolInc/parabol/issues/11311)) ([9a68c5f](https://github.com/ParabolInc/parabol/commit/9a68c5fc42f7d8b5b92405db8a0f3a61f887686c))
+
 ## [10.5.3](https://github.com/ParabolInc/parabol/compare/v10.5.2...v10.5.3) (2025-06-03)
 
 
