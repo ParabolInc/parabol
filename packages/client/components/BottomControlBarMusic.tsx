@@ -64,10 +64,10 @@ const BottomControlBarMusic = ({
       </RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
-          sideOffset={8}
+          sideOffset={2}
           className={`background-music-popover z-10 m-0 w-64 max-w-md min-w-[14rem] p-0`}
         >
-          <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
+          <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
               <span className='text-gray-800 text-base font-semibold'>Background music</span>
@@ -161,7 +161,6 @@ const BottomControlBarMusic = ({
               </div>
             </div>
           </div>
-          <RadixPopover.Arrow className='fill-white' />
         </RadixPopover.Content>
       </RadixPopover.Portal>
     </RadixPopover.Root>
