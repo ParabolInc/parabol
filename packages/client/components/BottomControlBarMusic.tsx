@@ -67,7 +67,7 @@ const BottomControlBarMusic = ({
           sideOffset={2}
           className={`background-music-popover z-10 m-0 w-64 max-w-md min-w-[14rem] p-0`}
         >
-          <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-xl'>
+          <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-2xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
               <span className='text-gray-800 text-base font-semibold'>Background music</span>

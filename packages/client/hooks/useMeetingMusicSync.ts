@@ -97,6 +97,13 @@ const useMeetingMusicSync = (meetingId: string) => {
           audioRef.current!.volume = volume
         }
       })
+
+      audioRef.current.addEventListener('ended', () => {
+        if (audioRef.current && isPlaying) {
+          audioRef.current.currentTime = 0
+          audioRef.current.play()
+        }
+      })
     }
 
     return () => {
