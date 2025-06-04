@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.6.0](https://github.com/ParabolInc/parabol/compare/v10.5.4...v10.6.0) (2025-06-04)
+
+
+### Added
+
+* **pages:** RBAC and Drag-n-Drop ([#11374](https://github.com/ParabolInc/parabol/issues/11374)) ([a127958](https://github.com/ParabolInc/parabol/commit/a12795817ae66fd925f46aa8bfae4f35554c25b7))
+
 ## [10.5.4](https://github.com/ParabolInc/parabol/compare/v10.5.3...v10.5.4) (2025-06-03)
 
 
