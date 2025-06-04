@@ -58,11 +58,7 @@ const BottomControlBarMusic = ({
         >
           <span className='flex flex-col items-center justify-center'>
             <HeadphonesIcon
-              className={cn(
-                'text-gray-500',
-                isPlaying &&
-                  'from-blue-400 via-purple-400 to-green-400 animate-shimmer bg-gradient-to-r bg-[length:200%_200%] bg-clip-text text-transparent'
-              )}
+              className={cn(isPlaying ? 'animate-pulse text-slate-700' : 'text-slate-700')}
               fontSize='medium'
             />
             <span className='mt-0.5 text-xs font-medium text-slate-600'>Music</span>
