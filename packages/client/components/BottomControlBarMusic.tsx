@@ -57,7 +57,14 @@ const BottomControlBarMusic = ({
           onClick={() => setOpen((prev) => !prev)}
         >
           <span className='flex flex-col items-center justify-center'>
-            <HeadphonesIcon className='text-gray-500' fontSize='medium' />
+            <HeadphonesIcon
+              className={cn(
+                'text-gray-500',
+                isPlaying &&
+                  'from-blue-400 via-purple-400 to-green-400 animate-shimmer bg-gradient-to-r bg-[length:200%_200%] bg-clip-text text-transparent'
+              )}
+              fontSize='medium'
+            />
             <span className='mt-0.5 text-xs font-medium text-slate-600'>Music</span>
           </span>
         </BottomNavControl>
@@ -96,12 +103,10 @@ const BottomControlBarMusic = ({
                         }
                       }}
                       className={cn(
-                        'hover:bg-gray-600 box-border flex w-full appearance-none items-center gap-2 rounded-lg border px-3 py-2 text-base leading-tight font-normal transition-colors outline-none focus:outline-none',
+                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border bg-slate-200 px-3 py-2 text-base leading-tight font-normal transition-colors outline-none focus:outline-none',
                         isSelected
-                          ? isCurrentlyPlaying
-                            ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
-                            : 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                          : 'cursor-pointer border-transparent bg-slate-200 text-slate-700 hover:bg-slate-300 hover:text-slate-900'
+                          ? 'font-semibold shadow'
+                          : 'cursor-pointer border-transparent text-slate-700 hover:bg-slate-300 hover:text-slate-900'
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>
