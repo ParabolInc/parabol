@@ -13,7 +13,9 @@
   },
 
   "exclude": [
-    "**/node_modules",
+    "node_modules",
+    "../dist",
+    "../build",
     "types/githubTypes.ts",
     "types/linearTypes.ts",
     "postgres/migrations/**/*",
