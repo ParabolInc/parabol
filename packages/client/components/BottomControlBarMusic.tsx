@@ -96,12 +96,12 @@ const BottomControlBarMusic = ({
                         }
                       }}
                       className={cn(
-                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border px-3 py-2 text-base leading-tight font-normal outline-none focus:outline-none',
+                        'hover:bg-gray-600 box-border flex w-full appearance-none items-center gap-2 rounded-lg border px-3 py-2 text-base leading-tight font-normal transition-colors outline-none focus:outline-none',
                         isSelected
                           ? isCurrentlyPlaying
                             ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
                             : 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                          : 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
+                          : 'cursor-pointer border-transparent bg-slate-200 text-slate-700 hover:bg-slate-300 hover:text-slate-900'
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>
