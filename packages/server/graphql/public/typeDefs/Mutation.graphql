@@ -1643,12 +1643,7 @@ type Mutation {
   """
   Set the music being played in the meeting
   """
-  setMeetingMusic(
-    meetingId: ID!
-    trackSrc: String
-    isPlaying: Boolean!
-    timestamp: Float
-  ): SetMeetingMusicPayload!
+  setMeetingMusic(meetingId: ID!, trackSrc: String, isPlaying: Boolean!): SetMeetingMusicPayload!
 
   """
   Update the role of the org user

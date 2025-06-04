@@ -6,7 +6,7 @@ import {MutationResolvers} from '../resolverTypes'
 
 const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
   _source,
-  {meetingId, trackSrc, isPlaying, timestamp},
+  {meetingId, trackSrc, isPlaying},
   {dataLoader, authToken, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -24,8 +24,7 @@ const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
   const data = {
     meetingId,
     trackSrc: trackSrc || null,
-    isPlaying: !!isPlaying,
-    timestamp: timestamp || null
+    isPlaying: !!isPlaying
   }
 
   publish(SubscriptionChannel.MEETING, meetingId, 'SetMeetingMusicSuccess', data, subOptions)

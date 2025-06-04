@@ -28,7 +28,6 @@ const useMeetingMusicSync = (meetingId: string) => {
             musicSettings {
               trackSrc
               isPlaying
-              timestamp
             }
           }
         }
@@ -133,8 +132,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       {
         meetingId,
         trackSrc,
-        isPlaying: shouldPlay,
-        timestamp: shouldPlay && trackSrc ? Date.now() : null
+        isPlaying: shouldPlay
       },
       {onError, onCompleted}
     )

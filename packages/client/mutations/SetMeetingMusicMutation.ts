@@ -6,18 +6,8 @@ import {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 const mutation = graphql`
-  mutation SetMeetingMusicMutation(
-    $meetingId: ID!
-    $trackSrc: String
-    $isPlaying: Boolean!
-    $timestamp: Float
-  ) {
-    setMeetingMusic(
-      meetingId: $meetingId
-      trackSrc: $trackSrc
-      isPlaying: $isPlaying
-      timestamp: $timestamp
-    ) {
+  mutation SetMeetingMusicMutation($meetingId: ID!, $trackSrc: String, $isPlaying: Boolean!) {
+    setMeetingMusic(meetingId: $meetingId, trackSrc: $trackSrc, isPlaying: $isPlaying) {
       ... on ErrorPayload {
         error {
           message
@@ -33,7 +23,6 @@ graphql`
     meetingId
     trackSrc
     isPlaying
-    timestamp
   }
 `
 
@@ -44,7 +33,6 @@ export const setMeetingMusicMeetingUpdater: SharedUpdater<SetMeetingMusicMutatio
   const meetingId = payload.getValue('meetingId')
   const trackSrc = payload.getValue('trackSrc')
   const isPlaying = payload.getValue('isPlaying')
-  const timestamp = payload.getValue('timestamp')
 
   const meeting = store.get(meetingId)
   if (!meeting) return
@@ -53,15 +41,13 @@ export const setMeetingMusicMeetingUpdater: SharedUpdater<SetMeetingMusicMutatio
   if (!musicSettingsRecord) {
     const musicSettingsData = {
       trackSrc,
-      isPlaying,
-      timestamp
+      isPlaying
     }
     const musicSettings = createProxyRecord(store, 'MusicSettings', musicSettingsData)
     meeting.setLinkedRecord(musicSettings, 'musicSettings')
   } else {
     musicSettingsRecord.setValue(trackSrc, 'trackSrc')
     musicSettingsRecord.setValue(isPlaying, 'isPlaying')
-    musicSettingsRecord.setValue(timestamp, 'timestamp')
   }
 }
 
