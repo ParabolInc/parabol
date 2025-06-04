@@ -86,7 +86,6 @@ const BottomControlBarMusic = ({
               >
                 {availableTracks.map((track) => {
                   const isSelected = currentTrackSrc === track.src
-                  const isCurrentlyPlaying = isSelected && isPlaying
 
                   return (
                     <button
