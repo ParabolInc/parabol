@@ -67,9 +67,7 @@
     "axios": "^1.7.8",
     "prosemirror-model": "^1.24.1",
     "prosemirror-view": "^1.38.0",
-    "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df",
-    "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -162,7 +160,6 @@
     "webpack": "^5.99.6",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "^5.2.1",
     "webpack-hot-middleware": "^2.26.1",
     "webpack-node-externals": "^3.0.0",
     "workbox-webpack-plugin": "^6.5.4",
@@ -203,5 +200,5 @@
     "react": "17.0.2",
     "tslib": "^2.8.1"
   },
-  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
+  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"
 }

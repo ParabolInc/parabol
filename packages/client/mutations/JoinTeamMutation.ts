@@ -6,11 +6,6 @@ import {OnNextHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment JoinTeamMutation_team on JoinTeamSuccess {
-    viewer {
-      teams {
-        id
-      }
-    }
     team {
       id
       name
@@ -19,7 +14,6 @@ graphql`
         name
         isPaid
       }
-      sortOrder
       ...PublicTeamsFrag_team
     }
     teamMember {

@@ -1,6 +1,0 @@
-enum PageSubjectEnum {
-  external
-  user
-  team
-  organization
-}

@@ -85,19 +85,19 @@ export const selectTeams = () =>
   getKysely()
     .selectFrom('Team')
     .select([
-      'Team.autoJoin',
-      'Team.createdAt',
-      'Team.createdBy',
-      'Team.id',
-      'Team.isArchived',
-      'Team.isOnboardTeam',
-      'Team.kudosEmojiUnicode',
-      'Team.lastMeetingType',
-      'Team.name',
-      'Team.orgId',
-      'Team.qualAIMeetingsCount',
-      'Team.isPublic',
-      'Team.updatedAt'
+      'autoJoin',
+      'createdAt',
+      'createdBy',
+      'id',
+      'isArchived',
+      'isOnboardTeam',
+      'kudosEmojiUnicode',
+      'lastMeetingType',
+      'name',
+      'orgId',
+      'qualAIMeetingsCount',
+      'isPublic',
+      'updatedAt'
     ])
     .select(({fn}) => [
       fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
@@ -303,22 +303,3 @@ export const selectTasks = () =>
 
 export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()
-
-export const selectPages = () =>
-  getKysely().selectFrom('Page').select([
-    // do not select plaintextContent or yDoc.
-    // yDoc is large and can't be sent via graphql
-    'createdAt',
-    'id',
-    'isParentLinked',
-    'isPrivate',
-    'parentPageId',
-    'sortOrder',
-    'Page.teamId',
-    'title',
-    'updatedAt',
-    'Page.userId'
-  ])
-
-export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
-export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()

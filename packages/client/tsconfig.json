@@ -9,5 +9,5 @@
     "outDir": "lib",
     "lib": ["esnext", "dom"]
   },
-  "exclude": ["serviceWorker", "node_modules"]
+  "exclude": ["serviceWorker", "**/node_modules"]
 }

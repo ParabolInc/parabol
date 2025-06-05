@@ -8,7 +8,6 @@
 
 @config '../../../../tailwind.config.js';
 
-@custom-variant no-hover (@media not all and (hover: hover));
 @theme {
   /* Fonts */
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',

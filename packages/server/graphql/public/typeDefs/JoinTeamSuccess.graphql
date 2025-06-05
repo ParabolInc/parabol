@@ -1,5 +1,4 @@
 type JoinTeamSuccess {
-  viewer: User!
   """
   The team that was joined
   """

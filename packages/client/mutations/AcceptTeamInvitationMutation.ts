@@ -35,7 +35,6 @@ graphql`
     }
     team {
       name
-      sortOrder
     }
   }
 `
@@ -57,6 +56,7 @@ graphql`
         isPaid
         ...DashNavList_organization
       }
+      ...DashNavListTeam
       ...PublicTeamsFrag_team
     }
     meeting {

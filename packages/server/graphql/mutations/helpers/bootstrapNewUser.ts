@@ -41,7 +41,6 @@ const bootstrapNewUser = async (
     isQualifiedForAutoJoin ? dataLoader.get('autoJoinTeamsByOrgId').loadMany(orgIds) : [],
     pg
       .with('User', (qc) =>
-        // PageExternalAccess is moved to PageUserAccess via PG trigger
         qc.insertInto('User').values({
           ...newUser,
           isPatient0,
