@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import {ArrowUpward} from '@mui/icons-material'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
-import {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
+import {MutableRefObject, RefObject} from 'react'
 import {useFragment} from 'react-relay'
 import {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useIsEditing from '../../hooks/useIsEditing'
 import useMutationProps from '../../hooks/useMutationProps'
 import usePortal from '../../hooks/usePortal'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
@@ -15,9 +15,9 @@ import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
-import PlainButton from '../PlainButton/PlainButton'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
+import SubmitReflectionButton from '../ReflectionCard/SubmitReflectionButton'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import HTMLReflection from './HTMLReflection'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
@@ -142,66 +142,21 @@ const PhaseItemEditor = (props: Props) => {
       placeholder: 'Share your thoughts, press / for commands',
       teamId,
       readOnly: !!readOnly
-      //onEnter: handleSubmit
     }
   )
-  const [isEditing, setIsEditing] = useState(false)
-  const idleTimerIdRef = useRef<number>()
-  const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(idleTimerIdRef.current)
-    }
-  }, [idleTimerIdRef])
 
-  const ensureNotEditing = useEventCallback(() => {
-    if (!isEditing) return
-    // some delay in case the user just submitted the reflection, otherwise the update on other clients will remove and add a card which doesn't look good
-    window.clearTimeout(idleTimerIdRef.current)
-    idleTimerIdRef.current = window.setTimeout(() => {
+  const isEditing = useIsEditing({
+    editor,
+    onStartEditing: () => {
+      EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
+    },
+    onStopEditing: () => {
       EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
-      setIsEditing(false)
-    }, 500)
-  })
-
-  const ensureEditing = useEventCallback(() => {
-    if (!isEditing) {
-      EditReflectionMutation(atmosphere, {
-        isEditing: true,
-        meetingId,
-        promptId
-      })
-      setIsEditing(true)
-    }
-    window.clearTimeout(idleTimerIdRef.current)
-    idleTimerIdRef.current = window.setTimeout(() => {
-      EditReflectionMutation(atmosphere, {
-        isEditing: false,
-        meetingId,
-        promptId
-      })
-      setIsEditing(false)
-    }, 5000)
-  })
-
-  const editorUpdating = useEventCallback(() => {
-    if (editor && !editor.isEmpty) {
-      ensureEditing()
     }
   })
 
-  useEffect(() => {
-    editor?.on('update', editorUpdating)
-    editor?.on('focus', ensureEditing)
-    editor?.on('blur', ensureNotEditing)
-    return () => {
-      editor?.off('update', editorUpdating)
-      editor?.off('focus', ensureEditing)
-      editor?.off('blur', ensureNotEditing)
-    }
-  }, [editor, editorUpdating, ensureEditing, ensureNotEditing])
-
-  const showFooter = isEditing || !editor?.isEmpty
+  const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
+  const showFooter = isEditing || (editor && !editor?.isEmpty)
 
   const removeCardInFlight = (content: string) => () => {
     const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
@@ -224,22 +179,17 @@ const PhaseItemEditor = (props: Props) => {
           editor={editor}
         />
         <div
-          className={cn('flex items-center justify-between pr-2 pb-2 transition-all', {
-            'h-0 overflow-hidden pb-0': !showFooter
-          })}
+          className={cn(
+            'flex w-full flex-row-reverse items-center justify-between pr-2 pb-2 pl-4 opacity-100 transition-all',
+            {
+              'opacity-0': !showFooter
+            }
+          )}
         >
-          <div>
-            {disableAnonymity && (
-              <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
-            )}
-          </div>
-          <PlainButton
-            className='align-self-end flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500'
-            onClick={handleSubmit}
-            disabled={readOnly || editor.isEmpty}
-          >
-            <ArrowUpward />
-          </PlainButton>
+          <SubmitReflectionButton onClick={handleSubmit} disabled={readOnly || editor.isEmpty} />
+          {disableAnonymity && (
+            <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
+          )}
         </div>
       </ReflectionCardRoot>
       {portal(

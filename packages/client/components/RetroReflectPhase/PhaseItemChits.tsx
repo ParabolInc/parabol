@@ -66,12 +66,6 @@ const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
   width: PROGRESS_WIDTH
 }))
 
-const ChitWrap = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  flexShrink: 0
-})
-
 const ChitAreaLabel = styled(TinyLabel)({
   margin: '0 0 1em'
 })
@@ -131,10 +125,10 @@ const PhaseItemChits = (props: Props) => {
     .reverse()
 
   return (
-    <ChitWrap>
+    <div className='flex flex-col'>
       <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
-      <div className='relative w-full'>{chitList}</div>
-    </ChitWrap>
+      <div className='relative h-5 w-full'>{chitList}</div>
+    </div>
   )
 }
 
