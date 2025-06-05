@@ -9,7 +9,7 @@
 
   This file accepts resolvers and permissions and applies permissions as higher order functions to those resolvers
 */
-import {defaultFieldResolver, GraphQLError} from 'graphql'
+import {defaultFieldResolver} from 'graphql'
 import {allow} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/typings/types'
 import hash from 'object-hash'
@@ -39,14 +39,12 @@ const wrapResolve =
       if (res === true) {
         return await resolve(source, args, context, info)
       } else {
-        if (res === false) return new GraphQLError('Not authorized')
-        if (typeof res === 'string') return new GraphQLError(res)
+        if (res === false) return new Error('Not authorized')
+        if (typeof res === 'string') return new Error(res)
         return res
       }
     } catch (err) {
-      if (!(err instanceof GraphQLError)) {
-        Logger.log(err)
-      }
+      Logger.log(err)
       throw err
     }
   }

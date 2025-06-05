@@ -9,7 +9,6 @@ import {MaybeReadonly} from '../types/generics'
 
 const START_CHAR_CODE = 32
 const END_CHAR_CODE = 126
-export const __END__ = '__END__'
 
 export function positionBefore(pos: string) {
   for (let i = pos.length - 1; i >= 0; i--) {
@@ -38,7 +37,7 @@ function avg(a: number, b: number) {
   return Math.trunc((a + b) / 2)
 }
 
-export function positionBetween(firstPos: string, secondPos: string) {
+function positionBetween(firstPos: string, secondPos: string) {
   let flag = false
   let position = ''
   const maxLength = Math.max(firstPos.length, secondPos.length)

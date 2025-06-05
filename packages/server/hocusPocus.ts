@@ -7,7 +7,7 @@ import {generateText, type JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from '../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from './postgres/getKysely'
 import {isAuthenticated} from './utils/authorization'
-import {CipherId} from './utils/CipherId'
+import {feistelCipher} from './utils/feistelCipher'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
@@ -33,27 +33,27 @@ const server = Server.configure({
     }
   },
   async onAuthenticate(data) {
-    const {documentName, requestParameters, connection} = data
+    const {documentName, requestParameters} = data
     const authTokenStr = requestParameters.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
-    const [dbId] = CipherId.fromClient(documentName)
-    const pageAccess = await getKysely()
-      .selectFrom('PageAccess')
-      .select('role')
-      .where('pageId', '=', dbId)
-      .where('userId', '=', authToken.sub)
+
+    const [_entityName, entityId] = documentName.split(':')
+    const dbId = feistelCipher.decrypt(Number(entityId))
+    // TODO implement RBAC to see if authToken.sub has permission to access entityId
+    const page = await getKysely()
+      .selectFrom('Page')
+      .where('id', '=', dbId)
+      .select('userId')
       .executeTakeFirst()
-    if (!pageAccess) throw new Error('Document does not exist or user is not authorized')
-    const {role} = pageAccess
-    if (role === 'viewer' || role === 'commenter') {
-      connection.readOnly = true
-    }
+    if (!page) throw new Error('Document does not exist')
+    if (page.userId !== authToken.sub) throw new Error('Unauthorized')
   },
   extensions: [
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({documentName}) => {
-        const [dbId] = CipherId.fromClient(documentName)
+        const [_entityName, entityId] = documentName.split(':')
+        const dbId = feistelCipher.decrypt(Number(entityId))
         const pg = getKysely()
         const res = await pg
           .selectFrom('Page')
@@ -70,10 +70,10 @@ const server = Server.configure({
         const docText = generateText(doc, serverTipTapExtensions)
         const delimiter = '\n\n'
         const titleBreakIdx = docText.indexOf(delimiter)
-        const safeTitleBreakIdx = titleBreakIdx === -1 ? docText.length : titleBreakIdx
-        const title = docText.slice(0, safeTitleBreakIdx).slice(0, 255)
-        const plaintextContent = docText.slice(safeTitleBreakIdx + delimiter.length)
-        const [dbId] = CipherId.fromClient(documentName)
+        const title = docText.slice(0, titleBreakIdx).slice(0, 255)
+        const plaintextContent = docText.slice(titleBreakIdx + delimiter.length)
+        const [_entityName, entityId] = documentName.split(':')
+        const dbId = feistelCipher.decrypt(Number(entityId))
         const pg = getKysely()
         await pg
           .updateTable('Page')

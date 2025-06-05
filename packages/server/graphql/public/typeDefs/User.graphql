@@ -519,28 +519,4 @@ type User {
     """
     before: DateTime!
   ): MeetingConnection!
-
-  """
-  A single page accessible by the User
-  """
-  page(pageId: ID!): Page!
-  """
-  All the pages accessible by a user
-  """
-  pages(
-    teamId: ID
-    parentPageId: ID
-    """
-    The first n records to return
-    """
-    first: Int!
-    """
-    The pagination cursor, if any
-    """
-    after: String
-    """
-    true to query top-level private pages. false to query top-level shard pages. ignored if parentPageId or teamId is present
-    """
-    isPrivate: Boolean
-  ): PageConnection!
 }

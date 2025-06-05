@@ -1,10 +1,10 @@
-import {sendPublic, signUp} from './common'
+import {getUserTeams, sendPublic, signUp} from './common'
 
 test('Invite to team, works for ordinary email domain', async () => {
-  const [user1, user2] = await Promise.all([signUp(), signUp()])
-  const {authToken, teamId} = user1
-  const {email: inviteeEmail} = user2
+  const {userId, authToken} = await signUp()
+  const {email: inviteeEmail} = await signUp()
 
+  const teamId = (await getUserTeams(userId))[0].id
   const inviteToTeam = await sendPublic({
     query: `
       mutation InviteToTeam($teamId: ID!, $invitees: [Email!]!) {
@@ -35,9 +35,10 @@ test('Invite to team, works for ordinary email domain', async () => {
 })
 
 test('Invite to team, deny for untrusted domain', async () => {
-  const [user1, user2] = await Promise.all([signUp(), signUp()])
-  const {authToken, teamId} = user1
-  const {email: inviteeEmail} = user2
+  const {userId, authToken} = await signUp()
+  const {email: inviteeEmail} = await signUp()
+
+  const teamId = (await getUserTeams(userId))[0].id
   const inviteToTeam = await sendPublic({
     query: `
       mutation InviteToTeam($teamId: ID!, $invitees: [Email!]!) {

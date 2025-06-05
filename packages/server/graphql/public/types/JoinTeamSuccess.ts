@@ -6,11 +6,8 @@ export type JoinTeamSuccessSource = {
 }
 
 const JoinTeamSuccess: JoinTeamSuccessResolvers = {
-  viewer: async (_source, _args, {authToken, dataLoader}) => {
-    return dataLoader.get('users').loadNonNull(authToken.sub)
-  },
-  team: async ({teamId}, _args, {authToken, dataLoader}) => {
-    return dataLoader.get('teamsWithUserSort').loadNonNull({teamId, userId: authToken.sub})
+  team: async ({teamId}, _args, {dataLoader}) => {
+    return dataLoader.get('teams').loadNonNull(teamId)
   },
   teamMember: async ({teamMemberId}, _args, {dataLoader}) => {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)

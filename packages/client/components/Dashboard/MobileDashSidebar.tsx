@@ -95,7 +95,6 @@ const MobileDashSidebar = (props: Props) => {
     graphql`
       fragment MobileDashSidebar_viewer on User {
         ...StandardHub_viewer
-        ...DashNavList_viewer
         organizations {
           ...DashNavList_organization
           id
@@ -243,11 +242,7 @@ const MobileDashSidebar = (props: Props) => {
               label={'Add a Team'}
             />
           </NavItemsWrap>
-          <DashNavList
-            onClick={handleMenuClick}
-            organizationsRef={organizations}
-            viewerRef={viewer}
-          />
+          <DashNavList onClick={handleMenuClick} organizationsRef={organizations} />
         </Nav>
       </NavBlock>
       <DashHR />

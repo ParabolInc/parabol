@@ -37,6 +37,6 @@ export function extractErrorIntoSpanEvent(span: opentelemetry.Span, exc: GraphQL
   if (exc.message) {
     attributes.message = exc.message
   }
-  // if the span is a noopspan, addEvent will not exist
-  span.addEvent?.('dd.graphql.query.error', attributes, Date.now())
+
+  span.addEvent('dd.graphql.query.error', attributes, Date.now())
 }

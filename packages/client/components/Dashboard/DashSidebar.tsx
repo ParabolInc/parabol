@@ -68,7 +68,6 @@ const DashSidebar = (props: Props) => {
     graphql`
       fragment DashSidebar_viewer on User {
         ...StandardHub_viewer
-        ...DashNavList_viewer
         organizations {
           ...DashNavList_organization
           id
@@ -154,7 +153,7 @@ const DashSidebar = (props: Props) => {
             <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
           </div>
           <NavMain>
-            <NavList viewerRef={viewer} organizationsRef={organizations} />
+            <NavList organizationsRef={organizations} />
           </NavMain>
         </Contents>
       </Nav>

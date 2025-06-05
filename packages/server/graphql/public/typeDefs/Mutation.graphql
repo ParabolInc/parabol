@@ -120,16 +120,7 @@ type Mutation {
     status: NotificationStatusEnum!
   ): SetNotificationStatusPayload
 
-  createPage(
-    """
-    The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
-    """
-    teamId: ID
-    """
-    The parent page that this should be placed under. Mutally exclusive to teamId
-    """
-    parentPageId: ID
-  ): CreatePagePayload!
+  createPage: CreatePagePayload!
   createTaskIntegration(
     """
     Which integration to push the task to
@@ -2101,67 +2092,4 @@ type Mutation {
     """
     verificationToken: ID!
   ): UserLogInPayload!
-
-  """
-  Update the role-based access for a page
-  """
-  updatePageAccess(
-    """
-    The page to update access for
-    """
-    pageId: ID!
-    subjectType: PageSubjectEnum!
-    subjectId: ID!
-    role: PageRoleEnum
-    """
-    True if this mutation can unlink the pageId from its parent
-    """
-    unlinkApproved: Boolean
-  ): UpdatePageAccessPayload
-
-  """
-  Update the page sortOrder, teamId, or parentPageId and adjust access accordingly
-  """
-  updatePage(
-    """
-    The ID of the page to update
-    """
-    pageId: ID!
-    """
-    The new sort order, as a fractional index
-    """
-    sortOrder: String!
-    """
-    The new parent If null, and no teamId, it will be top-level
-    """
-    parentPageId: ID
-    """
-    The new teamId, if moved to a team
-    """
-    teamId: ID
-    """
-    true to revoke access for all but the mutator
-    """
-    makePrivate: Boolean
-  ): UpdatePagePayload
-  """
-  link or unlink a page to its parent
-  """
-  updatePageParentLink(
-    """
-    The ID of the page to update
-    """
-    pageId: ID!
-    """
-    True to re-link, false to unlink
-    """
-    isParentLinked: Boolean!
-  ): UpdatePagePayload
-  updateTeamSortOrder(
-    teamId: ID!
-    """
-    The new sort order as a fractional index
-    """
-    sortOrder: String!
-  ): UpdateTeamSortOrderPayload
 }

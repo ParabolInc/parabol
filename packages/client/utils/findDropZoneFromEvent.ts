@@ -1,8 +1,8 @@
 import {DragAttribute} from '../types/constEnums'
 
 const findDropZoneFromEvent = (e: MouseEvent | TouchEvent) => {
-  if ('touches' in e) {
-    const touch = e.changedTouches.item(0)
+  if ((e as TouchEvent).touches) {
+    const touch = (e as TouchEvent).changedTouches.item(0)
     if (!touch) return null
     let childEl = document.elementFromPoint(touch.pageX, touch.pageY)
     while (childEl && childEl.hasAttribute) {

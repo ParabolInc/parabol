@@ -200,8 +200,4 @@ type Team implements Node {
   Whether the team is visible to everyone in the org and anyone can join it without an invitation
   """
   isPublic: Boolean!
-  """
-  The viewer-specific sort order index. Present in User.teams
-  """
-  sortOrder: String!
 }

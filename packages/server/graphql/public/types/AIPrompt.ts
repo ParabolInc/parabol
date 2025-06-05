@@ -1,9 +1,9 @@
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {feistelCipher} from '../../../utils/feistelCipher'
 import {AiPromptResolvers} from '../resolverTypes'
 
 const AIPrompt: AiPromptResolvers = {
-  id: ({id}) => CipherId.toClient(id, 'AIPrompt'),
+  id: ({id}) => `AIPrompt:${feistelCipher.encrypt(id)}`,
   isUserDefined: ({userId}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
     return userId === viewerId
