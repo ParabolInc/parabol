@@ -57,17 +57,20 @@ const BottomControlBarMusic = ({
           onClick={() => setOpen((prev) => !prev)}
         >
           <span className='flex flex-col items-center justify-center'>
-            <HeadphonesIcon className='text-gray-500' fontSize='medium' />
+            <HeadphonesIcon
+              className={cn(isPlaying ? 'animate-pulse text-slate-700' : 'text-slate-700')}
+              fontSize='medium'
+            />
             <span className='mt-0.5 text-xs font-medium text-slate-600'>Music</span>
           </span>
         </BottomNavControl>
       </RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
-          sideOffset={8}
+          sideOffset={2}
           className={`background-music-popover z-10 m-0 w-64 max-w-md min-w-[14rem] p-0`}
         >
-          <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
+          <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-2xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
               <span className='text-gray-800 text-base font-semibold'>Background music</span>
@@ -83,7 +86,6 @@ const BottomControlBarMusic = ({
               >
                 {availableTracks.map((track) => {
                   const isSelected = currentTrackSrc === track.src
-                  const isCurrentlyPlaying = isSelected && isPlaying
 
                   return (
                     <button
@@ -96,12 +98,10 @@ const BottomControlBarMusic = ({
                         }
                       }}
                       className={cn(
-                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border px-3 py-2 text-base leading-tight font-normal outline-none focus:outline-none',
+                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border bg-slate-200 px-3 py-2 text-base leading-tight font-normal transition-colors outline-none focus:outline-none',
                         isSelected
-                          ? isCurrentlyPlaying
-                            ? 'border-green-500 bg-green-50 text-green-700 font-semibold shadow'
-                            : 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                          : 'hover:bg-gray-50 text-gray-700 cursor-pointer border-transparent'
+                          ? 'font-semibold shadow'
+                          : 'cursor-pointer border-transparent text-slate-700 hover:bg-slate-300 hover:text-slate-900'
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>
@@ -161,7 +161,6 @@ const BottomControlBarMusic = ({
               </div>
             </div>
           </div>
-          <RadixPopover.Arrow className='fill-white' />
         </RadixPopover.Content>
       </RadixPopover.Portal>
     </RadixPopover.Root>
