@@ -1,42 +1,42 @@
 import HeadphonesIcon from '@mui/icons-material/Headphones'
-import PauseIcon from '@mui/icons-material/Pause'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useRef, useState} from 'react'
 import {TransitionStatus} from '~/hooks/useTransition'
-import useBackgroundMusicManager, {availableTracks, Track} from '../hooks/useBackgroundMusicManager'
+import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
 
 interface Props {
-  isFacilitator: boolean
   status?: TransitionStatus
   onTransitionEnd?: () => void
+  meetingId: string
 }
 
 const BottomControlBarMusic = ({
-  isFacilitator,
   status = TransitionStatus.ENTERED,
-  onTransitionEnd
+  onTransitionEnd,
+  meetingId
 }: Props) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [atBottom, setAtBottom] = useState(false)
 
-  const {playTrack, pause, stop, setVolume, selectTrack, currentTrackSrc, isPlaying, volume} =
-    useBackgroundMusicManager({
-      initialTrackUrl: null,
-      initialIsPlaying: false,
-      initialVolume: 0.5
-    })
-
-  if (!isFacilitator) return null
+  const {
+    playTrack,
+    stop,
+    handleVolumeChange,
+    selectTrack,
+    currentTrackSrc,
+    isPlaying,
+    volume,
+    availableTracks
+  } = useMeetingMusicSync(meetingId)
 
   const playEnabled = !!currentTrackSrc && !isPlaying
   const stopEnabled = !!currentTrackSrc && isPlaying
-
   const showFade = availableTracks.length > 3 && !atBottom
 
   const handleScroll = () => {
@@ -57,17 +57,20 @@ const BottomControlBarMusic = ({
           onClick={() => setOpen((prev) => !prev)}
         >
           <span className='flex flex-col items-center justify-center'>
-            <HeadphonesIcon className='text-gray-500' fontSize='medium' />
+            <HeadphonesIcon
+              className={cn(isPlaying ? 'animate-pulse text-slate-700' : 'text-slate-700')}
+              fontSize='medium'
+            />
             <span className='mt-0.5 text-xs font-medium text-slate-600'>Music</span>
           </span>
         </BottomNavControl>
       </RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
-          sideOffset={8}
+          sideOffset={2}
           className={`background-music-popover z-10 m-0 w-64 max-w-md min-w-[14rem] p-0`}
         >
-          <div className='border-gray-100 flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-xl'>
+          <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-2xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
               <span className='text-gray-800 text-base font-semibold'>Background music</span>
@@ -81,31 +84,40 @@ const BottomControlBarMusic = ({
                   availableTracks.length > 3 ? 'max-h-[200px] pr-1 pb-4' : ''
                 )}
               >
-                {availableTracks.map((track: Track) => (
-                  <button
-                    key={track.src}
-                    onClick={() => {
-                      selectTrack(track.src)
-                    }}
-                    className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 transition-all',
-                      currentTrackSrc === track.src
-                        ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold shadow'
-                        : 'hover:bg-gray-50 text-gray-700 border-transparent'
-                    )}
-                  >
-                    <span className='flex-1 truncate'>{track.name}</span>
-                  </button>
-                ))}
+                {availableTracks.map((track) => {
+                  const isSelected = currentTrackSrc === track.src
+
+                  return (
+                    <button
+                      key={track.src}
+                      onClick={() => {
+                        if (isSelected) {
+                          stop()
+                        } else {
+                          selectTrack(track.src)
+                        }
+                      }}
+                      className={cn(
+                        'box-border flex w-full appearance-none items-center gap-2 rounded-lg border bg-slate-200 px-3 py-2 text-base leading-tight font-normal transition-colors outline-none focus:outline-none',
+                        isSelected
+                          ? 'font-semibold shadow'
+                          : 'cursor-pointer border-transparent text-slate-700 hover:bg-slate-300 hover:text-slate-900'
+                      )}
+                    >
+                      <span className='flex-1 truncate'>{track.name}</span>
+                    </button>
+                  )
+                })}
               </div>
               {showFade && (
                 <div className='pointer-events-none absolute right-0 bottom-0 left-0 h-8 bg-gradient-to-t from-white to-transparent' />
               )}
             </div>
-            <div className='mt-2 flex items-center justify-between gap-2'>
+
+            <div className='mt-2 flex items-center justify-center gap-4'>
               <button
                 type='button'
-                onClick={() => currentTrackSrc && playTrack(currentTrackSrc)}
+                onClick={() => playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
@@ -116,20 +128,6 @@ const BottomControlBarMusic = ({
                 aria-label='Play'
               >
                 <PlayArrowIcon />
-              </button>
-              <button
-                type='button'
-                onClick={pause}
-                disabled={!isPlaying}
-                className={cn(
-                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition',
-                  isPlaying
-                    ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                )}
-                aria-label='Pause'
-              >
-                <PauseIcon />
               </button>
               <button
                 type='button'
@@ -146,21 +144,23 @@ const BottomControlBarMusic = ({
                 <StopIcon />
               </button>
             </div>
+
             <div className='mt-2 flex items-center gap-3'>
               <span className='text-gray-500 w-14 text-sm'>Volume</span>
-              <input
-                type='range'
-                min='0'
-                max='1'
-                step='0.01'
-                value={volume}
-                onChange={(e) => setVolume(parseFloat(e.target.value))}
-                className='accent-blue-500 h-2 flex-1 cursor-pointer'
-                onMouseDown={(e) => e.stopPropagation()}
-              />
+              <div className='min-w-0 flex-1'>
+                <input
+                  type='range'
+                  min='0'
+                  max='1'
+                  step='0.01'
+                  value={volume}
+                  onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                  className='accent-blue-500 h-2 w-full cursor-pointer transition-all duration-200 ease-in-out hover:opacity-100'
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+              </div>
             </div>
           </div>
-          <RadixPopover.Arrow className='fill-white' />
         </RadixPopover.Content>
       </RadixPopover.Portal>
     </RadixPopover.Root>
