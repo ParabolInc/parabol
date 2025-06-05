@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
-import {MutableRefObject, RefObject} from 'react'
+import {MutableRefObject, RefObject, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -84,6 +84,7 @@ const PhaseItemEditor = (props: Props) => {
     meetingRef
   )
 
+  const draftStorageKey = `phaseItemEditor-${meetingId}-${promptId}`
   const {disableAnonymity, viewerMeetingMember, teamId} = meeting
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const handleSubmit = useEventCallback(() => {
@@ -105,7 +106,17 @@ const PhaseItemEditor = (props: Props) => {
       sortOrder: nextSortOrder()
     }
     submitMutation()
-    CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
+    CreateReflectionMutation(
+      atmosphere,
+      {input},
+      {
+        onError,
+        onCompleted: () => {
+          onCompleted()
+          window.localStorage.removeItem(draftStorageKey)
+        }
+      }
+    )
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
       transform: `translate(${left}px,${top}px)`,
@@ -154,6 +165,30 @@ const PhaseItemEditor = (props: Props) => {
       EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
     }
   })
+
+  useEffect(() => {
+    if (!editor) return
+
+    const draft = window.localStorage.getItem(draftStorageKey)
+    if (draft && editor.isEmpty) {
+      const content = JSON.parse(draft)
+      editor?.commands.setContent(content)
+      window.localStorage.removeItem(draftStorageKey)
+    }
+
+    const storeDraft = () => {
+      if (editor.isEmpty) {
+        window.localStorage.removeItem(draftStorageKey)
+      } else {
+        window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
+      }
+    }
+
+    editor.on('update', storeDraft)
+    return () => {
+      editor.off('update', storeDraft)
+    }
+  }, [editor])
 
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
   const showFooter = isEditing || (editor && !editor?.isEmpty)
