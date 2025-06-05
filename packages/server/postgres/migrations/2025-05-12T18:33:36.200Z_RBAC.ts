@@ -169,72 +169,110 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await sql`
 -- UPDATE Page.isPrivate
-CREATE OR REPLACE FUNCTION "maybeMarkPrivate"("_pageId" INT)
+CREATE OR REPLACE FUNCTION "maybeMarkPrivate"("_pageIds" INT[])
 RETURNS VOID AS $$
 DECLARE
   "_willBePrivate" BOOLEAN;
 BEGIN
-  SELECT (
-  (SELECT COUNT(*) = 1 FROM "PageUserAccess"         WHERE "pageId" = "_pageId" LIMIT 2) AND
-  NOT EXISTS (SELECT 1 FROM "PageTeamAccess"         WHERE "pageId" = "_pageId" LIMIT 1) AND
-  NOT EXISTS (SELECT 1 FROM "PageOrganizationAccess" WHERE "pageId" = "_pageId" LIMIT 1) AND
-  NOT EXISTS (SELECT 1 FROM "PageExternalAccess"     WHERE "pageId" = "_pageId" LIMIT 1)
-) INTO "_willBePrivate";
+  WITH "PagePrivacyCalc" AS (
+    SELECT
+      p.id,
+      p."isPrivate" AS "currentPrivate",
+      (
+        (SELECT COUNT(*) = 1 FROM "PageUserAccess"         WHERE "pageId" = p.id LIMIT 2) AND
+        NOT EXISTS (SELECT 1 FROM "PageTeamAccess"         WHERE "pageId" = p.id LIMIT 1) AND
+        NOT EXISTS (SELECT 1 FROM "PageOrganizationAccess" WHERE "pageId" = p.id LIMIT 1) AND
+        NOT EXISTS (SELECT 1 FROM "PageExternalAccess"     WHERE "pageId" = p.id LIMIT 1)
+      ) AS "shouldBePrivate"
+    FROM "Page" p
+    WHERE p.id = ANY("_pageIds")
+  )
   UPDATE "Page"
-  SET "isPrivate" = "_willBePrivate"
-  WHERE id = "_pageId"
-    AND "isPrivate" <> "_willBePrivate";
+  SET "isPrivate" = ppc."shouldBePrivate"
+  FROM "PagePrivacyCalc" ppc
+  WHERE "Page".id = ppc.id
+    AND "Page"."isPrivate" <> ppc."shouldBePrivate";
 END;
 $$ LANGUAGE plpgsql;
 
 
 -- FUNCTION TO UPDATE CACHED TABLE
-CREATE OR REPLACE FUNCTION "updatePageAccess"("_userId" VARCHAR, "_pageId" INT) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION "updatePageAccess"("_userIds" VARCHAR[], "_pageId" INT) RETURNS VOID AS $$
 DECLARE
-  "_strongestRole" "PageRoleEnum";
-  "_currentRole" "PageRoleEnum";
+  "_inserted" INT := 0;
+  "_deleted" INT := 0;
+  "_isPrivate" BOOLEAN;
 BEGIN
-  -- Find the strongest applicable role
-  SELECT MIN(role)
-  INTO "_strongestRole"
-  FROM (
-    SELECT pua.role FROM "PageUserAccess" pua
-    WHERE pua."userId" = "_userId" AND pua."pageId" = "_pageId"
-    UNION ALL
-    SELECT pta.role
-    FROM "PageTeamAccess" pta
-    JOIN "TeamMember" tm ON pta."teamId" = tm."teamId"
-    WHERE tm."userId" = "_userId" AND pta."pageId" = "_pageId"
-    UNION ALL
-    SELECT poa.role
-    FROM "PageOrganizationAccess" poa
-    JOIN "OrganizationUser" ou ON poa."orgId" = ou."orgId"
-    WHERE ou."userId" = "_userId" AND poa."pageId" = "_pageId"
-  ) AS effective_roles;
+  -- Get current Page.isPrivate value
+  SELECT "isPrivate" INTO "_isPrivate" FROM "Page" WHERE id = "_pageId";
 
-  -- Check existing effective role
-  SELECT role INTO "_currentRole"
-  FROM "PageAccess"
-  WHERE "userId" = "_userId" AND "pageId" = "_pageId";
+  -- Create a temporary table to hold the strongest role per user
+  WITH effective_roles AS (
+    SELECT "userId", MIN(role) AS "strongestRole" FROM (
+      SELECT pua."userId", pua.role
+      FROM "PageUserAccess" pua
+      WHERE pua."userId" = ANY("_userIds") AND pua."pageId" = "_pageId"
 
-  IF "_strongestRole" IS NULL THEN
-    -- User lost access
-    DELETE FROM "PageAccess"
-    WHERE "userId" = "_userId" AND "pageId" = "_pageId";
+      UNION ALL
+
+      SELECT tm."userId", pta.role
+      FROM "PageTeamAccess" pta
+      JOIN "TeamMember" tm ON pta."teamId" = tm."teamId"
+      WHERE tm."userId" = ANY("_userIds") AND pta."pageId" = "_pageId"
+
+      UNION ALL
+
+      SELECT ou."userId", poa.role
+      FROM "PageOrganizationAccess" poa
+      JOIN "OrganizationUser" ou ON poa."orgId" = ou."orgId"
+      WHERE ou."userId" = ANY("_userIds") AND poa."pageId" = "_pageId"
+    ) combined
+    GROUP BY "userId"
+  ),
+
+  -- Identify users who currently have access
+  existing_access AS (
+    SELECT "userId", role AS "currentRole"
+    FROM "PageAccess"
+    WHERE "userId" = ANY("_userIds") AND "pageId" = "_pageId"
+  ),
+
+  -- Upserts: Insert new or update changed roles
+  to_upsert AS (
+    SELECT er."userId", "_pageId" AS "pageId", er."strongestRole"
+    FROM effective_roles er
+    LEFT JOIN existing_access ea ON ea."userId" = er."userId"
+    WHERE ea."currentRole" IS DISTINCT FROM er."strongestRole"
+  ),
+
+  -- Deletes: Users who had access but no longer should
+  to_delete AS (
+    SELECT ea."userId"
+    FROM existing_access ea
+    LEFT JOIN effective_roles er ON er."userId" = ea."userId"
+    WHERE er."userId" IS NULL
+  )
+
+  -- Upsert: Add/update roles
+  INSERT INTO "PageAccess" ("userId", "pageId", role)
+  SELECT "userId", "pageId", "strongestRole" FROM to_upsert
+  ON CONFLICT ("userId", "pageId") DO UPDATE
+  SET role = EXCLUDED.role
+  WHERE "PageAccess".role IS DISTINCT FROM EXCLUDED.role;
+  GET DIAGNOSTICS "_inserted" = ROW_COUNT;
+
+  -- Delete: Remove access where appropriate
+  DELETE FROM "PageAccess"
+  WHERE "pageId" = "_pageId" AND "userId" IN (SELECT "userId" FROM to_delete);
+  GET DIAGNOSTICS "_deleted" = ROW_COUNT;
+
+  -- Conditional maybeMarkPrivate based on isPrivate
+  IF ("_isPrivate" AND "_inserted" > 0) OR (NOT "_isPrivate" AND "_deleted" > 0) THEN
     PERFORM "maybeMarkPrivate"("_pageId");
-  ELSIF "_currentRole" IS NULL THEN
-    -- New access
-    INSERT INTO "PageAccess" ("userId", "pageId", role)
-    VALUES ("_userId", "_pageId", "_strongestRole");
-    PERFORM "maybeMarkPrivate"("_pageId");
-  ELSIF "_strongestRole" != "_currentRole" THEN
-    -- Changed access
-    UPDATE "PageAccess"
-    SET role = "_strongestRole"
-    WHERE "userId" = "_userId" AND "pageId" = "_pageId";
   END IF;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 -- MOVE EXTERNAL ACCESS TO USER ACCESS ON SIGNUP
@@ -294,12 +332,24 @@ FOR EACH ROW EXECUTE FUNCTION "updateTeamPageAccess"();
 -- UPDATE CACHE FROM PageOrganizationAccess
 CREATE OR REPLACE FUNCTION "updateOrganizationPageAccess"() RETURNS TRIGGER AS $$
 DECLARE
-  "_userId" VARCHAR;
+  "_userIds" VARCHAR;[]
   "_pageId" INT := COALESCE(NEW."pageId", OLD."pageId");
 BEGIN
-  FOR "_userId" IN SELECT "userId" FROM "OrganizationUser" WHERE "orgId" = COALESCE(NEW."orgId", OLD."orgId") LOOP
-  PERFORM "updatePageAccess"("_userId", "_pageId");
-  END LOOP;
+  IF TG_OP != 'INSERT' THEN
+    SELECT "userId" INTO "_userIds" FROM "OrganizationUser" WHERE "orgId" = OLD."orgId";
+    PERFORM "updatePageAccess"("_userIds", "_pageId");
+  ELSE
+    INSERT INTO "PageAccess" ("userId", "pageId", "role")
+    SELECT "OrganizationUser"."userId", "_pageId", NEW.role
+    FROM "OrganizationUser"
+    LEFT JOIN "PageAccess" ON "OrganizationUser"."userId" = "PageAccess"."userId"
+    WHERE "OrganizationUser"."orgId" = NEW."orgId"
+    AND "pageId" = NEW."pageId"
+    AND ("PageAccess".role IS NULL OR NEW."role" < "PageAccess".role)
+    ON CONFLICT ("userId", "pageId") DO UPDATE
+    SET role = EXCLUDED.role
+    WHERE "PageAccess".role IS DISTINCT FROM EXCLUDED.role;
+    UPDATE "Page" SET "isPrivate" = FALSE WHERE id = "_pageId" AND "isPrivate" = TRUE;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
