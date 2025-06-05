@@ -20,6 +20,7 @@ import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meetin
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
 import showTimerInPhase from '../utils/showTimerInPhase'
+import BottomControlBarMusic from './BottomControlBarMusic'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
@@ -127,10 +128,11 @@ const MeetingControlBar = (props: Props) => {
   const isCheckIn = phaseType === 'checkin'
   const isPoker = meetingType === 'poker'
   const getPossibleButtons = () => {
-    const buttons = ['tips']
+    const buttons = ['music']
+    if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
+    buttons.push('tips')
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
     if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
@@ -167,6 +169,8 @@ const MeetingControlBar = (props: Props) => {
             key
           }
           switch (key) {
+            case 'music':
+              return <BottomControlBarMusic {...tranProps} meetingId={meetingId} />
             case 'tips':
               return (
                 <BottomControlBarTips
