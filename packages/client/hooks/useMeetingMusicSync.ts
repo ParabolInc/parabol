@@ -1,17 +1,22 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
+import coffeeLofi from '../../../static/sounds/coffee-lofi.mp3'
+import lofiAmbient from '../../../static/sounds/lofi-ambient.mp3'
+import lofiHipHopNight from '../../../static/sounds/lofi-hip-hop-night.mp3'
+import quietLofi from '../../../static/sounds/quiet-lofi.mp3'
+import tokyoLofi from '../../../static/sounds/tokyo-lofi.mp3'
 import {useMeetingMusicSyncQuery} from '../__generated__/useMeetingMusicSyncQuery.graphql'
 import SetMeetingMusicMutation from '../mutations/SetMeetingMusicMutation'
 import useAtmosphere from './useAtmosphere'
 import useMutationProps from './useMutationProps'
 
 export const availableTracks = [
-  {name: 'Lo-fi Hip Hop Night', src: '/static/sounds/lofi-hip-hop-night.mp3'},
-  {name: 'Lo-fi Coffee', src: '/static/sounds/coffee-lofi.mp3'},
-  {name: 'Lo-fi Quiet', src: '/static/sounds/quiet-lofi.mp3'},
-  {name: 'Lo-fi Tokyo', src: '/static/sounds/tokyo-lofi.mp3'},
-  {name: 'Lo-fi Ambient', src: '/static/sounds/lofi-ambient.mp3'}
+  {name: 'Lo-fi Hip Hop Night', src: lofiHipHopNight},
+  {name: 'Lo-fi Coffee', src: coffeeLofi},
+  {name: 'Lo-fi Quiet', src: quietLofi},
+  {name: 'Lo-fi Tokyo', src: tokyoLofi},
+  {name: 'Lo-fi Ambient', src: lofiAmbient}
 ]
 
 const useMeetingMusicSync = (meetingId: string) => {
