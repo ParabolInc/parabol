@@ -59,31 +59,23 @@ const MeetingsDash = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {teamIds: teamFilterIds} = useQueryParameterParser(atmosphere.viewerId)
   const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
-  const activeMeetings = useMemo(
-    () =>
-      teams
-        .flatMap((team) => team.activeMeetings)
-        .filter(Boolean)
-        .sort((a, b) => {
-          const aRecurring = !!(a.meetingSeries && !a.meetingSeries.cancelledAt)
-          const bRecurring = !!(b.meetingSeries && !b.meetingSeries.cancelledAt)
-          if (aRecurring && !bRecurring) {
-            return -1
-          }
-          if (bRecurring && !aRecurring) {
-            return 1
-          }
-
-          if (aRecurring && bRecurring) {
-            // When ordering recurring meetings, sort based on when the series was created to maintain
-            // consistency when meetings are restarted.
-            return a.meetingSeries.createdAt > b.meetingSeries.createdAt ? -1 : 1
-          }
-
-          return a.createdAt > b.createdAt ? -1 : 1
-        }),
-    [teams]
-  )
+  const activeMeetings = useMemo(() => {
+    const meetingSeriesMeetings = teams
+      .flatMap((team) => team.activeMeetingSeries)
+      .filter(Boolean)
+      .sort((a, b) => {
+        return a.createdAt > b.createdAt ? -1 : 1
+      })
+      .map((meetingSeries) => meetingSeries.mostRecentMeeting)
+    const otherActiveMeetings = teams
+      .flatMap((team) => team.activeMeetings)
+      .filter(Boolean)
+      .filter((meeting) => !meeting.meetingSeries || meeting.meetingSeries.cancelledAt)
+      .sort((a, b) => {
+        return a.createdAt > b.createdAt ? -1 : 1
+      })
+    return [...meetingSeriesMeetings, ...otherActiveMeetings]
+  }, [teams])
   const filteredMeetings = useMemo(() => {
     const searchedMeetings = dashSearch
       ? activeMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
@@ -150,23 +142,31 @@ const MeetingsDash = (props: Props) => {
 }
 
 graphql`
+  fragment MeetingsDash_meeting on NewMeeting {
+    ...MeetingCard_meeting
+    ...useSnacksForNewMeetings_meetings
+    id
+    teamId
+    name
+    createdAt
+  }
+`
+
+graphql`
   fragment MeetingsDashActiveMeetings on Team {
     activeMeetings {
-      ...MeetingCard_meeting
-      ...useSnacksForNewMeetings_meetings
-      id
-      teamId
-      name
-      createdAt
-      meetingMembers {
-        user {
-          isConnected
-          lastSeenAtURLs
-        }
-      }
+      ...MeetingsDash_meeting @relay(mask: false)
       meetingSeries {
         createdAt
         cancelledAt
+      }
+    }
+    activeMeetingSeries {
+      id
+      createdAt
+      cancelledAt
+      mostRecentMeeting {
+        ...MeetingsDash_meeting @relay(mask: false)
       }
     }
   }
