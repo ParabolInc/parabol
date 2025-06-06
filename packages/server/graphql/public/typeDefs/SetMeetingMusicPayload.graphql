@@ -1,0 +1,4 @@
+"""
+Return value for setMeetingMusic, which could be an error
+"""
+union SetMeetingMusicPayload = ErrorPayload | SetMeetingMusicSuccess
