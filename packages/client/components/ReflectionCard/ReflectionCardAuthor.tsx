@@ -1,15 +1,7 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
+import {twStyled} from '../../ui/twStyled'
 
-const Author = styled('div')({
-  padding: '2px 16px',
-  color: PALETTE.SLATE_600,
-  fontSize: 13,
-  fontWeight: 600,
-  lineHeight: '20px',
-  whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis',
-  overflow: 'hidden'
-})
+const Author = twStyled('div')(
+  'py-1 text-slate-600 text-[13px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis'
+)
 
 export default Author
