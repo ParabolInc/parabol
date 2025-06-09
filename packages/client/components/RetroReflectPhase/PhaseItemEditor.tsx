@@ -153,7 +153,7 @@ const PhaseItemEditor = (props: Props) => {
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
-      placeholder: 'Add your reflection and press enter.\n\nTry /image for gifs or : for emoji',
+      placeholder: 'Share your thoughts, hit / for commands',
       teamId,
       readOnly: !!readOnly,
       onEnter: handleSubmit

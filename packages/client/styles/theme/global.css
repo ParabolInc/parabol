@@ -489,17 +489,6 @@
     margin-inline-start: 2px;
   }
 
-  /* For pages, only show placeholder on focused empty p lines */
-  p.is-empty.has-focus:not(li *)::before,
-  /* For everything else placeholder shows when empty */
-  p.is-empty:not(.page-editor)::before {
-    content: attr(data-placeholder);
-    float: left;
-    color: hsl(from var(--color-slate-700) h s l / 0.5);
-    pointer-events: none;
-    height: 0;
-  }
-
   a {
     text-decoration: underline;
     color: var(--color-slate-700);
@@ -528,6 +517,19 @@
   hr {
     border-top: 1px solid var(--color-slate-400);
   }
+}
+
+/* If a page title is empty, always show it */
+/* If a top-level page block is empty, show when focused */
+/* For other editors, only show placeholder when the whole thing is empty */
+.page-editor .tiptap > h1.is-empty::before,
+.page-editor .tiptap > .is-empty.has-focus::before,
+.tiptap > .is-editor-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(from var(--color-slate-700) h s l / 0.5);
+  pointer-events: none;
+  height: 0;
 }
 
 .ProseMirror-focused:focus {
