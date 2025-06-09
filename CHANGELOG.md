@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.7.2](https://github.com/ParabolInc/parabol/compare/v10.7.1...v10.7.2) (2025-06-09)
+
+
+### Fixed
+
+* disappearing reflections on phase change ([#11404](https://github.com/ParabolInc/parabol/issues/11404)) ([6775c2e](https://github.com/ParabolInc/parabol/commit/6775c2e45e211bc7ddb106b05a4980e03d6dfcd9))
+
+
+### Changed
+
+* hide tips on mobile ([#11405](https://github.com/ParabolInc/parabol/issues/11405)) ([52432f8](https://github.com/ParabolInc/parabol/commit/52432f830c2fa3346e57a4e35e54f3d2d30178d9))
+
 ## [10.7.1](https://github.com/ParabolInc/parabol/compare/v10.7.0...v10.7.1) (2025-06-06)
 
 
