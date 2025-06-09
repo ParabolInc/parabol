@@ -21,6 +21,7 @@ import {pokerAnnounceDeckHoverMeetingUpdater} from '../mutations/PokerAnnounceDe
 import {promoteNewMeetingFacilitatorMeetingOnNext} from '../mutations/PromoteNewMeetingFacilitatorMutation'
 import {removeReflectionMeetingUpdater} from '../mutations/RemoveReflectionMutation'
 import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeetingToGroupStageMutation'
+import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import subscriptionOnNext from './subscriptionOnNext'
@@ -126,6 +127,9 @@ const subscription = graphql`
       StartDraggingReflectionPayload {
         ...StartDraggingReflectionMutation_meeting @relay(mask: false)
       }
+      SetMeetingMusicSuccess {
+        ...SetMeetingMusicMutation_meeting @relay(mask: false)
+      }
       SetTaskHighlightSuccess {
         ...SetTaskHighlightMutation_meeting @relay(mask: false)
       }
@@ -181,7 +185,8 @@ const updateHandlers = {
   ResetRetroMeetingToGroupStagePayload: resetRetroMeetingToGroupStageUpdater,
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
-  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater
+  UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater,
+  SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater
 } as const
 
 const MeetingSubscription = (

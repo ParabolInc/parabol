@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.7.1](https://github.com/ParabolInc/parabol/compare/v10.7.0...v10.7.1) (2025-06-06)
+
+
+### Fixed
+
+* update track imports ([#11401](https://github.com/ParabolInc/parabol/issues/11401)) ([4fb0e25](https://github.com/ParabolInc/parabol/commit/4fb0e25e1e0cead472921569eafad8dd85addc70))
+
+## [10.7.0](https://github.com/ParabolInc/parabol/compare/v10.6.0...v10.7.0) (2025-06-05)
+
+
+### Added
+
+* add background music for viewer ([#11341](https://github.com/ParabolInc/parabol/issues/11341)) ([1761a9a](https://github.com/ParabolInc/parabol/commit/1761a9a1663a20ca1dd709d4ab1a8879411f6a58))
+
+
+### Fixed
+
+* Revert "feat(pages): RBAC and Drag-n-Drop ([#11374](https://github.com/ParabolInc/parabol/issues/11374))" ([#11395](https://github.com/ParabolInc/parabol/issues/11395)) ([697f6dc](https://github.com/ParabolInc/parabol/commit/697f6dc04c4493c4620d8f312d5d74b16815f490))
+
+## [10.6.0](https://github.com/ParabolInc/parabol/compare/v10.5.4...v10.6.0) (2025-06-04)
+
+
+### Added
+
+* **pages:** RBAC and Drag-n-Drop ([#11374](https://github.com/ParabolInc/parabol/issues/11374)) ([a127958](https://github.com/ParabolInc/parabol/commit/a12795817ae66fd925f46aa8bfae4f35554c25b7))
+
 ## [10.5.4](https://github.com/ParabolInc/parabol/compare/v10.5.3...v10.5.4) (2025-06-03)
 
 
