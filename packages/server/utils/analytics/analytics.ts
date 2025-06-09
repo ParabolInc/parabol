@@ -132,7 +132,6 @@ export type AnalyticsEvent =
   | 'Scale Cloned'
   | 'Music Played'
   | 'Music Stopped'
-  | 'Music Track Selected'
   | 'Music Volume Changed'
   // team
   | 'Team Name Changed'
