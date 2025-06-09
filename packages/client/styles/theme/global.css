@@ -521,10 +521,10 @@
 
 /* If a page title is empty, always show it */
 /* If a top-level page block is empty, show when focused */
-/* For other editors, always show top-level placeholders */
+/* For other editors, only show placeholder when the whole thing is empty */
 .page-editor .tiptap > h1.is-empty::before,
 .page-editor .tiptap > .is-empty.has-focus::before,
-.tiptap > .is-empty::before {
+.tiptap > .is-editor-empty::before {
   content: attr(data-placeholder);
   float: left;
   color: hsl(from var(--color-slate-700) h s l / 0.5);
