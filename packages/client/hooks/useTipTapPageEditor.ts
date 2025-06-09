@@ -131,11 +131,24 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           placeholder: ({node, pos}) => {
-            if (node.type.name === 'heading') {
-              if (pos === 0) return 'New Page'
-              return `Heading ${node.attrs.level}`
+            const {type, attrs} = node
+            const {name} = type
+            switch (name) {
+              case 'heading':
+                if (pos === 0) return 'New Page'
+                return `Heading ${attrs.level}`
+              case 'codeBlock':
+                return 'New code'
+              case 'blockquote':
+                return 'New quote'
+              case 'paragraph':
+                return "Press '/' for commands"
+              case 'bulletList':
+              case 'listItem':
+              case 'orderedList':
+              default:
+                return ''
             }
-            return "Press '/' for commands"
           }
         }),
         Mention.configure(
