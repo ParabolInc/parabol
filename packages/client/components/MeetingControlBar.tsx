@@ -109,6 +109,7 @@ const MeetingControlBar = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {viewerId} = atmosphere
   const {
     endedAt,
@@ -130,7 +131,7 @@ const MeetingControlBar = (props: Props) => {
   const getPossibleButtons = () => {
     const buttons = ['music']
     if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
-    buttons.push('tips')
+    if (isDesktop) buttons.push('tips')
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
     if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
@@ -141,7 +142,6 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const controlBarWidth =
     buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
   const left = useLeft(controlBarWidth, isRightDrawerOpen, showSidebar)
