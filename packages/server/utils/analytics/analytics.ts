@@ -18,6 +18,7 @@ import {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
+
 export type AnalyticsUser = {
   id: string
   email?: string
@@ -101,6 +102,13 @@ export type WebSocketProperties = {
   tms: string[]
 }
 
+export type MusicEventProperties = {
+  meetingId: string
+  trackName: string
+  isFacilitator: boolean
+  volume?: number
+}
+
 export type AnalyticsEvent =
   // meeting
   | 'Meeting Started'
@@ -122,6 +130,10 @@ export type AnalyticsEvent =
   | 'Template Shared'
   | 'Scale Created'
   | 'Scale Cloned'
+  | 'Music Played'
+  | 'Music Stopped'
+  | 'Music Track Selected'
+  | 'Music Volume Changed'
   // team
   | 'Team Name Changed'
   | 'Integration Added'
@@ -757,6 +769,23 @@ class Analytics {
       feedback,
       canEmail
     })
+  }
+
+  musicPlayed = (user: AnalyticsUser, properties: MusicEventProperties) => {
+    console.log('musicPlayed', properties)
+    this.track(user, 'Music Played', properties)
+  }
+
+  musicStopped = (user: AnalyticsUser, properties: MusicEventProperties) => {
+    this.track(user, 'Music Stopped', properties)
+  }
+
+  musicTrackSelected = (user: AnalyticsUser, properties: MusicEventProperties) => {
+    this.track(user, 'Music Track Selected', properties)
+  }
+
+  musicVolumeChanged = (user: AnalyticsUser, properties: MusicEventProperties) => {
+    this.track(user, 'Music Volume Changed', properties)
   }
 
   identify = (options: IdentifyOptions) => {

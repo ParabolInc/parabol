@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -25,6 +26,30 @@ const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
     meetingId,
     trackSrc: trackSrc || null,
     isPlaying: !!isPlaying
+  }
+
+  // Track analytics
+  const track = trackSrc ? trackSrc.split('/').pop()?.replace('.mp3', '') : null
+  if (track) {
+    if (isPlaying) {
+      analytics.musicPlayed(
+        {id: viewerId},
+        {
+          meetingId,
+          trackName: track,
+          isFacilitator: true
+        }
+      )
+    } else {
+      analytics.musicStopped(
+        {id: viewerId},
+        {
+          meetingId,
+          trackName: track,
+          isFacilitator: true
+        }
+      )
+    }
   }
 
   publish(SubscriptionChannel.MEETING, meetingId, 'SetMeetingMusicSuccess', data, subOptions)
