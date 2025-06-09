@@ -772,20 +772,11 @@ class Analytics {
   }
 
   musicPlayed = (user: AnalyticsUser, properties: MusicEventProperties) => {
-    console.log('musicPlayed', properties)
     this.track(user, 'Music Played', properties)
   }
 
   musicStopped = (user: AnalyticsUser, properties: MusicEventProperties) => {
     this.track(user, 'Music Stopped', properties)
-  }
-
-  musicTrackSelected = (user: AnalyticsUser, properties: MusicEventProperties) => {
-    this.track(user, 'Music Track Selected', properties)
-  }
-
-  musicVolumeChanged = (user: AnalyticsUser, properties: MusicEventProperties) => {
-    this.track(user, 'Music Volume Changed', properties)
   }
 
   identify = (options: IdentifyOptions) => {

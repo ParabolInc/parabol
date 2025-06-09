@@ -28,7 +28,6 @@ const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
     isPlaying: !!isPlaying
   }
 
-  // Track analytics
   const track = trackSrc ? trackSrc.split('/').pop()?.replace('.mp3', '') : null
   if (track) {
     if (isPlaying) {
