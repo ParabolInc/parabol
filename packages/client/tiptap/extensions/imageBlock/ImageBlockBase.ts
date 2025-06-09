@@ -28,7 +28,12 @@ export const ImageBlockBase = Image.extend({
       }
     ]
   },
-
+  renderText({node}) {
+    const src = node.attrs.src as string
+    const url = new URL(src)
+    const fileName = url.pathname.split('/').pop()
+    return `\n<<${fileName}>>\n`
+  },
   renderHTML({HTMLAttributes}) {
     const align = HTMLAttributes['data-align']
     const justify = align === 'left' ? 'start' : align === 'right' ? 'end' : 'center'
