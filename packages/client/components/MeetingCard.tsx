@@ -121,10 +121,10 @@ const BACKGROUND_COLORS = {
   teamPrompt: PALETTE.JADE_400
 }
 const RECURRING_LABEL_COLORS = {
-  retrospective: 'text-grape-600 bg-grape-100',
-  action: 'text-aqua-600 bg-aqua-300',
-  poker: 'text-tomato-600 bg-tomato-300',
-  teamPrompt: 'text-jade-600 bg-jade-300'
+  retrospective: 'text-grape-600',
+  action: 'text-aqua-600',
+  poker: 'text-tomato-600',
+  teamPrompt: 'text-jade-600'
 }
 const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
   ({meetingType}) => ({
@@ -302,7 +302,7 @@ const MeetingCard = (props: Props) => {
             {isRecurring && (
               <span
                 className={cn(
-                  'absolute top-2 right-2 rounded-[64px] px-2 py-1 text-[11px] leading-3 font-medium',
+                  'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 text-[11px] leading-3 font-medium',
                   RECURRING_LABEL_COLORS[meetingType]
                 )}
               >
