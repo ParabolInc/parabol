@@ -90,14 +90,12 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         oc
           .columns(['pageId', typeId])
           .doUpdateSet({role})
-          .where(({eb, ref}) => eb(ref('role'), '!=', ref('excluded.role')))
+          .where(({eb, ref}) => eb(ref(`${table}.role`), '!=', ref('excluded.role')))
       )
       .execute()
   }
 
-  const atLeastOneOwner = await Promise.all([
-    unlinkFromParent &&
-      trx.updateTable('Page').set({isParentLinked: false}).where('id', '=', dbPageId).execute(),
+  const [atLeastOneOwner] = await Promise.all([
     // only need to check the top-most page because all LINKED children are guaranteed to have at least the same access
     trx
       .selectFrom('PageAccess')
@@ -105,7 +103,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .where('pageId', '=', dbPageId)
       .where('role', '=', 'owner')
       .limit(1)
-      .executeTakeFirst()
+      .executeTakeFirst(),
+    unlinkFromParent &&
+      trx.updateTable('Page').set({isParentLinked: false}).where('id', '=', dbPageId).execute()
   ])
 
   if (atLeastOneOwner) {

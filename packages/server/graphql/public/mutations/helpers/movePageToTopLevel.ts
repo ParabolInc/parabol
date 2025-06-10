@@ -18,7 +18,8 @@ export const movePageToTopLevel = async (viewerId: string, pageId: number, sortO
       teamId: null,
       parentPageId: null,
       isParentLinked: true,
-      sortOrder
+      sortOrder,
+      ancestorIds: []
     })
     .where('id', '=', pageId)
     .execute()
