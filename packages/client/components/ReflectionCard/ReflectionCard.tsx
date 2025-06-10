@@ -268,6 +268,10 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
+  const preventPrematureBlur = (e: MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+  }
+
   const handleDelete = () => {
     if (readOnly || submitting) return
     submitMutation()
@@ -330,7 +334,9 @@ const ReflectionCard = (props: Props) => {
         <ReactjiSection className='pt-2 pr-2 pl-4' reactjis={reactjis} onToggle={onToggleReactji} />
       )}
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
-      {!readOnly && <DeleteReflectionButton onClick={handleDelete} />}
+      {!readOnly && (
+        <DeleteReflectionButton onMouseDown={preventPrematureBlur} onClick={handleDelete} />
+      )}
       <SpotlightButton onClick={handleClickSpotlight} showSpotlight={showSpotlight} />
     </ReflectionCardRoot>
   )
