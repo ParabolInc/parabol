@@ -5,6 +5,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {MutationResolvers} from '../resolverTypes'
+import {MAX_PAGE_DEPTH} from './updatePage'
 
 const createPage: MutationResolvers['createPage'] = async (
   _source,
@@ -22,6 +23,12 @@ const createPage: MutationResolvers['createPage'] = async (
   ])
   if (dbParentPageId && !parentPage) {
     throw new GraphQLError('Invalid parentPageId')
+  }
+
+  if (parentPage && parentPage.ancestorIds.length >= MAX_PAGE_DEPTH) {
+    throw new GraphQLError(`Pages can only be nested ${MAX_PAGE_DEPTH} pages deep`, {
+      extensions: {code: 'MAX_PAGE_DEPTH_REACHED'}
+    })
   }
 
   const pg = getKysely()

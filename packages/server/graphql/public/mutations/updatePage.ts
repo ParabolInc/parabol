@@ -8,7 +8,7 @@ import {movePageToNewTeam} from './helpers/movePageToNewTeam'
 import {movePageToTopLevel} from './helpers/movePageToTopLevel'
 import {privatizePage} from './helpers/privatizePage'
 
-const MAX_PAGE_DEPTH = 10
+export const MAX_PAGE_DEPTH = 10
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, parentPageId, makePrivate},
@@ -35,7 +35,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
       .load({pageId: dbPageId, userId: viewerId})
     dataLoader.get('pageAccessByUserId').clearAll()
     if (userRole !== 'owner') {
-      throw new GraphQLError('You must be an owner to move the page to a different parent')
+      throw new GraphQLError('You must be an owner to move the page to a different parent', {
+        extensions: {code: 'FOOB_AR'}
+      })
     }
   }
 
@@ -47,7 +49,6 @@ const updatePage: MutationResolvers['updatePage'] = async (
   )
   if (makePrivate && !page.isPrivate) {
     await privatizePage(viewerId, dbPageId, nextSortOrder)
-    return {pageId: dbPageId}
   } else if (teamId && teamId !== page.teamId) {
     await movePageToNewTeam(viewerId, dbPageId, teamId, nextSortOrder)
   } else if (dbParentPageId && dbParentPageId !== page.parentPageId) {
