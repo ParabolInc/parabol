@@ -10,7 +10,6 @@ export const movePageToNewParent = async (
   ancestorIds: number[]
 ) => {
   const pg = getKysely()
-  console.log('next ancestors', [...ancestorIds, parentPageId])
   const trx = await pg.startTransaction().execute()
   await selectDescendantPages(trx, pageId)
     // Remove previous access for all descendants _that doesn't match the new parent's access_ (the exclusion means fewer writes)

@@ -2143,7 +2143,7 @@ type Mutation {
     true to revoke access for all but the mutator
     """
     makePrivate: Boolean
-  ): UpdatePagePayload
+  ): UpdatePagePayload!
   """
   link or unlink a page to its parent
   """

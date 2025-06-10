@@ -13,7 +13,7 @@ import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import type {History} from 'history'
-import {useMemo} from 'react'
+import {useMemo, useRef} from 'react'
 import {commitLocalUpdate, readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
@@ -94,10 +94,13 @@ export const useTipTapPageEditor = (
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
   const pageIdNum = Number(pageId.split(':')[1])
-
+  const providerRef = useRef<TiptapCollabProvider>()
   // Connect to your Collaboration server
-  const provider = useMemo(() => {
+  providerRef.current = useMemo(() => {
     if (!pageId) return undefined
+    if (providerRef.current) {
+      providerRef.current.disconnect()
+    }
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
     // update the URL to match the title
@@ -134,6 +137,7 @@ export const useTipTapPageEditor = (
     return nextProvider
   }, [pageId, atmosphere.authToken])
 
+  const provider = providerRef.current
   const editor = useEditor(
     {
       content: '',
