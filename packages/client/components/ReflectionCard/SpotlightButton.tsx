@@ -15,7 +15,8 @@ const SpotlightButton = (props: Props) => {
         'invisible absolute right-1 bottom-1 bg-transparent hover:bg-slate-200',
         showSpotlight && 'visible'
       )}
-      tooltipText='Find similar'
+      aria-label='Find similar reflections'
+      title='Find similar'
       {...rest}
     >
       <Search className='h-5 w-5' />

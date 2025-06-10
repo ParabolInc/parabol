@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {MouseEvent, useEffect, useRef, useState} from 'react'
+import {MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {
   NewMeetingPhaseTypeEnum,
@@ -29,6 +29,7 @@ import ReactjiSection from './ReactjiSection'
 import ReflectionCardAuthor from './ReflectionCardAuthor'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import SpotlightButton from './SpotlightButton'
+import SubmitReflectionButton from './SubmitReflectionButton'
 
 interface Props {
   isClipped?: boolean
@@ -215,6 +216,11 @@ const ReflectionCard = (props: Props) => {
     )
   }
 
+  const contentChanged = useMemo(() => {
+    if (!editor) return false
+    return !isEqualWhenSerialized(editor.getJSON(), JSON.parse(content))
+  }, [content, editor?.getJSON()])
+
   const handleEditorBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (isTempId(reflectionId)) return
     const newFocusedElement = e.relatedTarget as Node
@@ -271,7 +277,7 @@ const ReflectionCard = (props: Props) => {
   const enableSpotlight =
     phaseType === 'group' && !isSpotlightOpen && !isComplete && !isDemoRoute() && !isEditing
   const showSpotlight = enableSpotlight && (isHovering || !isDesktop)
-  const showButtons = isEditing || isHovering || !isDesktop
+  const showEditButton = !readOnly && isEditing
 
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -310,21 +316,22 @@ const ReflectionCard = (props: Props) => {
       <div className='flex flex-row-reverse items-center justify-between pr-2 pl-4'>
         <div
           className={cn('flex items-center gap-1 opacity-0', {
-            'opacity-100': showButtons
+            'opacity-100': showEditButton
           })}
-        ></div>
-        {disableAnonymity && (
-          <ReflectionCardAuthor onClick={() => {}}>{creator?.preferredName}</ReflectionCardAuthor>
-        )}
+        >
+          <SubmitReflectionButton
+            onClick={handleContentUpdate}
+            disabled={readOnly || !contentChanged || submitting}
+          />
+        </div>
+        {disableAnonymity && <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>}
       </div>
       {showReactji && (
         <ReactjiSection className='pt-2 pr-2 pl-4' reactjis={reactjis} onToggle={onToggleReactji} />
       )}
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && <DeleteReflectionButton onClick={handleDelete} />}
-      {enableSpotlight && (
-        <SpotlightButton onClick={handleClickSpotlight} showSpotlight={showSpotlight} />
-      )}
+      <SpotlightButton onClick={handleClickSpotlight} showSpotlight={showSpotlight} />
     </ReflectionCardRoot>
   )
 }
