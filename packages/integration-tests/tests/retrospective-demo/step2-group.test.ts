@@ -14,20 +14,20 @@ test.describe('retrospective-demo / group page', () => {
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
     await page.type(startTextbox, 'Start doing this')
-    await page.press(startTextbox, 'Tab')
-    await page.press(startTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
 
     const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
     await page.click(stopTextbox)
     await page.type(stopTextbox, 'Stop doing this')
-    await page.press(stopTextbox, 'Tab')
-    await page.press(stopTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
 
     const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
     await page.click(continueTextbox)
     await page.type(continueTextbox, 'Continue doing this')
-    await page.press(continueTextbox, 'Tab')
-    await page.press(continueTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
 
     await goToNextPhase(page)
     expect(page.url()).toEqual(`${config.rootUrlPath}/retrospective-demo/group`)
@@ -49,16 +49,16 @@ test.describe('retrospective-demo / group page', () => {
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
     await page.type(startTextbox, 'Documenting things in Notion')
-    await page.press(startTextbox, 'Tab')
-    await page.press(startTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
     await expect(
       page.locator('[data-cy="reflection-column-Start"] :text("Documenting things in Notion")')
     ).toBeVisible()
 
     await page.click(startTextbox)
     await page.type(startTextbox, 'Writing things down')
-    await page.press(startTextbox, 'Tab')
-    await page.press(startTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
     await expect(
       page.locator('[data-cy="reflection-column-Start"] :text("Writing things down")')
     ).toBeVisible()
@@ -94,8 +94,8 @@ test.describe('retrospective-demo / group page', () => {
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
     await page.fill(startTextbox, 'Documenting things in Notion')
-    await page.press(startTextbox, 'Tab')
-    await page.press(startTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
     await expect(
       page.locator('[data-cy="reflection-column-Start"] :text("Documenting things in Notion")')
     ).toBeVisible()
@@ -103,8 +103,8 @@ test.describe('retrospective-demo / group page', () => {
     const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
     await page.click(stopTextbox)
     await page.fill(stopTextbox, 'Making decisions in one-on-one meetings')
-    await page.press(stopTextbox, 'Tab')
-    await page.press(stopTextbox, 'Enter')
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Enter')
     await expect(
       page.locator(
         '[data-cy="reflection-column-Stop"] :text("Making decisions in one-on-one meetings")'
