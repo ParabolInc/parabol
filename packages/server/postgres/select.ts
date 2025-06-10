@@ -319,7 +319,8 @@ export const selectPages = () =>
     'Page.teamId',
     'title',
     'updatedAt',
-    'Page.userId'
+    'Page.userId',
+    'ancestorIds'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()

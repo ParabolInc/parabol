@@ -3,11 +3,12 @@ import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
+import {movePageToNewParent} from './helpers/movePageToNewParent'
 import {movePageToNewTeam} from './helpers/movePageToNewTeam'
 import {movePageToTopLevel} from './helpers/movePageToTopLevel'
 import {privatizePage} from './helpers/privatizePage'
-import {movePageToNewParent} from './movePageToNewParent'
 
+const MAX_PAGE_DEPTH = 10
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, parentPageId, makePrivate},
@@ -50,7 +51,20 @@ const updatePage: MutationResolvers['updatePage'] = async (
   } else if (teamId && teamId !== page.teamId) {
     await movePageToNewTeam(viewerId, dbPageId, teamId, nextSortOrder)
   } else if (dbParentPageId && dbParentPageId !== page.parentPageId) {
-    await movePageToNewParent(viewerId, dbPageId, dbParentPageId, nextSortOrder)
+    const parentPage = await dataLoader.get('pages').load(dbParentPageId)
+    if (!parentPage) {
+      throw new GraphQLError('Invalid parentPageId')
+    }
+    const {ancestorIds} = parentPage
+    if (ancestorIds.length >= MAX_PAGE_DEPTH) {
+      throw new GraphQLError(`Pages can only be nested ${MAX_PAGE_DEPTH} pages deep`, {
+        extensions: {code: 'MAX_PAGE_DEPTH_REACHED'}
+      })
+    }
+    if (ancestorIds.includes(dbPageId) || dbParentPageId === dbPageId) {
+      throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)
+    }
+    await movePageToNewParent(viewerId, dbPageId, dbParentPageId, nextSortOrder, ancestorIds)
   } else {
     await movePageToTopLevel(viewerId, dbPageId, nextSortOrder)
   }
