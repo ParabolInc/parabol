@@ -72,6 +72,16 @@ const Team: TeamResolvers = {
       'sortOrder is not being pre-calculated! Did you call teamsWithUserSort dataloader?'
     )
     return '!'
+  },
+  activeMeetings: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+    if (!isTeamMember(authToken, teamId)) return []
+    // this is by team, not by meeting member, which caused an err in dev, not sure about prod
+    // we need better perms for people to view/not view a meeting that happened before they joined the team
+    return dataLoader.get('activeMeetingsByTeamId').load(teamId)
+  },
+  activeMeetingSeries: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+    if (!isTeamMember(authToken, teamId)) return []
+    return dataLoader.get('activeMeetingSeriesByTeamId').load(teamId)
   }
 }
 
