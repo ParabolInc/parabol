@@ -252,7 +252,7 @@ const PhaseItemColumn = (props: Props) => {
       <ColumnHighlight isDesktop={isDesktop}>
         <ColumnColorDrop isDesktop={isDesktop} isFocused={isFocused} groupColor={groupColor} />
         <ColumnContent isDesktop={isDesktop}>
-          <div>
+          <div className='flex-1'>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
               <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
                 <ColorSpacer />
@@ -281,7 +281,7 @@ const PhaseItemColumn = (props: Props) => {
               </EditorAndStatus>
             </EditorSection>
           </div>
-          <div>
+          <div className='flex-1'>
             <ReflectionStack
               dataCy={`reflection-stack-${question}`}
               reflectionStack={reflectionStack}

@@ -270,6 +270,7 @@ const ReflectionCard = (props: Props) => {
 
   const enableSpotlight =
     phaseType === 'group' && !isSpotlightOpen && !isComplete && !isDemoRoute() && !isEditing
+  const showSpotlight = enableSpotlight && (isHovering || !isDesktop)
   const showButtons = isEditing || isHovering || !isDesktop
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -306,15 +307,12 @@ const ReflectionCard = (props: Props) => {
           editor={editor}
         />
       </div>
-      <div className='flex flex-row-reverse items-center justify-between pt-2 pr-2 pl-4'>
+      <div className='flex flex-row-reverse items-center justify-between pr-2 pl-4'>
         <div
           className={cn('flex items-center gap-1 opacity-0', {
             'opacity-100': showButtons
           })}
-        >
-          {!readOnly && <DeleteReflectionButton onClick={handleDelete} />}
-          {enableSpotlight && <SpotlightButton onClick={handleClickSpotlight} />}
-        </div>
+        ></div>
         {disableAnonymity && (
           <ReflectionCardAuthor onClick={() => {}}>{creator?.preferredName}</ReflectionCardAuthor>
         )}
@@ -323,6 +321,10 @@ const ReflectionCard = (props: Props) => {
         <ReactjiSection className='pt-2 pr-2 pl-4' reactjis={reactjis} onToggle={onToggleReactji} />
       )}
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
+      {!readOnly && <DeleteReflectionButton onClick={handleDelete} />}
+      {enableSpotlight && (
+        <SpotlightButton onClick={handleClickSpotlight} showSpotlight={showSpotlight} />
+      )}
     </ReflectionCardRoot>
   )
 }

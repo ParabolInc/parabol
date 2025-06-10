@@ -125,7 +125,7 @@ const PhaseItemChits = (props: Props) => {
     .reverse()
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-none flex-col'>
       <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
       <div className='relative h-5 w-full'>{chitList}</div>
     </div>

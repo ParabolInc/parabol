@@ -150,7 +150,7 @@ const PhaseItemEditor = (props: Props) => {
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
-      placeholder: 'Share your thoughts, press / for commands',
+      placeholder: 'Share your thoughts, press / for blocks',
       teamId,
       readOnly: !!readOnly
     }
@@ -191,7 +191,8 @@ const PhaseItemEditor = (props: Props) => {
   }, [editor])
 
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
-  const showFooter = isEditing || (editor && !editor?.isEmpty)
+  const showButtons = isEditing || (editor && !editor?.isEmpty)
+  const showFooter = showButtons || disableAnonymity
 
   const removeCardInFlight = (content: string) => () => {
     const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
@@ -208,20 +209,23 @@ const PhaseItemEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='pb-2'>
         <TipTapEditor
-          className={'flex max-h-41 min-h-[6rem] overflow-auto px-4 pt-3'}
+          className={cn('flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all', {
+            'min-h-[6rem]': isEditing
+          })}
           editor={editor}
         />
         <div
-          className={cn(
-            'flex w-full flex-row-reverse items-center justify-between pr-2 pb-2 pl-4 opacity-100 transition-all',
-            {
-              'opacity-0': !showFooter
-            }
-          )}
+          className={cn('flex w-full flex-row-reverse items-center justify-between pr-2 pl-4', {
+            hidden: !showFooter
+          })}
         >
-          <SubmitReflectionButton onClick={handleSubmit} disabled={readOnly || editor.isEmpty} />
+          <SubmitReflectionButton
+            className={cn('opacity-100 transition-all', {'opacity-0': !showButtons})}
+            onClick={handleSubmit}
+            disabled={readOnly || editor.isEmpty}
+          />
           {disableAnonymity && (
             <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
           )}
@@ -232,17 +236,14 @@ const PhaseItemEditor = (props: Props) => {
           {cardsInFlightRef.current.map((card) => {
             return (
               <CardInFlightStyles
-                className=''
                 key={card.key}
                 transform={card.transform}
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
-                <div className='py-[2px]'>
-                  <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
-                </div>
+                <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
                 {disableAnonymity && (
-                  <div className='pb-3'>
+                  <div className='py-2 pl-4'>
                     <ReflectionCardAuthor>
                       {viewerMeetingMember?.user.preferredName}
                     </ReflectionCardAuthor>
