@@ -29,6 +29,8 @@ const useMeetingMusicSync = (meetingId: string) => {
     graphql`
       query useMeetingMusicSyncQuery($meetingId: ID!) {
         viewer {
+          id
+          email
           meeting(meetingId: $meetingId) {
             id
             facilitatorUserId
@@ -219,7 +221,8 @@ const useMeetingMusicSync = (meetingId: string) => {
         meetingId,
         trackName: track,
         isFacilitator,
-        volume: roundedVolume
+        volume: roundedVolume,
+        email: data.viewer?.email
       })
     }
   }

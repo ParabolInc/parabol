@@ -30,24 +30,19 @@ const setMeetingMusic: MutationResolvers['setMeetingMusic'] = async (
 
   const track = trackSrc ? trackSrc.split('/').pop()?.replace('.mp3', '') : null
   if (track) {
+    const user = await dataLoader.get('users').loadNonNull(viewerId)
     if (isPlaying) {
-      analytics.musicPlayed(
-        {id: viewerId},
-        {
-          meetingId,
-          trackName: track,
-          isFacilitator: true
-        }
-      )
+      analytics.musicPlayed(user, {
+        meetingId,
+        trackName: track,
+        isFacilitator: true
+      })
     } else {
-      analytics.musicStopped(
-        {id: viewerId},
-        {
-          meetingId,
-          trackName: track,
-          isFacilitator: true
-        }
-      )
+      analytics.musicStopped(user, {
+        meetingId,
+        trackName: track,
+        isFacilitator: true
+      })
     }
   }
 
