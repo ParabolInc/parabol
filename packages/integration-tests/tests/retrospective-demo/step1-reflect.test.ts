@@ -23,6 +23,7 @@ test.describe('retrospective-demo / reflect page', () => {
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
     await page.type(startTextbox, 'Start doing this')
+    await page.press(startTextbox, 'Tab')
     await page.press(startTextbox, 'Enter')
 
     await expect(
@@ -36,6 +37,7 @@ test.describe('retrospective-demo / reflect page', () => {
     const stopTextbox = '[data-cy=reflection-column-Stop] [role=textbox]'
     await page.click(stopTextbox)
     await page.type(stopTextbox, 'Stop doing this')
+    await page.press(stopTextbox, 'Tab')
     await page.press(stopTextbox, 'Enter')
 
     await expect(
@@ -49,6 +51,7 @@ test.describe('retrospective-demo / reflect page', () => {
     const continueTextbox = '[data-cy=reflection-column-Continue] [role=textbox]'
     await page.click(continueTextbox)
     await page.fill(continueTextbox, 'Continue doing this')
+    await page.press(continueTextbox, 'Tab')
     await page.press(continueTextbox, 'Enter')
 
     await expect(
@@ -62,6 +65,7 @@ test.describe('retrospective-demo / reflect page', () => {
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
     await page.fill(startTextbox, 'Start doing this')
+    await page.press(startTextbox, 'Tab')
     await page.press(startTextbox, 'Enter')
 
     await expect(

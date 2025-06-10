@@ -19,10 +19,12 @@ test.describe('retrospective-demo / discuss page', () => {
     const startTextbox = '[data-cy=reflection-column-Start] [role=textbox]'
     await page.click(startTextbox)
     await page.type(startTextbox, 'Documenting things in Notion')
+    await page.press(startTextbox, 'Tab')
     await page.press(startTextbox, 'Enter')
 
     await page.click(startTextbox)
     await page.type(startTextbox, 'Writing things down')
+    await page.press(startTextbox, 'Tab')
     await page.press(startTextbox, 'Enter')
 
     await goToNextPhase(page)
