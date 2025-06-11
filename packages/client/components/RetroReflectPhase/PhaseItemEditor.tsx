@@ -165,6 +165,7 @@ const PhaseItemEditor = (props: Props) => {
       EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
     }
   })
+  const isFocused = editor?.isFocused
 
   useEffect(() => {
     if (!editor) return
@@ -191,7 +192,7 @@ const PhaseItemEditor = (props: Props) => {
   }, [editor])
 
   const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
-  const showButtons = isEditing || (editor && !editor?.isEmpty)
+  const showButtons = isFocused || isEditing || (editor && !editor?.isEmpty)
   const showFooter = showButtons || disableAnonymity
 
   const removeCardInFlight = (content: string) => () => {
@@ -212,7 +213,7 @@ const PhaseItemEditor = (props: Props) => {
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='pb-2'>
         <TipTapEditor
           className={cn('flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all', {
-            'min-h-[6rem]': isEditing
+            'min-h-16': isEditing || isFocused
           })}
           editor={editor}
         />

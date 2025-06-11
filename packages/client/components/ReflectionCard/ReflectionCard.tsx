@@ -1,3 +1,5 @@
+import {isNodeEmpty} from '@tiptap/core'
+import {Node as ProseMirrorNode} from '@tiptap/pm/model'
 import graphql from 'babel-plugin-relay/macro'
 import {MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -278,10 +280,16 @@ const ReflectionCard = (props: Props) => {
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
   }
 
+  const isFirstEdit = useMemo(() => {
+    if (!editor || !isEditing) return false
+    const node = ProseMirrorNode.fromJSON(editor.schema, JSON.parse(content))
+    return isNodeEmpty(node)
+  }, [editor, isEditing, content])
+
   const enableSpotlight =
     phaseType === 'group' && !isSpotlightOpen && !isComplete && !isDemoRoute() && !isEditing
   const showSpotlight = enableSpotlight && (isHovering || !isDesktop)
-  const showEditButton = !readOnly && isEditing
+  const showEditButton = !readOnly && isFirstEdit
 
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
