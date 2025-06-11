@@ -8,6 +8,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('deletedBy', 'varchar(100)', (col) => col.references('User.id').onDelete('cascade'))
     .execute()
 
+  await db.schema
+    .createIndex('idx_pages_deletedBy_deletedAt')
+    .on('Page')
+    .column('deletedBy')
+    .column('deletedAt desc')
+    .where('deletedBy', 'is not', null)
+    .execute()
+
   await sql`
 CREATE OR REPLACE FUNCTION "handleCascadeDeletePage"()
 RETURNS TRIGGER AS $$

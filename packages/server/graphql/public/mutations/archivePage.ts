@@ -38,29 +38,11 @@ const archivePage: MutationResolvers['archivePage'] = async (
       const parentPage = await dataLoader.get('pages').load(page.parentPageId)
       if (parentPage?.deletedAt) {
         parentPageId = null
-        const topLevelAncestor = await pg
-          .withRecursive('ancestors', (qb) =>
-            qb
-              .selectFrom('Page')
-              .select(['id', 'parentPageId', 'deletedAt', 'teamId'])
-              .where('id', '=', dbPageId)
-              .unionAll(
-                qb
-                  .selectFrom('Page as p')
-                  .innerJoin('ancestors as a', 'a.parentPageId', 'p.id')
-                  .select([
-                    'p.id as id',
-                    'p.parentPageId as parentPageId',
-                    'p.deletedAt as deletedAt',
-                    'p.teamId as teamId'
-                  ])
-              )
-          )
-          .selectFrom('ancestors')
-          .select(['id', 'teamId'])
-          .where('parentPageId', 'is', null)
-          .executeTakeFirst()
-        teamId = topLevelAncestor?.teamId ?? undefined
+        const topLevelAncestorPageId = page.ancestorIds[0]
+        if (topLevelAncestorPageId) {
+          const topLevelAncestorPage = await dataLoader.get('pages').load(topLevelAncestorPageId)
+          teamId = topLevelAncestorPage?.teamId ?? undefined
+        }
       }
     }
     await pg

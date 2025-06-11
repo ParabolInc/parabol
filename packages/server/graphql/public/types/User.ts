@@ -916,7 +916,7 @@ const User: ReqResolvers<'User'> = {
       .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-      .where('deletedAt', 'is', null)
+      .where('deletedBy', 'is', null)
       .orderBy('sortOrder')
       .limit(first + 1)
       .execute()
