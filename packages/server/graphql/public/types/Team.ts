@@ -64,6 +64,15 @@ const Team: TeamResolvers = {
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
   },
+  sortOrder: (source, _args) => {
+    if ('sortOrder' in source) {
+      return source.sortOrder as string
+    }
+    console.warn(
+      'sortOrder is not being pre-calculated! Did you call teamsWithUserSort dataloader?'
+    )
+    return '!'
+  },
   activeMeetings: async ({id: teamId}, _args, {authToken, dataLoader}) => {
     if (!isTeamMember(authToken, teamId)) return []
     // this is by team, not by meeting member, which caused an err in dev, not sure about prod

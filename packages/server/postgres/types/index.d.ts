@@ -18,7 +18,8 @@ import {
   selectTeams,
   selectTemplateScale,
   selectTemplateScaleRef,
-  type selectDiscussion
+  type selectDiscussion,
+  type selectPages
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
@@ -26,7 +27,10 @@ import {
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
-  Page as PagePG,
+  PageExternalAccess as PageExternalAccessPG,
+  PageOrganizationAccess as PageOrganizationAccessPG,
+  PageTeamAccess as PageTeamAccessPG,
+  PageUserAccess as PageUserAccessPG,
   TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
@@ -102,6 +106,10 @@ export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
 export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
-export type Page = Selectable<PagePG>
+export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages>
+export type PageExternalAccess = Selectable<PageExternalAccessPG>
+export type PageAccessUser = Omit<Selectable<PageUserAccessPG>, 'pageId'>
+export type PageAccessTeam = Omit<Selectable<PageTeamAccessPG>, 'pageId'>
+export type PageAccessOrganization = Omit<Selectable<PageOrganizationAccessPG>, 'pageId'>
 
 export type AIPrompt = Selectable<AIPromptPG>
