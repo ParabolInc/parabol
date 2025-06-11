@@ -5,9 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {ArchivedPagesButton} from './ArchivedPagesButton'
 interface Props {
   queryRef: PreloadedQuery<ArchivedPagesQuery>
 }
@@ -52,9 +50,10 @@ export const ArchivedPages = (props: Props) => {
       }
     })
   }
+  const header = edges.length === 0 ? 'No deleted pages' : 'Deleted pages'
   return (
     <div className='flex max-h-96 min-h-56 min-w-96 flex-col space-y-1 overflow-x-auto bg-white p-4 pb-0 text-slate-700'>
-      {edges.length === 0 && <div>No deleted pages </div>}
+      <div className='self-center text-sm font-semibold'>{header}</div>
       {edges.map(({node}) => {
         const {id: pageId, title} = node
         return (
@@ -65,42 +64,22 @@ export const ArchivedPages = (props: Props) => {
                 <div className='text-sm font-medium text-slate-700'>{title || '<Untitled>'}</div>
               </div>
               <div className='flex items-center justify-end space-x-1'>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={
-                        'flex size-5 cursor-pointer items-center justify-center rounded-sm bg-slate-200 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300 hover:bg-slate-400'
-                      }
-                    >
-                      <UndoIcon
-                        className='size-4'
-                        onClick={(e) => {
-                          e.preventDefault()
-                          restorePage(pageId)
-                        }}
-                      />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side={'bottom'}>{'Restore'}</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className={
-                        'flex size-5 cursor-pointer items-center justify-center rounded-sm bg-slate-200 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300 hover:bg-slate-400'
-                      }
-                    >
-                      <DeleteForeverIcon
-                        className='size-4'
-                        onClick={(e) => {
-                          e.preventDefault()
-                          deletePage(pageId)
-                        }}
-                      />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side={'bottom'}>{'Permanently Delete'}</TooltipContent>
-                </Tooltip>
+                <ArchivedPagesButton
+                  Icon={UndoIcon}
+                  tooltip='Restore'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    restorePage(pageId)
+                  }}
+                />
+                <ArchivedPagesButton
+                  Icon={DeleteForeverIcon}
+                  tooltip='Permanently Delete'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    deletePage(pageId)
+                  }}
+                />
               </div>
             </div>
           </div>

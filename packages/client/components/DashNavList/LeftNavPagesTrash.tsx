@@ -4,6 +4,7 @@ import {ArchivedPagesRoot} from '../../modules/pages/ArchivedPagesRoot'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {LeftNavHeader} from './LeftNavHeader'
 
 interface Props {}
 export const LeftNavPagesTrash = (_props: Props) => {
@@ -14,11 +15,11 @@ export const LeftNavPagesTrash = (_props: Props) => {
           <Popover.Root>
             <Popover.Trigger asChild>
               <div>
-                <div className='group flex flex-1 cursor-pointer items-center rounded-md py-2 text-xs font-semibold hover:bg-slate-300'>
-                  <div className='flex items-center text-sm font-medium'>
+                <div className='group flex flex-1 cursor-pointer rounded-md text-xs leading-5 font-semibold hover:bg-slate-300'>
+                  <LeftNavHeader>
                     <DeleteIcon />
                     <span>{'Trash'}</span>
-                  </div>
+                  </LeftNavHeader>
                 </div>
               </div>
             </Popover.Trigger>
