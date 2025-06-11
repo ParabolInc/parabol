@@ -1,0 +1,10 @@
+"""
+An edge in a connection.
+"""
+type PageEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Page!
+  cursor: String!
+}

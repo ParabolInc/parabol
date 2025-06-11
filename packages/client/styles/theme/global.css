@@ -8,6 +8,7 @@
 
 @config '../../../../tailwind.config.js';
 
+@custom-variant no-hover (@media not all and (hover: hover));
 @theme {
   /* Fonts */
   --font-sans:

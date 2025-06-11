@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader'
-import {Selectable, SqlBool, sql} from 'kysely'
+import {SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import MeetingTemplate from '../database/types/MeetingTemplate'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
@@ -7,7 +7,6 @@ import isValid from '../graphql/isValid'
 import {ReactableEnum} from '../graphql/public/resolverTypes'
 import {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
-import {TierEnum} from '../postgres/queries/generated/TierEnum'
 import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
   GitHubAuth
@@ -25,6 +24,8 @@ import getMeetingTaskEstimates, {
 import {
   selectMeetingSettings,
   selectNewMeetings,
+  selectPageAccess,
+  selectPageUserSortOrder,
   selectTasks,
   selectTeams
 } from '../postgres/select'
@@ -37,7 +38,7 @@ import {
   Team
 } from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
-import {TeamMeetingTemplate} from '../postgres/types/pg'
+import {Tierenum as TierEnum, type Pageroleenum} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
@@ -405,23 +406,6 @@ export const meetingTemplatesByType = (parent: RootDataLoader, dependsOn: Regist
   )
 }
 
-export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
-  return new DataLoader<string, Selectable<TeamMeetingTemplate>[], string>(
-    async (teamIds) => {
-      const pg = getKysely()
-      const teamMeetingTemplates = await pg
-        .selectFrom('TeamMeetingTemplate')
-        .selectAll()
-        .where('teamId', 'in', teamIds)
-        .execute()
-      return normalizeArrayResults(teamIds, teamMeetingTemplates, 'teamId')
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
 export const meetingTemplatesByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingTemplates')
   return new DataLoader<string, MeetingTemplate[], string>(
@@ -497,27 +481,6 @@ export const meetingStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterD
         })
       )
       return meetingStatsByOrgId
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const teamStatsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
-  dependsOn('teams')
-  return new DataLoader<string, {id: string; createdAt: Date}[], string>(
-    async (orgIds) => {
-      const teamStatsByOrgId = await Promise.all(
-        orgIds.map(async (orgId) => {
-          const teams = await parent.get('teamsByOrgIds').load(orgId)
-          return teams.map((team) => ({
-            id: `ts:${team.createdAt.getTime()}`,
-            createdAt: team.createdAt
-          }))
-        })
-      )
-      return teamStatsByOrgId
     },
     {
       ...parent.dataLoaderOptions
@@ -1046,6 +1009,54 @@ export const highestTierForUserId = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const pageAccessByUserId = (parent: RootDataLoader) => {
+  return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
+    async (keys) => {
+      const res = await selectPageAccess()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('pageId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.pageId, key.userId))
+          )
+        )
+        .execute()
+      return keys.map((key) => {
+        const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
+        return rule?.role ?? null
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
+    }
+  )
+}
+
+export const pageUserSortOrder = (parent: RootDataLoader) => {
+  return new DataLoader<{pageId: number; userId: string}, string | null, string>(
+    async (keys) => {
+      const res = await selectPageUserSortOrder()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('pageId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.pageId, key.userId))
+          )
+        )
+        .execute()
+      return keys.map((key) => {
+        const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
+        return rule?.sortOrder ?? null
+      })
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
     }
   )
 }

@@ -15,12 +15,12 @@ const {PORT, SOCKET_PORT} = process.env
 
 const USE_REFRESH = false
 module.exports = {
-  cache: {
-    type: 'filesystem',
-    buildDependencies: {
-      config: [__filename]
-    }
-  },
+  // cache: {
+  // type: 'filesystem'
+  // buildDependencies: {
+  //   config: [__filename]
+  // }
+  // },
   stats: 'errors-warnings',
   devServer: {
     allowedHosts: ['localhost', 'host.docker.internal'],
