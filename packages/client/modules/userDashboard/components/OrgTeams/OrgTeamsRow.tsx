@@ -31,28 +31,38 @@ const OrgTeamsRow = (props: Props) => {
   const isLead = viewerTeamMember?.isLead
   const isMember = !!viewerTeamMember && !isLead
 
+  const teamNameAndTags = (
+    <div className='flex flex-1 items-center'>
+      {name}
+      {isLead && (
+        <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+          Team Lead
+        </span>
+      )}
+      {isMember && (
+        <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>Member</span>
+      )}
+    </div>
+  )
+
   return (
     <tr className='hover:bg-slate-50 border-b border-slate-300'>
       <td className='flex items-center p-3'>
-        <Link
-          to={`teams/${teamId}`}
-          className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'
-        >
-          <div className='flex flex-1 items-center'>
-            {name}
-            {isLead && (
-              <span className='ml-2 rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
-                Team Lead
-              </span>
-            )}
-            {isMember && (
-              <span className='ml-2 rounded-full bg-sky-500 px-2 py-0.5 text-xs text-white'>
-                Member
-              </span>
-            )}
-          </div>
-          <ChevronRight className='ml-2 text-slate-600' />
-        </Link>
+        <td className='flex items-center p-3'>
+          {isLead || isMember ? (
+            <Link
+              to={`teams/${teamId}`}
+              className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'
+            >
+              {teamNameAndTags}
+              <ChevronRight className='ml-2 text-slate-600' />
+            </Link>
+          ) : (
+            <div className='text-gray-700 flex items-center text-lg font-bold'>
+              {teamNameAndTags}
+            </div>
+          )}
+        </td>
       </td>
       <td className='text-gray-600 p-3'>{teamMembersCount}</td>
       <td className='text-gray-600 p-3'>
