@@ -12,6 +12,7 @@ import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {LocalStorageKey} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAnonymousId from '../utils/getAnonymousId'
 import getOAuthPopupFeatures from '../utils/getOAuthPopupFeatures'
@@ -97,6 +98,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const isSSODefault = isSSOAuthEnabled && Boolean(params.get('sso'))
   const signInWithSSOOnly = isSSOAuthEnabled && !isInternalAuthEnabled
   const [isSSO, setIsSSO] = useState(isSSODefault || signInWithSSOOnly)
+  const [ssoMessage, setSSOMessage] = useState('')
   const [pendingDomain, setPendingDomain] = useState('')
   const [ssoDomain, setSSODomain] = useState<string>()
   const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
@@ -135,9 +137,18 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         // Don't cache it as we need a fresh one for login
         const url = await getSSOUrl(atmosphere, email)
         setSSODomain(url ? domain : undefined)
+        // hide the password field if it's SSO to avoid confusion
+        if (url && !isSSO) {
+          setIsSSO(true)
+          // easiest way to reset the message is on each isSSO change, so wait till that happened for the line above and set it after
+          setTimeout(() => setSSOMessage('Your Organization requires SSO'), 0)
+        }
       }
     }
   }
+  useEffect(() => {
+    setSSOMessage('')
+  }, [isSSO])
 
   const toggleSSO = () => {
     setIsSSO(!isSSO)
@@ -251,7 +262,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       <Form onSubmit={onSubmit}>
         {error && <ErrorAlert message={error.message} />}
         {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
-        <div className={signInWithSSOOnly ? 'hidden' : 'mt-4 mb-4'}>
+        <div className={cn('relative', signInWithSSOOnly ? 'hidden' : 'mt-4 mb-4')}>
           <FieldBlock isSSO={signInWithSSOOnly}>
             <EmailInputField
               autoFocus={!hasEmail}
@@ -260,6 +271,9 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
               onBlur={handleBlur}
             />
           </FieldBlock>
+          {ssoMessage && (
+            <div className='absolute w-full text-center text-sm font-medium'>{ssoMessage}</div>
+          )}
           {isInternalAuthEnabled && (
             <FieldBlock isSSO={isSSO}>
               <PasswordInputField
