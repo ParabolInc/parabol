@@ -135,6 +135,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         // Don't cache it as we need a fresh one for login
         const url = await getSSOUrl(atmosphere, email)
         setSSODomain(url ? domain : undefined)
+        // hide the password field if it's SSO to avoid confusion
+        if (url) {
+          setIsSSO(true)
+        }
       }
     }
   }
