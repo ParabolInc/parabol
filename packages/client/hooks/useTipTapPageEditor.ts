@@ -13,7 +13,7 @@ import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import type {History} from 'history'
-import {useMemo, useRef} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate, readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
@@ -99,7 +99,7 @@ export const useTipTapPageEditor = (
   providerRef.current = useMemo(() => {
     if (!pageId) return undefined
     if (providerRef.current) {
-      providerRef.current.disconnect()
+      providerRef.current.destroy()
     }
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
@@ -218,5 +218,10 @@ export const useTipTapPageEditor = (
     },
     [provider]
   )
+  useEffect(() => {
+    return () => {
+      provider?.destroy()
+    }
+  }, [])
   return {editor}
 }

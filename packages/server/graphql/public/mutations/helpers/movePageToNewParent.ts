@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../../../../postgres/getKysely'
 import {selectDescendantPages} from '../../../../postgres/select'
+import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
 
 export const movePageToNewParent = async (
   viewerId: string,
@@ -11,6 +12,7 @@ export const movePageToNewParent = async (
 ) => {
   const pg = getKysely()
   const trx = await pg.startTransaction().execute()
+
   await selectDescendantPages(trx, pageId)
     // Remove previous access for all descendants _that doesn't match the new parent's access_ (the exclusion means fewer writes)
     // Copy parent access to all descendants (if new parent has a different role, adopt that)
@@ -18,6 +20,7 @@ export const movePageToNewParent = async (
       qc
         .deleteFrom('PageUserAccess')
         .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+        .where('userId', '!=', viewerId)
         .where(({eb, not, exists}) =>
           not(
             exists(
@@ -28,7 +31,6 @@ export const movePageToNewParent = async (
             )
           )
         )
-        .where('userId', '!=', viewerId)
     )
     .with('delTeams', (qc) =>
       qc
@@ -97,7 +99,7 @@ export const movePageToNewParent = async (
             .doUpdateSet((eb) => ({
               role: eb.ref('excluded.role')
             }))
-            .where((eb) => eb(eb.ref('PageUserAccess.role'), '!=', eb.ref('excluded.role')))
+            .whereRef('PageUserAccess.role', '!=', 'excluded.role')
         )
     )
     .with('upsertTeams', (qc) =>
@@ -122,7 +124,7 @@ export const movePageToNewParent = async (
             .doUpdateSet((eb) => ({
               role: eb.ref('excluded.role')
             }))
-            .where((eb) => eb(eb.ref('PageTeamAccess.role'), '!=', eb.ref('excluded.role')))
+            .whereRef('PageTeamAccess.role', '!=', 'excluded.role')
         )
     )
     .with('upsertOrganizations', (qc) =>
@@ -147,7 +149,7 @@ export const movePageToNewParent = async (
             .doUpdateSet((eb) => ({
               role: eb.ref('excluded.role')
             }))
-            .where((eb) => eb(eb.ref('PageOrganizationAccess.role'), '!=', eb.ref('excluded.role')))
+            .whereRef('PageOrganizationAccess.role', '!=', 'excluded.role')
         )
     )
     .with('upsertExternals', (qc) =>
@@ -172,53 +174,78 @@ export const movePageToNewParent = async (
             .doUpdateSet((eb) => ({
               role: eb.ref('excluded.role')
             }))
-            .where((eb) => eb(eb.ref('PageExternalAccess.role'), '!=', eb.ref('excluded.role')))
+            .whereRef('PageExternalAccess.role', '!=', 'excluded.role')
         )
     )
     .updateTable('Page')
-    .set({
+    .set((eb) => ({
       teamId: null,
       parentPageId,
+      isPrivate: eb.selectFrom('Page').select('isPrivate').where('id', '=', parentPageId),
       isParentLinked: true,
       sortOrder,
       ancestorIds: [...ancestorIds, parentPageId]
-    })
+    }))
     .where('id', '=', pageId)
     .execute()
 
-  // make sure the viewer stays an owner no matter what so they can undo the action
-  await selectDescendantPages(trx, pageId)
-    .insertInto('PageUserAccess')
-    .columns(['pageId', 'userId', 'role'])
-    .expression((eb) =>
-      eb
-        .selectFrom('descendants as d')
-        .where(({not, exists, selectFrom}) =>
-          not(
-            exists(
-              selectFrom('PageAccess')
-                .select('pageId')
-                .whereRef('PageAccess.pageId', '=', 'd.id')
-                .where('PageAccess.userId', '=', viewerId)
-                .where('PageAccess.role', '=', 'owner')
-            )
+  // upsert viewer as owner IIF nothing else is the owner
+  // nothing else is the owner if PageAccess(pageId) has no owner
+  const strongestRole = await updatePageAccessTable(trx, pageId)
+    .selectFrom('PageAccess')
+    .select(({fn}) => fn.min('role').as('role'))
+    // since all children will have identical access, no need to query descendants
+    .where('pageId', '=', pageId)
+    .where('userId', '=', viewerId)
+    .executeTakeFirstOrThrow()
+
+  if (strongestRole.role !== 'owner') {
+    // make sure the viewer stays an owner no matter what so they can undo the action
+    await selectDescendantPages(trx, pageId)
+      .with('insertNew', (qc) =>
+        qc
+          .insertInto('PageAccess')
+          .columns(['userId', 'pageId', 'role'])
+          .expression((eb) =>
+            eb
+              .selectFrom('descendants')
+              .select((eb) => [
+                eb.ref('descendants.id').as('pageId'),
+                eb.val(viewerId).as('userId'),
+                sql`'owner'::"PageRoleEnum"`.as('role')
+              ])
           )
-        )
-        .select((eb) => [
-          eb.ref('d.id').as('pageId'),
-          eb.val(viewerId).as('userId'),
-          sql`'owner'::"PageRoleEnum"`.as('role')
-        ])
-        .distinct()
-    )
-    .onConflict((oc) =>
-      oc
-        .columns(['pageId', 'userId'])
-        .doUpdateSet((eb) => ({
-          role: eb.ref('excluded.role')
-        }))
-        .where(({eb, ref}) => eb(ref('PageUserAccess.role'), '!=', 'owner'))
-    )
-    .execute()
+          .onConflict((oc) =>
+            oc
+
+              .columns(['userId', 'pageId'])
+              .doUpdateSet((eb) => ({
+                role: eb.ref('excluded.role')
+              }))
+              .where(({eb, ref}) => eb('PageAccess.role', 'is distinct from', ref('excluded.role')))
+          )
+      )
+      .insertInto('PageUserAccess')
+      .columns(['pageId', 'userId', 'role'])
+      .expression((eb) =>
+        eb
+          .selectFrom('descendants as d')
+          .select((eb) => [
+            eb.ref('d.id').as('pageId'),
+            eb.val(viewerId).as('userId'),
+            sql`'owner'::"PageRoleEnum"`.as('role')
+          ])
+          .distinct()
+      )
+      .onConflict((oc) =>
+        oc
+          .columns(['pageId', 'userId'])
+          .doUpdateSet((eb) => ({
+            role: eb.ref('excluded.role')
+          }))
+          .whereRef('PageUserAccess.role', '!=', 'excluded.role')
+      )
+      .execute()
+  }
   await trx.commit().execute()
 }

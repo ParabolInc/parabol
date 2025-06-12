@@ -1,6 +1,8 @@
 import {GraphQLError} from 'graphql'
+import {sql} from 'kysely'
 import {positionBefore} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
+import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
@@ -45,19 +47,75 @@ const createPage: MutationResolvers['createPage'] = async (
     .limit(1)
     .executeTakeFirst()
   const sortOrder = positionBefore(topPage?.sortOrder ?? ' ')
-  const page = await getKysely()
+  const page = await pg
     .insertInto('Page')
     .values({
       userId: viewerId,
       parentPageId: dbParentPageId,
+      isPrivate: !(dbParentPageId || teamId),
       ancestorIds: parentPage?.ancestorIds.concat(dbParentPageId!) ?? [],
       teamId,
       sortOrder
     })
     .returningAll()
     .executeTakeFirstOrThrow()
-
-  analytics.pageCreated(viewer, page.id)
+  const {id: pageId} = page
+  const viewerAccessPromise = pg
+    .insertInto('PageUserAccess')
+    .values({userId: viewerId, pageId, role: 'owner'})
+    .execute()
+  if (dbParentPageId) {
+    await Promise.all([
+      pg
+        .insertInto('PageUserAccess')
+        .columns(['userId', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageUserAccess')
+            .select((eb) => ['userId', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+            .where('userId', '!=', viewerId)
+        )
+        .execute(),
+      pg
+        .insertInto('PageTeamAccess')
+        .columns(['teamId', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageTeamAccess')
+            .select((eb) => ['teamId', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+        )
+        .execute(),
+      pg
+        .insertInto('PageOrganizationAccess')
+        .columns(['orgId', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageOrganizationAccess')
+            .select((eb) => ['orgId', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+        )
+        .execute(),
+      pg
+        .insertInto('PageExternalAccess')
+        .columns(['email', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageExternalAccess')
+            .select((eb) => ['email', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+        )
+        .execute()
+    ])
+  } else if (teamId) {
+    await pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
+  }
+  await viewerAccessPromise
+  await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
+    .selectNoFrom(sql`1`.as('t'))
+    .execute()
+  analytics.pageCreated(viewer, pageId)
   return {page}
 }
 
