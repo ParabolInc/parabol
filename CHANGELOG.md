@@ -5,6 +5,39 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.8.1](https://github.com/ParabolInc/parabol/compare/v10.8.0...v10.8.1) (2025-06-12)
+
+
+### Fixed
+
+* do not show hyperlink into team members page in OrgTeamsRow if the viewer is not part of the team ([#11387](https://github.com/ParabolInc/parabol/issues/11387)) ([549b4a7](https://github.com/ParabolInc/parabol/commit/549b4a7f8b2ad982f2ceeebd33cf85e45de96e4a))
+* rbac performance ([#11422](https://github.com/ParabolInc/parabol/issues/11422)) ([cc64f37](https://github.com/ParabolInc/parabol/commit/cc64f373f21c37221ecc8e89cc1863d52fc1a84a))
+
+
+### Changed
+
+* facilitator music overrides non facilitator's music ([#11418](https://github.com/ParabolInc/parabol/issues/11418)) ([3366582](https://github.com/ParabolInc/parabol/commit/3366582b68e5c413d7b026483e5e9fafe9de396e))
+* Hide password field after entering an SSO email ([#11419](https://github.com/ParabolInc/parabol/issues/11419)) ([ed0f9a8](https://github.com/ParabolInc/parabol/commit/ed0f9a8f2b3429f807391f07b21b4ab3de96fd42))
+* track background music activity ([#11408](https://github.com/ParabolInc/parabol/issues/11408)) ([3a3357b](https://github.com/ParabolInc/parabol/commit/3a3357b1aadefcf61e91eba4e9ccf3fde32eea66))
+
+## [10.8.0](https://github.com/ParabolInc/parabol/compare/v10.7.2...v10.8.0) (2025-06-11)
+
+
+### Added
+
+* **pages:** RBAC  ([#11412](https://github.com/ParabolInc/parabol/issues/11412)) ([ce0f3ce](https://github.com/ParabolInc/parabol/commit/ce0f3ceff4fbdef0644ec142949fe3fb9db9f1e7))
+
+
+### Fixed
+
+* reduce MS Teams error logs ([#11413](https://github.com/ParabolInc/parabol/issues/11413)) ([94d8818](https://github.com/ParabolInc/parabol/commit/94d8818384c361538bb5d4f1b675310baff7e25c))
+* show meeting series without active meetings in dash ([#11367](https://github.com/ParabolInc/parabol/issues/11367)) ([0321138](https://github.com/ParabolInc/parabol/commit/03211381faeb7cfdbf081367e00ffcd7bdad105e))
+
+
+### Changed
+
+* improve recurring badge readability ([#11400](https://github.com/ParabolInc/parabol/issues/11400)) ([498e26a](https://github.com/ParabolInc/parabol/commit/498e26a38f717f189c62efde1ce4eb26ad500b44))
+
 ## [10.7.2](https://github.com/ParabolInc/parabol/compare/v10.7.1...v10.7.2) (2025-06-09)
 
 

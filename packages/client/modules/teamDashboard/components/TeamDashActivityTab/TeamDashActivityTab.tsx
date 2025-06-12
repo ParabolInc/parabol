@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamDashActivityTab_team$key} from '~/__generated__/TeamDashActivityTab_team.graphql'
 import DemoMeetingCard from '../../../../components/DemoMeetingCard'
@@ -18,15 +19,37 @@ const TeamDashActivityTab = (props: Props) => {
         activeMeetings {
           id
           ...MeetingCard_meeting
+          meetingSeries {
+            id
+            cancelledAt
+          }
+        }
+        activeMeetingSeries {
+          id
+          cancelledAt
+          mostRecentMeeting {
+            id
+            ...MeetingCard_meeting
+          }
         }
       }
     `,
     teamRef
   )
 
-  const {activeMeetings} = team
+  const {activeMeetings, activeMeetingSeries} = team
+  const meetings = useMemo(() => {
+    const meetingSeriesMeetings = activeMeetingSeries
+      .map(({mostRecentMeeting}) => mostRecentMeeting)
+      .filter(Boolean)
+    const otherActiveMeetings = activeMeetings.filter(
+      (meeting) => !meeting.meetingSeries || meeting.meetingSeries.cancelledAt
+    )
+    return [...meetingSeriesMeetings, ...otherActiveMeetings]
+  }, [activeMeetings, activeMeetingSeries])
+
   const transitioningMeetings = useTransition(
-    activeMeetings.map((meeting, displayIdx) => ({
+    meetings.map((meeting, displayIdx) => ({
       ...meeting,
       key: meeting.id,
       displayIdx

@@ -9,6 +9,7 @@ import tokyoLofi from '../../../static/sounds/tokyo-lofi.mp3'
 import {useMeetingMusicSyncQuery} from '../__generated__/useMeetingMusicSyncQuery.graphql'
 import SetMeetingMusicMutation from '../mutations/SetMeetingMusicMutation'
 import useAtmosphere from './useAtmosphere'
+import useManualClientSideTrack from './useManualClientSideTrack'
 import useMutationProps from './useMutationProps'
 
 export const availableTracks = [
@@ -23,10 +24,13 @@ const useMeetingMusicSync = (meetingId: string) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {onError, onCompleted, submitMutation} = useMutationProps()
+  const trackEvent = useManualClientSideTrack()
   const data = useLazyLoadQuery<useMeetingMusicSyncQuery>(
     graphql`
       query useMeetingMusicSyncQuery($meetingId: ID!) {
         viewer {
+          id
+          email
           meeting(meetingId: $meetingId) {
             id
             facilitatorUserId
@@ -47,7 +51,6 @@ const useMeetingMusicSync = (meetingId: string) => {
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [volume, setVolume] = useState<number>(0.5)
-  const [localOverride, setLocalOverride] = useState(false)
 
   // Stores track info when autoplay is blocked by browser, waits for user interaction to play
   const pendingPlay = useRef<{trackSrc: string} | null>(null)
@@ -55,7 +58,7 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   // Sync music state from server for non-facilitators
   useEffect(() => {
-    if (isFacilitator || localOverride || !audioRef.current) return
+    if (isFacilitator || !audioRef.current) return
 
     const {musicSettings} = meeting || {}
     if (!musicSettings) return
@@ -66,7 +69,8 @@ const useMeetingMusicSync = (meetingId: string) => {
     const shouldStartPlaying = shouldPlay && !isPlaying
     const shouldStopPlaying = !shouldPlay && isPlaying
 
-    if (shouldStartPlaying || (trackChanged && shouldPlay)) {
+    // Override local control when facilitator plays a track
+    if (shouldStartPlaying) {
       playTrack(trackSrc || currentTrackSrc)
     } else if (shouldStopPlaying) {
       audioRef.current.pause()
@@ -77,7 +81,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current.load()
       setCurrentTrackSrc(trackSrc)
     }
-  }, [musicSettings?.trackSrc, musicSettings?.isPlaying, isFacilitator, localOverride])
+  }, [musicSettings?.trackSrc, musicSettings?.isPlaying, isFacilitator])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
@@ -184,8 +188,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     if (isFacilitator) {
       syncMusicState(currentTrackSrc, false)
-    } else {
-      setLocalOverride(true)
     }
   }
 
@@ -199,8 +201,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     if (isFacilitator) {
       syncMusicState(trackSrc, false)
-    } else {
-      setLocalOverride(true)
     }
   }
 
@@ -209,6 +209,17 @@ const useMeetingMusicSync = (meetingId: string) => {
     setVolume(roundedVolume)
     if (audioRef.current) {
       audioRef.current.volume = roundedVolume
+    }
+
+    const track = currentTrackSrc ? currentTrackSrc.split('/').pop()?.replace('.mp3', '') : null
+    if (track) {
+      trackEvent('Music Volume Changed', {
+        meetingId,
+        trackName: track,
+        isFacilitator,
+        volume: roundedVolume,
+        email: data.viewer?.email
+      })
     }
   }
 
