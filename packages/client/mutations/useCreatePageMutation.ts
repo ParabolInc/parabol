@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ConnectionHandler, useMutation, UseMutationConfig} from 'react-relay'
 import {useCreatePageMutation as TCreatePageMutation} from '../__generated__/useCreatePageMutation.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {snackOnError} from './handlers/snackOnError'
 import {isPrivatePageConnectionLookup} from './useUpdatePageMutation'
 
 const mutation = graphql`
@@ -21,6 +23,7 @@ const mutation = graphql`
 
 export const useCreatePageMutation = () => {
   const [commit, submitting] = useMutation<TCreatePageMutation>(mutation)
+  const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TCreatePageMutation>) => {
     const {variables} = config
     const {parentPageId, teamId} = variables
@@ -37,6 +40,7 @@ export const useCreatePageMutation = () => {
         const node = store.getRootField('createPage')?.getLinkedRecord('page')
         safePutNodeInConn(conn, node, store, 'sortOrder', true)
       },
+      onError: snackOnError(atmosphere, 'createPageErr'),
       ...config
     })
   }

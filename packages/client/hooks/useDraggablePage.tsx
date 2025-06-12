@@ -3,6 +3,7 @@ import {useRef} from 'react'
 import {commitLocalUpdate, ConnectionHandler} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
+import {snackOnError} from '../mutations/handlers/snackOnError'
 import {
   isPrivatePageConnectionLookup,
   useUpdatePageMutation
@@ -131,16 +132,7 @@ export const useDraggablePage = (
           targetConnectionKey === 'User_privatePages' &&
           sourceConnectionKey !== targetConnectionKey
       },
-      onCompleted(_res, errors) {
-        const firstError = errors?.[0]?.message
-        if (firstError) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'PageSharingInput',
-            message: firstError,
-            autoDismiss: 5
-          })
-        }
-      },
+      onError: snackOnError(atmosphere, 'updatePageErr'),
       sourceTeamId,
       sourceParentPageId,
       sourceConnectionKey,

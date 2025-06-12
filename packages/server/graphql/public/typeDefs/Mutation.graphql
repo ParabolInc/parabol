@@ -1650,6 +1650,11 @@ type Mutation {
   ): SetMeetingSettingsPayload!
 
   """
+  Set the music being played in the meeting
+  """
+  setMeetingMusic(meetingId: ID!, trackSrc: String, isPlaying: Boolean!): SetMeetingMusicPayload!
+
+  """
   Update the role of the org user
   """
   setOrgUserRole(
@@ -2143,7 +2148,7 @@ type Mutation {
     true to revoke access for all but the mutator
     """
     makePrivate: Boolean
-  ): UpdatePagePayload
+  ): UpdatePagePayload!
   """
   link or unlink a page to its parent
   """

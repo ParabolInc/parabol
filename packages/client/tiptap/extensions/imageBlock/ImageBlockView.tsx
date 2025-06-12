@@ -35,6 +35,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
       <div className={cn('flex', alignClass)}>
         <div contentEditable={false} ref={imageWrapperRef} className='group relative w-fit'>
           <img
+            draggable={false}
             className='block'
             src={src}
             alt=''

@@ -256,6 +256,19 @@ export const completedMeetingsByTeamId = foreignKeyLoaderMaker(
       .execute()
   }
 )
+export const activeMeetingSeriesByTeamId = foreignKeyLoaderMaker(
+  'meetingSeries',
+  'teamId',
+  async (teamIds) => {
+    return getKysely()
+      .selectFrom('MeetingSeries')
+      .selectAll()
+      .where('teamId', 'in', teamIds)
+      .where('cancelledAt', 'is', null)
+      .orderBy('createdAt', 'desc')
+      .execute()
+  }
+)
 
 export const meetingMembersByMeetingId = foreignKeyLoaderMaker(
   'meetingMembers',

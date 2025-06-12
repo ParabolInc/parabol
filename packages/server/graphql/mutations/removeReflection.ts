@@ -8,7 +8,6 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import RemoveReflectionPayload from '../types/RemoveReflectionPayload'
-import removeEmptyReflectionGroup from './helpers/removeEmptyReflectionGroup'
 
 export default {
   type: RemoveReflectionPayload,
@@ -50,11 +49,23 @@ export default {
 
     // RESOLUTION
     await pg
-      .updateTable('RetroReflection')
+      .with('delReflection', (qc) =>
+        qc.updateTable('RetroReflection').set({isActive: false}).where('id', '=', reflectionId)
+      )
+      .updateTable('RetroReflectionGroup')
       .set({isActive: false})
-      .where('id', '=', reflectionId)
+      .where('id', '=', reflectionGroupId)
+      .where(
+        ({selectFrom}) =>
+          selectFrom('RetroReflection')
+            .select(({fn}) => fn.countAll().as('count'))
+            .where('reflectionGroupId', '=', reflectionGroupId)
+            .where('id', '!=', reflectionId)
+            .where('isActive', '=', true),
+        '=',
+        0
+      )
       .execute()
-    await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId, dataLoader)
     const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
     let unlockedStageIds
     if (reflections.length === 0) {

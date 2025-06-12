@@ -25,7 +25,7 @@ const handleCompletedRetrospectiveStage = async (
 ) => {
   const pg = getKysely()
   if (stage.phaseType === REFLECT || stage.phaseType === GROUP) {
-    const data: Record<string, any> = await removeEmptyReflections(meeting, dataLoader)
+    const data: Record<string, any> = await removeEmptyReflections(meeting.id)
 
     if (stage.phaseType === REFLECT) {
       const [reflectionGroups, unsortedReflections] = await Promise.all([

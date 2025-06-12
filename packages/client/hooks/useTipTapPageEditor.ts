@@ -13,7 +13,7 @@ import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import type {History} from 'history'
-import {useMemo} from 'react'
+import {useMemo, useRef} from 'react'
 import {commitLocalUpdate, readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
@@ -94,10 +94,13 @@ export const useTipTapPageEditor = (
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
   const pageIdNum = Number(pageId.split(':')[1])
-
+  const providerRef = useRef<TiptapCollabProvider>()
   // Connect to your Collaboration server
-  const provider = useMemo(() => {
+  providerRef.current = useMemo(() => {
     if (!pageId) return undefined
+    if (providerRef.current) {
+      providerRef.current.disconnect()
+    }
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
     // update the URL to match the title
@@ -134,6 +137,7 @@ export const useTipTapPageEditor = (
     return nextProvider
   }, [pageId, atmosphere.authToken])
 
+  const provider = providerRef.current
   const editor = useEditor(
     {
       content: '',
@@ -162,11 +166,24 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           placeholder: ({node, pos}) => {
-            if (node.type.name === 'heading') {
-              if (pos === 0) return 'New Page'
-              return `Heading ${node.attrs.level}`
+            const {type, attrs} = node
+            const {name} = type
+            switch (name) {
+              case 'heading':
+                if (pos === 0) return 'New Page'
+                return `Heading ${attrs.level}`
+              case 'codeBlock':
+                return 'New code'
+              case 'blockquote':
+                return 'New quote'
+              case 'paragraph':
+                return "Press '/' for commands"
+              case 'bulletList':
+              case 'listItem':
+              case 'orderedList':
+              default:
+                return ''
             }
-            return "Press '/' for commands"
           }
         }),
         Mention.configure(

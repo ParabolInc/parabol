@@ -1,10 +1,12 @@
 import type {JSONContent} from '@tiptap/core'
+import type {ControlledTransaction, Kysely} from 'kysely'
 import {NotNull, sql, type SelectQueryBuilder} from 'kysely'
 import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import {JiraDimensionField, ReactjiDB, TaskTag} from './types'
 import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import {AnyNotification} from './types/Notification'
+import type {DB} from './types/pg'
 import {AnyTaskIntegration} from './types/TaskIntegration'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
@@ -317,8 +319,27 @@ export const selectPages = () =>
     'Page.teamId',
     'title',
     'updatedAt',
-    'Page.userId'
+    'Page.userId',
+    'ancestorIds'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
 export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()
+
+export const selectDescendantPages = (
+  db: ControlledTransaction<DB, []> | Kysely<DB>,
+  pageId: number
+) =>
+  db.withRecursive('descendants', (qc) =>
+    qc
+      .selectFrom('Page')
+      .select(['id', 'parentPageId'])
+      .where('id', '=', pageId)
+      .unionAll(
+        qc
+          .selectFrom('Page as p')
+          .innerJoin('descendants as d', 'd.id', 'p.parentPageId')
+          .where('p.isParentLinked', '=', true)
+          .select(['p.id', 'p.parentPageId'])
+      )
+  )
