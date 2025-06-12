@@ -1,16 +1,54 @@
 import {GraphQLError} from 'graphql'
+import type {ControlledTransaction} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
+import type {DB} from '../../../postgres/types/pg'
+import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {MutationResolvers} from '../resolverTypes'
+import {MutationResolvers, type PageRoleEnum, type PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
+
+const getNextIsPrivate = async (
+  trx: ControlledTransaction<DB, []>,
+  pageId: number,
+  isPrivate: boolean,
+  role: PageRoleEnum | null,
+  viewerId: string,
+  subjectType: PageSubjectEnum,
+  subjectId: string
+) => {
+  console.log({isPrivate, role})
+  if (isPrivate && role) {
+    return subjectType !== 'user' || subjectId !== viewerId ? false : undefined
+  }
+  if (isPrivate || role) return undefined
+  // only need to do the expensive query if removing access on a public page might make it private
+  const willBePrivateRes = await trx
+    .selectNoFrom(({and, not, exists, selectFrom}) => [
+      and([
+        selectFrom('PageUserAccess')
+          .select(({eb, fn}) => eb(fn.countAll(), '<=', 1).as('val'))
+          .where('pageId', '=', pageId)
+          .limit(2),
+        not(exists(selectFrom('PageTeamAccess').select('pageId').where('pageId', '=', pageId))),
+        not(
+          exists(selectFrom('PageOrganizationAccess').select('pageId').where('pageId', '=', pageId))
+        ),
+        not(exists(selectFrom('PageExternalAccess').select('pageId').where('pageId', '=', pageId)))
+      ]).as('isPrivate')
+    ])
+    .executeTakeFirstOrThrow()
+  console.log({willBePrivateRes})
+  return willBePrivateRes.isPrivate ? true : undefined
+}
 
 const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   _source,
   {pageId, subjectType, subjectId, role, unlinkApproved},
-  {dataLoader}
+  {authToken, dataLoader}
 ) => {
+  const viewerId = getUserId(authToken)
   const pg = getKysely()
   const [dbPageId] = CipherId.fromClient(pageId)
   const tableMap = {
@@ -95,25 +133,103 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .execute()
   }
 
-  const [atLeastOneOwner] = await Promise.all([
-    // only need to check the top-most page because all LINKED children are guaranteed to have at least the same access
-    trx
-      .selectFrom('PageAccess')
-      .select('role')
-      .where('pageId', '=', dbPageId)
-      .where('role', '=', 'owner')
-      .limit(1)
-      .executeTakeFirst(),
-    unlinkFromParent &&
-      trx.updateTable('Page').set({isParentLinked: false}).where('id', '=', dbPageId).execute()
-  ])
+  const strongestRole = await selectDescendantPages(trx, dbPageId)
+    .with('unionAccess', (qc) =>
+      qc
+        .selectFrom('PageUserAccess')
+        .select(['userId', 'pageId', 'role'])
+        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+        .unionAll(({parens, selectFrom}) =>
+          parens(
+            selectFrom('PageTeamAccess')
+              .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+              .innerJoin('TeamMember', 'PageTeamAccess.teamId', 'TeamMember.teamId')
+              .where('TeamMember.isNotRemoved', '=', true)
+              .select(['TeamMember.userId', 'pageId', 'role'])
+          )
+        )
+        .unionAll(({parens, selectFrom}) =>
+          parens(
+            selectFrom('PageOrganizationAccess')
+              .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+              .innerJoin(
+                'OrganizationUser',
+                'PageOrganizationAccess.orgId',
+                'OrganizationUser.orgId'
+              )
+              .where('OrganizationUser.removedAt', 'is', null)
+              .select(['OrganizationUser.userId', 'pageId', 'PageOrganizationAccess.role'])
+          )
+        )
+    )
+    .with('nextPageAccess', (qc) =>
+      qc
+        .selectFrom('unionAccess')
+        .select(({fn}) => ['userId', 'pageId', fn.min('role').as('role')])
+        .groupBy(['userId', 'pageId'])
+    )
+    .with('insertNew', (qc) =>
+      qc
+        .insertInto('PageAccess')
+        .columns(['userId', 'pageId', 'role'])
+        .expression((eb) => eb.selectFrom('nextPageAccess').select(['userId', 'pageId', 'role']))
+        .onConflict((oc) =>
+          oc
 
-  if (atLeastOneOwner) {
-    await trx.commit().execute()
-  } else {
+            .columns(['userId', 'pageId'])
+            .doUpdateSet((eb) => ({
+              role: eb.ref('excluded.role')
+            }))
+            .where(({eb, ref}) => eb('PageAccess.role', 'is distinct from', ref('excluded.role')))
+        )
+    )
+    .with('deleteOld', (qc) =>
+      qc
+        .deleteFrom('PageAccess')
+        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
+        .where(({not, exists, selectFrom}) =>
+          not(
+            exists(
+              selectFrom('nextPageAccess')
+                .select('userId')
+                .whereRef('nextPageAccess.userId', '=', 'PageAccess.userId')
+                .whereRef('nextPageAccess.pageId', '=', 'PageAccess.pageId')
+            )
+          )
+        )
+    )
+    .selectFrom('PageAccess')
+    .select(({fn}) => fn.min('role').as('role'))
+    // since all children will have identical access, no need to query descendants
+    .where('pageId', '=', dbPageId)
+    .executeTakeFirst()
+
+  if (!strongestRole || strongestRole.role !== 'owner') {
     await trx.rollback().execute()
     throw new GraphQLError('A Page must have at least one owner')
   }
+
+  const willBePrivate = await getNextIsPrivate(
+    trx,
+    dbPageId,
+    page.isPrivate,
+    role || null,
+    viewerId,
+    nextSubjectType,
+    nextSubjectId
+  )
+
+  console.log({willBePrivate, unlinkFromParent})
+  if (willBePrivate !== undefined || unlinkFromParent) {
+    console.log('updating page', unlinkFromParent, willBePrivate)
+    await trx
+      .updateTable('Page')
+      .set({isParentLinked: unlinkFromParent ? false : undefined, isPrivate: willBePrivate})
+      .where('id', '=', dbPageId)
+      .execute()
+  }
+
+  await trx.commit().execute()
   dataLoader.get('pages').clear(dbPageId)
   return {pageId: dbPageId}
 }

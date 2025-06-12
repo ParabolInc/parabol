@@ -99,7 +99,7 @@ export const useTipTapPageEditor = (
   providerRef.current = useMemo(() => {
     if (!pageId) return undefined
     if (providerRef.current) {
-      providerRef.current.disconnect()
+      providerRef.current.destroy()
     }
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')

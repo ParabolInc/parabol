@@ -8,7 +8,7 @@ import {movePageToNewTeam} from './helpers/movePageToNewTeam'
 import {movePageToTopLevel} from './helpers/movePageToTopLevel'
 import {privatizePage} from './helpers/privatizePage'
 
-export const MAX_PAGE_DEPTH = 10
+export const MAX_PAGE_DEPTH = 23
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, parentPageId, makePrivate},
@@ -47,8 +47,10 @@ const updatePage: MutationResolvers['updatePage'] = async (
     teamId || null,
     dbParentPageId
   )
+  const start = Date.now()
   if (makePrivate && !page.isPrivate) {
     await privatizePage(viewerId, dbPageId, nextSortOrder)
+    return {pageId: dbPageId}
   } else if (teamId && teamId !== page.teamId) {
     await movePageToNewTeam(viewerId, dbPageId, teamId, nextSortOrder)
   } else if (dbParentPageId && dbParentPageId !== page.parentPageId) {
@@ -69,6 +71,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
   } else {
     await movePageToTopLevel(viewerId, dbPageId, nextSortOrder)
   }
+  const end = Date.now()
+  const actionType = teamId && teamId !== page.teamId ? '(team)' : '(parent)'
+  console.log('run time', end - start, actionType)
   return {pageId: dbPageId}
 }
 

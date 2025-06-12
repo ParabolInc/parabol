@@ -45,19 +45,105 @@ const createPage: MutationResolvers['createPage'] = async (
     .limit(1)
     .executeTakeFirst()
   const sortOrder = positionBefore(topPage?.sortOrder ?? ' ')
-  const page = await getKysely()
+  const page = await pg
     .insertInto('Page')
     .values({
       userId: viewerId,
       parentPageId: dbParentPageId,
+      isPrivate: !(dbParentPageId || teamId),
       ancestorIds: parentPage?.ancestorIds.concat(dbParentPageId!) ?? [],
       teamId,
       sortOrder
     })
     .returningAll()
     .executeTakeFirstOrThrow()
-
-  analytics.pageCreated(viewer, page.id)
+  const {id: pageId} = page
+  const viewerAccessPromise = pg
+    .insertInto('PageUserAccess')
+    .values({userId: viewerId, pageId, role: 'owner'})
+    .execute()
+  if (dbParentPageId) {
+    await Promise.all([
+      pg
+        .insertInto('PageUserAccess')
+        .columns(['userId', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageUserAccess')
+            .select((eb) => ['userId', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+            .where('userId', '!=', viewerId)
+        )
+        .execute(),
+      pg
+        .insertInto('PageTeamAccess')
+        .columns(['teamId', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageTeamAccess')
+            .select((eb) => ['teamId', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+        )
+        .execute(),
+      pg
+        .insertInto('PageOrganizationAccess')
+        .columns(['orgId', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageOrganizationAccess')
+            .select((eb) => ['orgId', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+        )
+        .execute(),
+      pg
+        .insertInto('PageExternalAccess')
+        .columns(['email', 'pageId', 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('PageExternalAccess')
+            .select((eb) => ['email', eb.val(pageId).as('pageId'), 'role'])
+            .where('pageId', '=', dbParentPageId)
+        )
+        .execute()
+    ])
+  } else if (teamId) {
+    await pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
+  }
+  await viewerAccessPromise
+  await pg
+    .with('nextPageAccess', (qc) =>
+      qc
+        .selectFrom('PageUserAccess')
+        .select(['userId', 'pageId', 'role'])
+        .where('pageId', '=', pageId)
+        .unionAll(({parens, selectFrom}) =>
+          parens(
+            selectFrom('PageTeamAccess')
+              .innerJoin('TeamMember', 'PageTeamAccess.teamId', 'TeamMember.teamId')
+              .where('pageId', '=', pageId)
+              .where('TeamMember.isNotRemoved', '=', true)
+              .select(['TeamMember.userId', 'pageId', 'role'])
+          )
+        )
+        .unionAll(({parens, selectFrom}) =>
+          parens(
+            selectFrom('PageOrganizationAccess')
+              .innerJoin(
+                'OrganizationUser',
+                'OrganizationUser.orgId',
+                'PageOrganizationAccess.orgId'
+              )
+              .where('pageId', '=', pageId)
+              .where('OrganizationUser.removedAt', 'is', null)
+              .select(['OrganizationUser.userId', 'pageId', 'PageOrganizationAccess.role'])
+          )
+        )
+    )
+    .insertInto('PageAccess')
+    .columns(['userId', 'pageId', 'role'])
+    .expression((eb) => eb.selectFrom('nextPageAccess').select(['userId', 'pageId', 'role']))
+    .execute()
+  analytics.pageCreated(viewer, pageId)
   return {page}
 }
 

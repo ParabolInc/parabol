@@ -8,79 +8,122 @@ export const movePageToNewTeam = async (
   sortOrder: string
 ) => {
   const pg = getKysely()
-  // When moving to a new team, revoke all previous access then add editor access for the team for all descendants
-  await selectDescendantPages(pg, pageId)
-    // don't delete the user record because the insert will see the same snapshot as this CTE, so it must do nothing if it exists
-    .with('delUsers', (qc) =>
+
+  const descendants = await selectDescendantPages(pg, pageId)
+    .selectFrom('descendants')
+    .select('id')
+    .execute()
+
+  const pageIds = descendants.map(({id}) => id)
+  const viewerInserts = pageIds.map((pageId) => ({
+    pageId,
+    userId: viewerId,
+    role: 'owner' as const
+  }))
+  const teamInserts = pageIds.map((pageId) => ({
+    pageId,
+    teamId,
+    role: 'editor' as const
+  }))
+  const trx = await pg.startTransaction().execute()
+
+  await Promise.all([
+    trx
+      .deleteFrom('PageUserAccess')
+      .where('pageId', 'in', pageIds)
+      .where('userId', '!=', viewerId)
+      .execute(),
+    trx
+      .deleteFrom('PageTeamAccess')
+      .where('pageId', 'in', pageIds)
+      .where('teamId', '!=', teamId)
+      .execute(),
+    trx.deleteFrom('PageOrganizationAccess').where('pageId', 'in', pageIds).execute(),
+    trx.deleteFrom('PageExternalAccess').where('pageId', 'in', pageIds).execute(),
+    // viewer ownership may have come from a team/org, so re-add it here
+    trx
+      .insertInto('PageUserAccess')
+      .values(viewerInserts)
+      .onConflict((oc) =>
+        oc
+          .columns(['pageId', 'userId'])
+          .doUpdateSet({role: 'owner'})
+          .whereRef('PageUserAccess.role', '!=', 'excluded.role')
+      )
+      .execute(),
+    trx
+      .insertInto('PageTeamAccess')
+      .values(teamInserts)
+      .onConflict((oc) =>
+        oc
+          .columns(['pageId', 'teamId'])
+          .doUpdateSet({role: 'editor'})
+          .whereRef('PageTeamAccess.role', '!=', 'excluded.role')
+      )
+      .execute(),
+    trx
+      .updateTable('Page')
+      .set({
+        teamId,
+        parentPageId: null,
+        isParentLinked: true,
+        isPrivate: false,
+        sortOrder,
+        ancestorIds: []
+      })
+      .where('id', '=', pageId)
+      .execute()
+  ])
+
+  await trx
+    .with('unionAccess', (qc) =>
       qc
-        .deleteFrom('PageUserAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
-        .where('userId', '!=', viewerId)
-    )
-    .with('delTeams', (qc) =>
-      qc
-        .deleteFrom('PageTeamAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
-        .where('teamId', '!=', teamId)
-    )
-    .with('delOrgs', (qc) =>
-      qc
-        .deleteFrom('PageOrganizationAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
-    )
-    .with('delExts', (qc) =>
-      qc
-        .deleteFrom('PageExternalAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
-    )
-    .with('reinsertOwner', (qc) =>
-      qc
-        // viewer ownership may have come from a team/org, so re-add it here
-        .insertInto('PageUserAccess')
-        .columns(['pageId', 'userId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('descendants')
-            .select(['id', eb.val(viewerId).as('userId'), eb.val('owner').as('role')])
+        .selectFrom('PageUserAccess')
+        .select(['userId', 'pageId', 'role'])
+        .where('pageId', 'in', pageIds)
+        .unionAll(({parens, selectFrom}) =>
+          parens(
+            selectFrom('PageTeamAccess')
+              .innerJoin('TeamMember', 'PageTeamAccess.teamId', 'TeamMember.teamId')
+              .where('pageId', 'in', pageIds)
+              .where('TeamMember.isNotRemoved', '=', true)
+              .select(['TeamMember.userId', 'pageId', 'role'])
+          )
         )
+    )
+    .with('nextPageAccess', (qc) =>
+      qc
+        .selectFrom('unionAccess')
+        .select(({fn}) => ['userId', 'pageId', fn.min('role').as('role')])
+        .groupBy(['userId', 'pageId'])
+    )
+    .with('insertNew', (qc) =>
+      qc
+        .insertInto('PageAccess')
+        .columns(['userId', 'pageId', 'role'])
+        .expression((eb) => eb.selectFrom('nextPageAccess').select(['userId', 'pageId', 'role']))
         .onConflict((oc) =>
           oc
-            .columns(['pageId', 'userId'])
-            .doUpdateSet({role: 'owner'})
-            .where(({eb, ref}) => eb(ref('PageUserAccess.role'), '!=', ref('excluded.role')))
-        )
-    )
-    .with('insertNewTeam', (qc) =>
-      qc
-        .insertInto('PageTeamAccess')
-        .columns(['pageId', 'teamId', 'role'])
-        .expression((eb) =>
-          eb
-            .selectFrom('descendants as d')
-            .select(({ref, val}) => [
-              ref('d.id').as('pageId'),
-              val(teamId).as('teamId'),
-              val('editor').as('role')
-            ])
-        )
-        .onConflict((oc) =>
-          oc
-            .columns(['pageId', 'teamId'])
+
+            .columns(['userId', 'pageId'])
             .doUpdateSet((eb) => ({
               role: eb.ref('excluded.role')
             }))
-            .where((eb) => eb(eb.ref('PageTeamAccess.role'), '!=', eb.ref('excluded.role')))
+            .where(({eb, ref}) => eb('PageAccess.role', 'is distinct from', ref('excluded.role')))
         )
     )
-    .updateTable('Page')
-    .set({
-      teamId,
-      parentPageId: null,
-      isParentLinked: true,
-      isPrivate: false,
-      sortOrder,
-      ancestorIds: []
-    })
-    .where('id', '=', pageId)
+    .deleteFrom('PageAccess')
+    .where('pageId', 'in', pageIds)
+    .where(({not, exists, selectFrom}) =>
+      not(
+        exists(
+          selectFrom('nextPageAccess')
+            .select('userId')
+            .whereRef('nextPageAccess.userId', '=', 'PageAccess.userId')
+            .whereRef('nextPageAccess.pageId', '=', 'PageAccess.pageId')
+        )
+      )
+    )
     .execute()
+  await trx.commit().execute()
 }
