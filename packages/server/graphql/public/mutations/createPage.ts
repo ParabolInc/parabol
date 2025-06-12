@@ -1,6 +1,8 @@
 import {GraphQLError} from 'graphql'
+import {sql} from 'kysely'
 import {positionBefore} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
+import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
@@ -110,38 +112,8 @@ const createPage: MutationResolvers['createPage'] = async (
     await pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
   }
   await viewerAccessPromise
-  await pg
-    .with('nextPageAccess', (qc) =>
-      qc
-        .selectFrom('PageUserAccess')
-        .select(['userId', 'pageId', 'role'])
-        .where('pageId', '=', pageId)
-        .unionAll(({parens, selectFrom}) =>
-          parens(
-            selectFrom('PageTeamAccess')
-              .innerJoin('TeamMember', 'PageTeamAccess.teamId', 'TeamMember.teamId')
-              .where('pageId', '=', pageId)
-              .where('TeamMember.isNotRemoved', '=', true)
-              .select(['TeamMember.userId', 'pageId', 'role'])
-          )
-        )
-        .unionAll(({parens, selectFrom}) =>
-          parens(
-            selectFrom('PageOrganizationAccess')
-              .innerJoin(
-                'OrganizationUser',
-                'OrganizationUser.orgId',
-                'PageOrganizationAccess.orgId'
-              )
-              .where('pageId', '=', pageId)
-              .where('OrganizationUser.removedAt', 'is', null)
-              .select(['OrganizationUser.userId', 'pageId', 'PageOrganizationAccess.role'])
-          )
-        )
-    )
-    .insertInto('PageAccess')
-    .columns(['userId', 'pageId', 'role'])
-    .expression((eb) => eb.selectFrom('nextPageAccess').select(['userId', 'pageId', 'role']))
+  await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
+    .selectNoFrom(sql`1`.as('t'))
     .execute()
   analytics.pageCreated(viewer, pageId)
   return {page}
