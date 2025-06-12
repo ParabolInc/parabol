@@ -223,8 +223,17 @@ const ReflectionCard = (props: Props) => {
     return !isEqualWhenSerialized(editor.getJSON(), JSON.parse(content))
   }, [content, editor?.getJSON()])
 
+  const isFirstEdit = useMemo(() => {
+    if (!editor || !isEditing) return false
+    const node = ProseMirrorNode.fromJSON(editor.schema, JSON.parse(content))
+    return isNodeEmpty(node)
+  }, [editor, isEditing, content])
+
   const handleEditorBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (isTempId(reflectionId)) return
+    // Creating a reflection in the group phase is different than in reflect phase. We're creating an empty reflection and start editing it.
+    // For the user however we want to have a consistent behaviour with the reflect phase. This means when they blur without editing, we don't want to submit the reflection.
+    if (isFirstEdit) return
     const newFocusedElement = e.relatedTarget as Node
     // don't trigger a blur if a button inside the element is clicked
     if (e.currentTarget.contains(newFocusedElement)) return
@@ -235,6 +244,7 @@ const ReflectionCard = (props: Props) => {
     if (isClickInModal) {
       return
     }
+
     handleContentUpdate()
     updateIsEditing(false)
     EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
@@ -280,12 +290,6 @@ const ReflectionCard = (props: Props) => {
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
   }
 
-  const isFirstEdit = useMemo(() => {
-    if (!editor || !isEditing) return false
-    const node = ProseMirrorNode.fromJSON(editor.schema, JSON.parse(content))
-    return isNodeEmpty(node)
-  }, [editor, isEditing, content])
-
   const enableSpotlight =
     phaseType === 'group' && !isSpotlightOpen && !isComplete && !isDemoRoute() && !isEditing
   const showSpotlight = enableSpotlight && (isHovering || !isDesktop)
@@ -325,7 +329,11 @@ const ReflectionCard = (props: Props) => {
           editor={editor}
         />
       </div>
-      <div className='flex flex-row-reverse items-center justify-between pr-2 pl-4'>
+      <div
+        className={cn('flex flex-row-reverse items-center justify-between pr-2 pl-4', {
+          'h-0': !showEditButton && !disableAnonymity
+        })}
+      >
         <div
           className={cn('flex items-center gap-1 opacity-0', {
             'opacity-100': showEditButton
