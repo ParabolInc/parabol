@@ -1,5 +1,6 @@
 import {Link} from '@mui/icons-material'
-import {BubbleMenu, Editor} from '@tiptap/react'
+import {Editor} from '@tiptap/react'
+import {BubbleMenu} from '@tiptap/react/menus'
 import {cn} from '../../ui/cn'
 import {BubbleMenuButton} from './BubbleMenuButton'
 import isTextSelected from './isTextSelected'

@@ -1,14 +1,10 @@
-import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
+import {HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import Document from '@tiptap/extension-document'
-import Focus from '@tiptap/extension-focus'
+import CollaborationCaret from '@tiptap/extension-collaboration-caret'
+import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import Placeholder from '@tiptap/extension-placeholder'
-import {TaskItem} from '@tiptap/extension-task-item'
-import {TaskList} from '@tiptap/extension-task-list'
-import Underline from '@tiptap/extension-underline'
+import {Focus, Placeholder} from '@tiptap/extensions'
 import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
@@ -30,6 +26,7 @@ import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import {TiptapCollabProvider} from '../tiptap/extensions/TiptapCollabProvider'
 import {ElementWidth} from '../types/constEnums'
 import type {FirstParam} from '../types/generics'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -59,7 +56,7 @@ const updateUrlWithSlug = (
   })
 }
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
-let socket: TiptapCollabProviderWebsocket
+let socket: HocuspocusProviderWebsocket
 const makeHocusPocusSocket = (authToken: string | null) => {
   if (!socket) {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
@@ -67,8 +64,8 @@ const makeHocusPocusSocket = (authToken: string | null) => {
       ? `${window.location.host}/hocuspocus`
       : `${window.location.hostname}:${__HOCUS_POCUS_PORT__}`
     const baseUrl = `${wsProtocol}//${host}?token=${authToken}`
-    socket = new TiptapCollabProviderWebsocket({
-      baseUrl
+    socket = new HocuspocusProviderWebsocket({
+      url: baseUrl
     })
   }
   return socket
@@ -142,14 +139,13 @@ export const useTipTapPageEditor = (
     {
       content: '',
       extensions: [
-        Document.extend({
-          content: 'heading block*'
+        StarterKit.extend({
+          document: {
+            content: 'heading block*'
+          }
+        }).configure({
+          undoRedo: false
         }),
-        StarterKit.configure({
-          document: false,
-          history: false
-        }),
-        Underline,
         TaskList,
         TaskItem.configure({
           nested: true
@@ -197,7 +193,7 @@ export const useTipTapPageEditor = (
         Collaboration.configure({
           document: provider?.document
         }),
-        CollaborationCursor.configure({
+        CollaborationCaret.configure({
           provider,
           user: {
             name: preferredName,
