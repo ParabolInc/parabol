@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
-import {Extension, generateText, useEditor, type Editor} from '@tiptap/react'
+import {generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useEffect, useRef, useState} from 'react'
 import Atmosphere from '../Atmosphere'
@@ -25,20 +25,6 @@ const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
   return !!obj
 }
 
-const isCursorMakingNode = (editor: Editor) => {
-  const from = editor.state.selection.$from
-  const nodeType = from.node().type.name
-  const parentType = from.node(-1)?.type.name
-  /*
-    Support cases (nodeType/parentType):
-      - Headings (heading/doc)
-      - Bullet Lists (paragraph/listItem)
-      - Blockquotes (paragraph/blockQuote)
-      - CodeBlocks (codeBlock/doc)
-  */
-  return !(nodeType === 'paragraph' && parentType === 'doc')
-}
-
 export const useTipTapReflectionEditor = (
   content: string,
   options: {
@@ -46,11 +32,9 @@ export const useTipTapReflectionEditor = (
     teamId?: string
     readOnly?: boolean
     placeholder?: string
-    onEnter?: () => void
-    // onEscape?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, placeholder, onEnter} = options
+  const {atmosphere, teamId, readOnly, placeholder} = options
   const [contentJSON] = useState(() => JSON.parse(content))
   const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
@@ -94,37 +78,6 @@ export const useTipTapReflectionEditor = (
         CharacterCount.configure({
           // this is a rough estimate because we store the JSON content as a string, not plaintext
           limit: 1900
-        }),
-        Extension.create({
-          name: 'commentKeyboardShortcuts',
-          addKeyboardShortcuts(this) {
-            return {
-              'Shift-Enter': ({editor}) => {
-                const isMakingNode = isCursorMakingNode(this.editor)
-                if (isMakingNode) return false
-                editor.storage.shifted = true
-                return editor.commands.keyboardShortcut('Enter')
-              },
-              Enter: ({editor}) => {
-                if (editor.storage.shifted) {
-                  editor.storage.shifted = undefined
-                  return false
-                }
-                const isMakingNode = isCursorMakingNode(this.editor)
-                if (isMakingNode) return false
-                if (onEnter) {
-                  onEnter()
-                } else {
-                  this.editor.commands.blur()
-                }
-                return true
-              }
-              // Escape: () => {
-              //   onEscape()
-              //   return true
-              // }
-            }
-          }
         })
       ].filter(isValid),
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
