@@ -150,7 +150,7 @@ const PhaseItemEditor = (props: Props) => {
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
-      placeholder: 'Share your thoughts, press / for blocks',
+      placeholder: 'Share your thoughts, hit / for commands',
       teamId,
       readOnly: !!readOnly
     }

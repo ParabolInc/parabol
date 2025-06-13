@@ -1,5 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
@@ -16,8 +17,14 @@ import {
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
-import {selectNewMeetings, selectNotifications, selectTasks} from '../../../postgres/select'
+import {
+  selectNewMeetings,
+  selectNotifications,
+  selectPages,
+  selectTasks
+} from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
@@ -590,8 +597,13 @@ const User: ReqResolvers<'User'> = {
     const teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
-    const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
-    teams.sort((a, b) => (a.name > b.name ? 1 : -1))
+    const teams = (
+      await Promise.all(
+        teamIds.map((teamId) => dataLoader.get('teamsWithUserSort').load({teamId, userId}))
+      )
+    )
+      .filter(isValid)
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
     return teams
   },
 
@@ -844,7 +856,69 @@ const User: ReqResolvers<'User'> = {
     return highestTier
   },
   pageInsights,
-  aiPrompts
+  aiPrompts,
+  page: async (_source, {pageId}, {dataLoader}) => {
+    const [dbId] = CipherId.fromClient(pageId)
+    const page = await dataLoader.get('pages').load(dbId)
+    if (!page) throw new GraphQLError('Page not found')
+    return page
+  },
+  pages: async (
+    _source,
+    {parentPageId, isPrivate, first, after, teamId},
+    {authToken, dataLoader}
+  ) => {
+    const isPrivateDefined = typeof isPrivate === 'boolean'
+    if ((parentPageId || teamId) && isPrivateDefined) {
+      throw new GraphQLError('isPrivate and parentPageId/teamId are mutually exclusive')
+    }
+    if (parentPageId && teamId) {
+      throw new GraphQLError('parentPageId and teamId are mutually exclusive')
+    }
+    const isTopLevel = !parentPageId
+    const viewerId = getUserId(authToken)
+    const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
+
+    const pagesPlusOne = await selectPages()
+      .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
+      .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
+      .where('PageAccess.userId', '=', viewerId)
+      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
+      .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
+      .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .orderBy('sortOrder')
+      .limit(first + 1)
+      .execute()
+
+    const hasNextPage = pagesPlusOne.length > first
+    const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+
+    if (isTopLevel && !isPrivate) {
+      // for shared pages, we need a user-specific sortOrder
+      await Promise.all(
+        pages.map(async (page) => {
+          const userSortOrder = await dataLoader
+            .get('pageUserSortOrder')
+            .load({pageId: page.id, userId: viewerId})
+          page.sortOrder = userSortOrder ?? page.sortOrder
+        })
+      )
+    }
+    return {
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage: false,
+        startCursor: pages.at(0)?.sortOrder,
+        endCursor: pages.at(-1)?.sortOrder
+      },
+      edges: pages.map((page) => ({
+        node: page,
+        cursor: page.sortOrder
+      }))
+    }
+  }
 }
 
 export default User

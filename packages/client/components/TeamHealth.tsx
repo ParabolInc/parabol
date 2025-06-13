@@ -1,6 +1,5 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
 import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
@@ -9,6 +8,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
 import SetTeamHealthVoteMutation from '../mutations/SetTeamHealthVoteMutation'
+import {cn} from '../ui/cn'
 import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
@@ -118,7 +118,7 @@ const TeamHealth = (props: Props) => {
                       id={`radio-${label}`}
                       key={label}
                       value={label}
-                      className={clsx(
+                      className={cn(
                         'group m-3 flex h-32 w-20 flex-col items-center justify-start rounded-sm bg-slate-300 p-0 data-[state=checked]:bg-grape-300',
                         canVote
                           ? 'hover:cursor-pointer hover:bg-grape-100'
@@ -127,7 +127,7 @@ const TeamHealth = (props: Props) => {
                     >
                       <label
                         htmlFor={`radio-${label}`}
-                        className={clsx(
+                        className={cn(
                           'flex h-24 items-center justify-center text-4xl group-data-[state=checked]:text-5xl',
                           canVote ? 'hover:cursor-pointer' : 'hover:cursor-not-allowed'
                         )}

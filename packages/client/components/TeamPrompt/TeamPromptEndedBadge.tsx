@@ -32,7 +32,7 @@ export const NextMeetingCountdown = (props: NextMeetingCountdownProps) => {
 const TeamPromptEndedBadgeRoot = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'start'
+  alignItems: 'center'
 })
 
 const StyledLink = styled(Link)({

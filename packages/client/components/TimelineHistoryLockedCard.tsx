@@ -69,11 +69,13 @@ const TimelineHistoryLockedCard = (props: Props) => {
       fragment TimelineHistoryLockedCard_organization on Organization {
         id
         name
+        isPaid
+        unpaidMessageHTML
       }
     `,
     organizationRef
   )
-  const {id: orgId, name: orgName} = organization ?? {}
+  const {id: orgId, name: orgName, isPaid, unpaidMessageHTML} = organization ?? {}
 
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
@@ -96,19 +98,33 @@ const TimelineHistoryLockedCard = (props: Props) => {
       upgradeTier: 'team',
       orgId
     })
-    history.push(`/me/organizations/${orgId}`)
+    history.push(`/me/organizations/${orgId}/billing`)
   }
+
+  const title = isPaid === false ? 'Organization Locked' : 'Past Meetings Locked'
+  const body =
+    isPaid === false ? (
+      (unpaidMessageHTML && <div dangerouslySetInnerHTML={{__html: unpaidMessageHTML}} />) || (
+        <>
+          Your organization <>{orgName}</> is currently locked. Please contact your billing leader
+          to unlock.
+        </>
+      )
+    ) : (
+      <>
+        Your plan includes 30 days of meeting history. Unlock the full meeting history of{' '}
+        <i>{orgName}</i> by upgrading.
+      </>
+    )
+  const action = isPaid === false ? 'Go To Billing Page' : 'Unlock Past Meetings'
 
   return (
     <Card ref={cardRef}>
       <Icon />
-      <HeaderText>Past Meetings Locked</HeaderText>
-      <CardBody>
-        Your plan includes 30 days of meeting history. Unlock the full meeting history of{' '}
-        <i>{orgName}</i> by upgrading.
-      </CardBody>
+      <HeaderText>{title}</HeaderText>
+      <CardBody>{body}</CardBody>
       <PrimaryButton size='medium' onClick={onClick}>
-        Unlock Past Meetings
+        {action}
       </PrimaryButton>
     </Card>
   )

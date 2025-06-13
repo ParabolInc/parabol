@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.5.1",
+  "version": "10.8.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -44,8 +44,7 @@
     "@types/sanitize-html": "^2.11.0",
     "@types/stripe-v2": "^2.0.1",
     "debug": "^4.1.1",
-    "strict-event-emitter-types": "^2.0.0",
-    "webpack-dev-server": "^5.0.4"
+    "strict-event-emitter-types": "^2.0.0"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "2.2.3",

@@ -1,10 +1,10 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
 import useTemplateCategoryMutation from '../../../mutations/UpdateTemplateCategoryMutation'
+import {cn} from '../../../ui/cn'
 import PlainButton from '../../PlainButton/PlainButton'
 import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, MAIN_CATEGORIES} from '../Categories'
 import ActivityDetailsBadge from './ActivityDetailsBadge'
@@ -36,9 +36,9 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild disabled={!isEditing}>
-        <PlainButton className={clsx(!isEditing && 'cursor-default', 'flex')} disabled={false}>
+        <PlainButton className={cn(!isEditing && 'cursor-default', 'flex')} disabled={false}>
           <ActivityDetailsBadge
-            className={clsx(`${CATEGORY_THEMES[category].primary}`, 'text-white select-none')}
+            className={cn(`${CATEGORY_THEMES[category].primary}`, 'text-white select-none')}
           >
             {CATEGORY_ID_TO_NAME[category]}
           </ActivityDetailsBadge>
@@ -60,10 +60,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
                   value={categoryId}
                 >
                   <span
-                    className={clsx(
-                      `${CATEGORY_THEMES[categoryId].primary}`,
-                      'h-5 w-5 rounded-full'
-                    )}
+                    className={cn(`${CATEGORY_THEMES[categoryId].primary}`, 'h-5 w-5 rounded-full')}
                   ></span>
                   <span className='pr-10 pl-5 text-xs font-semibold'>
                     {CATEGORY_ID_TO_NAME[categoryId]}

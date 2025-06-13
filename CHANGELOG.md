@@ -5,6 +5,92 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.8.0](https://github.com/ParabolInc/parabol/compare/v10.7.2...v10.8.0) (2025-06-11)
+
+
+### Added
+
+* **pages:** RBAC  ([#11412](https://github.com/ParabolInc/parabol/issues/11412)) ([ce0f3ce](https://github.com/ParabolInc/parabol/commit/ce0f3ceff4fbdef0644ec142949fe3fb9db9f1e7))
+
+
+### Fixed
+
+* reduce MS Teams error logs ([#11413](https://github.com/ParabolInc/parabol/issues/11413)) ([94d8818](https://github.com/ParabolInc/parabol/commit/94d8818384c361538bb5d4f1b675310baff7e25c))
+* show meeting series without active meetings in dash ([#11367](https://github.com/ParabolInc/parabol/issues/11367)) ([0321138](https://github.com/ParabolInc/parabol/commit/03211381faeb7cfdbf081367e00ffcd7bdad105e))
+
+
+### Changed
+
+* improve recurring badge readability ([#11400](https://github.com/ParabolInc/parabol/issues/11400)) ([498e26a](https://github.com/ParabolInc/parabol/commit/498e26a38f717f189c62efde1ce4eb26ad500b44))
+
+## [10.7.2](https://github.com/ParabolInc/parabol/compare/v10.7.1...v10.7.2) (2025-06-09)
+
+
+### Fixed
+
+* disappearing reflections on phase change ([#11404](https://github.com/ParabolInc/parabol/issues/11404)) ([6775c2e](https://github.com/ParabolInc/parabol/commit/6775c2e45e211bc7ddb106b05a4980e03d6dfcd9))
+
+
+### Changed
+
+* hide tips on mobile ([#11405](https://github.com/ParabolInc/parabol/issues/11405)) ([52432f8](https://github.com/ParabolInc/parabol/commit/52432f830c2fa3346e57a4e35e54f3d2d30178d9))
+
+## [10.7.1](https://github.com/ParabolInc/parabol/compare/v10.7.0...v10.7.1) (2025-06-06)
+
+
+### Fixed
+
+* update track imports ([#11401](https://github.com/ParabolInc/parabol/issues/11401)) ([4fb0e25](https://github.com/ParabolInc/parabol/commit/4fb0e25e1e0cead472921569eafad8dd85addc70))
+
+## [10.7.0](https://github.com/ParabolInc/parabol/compare/v10.6.0...v10.7.0) (2025-06-05)
+
+
+### Added
+
+* add background music for viewer ([#11341](https://github.com/ParabolInc/parabol/issues/11341)) ([1761a9a](https://github.com/ParabolInc/parabol/commit/1761a9a1663a20ca1dd709d4ab1a8879411f6a58))
+
+
+### Fixed
+
+* Revert "feat(pages): RBAC and Drag-n-Drop ([#11374](https://github.com/ParabolInc/parabol/issues/11374))" ([#11395](https://github.com/ParabolInc/parabol/issues/11395)) ([697f6dc](https://github.com/ParabolInc/parabol/commit/697f6dc04c4493c4620d8f312d5d74b16815f490))
+
+## [10.6.0](https://github.com/ParabolInc/parabol/compare/v10.5.4...v10.6.0) (2025-06-04)
+
+
+### Added
+
+* **pages:** RBAC and Drag-n-Drop ([#11374](https://github.com/ParabolInc/parabol/issues/11374)) ([a127958](https://github.com/ParabolInc/parabol/commit/a12795817ae66fd925f46aa8bfae4f35554c25b7))
+
+## [10.5.4](https://github.com/ParabolInc/parabol/compare/v10.5.3...v10.5.4) (2025-06-03)
+
+
+### Fixed
+
+* fix in OrgTeamMembers where {teamName} is not a valid HTML ([#11383](https://github.com/ParabolInc/parabol/issues/11383)) ([2ecd59e](https://github.com/ParabolInc/parabol/commit/2ecd59e8663d2506a2c62edfa7785d97d89e9b6d))
+* ungrouped reflection layout issue on kanban ([#11311](https://github.com/ParabolInc/parabol/issues/11311)) ([9a68c5f](https://github.com/ParabolInc/parabol/commit/9a68c5fc42f7d8b5b92405db8a0f3a61f887686c))
+
+## [10.5.3](https://github.com/ParabolInc/parabol/compare/v10.5.2...v10.5.3) (2025-06-03)
+
+
+### Changed
+
+* lock all meetings of unpaid orgs ([#11365](https://github.com/ParabolInc/parabol/issues/11365)) ([fdbe122](https://github.com/ParabolInc/parabol/commit/fdbe122d9b08e43def839c255428def05f67f14f))
+
+## [10.5.2](https://github.com/ParabolInc/parabol/compare/v10.5.1...v10.5.2) (2025-06-02)
+
+
+### Fixed
+
+* fix suUserCount after DB schema migration ([#11376](https://github.com/ParabolInc/parabol/issues/11376)) ([c58a54c](https://github.com/ParabolInc/parabol/commit/c58a54caf5805a364e0ac912f95a33914427ec2e))
+* **orgAdmin:** move editable team name component to the team members page ([#11357](https://github.com/ParabolInc/parabol/issues/11357)) ([0a4002c](https://github.com/ParabolInc/parabol/commit/0a4002c3d6140f8fd456efd8d11600cebbce05fa))
+* show correct emoji suggestion for :) and :( ([#11368](https://github.com/ParabolInc/parabol/issues/11368)) ([120b0fd](https://github.com/ParabolInc/parabol/commit/120b0fd91182143bcf5b66d78a985189ceea5119))
+
+
+### Changed
+
+* improve SAML error message for wrong IdP settings ([#11372](https://github.com/ParabolInc/parabol/issues/11372)) ([604a1f1](https://github.com/ParabolInc/parabol/commit/604a1f1956fa53811f23ca3e9d8096d0b830da1e))
+* replace clsx with cn ([#11336](https://github.com/ParabolInc/parabol/issues/11336)) ([3167f2a](https://github.com/ParabolInc/parabol/commit/3167f2a4308809236c6364256de4753dc22359f2))
+
 ## [10.5.1](https://github.com/ParabolInc/parabol/compare/v10.5.0...v10.5.1) (2025-05-26)
 
 

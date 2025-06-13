@@ -1,6 +1,6 @@
 import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '@mui/icons-material'
-import clsx from 'clsx'
 import * as React from 'react'
+import {cn} from '../ui/cn'
 
 interface Props {
   active: boolean | null
@@ -16,7 +16,7 @@ const Checkbox = (props: Props) => {
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'text-slate-600',
         'h-6',
         'w-6',

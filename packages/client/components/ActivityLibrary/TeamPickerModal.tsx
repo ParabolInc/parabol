@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 
-import clsx from 'clsx'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
@@ -12,6 +11,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
 import AddReflectTemplateMutation from '../../mutations/AddReflectTemplateMutation'
+import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
@@ -143,7 +143,7 @@ const TeamPickerModal = (props: Props) => {
           {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
           <div className='flex gap-2.5 self-end'>
             <button
-              className={clsx(
+              className={cn(
                 ACTION_BUTTON_CLASSES,
                 'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
               )}
@@ -153,7 +153,7 @@ const TeamPickerModal = (props: Props) => {
             </button>
             {selectedTeam.tier === 'starter' ? (
               <button
-                className={clsx(
+                className={cn(
                   ACTION_BUTTON_CLASSES,
                   'bg-rose-500 px-4 py-2 text-white hover:bg-rose-600',
                   submitting && 'cursor-wait'
@@ -164,7 +164,7 @@ const TeamPickerModal = (props: Props) => {
               </button>
             ) : (
               <button
-                className={clsx(
+                className={cn(
                   ACTION_BUTTON_CLASSES,
                   'bg-sky-500 px-4 py-2 text-white hover:bg-sky-600',
                   submitting && 'cursor-wait'

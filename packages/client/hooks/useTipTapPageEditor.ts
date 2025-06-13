@@ -12,13 +12,15 @@ import Underline from '@tiptap/extension-underline'
 import {generateJSON, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
-import {readInlineData} from 'relay-runtime'
+import type {History} from 'history'
+import {useMemo, useRef} from 'react'
+import {commitLocalUpdate, readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
 import {Markdown} from 'tiptap-markdown'
 import * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
+import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
@@ -29,11 +31,33 @@ import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
+import type {FirstParam} from '../types/generics'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
+let currentPrefix: string | undefined = undefined
+const updateUrlWithSlug = (
+  headerBlock: Y.XmlText,
+  pageIdNum: number,
+  history: History,
+  atmosphere: Atmosphere
+) => {
+  const plaintext = generateText(
+    generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
+    serverTipTapExtensions
+  )
+  const slug = toSlug(plaintext)
+  const prefix = slug ? `${slug}-` : ''
+  if (prefix === currentPrefix) return
+  currentPrefix = prefix
+  history.replace(`/pages/${prefix}${pageIdNum}`)
+  commitLocalUpdate(atmosphere, (store) => {
+    const title = plaintext.slice(0, 255)
+    store.get(`page:${pageIdNum}`)?.setValue(title, 'title')
+  })
+}
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 let socket: TiptapCollabProviderWebsocket
 const makeHocusPocusSocket = (authToken: string | null) => {
@@ -51,7 +75,7 @@ const makeHocusPocusSocket = (authToken: string | null) => {
 }
 
 export const useTipTapPageEditor = (
-  pageId: number,
+  pageId: string,
   options: {
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
@@ -69,40 +93,51 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const {history} = useRouter<{meetingId: string}>()
-  const [document] = useState(() => {
+  const pageIdNum = Number(pageId.split(':')[1])
+  const providerRef = useRef<TiptapCollabProvider>()
+  // Connect to your Collaboration server
+  providerRef.current = useMemo(() => {
+    if (!pageId) return undefined
+    if (providerRef.current) {
+      providerRef.current.disconnect()
+    }
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
     // update the URL to match the title
-    frag.observeDeep((events) => {
-      const docBlock = frag.get(0)
-      const headerBlock = docBlock instanceof Y.XmlText ? docBlock : docBlock.get(0)
-      for (const event of events) {
-        for (const delta of event.delta) {
-          if (delta.insert || delta.retain || delta.delete) {
-            if (event.target === headerBlock) {
-              const plaintext = generateText(
-                generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
-                serverTipTapExtensions
-              )
-              const slug = toSlug(plaintext)
-              const prefix = slug ? `${slug}-` : ''
-              history.replace(`/pages/${prefix}${pageId}`)
-            }
-          }
-        }
+    const nextProvider = new TiptapCollabProvider({
+      websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
+      name: pageId,
+      document: doc
+    })
+
+    const observeHeader = (headerBlock: Y.XmlText) => {
+      updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
+      headerBlock.observe(() => {
+        updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
+      })
+    }
+    const observeFragForHeader: FirstParam<Y.AbstractType<Y.YXmlEvent>['observeDeep']> = () => {
+      const headerElement = frag.get(0) as Y.XmlElement | null
+      const headerText = headerElement?.get(0) as Y.XmlText
+      if (headerText) {
+        observeHeader(headerText)
+        frag.unobserveDeep(observeFragForHeader)
+      }
+    }
+    nextProvider.on('synced', () => {
+      const headerElement = frag.get(0) as Y.XmlElement | null
+      const headerText = headerElement?.get(0) as Y.XmlText
+      if (headerText) {
+        observeHeader(headerText)
+      } else {
+        // header doesn't exist yet, observe the whole doc
+        frag.observeDeep(observeFragForHeader)
       }
     })
-    return doc
-  })
-  // Connect to your Collaboration server
-  const [provider] = useState(() => {
-    if (!pageId) return
-    return new TiptapCollabProvider({
-      websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      name: `page:${pageId}`,
-      document
-    })
-  })
+    return nextProvider
+  }, [pageId, atmosphere.authToken])
+
+  const provider = providerRef.current
   const editor = useEditor(
     {
       content: '',
@@ -131,11 +166,24 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           placeholder: ({node, pos}) => {
-            if (node.type.name === 'heading') {
-              if (pos === 0) return 'New Page'
-              return `Heading ${node.attrs.level}`
+            const {type, attrs} = node
+            const {name} = type
+            switch (name) {
+              case 'heading':
+                if (pos === 0) return 'New Page'
+                return `Heading ${attrs.level}`
+              case 'codeBlock':
+                return 'New code'
+              case 'blockquote':
+                return 'New quote'
+              case 'paragraph':
+                return "Press '/' for commands"
+              case 'bulletList':
+              case 'listItem':
+              case 'orderedList':
+              default:
+                return ''
             }
-            return "Press '/' for commands"
           }
         }),
         Mention.configure(
@@ -147,7 +195,7 @@ export const useTipTapPageEditor = (
         }),
         SearchAndReplace.configure(),
         Collaboration.configure({
-          document
+          document: provider?.document
         }),
         CollaborationCursor.configure({
           provider,
@@ -168,7 +216,7 @@ export const useTipTapPageEditor = (
       autofocus: true,
       editable: true
     },
-    []
+    [provider]
   )
   return {editor}
 }

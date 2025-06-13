@@ -31,8 +31,9 @@ export const SlashCommandMenu = forwardRef(
     }
 
     const enterHandler = () => {
-      const title = flatItems[selectedIndex]!.title
-      selectItem(title)
+      const nextItem = flatItems[selectedIndex]
+      if (!nextItem) return
+      selectItem(nextItem.title)
     }
 
     useEffect(() => setSelectedIndex(0), [items])

@@ -1,13 +1,21 @@
+interface MusicSettings {
+  trackSrc: String
+  isPlaying: Boolean
+  timestamp: Float
+}
+
 extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  musicSettings: MusicSettings
 }
 
 extend type ActionMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
+  musicSettings: MusicSettings
 }
 
 type ParabolSearchQuery {
@@ -29,6 +37,7 @@ extend type PokerMeeting {
   parabolSearchQuery: ParabolSearchQuery!
   azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
   linearSearchQuery: LinearSearchQuery!
+  musicSettings: MusicSettings
 }
 
 extend type RetrospectiveMeeting {
@@ -40,6 +49,7 @@ extend type RetrospectiveMeeting {
   spotlightReflectionId: String
   spotlightSearchQuery: String
   showTranscription: Boolean!
+  musicSettings: MusicSettings
 }
 
 extend type TeamPromptMeeting {
@@ -49,11 +59,15 @@ extend type TeamPromptMeeting {
   isRightDrawerOpen: Boolean!
   showWorkSidebar: Boolean!
   showSidebar: Boolean!
+  musicSettings: MusicSettings
 }
 
 extend type Team {
   teamMemberFilter: TeamMember
   editingScaleId: ID
+  # Used for Page DnD dropping on a team
+  isDraggingFirstChild: Boolean
+  isDraggingLastChild: Boolean
 }
 
 extend type TeamMember {
@@ -77,6 +91,15 @@ extend type User {
   pageName: String
   # The team we should default to in team pickers, etc.
   preferredTeamId: ID
+  # The ID of the Page that is currently being dragged
+  draggingPageId: ID
+  # True if the page being dragged is private (private pages cannot be dragged to top-level shared)
+  draggingPageIsPrivate: Boolean
+}
+
+extend type Page {
+  isDraggingFirstChild: Boolean
+  isDraggingLastChild: Boolean
 }
 
 extend type Task {

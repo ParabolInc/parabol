@@ -8,12 +8,15 @@
 
 @config '../../../../tailwind.config.js';
 
+@custom-variant no-hover (@media not all and (hover: hover));
 @theme {
   /* Fonts */
-  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-mono: 'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+  --font-sans:
+    'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
 
   /* Palette */
   --color-*: initial;
@@ -31,7 +34,7 @@
   --color-tomato-600: #f23b31;
   --color-tomato-700: #d5211a;
   --color-tomato-800: #9f201e;
-  --color-tomato-900: #6D1D1;
+  --color-tomato-900: #6d1d1d;
   --color-terra-100: #fedccd;
   --color-terra-200: #ffb89c;
   --color-terra-300: #fe975d;
@@ -40,7 +43,7 @@
   --color-terra-600: #a34f25;
   --color-terra-700: #823917;
   --color-terra-800: #501f08;
-  --color-terra-900: #3A140;
+  --color-terra-900: #3a1404;
   --color-gold-100: #faebd3;
   --color-gold-200: #fadc9e;
   --color-gold-300: #ffcc63;
@@ -49,7 +52,7 @@
   --color-gold-600: #a36200;
   --color-gold-700: #855000;
   --color-gold-800: #703c00;
-  --color-gold-900: #522C0;
+  --color-gold-900: #522c00;
   --color-grass-100: #ecf1a7;
   --color-grass-200: #dee58a;
   --color-grass-300: #c4cf66;
@@ -58,7 +61,7 @@
   --color-grass-600: #91a617;
   --color-grass-700: #73880c;
   --color-grass-800: #556704;
-  --color-grass-900: #35420;
+  --color-grass-900: #354200;
   --color-forest-100: #e3f7d4;
   --color-forest-200: #c8ebad;
   --color-forest-300: #9ec87e;
@@ -67,7 +70,7 @@
   --color-forest-600: #528433;
   --color-forest-700: #427326;
   --color-forest-800: #335f1b;
-  --color-forest-900: #244A1;
+  --color-forest-900: #244a11;
   --color-jade-100: #cff2de;
   --color-jade-200: #abedc8;
   --color-jade-300: #91e8b7;
@@ -76,7 +79,7 @@
   --color-jade-600: #2d9f5f;
   --color-jade-700: #1d8647;
   --color-jade-800: #116931;
-  --color-jade-900: #08491;
+  --color-jade-900: #08491e;
   --color-aqua-100: #cbecf0;
   --color-aqua-200: #a4dee5;
   --color-aqua-300: #7ccfd9;
@@ -85,7 +88,7 @@
   --color-aqua-600: #2792aa;
   --color-aqua-700: #1c748d;
   --color-aqua-800: #12566d;
-  --color-aqua-900: #0A3A4;
+  --color-aqua-900: #0a3a4c;
   --color-sky-100: #e8f4fc;
   --color-sky-200: #bbddf7;
   --color-sky-300: #8ec7f1;
@@ -94,7 +97,7 @@
   --color-sky-600: #14649e;
   --color-sky-700: #0f4a76;
   --color-sky-800: #0a314d;
-  --color-sky-900: #051A2;
+  --color-sky-900: #051a29;
   --color-lilac-100: #eeedf7;
   --color-lilac-200: #d4d2ef;
   --color-lilac-300: #b7b4e9;
@@ -103,7 +106,7 @@
   --color-lilac-600: #5454e3;
   --color-lilac-700: #3333cc;
   --color-lilac-800: #2121ab;
-  --color-lilac-900: #1A1A7;
+  --color-lilac-900: #1a1a7f;
   --color-grape-100: #bd6bd6;
   --color-grape-200: #b66bd6;
   --color-grape-300: #af6bd6;
@@ -112,7 +115,7 @@
   --color-grape-600: #7340b5;
   --color-grape-700: #493272;
   --color-grape-800: #2d1d53;
-  --color-grape-900: #170F3;
+  --color-grape-900: #170f34;
   --color-fuscia-100: #edd5f1;
   --color-fuscia-200: #e4b5e8;
   --color-fuscia-300: #de94e1;
@@ -121,7 +124,7 @@
   --color-fuscia-600: #bc29b2;
   --color-fuscia-700: #941e88;
   --color-fuscia-800: #6b1460;
-  --color-fuscia-900: #410B3;
+  --color-fuscia-900: #410b38;
   --color-rose-100: #f9e2ed;
   --color-rose-200: #f4bed7;
   --color-rose-300: #f099bf;
@@ -130,7 +133,7 @@
   --color-rose-600: #eb195f;
   --color-rose-700: #c20f45;
   --color-rose-800: #95092f;
-  --color-rose-900: #66051;
+  --color-rose-900: #66051c;
   --color-slate-100: #f8f7fc;
   --color-slate-200: #f1f0fa;
   --color-slate-300: #e0ddec;
@@ -139,7 +142,7 @@
   --color-slate-600: #82809a;
   --color-slate-700: #444258;
   --color-slate-800: #2d2d39;
-  --color-slate-900: #1C1C2;
+  --color-slate-900: #1c1c21;
   --color-success-light: #2db553;
   --color-starter: #f2e1f7;
   --color-team: #cbecf0;
@@ -489,17 +492,6 @@
     margin-inline-start: 2px;
   }
 
-  /* For pages, only show placeholder on focused empty p lines */
-  p.is-empty.has-focus:not(li *)::before,
-  /* For everything else placeholder shows when empty */
-  p.is-empty:not(.page-editor)::before {
-    content: attr(data-placeholder);
-    float: left;
-    color: hsl(from var(--color-slate-700) h s l / 0.5);
-    pointer-events: none;
-    height: 0;
-  }
-
   a {
     text-decoration: underline;
     color: var(--color-slate-700);
@@ -528,6 +520,19 @@
   hr {
     border-top: 1px solid var(--color-slate-400);
   }
+}
+
+/* If a page title is empty, always show it */
+/* If a top-level page block is empty, show when focused */
+/* For other editors, only show placeholder when the whole thing is empty */
+.page-editor .tiptap > h1.is-empty::before,
+.page-editor .tiptap > .is-empty.has-focus::before,
+.tiptap > .is-editor-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(from var(--color-slate-700) h s l / 0.5);
+  pointer-events: none;
+  height: 0;
 }
 
 .ProseMirror-focused:focus {

@@ -20,6 +20,7 @@ import {NewMeetingPhaseTypeEnum} from '../__generated__/MeetingControlBar_meetin
 import useClickConfirmation from '../hooks/useClickConfirmation'
 import {bottomBarShadow, desktopBarShadow} from '../styles/elevation'
 import showTimerInPhase from '../utils/showTimerInPhase'
+import BottomControlBarMusic from './BottomControlBarMusic'
 import BottomControlBarReady from './BottomControlBarReady'
 import BottomControlBarRejoin from './BottomControlBarRejoin'
 import BottomControlBarTips from './BottomControlBarTips'
@@ -108,6 +109,7 @@ const MeetingControlBar = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {viewerId} = atmosphere
   const {
     endedAt,
@@ -127,10 +129,11 @@ const MeetingControlBar = (props: Props) => {
   const isCheckIn = phaseType === 'checkin'
   const isPoker = meetingType === 'poker'
   const getPossibleButtons = () => {
-    const buttons = ['tips']
+    const buttons = ['music']
+    if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
+    if (isDesktop) buttons.push('tips')
     if (!isFacilitating && !isCheckIn && !isComplete && !isPoker) buttons.push('ready')
     if (!isFacilitating && localStageId !== facilitatorStageId) buttons.push('rejoin')
-    if (isFacilitating && !isComplete && showTimerInPhase(phaseType)) buttons.push('timer')
     if ((isFacilitating || isPoker) && findStageAfterId(phases, localStageId)) buttons.push('next')
     if (isFacilitating) buttons.push('end')
     return buttons.map((key) => ({key}))
@@ -139,7 +142,6 @@ const MeetingControlBar = (props: Props) => {
   const [confirmingButton, setConfirmingButton] = useClickConfirmation()
   const cancelConfirm = confirmingButton ? () => setConfirmingButton('') : undefined
   const tranChildren = useTransition(buttons)
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const controlBarWidth =
     buttons.length * ElementWidth.CONTROL_BAR_BUTTON + ElementWidth.CONTROL_BAR_PADDING * 2
   const left = useLeft(controlBarWidth, isRightDrawerOpen, showSidebar)
@@ -167,6 +169,8 @@ const MeetingControlBar = (props: Props) => {
             key
           }
           switch (key) {
+            case 'music':
+              return <BottomControlBarMusic {...tranProps} meetingId={meetingId} />
             case 'tips':
               return (
                 <BottomControlBarTips

@@ -1,6 +1,5 @@
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
-import clsx from 'clsx'
 import {Fragment, useEffect, useMemo, useState} from 'react'
 import {
   PreloadedQuery,
@@ -21,6 +20,7 @@ import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
+import {cn} from '../../ui/cn'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import IconLabel from '../IconLabel'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
@@ -391,7 +391,7 @@ export const ActivityLibrary = (props: Props) => {
             {(availableCategoryIds as Array<AllCategoryID | typeof QUICK_START_CATEGORY_ID>).map(
               (category) => (
                 <Link
-                  className={clsx(
+                  className={cn(
                     'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
                     category === categoryId && searchQuery.length === 0
                       ? [

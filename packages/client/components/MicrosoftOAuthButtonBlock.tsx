@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import clsx from 'clsx'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import logo from '../styles/theme/images/graphics/microsoft.svg'
+import {cn} from '../ui/cn'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
@@ -52,12 +52,12 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
       <RaisedButton
         onClick={openOAuth}
         waiting={submitting}
-        className={clsx(
+        className={cn(
           'mt-4 h-10 w-60 justify-start px-4 disabled:opacity-100',
           submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
         )}
       >
-        <img src={logo} className={clsx('mx-4 h-[18px] w-[18px]', submitting && 'saturate-0')} />
+        <img src={logo} className={cn('mx-4 h-[18px] w-[18px]', submitting && 'saturate-0')} />
         <div>{label}</div>
       </RaisedButton>
       {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}

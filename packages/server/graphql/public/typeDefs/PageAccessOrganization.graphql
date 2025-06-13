@@ -1,0 +1,4 @@
+type PageAccessOrganization {
+  organization: Organization!
+  role: PageRoleEnum!
+}
