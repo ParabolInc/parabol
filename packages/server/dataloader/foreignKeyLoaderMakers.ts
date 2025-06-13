@@ -145,7 +145,8 @@ export const organizationUsersByOrgId = foreignKeyLoaderMaker(
 export const scalesByTeamId = foreignKeyLoaderMaker('templateScales', 'teamId', async (teamIds) => {
   return selectTemplateScale()
     .where('teamId', 'in', teamIds)
-    .orderBy(['isStarter', 'name'])
+    .orderBy('isStarter')
+    .orderBy('name')
     .execute()
 })
 
