@@ -22,6 +22,7 @@ import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {
+  selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
   selectTasks,
@@ -30,6 +31,7 @@ import {
 import {
   FeatureFlag,
   Insight,
+  MassInvitation,
   MeetingSettings,
   OrganizationUser,
   Task,
@@ -1007,6 +1009,30 @@ export const highestTierForUserId = (parent: RootDataLoader) => {
     },
     {
       ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const massInvitationsByTeamIdUserId = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; userId: string}, MassInvitation[], string>(
+    async (keys) => {
+      const res = await selectMassInvitations()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.userId))
+          )
+        )
+        .orderBy('expiration', 'desc')
+        .execute()
+      return keys.map(
+        (key) => res.filter((doc) => doc.teamId === key.teamId && doc.userId === key.userId)!
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
     }
   )
 }
