@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.8.2](https://github.com/ParabolInc/parabol/compare/v10.8.1...v10.8.2) (2025-06-13)
+
+
+### Changed
+
+* Reflect phase restyling ([#11375](https://github.com/ParabolInc/parabol/issues/11375)) ([7fe329e](https://github.com/ParabolInc/parabol/commit/7fe329ec7d72a23fd1be4c1c4cae4701471d1dce))
+
 ## [10.8.1](https://github.com/ParabolInc/parabol/compare/v10.8.0...v10.8.1) (2025-06-12)
 
 
