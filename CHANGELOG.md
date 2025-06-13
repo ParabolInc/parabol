@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.9.1](https://github.com/ParabolInc/parabol/compare/v10.9.0...v10.9.1) (2025-06-13)
+
+
+### Fixed
+
+* migration order for delete pages ([#11430](https://github.com/ParabolInc/parabol/issues/11430)) ([534d12f](https://github.com/ParabolInc/parabol/commit/534d12f924f58682cbd3cbbd2705ce958f938959))
+* refactor mass invitation to support org admin invites ([#11433](https://github.com/ParabolInc/parabol/issues/11433)) ([0086621](https://github.com/ParabolInc/parabol/commit/008662161b02719453844013f0d5b79229cbfac5))
+
 ## [10.9.0](https://github.com/ParabolInc/parabol/compare/v10.8.2...v10.9.0) (2025-06-13)
 
 
