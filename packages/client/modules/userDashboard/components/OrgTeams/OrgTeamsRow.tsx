@@ -7,10 +7,11 @@ import {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.g
 
 type Props = {
   teamRef: OrgTeamsRow_team$key
+  isOrgAdmin?: boolean
 }
 
 const OrgTeamsRow = (props: Props) => {
-  const {teamRef} = props
+  const {teamRef, isOrgAdmin} = props
   const team = useFragment(
     graphql`
       fragment OrgTeamsRow_team on Team {
@@ -44,12 +45,11 @@ const OrgTeamsRow = (props: Props) => {
       )}
     </div>
   )
-
   return (
     <tr className='hover:bg-slate-50 border-b border-slate-300'>
       <td className='flex items-center p-3'>
         <td className='flex items-center p-3'>
-          {isLead || isMember ? (
+          {isLead || isMember || isOrgAdmin ? (
             <Link
               to={`teams/${teamId}`}
               className='text-gray-700 hover:text-gray-900 flex items-center text-lg font-bold'

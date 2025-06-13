@@ -7,7 +7,6 @@ import {useFragment} from 'react-relay'
 import {useInviteToTeam_team$key} from '../__generated__/useInviteToTeam_team.graphql'
 import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
-import useMassInvitationToken from './useMassInvitationToken'
 
 export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
   const team = useFragment(
@@ -15,22 +14,23 @@ export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
       fragment useInviteToTeam_team on Team {
         id
         name
+        massInvitation {
+          id
+        }
       }
     `,
     teamRef
   )
 
-  const {id: teamId, name: teamName} = team || {}
-  const getToken = useMassInvitationToken({teamId})
+  const {name: teamName, massInvitation} = team || {}
   const config = useConfig()
   const {parabolUrl} = config
   const channel = useCurrentChannel()
-
+  const token = massInvitation?.id
   const invite = useCallback(async () => {
     if (!channel) {
       return
     }
-    const token = await getToken()
     if (!token) {
       return
     }
@@ -60,7 +60,7 @@ export const useInviteToTeam = (teamRef?: useInviteToTeam_team$key) => {
       channel_id: channel.id,
       props
     } as Partial<Post> as Post)
-  }, [channel, getToken, teamName, parabolUrl])
+  }, [channel, teamName, parabolUrl])
 
   return invite
 }
