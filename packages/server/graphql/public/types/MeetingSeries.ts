@@ -13,7 +13,8 @@ const MeetingSeries: MeetingSeriesResolvers = {
   mostRecentMeeting: async ({id: meetingSeriesId}, _args, _context) => {
     const meeting = await selectNewMeetings()
       .where('meetingSeriesId', '=', meetingSeriesId)
-      .orderBy(['endedAt desc', 'createdAt desc'])
+      .orderBy('endedAt', 'desc')
+      .orderBy('createdAt', 'desc')
       .limit(1)
       .executeTakeFirstOrThrow()
     return meeting

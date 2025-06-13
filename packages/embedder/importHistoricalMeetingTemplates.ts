@@ -15,7 +15,8 @@ export const importHistoricalMeetingTemplates = async () => {
         '=',
         selectFrom('MeetingTemplate')
           .select('MeetingTemplate.id')
-          .orderBy(['updatedAt', 'id'])
+          .orderBy('updatedAt')
+          .orderBy('id')
           .limit(1)
       )
     )

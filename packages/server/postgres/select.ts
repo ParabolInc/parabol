@@ -320,7 +320,9 @@ export const selectPages = () =>
     'title',
     'updatedAt',
     'Page.userId',
-    'ancestorIds'
+    'ancestorIds',
+    'deletedAt',
+    'deletedBy'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()

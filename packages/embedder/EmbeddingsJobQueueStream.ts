@@ -31,7 +31,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
             db
               .selectFrom('EmbeddingsJobQueue')
               .select('id')
-              .orderBy(['priority'])
+              .orderBy('priority')
               .$if(!isFailed, (db) => db.where('state', '=', 'queued'))
               .$if(isFailed, (db) =>
                 db

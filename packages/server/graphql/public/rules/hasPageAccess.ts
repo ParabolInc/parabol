@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
@@ -22,8 +23,8 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
         .get('pageAccessByUserId')
         .load({pageId: dbPageId, userId: viewerId})
       if (!userRole || PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(userRole)) {
-        return new Error(
-          `Access denied. PageId: ${pageId} User role: ${userRole || 'None'} Role required: ${roleRequired}`
+        return new GraphQLError(
+          `Insufficient permission. User role: ${userRole || 'None'} Role required: ${roleRequired}`
         )
       }
       dataLoader.get('pageAccessByUserId').clearAll()

@@ -14,4 +14,6 @@ type Page {
   isParentLinked: Boolean!
   isPrivate: Boolean!
   sortOrder: String!
+  deletedAt: DateTime
+  deletedBy: ID
 }

@@ -1,0 +1,7 @@
+type ArchivePagePayload {
+  pageId: String
+  """
+  page is null if it was hard deleted
+  """
+  page: Page
+}

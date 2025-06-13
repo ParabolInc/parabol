@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.9.0](https://github.com/ParabolInc/parabol/compare/v10.8.2...v10.9.0) (2025-06-13)
+
+
+### Added
+
+* **pages:** support deleting pages ([#11417](https://github.com/ParabolInc/parabol/issues/11417)) ([e416bc4](https://github.com/ParabolInc/parabol/commit/e416bc4397fcd9fae43f3d3059a603f21faa0a95))
+
+
+### Changed
+
+* kysely orderBy(array) is deprecated ([#11426](https://github.com/ParabolInc/parabol/issues/11426)) ([7bd0d03](https://github.com/ParabolInc/parabol/commit/7bd0d036ee595eacad4158343fc6c390edbd5590))
+
 ## [10.8.2](https://github.com/ParabolInc/parabol/compare/v10.8.1...v10.8.2) (2025-06-13)
 
 

@@ -16,6 +16,7 @@ const mutation = graphql`
         sortOrder
         teamId
         parentPageId
+        ...PageActions_page
       }
     }
   }

@@ -9,7 +9,7 @@ const debugFailedJob = async () => {
   const failedJob = await pg
     .selectFrom('EmbeddingsJobQueue')
     .selectAll()
-    .orderBy(['priority'])
+    .orderBy('priority')
     .where('state', '=', 'failed')
     .limit(1)
     .executeTakeFirst()
