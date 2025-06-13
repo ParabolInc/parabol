@@ -10,6 +10,7 @@ import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import sortByTier from '../../utils/sortByTier'
 import DashNavListTeams from './DashNavListTeams'
 import EmptyTeams from './EmptyTeams'
+import {LeftNavPagesTrash} from './LeftNavPagesTrash'
 import {LeftNavPrivatePagesSection} from './LeftNavPrivatePagesSection'
 import {LeftNavSharedPagesSection} from './LeftNavSharedPagesSection'
 import {LeftNavTeamsSection} from './LeftNavTeamsSection'
@@ -68,6 +69,7 @@ const DashNavList = (props: Props) => {
           <div className='pt-2'>
             <LeftNavSharedPagesSection viewerRef={viewer} />
             <LeftNavPrivatePagesSection viewerRef={viewer} />
+            <LeftNavPagesTrash />
           </div>
         </>
       )}

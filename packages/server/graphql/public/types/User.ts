@@ -1,7 +1,7 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
-import {sql} from 'kysely'
+import {sql, type NotNull} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
@@ -865,19 +865,47 @@ const User: ReqResolvers<'User'> = {
   },
   pages: async (
     _source,
-    {parentPageId, isPrivate, first, after, teamId},
+    {parentPageId, isPrivate, first, after, teamId, isArchived},
     {authToken, dataLoader}
   ) => {
     const isPrivateDefined = typeof isPrivate === 'boolean'
+    const isArchivedDefined = typeof isArchived === 'boolean'
+
     if ((parentPageId || teamId) && isPrivateDefined) {
       throw new GraphQLError('isPrivate and parentPageId/teamId are mutually exclusive')
     }
     if (parentPageId && teamId) {
       throw new GraphQLError('parentPageId and teamId are mutually exclusive')
     }
+    if (isArchivedDefined && (parentPageId || teamId || isPrivateDefined)) {
+      throw new GraphQLError('If isArchived is set, parentPageId/teamId/isPrivate must be unset')
+    }
+
     const isTopLevel = !parentPageId
     const viewerId = getUserId(authToken)
     const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
+
+    if (isArchived) {
+      const pagesPlusOne = await selectPages()
+        .where('deletedBy', '=', viewerId)
+        .orderBy('deletedAt', 'desc')
+        .$narrowType<{deletedAt: NotNull}>()
+        .execute()
+      const hasNextPage = pagesPlusOne.length > first
+      const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+      return {
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false,
+          startCursor: pages.at(0)?.deletedAt.toJSON(),
+          endCursor: pages.at(-1)?.deletedAt.toJSON()
+        },
+        edges: pages.map((page) => ({
+          node: page,
+          cursor: page.deletedAt.toJSON()
+        }))
+      }
+    }
 
     const pagesPlusOne = await selectPages()
       .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
@@ -888,6 +916,7 @@ const User: ReqResolvers<'User'> = {
       .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
       .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .where('deletedBy', 'is', null)
       .orderBy('sortOrder')
       .limit(first + 1)
       .execute()

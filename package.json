@@ -130,7 +130,7 @@
     "jscodeshift": "^0.14.0",
     "json-loader": "^0.5.7",
     "kysely-codegen": "^0.17.0",
-    "kysely-ctl": "^0.12.2",
+    "kysely-ctl": "^0.13.1",
     "lint-staged": "^10.1.7",
     "loader-utils": "^3.3.1",
     "marked": "^15.0.7",
