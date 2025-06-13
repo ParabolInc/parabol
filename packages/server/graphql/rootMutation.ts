@@ -11,7 +11,6 @@ import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
 import changeTaskTeam from './mutations/changeTaskTeam'
-import createMassInvitation from './mutations/createMassInvitation'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
@@ -111,7 +110,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       changeTaskTeam,
       setNotificationStatus,
       createTaskIntegration,
-      createMassInvitation,
       createOAuth1AuthorizeUrl,
       createReflection,
       createTask,

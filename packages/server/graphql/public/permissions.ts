@@ -2,6 +2,7 @@ import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from 'graphql-shield/typings/types'
 import {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
+import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
@@ -90,6 +91,13 @@ const permissionMap: PermissionMap<Resolvers> = {
   RetroReflectionGroup: {
     smartTitle: isSuperUser,
     voterIds: isSuperUser
+  },
+  Team: {
+    massInvitation: or(
+      // TODO or rules run in parallel, make it go in serial since org_admin check is rare
+      isTeamMember<'Team.massInvitation'>('source.id'),
+      hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
+    )
   },
   User: {
     domains: or(isSuperUser, isUserViewer),

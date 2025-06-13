@@ -9,10 +9,7 @@ import {
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {Security, Threshold} from '../../../client/types/constEnums'
 import ITeam from '../../database/types/Team'
-import generateRandomString from '../../generateRandomString'
-import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
 import isValid from '../isValid'
@@ -20,7 +17,6 @@ import connectionFromTasks from '../queries/helpers/connectionFromTasks'
 import {GQLContext} from './../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import MassInvitation from './MassInvitation'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
 import Organization from './Organization'
@@ -54,53 +50,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
     lastMeetingType: {
       type: new GraphQLNonNull(MeetingTypeEnum),
       description: 'The type of the last meeting run'
-    },
-    massInvitation: {
-      type: new GraphQLNonNull(MassInvitation),
-      args: {
-        meetingId: {
-          type: GraphQLID,
-          description: 'the meetingId to optionally direct them to'
-        }
-      },
-      description:
-        'The hash and expiration for a token that allows anyone with it to join the team',
-      resolve: async (
-        {id: teamId}: {id: string},
-        {meetingId},
-        {authToken, dataLoader}: GQLContext
-      ) => {
-        if (!isTeamMember(authToken, teamId)) return null
-        const pg = getKysely()
-        const viewerId = getUserId(authToken)
-        const teamMemberId = toTeamMemberId(teamId, viewerId)
-        const invitationTokens = await dataLoader
-          .get('massInvitationsByTeamMemberId')
-          .load(teamMemberId)
-        const matchingInvitation = invitationTokens.find((token) => token.meetingId === meetingId)
-        // if the token is valid, return it
-        if ((matchingInvitation?.expiration ?? new Date(0)) > new Date()) {
-          return matchingInvitation
-        }
-
-        // if there is no matching token, let's use the opportunity to clean up old tokens
-        if (invitationTokens.length > 0) {
-          await pg
-            .deleteFrom('MassInvitation')
-            .where('teamMemberId', '=', teamMemberId)
-            .where('expiration', '<', new Date(Date.now()))
-            .execute()
-        }
-        const massInvitation = {
-          id: generateRandomString(Security.MASS_INVITATION_TOKEN_LENGTH),
-          meetingId,
-          teamMemberId,
-          expiration: new Date(Date.now() + Threshold.MASS_INVITATION_TOKEN_LIFESPAN)
-        }
-        await pg.insertInto('MassInvitation').values(massInvitation).execute()
-        dataLoader.get('massInvitationsByTeamMemberId').clear(teamMemberId)
-        return massInvitation
-      }
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),

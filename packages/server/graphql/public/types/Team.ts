@@ -1,5 +1,10 @@
+import {sql} from 'kysely'
+import ms from 'ms'
 import {InsightId} from '../../../../client/shared/gqlIds/InsightId'
+import {Security, Threshold} from '../../../../client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
+import generateRandomString from '../../../generateRandomString'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import {TeamResolvers} from '../resolverTypes'
@@ -82,6 +87,42 @@ const Team: TeamResolvers = {
   activeMeetingSeries: async ({id: teamId}, _args, {authToken, dataLoader}) => {
     if (!isTeamMember(authToken, teamId)) return []
     return dataLoader.get('activeMeetingSeriesByTeamId').load(teamId)
+  },
+  massInvitation: async ({id: teamId}, {meetingId}, {authToken, dataLoader}) => {
+    const pg = getKysely()
+    const viewerId = getUserId(authToken)
+    const invitationTokens = await dataLoader
+      .get('massInvitationsByTeamIdUserId')
+      .load({teamId, userId: viewerId})
+    const matchingInvitation = invitationTokens.find((token) => token.meetingId === meetingId)
+    if (matchingInvitation) {
+      // if the token is < 5 mins old return it
+      const createdAt =
+        matchingInvitation.expiration.getTime() - Threshold.MASS_INVITATION_TOKEN_LIFESPAN
+      if (createdAt > Date.now() - ms('5m')) {
+        return matchingInvitation
+      }
+    }
+
+    // if there is no matching token, let's use the opportunity to clean up old tokens
+    if (invitationTokens.length > 0) {
+      await pg
+        .deleteFrom('MassInvitation')
+        .where('userId', '=', viewerId)
+        .where('teamId', '=', teamId)
+        .where('expiration', '<', sql<Date>`CURRENT_TIMESTAMP`)
+        .execute()
+    }
+    const massInvitation = {
+      id: generateRandomString(Security.MASS_INVITATION_TOKEN_LENGTH),
+      meetingId,
+      teamId,
+      userId: viewerId,
+      expiration: new Date(Date.now() + Threshold.MASS_INVITATION_TOKEN_LIFESPAN)
+    }
+    await pg.insertInto('MassInvitation').values(massInvitation).execute()
+    dataLoader.get('massInvitationsByTeamIdUserId').clearAll()
+    return massInvitation
   }
 }
 
