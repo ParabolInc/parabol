@@ -106,6 +106,15 @@ const onFetch = async (event: FetchEvent) => {
   return fetch(request)
 }
 
+const onMessage = async (event: MessageEvent) => {
+  if (event.data?.type === 'getVersion') {
+    const port = event.ports?.[0]
+    port?.postMessage({type: 'version', payload: `${__APP_VERSION__}`})
+    port?.close()
+  }
+}
+
+self.onmessage = onMessage
 self.oninstall = waitUntil(onInstall)
 self.onactivate = waitUntil(onActivate)
 self.onfetch = (e: FetchEvent) => {
