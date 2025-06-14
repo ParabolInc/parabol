@@ -1,6 +1,7 @@
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint, ExternalLinks} from '~/types/constEnums'
 import {MenuProps} from '../hooks/useMenu'
+import useSWVersion from '../hooks/useSWVersion'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemWithIcon from './MenuItemWithIcon'
@@ -13,6 +14,7 @@ interface Props {
 
 const TopBarHelpMenu = (props: Props) => {
   const {menuProps, toggleShortcuts, dataCy} = props
+  const swVersion = useSWVersion()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const gotoSupport = () => {
     window.open(ExternalLinks.SUPPORT, '_blank', 'noreferrer')
@@ -38,6 +40,10 @@ const TopBarHelpMenu = (props: Props) => {
         label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Get help'} icon={'comment'} />}
         onClick={gotoContact}
       />
+      <div className='pt-2 pl-4 text-xs text-slate-500'>
+        Version {__APP_VERSION__}
+        {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
+      </div>
     </Menu>
   )
 }
