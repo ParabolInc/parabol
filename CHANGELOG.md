@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.9.2](https://github.com/ParabolInc/parabol/compare/v10.9.1...v10.9.2) (2025-06-14)
+
+
+### Changed
+
+* show app version in help menu ([#11435](https://github.com/ParabolInc/parabol/issues/11435)) ([1b53424](https://github.com/ParabolInc/parabol/commit/1b53424d4f3b41ec50d54acd96424cff0264f528))
+
 ## [10.9.1](https://github.com/ParabolInc/parabol/compare/v10.9.0...v10.9.1) (2025-06-13)
 
 
