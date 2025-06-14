@@ -42,7 +42,7 @@ const TopBarHelpMenu = (props: Props) => {
       />
       <div className='pt-2 pl-4 text-xs text-slate-500'>
         Version {__APP_VERSION__}
-        {swVersion && swVersion !== __APP_VERSION__ && ` (sw${swVersion})`}
+        {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
       </div>
     </Menu>
   )
