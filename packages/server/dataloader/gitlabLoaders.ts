@@ -2,7 +2,7 @@ import DataLoader from 'dataloader'
 import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {TeamMemberIntegrationAuth} from '../postgres/types'
-import sendToSentry from '../utils/sendToSentry'
+import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 
 export const freshGitlabAuth = (parent: RootDataLoader) => {
@@ -23,7 +23,7 @@ export const freshGitlabAuth = (parent: RootDataLoader) => {
           if (expiresAt && expiresAt < now) {
             const {providerId, refreshToken} = gitlabAuth
             if (!refreshToken) {
-              sendToSentry(new Error('No refresh token in gitlabAuth'), {userId})
+              logError(new Error('No refresh token in gitlabAuth'), {userId})
               return null
             }
             const provider = await parent.get('integrationProviders').loadNonNull(providerId)

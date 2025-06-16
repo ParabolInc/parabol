@@ -2,7 +2,7 @@ import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {AnyMeeting} from '../../../../postgres/types/Meeting'
-import sendToSentry from '../../../../utils/sendToSentry'
+import logError from '../../../../utils/logError'
 
 const getSummaryText = async (meeting: AnyMeeting) => {
   if (meeting.meetingType === 'retrospective') {
@@ -12,7 +12,7 @@ const getSummaryText = async (meeting: AnyMeeting) => {
     const taskCount = meeting.taskCount || 0
     const hasNonZeroStat = commentCount || reflectionCount || topicCount || taskCount
     if (!hasNonZeroStat && meeting.summary) {
-      sendToSentry(new Error('No stats found for meeting'), {
+      logError(new Error('No stats found for meeting'), {
         tags: {meetingId: meeting.id, summary: meeting.summary}
       })
     }

@@ -1,7 +1,7 @@
 import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import safetyPatchRes from '../safetyPatchRes'
 import getReqAuth from '../utils/getReqAuth'
-import sendToSentry from '../utils/sendToSentry'
+import logError from '../utils/logError'
 
 export type uWSHandler = (res: HttpResponse, req: HttpRequest) => Promise<void>
 const uWSAsyncHandler =
@@ -16,7 +16,7 @@ const uWSAsyncHandler =
     } catch (e) {
       res.writeStatus('503').end()
       const error = e instanceof Error ? e : new Error('uWSAsyncHandler failed')
-      sendToSentry(error, {userId: authToken.sub})
+      logError(error, {userId: authToken.sub})
     }
   }
 
