@@ -22,6 +22,13 @@ const TopBarHelpMenu = (props: Props) => {
   const gotoContact = () => {
     window.open(ExternalLinks.CONTACT, '_blank', 'noreferrer')
   }
+  const gotoVersion = () => {
+    window.open(
+      `https://github.com/ParabolInc/parabol/releases/tag/v${__APP_VERSION__}`,
+      '_blank',
+      'noreferrer'
+    )
+  }
   return (
     <Menu ariaLabel={'How may we help?'} {...menuProps}>
       <MenuItem
@@ -40,10 +47,15 @@ const TopBarHelpMenu = (props: Props) => {
         label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Get help'} icon={'comment'} />}
         onClick={gotoContact}
       />
-      <div className='pt-2 pl-4 text-xs text-slate-500'>
-        Version {__APP_VERSION__}
-        {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
-      </div>
+      <MenuItem
+        label={
+          <div className='py-1 pl-4 text-xs text-slate-500'>
+            Version {__APP_VERSION__}
+            {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
+          </div>
+        }
+        onClick={gotoVersion}
+      />
     </Menu>
   )
 }
