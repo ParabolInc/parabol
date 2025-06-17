@@ -15,7 +15,7 @@ const CommentingStatus = styled('div')({
 })
 
 interface Props {
-  preferredNames: string[] | null
+  commentorNames: string[] | null
 }
 
 const getStatusText = (preferredNames: string[]) => {
@@ -27,13 +27,13 @@ const getStatusText = (preferredNames: string[]) => {
 }
 
 const CommentingStatusText = (props: Props) => {
-  const {preferredNames} = props
+  const {commentorNames} = props
 
-  if (!preferredNames || !preferredNames.length) return null
+  if (!commentorNames?.length) return null
 
   return (
     <CommentingStatus>
-      {getStatusText(preferredNames)}
+      {getStatusText(commentorNames)}
       <Ellipsis />
     </CommentingStatus>
   )
