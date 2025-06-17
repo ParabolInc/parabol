@@ -107,7 +107,7 @@ export const useDraggablePage = (
 
     const targetParentPageId = targetParentPageIdOrTeamId?.startsWith('page:')
       ? targetParentPageIdOrTeamId
-      : undefined
+      : null
     const targetTeamId =
       targetParentPageIdOrTeamId && !targetParentPageId ? targetParentPageIdOrTeamId : undefined
     const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null

@@ -34,7 +34,7 @@ export const useCreatePageMutation = () => {
         if (!viewer) return
         const connectionKey = parentPageId || teamId ? 'User_pages' : 'User_privatePages'
         const conn = ConnectionHandler.getConnection(viewer, connectionKey, {
-          parentPageId: parentPageId || undefined,
+          parentPageId: parentPageId || null,
           teamId: teamId || undefined,
           isPrivate: isPrivatePageConnectionLookup[connectionKey]
         })!

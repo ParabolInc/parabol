@@ -108,7 +108,7 @@ const Dashboard = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<DashboardQuery>(
     graphql`
-      query DashboardQuery($first: Int!, $after: DateTime) {
+      query DashboardQuery($first: Int!, $after: DateTime, $sharedPagesNull: ID) {
         ...DashTopBar_query
         ...MobileDashTopBar_query
         viewer {
