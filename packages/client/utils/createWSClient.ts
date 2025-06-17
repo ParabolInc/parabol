@@ -90,9 +90,17 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
           const isNewVersion = version !== __APP_VERSION__
           if (isNewVersion) {
-            const registration = await navigator.serviceWorker.getRegistration()
-            registration?.update().catch(() => {
-              /*ignore*/
+            // Safari is not ready immediately after a refresh and getRegistration() will return null, so wait till ready for the update
+            // ready will wait indefinitely if the service worker is not registered, so do not await
+            navigator.serviceWorker.ready.then((registration) => {
+              registration
+                ?.update()
+                .then(() => {
+                  console.log(`Service worker updated from ${__APP_VERSION__} to ${version}`)
+                })
+                .catch((error) => {
+                  console.error('Error updating service worker:', error)
+                })
             })
           }
           if (abruptlyClosed) {
