@@ -30,6 +30,7 @@ import {toSlug} from '../shared/toSlug'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
+import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
@@ -236,7 +237,8 @@ export const useTipTapPageEditor = (
         }),
         PageLinkPicker.configure({
           atmosphere
-        })
+        }),
+        PageLinkBlock
       ],
       autofocus: true,
       editable: true

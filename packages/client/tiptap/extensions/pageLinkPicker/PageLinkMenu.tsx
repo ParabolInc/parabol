@@ -3,15 +3,16 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 
 export const PageLinkMenu = forwardRef(
   (props: SuggestionProps<{pageId: string; title: string}>, ref) => {
-    const {items} = props
+    const {editor, items} = props
     const [selectedIndex, setSelectedIndex] = useState(0)
     const activeRef = useRef<HTMLDivElement>(null)
     const activeItem = items[selectedIndex]
-    const selectItem = (title: string) => {
-      const item = items.find((item) => item.title === title)
+    const selectItem = (pageId: string) => {
+      const item = items.find((item) => item.pageId === pageId)
       if (!item) return
-      const {pageId} = item
-      console.log({pageId})
+      const pageNum = Number(pageId.split(':')[1])
+      editor.chain().focus().setPageLinkBlock({pageId: pageNum, title: item.title}).run()
+      editor.emit('pageLinkPicker', {willOpen: false})
     }
 
     const upHandler = () => {
@@ -25,7 +26,7 @@ export const PageLinkMenu = forwardRef(
     const enterHandler = () => {
       const nextItem = items[selectedIndex]
       if (!nextItem) return
-      selectItem(nextItem.title)
+      selectItem(nextItem.pageId)
     }
 
     useEffect(() => setSelectedIndex(0), [items])
