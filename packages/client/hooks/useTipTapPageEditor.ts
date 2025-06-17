@@ -1,5 +1,6 @@
 import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
+import type {EditorEvents} from '@tiptap/core'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Document from '@tiptap/extension-document'
@@ -29,6 +30,7 @@ import {toSlug} from '../shared/toSlug'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
+import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import type {FirstParam} from '../types/generics'
@@ -137,6 +139,23 @@ export const useTipTapPageEditor = (
     return nextProvider
   }, [pageId, atmosphere.authToken])
 
+  const placeholderRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    const setPageLinkPlaceholder = ({willOpen}: EditorEvents['pageLinkPicker']) => {
+      console.log('set placeholder', willOpen)
+      const nextValue = willOpen ? 'Search for a page…' : undefined
+      placeholderRef.current = nextValue
+      // using state would trigger a re-render, resetting cursor position, so we use ref
+      // ref won't trigger an update, so we manually change the placeholder for the first render
+      const emptyEl = editor?.view.domAtPos(editor.state.selection.from)
+        ?.node as HTMLParagraphElement
+      emptyEl?.setAttribute('data-placeholder', nextValue || "Press '/' for commands")
+    }
+    editor?.on('pageLinkPicker', setPageLinkPlaceholder)
+    return () => {
+      editor?.off('pageLinkPicker', setPageLinkPlaceholder)
+    }
+  }, [])
   const provider = providerRef.current
   const editor = useEditor(
     {
@@ -166,6 +185,9 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           placeholder: ({node, pos}) => {
+            if (placeholderRef.current) {
+              return placeholderRef.current
+            }
             const {type, attrs} = node
             const {name} = type
             switch (name) {
@@ -211,7 +233,8 @@ export const useTipTapPageEditor = (
           html: true,
           transformPastedText: true,
           transformCopiedText: true
-        })
+        }),
+        PageLinkPicker
       ],
       autofocus: true,
       editable: true
