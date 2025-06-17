@@ -122,7 +122,7 @@ export const slashCommands = [
       },
       {
         title: 'Link to page',
-        description: 'Insert horizontal rule divider',
+        description: 'Link to an existing page',
         searchTerms: ['link', 'hyperlink', 'url', 'anchor', 'href', 'page'],
         icon: FileOpenIcon,
         action: (editor: Editor) => {

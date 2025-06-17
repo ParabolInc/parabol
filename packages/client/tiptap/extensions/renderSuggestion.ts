@@ -14,7 +14,6 @@ const renderSuggestion =
     type GetReferenceClientRect = () => DOMRect
     let component: ReactRenderer<any, any> | undefined
     let popup: Instance<Props>
-
     const defaultGetClientRect = (editor: Editor) => () => {
       // if the character is 0-space, then the decorationId attribute can't be applied to the node
       // which means clientRect won't be provided
@@ -34,13 +33,12 @@ const renderSuggestion =
         })
 
         const clientRect = props.clientRect || defaultGetClientRect(props.editor)
-        const onHide = options?.onHide
         popup = tippy(document.body, {
           animation: false,
           getReferenceClientRect: clientRect as GetReferenceClientRect,
           appendTo: () => document.body,
           content: component.element,
-          onHide,
+          onHide: options?.onHide,
           showOnCreate: true,
           interactive: true,
           trigger: 'manual',

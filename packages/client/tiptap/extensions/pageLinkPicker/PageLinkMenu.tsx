@@ -3,7 +3,7 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 
 export const PageLinkMenu = forwardRef(
   (props: SuggestionProps<{pageId: string; title: string}>, ref) => {
-    const {editor, items} = props
+    const {items} = props
     const [selectedIndex, setSelectedIndex] = useState(0)
     const activeRef = useRef<HTMLDivElement>(null)
     const activeItem = items[selectedIndex]
@@ -32,12 +32,6 @@ export const PageLinkMenu = forwardRef(
     useEffect(() => {
       activeRef.current?.scrollIntoView({block: 'nearest'})
     }, [activeRef.current])
-    useEffect(() => {
-      return () => {
-        console.log('closing from compnent useEffect')
-        editor.emit('pageLinkPicker', {willOpen: false})
-      }
-    }, [])
     useImperativeHandle(ref, () => ({
       onKeyDown: ({event}: {event: React.KeyboardEvent}) => {
         if (event.key === 'ArrowUp') {
@@ -58,15 +52,16 @@ export const PageLinkMenu = forwardRef(
       }
     }))
 
-    if (!items.length) return null
     return (
-      <div
-        key={'pfjdf'}
-        className='z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'
-      >
+      <div className='z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
         <div className='mx-1 px-3 py-1 text-xs font-semibold'>{'Select a page'}</div>
+        {items.length === 0 && (
+          <div className='mx-1 px-3 py-1 text-xs font-semibold text-slate-500 italic'>
+            {'No pages found'}
+          </div>
+        )}
         {items.map((item) => (
-          <div className='mx-1 flex' key={item.title}>
+          <div className='mx-1 flex' key={item.pageId}>
             <div
               ref={item === activeItem ? activeRef : undefined}
               data-highlighted={item === activeItem ? '' : undefined}

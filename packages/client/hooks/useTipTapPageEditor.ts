@@ -234,7 +234,9 @@ export const useTipTapPageEditor = (
           transformPastedText: true,
           transformCopiedText: true
         }),
-        PageLinkPicker
+        PageLinkPicker.configure({
+          atmosphere
+        })
       ],
       autofocus: true,
       editable: true
