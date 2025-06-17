@@ -16,6 +16,7 @@ import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
+import updateGroupTitle from './helpers/updateGroupTitle'
 
 export default {
   type: CreateReflectionPayload,
@@ -85,6 +86,17 @@ export default {
       sortOrder
     })
 
+    // Upgrade the simple title to an AI-generated one. Don't await to keep things snappy
+    updateGroupTitle({
+      reflections: [reflection],
+      reflectionGroupId,
+      meetingId,
+      teamId,
+      dataLoader
+    }).catch((e) => {
+      console.error('Error generating AI title for new reflection:', e)
+    })
+
     await pg
       .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
       .insertInto('RetroReflection')
@@ -106,6 +118,7 @@ export default {
       dataLoader.clearAll('newMeetings')
     }
     analytics.reflectionAdded(viewer, teamId, meetingId)
+
     const data = {
       meetingId,
       reflectionId: reflection.id,
