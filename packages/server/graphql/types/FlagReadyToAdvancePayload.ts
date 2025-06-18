@@ -10,14 +10,14 @@ export const FlagReadyToAdvanceSuccess = new GraphQLObjectType<any, GQLContext>(
   fields: () => ({
     meeting: {
       type: new GraphQLNonNull(NewMeeting),
-      description: 'the meeting with the updated readyCount',
+      description: 'the meeting with the updated readyUserIds',
       resolve: async ({meetingId}, _args: unknown, {dataLoader}) => {
         return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     stage: {
       type: new GraphQLNonNull(NewMeetingStage),
-      description: 'the stage with the updated readyCount',
+      description: 'the stage with the updated readyUserIds',
       resolve: async ({meetingId, stageId}, _args: unknown, {dataLoader}) => {
         const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
         return resolveGQLStageFromId(stageId, meeting)

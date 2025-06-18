@@ -7,7 +7,7 @@ interface Phase {
     isNavigable: boolean
     isNavigableByFacilitator: boolean
     isComplete: boolean
-    readyCount?: number
+    readyUserIds?: readonly string[]
   }[]
 }
 

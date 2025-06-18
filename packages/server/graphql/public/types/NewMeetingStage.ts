@@ -1,6 +1,5 @@
 import isValidDate from '../../../../client/utils/isValidDate'
 import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
-import {Logger} from '../../../utils/Logger'
 import {getUserId} from '../../../utils/authorization'
 import {NewMeetingPhaseTypeEnum, NewMeetingStageResolvers} from '../resolverTypes'
 
@@ -26,12 +25,8 @@ const NewMeetingStage: NewMeetingStageResolvers = {
     return readyToAdvance?.includes(viewerId) ?? false
   },
 
-  readyCount: async ({meetingId, readyToAdvance}, _args, {dataLoader}, ref) => {
-    if (!readyToAdvance) return 0
-    if (!meetingId) Logger.log('no meetingid', ref)
-    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    const {facilitatorUserId} = meeting
-    return readyToAdvance.filter((userId: string) => userId !== facilitatorUserId).length
+  readyUserIds: async ({readyToAdvance}, _args) => {
+    return readyToAdvance ?? []
   },
 
   timeRemaining: ({scheduledEndTime}) => {

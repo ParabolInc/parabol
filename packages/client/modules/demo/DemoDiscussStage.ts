@@ -13,7 +13,7 @@ export default class DemoDiscussStage extends DemoGenericMeetingStage {
   phaseType = 'discuss' as const
   startAt = new Date().toJSON()
   viewCount = 0
-  readyCount = 0
+  readyUserIds = []
   reflectionGroupId: string
   discussion: DemoDiscussion
   constructor(

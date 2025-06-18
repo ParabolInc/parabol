@@ -22,7 +22,7 @@ graphql`
       preferredName
     }
     facilitatorStage {
-      readyCount
+      readyUserIds
       isViewerReady
     }
   }
