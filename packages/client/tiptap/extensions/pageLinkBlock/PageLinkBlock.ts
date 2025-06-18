@@ -1,5 +1,5 @@
 import {ReactNodeViewRenderer} from '@tiptap/react'
-import {PageLinkBlockBase} from '../../../shared/tiptap/PageLinkBlockBase'
+import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {PageLinkBlockView} from './PageLinkBlockView'
 
 export const PageLinkBlock = PageLinkBlockBase.extend({

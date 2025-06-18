@@ -17,7 +17,7 @@ class FeistelCipher {
     return ((value * this.key) ^ (value >>> 3)) >>> 0 // Ensure 32-bit unsigned
   }
 
-  encrypt(input: number): number {
+  encrypt = (input: number) => {
     if (input < 0 || input > 0xffffffff) {
       throw new Error('Input must be a valid uint32 (0 to 4294967295)')
     }
@@ -35,7 +35,7 @@ class FeistelCipher {
     return ((r << 16) | l) >>> 0
   }
 
-  decrypt(input: number): number {
+  decrypt = (input: number) => {
     if (input < 0 || input > 0xffffffff) {
       throw new Error('Input must be a valid uint32 (0 to 4294967295)')
     }

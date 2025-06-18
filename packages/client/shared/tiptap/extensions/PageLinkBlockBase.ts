@@ -1,9 +1,13 @@
 import {mergeAttributes, Node} from '@tiptap/core'
 
+export type PageLinkBlockAttributes = {
+  pageId: number
+  title: string
+}
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     pageLinkBlock: {
-      setPageLinkBlock: (attributes: {pageId: number; title: string}) => ReturnType
+      setPageLinkBlock: (attributes: PageLinkBlockAttributes) => ReturnType
     }
   }
 }
