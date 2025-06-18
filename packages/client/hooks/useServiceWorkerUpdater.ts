@@ -15,6 +15,9 @@ const useServiceWorkerUpdater = () => {
       isFirstServiceWorkerRef.current = !registration
     }
     const onServiceWorkerChange = () => {
+      // new service worker means new sources
+      sourcesAreDirtyRef.current = true
+
       if (isFirstServiceWorkerRef.current) {
         isFirstServiceWorkerRef.current = false
         return
@@ -31,7 +34,6 @@ const useServiceWorkerUpdater = () => {
           }
         }
       })
-      sourcesAreDirtyRef.current = true
     }
     if ('serviceWorker' in navigator) {
       setFirstServiceWorker().catch(() => {
@@ -49,7 +51,6 @@ const useServiceWorkerUpdater = () => {
     // When the sources are dirty, we want to reload the page as soon as possible without too much interruption for the user.
     // Let's hide it in a navigation event.
     if (sourcesAreDirtyRef.current) {
-      sourcesAreDirtyRef.current = false
       window.location.reload()
     }
   }, [location.pathname])
