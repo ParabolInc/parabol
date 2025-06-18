@@ -24,6 +24,8 @@ export const updateBacklinks = async (pageId: number, document: Document, conten
             fromPageId: pageId
           }))
         )
+        // conflict possible in a race condition
+        .onConflict((oc) => oc.doNothing())
         .execute(),
     deletions.length &&
       pg
