@@ -98,7 +98,7 @@ export const LeftNavTeamLink = (props: Props) => {
             icon={GroupIcon}
           />
           <LeftNavItem>
-            <span>{teamName}</span>
+            <span className='pl-1'>{teamName}</span>
           </LeftNavItem>
           <LeftNavItemButtons>
             <LeftNavItemButton
