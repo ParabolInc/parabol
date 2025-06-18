@@ -100,6 +100,18 @@ interface Props {
   onTransitionEnd: () => void
 }
 
+graphql`
+  fragment TeamPromptResponseCard_response on TeamPromptResponse {
+    id
+    userId
+    content
+    plaintextContent
+    updatedAt
+    createdAt
+    ...TeamPromptResponseEmojis_response
+  }
+`
+
 const TeamPromptResponseCard = (props: Props) => {
   const {stageRef, status, onTransitionEnd, displayIdx} = props
   const responseStage = useFragment(
@@ -130,13 +142,7 @@ const TeamPromptResponseCard = (props: Props) => {
           }
         }
         response {
-          id
-          userId
-          content
-          plaintextContent
-          updatedAt
-          createdAt
-          ...TeamPromptResponseEmojis_response
+          ...TeamPromptResponseCard_response @relay(mask: false)
         }
       }
     `,
