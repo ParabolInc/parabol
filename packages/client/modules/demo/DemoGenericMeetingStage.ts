@@ -13,7 +13,7 @@ export default class DemoGenericMeetingStage {
   isNavigableByFacilitator = false
   startAt = new Date().toJSON()
   viewCount = 0
-  readyCount = 0
+  readyUserIds = []
   scheduledEndTime = null
   suggestedEndTime = null
   suggestedTimeLimit = null

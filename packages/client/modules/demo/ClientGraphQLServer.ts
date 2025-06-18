@@ -732,8 +732,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const {phases} = meeting
       const stageRes = findStageById(phases, stageId)
       const {stage} = stageRes!
-      const increment = isReady ? 1 : -1
-      stage.readyCount += increment
+      const readyUserIds = (stage.readyUserIds ?? []) as readonly string[]
+      stage.readyUserIds = isReady
+        ? [...readyUserIds, userId]
+        : readyUserIds.filter((id) => id !== userId)
 
       const data = {
         __typename: 'FlagReadyToAdvanceSuccess',
