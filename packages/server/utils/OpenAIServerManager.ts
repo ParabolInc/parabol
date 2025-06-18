@@ -429,7 +429,7 @@ Important: Respond with ONLY the title itself. Do not include any prefixes like 
 
     try {
       const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',

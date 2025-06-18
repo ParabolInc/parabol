@@ -9,13 +9,7 @@ graphql`
   fragment UpsertTeamPromptResponseMutation_meeting on UpsertTeamPromptResponseSuccess {
     meetingId
     teamPromptResponse {
-      id
-      userId
-      content
-      plaintextContent
-      updatedAt
-      createdAt
-      ...TeamPromptResponseEmojis_response
+      ...TeamPromptResponseCard_response @relay(mask: false)
     }
   }
 `

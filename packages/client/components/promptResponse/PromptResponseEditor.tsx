@@ -83,19 +83,6 @@ const PromptResponseEditor = (props: Props) => {
     [setEditing, draftStorageKey]
   )
 
-  const onSubmit = useCallback(() => {
-    if (!editor) return
-    setEditing(false)
-    const newContentJSON = editor.getJSON()
-
-    // to avoid creating an empty post on first blur
-    if (!content && editor.isEmpty) return
-
-    if (isEqualWhenSerialized(content, newContentJSON)) return
-
-    handleSubmit?.(editor)
-  }, [setEditing, content, handleSubmit])
-
   const onCancel = () => {
     setEditing(false)
     editor?.commands.setContent(content)
@@ -125,8 +112,21 @@ const PromptResponseEditor = (props: Props) => {
       onUpdate,
       editable: !readOnly
     },
-    [content, readOnly, onSubmit, onUpdate]
+    [content, readOnly, onUpdate]
   )
+
+  const onSubmit = useCallback(() => {
+    if (!editor) return
+    setEditing(false)
+    const newContentJSON = editor.getJSON()
+
+    // to avoid creating an empty post on first blur
+    if (!content && editor.isEmpty) return
+
+    if (isEqualWhenSerialized(content, newContentJSON)) return
+
+    handleSubmit?.(editor)
+  }, [setEditing, content, editor, handleSubmit])
 
   useEffect(() => {
     // Attempt to reload draft persisted to localstorage.
