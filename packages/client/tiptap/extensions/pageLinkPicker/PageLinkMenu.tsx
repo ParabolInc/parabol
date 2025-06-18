@@ -11,7 +11,18 @@ export const PageLinkMenu = forwardRef(
       const item = items.find((item) => item.pageId === pageId)
       if (!item) return
       const pageNum = Number(pageId.split(':')[1])
-      editor.chain().focus().setPageLinkBlock({pageId: pageNum, title: item.title}).run()
+      const {state} = editor
+      const {selection} = state
+      const {$from} = selection
+      const nodeBefore = $from.nodeBefore!
+      const from = $from.pos - nodeBefore.nodeSize
+      const to = $from.pos
+      editor
+        .chain()
+        .focus()
+        .deleteRange({from, to})
+        .setPageLinkBlock({pageId: pageNum, title: item.title})
+        .run()
       editor.emit('pageLinkPicker', {willOpen: false})
     }
 

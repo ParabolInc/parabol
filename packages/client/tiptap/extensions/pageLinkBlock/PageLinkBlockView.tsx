@@ -8,7 +8,8 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const {pageId, title} = attrs
   const pageSlug = getPageSlug(pageId, title)
   return (
-    <NodeViewWrapper>
+    // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
+    <NodeViewWrapper className={'group-[.ProseMirror-selectednode]:bg-slate-200'}>
       <Link
         to={`/pages/${pageSlug}`}
         className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-200'

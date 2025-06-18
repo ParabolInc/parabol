@@ -1,4 +1,4 @@
-import {ReactNodeViewRenderer} from '@tiptap/react'
+import {ReactNodeViewRenderer, type JSONContent} from '@tiptap/react'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {PageLinkBlockView} from './PageLinkBlockView'
 
@@ -26,13 +26,14 @@ export const PageLinkBlock = PageLinkBlockBase.extend({
       setPageLinkBlock:
         (attrs) =>
         ({commands}) => {
-          return commands.insertContent({type: 'pageLinkBlock', attrs})
+          const content = [{type: 'pageLinkBlock', attrs}, {type: 'paragraph'}] as JSONContent[]
+          return commands.insertContent(content)
         }
     }
   },
 
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(PageLinkBlockView)
+    return ReactNodeViewRenderer(PageLinkBlockView, {className: 'group'})
   }
 })
