@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.9.5](https://github.com/ParabolInc/parabol/compare/v10.9.4...v10.9.5) (2025-06-18)
+
+
+### Fixed
+
+* show correct ready number if user goes offline ([#11454](https://github.com/ParabolInc/parabol/issues/11454)) ([f28da39](https://github.com/ParabolInc/parabol/commit/f28da393f074e0609ae8ded2e7b1a87809ed6e6d))
+
+
+### Changed
+
+* Minor pages nav list styling ([#11452](https://github.com/ParabolInc/parabol/issues/11452)) ([ee50340](https://github.com/ParabolInc/parabol/commit/ee50340ac69f0b2a860d5fed3ac3bda4bc882134))
+
 ## [10.9.4](https://github.com/ParabolInc/parabol/compare/v10.9.3...v10.9.4) (2025-06-18)
 
 
