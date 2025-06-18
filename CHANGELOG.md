@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.9.3](https://github.com/ParabolInc/parabol/compare/v10.9.2...v10.9.3) (2025-06-18)
+
+
+### Fixed
+
+* clear is typing status when moving to next discussion ([#11444](https://github.com/ParabolInc/parabol/issues/11444)) ([c44acbd](https://github.com/ParabolInc/parabol/commit/c44acbd694ff352d6edaf3635e1678933105a14f))
+* Update service worker when sources return 404 ([#11439](https://github.com/ParabolInc/parabol/issues/11439)) ([9ea0981](https://github.com/ParabolInc/parabol/commit/9ea098118e81322d799d92d45d91bd339d028135))
+
+
+### Changed
+
+* Make version in help menu clickable ([#11440](https://github.com/ParabolInc/parabol/issues/11440)) ([e635b8c](https://github.com/ParabolInc/parabol/commit/e635b8ca0150f7e40bd7de2c8d536031e4ec4752))
+
 ## [10.9.2](https://github.com/ParabolInc/parabol/compare/v10.9.1...v10.9.2) (2025-06-14)
 
 
