@@ -100,7 +100,7 @@ const DiscussionThread = (props: Props) => {
     ) || allowedThreadables.length === 0
   const {discussion} = viewer
   const commentors = discussion?.commentors ?? []
-  const preferredNames = useMemo(
+  const commentorNames = useMemo(
     () => commentors.filter(({id}) => id !== viewerId).map(({preferredName}) => preferredName),
     [viewerId, discussion]
   )
@@ -121,7 +121,7 @@ const DiscussionThread = (props: Props) => {
       <DiscussionThreadList
         discussion={discussion}
         allowedThreadables={allowedThreadables}
-        preferredNames={preferredNames}
+        commentorNames={commentorNames}
         threadables={threadables}
         viewer={viewer}
         header={header}

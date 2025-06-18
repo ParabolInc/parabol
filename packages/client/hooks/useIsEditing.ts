@@ -19,12 +19,10 @@ const useIsEditing = (p: {
 
   const ensureNotEditing = useEventCallback(() => {
     if (!isEditing) return
-    // some delay in case the user just submitted the reflection, otherwise the update on other clients will remove and add a card which doesn't look good
     window.clearTimeout(idleTimerIdRef.current)
-    idleTimerIdRef.current = window.setTimeout(() => {
-      onStopEditing?.()
-      setIsEditing(false)
-    }, 500)
+    idleTimerIdRef.current = 0
+    onStopEditing?.()
+    setIsEditing(false)
   })
 
   const ensureEditing = useEventCallback(() => {
@@ -45,14 +43,27 @@ const useIsEditing = (p: {
     }
   })
 
+  const editorFocusing = useEventCallback(() => {
+    if (editor && !editor.isEmpty) {
+      ensureEditing()
+    }
+  })
+
+  const editorBlurring = useEventCallback(() => {
+    if (editor && editor.isEmpty) {
+      ensureNotEditing()
+    }
+  })
+
   useEffect(() => {
     editor?.on('update', editorUpdating)
-    editor?.on('focus', ensureEditing)
-    editor?.on('blur', ensureNotEditing)
+    editor?.on('focus', editorFocusing)
+    editor?.on('blur', editorBlurring)
     return () => {
       editor?.off('update', editorUpdating)
-      editor?.off('focus', ensureEditing)
-      editor?.off('blur', ensureNotEditing)
+      editor?.off('focus', editorFocusing)
+      editor?.off('blur', editorBlurring)
+      ensureNotEditing()
     }
   }, [editor, editorUpdating, ensureEditing, ensureNotEditing])
 
