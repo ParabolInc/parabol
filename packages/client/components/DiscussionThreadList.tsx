@@ -25,7 +25,7 @@ export type DiscussionThreadables = 'task' | 'comment' | 'poll'
 interface Props {
   allowedThreadables: DiscussionThreadables[]
   discussion: DiscussionThreadList_discussion$key
-  preferredNames: string[] | null
+  commentorNames: string[] | null
   threadables: DiscussionThreadList_threadables$key
   viewer: DiscussionThreadList_viewer$key
   header?: ReactNode
@@ -39,7 +39,7 @@ const DiscussionThreadList = (props: Props) => {
     allowedThreadables,
     discussion: discussionRef,
     threadables: threadablesRef,
-    preferredNames,
+    commentorNames,
     viewer: viewerRef,
     header,
     transcription,
@@ -100,7 +100,7 @@ const DiscussionThreadList = (props: Props) => {
         {header}
         {emptyState}
         <div className='h-9 w-full'>
-          <CommentingStatusText preferredNames={preferredNames} />
+          <CommentingStatusText commentorNames={commentorNames} />
         </div>
       </div>
     )
@@ -127,7 +127,7 @@ const DiscussionThreadList = (props: Props) => {
         })
       )}
       <div ref={threadBottomRef}></div>
-      <CommentingStatusText preferredNames={preferredNames} />
+      <CommentingStatusText commentorNames={commentorNames} />
     </div>
   )
 }
