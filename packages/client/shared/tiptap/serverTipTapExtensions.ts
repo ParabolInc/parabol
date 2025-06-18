@@ -11,6 +11,7 @@ import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
+import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
@@ -42,5 +43,6 @@ export const serverTipTapExtensions = [
     }
   }),
   InsightsBlockBase,
-  UniqueID
+  UniqueID,
+  PageLinkBlockBase
 ]

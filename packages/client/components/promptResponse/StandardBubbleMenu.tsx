@@ -10,7 +10,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const StandardBubbleMenu = (props: Props) => {
   const {editor} = props
   const shouldShowBubbleMenu = () => {
-    if (!editor || editor.isActive('link')) return false
+    if (!editor || editor.isActive('link') || editor.isActive('pageLinkBlock')) return false
     return isTextSelected(editor)
   }
 

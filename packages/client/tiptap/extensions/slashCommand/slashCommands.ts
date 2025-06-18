@@ -1,5 +1,6 @@
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import CodeIcon from '@mui/icons-material/Code'
+import FileOpenIcon from '@mui/icons-material/FileOpen'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
@@ -11,6 +12,11 @@ import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
 
+declare module '@tiptap/core' {
+  interface EditorEvents {
+    pageLinkPicker: {willOpen: boolean}
+  }
+}
 export type CommandTitle = (typeof slashCommands)[number]['commands'][number]['title']
 
 export interface SlashCommandGroup {
@@ -113,6 +119,15 @@ export const slashCommands = [
         searchTerms: ['horizontal rule', 'hr', 'divider', 'rule'],
         icon: HorizontalRuleIcon,
         action: (editor: Editor) => editor.chain().focus().setHorizontalRule().run()
+      },
+      {
+        title: 'Link to page',
+        description: 'Link to an existing page',
+        searchTerms: ['link', 'hyperlink', 'url', 'anchor', 'href', 'page'],
+        icon: FileOpenIcon,
+        action: (editor: Editor) => {
+          editor.emit('pageLinkPicker', {willOpen: true})
+        }
       }
     ]
   },

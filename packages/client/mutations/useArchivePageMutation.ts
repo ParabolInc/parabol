@@ -44,7 +44,8 @@ export const handleArchivePage = (
   const connectionKey =
     parentPageId || teamId ? 'User_pages' : isPrivate ? 'User_privatePages' : 'User_sharedPages'
   const conn = ConnectionHandler.getConnection(viewer, connectionKey, {
-    parentPageId: parentPageId || undefined,
+    // parentPage is null on the User_sharedPages connection, but could be undefined on User_pages
+    parentPageId: parentPageId || null,
     teamId: teamId || undefined,
     isPrivate: isPrivatePageConnectionLookup[connectionKey]
   })!
