@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.9.6](https://github.com/ParabolInc/parabol/compare/v10.9.5...v10.9.6) (2025-06-18)
+
+
+### Fixed
+
+* fix update button on team prompt response on second edit ([#11457](https://github.com/ParabolInc/parabol/issues/11457)) ([99bc600](https://github.com/ParabolInc/parabol/commit/99bc6003fe6b5503e03fae93ec2b1a83d3ffb3c6))
+
+
+### Changed
+
+* create ai titles for single reflections ([#11445](https://github.com/ParabolInc/parabol/issues/11445)) ([0391301](https://github.com/ParabolInc/parabol/commit/0391301c10ac224986c7bd0c04f3dc773beae072))
+
 ## [10.9.5](https://github.com/ParabolInc/parabol/compare/v10.9.4...v10.9.5) (2025-06-18)
 
 
