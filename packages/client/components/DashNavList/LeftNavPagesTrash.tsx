@@ -17,8 +17,8 @@ export const LeftNavPagesTrash = (_props: Props) => {
               <div>
                 <div className='group flex flex-1 cursor-pointer rounded-md text-xs leading-5 font-semibold hover:bg-slate-300'>
                   <LeftNavHeader>
-                    <DeleteIcon />
-                    <span>{'Trash'}</span>
+                    <DeleteIcon className='text-slate-600' />
+                    <span className='pl-1'>{'Trash'}</span>
                   </LeftNavHeader>
                 </div>
               </div>

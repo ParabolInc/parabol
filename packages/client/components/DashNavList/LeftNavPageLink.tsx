@@ -128,7 +128,7 @@ export const LeftNavPageLink = (props: Props) => {
             draggingPageId={isSelf ? null : draggingPageId}
           />
           <LeftNavItem>
-            <span>{title || '<Untitled>'}</span>
+            <span className='pl-1'>{title || '<Untitled>'}</span>
           </LeftNavItem>
           <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>

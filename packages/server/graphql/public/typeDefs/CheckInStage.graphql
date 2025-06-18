@@ -68,9 +68,9 @@ type CheckInStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   isViewerReady: Boolean!
 
   """
-  the number of meeting members ready to advance, excluding the facilitator
+  User ids of those who are ready to advance to the next stage
   """
-  readyCount: Int!
+  readyUserIds: [ID!]!
 
   """
   The datetime the phase is scheduled to be finished, null if no time limit or end time is set
