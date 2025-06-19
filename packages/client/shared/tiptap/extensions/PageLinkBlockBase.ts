@@ -3,6 +3,7 @@ import {mergeAttributes, Node} from '@tiptap/core'
 export type PageLinkBlockAttributes = {
   pageId: number
   title: string
+  auto?: boolean
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

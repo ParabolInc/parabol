@@ -6,6 +6,7 @@ import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {hocusPocusHub} from '../../../utils/hocusPocusHub'
 import {MutationResolvers} from '../resolverTypes'
 import {MAX_PAGE_DEPTH} from './updatePage'
 
@@ -109,6 +110,8 @@ const createPage: MutationResolvers['createPage'] = async (
         )
         .execute()
     ])
+    // Add the Auto-toc PageLinkBlock to the parent
+    hocusPocusHub.emit('insertChildPageLink', dbParentPageId, pageId)
   } else if (teamId) {
     await pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
   }
