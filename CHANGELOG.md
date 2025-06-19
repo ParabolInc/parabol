@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.10.1](https://github.com/ParabolInc/parabol/compare/v10.10.0...v10.10.1) (2025-06-19)
+
+
+### Fixed
+
+* **pages:** support null nodeBefore ([#11464](https://github.com/ParabolInc/parabol/issues/11464)) ([d7e8dd1](https://github.com/ParabolInc/parabol/commit/d7e8dd1e06e6558389a6c7cf4e2bcc5a41478854))
+
 ## [10.10.0](https://github.com/ParabolInc/parabol/compare/v10.9.6...v10.10.0) (2025-06-18)
 
 
