@@ -62,7 +62,7 @@ const MeetingsDash = (props: Props) => {
   const activeMeetings = useMemo(() => {
     const meetingSeriesMeetings = teams
       .flatMap((team) => team.activeMeetingSeries)
-      .filter(Boolean)
+      .filter((meetingSeries) => !meetingSeries.cancelledAt)
       .sort((a, b) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })

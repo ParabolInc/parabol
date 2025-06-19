@@ -1,13 +1,16 @@
 export function createMeetingSeriesTitle(
   meetingSeriesName: string,
-  startTime: Date,
-  timeZone: string
+  endTime: Date | null | undefined,
+  timeZone?: string
 ) {
-  const formattedDate = startTime.toLocaleDateString('en-US', {
+  if (!endTime) {
+    return meetingSeriesName
+  }
+  const formattedDate = endTime.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     timeZone
   })
 
-  return `${meetingSeriesName} - ${formattedDate}`
+  return `${meetingSeriesName} - ends ${formattedDate}`
 }
