@@ -52,7 +52,8 @@ export const useUpdatePageAccessMutation = () => {
         // If it's a top-level page, make sure it didn't move from Shared <-> Private
         const viewer = store.getRoot().getLinkedRecord('viewer')!
         const sharedConn = ConnectionHandler.getConnection(viewer, 'User_sharedPages', {
-          isPrivate: false
+          isPrivate: false,
+          parentPageId: null
         })!
         const privateConn = ConnectionHandler.getConnection(viewer, 'User_privatePages', {
           isPrivate: true

@@ -529,6 +529,9 @@ type User {
   """
   pages(
     teamId: ID
+    """
+    a null value means parentPageId = null. not provided (undefined) means it is unfiltered
+    """
     parentPageId: ID
     """
     The first n records to return
@@ -546,5 +549,9 @@ type User {
     true is the page has been archived and is ready for deletion
     """
     isArchived: Boolean
+    """
+    A string of text to filter the results. If an empty string is provided, it returns top suggestions
+    """
+    textFilter: String
   ): PageConnection!
 }

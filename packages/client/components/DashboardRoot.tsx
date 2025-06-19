@@ -14,7 +14,13 @@ const DashboardRoot = () => {
   useSubscription('DashboardRoot', OrganizationSubscription)
   useSubscription('DashboardRoot', TaskSubscription)
   useSubscription('DashboardRoot', TeamSubscription)
-  const queryRef = useQueryLoaderNow<DashboardQuery>(dashboardQuery, {first: 5})
+  const queryRef = useQueryLoaderNow<DashboardQuery>(dashboardQuery, {
+    first: 5,
+    // relay-compiler has a bug where null literal values are stripped away. However, null != undefined.
+    // The only workaround is to pass null as a variable instead of a literal
+    // Issue here: https://github.com/facebook/relay/issues/4488
+    sharedPagesNull: null
+  })
   return <Suspense fallback={''}>{queryRef && <Dashboard queryRef={queryRef} />}</Suspense>
 }
 

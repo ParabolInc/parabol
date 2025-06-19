@@ -865,29 +865,31 @@ const User: ReqResolvers<'User'> = {
   },
   pages: async (
     _source,
-    {parentPageId, isPrivate, first, after, teamId, isArchived},
+    {parentPageId, isPrivate, first, after, teamId, isArchived, textFilter},
     {authToken, dataLoader}
   ) => {
-    const isPrivateDefined = typeof isPrivate === 'boolean'
-    const isArchivedDefined = typeof isArchived === 'boolean'
-
-    if ((parentPageId || teamId) && isPrivateDefined) {
-      throw new GraphQLError('isPrivate and parentPageId/teamId are mutually exclusive')
-    }
     if (parentPageId && teamId) {
       throw new GraphQLError('parentPageId and teamId are mutually exclusive')
     }
-    if (isArchivedDefined && (parentPageId || teamId || isPrivateDefined)) {
-      throw new GraphQLError('If isArchived is set, parentPageId/teamId/isPrivate must be unset')
-    }
 
-    const isTopLevel = !parentPageId
+    const isTopLevel = parentPageId === null
     const viewerId = getUserId(authToken)
-    const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
-
+    const dbParentPageId = parentPageId
+      ? CipherId.fromClient(parentPageId)[0]
+      : parentPageId === null
+        ? null
+        : undefined
+    const isPrivateDefined = typeof isPrivate === 'boolean'
     if (isArchived) {
+      // this is a separate query because deletedBy is going to be a more exclusive index
+      // and archived items use deletedAt for their cursor instead of a sortOrder
       const pagesPlusOne = await selectPages()
         .where('deletedBy', '=', viewerId)
+        .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
+        .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+        .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
+        .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+        .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
         .orderBy('deletedAt', 'desc')
         .$narrowType<{deletedAt: NotNull}>()
         .execute()
@@ -913,9 +915,10 @@ const User: ReqResolvers<'User'> = {
       .where('PageAccess.userId', '=', viewerId)
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
       .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
       .where('deletedBy', 'is', null)
       .orderBy('sortOrder')
       .limit(first + 1)

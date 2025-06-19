@@ -72,14 +72,14 @@ export const useUpdatePageMutation = () => {
         const isSourcePrivate = isPrivatePageConnectionLookup[sourceConnectionKey]
         const isTargetPrivate = isPrivatePageConnectionLookup[targetConnectionKey]
         const sourceConn = ConnectionHandler.getConnection(connParent, sourceConnectionKey, {
-          parentPageId: sourceParentPageId || undefined,
+          parentPageId: sourceParentPageId || null,
           teamId: sourceTeamId || undefined,
           isPrivate: isSourcePrivate
         })!
         ConnectionHandler.deleteNode(sourceConn, pageId)
 
         const targetConn = ConnectionHandler.getConnection(connParent, targetConnectionKey, {
-          parentPageId: targetParentPageId || undefined,
+          parentPageId: targetParentPageId || null,
           teamId: targetTeamId || undefined,
           isPrivate: isTargetPrivate
         })
