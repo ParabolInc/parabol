@@ -7,7 +7,6 @@ import {CipherId} from '../CipherId'
 import {updateYDocNodes} from './updateYDocNodes'
 
 export const hocusPocusHub = new EventEmitter<{
-  insertChildPageLink: (parentPageId: number, childPageId: number) => void
   moveChildPageLink: (params: {
     oldParentPageId: number | null
     newParentPageId: number | null
@@ -15,6 +14,7 @@ export const hocusPocusHub = new EventEmitter<{
     childPageId: number
     sortOrder: string
   }) => void
+  removeBacklinks: (params: {pageId: number}) => void
 }>()
 
 const createPageLinkElement = (pageId: number, title: string) => {
@@ -26,16 +26,40 @@ const createPageLinkElement = (pageId: number, title: string) => {
   return el
 }
 
-hocusPocusHub.on('insertChildPageLink', async (parentPageId, childPageId) => {
-  const parentDocName = CipherId.toClient(parentPageId, 'page')
-  const clientChildPageId = CipherId.encrypt(childPageId)
-  const docConnection = await server.openDirectConnection(parentDocName, {})
-  await docConnection.transact((doc) => {
-    const frag = doc.getXmlFragment('default')
-    const pageLinkBlock = createPageLinkElement(clientChildPageId, '<Untitled>')
-    frag.push([pageLinkBlock])
+export const withBacklinks = async (
+  pageId: number,
+  fn: (doc: Document) => void | Promise<void>
+) => {
+  const pg = getKysely()
+  const backLinks = await pg
+    .selectFrom('PageBacklink')
+    .select('fromPageId')
+    .where('toPageId', '=', pageId)
+    .execute()
+  await Promise.all(
+    backLinks.map(async ({fromPageId}) => {
+      const backlinkDocName = CipherId.toClient(fromPageId, 'page')
+      const docConnection = await server.openDirectConnection(backlinkDocName, {})
+      await docConnection.transact(fn)
+      await docConnection.disconnect()
+    })
+  )
+}
+
+hocusPocusHub.on('removeBacklinks', async ({pageId}) => {
+  const clientNumber = CipherId.encrypt(pageId)
+  await withBacklinks(pageId, (doc) => {
+    updateYDocNodes(
+      doc,
+      'pageLinkBlock',
+      {pageId: clientNumber},
+      (_, idx, parent) => {
+        parent.delete(idx)
+      },
+      // gotcha: ascending must be false for deletes because Yjs array length will change unlink a JS array
+      {ascending: false}
+    )
   })
-  // await docConnection.disconnect()
 })
 
 hocusPocusHub.on(

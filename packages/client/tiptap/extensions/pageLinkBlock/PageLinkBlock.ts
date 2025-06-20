@@ -20,7 +20,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend({
         })
       },
       auto: {
-        default: true,
+        default: false,
         parseHTML: (element) => {
           return element.getAttribute('data-auto') === '' ? true : false
         },

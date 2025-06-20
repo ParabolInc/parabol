@@ -10,9 +10,10 @@ import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
+import {withBacklinks} from './utils/tiptap/hocusPocusHub'
 import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
-import {updateTitleInBacklinks} from './utils/tiptap/updateTitleInBacklinks'
+import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
 
 const {SERVER_ID, HOCUS_POCUS_PORT} = process.env
 const port = Number(HOCUS_POCUS_PORT)
@@ -75,7 +76,11 @@ export const server = Server.configure({
           updateBacklinks(dbId, document, content)
         ])
         if (updatedTitle) {
-          await updateTitleInBacklinks(dbId, clientId, updatedTitle, server)
+          await withBacklinks(dbId, (doc) => {
+            updateYDocNodes(doc, 'pageLinkBlock', {pageId: clientId}, (node) => {
+              node.setAttribute('title', updatedTitle)
+            })
+          })
         }
       }
     }),

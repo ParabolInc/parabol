@@ -19,10 +19,6 @@ export function updateYDocNodes(
     for (let i = 0; i < children.length; i++) {
       const child = children[i]
       if (!(child instanceof Y.XmlElement)) continue
-      if (depth < maxDepth) {
-        const isDone = updateYDocFragment(child, depth + 1)
-        if (isDone) return isDone
-      }
       if (child.nodeName !== nodeName) continue
       const isMatch = Object.entries(filters).every(([key, value]) => {
         return child.getAttribute(key) === value
@@ -32,6 +28,11 @@ export function updateYDocNodes(
       const result = callbackFn(child, idx, frag)
       if (result === 'EXIT_NODE') break
       if (result === 'DONE') return true
+      // Important that this comes last. This mimics a "onEnter" visitor pattern
+      if (depth < maxDepth) {
+        const isDone = updateYDocFragment(child, depth + 1)
+        if (isDone) return isDone
+      }
     }
   }
   updateYDocFragment(doc.getXmlFragment('default'), 0)

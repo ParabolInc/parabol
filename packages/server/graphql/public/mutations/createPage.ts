@@ -106,7 +106,13 @@ const createPage: MutationResolvers['createPage'] = async (
         .execute()
     ])
     // Add the Auto-toc PageLinkBlock to the parent
-    hocusPocusHub.emit('insertChildPageLink', dbParentPageId, pageId)
+    hocusPocusHub.emit('moveChildPageLink', {
+      oldParentPageId: null,
+      newParentPageId: dbParentPageId,
+      childPageId: pageId,
+      sortOrder,
+      title: '<Untitled>'
+    })
   } else if (teamId) {
     await pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
   }
