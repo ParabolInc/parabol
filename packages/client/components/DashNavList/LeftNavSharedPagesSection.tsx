@@ -17,7 +17,7 @@ export const LeftNavSharedPagesSection = (props: Props) => {
       fragment LeftNavSharedPagesSection_viewer on User {
         draggingPageId
         draggingPageIsPrivate
-        sharedPages: pages(parentPageId: $sharedPagesNull, first: 500, isPrivate: false)
+        sharedPages: pages(parentPageId: $nullId, first: 500, isPrivate: false)
           @connection(key: "User_sharedPages") {
           edges {
             node {

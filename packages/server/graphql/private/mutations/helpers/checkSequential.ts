@@ -1,5 +1,5 @@
+import {Redlock} from '@sesamecare-oss/redlock'
 import {GraphQLResolveInfo} from 'graphql'
-import Redlock from 'redlock'
 import getRedis from '../../../../utils/getRedis'
 import standardError from '../../../../utils/standardError'
 import {ErrorPayload, ResolverFn} from '../../resolverTypes'

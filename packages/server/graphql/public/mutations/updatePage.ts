@@ -1,6 +1,8 @@
 import {GraphQLError} from 'graphql'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {hocusPocusHub} from '../../../utils/tiptap/hocusPocusHub'
 import {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 import {movePageToNewParent} from './helpers/movePageToNewParent'
@@ -44,9 +46,11 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const nextSortOrder = await getPageNextSortOrder(
     sortOrder,
     viewerId,
+    page.isPrivate,
     teamId || null,
     dbParentPageId
   )
+  const pg = getKysely()
   if (makePrivate && !page.isPrivate) {
     await privatizePage(viewerId, dbPageId, nextSortOrder)
   } else if (teamId && teamId !== page.teamId) {
@@ -66,8 +70,28 @@ const updatePage: MutationResolvers['updatePage'] = async (
       throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)
     }
     await movePageToNewParent(viewerId, dbPageId, dbParentPageId, nextSortOrder, ancestorIds)
-  } else {
+  } else if (teamId === page.teamId || dbParentPageId === page.parentPageId) {
+    // simple reorder
+    await pg
+      .updateTable('Page')
+      .set({sortOrder: nextSortOrder})
+      .where('id', '=', dbPageId)
+      .execute()
+  } else if (!teamId && !parentPageId) {
     await movePageToTopLevel(viewerId, dbPageId, nextSortOrder)
+  } else {
+    throw new GraphQLError('No page update could be performed')
+  }
+
+  if (page.parentPageId || dbParentPageId) {
+    // if it had a parent or it has a parent, update the auto link
+    hocusPocusHub.emit('moveChildPageLink', {
+      oldParentPageId: page.parentPageId,
+      newParentPageId: dbParentPageId,
+      childPageId: dbPageId,
+      title: page.title,
+      sortOrder: nextSortOrder
+    })
   }
   return {pageId: dbPageId}
 }

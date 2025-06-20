@@ -1,12 +1,15 @@
 import DescriptionIcon from '@mui/icons-material/Description'
+import FileOpenIcon from '@mui/icons-material/FileOpen'
 import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
 import {Link} from 'react-router-dom'
 import {getPageSlug} from '../../getPageSlug'
+
 export const PageLinkBlockView = (props: NodeViewProps) => {
   const {node} = props
   const {attrs} = node
-  const {pageId, title} = attrs
+  const {pageId, title, auto} = attrs
   const pageSlug = getPageSlug(pageId, title)
+  const Icon = auto ? DescriptionIcon : FileOpenIcon
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
     <NodeViewWrapper className={'group-[.ProseMirror-selectednode]:bg-slate-200'}>
@@ -14,7 +17,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
         to={`/pages/${pageSlug}`}
         className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-200'
       >
-        <DescriptionIcon />
+        <Icon />
         <div className='pl-1'>{title}</div>
       </Link>
     </NodeViewWrapper>

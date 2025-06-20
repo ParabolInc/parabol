@@ -39,8 +39,7 @@ export const PageActions = (props: Props) => {
   const [execute, submitting] = useCreatePageMutation()
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
-  const archivePage = (e: Event) => {
-    e.preventDefault()
+  const archivePage = () => {
     executeArchive({
       variables: {pageId, action: 'archive'},
       onCompleted(_res, errors) {
@@ -88,7 +87,7 @@ export const PageActions = (props: Props) => {
               </div>
             }
           >
-            <MenuContent align='start' sideOffset={4} className='max-h-80'>
+            <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
               <MenuItem onClick={archivePage}>{'Delete page'}</MenuItem>
             </MenuContent>
           </Menu>

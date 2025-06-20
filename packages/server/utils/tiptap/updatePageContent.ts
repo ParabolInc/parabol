@@ -18,7 +18,7 @@ export const updatePageContent = async (
     .where('id', '=', pageId)
     .returning(({eb, selectFrom}) => [
       // if we change the isolation level to "read uncommitted" this will fail, but fine for now
-      eb(selectFrom('Page').select('title').where('id', '=', pageId), '!=', title).as(
+      eb(selectFrom('Page').select('title').where('id', '=', pageId), 'is distinct from', title).as(
         'titleChanged'
       )
     ])
