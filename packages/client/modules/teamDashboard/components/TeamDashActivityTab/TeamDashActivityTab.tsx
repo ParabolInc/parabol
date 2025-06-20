@@ -40,6 +40,7 @@ const TeamDashActivityTab = (props: Props) => {
   const {activeMeetings, activeMeetingSeries} = team
   const meetings = useMemo(() => {
     const meetingSeriesMeetings = activeMeetingSeries
+      .filter((series) => !series.cancelledAt)
       .map(({mostRecentMeeting}) => mostRecentMeeting)
       .filter(Boolean)
     const otherActiveMeetings = activeMeetings.filter(

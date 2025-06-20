@@ -5,7 +5,7 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
+import {toDateTime} from '../../../../client/shared/rruleUtil'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {selectNewMeetings} from '../../../postgres/select'
 import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
@@ -28,7 +28,6 @@ import {checkSequential} from './helpers/checkSequential'
 
 const startRecurringMeeting = async (
   meetingSeries: MeetingSeries,
-  startTime: Date,
   dataLoader: DataLoaderWorker,
   subOptions: SubOptions
 ) => {
@@ -49,7 +48,7 @@ const startRecurringMeeting = async (
   const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
   const scheduledEndTime = getNextRRuleDate(rrule)
 
-  const meetingName = createMeetingSeriesTitle(meetingSeries.title, startTime, rrule.tzid)
+  const meetingName = createMeetingSeriesTitle(meetingSeries.title, scheduledEndTime, rrule.tzid)
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
       const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
@@ -184,15 +183,10 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
             DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
           )
-          for (const startTime of newMeetingsStartTimes) {
+          if (newMeetingsStartTimes.length > 0) {
             const err = await tracer.trace('startRecurringMeeting', async (span) => {
               span?.addTags({meetingSeriesId})
-              return startRecurringMeeting(
-                meetingSeries,
-                fromDateTime(startTime.toString(), rrule.tzid).toDate(),
-                dataLoader,
-                subOptions
-              )
+              return startRecurringMeeting(meetingSeries, dataLoader, subOptions)
             })
             if (!err) meetingsStarted++
           }

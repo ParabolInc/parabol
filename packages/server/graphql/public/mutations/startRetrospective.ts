@@ -4,6 +4,7 @@ import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMee
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -50,7 +51,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingName = !name
     ? `Retro #${meetingCount + 1}`
     : rrule
-      ? createMeetingSeriesTitle(name, new Date(), 'UTC')
+      ? createMeetingSeriesTitle(name, getNextRRuleDate(rrule), rrule.tzid)
       : name
   const meetingSeriesName = name || meetingName
 
