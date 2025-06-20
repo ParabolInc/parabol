@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.11.0](https://github.com/ParabolInc/parabol/compare/v10.10.1...v10.11.0) (2025-06-20)
+
+
+### Added
+
+* Automatic Table of Contents for child pages ([#11472](https://github.com/ParabolInc/parabol/issues/11472)) ([da6d962](https://github.com/ParabolInc/parabol/commit/da6d962f3dc93f5d875d973134f3d27683d55fbe))
+
+
+### Changed
+
+* background music loops ([#11446](https://github.com/ParabolInc/parabol/issues/11446)) ([6862768](https://github.com/ParabolInc/parabol/commit/6862768127ec7eec01e2b72f1a13ddd94d322220))
+
 ## [10.10.1](https://github.com/ParabolInc/parabol/compare/v10.10.0...v10.10.1) (2025-06-19)
 
 
