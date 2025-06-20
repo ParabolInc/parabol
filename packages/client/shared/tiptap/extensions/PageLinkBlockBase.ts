@@ -3,6 +3,7 @@ import {mergeAttributes, Node} from '@tiptap/core'
 export type PageLinkBlockAttributes = {
   pageId: number
   title: string
+  auto?: boolean
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -35,7 +36,7 @@ export const PageLinkBlockBase = Node.create({
   },
   renderText({node}) {
     const pageId = node.attrs.pageId as string
-    const title = node.attrs.title || ('<<Unknown>>' as string)
+    const title = node.attrs.title || ('<Untitled>' as string)
     return `[${title}](/pages/${pageId})`
   }
 })

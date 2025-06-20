@@ -5,7 +5,9 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
+import {hocusPocusHub} from '../../../utils/tiptap/hocusPocusHub'
 import {MutationResolvers} from '../resolverTypes'
+import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
 const archivePage: MutationResolvers['archivePage'] = async (
   _source,
@@ -30,6 +32,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
       .where('id', '=', dbPageId)
       .execute()
+    hocusPocusHub.emit('removeBacklinks', {pageId: dbPageId})
   } else {
     // When restoring, if the parent no longer exists, promote the orphan to the same level as its greatest ancestor
     let parentPageId: null | undefined = undefined
@@ -45,9 +48,17 @@ const archivePage: MutationResolvers['archivePage'] = async (
         }
       }
     }
+
+    const sortOrder = await getPageNextSortOrder(
+      page.sortOrder,
+      viewerId,
+      page.isPrivate,
+      teamId === undefined ? page.teamId : teamId,
+      parentPageId === undefined ? page.parentPageId : parentPageId
+    )
     await pg
       .updateTable('Page')
-      .set({deletedAt: null, deletedBy: null, parentPageId, teamId})
+      .set({deletedAt: null, deletedBy: null, parentPageId, teamId, sortOrder})
       .where('id', '=', dbPageId)
       .execute()
     if (parentPageId !== undefined || teamId !== undefined) {
@@ -65,6 +76,16 @@ const archivePage: MutationResolvers['archivePage'] = async (
           })
         )
         .execute()
+    }
+    const newParentPageId = parentPageId || page.parentPageId
+    if (newParentPageId) {
+      hocusPocusHub.emit('moveChildPageLink', {
+        oldParentPageId: null,
+        newParentPageId,
+        childPageId: dbPageId,
+        title: page.title,
+        sortOrder
+      })
     }
   }
   const data = {pageId: dbPageId, action}
