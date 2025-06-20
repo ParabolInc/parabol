@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {__END__} from '../../../../client/shared/sortOrder'
+import {__START__} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -38,7 +38,7 @@ const createPage: MutationResolvers['createPage'] = async (
   const pg = getKysely()
   const isPrivate = teamId ? false : parentPage ? parentPage.isPrivate : true
   const sortOrder = await getPageNextSortOrder(
-    __END__,
+    __START__,
     viewerId,
     isPrivate,
     teamId || null,

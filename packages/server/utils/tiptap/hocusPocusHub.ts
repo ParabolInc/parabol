@@ -98,6 +98,7 @@ hocusPocusHub.on(
         .executeTakeFirst()
       const putBeforePageId = putBeforePage ? CipherId.encrypt(putBeforePage.id) : null
       const filters = {auto: true, ...(putBeforePageId && {pageId: putBeforePageId})}
+      let inserted = false
       updateYDocNodes(
         doc,
         'pageLinkBlock',
@@ -105,10 +106,15 @@ hocusPocusHub.on(
         (_, idx, parent) => {
           const insertAt = putBeforePage ? idx : idx + 1
           parent.insert(insertAt, [pageLinkBlock])
+          inserted = true
           return 'DONE'
         },
         {maxDepth: 0, ascending: false}
       )
+      if (!inserted) {
+        const frag = doc.getXmlFragment('default')
+        frag.insert(1, [pageLinkBlock])
+      }
     }
 
     if (oldParentPageId && oldParentPageId === newParentPageId) {
