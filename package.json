@@ -171,6 +171,7 @@
   "dependencies": {
     "@eslint/js": "^9.25.1",
     "@module-federation/enhanced": "^0.13.0",
+    "@sesamecare-oss/redlock": "^1.4.0",
     "@tiptap/core": "^2.11.7",
     "@tiptap/extension-character-count": "^2.11.7",
     "@tiptap/extension-collaboration": "^2.11.7",

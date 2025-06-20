@@ -6,6 +6,7 @@ import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
+import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
 const archivePage: MutationResolvers['archivePage'] = async (
   _source,
@@ -45,9 +46,16 @@ const archivePage: MutationResolvers['archivePage'] = async (
         }
       }
     }
+    const sortOrder = await getPageNextSortOrder(
+      page.sortOrder,
+      viewerId,
+      page.isPrivate,
+      teamId === undefined ? page.teamId : teamId,
+      parentPageId === undefined ? page.parentPageId : parentPageId
+    )
     await pg
       .updateTable('Page')
-      .set({deletedAt: null, deletedBy: null, parentPageId, teamId})
+      .set({deletedAt: null, deletedBy: null, parentPageId, teamId, sortOrder})
       .where('id', '=', dbPageId)
       .execute()
     if (parentPageId !== undefined || teamId !== undefined) {

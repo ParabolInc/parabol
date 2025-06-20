@@ -16,7 +16,7 @@ const NewMeetingSummaryRoot = () => {
   const queryRef = useQueryLoaderNow<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {
     meetingId,
     first: 5,
-    sharedPagesNull: null
+    nullId: null
   })
   return (
     <Suspense fallback={<Loader size={LoaderSize.WHOLE_PAGE} />}>

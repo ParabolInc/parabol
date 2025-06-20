@@ -10,6 +10,7 @@ import {MaybeReadonly} from '../types/generics'
 const START_CHAR_CODE = 32
 const END_CHAR_CODE = 126
 export const __END__ = '__END__'
+export const __START__ = '__START__'
 
 export function positionBefore(pos: string) {
   for (let i = pos.length - 1; i >= 0; i--) {

@@ -1,18 +1,16 @@
 import {Database} from '@hocuspocus/extension-database'
-import {Redis} from '@hocuspocus/extension-redis'
 import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
-import * as Y from 'yjs'
 import getKysely from './postgres/getKysely'
 import {updateBacklinks} from './updateBacklinks'
 import {isAuthenticated} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
-import {hocusPocusHub} from './utils/hocusPocusHub'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
+import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 import {updateTitleInBacklinks} from './utils/tiptap/updateTitleInBacklinks'
 
@@ -21,7 +19,7 @@ const port = Number(HOCUS_POCUS_PORT)
 if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
 }
-const server = Server.configure({
+export const server = Server.configure({
   stopOnSignals: false,
   port,
   quiet: true,
@@ -92,21 +90,6 @@ const server = Server.configure({
 })
 
 server.listen()
-
-hocusPocusHub.on('insertChildPageLink', async (parentPageId, childPageId) => {
-  const parentDocName = CipherId.toClient(parentPageId, 'page')
-  const clientChildPageId = CipherId.encrypt(childPageId)
-  const docConnection = await server.openDirectConnection(parentDocName, {})
-  await docConnection.transact((doc) => {
-    const frag = doc.getXmlFragment('default')
-    const pageLinkBlock = new Y.XmlElement('pageLinkBlock')
-    pageLinkBlock.setAttribute('pageId', clientChildPageId as any)
-    pageLinkBlock.setAttribute('title', '<<New Page>>')
-    pageLinkBlock.setAttribute('auto', true as any)
-    frag.push([pageLinkBlock])
-  })
-  await docConnection.disconnect()
-})
 
 const signalHandler = async () => {
   await server.destroy()

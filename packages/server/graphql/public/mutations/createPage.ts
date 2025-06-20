@@ -1,13 +1,14 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {positionBefore} from '../../../../client/shared/sortOrder'
+import {__END__} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {hocusPocusHub} from '../../../utils/hocusPocusHub'
+import {hocusPocusHub} from '../../../utils/tiptap/hocusPocusHub'
 import {MutationResolvers} from '../resolverTypes'
+import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 import {MAX_PAGE_DEPTH} from './updatePage'
 
 const createPage: MutationResolvers['createPage'] = async (
@@ -19,7 +20,7 @@ const createPage: MutationResolvers['createPage'] = async (
     throw new GraphQLError('Can only provider either parentPageId OR teamId')
   }
   const viewerId = getUserId(authToken)
-  const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : undefined
+  const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
   const [viewer, parentPage] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
     dbParentPageId ? dataLoader.get('pages').load(dbParentPageId) : null
@@ -35,26 +36,20 @@ const createPage: MutationResolvers['createPage'] = async (
   }
 
   const pg = getKysely()
-  const topPage = await pg
-    .selectFrom('Page')
-    .select('sortOrder')
-    .innerJoin('PageAccess', 'pageId', 'Page.id')
-    .where('PageAccess.userId', '=', viewerId)
-    .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-    .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
-    .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
-    .$if(!teamId, (qb) => qb.where('isPrivate', '=', true))
-    // purposefully not excluding deleted docs because if they get restored then it could be a duplicate sortOrder
-    .orderBy('sortOrder')
-    .limit(1)
-    .executeTakeFirst()
-  const sortOrder = positionBefore(topPage?.sortOrder ?? ' ')
+  const isPrivate = teamId ? false : parentPage ? parentPage.isPrivate : true
+  const sortOrder = await getPageNextSortOrder(
+    __END__,
+    viewerId,
+    isPrivate,
+    teamId || null,
+    dbParentPageId
+  )
   const page = await pg
     .insertInto('Page')
     .values({
       userId: viewerId,
       parentPageId: dbParentPageId,
-      isPrivate: !(dbParentPageId || teamId),
+      isPrivate,
       ancestorIds: parentPage?.ancestorIds.concat(dbParentPageId!) ?? [],
       teamId,
       sortOrder

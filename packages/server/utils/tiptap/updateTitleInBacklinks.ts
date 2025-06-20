@@ -20,7 +20,9 @@ export const updateTitleInBacklinks = async (
       const backlinkDocName = CipherId.toClient(fromPageId, 'page')
       const docConnection = await server.openDirectConnection(backlinkDocName, {})
       await docConnection.transact((doc) => {
-        updateYDocNodes(doc, 'pageLinkBlock', {pageId: clientNumber}, {title})
+        updateYDocNodes(doc, 'pageLinkBlock', {pageId: clientNumber}, (node) => {
+          node.setAttribute('title', title)
+        })
       })
       await docConnection.disconnect()
     })

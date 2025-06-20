@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "dd-trace": "^5.0.0",
-    "franc-min": "^5.0.0",
-    "redlock": "^5.0.0-beta.2"
+    "franc-min": "^5.0.0"
   }
 }
