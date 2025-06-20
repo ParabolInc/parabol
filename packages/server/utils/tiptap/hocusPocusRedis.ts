@@ -1,3 +1,4 @@
+// Remove after PR gets merged: https://github.com/ueberdosis/hocuspocus/pull/958
 import {
   afterLoadDocumentPayload,
   afterStoreDocumentPayload,

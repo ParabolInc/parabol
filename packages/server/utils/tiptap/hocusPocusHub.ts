@@ -80,7 +80,6 @@ hocusPocusHub.on(
         {auto: true, pageId: clientChildPageId},
         (_, idx, parent) => {
           parent.delete(idx)
-          console.log('deleting at', idx)
           return 'DONE'
         },
         {maxDepth: 0, ascending: false}
@@ -99,7 +98,6 @@ hocusPocusHub.on(
         .executeTakeFirst()
       const putBeforePageId = putBeforePage ? CipherId.encrypt(putBeforePage.id) : null
       const filters = {auto: true, ...(putBeforePageId && {pageId: putBeforePageId})}
-      console.log('looking for', putBeforePageId)
       updateYDocNodes(
         doc,
         'pageLinkBlock',
@@ -107,7 +105,6 @@ hocusPocusHub.on(
         (_, idx, parent) => {
           const insertAt = putBeforePage ? idx : idx + 1
           parent.insert(insertAt, [pageLinkBlock])
-          console.log('inserting at', insertAt)
           return 'DONE'
         },
         {maxDepth: 0, ascending: false}
