@@ -1,7 +1,7 @@
 import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {generateJSON, generateText} from '@tiptap/react'
 import type {History} from 'history'
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
@@ -50,6 +50,7 @@ const makeHocusPocusSocket = (authToken: string | null) => {
 
 export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
+  const [isLoaded, setIsLoaded] = useState(false)
   const {history} = useRouter<{meetingId: string}>()
   const clientPageNum = Number(pageId.split(':')[1])
   const providerRef = useRef<TiptapCollabProvider>()
@@ -58,6 +59,7 @@ export const usePageProvider = (pageId: string) => {
     if (!pageId) return undefined
     if (providerRef.current) {
       providerRef.current.destroy()
+      setIsLoaded(false)
     }
     const doc = new Y.Doc()
     const frag = doc.getXmlFragment('default')
@@ -83,6 +85,7 @@ export const usePageProvider = (pageId: string) => {
       }
     }
     nextProvider.on('synced', () => {
+      setIsLoaded(true)
       const headerElement = frag.get(0) as Y.XmlElement | null
       const headerText = headerElement?.get(0) as Y.XmlText
       if (headerText) {
@@ -100,5 +103,5 @@ export const usePageProvider = (pageId: string) => {
       providerRef.current?.destroy()
     }
   }, [])
-  return providerRef.current!
+  return {provider: providerRef.current!, isLoaded}
 }
