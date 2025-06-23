@@ -53,8 +53,8 @@ export const useTipTapPageEditor = (
   )
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
-  const provider = usePageProvider(pageId)
   const placeholderRef = useRef<string | undefined>(undefined)
+  const {provider, isLoaded} = usePageProvider(pageId)
   const editor = useEditor(
     {
       content: '',
@@ -145,5 +145,5 @@ export const useTipTapPageEditor = (
 
   usePageLinkPlaceholder(editor!, placeholderRef)
 
-  return {editor}
+  return {editor, isLoaded}
 }
