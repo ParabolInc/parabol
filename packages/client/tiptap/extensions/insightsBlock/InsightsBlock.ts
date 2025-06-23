@@ -163,6 +163,10 @@ export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: Markdown
 
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(InsightsBlockView)
+    return ReactNodeViewRenderer(InsightsBlockView, {
+      stopEvent() {
+        return false
+      }
+    })
   }
 })

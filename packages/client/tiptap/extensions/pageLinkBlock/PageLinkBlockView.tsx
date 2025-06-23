@@ -15,10 +15,10 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
     <NodeViewWrapper className={'group-[.ProseMirror-selectednode]:bg-slate-200'}>
       <Link
         to={`/pages/${pageSlug}`}
-        className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-200'
+        className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-100'
       >
         <Icon />
-        <div className='pl-1'>{title}</div>
+        <span className='pl-1'>{title}</span>
       </Link>
     </NodeViewWrapper>
   )

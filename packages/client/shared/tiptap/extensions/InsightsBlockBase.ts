@@ -11,8 +11,6 @@ export const InsightsBlockBase = Node.create({
 
   content: 'block*',
 
-  draggable: true,
-
   selectable: true,
 
   inline: false,

@@ -17,8 +17,6 @@ export const ImageUploadBase = Node.create({
 
   group: 'block',
 
-  draggable: true,
-
   selectable: true,
 
   inline: false,

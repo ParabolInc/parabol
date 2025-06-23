@@ -125,7 +125,9 @@ export const useTipTapPageEditor = (
           }
         }),
         InsightsBlock,
-        GlobalDragHandle,
+        GlobalDragHandle.configure({
+          customNodes: ['pageLinkBlock']
+        }),
         AutoJoiner,
         Markdown.configure({
           html: true,

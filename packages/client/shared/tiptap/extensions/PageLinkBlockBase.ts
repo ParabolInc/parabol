@@ -22,6 +22,7 @@ export const PageLinkBlockBase = Node.create({
 
   isolating: true,
   atom: true,
+  selectable: true,
 
   parseHTML() {
     return [
