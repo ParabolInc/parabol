@@ -22,12 +22,12 @@ const DismissNewFeatureMutation: StandardMutation<TDismissNewFeatureMutation> = 
     mutation,
     variables,
     updater: (store) => {
-      const viewer = store.getRoot().getLinkedRecord('viewer')!
-      viewer.setValue(null, 'newFeature')
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      viewer?.setValue(null, 'newFeature')
     },
     optimisticUpdater: (store) => {
-      const viewer = store.getRoot().getLinkedRecord('viewer')!
-      viewer.setValue(null, 'newFeature')
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      viewer?.setValue(null, 'newFeature')
     },
     onError,
     onCompleted
