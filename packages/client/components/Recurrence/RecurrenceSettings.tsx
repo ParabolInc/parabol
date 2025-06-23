@@ -8,6 +8,7 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import {fromRRuleDateTime, toRRuleDateTime} from '../../shared/rruleUtil'
 import {cn} from '../../ui/cn'
+import {createMeetingSeriesTitle} from '../../utils/createMeetingSeriesTitle'
 import plural from '../../utils/plural'
 import DropdownMenuToggle from '../DropdownMenuToggle'
 import {toHumanReadable} from './HumanReadableRecurrenceRule'
@@ -227,6 +228,8 @@ export const RecurrenceSettings = (props: Props) => {
 
     onRruleUpdated(rrule)
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
+
+  const endDate = rrule?.after(new Date())
   return (
     <div className='space-y-4 p-4'>
       <div className='space-y-1'>
@@ -250,9 +253,11 @@ export const RecurrenceSettings = (props: Props) => {
           <Error key={intervalError}>{intervalError}</Error>
         ) : (
           <Description>
-            The next meeting in this series will be called{' '}
+            {endDate
+              ? 'The first meeting in this series will be called'
+              : 'This meeting will be called'}{' '}
             <span className='font-semibold'>
-              "{title} - {dayjs(new Date()).format('MMM DD')}"
+              {createMeetingSeriesTitle(title, endDate, timeZone)}
             </span>
           </Description>
         )}
