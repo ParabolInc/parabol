@@ -38,6 +38,9 @@ const useNewFeatureSnackbar = (viewerRef: useNewFeatureSnackbar_viewer$key) => {
       }
     }
     atmosphere.eventEmitter.emit('addSnackbar', snack)
+    return () => {
+      atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'newFeature')
+    }
   }, [newFeature])
 }
 
