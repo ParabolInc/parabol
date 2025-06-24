@@ -1,7 +1,7 @@
 import {fetch} from '@whatwg-node/fetch'
 import {createSigner, httpbis} from 'http-message-signatures'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import sendToSentry from './sendToSentry'
+import logError from './logError'
 
 // Mattermost is a server-only integration for now, unlike the Slack integration
 
@@ -79,7 +79,7 @@ abstract class MattermostManager {
       return res
     } catch (error) {
       if (error instanceof Error) {
-        sendToSentry(error)
+        logError(error)
         return error
       }
       return new Error('Mattermost is not responding')

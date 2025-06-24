@@ -3,7 +3,7 @@ import {sql} from 'kysely'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
-import sendToSentry from '../../../../utils/sendToSentry'
+import logError from '../../../../utils/logError'
 import standardError from '../../../../utils/standardError'
 import {DataLoaderWorker} from '../../../graphql'
 import {RetrospectiveMeeting} from '../../resolverTypes'
@@ -84,7 +84,7 @@ const processLines = (lines: string[]): string[] => {
             const error = new Error(
               `AI hallucinated. Unable to find meetingId for ${shortMeetingId}. Line: ${line}`
             )
-            sendToSentry(error)
+            logError(error)
             isValid = false
           }
         })

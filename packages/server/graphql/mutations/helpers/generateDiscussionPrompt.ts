@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 
@@ -24,7 +24,7 @@ const generateDiscussionPrompt = async (
   const manager = new OpenAIServerManager()
   if (!reflectionGroups.length) {
     const error = new Error('No reflection groups in generateDiscussionPrompt')
-    sendToSentry(error, {userId: facilitator.id, tags: {meetingId}})
+    logError(error, {userId: facilitator.id, tags: {meetingId}})
     return
   }
   await Promise.all(

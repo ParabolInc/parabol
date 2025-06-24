@@ -2,7 +2,7 @@ import {sql} from 'kysely'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import {MutationResolvers} from '../resolverTypes'
 
@@ -50,7 +50,7 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
     .executeTakeFirst()
 
   if (!teamNotificationSettings) {
-    sendToSentry(new Error('Linking Mattermost Channel failed'), {tags: {teamId, channelId}})
+    logError(new Error('Linking Mattermost Channel failed'), {tags: {teamId, channelId}})
     return {error: {message: 'Linking failed'}}
   }
 
