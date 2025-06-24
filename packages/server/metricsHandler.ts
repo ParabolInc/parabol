@@ -1,5 +1,5 @@
 import {usePrometheus} from '@graphql-yoga/plugin-prometheus'
-import {Counter, Gauge, Histogram, Registry, collectDefaultMetrics} from 'prom-client'
+import {Gauge, Histogram, Registry, collectDefaultMetrics} from 'prom-client'
 import {HttpResponse} from 'uWebSockets.js'
 import {activeClients} from './activeClients'
 
@@ -19,24 +19,50 @@ collectDefaultMetrics({
 })
 
 // Node.js metrics
-const nodeMemoryUsage = new Gauge({
+new Gauge({
   name: 'node_memory_usage_bytes',
   help: 'Memory usage by type',
   labelNames: ['type'],
-  registers: [register]
+  registers: [register],
+  collect() {
+    const memoryUsage = process.memoryUsage()
+    const {heapTotal, heapUsed, external, rss, arrayBuffers} = memoryUsage
+
+    this.set({type: 'heapTotal'}, heapTotal)
+    this.set({type: 'heapUsed'}, heapUsed)
+    this.set({type: 'external'}, external)
+    this.set({type: 'rss'}, rss)
+    this.set({type: 'arrayBuffers'}, arrayBuffers)
+  }
 })
 
-const nodeCpuUsage = new Gauge({
+new Gauge({
   name: 'node_cpu_usage_seconds',
   help: 'CPU usage in seconds',
   labelNames: ['type'],
-  registers: [register]
+  registers: [register],
+  collect() {
+    const cpuUsage = process.cpuUsage()
+    const userCpu = cpuUsage.user / 1_000_000
+    const systemCpu = cpuUsage.system / 1_000_000
+    this.set({type: 'user'}, userCpu)
+    this.set({type: 'system'}, systemCpu)
+  }
 })
 
-const nodeEventLoopLag = new Gauge({
+new Gauge({
   name: 'node_eventloop_lag_seconds',
   help: 'Event loop lag in seconds',
-  registers: [register]
+  registers: [register],
+  collect() {
+    return new Promise<void>((resolve) => {
+      const end = this.startTimer()
+      setTimeout(() => {
+        end()
+        resolve()
+      }, 0)
+    })
+  }
 })
 
 const nodeGcDuration = new Histogram({
@@ -47,27 +73,43 @@ const nodeGcDuration = new Histogram({
   registers: [register]
 })
 
-const nodeHeapSize = new Gauge({
+new Gauge({
   name: 'node_heap_size_bytes',
   help: 'Heap size in bytes',
   labelNames: ['type'],
-  registers: [register]
+  registers: [register],
+  collect() {
+    const memoryUsage = process.memoryUsage()
+    const {heapTotal, heapUsed} = memoryUsage
+
+    this.set({type: 'total'}, heapTotal)
+    this.set({type: 'used'}, heapUsed)
+  }
 })
 
-const nodeActiveHandles = new Gauge({
+new Gauge({
   name: 'node_active_handles',
   help: 'Number of active handles',
-  registers: [register]
+  registers: [register],
+  collect() {
+    const activeResources = process.getActiveResourcesInfo()
+    this.set(activeResources.length)
+  }
 })
 
 // WebSocket metrics
-export const wsConnections = new Gauge({
+new Gauge({
   name: 'websocket_connections_total',
   help: 'Total number of active WebSocket connections',
   labelNames: ['port'],
-  registers: [register]
+  registers: [register],
+  collect() {
+    this.set({port: PORT.toString()}, activeClients.size)
+  }
 })
 
+// TODO wire up these ws metrics
+/*
 export const wsMessages = new Counter({
   name: 'websocket_messages_total',
   help: 'Total number of WebSocket messages',
@@ -97,58 +139,26 @@ export const wsErrors = new Counter({
   labelNames: ['type', 'port'],
   registers: [register]
 })
-
-// Cache for event loop lag measurement
-let lastEventLoopLag = 0
-let lastEventLoopCheck = 0
-const EVENT_LOOP_CHECK_INTERVAL = 1000
+*/
 
 // GraphQL Yoga Prometheus plugin configuration
 export const graphqlPrometheusPlugin = usePrometheus({
   registry: register
 })
 
-const updateWebSocketMetrics = () => {
-  wsConnections.set({port: PORT.toString()}, activeClients.size)
-}
-
-const updateNodeMetrics = () => {
-  const memoryUsage = process.memoryUsage()
-  const {heapTotal, heapUsed, external, rss, arrayBuffers} = memoryUsage
-
-  nodeMemoryUsage.set({type: 'heapTotal'}, heapTotal)
-  nodeMemoryUsage.set({type: 'heapUsed'}, heapUsed)
-  nodeMemoryUsage.set({type: 'external'}, external)
-  nodeMemoryUsage.set({type: 'rss'}, rss)
-  nodeMemoryUsage.set({type: 'arrayBuffers'}, arrayBuffers)
-
-  nodeHeapSize.set({type: 'total'}, heapTotal)
-  nodeHeapSize.set({type: 'used'}, heapUsed)
-
-  const cpuUsage = process.cpuUsage()
-  const userCpu = cpuUsage.user / 1_000_000
-  const systemCpu = cpuUsage.system / 1_000_000
-  nodeCpuUsage.set({type: 'user'}, userCpu)
-  nodeCpuUsage.set({type: 'system'}, systemCpu)
-
-  const now = Date.now()
-  if (now - lastEventLoopCheck >= EVENT_LOOP_CHECK_INTERVAL) {
-    const start = process.hrtime.bigint()
-    setTimeout(() => {
-      const end = process.hrtime.bigint()
-      lastEventLoopLag = Number(end - start) / 1_000_000_000
-      lastEventLoopCheck = now
-    }, 0)
-  }
-  nodeEventLoopLag.set(lastEventLoopLag)
-
+const updateHistorgrams = () => {
   const activeResources = process.getActiveResourcesInfo()
   const gcCount = activeResources.reduce(
     (count, resource) => (resource.includes('gc') ? count + 1 : count),
     0
   )
   nodeGcDuration.observe({type: 'total'}, gcCount)
-  nodeActiveHandles.set(activeResources.length)
+}
+
+if (process.env.ENABLE_METRICS === 'true') {
+  setInterval(() => {
+    updateHistorgrams()
+  }, 30000)
 }
 
 export const metricsHandler = async (res: HttpResponse) => {
@@ -165,22 +175,23 @@ export const metricsHandler = async (res: HttpResponse) => {
     return
   }
 
-  updateWebSocketMetrics()
-  updateNodeMetrics()
-
   try {
     const metrics = await register.metrics()
     if (!aborted) {
-      res.writeStatus('200 OK')
-      res.writeHeader('Content-Type', register.contentType)
-      res.writeHeader('Cache-Control', 'no-cache')
-      res.end(metrics)
+      res.cork(() => {
+        res.writeStatus('200 OK')
+        res.writeHeader('Content-Type', register.contentType)
+        res.writeHeader('Cache-Control', 'no-cache')
+        res.end(metrics)
+      })
     }
   } catch (error) {
     console.error('Error generating metrics:', error)
     if (!aborted) {
-      res.writeStatus('500 Internal Server Error')
-      res.end()
+      res.cork(() => {
+        res.writeStatus('500 Internal Server Error')
+        res.end()
+      })
     }
   }
 }
