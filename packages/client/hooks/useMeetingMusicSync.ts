@@ -89,6 +89,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current = new Audio()
       audioRef.current.volume = volume
       audioRef.current.setAttribute('playsinline', 'true')
+      audioRef.current.loop = true
       audioRef.current.muted = true
 
       audioRef.current.src = '/static/sounds/quiet-lofi.mp3'
@@ -104,13 +105,6 @@ const useMeetingMusicSync = (meetingId: string) => {
         if (pendingPlay.current) {
           audioRef.current!.muted = false
           audioRef.current!.volume = volume
-        }
-      })
-
-      audioRef.current.addEventListener('ended', () => {
-        if (audioRef.current && isPlaying) {
-          audioRef.current.currentTime = 0
-          audioRef.current.play()
         }
       })
     }

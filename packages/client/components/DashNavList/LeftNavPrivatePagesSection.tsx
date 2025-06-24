@@ -22,7 +22,8 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
       fragment LeftNavPrivatePagesSection_viewer on User {
         draggingPageId
         draggingPageIsPrivate
-        privatePages: pages(first: 500, isPrivate: true) @connection(key: "User_privatePages") {
+        privatePages: pages(parentPageId: $nullId, first: 500, isPrivate: true)
+          @connection(key: "User_privatePages") {
           edges {
             node {
               ...LeftNavPageLink_page

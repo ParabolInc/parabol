@@ -19,12 +19,7 @@ interface Props {
 }
 
 const query = graphql`
-  query NewMeetingSummaryQuery(
-    $meetingId: ID!
-    $first: Int!
-    $after: DateTime
-    $sharedPagesNull: ID
-  ) {
+  query NewMeetingSummaryQuery($meetingId: ID!, $first: Int!, $after: DateTime, $nullId: ID) {
     ...DashTopBar_query
     viewer {
       ...DashSidebar_viewer

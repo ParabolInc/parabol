@@ -32,6 +32,7 @@ export const privatizePage = async (viewerId: string, pageId: number, sortOrder:
       teamId: null,
       parentPageId: null,
       isParentLinked: true,
+      isPrivate: true,
       sortOrder,
       ancestorIds: []
     })

@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.11.1](https://github.com/ParabolInc/parabol/compare/v10.11.0...v10.11.1) (2025-06-23)
+
+
+### Fixed
+
+* flashing placeholders on pages ([#11475](https://github.com/ParabolInc/parabol/issues/11475)) ([cb5eef6](https://github.com/ParabolInc/parabol/commit/cb5eef64048a6a1c4b545f4de2286e16d409d7fe))
+* ignore dismiss new feature after logout ([#11477](https://github.com/ParabolInc/parabol/issues/11477)) ([92499f2](https://github.com/ParabolInc/parabol/commit/92499f2fa5ca0d279b35f12b5ecfeb5be038c531))
+
+## [10.11.0](https://github.com/ParabolInc/parabol/compare/v10.10.1...v10.11.0) (2025-06-20)
+
+
+### Added
+
+* Automatic Table of Contents for child pages ([#11472](https://github.com/ParabolInc/parabol/issues/11472)) ([da6d962](https://github.com/ParabolInc/parabol/commit/da6d962f3dc93f5d875d973134f3d27683d55fbe))
+
+
+### Changed
+
+* background music loops ([#11446](https://github.com/ParabolInc/parabol/issues/11446)) ([6862768](https://github.com/ParabolInc/parabol/commit/6862768127ec7eec01e2b72f1a13ddd94d322220))
+
 ## [10.10.1](https://github.com/ParabolInc/parabol/compare/v10.10.0...v10.10.1) (2025-06-19)
 
 

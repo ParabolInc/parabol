@@ -1,5 +1,4 @@
 import {Database} from '@hocuspocus/extension-database'
-import {Redis} from '@hocuspocus/extension-redis'
 import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
@@ -11,15 +10,17 @@ import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
+import {withBacklinks} from './utils/tiptap/hocusPocusHub'
+import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
-import {updateTitleInBacklinks} from './utils/tiptap/updateTitleInBacklinks'
+import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
 
 const {SERVER_ID, HOCUS_POCUS_PORT} = process.env
 const port = Number(HOCUS_POCUS_PORT)
 if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
 }
-const server = Server.configure({
+export const server = Server.configure({
   stopOnSignals: false,
   port,
   quiet: true,
@@ -75,7 +76,11 @@ const server = Server.configure({
           updateBacklinks(dbId, document, content)
         ])
         if (updatedTitle) {
-          await updateTitleInBacklinks(dbId, clientId, updatedTitle, server)
+          await withBacklinks(dbId, (doc) => {
+            updateYDocNodes(doc, 'pageLinkBlock', {pageId: clientId}, (node) => {
+              node.setAttribute('title', updatedTitle)
+            })
+          })
         }
       }
     }),

@@ -18,6 +18,8 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
           isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className
         )}
+        // FIX ME: onClick has a MouseEvent handler, onSelect has a custom event that can't do things like e.stopPropagation()
+        // Refactor: onClick -> onSelect here & in all dependencies
         onSelect={onClick}
         ref={ref}
       >

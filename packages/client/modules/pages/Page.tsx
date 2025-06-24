@@ -3,6 +3,7 @@ import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTap
 import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
 import useRouter from '../../hooks/useRouter'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
+import {cn} from '../../ui/cn'
 import {PageSharingRoot} from './PageSharingRoot'
 
 interface Props {
@@ -16,7 +17,7 @@ export const Page = (props: Props) => {
   const {pageSlug} = params
   const pageIdIdx = pageSlug.lastIndexOf('-')
   const pageId = `page:${Number(pageIdIdx === -1 ? pageSlug : pageSlug.slice(pageIdIdx + 1))}`
-  const {editor} = useTipTapPageEditor(pageId, {viewerRef})
+  const {editor, isLoaded} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
   if (!pageSlug) return <div>No page ID provided in route</div>
   return (
@@ -38,7 +39,10 @@ export const Page = (props: Props) => {
             </Popover.Portal>
           </Popover.Root>
         </div>
-        <TipTapEditor editor={editor} className='page-editor flex w-full px-6' />
+        <TipTapEditor
+          editor={editor}
+          className={cn('page-editor flex w-full px-6 opacity-0', isLoaded && 'opacity-100')}
+        />
       </div>
     </div>
   )
