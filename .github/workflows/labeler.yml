@@ -7,6 +7,21 @@ jobs:
     runs-on: ubuntu-latest
     name: Label the PR size
     steps:
+      # Remove this step once the https://github.com/CodelyTV/pr-size-labeler/issues/96 is resolved
+      - name: Remove legacy PR size labels
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labelsToRemove = ['size/xs', 'size/s', 'size/m', 'size/l', 'size/xl'];
+            const prLabels = context.payload.pull_request.labels.map(label => label.name);
+            const labelsToRemoveSet = new Set(labelsToRemove);
+            const labelsToKeep = issueLabels.filter(label => !labelsToRemoveSet.has(label));
+            await github.issues.setLabels({
+              ...context.repo,
+              issue_number: context.payload.issue.number,
+              labels: labelsToKeep
+            });
       - uses: codelytv/pr-size-labeler@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
