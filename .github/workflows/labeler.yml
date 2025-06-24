@@ -17,7 +17,7 @@ jobs:
             const prLabels = context.payload.pull_request.labels.map(label => label.name);
             const labelsToRemove = prLabels.filter(label => sizeLabels.includes(label));
             await Promise.allSettled(labelsToRemove.map(label => {
-              return github.issues.removeLabel({
+              return github.rest.issues.removeLabel({
                 ...context.repo,
                 issue_number: context.payload.pull_request.number,
                 name: label
