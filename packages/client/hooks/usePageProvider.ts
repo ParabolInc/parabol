@@ -15,7 +15,7 @@ import useRouter from './useRouter'
 let currentSlug: string | undefined = undefined
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText,
-  clientPageNum: number,
+  pageCode: number,
   history: History,
   atmosphere: Atmosphere
 ) => {
@@ -24,13 +24,13 @@ const updateUrlWithSlug = (
     serverTipTapExtensions
   )
   const {title} = getTitleFromPageText(plaintext)
-  const pageSlug = getPageSlug(clientPageNum, title)
+  const pageSlug = getPageSlug(pageCode, title)
   if (pageSlug === currentSlug) return
   currentSlug = pageSlug
   history.replace(`/pages/${pageSlug}`)
   commitLocalUpdate(atmosphere, (store) => {
     const title = plaintext.slice(0, 255)
-    store.get(`page:${clientPageNum}`)?.setValue(title, 'title')
+    store.get(`page:${pageCode}`)?.setValue(title, 'title')
   })
 }
 let socket: TiptapCollabProviderWebsocket
@@ -52,7 +52,7 @@ export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
   const [isLoaded, setIsLoaded] = useState(false)
   const {history} = useRouter<{meetingId: string}>()
-  const clientPageNum = Number(pageId.split(':')[1])
+  const pageCode = Number(pageId.split(':')[1])
   const providerRef = useRef<TiptapCollabProvider>()
   // Connect to your Collaboration server
   providerRef.current = useMemo(() => {
@@ -71,9 +71,9 @@ export const usePageProvider = (pageId: string) => {
     })
 
     const observeHeader = (headerBlock: Y.XmlText) => {
-      updateUrlWithSlug(headerBlock, clientPageNum, history, atmosphere)
+      updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
       headerBlock.observe(() => {
-        updateUrlWithSlug(headerBlock, clientPageNum, history, atmosphere)
+        updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
       })
     }
     const observeFragForHeader: FirstParam<Y.AbstractType<Y.YXmlEvent>['observeDeep']> = () => {

@@ -1,7 +1,7 @@
 import {mergeAttributes, Node} from '@tiptap/core'
 
 export type PageLinkBlockAttributes = {
-  pageId: number
+  pageCode: number
   title: string
   auto?: boolean
 }
@@ -35,8 +35,9 @@ export const PageLinkBlockBase = Node.create({
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   },
   renderText({node}) {
-    const pageId = node.attrs.pageId as string
-    const title = node.attrs.title || ('<Untitled>' as string)
-    return `[${title}](/pages/${pageId})`
+    const attrs = node.attrs as PageLinkBlockAttributes
+    const pageCode = attrs.pageCode
+    const title = attrs.title || '<Untitled>'
+    return `[${title}](/pages/${pageCode})`
   }
 })

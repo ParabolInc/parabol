@@ -55,8 +55,8 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         const {createPage} = response
         const {page} = createPage
         const {id} = page
-        const [_, pageId] = id.split(':')
-        history.push(`/pages/${pageId}`)
+        const [_, pageCode] = id.split(':')
+        history.push(`/pages/${pageCode}`)
       }
     })
   }

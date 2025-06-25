@@ -15,8 +15,8 @@ export const Page = (props: Props) => {
   const {match} = useRouter<{orgName: string; pageSlug: string}>()
   const {params} = match
   const {pageSlug} = params
-  const pageIdIdx = pageSlug.lastIndexOf('-')
-  const pageId = `page:${Number(pageIdIdx === -1 ? pageSlug : pageSlug.slice(pageIdIdx + 1))}`
+  const pageCodeIdx = pageSlug.lastIndexOf('-')
+  const pageId = `page:${Number(pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1))}`
   const {editor, isLoaded} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
   if (!pageSlug) return <div>No page ID provided in route</div>

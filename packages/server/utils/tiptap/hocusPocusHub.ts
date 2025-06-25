@@ -1,6 +1,7 @@
 import type {Document} from '@hocuspocus/server'
 import {EventEmitter} from 'tseep'
 import * as Y from 'yjs'
+import {type PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {server} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
@@ -17,12 +18,12 @@ export const hocusPocusHub = new EventEmitter<{
   removeBacklinks: (params: {pageId: number}) => void
 }>()
 
-const createPageLinkElement = (pageId: number, title: string) => {
-  const el = new Y.XmlElement()
+const createPageLinkElement = (pageCode: number, title: string) => {
+  const el = new Y.XmlElement<PageLinkBlockAttributes>()
   el.nodeName = 'pageLinkBlock'
-  el.setAttribute('pageId', pageId as any)
+  el.setAttribute('pageCode', pageCode)
   el.setAttribute('title', title)
-  el.setAttribute('auto', true as any)
+  el.setAttribute('auto', true)
   return el
 }
 
@@ -38,34 +39,36 @@ export const withBacklinks = async (
     .execute()
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {
-      const backlinkDocName = CipherId.toClient(fromPageId, 'page')
-      const docConnection = await server.openDirectConnection(backlinkDocName, {})
+      const pageKey = CipherId.toClient(fromPageId, 'page')
+      const docConnection = await server.openDirectConnection(pageKey, {})
       await docConnection.transact(fn)
       await docConnection.disconnect()
     })
   )
 }
 
-hocusPocusHub.on('removeBacklinks', async ({pageId}) => {
-  const clientNumber = CipherId.encrypt(pageId)
+export const removeBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number}) => {
+  const pageCode = CipherId.encrypt(pageId)
   await withBacklinks(pageId, (doc) => {
     updateYDocNodes(
       doc,
       'pageLinkBlock',
-      {pageId: clientNumber},
+      {pageCode},
       (_, idx, parent) => {
         parent.delete(idx)
       },
-      // gotcha: ascending must be false for deletes because Yjs array length will change unlink a JS array
+      // gotcha: ascending must be false for deletes because Yjs array length will change unlike a JS array
       {ascending: false}
     )
   })
-})
+}
+
+hocusPocusHub.on('removeBacklinks', removeBacklinkedPageLinkBlocks)
 
 hocusPocusHub.on(
   'moveChildPageLink',
   async ({oldParentPageId, newParentPageId, childPageId, sortOrder, title}) => {
-    const clientChildPageId = CipherId.encrypt(childPageId)
+    const pageCode = CipherId.encrypt(childPageId)
     const withDoc = async (parentPageId: number, fn: (doc: Document) => void | Promise<void>) => {
       const name = CipherId.toClient(parentPageId, 'page')
       const conn = await server.openDirectConnection(name, {})
@@ -77,7 +80,7 @@ hocusPocusHub.on(
       updateYDocNodes(
         doc,
         'pageLinkBlock',
-        {auto: true, pageId: clientChildPageId},
+        {auto: true, pageCode},
         (_, idx, parent) => {
           parent.delete(idx)
           return 'DONE'
@@ -86,7 +89,7 @@ hocusPocusHub.on(
       )
     }
     const insertNode = async (doc: Document) => {
-      const pageLinkBlock = createPageLinkElement(clientChildPageId, title || '<Untitled>')
+      const pageLinkBlock = createPageLinkElement(pageCode, title || '<Untitled>') as Y.XmlElement
       const putBeforePage = await getKysely()
         .selectFrom('Page')
         .select('id')

@@ -34,23 +34,26 @@ export const server = Server.configure({
     if (!isAuthenticated(authToken)) {
       throw new Error('Unauthenticated')
     }
+    const req = data.request as any
+    // put the userId on the request because context isn't available until onAuthenticate
+    req.userId = authToken.sub
   },
   async onAuthenticate(data) {
-    const {documentName, requestParameters, connection} = data
-    const authTokenStr = requestParameters.get('token')
-    const authToken = getVerifiedAuthToken(authTokenStr)
+    const {documentName, connection, request} = data
+    const userId = (request as any).userId as string
     const [dbId] = CipherId.fromClient(documentName)
     const pageAccess = await getKysely()
       .selectFrom('PageAccess')
       .select('role')
       .where('pageId', '=', dbId)
-      .where('userId', '=', authToken.sub)
+      .where('userId', '=', userId)
       .executeTakeFirst()
     if (!pageAccess) throw new Error('Document does not exist or user is not authorized')
     const {role} = pageAccess
     if (role === 'viewer' || role === 'commenter') {
       connection.readOnly = true
     }
+    return {userId}
   },
   extensions: [
     new Database({
@@ -66,18 +69,18 @@ export const server = Server.configure({
         return res?.yDoc ?? null
       },
       // … and a Promise to store data:
-      store: async ({documentName, state, document}) => {
-        const [dbId, clientId] = CipherId.fromClient(documentName)
+      store: async ({documentName, state, document, context}) => {
+        const [dbId, pageCode] = CipherId.fromClient(documentName)
         // TODO: there may be a way to sniff out the change from the yjs state so we don't have to parse the whole doc
         // Transforming the whole doc is actually faster than yjs traversal + generateText(generateJSON()). 2ms vs 10ms
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const [{updatedTitle}] = await Promise.all([
           updatePageContent(dbId, content, state),
-          updateBacklinks(dbId, document, content)
+          updateBacklinks(context.userId, dbId, document, content)
         ])
         if (updatedTitle) {
           await withBacklinks(dbId, (doc) => {
-            updateYDocNodes(doc, 'pageLinkBlock', {pageId: clientId}, (node) => {
+            updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
               node.setAttribute('title', updatedTitle)
             })
           })

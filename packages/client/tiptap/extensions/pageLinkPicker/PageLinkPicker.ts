@@ -68,7 +68,7 @@ export const PageLinkPicker = Extension.create<{atmosphere: Atmosphere}, {open: 
         },
         command: ({editor, props}: {editor: Editor; props: any}) => {
           const {pageId, title} = props
-          const pageNum = Number(pageId.split(':')[1])
+          const pageCode = Number(pageId.split(':')[1])
 
           const {state} = editor
           const {selection} = state
@@ -79,7 +79,7 @@ export const PageLinkPicker = Extension.create<{atmosphere: Atmosphere}, {open: 
           if (nodeBefore) {
             command.deleteRange({from: $from.pos - nodeBefore.nodeSize, to: $from.pos})
           }
-          command.setPageLinkBlock({pageId: pageNum, title}).run()
+          command.setPageLinkBlock({pageCode, title}).run()
         },
         items: async ({query}) => {
           const res = await this.options.atmosphere.fetchQuery<PageLinkPickerQuery>(
