@@ -69,22 +69,17 @@ class RecallAIServerManager {
       const bot = response.data
       const recordings = bot.recordings || []
 
-      if (recordings.length === 0) {
-        return []
-      }
+      if (recordings.length === 0) return []
 
       const recording = recordings[0]
       const mediaShortcuts = recording.media_shortcuts || {}
       const transcriptData = mediaShortcuts.transcript?.data
 
-      if (!transcriptData?.download_url) {
-        return []
-      }
+      if (!transcriptData?.download_url) return []
 
       const transcriptResponse = await axios.get(transcriptData.download_url)
       const data: TranscriptResponse[] = transcriptResponse.data
 
-      // Convert API response to our transcript format
       const transcript: TranscriptBlock[] = data.map((block) => ({
         speaker: block.participant.name || `Participant ${block.participant.id}`,
         words: block.words.map((word) => word.text).join(' ')
