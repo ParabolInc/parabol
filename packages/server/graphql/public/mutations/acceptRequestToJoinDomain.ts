@@ -1,4 +1,3 @@
-import {sql} from 'kysely'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -90,12 +89,6 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     const [organizationUser] = await Promise.all([
       dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
       pg
-        .with('UserUpdate', (qc) =>
-          qc
-            .updateTable('User')
-            .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
-            .where('id', '=', userId)
-        )
         .insertInto('TeamMember')
         .values({
           id: TeamMemberId.join(teamId, userId),

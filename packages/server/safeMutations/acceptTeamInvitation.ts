@@ -80,12 +80,6 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
         })
         .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
     )
-    .with('UserUpdate', (qc) =>
-      qc
-        .updateTable('User')
-        .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
-        .where('id', '=', userId)
-    )
     .with('TeamInvitationUpdate', (qb) =>
       // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
       qb
