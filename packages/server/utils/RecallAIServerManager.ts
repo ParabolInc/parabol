@@ -1,32 +1,18 @@
 import axios from 'axios'
-import {ExternalLinks} from '../../client/types/constEnums'
 import {TranscriptBlock} from '../postgres/types'
-import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 
 const RECALL_API_BASE_URL = 'https://us-west-2.recall.ai/api/v1'
 
-const getBase64Image = async () => {
-  try {
-    const imageUrl = ExternalLinks.LOGO
-    const response = await axios({
-      method: 'get',
-      url: imageUrl,
-      responseType: 'arraybuffer'
-    })
-    const buffer = Buffer.from(response.data, 'binary')
-    const base64Image = buffer.toString('base64')
-    return base64Image
-  } catch (error) {
-    Logger.error(error)
-    return null
-  }
-}
-
 type TranscriptResponse = {
-  speaker: string
+  participant: {
+    id: number
+    name: string
+  }
   words: {
     text: string
+    start_timestamp?: any
+    end_timestamp?: any
   }[]
 }
 
@@ -39,11 +25,11 @@ class RecallAIServerManager {
 
   async createBot(videoMeetingURL: string) {
     try {
-      console.log(`🚀 Creating bot for meeting URL: ${videoMeetingURL}`)
       const response = await axios.post(
         `${RECALL_API_BASE_URL}/bot`,
         {
           meeting_url: videoMeetingURL,
+          bot_name: 'Parabol Notetaker',
           recording_config: {
             transcript: {
               provider: {
@@ -120,8 +106,10 @@ class RecallAIServerManager {
         let currentBlock: TranscriptBlock | null = null
 
         data.forEach((block) => {
-          const {speaker, words} = block
+          const {participant, words} = block
+          const speaker = participant.name || `Participant ${participant.id}`
           const currentWords = words.map((word) => word.text).join(' ')
+
           if (currentBlock && currentBlock.speaker === speaker) {
             currentBlock.words += '. ' + currentWords
           } else {
