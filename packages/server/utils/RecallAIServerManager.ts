@@ -20,7 +20,7 @@ class RecallAIServerManager {
   private apiKey: string
 
   constructor() {
-    this.apiKey = process.env.RECALL_AI_KEY || ''
+    this.apiKey = process.env.RECALL_AI_KEY!
   }
 
   async createBot(videoMeetingURL: string) {
@@ -81,7 +81,6 @@ class RecallAIServerManager {
         return []
       }
 
-      console.log('🚀 ~ transcriptData:', transcriptData)
       const transcriptResponse = await axios.get(transcriptData.download_url)
       const data: TranscriptResponse[] = transcriptResponse.data
 
