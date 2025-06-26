@@ -46,7 +46,7 @@ export const LeftNavPageLink = (props: Props) => {
         isPrivate
         isDraggingFirstChild
         isDraggingLastChild
-        sortOrder # used implicityly in store traveral by useDraggingPage
+        sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,
     pageRef

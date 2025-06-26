@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
+import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {LeftNavPageLink} from './LeftNavPageLink'
 
 graphql`
@@ -24,37 +25,48 @@ interface Props {
   pageAncestors: string[]
   draggingPageId: string | null | undefined
   draggingPageIsPrivate: boolean | null
+  pageLinks: PageLinkBlockAttributes[] | null
 }
 
 export const SubPages = (props: Props) => {
   const connectionKey = 'User_pages'
-  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate} = props
+  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate, pageLinks} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {pages} = viewer
   const {edges} = pages
   const depth = pageAncestors.length
-  if (edges.length === 0) {
+
+  if (!pageLinks || pageLinks.length === 0) {
+    const noLinksMessage = !pageLinks ? 'Loading' : 'No pages inside'
     return (
       <div style={{paddingLeft: depth * 8 + 8}} className='text-sm font-medium text-slate-500'>
-        {'No pages inside'}
+        {noLinksMessage}
       </div>
     )
   }
+  const nodes = edges.map((edge) => edge.node)
   return (
     <>
-      {edges.map((edge, idx) => {
-        const {node} = edge
-        const {id} = node
+      {pageLinks.map((pageLink, idx) => {
+        const {pageCode} = pageLink
+        const pageKey = `page:${pageCode}`
+        const nextPeer = pageLinks[idx + 1]
+        const nextPeerId = nextPeer ? `page:${nextPeer.pageCode}` : null
+        const node = nodes.find((node) => node.id === pageKey)
+        if (!node) {
+          console.log('pageLink exists but no page was found under that parent')
+          return null
+        }
         return (
           <LeftNavPageLink
-            key={id}
+            key={pageCode}
             pageRef={node}
             pageAncestors={pageAncestors}
             draggingPageId={draggingPageId}
             dropIdx={idx}
-            isLastChild={idx === edges.length - 1}
-            nextPeerId={edges[idx + 1]?.node.id || null}
+            isLastChild={idx === pageLinks.length - 1}
+            nextPeerId={nextPeerId}
             connectionKey={connectionKey}
             draggingPageIsPrivate={draggingPageIsPrivate}
           />
