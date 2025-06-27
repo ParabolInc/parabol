@@ -66,7 +66,7 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
       topicCount: reflectionGroupIds.length,
       reflectionCount: reflections.length,
       sentimentScore,
-      transcription
+      transcription: transcription ? JSON.stringify(transcription) : null
     })
     .where('id', '=', meetingId)
     .execute()

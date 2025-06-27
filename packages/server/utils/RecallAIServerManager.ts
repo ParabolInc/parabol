@@ -1,68 +1,51 @@
-import api from 'api'
 import axios from 'axios'
-import {ExternalLinks} from '../../client/types/constEnums'
-import appOrigin from '../appOrigin'
 import {TranscriptBlock} from '../postgres/types'
-import {Logger} from './Logger'
 import sendToSentry from './sendToSentry'
 
-const sdk = api('@recallai/v1.6#536jnqlf7d6blh')
-
-const getBase64Image = async () => {
-  try {
-    const imageUrl = ExternalLinks.LOGO
-    const response = await axios({
-      method: 'get',
-      url: imageUrl,
-      responseType: 'arraybuffer'
-    })
-    const buffer = Buffer.from(response.data, 'binary')
-    const base64Image = buffer.toString('base64')
-    return base64Image
-  } catch (error) {
-    Logger.error(error)
-    return null
-  }
-}
+const RECALL_API_BASE_URL = 'https://us-west-2.recall.ai/api/v1'
 
 type TranscriptResponse = {
-  speaker: string
+  participant: {
+    id: number
+    name: string
+  }
   words: {
     text: string
+    start_timestamp?: any
+    end_timestamp?: any
   }[]
 }
 
 class RecallAIServerManager {
+  private apiKey: string
+
   constructor() {
-    sdk.auth(`Token ${process.env.RECALL_AI_KEY}`)
+    this.apiKey = process.env.RECALL_AI_KEY!
   }
 
   async createBot(videoMeetingURL: string) {
     try {
-      const base64Image = await getBase64Image()
-      if (!base64Image) return null
-
-      const {data} = await sdk.bot_create({
-        bot_name: 'Parabol Notetaker',
-        real_time_transcription: {
-          partial_results: false,
-          destination_url: appOrigin // this is required by the API but it's not doing anything and can be any URL. TODO: speak with recall.ai about this & fix
+      const response = await axios.post(
+        `${RECALL_API_BASE_URL}/bot`,
+        {
+          meeting_url: videoMeetingURL,
+          bot_name: 'Parabol Notetaker',
+          recording_config: {
+            transcript: {
+              provider: {
+                meeting_captions: {}
+              }
+            }
+          }
         },
-        transcription_options: {provider: 'assembly_ai'},
-        chat: {
-          on_bot_join: {send_to: 'everyone', message: 'Parabol Notetaker has joined the call'}
-        },
-        automatic_leave: {
-          waiting_room_timeout: 1200,
-          noone_joined_timeout: 1200,
-          everyone_left_timeout: 2
-        },
-        automatic_video_output: {in_call_recording: {kind: 'jpeg', b64_data: base64Image}},
-        recording_mode: 'speaker_view',
-        recording_mode_options: {participant_video_when_screenshare: 'hide'},
-        meeting_url: videoMeetingURL
-      })
-      const {id: botId} = data
+        {
+          headers: {
+            Authorization: `Token ${this.apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      const {id: botId} = response.data
       return botId as string
     } catch (err) {
       const error =
@@ -76,33 +59,31 @@ class RecallAIServerManager {
 
   async getBotTranscript(botId: string): Promise<TranscriptBlock[] | undefined> {
     try {
-      const {data}: {data: TranscriptResponse[]} = await sdk.bot_transcript_list({
-        enhanced_diarization: 'true',
-        id: botId
-      })
-
-      const transcript: TranscriptBlock[] = []
-      let currentBlock: TranscriptBlock | null = null
-
-      data.forEach((block) => {
-        const {speaker, words} = block
-        const currentWords = words.map((word) => word.text).join(' ')
-        if (currentBlock && currentBlock.speaker === speaker) {
-          currentBlock.words += '. ' + currentWords
-        } else {
-          if (currentBlock) {
-            transcript.push(currentBlock)
-          }
-          currentBlock = {
-            speaker,
-            words: currentWords
-          }
+      const response = await axios.get(`${RECALL_API_BASE_URL}/bot/${botId}`, {
+        headers: {
+          Authorization: `Token ${this.apiKey}`,
+          'Content-Type': 'application/json'
         }
       })
 
-      if (currentBlock) {
-        transcript.push(currentBlock)
-      }
+      const bot = response.data
+      const recordings = bot.recordings || []
+
+      if (recordings.length === 0) return []
+
+      const recording = recordings[0]
+      const mediaShortcuts = recording.media_shortcuts || {}
+      const transcriptData = mediaShortcuts.transcript?.data
+
+      if (!transcriptData?.download_url) return []
+
+      const transcriptResponse = await axios.get(transcriptData.download_url)
+      const data: TranscriptResponse[] = transcriptResponse.data
+
+      const transcript: TranscriptBlock[] = data.map((block) => ({
+        speaker: block.participant.name || `Participant ${block.participant.id}`,
+        words: block.words.map((word) => word.text).join(' ')
+      }))
 
       return transcript
     } catch (err) {
