@@ -22,7 +22,6 @@ import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
-import {humanReadableNextStart} from '../utils/date/relativeDate'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
@@ -279,9 +278,13 @@ const MeetingCard = (props: Props) => {
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   const now = new Date()
-  const nextMeetingDate = meetingSeries && RRule.fromString(meetingSeries.recurrenceRule).after(now)
-  const nextMeetingLabel =
-    isCompleted && nextMeetingDate && `Restarts ${humanReadableNextStart(nextMeetingDate)}`
+  const rrule = meetingSeries && RRule.fromString(meetingSeries.recurrenceRule)
+  const nextMeetingDate = rrule?.after(now)
+  const shortEndDate = nextMeetingDate?.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
+  const dateLabel = nextMeetingDate && `${isCompleted ? 'restarts' : 'ends'} ${shortEndDate}`
   const readableNextMeetingDate = nextMeetingDate && timeFormatter.format(nextMeetingDate)
   const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
 
@@ -335,7 +338,15 @@ const MeetingCard = (props: Props) => {
                 </Link>
               )}
               <Link to={meetingLink}>
-                <Name>{isRecurring ? meetingSeries.title : name}</Name>
+                {isRecurring ? (
+                  <Tooltip text={readableNextMeetingDate}>
+                    <Name>
+                      {meetingSeries.title} • {dateLabel}
+                    </Name>
+                  </Tooltip>
+                ) : (
+                  <Name>{name}</Name>
+                )}
               </Link>
               <Options ref={originRef} onClick={togglePortal}>
                 <IconLabel ref={tooltipRef} icon='more_vert' />
@@ -343,15 +354,7 @@ const MeetingCard = (props: Props) => {
             </div>
             <Link to={meetingLink}>
               <span className='block pb-2 text-sm wrap-break-word text-slate-600'>
-                {nextMeetingLabel ? (
-                  <Tooltip text={readableNextMeetingDate}>
-                    {teamName} • {meetingPhaseLabel} • {nextMeetingLabel}
-                  </Tooltip>
-                ) : (
-                  <>
-                    {teamName} • {meetingPhaseLabel}
-                  </>
-                )}
+                {teamName} • {meetingPhaseLabel}
               </span>
             </Link>
             <AvatarList users={connectedUsers} size={28} />

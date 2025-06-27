@@ -1,13 +1,14 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {createMeetingSeriesTitle} from 'parabol-client/utils/createMeetingSeriesTitle'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
-import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
@@ -50,7 +51,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingName = !name
     ? `Retro #${meetingCount + 1}`
     : rrule
-      ? createMeetingSeriesTitle(name, new Date(), 'UTC')
+      ? createMeetingSeriesTitle(name, getNextRRuleDate(rrule), rrule.tzid)
       : name
   const meetingSeriesName = name || meetingName
 
