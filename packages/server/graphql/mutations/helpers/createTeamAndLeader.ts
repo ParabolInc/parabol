@@ -1,4 +1,3 @@
-import {sql} from 'kysely'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {MeetingSettingsThreshold} from '../../../../client/types/constEnums'
 import Team from '../../../database/types/Team'
@@ -53,12 +52,6 @@ export default async function createTeamAndLeader(
   await Promise.all([
     pg
       .with('TeamInsert', (qc) => qc.insertInto('Team').values(verifiedTeam))
-      .with('UserUpdate', (qc) =>
-        qc
-          .updateTable('User')
-          .set({tms: sql`arr_append_uniq("tms", ${teamId})`})
-          .where('id', '=', userId)
-      )
       .with('TeamMemberInsert', (qc) =>
         qc.insertInto('TeamMember').values({
           id: TeamMemberId.join(teamId, userId),
