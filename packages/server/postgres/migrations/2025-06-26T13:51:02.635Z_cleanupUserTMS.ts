@@ -1,5 +1,15 @@
 import type {Kysely} from 'kysely'
 
+const arrayCmp = (a: string[], b: string[]) => {
+  if (a.length !== b.length) return false
+  const aSet = new Set(a)
+  const bSet = new Set(b)
+  for (const item of aSet) {
+    if (!bSet.has(item)) return false
+  }
+  return true
+}
+
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
   // clean our own backyard first
@@ -12,12 +22,10 @@ export async function up(db: Kysely<any>): Promise<void> {
       teamId,
       userId
     })
-    .onConflict((oc) => oc.doNothing())
+    .onConflict((oc) => oc.columns(['id']).doUpdateSet({isNotRemoved: true}))
     .execute()
 
-  //with truth as (select u.id, array_agg(tm."teamId") as truth, tms from "TeamMember" tm join "Team" t on tm."teamId" = t.id join "User" u on tm."userId" = u.id where t."isArchived" = false and tm."isNotRemoved" = true group by u.id having not (tms @> array_agg(tm."teamId") and tms <@ array_agg(tm."teamId")))
-  //select * from "User" where id in (select id from truth)
-  await db
+  const res = await db
     .with('truth', (qc) =>
       qc
         .selectFrom('TeamMember as tm')
@@ -29,21 +37,20 @@ export async function up(db: Kysely<any>): Promise<void> {
         .groupBy('u.id')
         .having(({eb, fn}) =>
           eb.not(
-            eb.and(
+            eb.and([
               eb('u.tms', '@>', fn.agg('array_agg', 'tm.teamId')),
               eb('u.tms', '<@', fn.agg('array_agg', 'tm.teamId'))
-            )
+            ])
           )
         )
     )
     .updateTable('User')
     .set((eb) => ({
-      tms: eb.ref('truth.truth')
+      tms: eb.selectFrom('truth').select('truth').where('User.id', '=', eb.ref('truth.id'))
     }))
-    .from('truth')
-    .where((eb) => eb('User.id', '=', eb.ref('truth.id')))
     .where((eb) => eb('User.id', 'in', eb.selectFrom('truth').select('id')))
-    .execute()
+    .executeTakeFirstOrThrow()
+  console.log(`Cleaned User.tms array of ${res.numUpdatedRows} users`)
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
