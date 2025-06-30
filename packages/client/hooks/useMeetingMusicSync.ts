@@ -92,7 +92,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current.loop = true
       audioRef.current.muted = true
 
-      audioRef.current.src = '/static/sounds/quiet-lofi.mp3'
+      audioRef.current.src = quietLofi
       audioRef.current.load()
       audioRef.current
         .play()
