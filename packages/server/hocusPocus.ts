@@ -3,6 +3,7 @@ import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
+import * as Y from 'yjs'
 import getKysely from './postgres/getKysely'
 import {updateBacklinks} from './updateBacklinks'
 import {isAuthenticated} from './utils/authorization'
@@ -71,6 +72,9 @@ export const server = Server.configure({
       // … and a Promise to store data:
       store: async ({documentName, state, document, context}) => {
         const [dbId, pageCode] = CipherId.fromClient(documentName)
+        const meta = document.getMap('metadata')
+        const deletions = meta.get('pendingDeletions') as Y.Array<number>
+        console.log('TODO: deleting', deletions)
         // TODO: there may be a way to sniff out the change from the yjs state so we don't have to parse the whole doc
         // Transforming the whole doc is actually faster than yjs traversal + generateText(generateJSON()). 2ms vs 10ms
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent

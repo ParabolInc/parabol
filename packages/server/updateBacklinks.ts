@@ -9,7 +9,8 @@ import {diffByLCS, type LCSDiffResult} from './utils/tiptap/diffByLCS'
 import {getPageLinkDiffs} from './utils/tiptap/getPageLinkDiffs'
 import {removeBacklinkedPageLinkBlocks} from './utils/tiptap/hocusPocusHub'
 
-export const getPageCodeFromLinkKey = (pageLinkKey: string) => Number(pageLinkKey.split(':auto')[0])
+export const getPageCodeFromLinkKey = (pageLinkKey: string) =>
+  Number(pageLinkKey.split(':canonical')[0])
 
 const archiveRemovedPages = (viewerId: string, removedPageIds: number[]) => {
   if (removedPageIds.length === 0) return undefined
@@ -101,10 +102,10 @@ export const updateBacklinks = async (
     ])
   }
   const oldAutoLinkCodes = oldPageLinkKeys
-    .filter((key) => key.endsWith(':auto'))
+    .filter((key) => key.endsWith(':canonical'))
     .map((k) => CipherId.decrypt(getPageCodeFromLinkKey(k)))
   const newAutoLinkCodes = newPageLinkKeys
-    .filter((key) => key.endsWith(':auto'))
+    .filter((key) => key.endsWith(':canonical'))
     .map((k) => CipherId.decrypt(getPageCodeFromLinkKey(k)))
   const childLinkDiffs = diffByLCS(oldAutoLinkCodes, newAutoLinkCodes)
   if (childLinkDiffs) {

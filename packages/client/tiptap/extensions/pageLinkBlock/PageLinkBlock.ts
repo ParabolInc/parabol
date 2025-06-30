@@ -2,9 +2,16 @@ import {GapCursor} from '@tiptap/pm/gapcursor'
 import {Plugin, TextSelection} from '@tiptap/pm/state'
 import {isNodeSelection, ReactNodeViewRenderer, type JSONContent} from '@tiptap/react'
 
+import {ReplaceStep} from '@tiptap/pm/transform'
+import * as Y from 'yjs'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {PageLinkBlockView} from './PageLinkBlockView'
-export const PageLinkBlock = PageLinkBlockBase.extend({
+
+export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}>({
+  addOptions: () => ({
+    // hack to enforce .configure({yDoc})
+    yDoc: undefined as any
+  }),
   addAttributes() {
     return {
       pageCode: {
@@ -21,14 +28,13 @@ export const PageLinkBlock = PageLinkBlockBase.extend({
           'data-title': attributes.title
         })
       },
-      auto: {
-        default: false,
+      canonical: {
         parseHTML: (element) => {
-          return element.getAttribute('data-auto') === '' ? true : false
+          return element.getAttribute('data-canonical') === '' ? true : false
         },
         renderHTML: (attributes) => {
           return {
-            'data-auto': attributes.auto ? '' : undefined
+            'data-canonical': attributes.canonical ? '' : undefined
           }
         }
       }
@@ -56,8 +62,8 @@ export const PageLinkBlock = PageLinkBlockBase.extend({
       }
     })
   },
-
   addProseMirrorPlugins() {
+    const {yDoc} = this.options
     return [
       new Plugin({
         props: {
@@ -91,6 +97,39 @@ export const PageLinkBlock = PageLinkBlockBase.extend({
             dispatch(tr.setSelection(nextSelection).scrollIntoView())
             return true
           }
+        },
+        appendTransaction(transactions, oldState) {
+          const deletedPageCodes: number[] = []
+          console.log(transactions)
+          transactions.forEach((tr) =>
+            tr.steps.forEach((step) => {
+              if (!(step instanceof ReplaceStep)) return
+              const {from, to} = step
+              // This means content was deleted
+              if (from >= to) return
+              const deletedFragment = oldState.doc.slice(step.from, step.to)
+
+              deletedFragment.content.descendants((node) => {
+                if (node.type.name === 'pageLinkBlock' && node.attrs.canonical === true) {
+                  deletedPageCodes.push(node.attrs.pageCode)
+                }
+              })
+            })
+          )
+
+          if (deletedPageCodes.length > 0) {
+            // Write to Yjs doc in a separate transaction
+            yDoc.transact(() => {
+              const metadataMap = yDoc.getMap('metadata')
+              let pendingDeletions = metadataMap.get('pendingDeletions') as Y.Array<number>
+              if (!pendingDeletions) {
+                pendingDeletions = new Y.Array()
+                metadataMap.set('pendingDeletions', pendingDeletions)
+              }
+              pendingDeletions.push(deletedPageCodes)
+            })
+          }
+          return undefined
         }
       })
     ]

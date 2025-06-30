@@ -8,9 +8,9 @@ import {getPageSlug} from '../../getPageSlug'
 export const PageLinkBlockView = (props: NodeViewProps) => {
   const {node} = props
   const attrs = node.attrs as PageLinkBlockAttributes
-  const {pageCode, title, auto} = attrs
+  const {pageCode, title, canonical} = attrs
   const pageSlug = getPageSlug(pageCode, title)
-  const Icon = auto ? DescriptionIcon : FileOpenIcon
+  const Icon = canonical ? DescriptionIcon : FileOpenIcon
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
     <NodeViewWrapper className={'group-[.ProseMirror-selectednode]:bg-slate-200'}>

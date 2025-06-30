@@ -23,7 +23,7 @@ const createPageLinkElement = (pageCode: number, title: string) => {
   el.nodeName = 'pageLinkBlock'
   el.setAttribute('pageCode', pageCode)
   el.setAttribute('title', title)
-  el.setAttribute('auto', true)
+  el.setAttribute('canonical', true)
   return el
 }
 
@@ -80,7 +80,7 @@ hocusPocusHub.on(
       updateYDocNodes(
         doc,
         'pageLinkBlock',
-        {auto: true, pageCode},
+        {canonical: true, pageCode},
         (_, idx, parent) => {
           parent.delete(idx)
           return 'DONE'
@@ -100,7 +100,7 @@ hocusPocusHub.on(
         .limit(1)
         .executeTakeFirst()
       const putBeforePageId = putBeforePage ? CipherId.encrypt(putBeforePage.id) : null
-      const filters = {auto: true, ...(putBeforePageId && {pageId: putBeforePageId})}
+      const filters = {canonical: true, ...(putBeforePageId && {pageId: putBeforePageId})}
       let inserted = false
       updateYDocNodes(
         doc,

@@ -84,7 +84,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
   }
 
   if (page.parentPageId || dbParentPageId) {
-    // if it had a parent or it has a parent, update the auto link
+    // if it had a parent or it has a parent, update the canonical link
     hocusPocusHub.emit('moveChildPageLink', {
       oldParentPageId: page.parentPageId,
       newParentPageId: dbParentPageId,

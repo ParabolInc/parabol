@@ -135,7 +135,7 @@ export const useTipTapPageEditor = (
         PageLinkPicker.configure({
           atmosphere
         }),
-        PageLinkBlock
+        PageLinkBlock.configure({yDoc: provider.document})
       ],
       autofocus: true,
       editable: true
