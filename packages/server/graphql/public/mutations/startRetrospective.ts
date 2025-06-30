@@ -1,11 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {createMeetingSeriesTitle} from 'parabol-client/utils/createMeetingSeriesTitle'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -48,11 +46,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     videoMeetingURL
   } = meetingSettings as typeof meetingSettings & {meetingType: 'retrospective'}
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
-  const meetingName = !name
-    ? `Retro #${meetingCount + 1}`
-    : rrule
-      ? createMeetingSeriesTitle(name, getNextRRuleDate(rrule), rrule.tzid)
-      : name
+  const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
 
   const meeting = await safeCreateRetrospective(

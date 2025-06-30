@@ -4,7 +4,6 @@ import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
-import {RRule} from 'rrule'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -14,6 +13,7 @@ import useAnimatedCard from '../hooks/useAnimatedCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
+import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
 import useMenu from '../hooks/useMenu'
 import useModal from '../hooks/useModal'
 import useTooltip from '../hooks/useTooltip'
@@ -31,16 +31,6 @@ import MeetingCardOptionsMenuRoot from './MeetingCardOptionsMenuRoot'
 import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
 import Tooltip from './Tooltip'
-
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit',
-  weekday: 'long',
-  timeZoneName: 'short'
-})
 
 const CardWrapper = styled('div')<{
   maybeTabletPlus: boolean
@@ -113,7 +103,7 @@ const Name = styled('span')({
   lineHeight: '24px',
   // add right padding to keep a long name from falling under the options button
   // add top and bottom padding to keep a single line at 32px to match the options button
-  padding: '4px 32px 4px 0',
+  padding: '4px 32px 0 0',
   wordBreak: 'break-word'
 })
 
@@ -208,6 +198,7 @@ const MeetingCard = (props: Props) => {
         ...useMeetingMemberAvatars_meeting
         ...EndRecurringMeetingModal_meeting
         ...UpdateRecurrenceSettingsModal_meeting
+        ...useMeetingSeriesDate_meeting
         id
         name
         meetingType
@@ -241,6 +232,7 @@ const MeetingCard = (props: Props) => {
   )
   const {name, team, id: meetingId, meetingType, phases, meetingSeries, endedAt, locked} = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
+  const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const ref = useAnimatedCard(displayIdx, status)
@@ -277,15 +269,6 @@ const MeetingCard = (props: Props) => {
     ? 'Completed'
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
-  const now = new Date()
-  const rrule = meetingSeries && RRule.fromString(meetingSeries.recurrenceRule)
-  const nextMeetingDate = rrule?.after(now)
-  const shortEndDate = nextMeetingDate?.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  })
-  const dateLabel = nextMeetingDate && `${isCompleted ? 'restarts' : 'ends'} ${shortEndDate}`
-  const readableNextMeetingDate = nextMeetingDate && timeFormatter.format(nextMeetingDate)
   const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
 
   return (
@@ -339,11 +322,12 @@ const MeetingCard = (props: Props) => {
               )}
               <Link to={meetingLink}>
                 {isRecurring ? (
-                  <Tooltip text={readableNextMeetingDate}>
-                    <Name>
-                      {meetingSeries.title} • {dateLabel}
-                    </Name>
-                  </Tooltip>
+                  <>
+                    <Name>{meetingSeries.title}</Name>
+                    <Tooltip text={readableNextMeetingDate}>
+                      <div className='text-sm'>{dateLabel}</div>
+                    </Tooltip>
+                  </>
                 ) : (
                   <Name>{name}</Name>
                 )}
@@ -353,7 +337,7 @@ const MeetingCard = (props: Props) => {
               </Options>
             </div>
             <Link to={meetingLink}>
-              <span className='block pb-2 text-sm wrap-break-word text-slate-600'>
+              <span className='block pt-1 pb-2 text-sm wrap-break-word text-slate-600'>
                 {teamName} • {meetingPhaseLabel}
               </span>
             </Link>

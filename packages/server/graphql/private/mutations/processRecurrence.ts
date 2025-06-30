@@ -3,7 +3,6 @@ import tracer from 'dd-trace'
 import {sql} from 'kysely'
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {createMeetingSeriesTitle} from 'parabol-client/utils/createMeetingSeriesTitle'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../../../client/shared/rruleUtil'
@@ -48,7 +47,7 @@ const startRecurringMeeting = async (
   const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
   const scheduledEndTime = getNextRRuleDate(rrule)
 
-  const meetingName = createMeetingSeriesTitle(meetingSeries.title, scheduledEndTime, rrule.tzid)
+  const meetingName = meetingSeries.title
   const meeting = await (async () => {
     if (meetingSeries.meetingType === 'teamPrompt') {
       const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null

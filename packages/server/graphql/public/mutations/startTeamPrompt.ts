@@ -1,10 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {createMeetingSeriesTitle} from 'parabol-client/utils/createMeetingSeriesTitle'
 import getKysely from '../../../postgres/getKysely'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -44,11 +42,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     })
   }
 
-  const meetingName = createMeetingSeriesTitle(
-    name || 'Standup',
-    rrule && getNextRRuleDate(rrule),
-    rrule?.tzid
-  )
+  const meetingName = name || 'Standup'
   const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
   if (!meeting) {
