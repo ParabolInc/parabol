@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.0](https://github.com/ParabolInc/parabol/compare/v10.11.1...v10.12.0) (2025-06-30)
+
+
+### Added
+
+* Prometheus metrics ([#11371](https://github.com/ParabolInc/parabol/issues/11371)) ([05257fd](https://github.com/ParabolInc/parabol/commit/05257fd676ccd43e1e30301d6348670363f6b76a))
+* zoom transcript proof of concept ([#11484](https://github.com/ParabolInc/parabol/issues/11484)) ([ea2d8d6](https://github.com/ParabolInc/parabol/commit/ea2d8d658d9f254ad30e8a623de570e05a700b8a))
+
+
+### Fixed
+
+* getSAMLForDomain domains field ([#11485](https://github.com/ParabolInc/parabol/issues/11485)) ([debd408](https://github.com/ParabolInc/parabol/commit/debd408abddcc9d953d0daff8a34a4b096526872))
+* use imported quietLofi file ([#11494](https://github.com/ParabolInc/parabol/issues/11494)) ([3914dd6](https://github.com/ParabolInc/parabol/commit/3914dd6acc2f6451e345db63cb1b28faca96c4bf))
+
+
+### Changed
+
+* avoid multiple size labels on PRs ([#11479](https://github.com/ParabolInc/parabol/issues/11479)) ([d4256ed](https://github.com/ParabolInc/parabol/commit/d4256edfe53d9f92f5aacb2914996723e6079a0c))
+* fix PR size labeler ([#11481](https://github.com/ParabolInc/parabol/issues/11481)) ([2638174](https://github.com/ParabolInc/parabol/commit/263817421c47435fc9c92208af5f901d6ae5e3ca))
+
 ## [10.11.1](https://github.com/ParabolInc/parabol/compare/v10.11.0...v10.11.1) (2025-06-23)
 
 
