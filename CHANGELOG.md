@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.1](https://github.com/ParabolInc/parabol/compare/v10.12.0...v10.12.1) (2025-07-01)
+
+
+### Changed
+
+* improve meeting series naming ([#11468](https://github.com/ParabolInc/parabol/issues/11468)) ([e15559f](https://github.com/ParabolInc/parabol/commit/e15559f53a477db49fa34492afb2f2708930dcb1))
+* Normalize User.tms ([#10992](https://github.com/ParabolInc/parabol/issues/10992)) ([a8934c5](https://github.com/ParabolInc/parabol/commit/a8934c5e4c493c17a8c8e6a8587a588224215f32))
+
 ## [10.12.0](https://github.com/ParabolInc/parabol/compare/v10.11.1...v10.12.0) (2025-06-30)
 
 

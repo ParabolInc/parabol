@@ -21,16 +21,10 @@ const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => 
       .returningAll()
       .executeTakeFirst(),
     pg
-      .with('TeamInvitationUpdate', (qb) =>
-        qb
-          .updateTable('TeamInvitation')
-          .set({expiresAt: sql`CURRENT_TIMESTAMP`})
-          .where('teamId', '=', teamId)
-          .where('acceptedAt', 'is', null)
-      )
-      .updateTable('User')
-      .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
-      .where('id', 'in', userIds)
+      .updateTable('TeamInvitation')
+      .set({expiresAt: sql`CURRENT_TIMESTAMP`})
+      .where('teamId', '=', teamId)
+      .where('acceptedAt', 'is', null)
       .execute()
   ])
   dataLoader.clearAll(['teamMembers', 'users', 'teams'])

@@ -20,10 +20,10 @@ import {DialogActions} from '../ui/Dialog/DialogActions'
 import {cn} from '../ui/cn'
 import GcalClientManager from '../utils/GcalClientManager'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import plural from '../utils/plural'
 import Legitity from '../validation/Legitity'
 import PrimaryButton from './PrimaryButton'
-import {toHumanReadable} from './Recurrence/HumanReadableRecurrenceRule'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
 import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
@@ -198,11 +198,7 @@ export const ScheduleDialog = (props: Props) => {
             <ExpandMore className={cn(openRecurrence && 'rotate-180')} />
           </Collapsible.Trigger>
           <Collapsible.Content className='space-y-4'>
-            <RecurrenceSettings
-              title={title || placeholder}
-              rrule={rrule}
-              onRruleUpdated={setRrule}
-            />
+            <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
           </Collapsible.Content>
         </Collapsible.Root>
       )}

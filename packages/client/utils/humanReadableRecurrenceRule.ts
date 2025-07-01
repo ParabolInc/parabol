@@ -1,9 +1,82 @@
-import styled from '@emotion/styled'
-import {useMemo} from 'react'
-import {Frequency, RRule} from 'rrule'
-import {PALETTE} from '../../styles/paletteV3'
-import plural from '../../utils/plural'
-import {ALL_DAYS} from './RecurrenceSettings'
+import {Frequency, RRule, Weekday} from 'rrule'
+import plural from './plural'
+
+export type DayFullName =
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+  | 'Sunday'
+
+export type Day = {
+  name: DayFullName
+  shortName: string
+  abbreviation: string
+  rruleVal: Weekday
+  intVal: number
+  isWeekday: boolean
+}
+
+export const ALL_DAYS: Day[] = [
+  {
+    name: 'Monday',
+    shortName: 'Mon',
+    abbreviation: 'M',
+    rruleVal: RRule.MO,
+    intVal: 0,
+    isWeekday: true
+  },
+  {
+    name: 'Tuesday',
+    shortName: 'Tue',
+    abbreviation: 'T',
+    rruleVal: RRule.TU,
+    intVal: 1,
+    isWeekday: true
+  },
+  {
+    name: 'Wednesday',
+    shortName: 'Wed',
+    abbreviation: 'W',
+    rruleVal: RRule.WE,
+    intVal: 2,
+    isWeekday: true
+  },
+  {
+    name: 'Thursday',
+    shortName: 'Thu',
+    abbreviation: 'T',
+    rruleVal: RRule.TH,
+    intVal: 3,
+    isWeekday: true
+  },
+  {
+    name: 'Friday',
+    shortName: 'Fri',
+    abbreviation: 'F',
+    rruleVal: RRule.FR,
+    intVal: 4,
+    isWeekday: true
+  },
+  {
+    name: 'Saturday',
+    shortName: 'Sat',
+    abbreviation: 'S',
+    rruleVal: RRule.SA,
+    intVal: 5,
+    isWeekday: false
+  },
+  {
+    name: 'Sunday',
+    shortName: 'Sun',
+    abbreviation: 'S',
+    rruleVal: RRule.SU,
+    intVal: 6,
+    isWeekday: false
+  }
+]
 
 export const lowerCase = (str: string, posToChange: number) => {
   if (posToChange < 0 || posToChange >= str.length) return str
@@ -66,28 +139,4 @@ export const toHumanReadable = (
   }
 
   return humanReadableText
-}
-
-const HumanReadableRecurrenceRuleHeading = styled('h2')({
-  fontSize: 14,
-  fontWeight: 400,
-  lineHeight: '14px',
-  margin: `4px 0px 0px 0px`,
-  color: PALETTE.SLATE_700
-})
-
-interface Props {
-  recurrenceRule: string
-}
-
-export const HumanReadableRecurrenceRule = ({recurrenceRule}: Props) => {
-  const humanReadableText = useMemo(() => {
-    return toHumanReadable(RRule.fromString(recurrenceRule), {isPartOfSentence: true})
-  }, [recurrenceRule])
-
-  return (
-    <HumanReadableRecurrenceRuleHeading>
-      Restarts {humanReadableText}
-    </HumanReadableRecurrenceRuleHeading>
-  )
 }
