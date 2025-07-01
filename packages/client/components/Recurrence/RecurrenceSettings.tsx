@@ -8,72 +8,14 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import {fromRRuleDateTime, toRRuleDateTime} from '../../shared/rruleUtil'
 import {cn} from '../../ui/cn'
+import {ALL_DAYS, Day, toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
 import plural from '../../utils/plural'
 import DropdownMenuToggle from '../DropdownMenuToggle'
-import {toHumanReadable} from './HumanReadableRecurrenceRule'
-import {Day, RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
+import {RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
 import {RecurrenceTimePicker} from './RecurrenceTimePicker'
 
 dayjs.extend(utcPlugin)
 dayjs.extend(timezonePlugin)
-export const ALL_DAYS: Day[] = [
-  {
-    name: 'Monday',
-    shortName: 'Mon',
-    abbreviation: 'M',
-    rruleVal: RRule.MO,
-    intVal: 0,
-    isWeekday: true
-  },
-  {
-    name: 'Tuesday',
-    shortName: 'Tue',
-    abbreviation: 'T',
-    rruleVal: RRule.TU,
-    intVal: 1,
-    isWeekday: true
-  },
-  {
-    name: 'Wednesday',
-    shortName: 'Wed',
-    abbreviation: 'W',
-    rruleVal: RRule.WE,
-    intVal: 2,
-    isWeekday: true
-  },
-  {
-    name: 'Thursday',
-    shortName: 'Thu',
-    abbreviation: 'T',
-    rruleVal: RRule.TH,
-    intVal: 3,
-    isWeekday: true
-  },
-  {
-    name: 'Friday',
-    shortName: 'Fri',
-    abbreviation: 'F',
-    rruleVal: RRule.FR,
-    intVal: 4,
-    isWeekday: true
-  },
-  {
-    name: 'Saturday',
-    shortName: 'Sat',
-    abbreviation: 'S',
-    rruleVal: RRule.SA,
-    intVal: 5,
-    isWeekday: false
-  },
-  {
-    name: 'Sunday',
-    shortName: 'Sun',
-    abbreviation: 'S',
-    rruleVal: RRule.SU,
-    intVal: 6,
-    isWeekday: false
-  }
-]
 
 const Label = ({
   className,
@@ -164,11 +106,10 @@ export interface RecurrenceSettings {
 interface Props {
   onRruleUpdated: (rrule: RRule | null) => void
   rrule: RRule | null
-  title: string
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {onRruleUpdated, rrule, title} = props
+  const {onRruleUpdated, rrule} = props
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     rrule ? rrule.options.interval : 1
   )
@@ -227,6 +168,7 @@ export const RecurrenceSettings = (props: Props) => {
 
     onRruleUpdated(rrule)
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
+
   return (
     <div className='space-y-4 p-4'>
       <div className='space-y-1'>
@@ -246,18 +188,8 @@ export const RecurrenceSettings = (props: Props) => {
           />
           <div className='self-end py-2 text-sm'>{plural(recurrenceInterval, 'week')}</div>
         </div>
-        {intervalError ? (
-          <Error key={intervalError}>{intervalError}</Error>
-        ) : (
-          <Description>
-            The next meeting in this series will be called{' '}
-            <span className='font-semibold'>
-              "{title} - {dayjs(new Date()).format('MMM DD')}"
-            </span>
-          </Description>
-        )}
+        {intervalError && <Error key={intervalError}>{intervalError}</Error>}
       </div>
-
       <div className='space-y-1'>
         <Label>Repeats on</Label>
         <div className='flex items-center justify-between'>

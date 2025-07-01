@@ -6,7 +6,6 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
-import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
@@ -43,8 +42,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     })
   }
 
-  //TODO: use client timezone here (requires sending it from the client and passing it via gql context most likely)
-  const meetingName = createMeetingSeriesTitle(name || 'Standup', new Date(), 'UTC')
+  const meetingName = name || 'Standup'
   const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
   if (!meeting) {

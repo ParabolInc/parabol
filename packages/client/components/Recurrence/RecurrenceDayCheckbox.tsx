@@ -1,24 +1,6 @@
 import styled from '@emotion/styled'
-import {Weekday} from 'rrule'
 import {PALETTE} from '../../styles/paletteV3'
-
-type DayFullName =
-  | 'Monday'
-  | 'Tuesday'
-  | 'Wednesday'
-  | 'Thursday'
-  | 'Friday'
-  | 'Saturday'
-  | 'Sunday'
-
-export type Day = {
-  name: DayFullName
-  shortName: string
-  abbreviation: string
-  rruleVal: Weekday
-  intVal: number
-  isWeekday: boolean
-}
+import {Day} from '../../utils/humanReadableRecurrenceRule'
 
 export const CheckboxRoot = styled('div')({
   position: 'relative',
