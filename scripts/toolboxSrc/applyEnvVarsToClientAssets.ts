@@ -82,7 +82,8 @@ const rewriteIndexHTML = () => {
         ? process.env.GIF_PROVIDER
         : process.env.TENOR_SECRET
           ? 'tenor'
-          : ''
+          : '',
+    HUBSPOT_ERROR_FORM_URL: process.env.HUBSPOT_ERROR_FORM_URL
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')

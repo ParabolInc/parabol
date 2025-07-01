@@ -219,7 +219,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const linearRequest = manager.getLinearRequest(info, context)
       const [data, error] = await linearRequest(query, {})
       if (error) {
-        sendToSentry(error, {userId: accessUserId})
+        logError(error, {userId: accessUserId})
       }
       // Ensure the returned object has a standard prototype
       return data ? {...data} : null

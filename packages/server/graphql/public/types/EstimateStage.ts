@@ -202,7 +202,7 @@ const EstimateStage: EstimateStageResolvers = {
       const [issueData, issueError] = await manager.getIssue({id: issueId})
       if (issueError) {
         const userId = getUserId(authToken)
-        sendToSentry(issueError, {userId, tags: {teamId, id: issueId}})
+        logError(issueError, {userId, tags: {teamId, id: issueId}})
         return NULL_FIELD
       }
       const {issue} = issueData
