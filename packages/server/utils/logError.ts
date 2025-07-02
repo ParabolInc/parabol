@@ -1,9 +1,6 @@
-import * as Sentry from '@sentry/node'
-import {getUserById} from '../postgres/queries/getUsersByIds'
 import {Logger} from './Logger'
 
-export interface SentryOptions {
-  sampleRate?: number
+export interface ErrorOptions {
   userId?: string
   ip?: string
   tags?: {
@@ -13,27 +10,9 @@ export interface SentryOptions {
 }
 
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
-const logError = async (error: Error, options: SentryOptions = {}) => {
-  const {sampleRate, tags, extras, userId, ip} = options
-  Logger.log('SEND TO SENTRY', error || JSON.stringify(error), {tags})
-  if (sampleRate && Math.random() > sampleRate) return
-  const fullUser = userId ? await getUserById(userId) : null
-  const user = fullUser ? {id: fullUser.id, email: fullUser.email} : null
-  if (user && ip) {
-    ;(user as any).ip_address = ip
-  }
-  Sentry.withScope((scope) => {
-    user && scope.setUser(user)
-    if (tags) {
-      Object.keys(tags).forEach((tag) => {
-        scope.setTag(tag, String(tags[tag]))
-      })
-    }
-    if (extras) {
-      scope.setExtras(extras)
-    }
-    Sentry.captureException(error)
-  })
+const logError = async (error: Error, options: ErrorOptions = {}) => {
+  const {tags, extras, userId, ip} = options
+  Logger.error('SEND TO SENTRY', error || JSON.stringify(error), {tags, extras, userId, ip})
 }
 
 export default logError

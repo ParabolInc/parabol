@@ -37,7 +37,6 @@ interface Window {
     mattermostGlobal: boolean | undefined
     msTeamsDisabled: boolean | undefined
     publicPath: string
-    sentry: string
     slack: string
     stripe: string
     oauth2Redirect: string
