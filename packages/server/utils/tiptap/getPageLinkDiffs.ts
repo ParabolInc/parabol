@@ -1,4 +1,4 @@
-import {getPageCodeFromLinkKey} from '../../updateBacklinks'
+import {getPageCodeFromLinkKey} from '../../syncPageLinks'
 
 // Yes, this could be 4 lines, but it's lower level to be as fast as possible
 export const getPageLinkDiffs = (oldPageLinkKeys: string[], newPageLinkKeys: string[]) => {

@@ -3,9 +3,8 @@ import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
-import * as Y from 'yjs'
 import getKysely from './postgres/getKysely'
-import {updateBacklinks} from './updateBacklinks'
+import {syncPageLinks} from './syncPageLinks'
 import {isAuthenticated} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
@@ -69,18 +68,13 @@ export const server = Server.configure({
           .executeTakeFirst()
         return res?.yDoc ?? null
       },
-      // … and a Promise to store data:
       store: async ({documentName, state, document, context}) => {
         const [dbId, pageCode] = CipherId.fromClient(documentName)
-        const meta = document.getMap('metadata')
-        const deletions = meta.get('pendingDeletions') as Y.Array<number>
-        console.log('TODO: deleting', deletions)
-        // TODO: there may be a way to sniff out the change from the yjs state so we don't have to parse the whole doc
-        // Transforming the whole doc is actually faster than yjs traversal + generateText(generateJSON()). 2ms vs 10ms
+        // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const [{updatedTitle}] = await Promise.all([
           updatePageContent(dbId, content, state),
-          updateBacklinks(context.userId, dbId, document, content)
+          syncPageLinks(context.userId, dbId, document, content)
         ])
         if (updatedTitle) {
           await withBacklinks(dbId, (doc) => {

@@ -36,10 +36,20 @@ class ProviderManager {
     this.providers[pageId] = {count: 1, provider}
     return provider
   }
-  unregister(pageId: string | undefined) {
+  unregister(pageId: string | undefined, delay = 10000) {
     const prevProviderEntry = this.providers[pageId!]
     if (!prevProviderEntry) return
     if (--prevProviderEntry.count === 0) {
+      setTimeout(() => {
+        this.destroy(pageId!)
+      }, delay)
+    }
+  }
+
+  destroy(pageId: string) {
+    const prevProviderEntry = this.providers[pageId!]
+    if (!prevProviderEntry) return
+    if (prevProviderEntry.count === 0) {
       prevProviderEntry.provider.destroy()
       delete this.providers[pageId!]
     }

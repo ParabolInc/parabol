@@ -22,7 +22,34 @@ export const PageLinkBlockBase = Node.create({
 
   isolating: true,
   atom: true,
-
+  addAttributes() {
+    return {
+      pageCode: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-id'),
+        renderHTML: (attributes) => ({
+          'data-id': attributes.pageCode
+        })
+      },
+      title: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-title'),
+        renderHTML: (attributes) => ({
+          'data-title': attributes.title
+        })
+      },
+      canonical: {
+        parseHTML: (element) => {
+          return element.getAttribute('data-canonical') === '' ? true : false
+        },
+        renderHTML: (attributes) => {
+          return {
+            'data-canonical': attributes.canonical ? '' : undefined
+          }
+        }
+      }
+    }
+  },
   parseHTML() {
     return [
       {

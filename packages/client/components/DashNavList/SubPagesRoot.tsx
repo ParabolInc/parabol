@@ -26,7 +26,7 @@ export const SubPagesRoot = (props: Props) => {
   // so local title changes update before Yjs changes propagate since those are debouced on the server
 
   // eslint-disable-next-line
-  const pageLinks = parentPageId ? usePageChildren(parentPageId) : null
+  const pageLinks = teamId ? undefined : parentPageId ? usePageChildren(parentPageId) : null
   return (
     <Suspense fallback={<Loader />}>
       {queryRef && (
