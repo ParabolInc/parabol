@@ -1,7 +1,7 @@
 import {us_listen_socket} from 'uWebSockets.js'
 import {RECONNECT_WINDOW} from './server'
 import {Logger} from './utils/Logger'
-import sendToSentry from './utils/sendToSentry'
+import logError from './utils/logError'
 import serverHealthChecker from './utils/serverHealthChecker'
 
 const listenHandler = (listenSocket: us_listen_socket) => {
@@ -11,7 +11,7 @@ const listenHandler = (listenSocket: us_listen_socket) => {
     Logger.log(`\n🔥🔥🔥 Server ID: ${SERVER_ID}. Ready for Sockets: Port ${PORT} 🔥🔥🔥`)
     // if shutdowns are clean, this isn't necessary
     // that's why we wait 3 minutes to let all the old servers shut down gracefully
-    serverHealthChecker.cleanUserPresence(RECONNECT_WINDOW + 120_000).catch(sendToSentry)
+    serverHealthChecker.cleanUserPresence(RECONNECT_WINDOW + 120_000).catch(logError)
   } else {
     Logger.log(`❌❌❌    Port ${PORT} is in use!    ❌❌❌`)
   }

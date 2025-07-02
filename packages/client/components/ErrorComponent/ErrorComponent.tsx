@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import PrimaryButton from '~/components/PrimaryButton'
-import ReportErrorFeedback from '~/components/ReportErrorFeedback'
+import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'
 import {isOldBrowserError} from '~/utils/isOldBrowserError'
 
@@ -64,8 +64,10 @@ const ErrorComponent = (props: Props) => {
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      {eventId && <Button onClick={openPortal}>Report Feedback</Button>}
-      {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
+      {ERROR_FEEDBACK_ENABLED && eventId && <Button onClick={openPortal}>Report Feedback</Button>}
+      {modalPortal(
+        <ReportErrorFeedback closePortal={closePortal} error={error} eventId={eventId} />
+      )}
     </ErrorBlock>
   )
 }

@@ -1,6 +1,6 @@
+import {datadogRum} from '@datadog/browser-rum'
 import styled from '@emotion/styled'
 import {Lock} from '@mui/icons-material'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
@@ -257,7 +257,7 @@ const MeetingCard = (props: Props) => {
   if (!team) {
     // 95% sure there's a bug in relay causing this
     const errObj = {id: meetingId} as any
-    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    datadogRum.addError(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
     return null
   }
   const {id: teamId, name: teamName, orgId} = team

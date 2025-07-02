@@ -10,7 +10,7 @@ import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/
 import {getUserId} from '../../../utils/authorization'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getIssueLabels from '../../../utils/githubQueries/getIssueLabels.graphql'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import isValid from '../../isValid'
 import {ReqResolvers} from './ReqResolvers'
 
@@ -77,7 +77,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       })
       if (!labelsData) {
         if (labelsError) {
-          sendToSentry(labelsError, {userId: accessUserId})
+          logError(labelsError, {userId: accessUserId})
         }
         return estimates
       }
@@ -174,7 +174,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const githubRequest = getGitHubRequest(info, context, {accessToken})
       const [data, error] = await githubRequest(query)
       if (error) {
-        sendToSentry(error, {userId: accessUserId})
+        logError(error, {userId: accessUserId})
       }
       return data
     } else if (integration.service === 'gitlab') {
@@ -198,7 +198,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const gitlabRequest = manager.getGitLabRequest(info, context)
       const [data, error] = await gitlabRequest(query, {})
       if (error) {
-        sendToSentry(error, {userId: accessUserId})
+        logError(error, {userId: accessUserId})
       }
       return data
     } else if (integration.service === 'linear') {
@@ -219,7 +219,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       const linearRequest = manager.getLinearRequest(info, context)
       const [data, error] = await linearRequest(query, {})
       if (error) {
-        sendToSentry(error, {userId: accessUserId})
+        logError(error, {userId: accessUserId})
       }
       // Ensure the returned object has a standard prototype
       return data ? {...data} : null

@@ -1,10 +1,10 @@
+import {datadogRum} from '@datadog/browser-rum'
 import {
   ArrowForward as ArrowForwardIcon,
   ChangeHistory,
   GroupWork,
   History
 } from '@mui/icons-material'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
@@ -43,7 +43,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   if (!team) {
     // 95% sure there's a bug in relay causing this
     const errObj = {id: meetingId} as any
-    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    datadogRum.addError(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
     return null
   }
   const {name: teamName} = team

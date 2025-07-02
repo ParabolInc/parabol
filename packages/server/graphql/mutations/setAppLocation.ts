@@ -3,8 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {getUserId} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
+import logError from '../../utils/logError'
 import publish from '../../utils/publish'
-import sendToSentry from '../../utils/sendToSentry'
 import {GQLContext} from '../graphql'
 import {UserPresence} from '../private/mutations/connectSocket'
 import rateLimit from '../rateLimit'
@@ -33,7 +33,7 @@ export default {
       const subOptions = {mutatorId, operationId}
       const redis = getRedis()
       if (!mutatorId) {
-        sendToSentry(new Error('No mutator id in setAppLocation.ts'))
+        logError(new Error('No mutator id in setAppLocation.ts'))
       }
 
       // AUTH

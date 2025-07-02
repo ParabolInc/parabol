@@ -15,7 +15,7 @@ const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts/webpack/utils/dotenv.js')
 const distPath = path.join(PROJECT_ROOT, 'dist')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
-const INIT_LOGGING = path.join(SERVER_ROOT, 'logging.ts')
+const INIT_LOGGING = path.join(SERVER_ROOT, 'initLogging.ts')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 const runtimePlatform = `${process.platform}-${process.arch}`

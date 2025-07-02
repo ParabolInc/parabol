@@ -37,7 +37,6 @@ interface Window {
     mattermostGlobal: boolean | undefined
     msTeamsDisabled: boolean | undefined
     publicPath: string
-    sentry: string
     slack: string
     stripe: string
     oauth2Redirect: string
@@ -55,6 +54,7 @@ interface Window {
     GLOBAL_BANNER_BG_COLOR: string
     GLOBAL_BANNER_COLOR: string
     GIF_PROVIDER: 'gifabol' | 'tenor' | ''
+    HUBSPOT_ERROR_FORM_URL: string
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}

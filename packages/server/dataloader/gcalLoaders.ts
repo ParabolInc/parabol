@@ -2,7 +2,7 @@ import DataLoader from 'dataloader'
 import GcalOAuth2Manager from '../integrations/gcal/GcalOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {TeamMemberIntegrationAuth} from '../postgres/types'
-import sendToSentry from '../utils/sendToSentry'
+import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 
 export const freshGcalAuth = (parent: RootDataLoader) => {
@@ -23,7 +23,7 @@ export const freshGcalAuth = (parent: RootDataLoader) => {
           if (expiresAt && expiresAt < now) {
             const {providerId, refreshToken} = gcalAuth
             if (!refreshToken) {
-              sendToSentry(new Error('No refresh token in gcalAuth'), {userId})
+              logError(new Error('No refresh token in gcalAuth'), {userId})
               return null
             }
             const provider = await parent.get('integrationProviders').loadNonNull(providerId)

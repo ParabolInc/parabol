@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.2](https://github.com/ParabolInc/parabol/compare/v10.12.1...v10.12.2) (2025-07-02)
+
+
+### Changed
+
+* remove remains of Sentry ([#11502](https://github.com/ParabolInc/parabol/issues/11502)) ([8a73627](https://github.com/ParabolInc/parabol/commit/8a73627db15a361b235b1833e85740888333c9ef))
+* remove Sentry error logging ([#11340](https://github.com/ParabolInc/parabol/issues/11340)) ([d121d6f](https://github.com/ParabolInc/parabol/commit/d121d6f2a75d04b6d3531785ae6dc815488d2c69))
+
 ## [10.12.1](https://github.com/ParabolInc/parabol/compare/v10.12.0...v10.12.1) (2025-07-01)
 
 

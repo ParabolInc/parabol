@@ -6,8 +6,8 @@ import TaskIntegrationManagerFactory from '../../integrations/TaskIntegrationMan
 import updatePrevUsedRepoIntegrationsCache from '../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import logError from '../../utils/logError'
 import publish from '../../utils/publish'
-import sendToSentry from '../../utils/sendToSentry'
 import standardError from '../../utils/standardError'
 import {GQLContext} from '../graphql'
 import CreateTaskIntegrationPayload from '../types/CreateTaskIntegrationPayload'
@@ -147,7 +147,7 @@ export default {
       )
 
       if (addCommentResponse instanceof Error) {
-        sendToSentry(addCommentResponse)
+        logError(addCommentResponse)
       }
     }
 
