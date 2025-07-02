@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
 import * as React from 'react'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
+import {LocalStorageKey} from '../types/constEnums'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -10,8 +11,11 @@ import PrimaryButton from './PrimaryButton'
 
 interface Props {
   closePortal: () => void
+  error: Error
   eventId: string
 }
+
+export const ERROR_FEEDBACK_ENABLED = !!window.__ACTION__.HUBSPOT_ERROR_FORM_URL
 
 const INVITE_DIALOG_BREAKPOINT = 864
 const INVITE_DIALOG_MEDIA_QUERY = `@media (min-width: ${INVITE_DIALOG_BREAKPOINT}px)`
@@ -55,25 +59,49 @@ const Description = styled('div')({
 })
 
 const ReportErrorFeedback = (props: Props) => {
-  const {closePortal, eventId} = props
+  const {closePortal, error, eventId} = props
   const [text, setText] = useState('')
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const nextValue = e.target.value
     setText(nextValue)
   }
+  const url = window.__ACTION__.HUBSPOT_ERROR_FORM_URL
+  useEffect(() => {
+    if (!url) {
+      closePortal()
+    }
+  }, [url, closePortal])
+  if (!url) {
+    return null
+  }
+  const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
 
   const onSubmit = () => {
-    const dsn = window.__ACTION__.sentry
-    const url = `https://sentry.io/api/embed/error-page/?dsn=${dsn}&eventId=${eventId}`
     if (!text) return
-    const body = new URLSearchParams()
-    body.set('comments', text)
-    body.set('name', 'user')
-    body.set('email', 'errors@parabol.co')
+    const body = JSON.stringify({
+      fields: [
+        {
+          name: 'email',
+          value: email || 'errors@parabol.co'
+        },
+        {
+          name: 'TICKET.subject',
+          value: error.message
+        },
+        {
+          name: 'TICKET.content',
+          value: text
+        },
+        {
+          name: 'TICKET.eventid',
+          value: eventId
+        }
+      ]
+    })
     fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        'Content-Type': 'application/json'
       },
       body
     })

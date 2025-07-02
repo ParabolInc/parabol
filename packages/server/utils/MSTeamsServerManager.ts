@@ -1,6 +1,6 @@
 import {fetch} from '@whatwg-node/fetch'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import sendToSentry from './sendToSentry'
+import logError from './logError'
 
 // MS Teams is a server-only integration for now, unlike the Slack integration
 
@@ -44,7 +44,7 @@ class MSTeamsServerManager {
       return res
     } catch (error) {
       if (error instanceof Error) {
-        sendToSentry(error)
+        logError(error)
         return error
       }
       return new Error('MS Teams is not responding')

@@ -2,7 +2,7 @@ import OpenAI from 'openai'
 import {ModifyType} from '../graphql/public/resolverTypes'
 import {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
-import sendToSentry from './sendToSentry'
+import logError from './logError'
 
 type InsightResponse = {
   wins: string[]
@@ -57,7 +57,7 @@ class OpenAIServerManager {
       return (response.choices[0]?.message?.content?.trim() as string) ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to getSummary')
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -112,7 +112,7 @@ class OpenAIServerManager {
         e instanceof Error
           ? e
           : new Error(`OpenAI failed to generate a question for the topic ${topic}`)
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -145,7 +145,7 @@ class OpenAIServerManager {
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
       Logger.error(error.message)
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -180,7 +180,7 @@ class OpenAIServerManager {
         if (!retry) {
           return getThemeForReflection(reflection, true)
         } else {
-          sendToSentry(
+          logError(
             new Error(
               `Couldn't find a suitable theme for reflection: "${reflection}" from the following themes: ${themes.join(
                 ', '
@@ -213,7 +213,7 @@ class OpenAIServerManager {
       return groupedReflections
     } catch (error) {
       const e = error instanceof Error ? error : new Error('OpenAI failed to group reflections')
-      sendToSentry(e)
+      logError(e)
       return null
     }
   }
@@ -252,7 +252,7 @@ class OpenAIServerManager {
       return (response.choices[0]?.message?.content?.trim() as string).replaceAll(`"`, '') ?? null
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to modifyCheckInQuestion')
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -362,14 +362,14 @@ Return the analysis as a JSON object with this structure:
         data = JSON.parse(completionContent)
       } catch (e) {
         const error = e instanceof Error ? e : new Error('Error parsing JSON in generateInsight')
-        sendToSentry(error)
+        logError(error)
         return null
       }
 
       return data
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Error in generateInsight')
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -414,7 +414,7 @@ Return the analysis as a JSON object with this structure:
       return content
     } catch (e) {
       const error = e instanceof Error ? e : new Error('Error in generateInsight')
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }
@@ -450,7 +450,7 @@ Important: Respond with ONLY the title itself. Do not include any prefixes like 
       return title
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate group title')
-      sendToSentry(error)
+      logError(error)
       return null
     }
   }

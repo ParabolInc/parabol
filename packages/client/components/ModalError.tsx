@@ -30,7 +30,9 @@ const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       <DialogContent>
         {'We’ve alerted the developers. Try refreshing the page'}
         <Button onClick={openPortal}>Report Feedback</Button>
-        {modalPortal(<ReportErrorFeedback closePortal={closePortal} eventId={eventId} />)}
+        {modalPortal(
+          <ReportErrorFeedback closePortal={closePortal} eventId={eventId} error={error} />
+        )}
       </DialogContent>
     </ErrorBlock>
   )

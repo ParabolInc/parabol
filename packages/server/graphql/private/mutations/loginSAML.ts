@@ -13,8 +13,8 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {isSingleTenantSSO} from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import logError from '../../../utils/logError'
 import {samlXMLValidator} from '../../../utils/samlXMLValidator'
-import sendToSentry from '../../../utils/sendToSentry'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
@@ -187,7 +187,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     const samlOrgIdsAttribute = attributes[samlOrgAttribute]
     if (!samlOrgIdsAttribute) {
       // This is probably a misconfiguration but should not stop us from accepting the new user
-      sendToSentry(
+      logError(
         new Error(
           `The SAML attribute ${samlOrgAttribute} is missing from the SAML response. The following attributes were included: ${Object.keys(attributes).join(', ')}`
         )
