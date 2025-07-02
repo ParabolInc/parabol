@@ -46,13 +46,21 @@ export const LeftNavPageLink = (props: Props) => {
         isPrivate
         isDraggingFirstChild
         isDraggingLastChild
-        sortOrder # used implicityly in store traveral by useDraggingPage
+        sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,
     pageRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild, teamId, isPrivate} =
-    page
+  const {
+    title,
+    id,
+    parentPageId,
+    isDraggingFirstChild,
+    isDraggingLastChild,
+    teamId,
+    isPrivate,
+    sortOrder
+  } = page
   const pageIdNum = id.split(':')[1]
   const titleSlug = toSlug(title || '')
   const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
@@ -128,7 +136,10 @@ export const LeftNavPageLink = (props: Props) => {
             draggingPageId={isSelf ? null : draggingPageId}
           />
           <LeftNavItem>
-            <span className='pl-1'>{title || '<Untitled>'}</span>
+            <span className='pl-1'>
+              {title || '<Untitled>'}
+              {sortOrder}
+            </span>
           </LeftNavItem>
           <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>

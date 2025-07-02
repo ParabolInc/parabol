@@ -3,7 +3,7 @@ import {Redirect} from 'react-router'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 
 export const MakePage = () => {
-  const [pageId, setPageId] = useState<number>()
+  const [pageCode, setPageCode] = useState<number>()
   const [execute] = useCreatePageMutation()
   useEffect(() => {
     execute({
@@ -12,13 +12,13 @@ export const MakePage = () => {
         const {createPage} = response
         const {page} = createPage
         const {id} = page
-        const [_, pageId] = id.split(':')
-        setPageId(Number(pageId))
+        const [_, pageCode] = id.split(':')
+        setPageCode(Number(pageCode))
       }
     })
   }, [])
-  if (pageId) {
-    return <Redirect to={`/pages/${pageId}`} />
+  if (pageCode) {
+    return <Redirect to={`/pages/${pageCode}`} />
   }
   return <div>Creating page...</div>
 }

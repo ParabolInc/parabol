@@ -1,4 +1,3 @@
-import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import {generateJSON, generateText} from '@tiptap/react'
 import type {History} from 'history'
 import {useEffect, useMemo, useRef, useState} from 'react'
@@ -8,14 +7,14 @@ import type Atmosphere from '../Atmosphere'
 import {getTitleFromPageText} from '../shared/tiptap/getTitleFromPageText'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {getPageSlug} from '../tiptap/getPageSlug'
+import {providerManager} from '../tiptap/providerManager'
 import type {FirstParam} from '../types/generics'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
 
-let currentSlug: string | undefined = undefined
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText,
-  clientPageNum: number,
+  pageCode: number,
   history: History,
   atmosphere: Atmosphere
 ) => {
@@ -24,56 +23,49 @@ const updateUrlWithSlug = (
     serverTipTapExtensions
   )
   const {title} = getTitleFromPageText(plaintext)
-  const pageSlug = getPageSlug(clientPageNum, title)
-  if (pageSlug === currentSlug) return
-  currentSlug = pageSlug
-  history.replace(`/pages/${pageSlug}`)
+  const pageSlug = getPageSlug(pageCode, title)
+  const {pathname} = location
+  if (pathname.endsWith(pageSlug)) return
+  const sluggedPageCodeIdx = pathname.lastIndexOf('-')
+  const pageCodeIdx = sluggedPageCodeIdx === -1 ? pathname.lastIndexOf('/') : sluggedPageCodeIdx
+  const currentRoutePageCode = Number(pathname.slice(pageCodeIdx + 1))
+  if (currentRoutePageCode === pageCode) {
+    history.replace(`/pages/${pageSlug}`)
+  }
   commitLocalUpdate(atmosphere, (store) => {
     const title = plaintext.slice(0, 255)
-    store.get(`page:${clientPageNum}`)?.setValue(title, 'title')
+    store.get(`page:${pageCode}`)?.setValue(title, 'title')
   })
-}
-let socket: TiptapCollabProviderWebsocket
-const makeHocusPocusSocket = (authToken: string | null) => {
-  if (!socket) {
-    const wsProtocol = window.location.protocol.replace('http', 'ws')
-    const host = __PRODUCTION__
-      ? `${window.location.host}/hocuspocus`
-      : `${window.location.hostname}:${__HOCUS_POCUS_PORT__}`
-    const baseUrl = `${wsProtocol}//${host}?token=${authToken}`
-    socket = new TiptapCollabProviderWebsocket({
-      baseUrl
-    })
-  }
-  return socket
 }
 
 export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
   const [isLoaded, setIsLoaded] = useState(false)
   const {history} = useRouter<{meetingId: string}>()
-  const clientPageNum = Number(pageId.split(':')[1])
-  const providerRef = useRef<TiptapCollabProvider>()
+  const pageCode = Number(pageId.split(':')[1])
+  const prevPageIdRef = useRef<string | undefined>()
   // Connect to your Collaboration server
-  providerRef.current = useMemo(() => {
-    if (!pageId) return undefined
-    if (providerRef.current) {
-      providerRef.current.destroy()
-      setIsLoaded(false)
+  const provider = useMemo(() => {
+    providerManager.unregister(prevPageIdRef.current)
+    prevPageIdRef.current = pageId
+
+    // if we've already opened a provider, use that
+    const existingProvider = providerManager.use(pageId)
+    if (existingProvider) {
+      if (!isLoaded) {
+        setIsLoaded(true)
+      }
+      return existingProvider
     }
-    const doc = new Y.Doc()
-    const frag = doc.getXmlFragment('default')
-    // update the URL to match the title
-    const nextProvider = new TiptapCollabProvider({
-      websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      name: pageId,
-      document: doc
-    })
+    setIsLoaded(false)
+
+    const nextProvider = providerManager.register(pageId, atmosphere.authToken!)
+    const frag = nextProvider.document.getXmlFragment('default')
 
     const observeHeader = (headerBlock: Y.XmlText) => {
-      updateUrlWithSlug(headerBlock, clientPageNum, history, atmosphere)
+      updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
       headerBlock.observe(() => {
-        updateUrlWithSlug(headerBlock, clientPageNum, history, atmosphere)
+        updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
       })
     }
     const observeFragForHeader: FirstParam<Y.AbstractType<Y.YXmlEvent>['observeDeep']> = () => {
@@ -100,8 +92,8 @@ export const usePageProvider = (pageId: string) => {
 
   useEffect(() => {
     return () => {
-      providerRef.current?.destroy()
+      providerManager.unregister(prevPageIdRef.current)
     }
   }, [])
-  return {provider: providerRef.current!, isLoaded}
+  return {provider, isLoaded}
 }
