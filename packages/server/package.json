@@ -65,7 +65,6 @@
     "@mattkrick/sanitize-svg": "0.4.1",
     "@octokit/graphql-schema": "^10.36.0",
     "@pgtyped/runtime": "^2.4.2",
-    "@sentry/node": "^9.14.0",
     "@smithy/types": "^4.2.0",
     "@smithy/util-retry": "^4.0.2",
     "@tiptap/core": "^2.11.7",

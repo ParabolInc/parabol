@@ -1,4 +1,3 @@
-import {User} from '@sentry/node'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
@@ -9,7 +8,7 @@ const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   {includeInWatchlist, emails, domain}
 ) => {
   // RESOLUTION
-  const users = [] as User[]
+  const users = [] as Awaited<ReturnType<typeof getUsersByEmails>>
   if (emails) {
     const usersByEmail = await getUsersByEmails(emails)
     users.push(...usersByEmail)

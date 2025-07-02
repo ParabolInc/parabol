@@ -1,5 +1,5 @@
 import tracer from 'dd-trace'
-import 'parabol-server/initSentry'
+import 'parabol-server/initLogging'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import {Tuple} from '../client/types/generics'

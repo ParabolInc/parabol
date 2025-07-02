@@ -74,7 +74,6 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "@sentry/browser": "^5.8.0",
     "@sereneinserenade/tiptap-search-and-replace": "^0.1.1",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^4.0.0",

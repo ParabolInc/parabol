@@ -1,9 +1,9 @@
 import {datadogRum} from '@datadog/browser-rum'
-import * as Sentry from '@sentry/browser'
 import {Component, ErrorInfo, ReactNode} from 'react'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
+import generateUID from '../../server/generateUID'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
@@ -40,29 +40,19 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const store = atmosphere.getStore()
     const email = (store?.getSource?.().get?.(viewerId) as any)?.email ?? ''
     const isOldBrowserErr = isOldBrowserError(error.message)
-    if (viewerId) {
-      Sentry.configureScope((scope) => {
-        scope.setUser({email, id: viewerId})
-      })
-    }
-    // Catch errors in any components below and re-render with error message
-    Sentry.withScope((scope) => {
-      scope.setExtras(errorInfo as any)
-      scope.setLevel(Sentry.Severity.Fatal)
-      const eventId = Sentry.captureException(error)
-      this.setState({
-        error,
-        errorInfo,
-        eventId,
-        isOldBrowserErr
-      })
+    const eventId = generateUID()
+    this.setState({
+      error,
+      errorInfo,
+      eventId,
+      isOldBrowserErr
     })
 
     const renderingError = new Error(error.message)
     renderingError.name = 'ReactRenderingError'
     renderingError.stack = errorInfo.componentStack
     renderingError.cause = error
-    datadogRum.addError(renderingError)
+    datadogRum.addError(renderingError, {viewerId, email})
   }
 
   render() {

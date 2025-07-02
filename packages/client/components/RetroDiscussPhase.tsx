@@ -1,6 +1,6 @@
+import {datadogRum} from '@datadog/browser-rum'
 import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
@@ -199,7 +199,7 @@ const RetroDiscussPhase = (props: Props) => {
     // this shouldn't ever happen, yet
     // https://sentry.io/organizations/parabol/issues/1322927523/?environment=client&project=107196&query=is%3Aunresolved
     const errObj = {id: reflectionGroup.id} as any
-    Sentry.captureException(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
+    datadogRum.addError(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
   }
   return (
     <MeetingContent ref={callbackRef}>
