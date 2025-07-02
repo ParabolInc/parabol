@@ -3,7 +3,6 @@ import {Component, ErrorInfo, ReactNode} from 'react'
 import Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
-import generateUID from '../../server/generateUID'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
@@ -40,7 +39,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const store = atmosphere.getStore()
     const email = (store?.getSource?.().get?.(viewerId) as any)?.email ?? ''
     const isOldBrowserErr = isOldBrowserError(error.message)
-    const eventId = generateUID()
+    const eventId = crypto.randomUUID()
     this.setState({
       error,
       errorInfo,
