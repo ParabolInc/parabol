@@ -3,12 +3,12 @@ import {generateJSON} from '@tiptap/html'
 import {sql} from 'kysely'
 import {__START__} from 'parabol-client/shared/sortOrder'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
+import {DataLoaderWorker} from '../../../graphql/graphql'
 import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import {updatePageContent} from '../../../utils/tiptap/updatePageContent'
-import {DataLoaderWorker} from '../../graphql/graphql'
 import {getPageNextSortOrder} from '../../public/mutations/helpers/getPageNextSortOrder'
 
 export const dumpTranscriptToPage = async (
