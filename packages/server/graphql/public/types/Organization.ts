@@ -103,10 +103,8 @@ const Organization: OrganizationResolvers = {
       dataLoader.get('organizationUsersByOrgId').load(orgId),
       dataLoader.get('activeOrganizationUsersByOrgId').load(orgId)
     ])
-
-    const inactiveUserCount = organizationUsers.length - activeOrganizationUsers.length
     return {
-      inactiveUserCount,
+      inactiveUserCount: organizationUsers.length - activeOrganizationUsers.length,
       activeUserCount: activeOrganizationUsers.length
     }
   },

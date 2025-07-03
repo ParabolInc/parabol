@@ -1,7 +1,6 @@
 import User from '../database/types/User'
 import {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import {DataLoaderWorker} from '../graphql/graphql'
-import isValid from '../graphql/isValid'
 import isUserVerified from './isUserVerified'
 
 export const getEligibleOrgIdsByDomain = async (
@@ -26,19 +25,12 @@ export const getEligibleOrgIdsByDomain = async (
     newOrgs.map(({id}) => dataLoader.get('isOrgVerified').load(id))
   )
   const verifiedOrgs = newOrgs.filter((_, idx) => verifiedOrgMask[idx])
-  const verifiedOrgUsers = await Promise.all(
-    verifiedOrgs.map((org) => dataLoader.get('organizationUsersByOrgId').load(org.id))
-  )
-
   const verifiedOrgsWithActiveUserCount = await Promise.all(
-    verifiedOrgs.map(async (org, idx) => {
-      const orgUsers = verifiedOrgUsers[idx] ?? []
-      const users = (
-        await dataLoader.get('users').loadMany(orgUsers.map(({userId}) => userId))
-      ).filter(isValid)
+    verifiedOrgs.map(async (org) => {
+      const activeOrgUsers = await dataLoader.get('activeOrganizationUsersByOrgId').load(org.id)
       return {
         ...org,
-        activeMembers: users.filter((u) => !u.isRemoved && !u.inactive).length
+        activeMembers: activeOrgUsers.length
       }
     })
   )

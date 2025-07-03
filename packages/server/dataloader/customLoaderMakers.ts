@@ -691,6 +691,7 @@ export const activeOrganizationUsersByOrgId = (
   parent: RootDataLoader,
   dependsOn: RegisterDependsOn
 ) => {
+  // this would be an easy query with a join, but we probably have most of the data already in the dataloader
   dependsOn('organizationUsers')
   dependsOn('users')
   return new DataLoader<string, OrganizationUser[], string>(
@@ -701,8 +702,8 @@ export const activeOrganizationUsersByOrgId = (
           return (
             await Promise.all(
               orgUsers.map(async (orgUser) => {
-                const user = await parent.get('users').loadNonNull(orgUser.userId)
-                return user.inactive ? null : orgUser
+                const user = await parent.get('users').load(orgUser.userId)
+                return !user || user.inactive ? null : orgUser
               })
             )
           ).filter(isValid)

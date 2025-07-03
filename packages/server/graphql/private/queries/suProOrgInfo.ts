@@ -13,7 +13,7 @@ const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeIna
     .innerJoin('User as u', 'ou.userId', 'u.id')
     .select(['orgId', ({fn}) => fn.count<number>('id').as('orgSize')])
     .where('orgId', 'in', proOrgIds)
-    .where('inactive', '=', false)
+    .where('u.inactive', '=', false)
     .where('ou.removedAt', 'is', null)
     .groupBy('orgId')
     .having(({eb, fn}) => eb(fn.count('ou.id'), '>=', 1))
