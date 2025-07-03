@@ -14,5 +14,5 @@ INSERT INTO "StripeQuantityMismatchLogging" (
     :eventTime,
     :eventType,
     :stripePreviousQuantity,
-    :stripeNextQuantity,
+    :stripeNextQuantity
 );
