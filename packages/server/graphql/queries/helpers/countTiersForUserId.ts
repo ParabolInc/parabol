@@ -5,8 +5,11 @@ import isValid from '../../isValid'
 // populate segment traits
 
 const countTiersForUserId = async (userId: string, dataLoader: DataLoaderInstance) => {
-  const allOrgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
-  const organizationUsers = allOrgUsers.filter(({inactive}) => !inactive)
+  const [allOrgUsers, user] = await Promise.all([
+    dataLoader.get('organizationUsersByUserId').load(userId),
+    dataLoader.get('users').load(userId)
+  ])
+  const organizationUsers = user && !user.inactive ? allOrgUsers : []
   const activeOrgs = (
     await dataLoader.get('organizations').loadMany(organizationUsers.map(({orgId}) => orgId))
   ).filter(isValid)

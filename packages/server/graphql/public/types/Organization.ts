@@ -99,11 +99,15 @@ const Organization: OrganizationResolvers = {
   },
 
   orgUserCount: async ({id: orgId}, _args, {dataLoader}) => {
-    const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-    const inactiveUserCount = organizationUsers.filter(({inactive}) => inactive).length
+    const [organizationUsers, activeOrganizationUsers] = await Promise.all([
+      dataLoader.get('organizationUsersByOrgId').load(orgId),
+      dataLoader.get('activeOrganizationUsersByOrgId').load(orgId)
+    ])
+
+    const inactiveUserCount = organizationUsers.length - activeOrganizationUsers.length
     return {
       inactiveUserCount,
-      activeUserCount: organizationUsers.length - inactiveUserCount
+      activeUserCount: activeOrganizationUsers.length
     }
   },
 

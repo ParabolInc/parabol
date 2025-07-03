@@ -56,11 +56,16 @@ const Company: CompanyResolvers = {
     const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
       .filter(isValid)
       .flat()
-    const activeOrganizationUsers = organizationUsers.filter((organizationUser) => {
-      const isActive = !organizationUser.inactive
-      const joinedAfter = after ? organizationUser.joinedAt > new Date(after) : true
-      return isActive && joinedAfter
-    })
+    const activeOrganizationUsers = (
+      await Promise.all(
+        organizationUsers.map(async (organizationUser) => {
+          if (after && organizationUser.joinedAt <= new Date(after)) return null
+          const user = await dataLoader.get('users').loadNonNull(organizationUser.userId)
+          if (user.inactive) return null
+          return organizationUser
+        })
+      )
+    ).filter(isValid)
     const userIds = activeOrganizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
@@ -75,9 +80,15 @@ const Company: CompanyResolvers = {
     const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(allOrgIds))
       .flat()
       .filter(isValid)
-    const activeOrganizationUsers = organizationUsers.filter(
-      (organizationUser) => !organizationUser.inactive
-    )
+    const activeOrganizationUsers = (
+      await Promise.all(
+        organizationUsers.map(async (organizationUser) => {
+          const user = await dataLoader.get('users').loadNonNull(organizationUser.userId)
+          if (user.inactive) return null
+          return organizationUser
+        })
+      )
+    ).filter(isValid)
     // if there aren't 2 active users, abort
     if (activeOrganizationUsers.length < 2) return 0
     // get the unarchived teams

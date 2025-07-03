@@ -9,13 +9,14 @@ const suProOrgInfo: QueryResolvers['suProOrgInfo'] = async (_source, {includeIna
 
   const proOrgIds = proOrgs.map(({id}) => id)
   const pgResults = await pg
-    .selectFrom('OrganizationUser')
+    .selectFrom('OrganizationUser as ou')
+    .innerJoin('User as u', 'ou.userId', 'u.id')
     .select(['orgId', ({fn}) => fn.count<number>('id').as('orgSize')])
     .where('orgId', 'in', proOrgIds)
     .where('inactive', '=', false)
-    .where('removedAt', 'is', null)
+    .where('ou.removedAt', 'is', null)
     .groupBy('orgId')
-    .having(({eb, fn}) => eb(fn.count('id'), '>=', 1))
+    .having(({eb, fn}) => eb(fn.count('ou.id'), '>=', 1))
     .execute()
 
   const activeOrgIds = pgResults.map(({orgId}) => orgId)

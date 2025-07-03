@@ -687,6 +687,34 @@ export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDepends
   )
 }
 
+export const activeOrganizationUsersByOrgId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  dependsOn('organizationUsers')
+  dependsOn('users')
+  return new DataLoader<string, OrganizationUser[], string>(
+    async (orgIds) => {
+      return await Promise.all(
+        orgIds.map(async (orgId) => {
+          const orgUsers = await parent.get('organizationUsersByOrgId').load(orgId)
+          return (
+            await Promise.all(
+              orgUsers.map(async (orgUser) => {
+                const user = await parent.get('users').loadNonNull(orgUser.userId)
+                return user.inactive ? null : orgUser
+              })
+            )
+          ).filter(isValid)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const autoJoinTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('teams')
   return new DataLoader<string, Team[], string>(

@@ -1,4 +1,5 @@
 import {DataLoaderWorker} from '../../graphql/graphql'
+import isValid from '../../graphql/isValid'
 import {Organization} from '../../postgres/types'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
@@ -14,7 +15,15 @@ const sendEnterpriseOverageEvent = async (
     dataLoader.get('organizationUsersByOrgId').load(orgId),
     manager.getSubscriptionItem(stripeSubscriptionId)
   ])
-  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
+  const activeOrgUsers = (
+    await Promise.all(
+      orgUsers.map(async (orgUser) => {
+        const user = await dataLoader.get('users').loadNonNull(orgUser.userId)
+        if (user.inactive) return null
+        return orgUser
+      })
+    )
+  ).filter(isValid)
   const orgUserCount = activeOrgUsers.length
   if (!subscriptionItem) return
 
