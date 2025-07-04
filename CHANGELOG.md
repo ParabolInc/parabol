@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.3](https://github.com/ParabolInc/parabol/compare/v10.12.2...v10.12.3) (2025-07-04)
+
+
+### Changed
+
+* Remove OrganizationUser.inactive ([#11504](https://github.com/ParabolInc/parabol/issues/11504)) ([9fb810f](https://github.com/ParabolInc/parabol/commit/9fb810f5981d49e749a85fce7733c68735a05034))
+
 ## [10.12.2](https://github.com/ParabolInc/parabol/compare/v10.12.1...v10.12.2) (2025-07-02)
 
 
