@@ -12,12 +12,12 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 ) => {
   const viewerId = getUserId(authToken)
 
-  const [viewer, organization, orgUsers] = await Promise.all([
+  const [viewer, organization, orgUsers, activeOrgUsers] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('organizations').loadNonNull(orgId),
-    dataLoader.get('organizationUsersByOrgId').load(orgId)
+    dataLoader.get('organizationUsersByOrgId').load(orgId),
+    dataLoader.get('activeOrganizationUsersByOrgId').load(orgId)
   ])
-  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
   const orgUsersCount = activeOrgUsers.length
   const organizationUser = orgUsers.find(({userId}) => userId === viewerId)
   if (!organizationUser)

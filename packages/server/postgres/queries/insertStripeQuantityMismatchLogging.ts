@@ -1,5 +1,4 @@
 import getPg from '../getPg'
-import {OrganizationUser} from '../types'
 import {insertStripeQuantityMismatchLoggingQuery} from './generated/insertStripeQuantityMismatchLoggingQuery'
 
 const insertStripeQuantityMismatchLogging = async (
@@ -8,8 +7,7 @@ const insertStripeQuantityMismatchLogging = async (
   eventTime: Date,
   eventType: string,
   stripePreviousQuantity: number,
-  stripeNextQuantity: number,
-  orgUsers: OrganizationUser[]
+  stripeNextQuantity: number
 ) => {
   return insertStripeQuantityMismatchLoggingQuery.run(
     {
@@ -18,17 +16,7 @@ const insertStripeQuantityMismatchLogging = async (
       eventTime,
       eventType,
       stripePreviousQuantity,
-      stripeNextQuantity,
-      orgUsers: orgUsers.map(({id, inactive, joinedAt, removedAt, userId, role}) => {
-        return {
-          id,
-          inactive,
-          joinedAt: joinedAt.toJSON(),
-          removedAt: removedAt ? removedAt.toJSON() : '',
-          userId,
-          role
-        }
-      })
+      stripeNextQuantity
     },
     getPg()
   )
