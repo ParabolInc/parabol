@@ -114,6 +114,13 @@ export const slashCommands = [
         action: (editor: Editor) => editor.chain().focus().toggleCodeBlock().run()
       },
       {
+        title: 'Details',
+        description: 'Insert details',
+        searchTerms: ['details', 'accordion'],
+        icon: CodeIcon,
+        action: (editor: Editor) => editor.chain().focus().setDetails().run()
+      },
+      {
         title: 'Divider',
         description: 'Insert horizontal rule divider',
         searchTerms: ['horizontal rule', 'hr', 'divider', 'rule'],
