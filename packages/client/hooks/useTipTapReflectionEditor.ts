@@ -14,6 +14,7 @@ import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
@@ -54,6 +55,7 @@ export const useTipTapReflectionEditor = (
           'To-do list': false,
           Insights: false
         }),
+        ClearOnSubmit,
         Focus,
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,

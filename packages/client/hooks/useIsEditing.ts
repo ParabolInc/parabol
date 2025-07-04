@@ -2,12 +2,12 @@ import {Editor} from '@tiptap/core'
 import {useEffect, useRef, useState} from 'react'
 import useEventCallback from './useEventCallback'
 
-const useIsEditing = (p: {
+const useIsEditing = (props: {
   editor: Editor | null
   onStartEditing?: () => void
   onStopEditing?: () => void
 }) => {
-  const {editor, onStartEditing, onStopEditing} = p
+  const {editor, onStartEditing, onStopEditing} = props
 
   const [isEditing, setIsEditing] = useState(false)
   const idleTimerIdRef = useRef<number>()
@@ -59,10 +59,12 @@ const useIsEditing = (p: {
     editor?.on('update', editorUpdating)
     editor?.on('focus', editorFocusing)
     editor?.on('blur', editorBlurring)
+    editor?.on('clearOnSubmit', ensureNotEditing)
     return () => {
       editor?.off('update', editorUpdating)
       editor?.off('focus', editorFocusing)
       editor?.off('blur', editorBlurring)
+      editor?.off('clearOnSubmit', ensureNotEditing)
       ensureNotEditing()
     }
   }, [editor, editorUpdating, ensureEditing, ensureNotEditing])
