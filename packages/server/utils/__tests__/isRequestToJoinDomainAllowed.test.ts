@@ -13,7 +13,7 @@ import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
 const TEST_DB = 'isRequestToJoinDomainAllowedTest'
 
 type TestOrganizationUser = Partial<
-  Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
+  Pick<OrganizationUser, 'joinedAt' | 'removedAt' | 'role' | 'userId'>
 > & {userId: string}
 
 type TestUser = Insertable<User>
@@ -38,7 +38,6 @@ const addOrg = async (
     id: generateUID(),
     orgId,
     ...member,
-    inactive: member.inactive ?? false,
     role: member.role ?? null,
     removedAt: member.removedAt ?? null
   }))

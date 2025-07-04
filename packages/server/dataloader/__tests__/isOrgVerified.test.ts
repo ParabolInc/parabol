@@ -15,7 +15,7 @@ const addUsers = async (users: TestUser[]) => {
 }
 
 type TestOrganizationUser = Partial<
-  Pick<OrganizationUser, 'inactive' | 'joinedAt' | 'removedAt' | 'role' | 'userId'>
+  Pick<OrganizationUser, 'joinedAt' | 'removedAt' | 'role' | 'userId'>
 >
 
 const addOrg = async (activeDomain: string | null, members: TestOrganizationUser[]) => {
@@ -31,7 +31,6 @@ const addOrg = async (activeDomain: string | null, members: TestOrganizationUser
     userId: generateUID(),
     orgId,
     ...member,
-    inactive: member.inactive ?? false,
     role: member.role ?? null,
     removedAt: member.removedAt ?? null
   }))
@@ -97,6 +96,7 @@ test('Non-founder billing lead is checked', async () => {
       email: 'user1@parabol.co',
       picture: '',
       preferredName: '',
+      inactive: true,
       identities: [{isEmailVerified: true}]
     },
     {
@@ -118,8 +118,7 @@ test('Non-founder billing lead is checked', async () => {
     {
       joinedAt: new Date('2023-09-06'),
       role: 'BILLING_LEADER',
-      userId: 'founder1',
-      inactive: true
+      userId: 'founder1'
     },
     {
       joinedAt: new Date('2023-09-12'),
