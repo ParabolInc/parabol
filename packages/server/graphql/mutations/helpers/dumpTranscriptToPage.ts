@@ -23,7 +23,7 @@ export const dumpTranscriptToPage = async (
     new RecallAIServerManager()
   ])
 
-  if (!meeting || meeting.meetingType !== 'retrospective') return null
+  if (!meeting || meeting.meetingType !== 'retrospective' || !meeting.facilitatorUserId) return null
 
   const transcription = await manager.getBotTranscript(recallBotId)
 
