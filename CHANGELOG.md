@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.5](https://github.com/ParabolInc/parabol/compare/v10.12.4...v10.12.5) (2025-07-07)
+
+
+### Fixed
+
+* show correct meeting phase in dashboard ([#11522](https://github.com/ParabolInc/parabol/issues/11522)) ([4e25d4d](https://github.com/ParabolInc/parabol/commit/4e25d4d40f3d1e144014711b1503ff52f2c38431))
+
 ## [10.12.4](https://github.com/ParabolInc/parabol/compare/v10.12.3...v10.12.4) (2025-07-04)
 
 
