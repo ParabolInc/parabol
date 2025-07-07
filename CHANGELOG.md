@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.6](https://github.com/ParabolInc/parabol/compare/v10.12.5...v10.12.6) (2025-07-07)
+
+
+### Fixed
+
+* drop stripe quantity mismatch logging not null constraint ([#11529](https://github.com/ParabolInc/parabol/issues/11529)) ([8dec804](https://github.com/ParabolInc/parabol/commit/8dec8041d7da556b09d6b39482225731036fe60c))
+
+
+### Changed
+
+* fix client schema types ([#11526](https://github.com/ParabolInc/parabol/issues/11526)) ([10df771](https://github.com/ParabolInc/parabol/commit/10df77123f742589e2887acbb512d29cebb0cb8b))
+
 ## [10.12.5](https://github.com/ParabolInc/parabol/compare/v10.12.4...v10.12.5) (2025-07-07)
 
 
