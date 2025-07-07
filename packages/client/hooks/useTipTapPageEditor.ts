@@ -109,6 +109,10 @@ export const useTipTapPageEditor = (
                 return 'New quote'
               case 'paragraph':
                 return "Press '/' for commands"
+              case 'detailsSummary':
+                return 'New summary'
+              case 'detailsContent':
+                return 'Add details, use / to add blocks'
               case 'bulletList':
               case 'listItem':
               case 'orderedList':
