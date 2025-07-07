@@ -126,7 +126,7 @@ const PhaseItemEditor = (props: Props) => {
     }
     openPortal()
     cardsInFlightRef.current = [...cardsInFlightRef.current, cardInFlight]
-    editor.commands.clearContent()
+    editor.commands.clearOnSubmit()
     forceUpdateColumn()
     requestAnimationFrame(() => {
       const stackBBox = getBBox(stackTopRef.current)
