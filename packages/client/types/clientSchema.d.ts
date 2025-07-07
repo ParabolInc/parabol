@@ -1,13 +1,13 @@
 export interface ClientRetroReflection {
-  isViewerDragging: boolean
-  isDropping: boolean
-  remoteDrag: IRemoteReflectionDrag
-  ignoreDragStarts: string[]
-  isEditing: boolean
+  isViewerDragging: boolean | null | undefined
+  isDropping: boolean | null | undefined
+  remoteDrag: IRemoteReflectionDrag | null | undefined
+  ignoreDragStarts: string[] | null | undefined
+  isEditing: boolean | null | undefined
 }
 
 export interface ParabolSearchQuery {
   id: string
-  queryString: string
-  statusFilters: [!TaskStatusEnum]
+  queryString: string | null | undefined
+  statusFilters: TaskStatusEnum[] | null | undefined
 }
