@@ -58,7 +58,7 @@ const ParabolScopingSearchFilterMenu = (props: Props) => {
             const meeting = store.get(meetingId)!
             const parabolSearchQuery =
               meeting.getLinkedRecord<ParabolSearchQuery>('parabolSearchQuery')
-            const statusFiltersProxy = parabolSearchQuery.getValue('statusFilters').slice()
+            const statusFiltersProxy = parabolSearchQuery.getValue('statusFilters')?.slice() ?? []
             const keyIdx = statusFiltersProxy.indexOf(status)
             keyIdx !== -1 ? statusFiltersProxy.splice(keyIdx, 1) : statusFiltersProxy.push(status)
             parabolSearchQuery.setValue(statusFiltersProxy, 'statusFilters')
