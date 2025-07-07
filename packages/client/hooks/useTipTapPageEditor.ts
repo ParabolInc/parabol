@@ -8,6 +8,10 @@ import Document from '@tiptap/extension-document'
 import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
@@ -78,6 +82,14 @@ export const useTipTapPageEditor = (
         }),
         DetailsSummary,
         DetailsContent,
+        Table.configure({
+          resizable: true,
+          allowTableNodeSelection: true
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+
         Underline,
         TaskList,
         TaskItem.configure({

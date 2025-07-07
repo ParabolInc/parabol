@@ -1,5 +1,6 @@
 import {Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
 import {cn} from '../../ui/cn'
+import {TipTapTableBubbleMenu} from '../TipTapTableBubbleMenu'
 import {StandardBubbleMenu} from './StandardBubbleMenu'
 import TipTapLinkMenu from './TipTapLinkMenu'
 
@@ -13,6 +14,7 @@ export const TipTapEditor = (props: Props) => {
   return (
     <>
       <StandardBubbleMenu editor={editor} />
+      <TipTapTableBubbleMenu editor={editor} />
       <TipTapLinkMenu editor={editor} useLinkEditor={useLinkEditor} />
       <EditorContent
         ref={ref as any}
