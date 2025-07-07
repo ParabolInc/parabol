@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.4](https://github.com/ParabolInc/parabol/compare/v10.12.3...v10.12.4) (2025-07-04)
+
+
+### Fixed
+
+* clear typing notification on submit ([#11518](https://github.com/ParabolInc/parabol/issues/11518)) ([9b6443a](https://github.com/ParabolInc/parabol/commit/9b6443ac81829f5cf1539a562036455c5556d64c))
+
 ## [10.12.3](https://github.com/ParabolInc/parabol/compare/v10.12.2...v10.12.3) (2025-07-04)
 
 
