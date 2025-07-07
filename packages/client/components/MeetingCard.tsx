@@ -207,9 +207,11 @@ const MeetingCard = (props: Props) => {
         phases {
           phaseType
           stages {
+            id
             isComplete
           }
         }
+        facilitatorStageId
         team {
           id
           name
@@ -230,7 +232,17 @@ const MeetingCard = (props: Props) => {
     `,
     meetingRef
   )
-  const {name, team, id: meetingId, meetingType, phases, meetingSeries, endedAt, locked} = meeting
+  const {
+    name,
+    team,
+    id: meetingId,
+    meetingType,
+    phases,
+    facilitatorStageId,
+    meetingSeries,
+    endedAt,
+    locked
+  } = meeting
   const connectedUsers = useMeetingMemberAvatars(meeting)
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
@@ -264,7 +276,7 @@ const MeetingCard = (props: Props) => {
 
   const isRecurring = !!(meetingSeries && !meetingSeries.cancelledAt)
   const isCompleted = !!endedAt
-  const meetingPhase = getMeetingPhase(phases)
+  const meetingPhase = getMeetingPhase(phases, facilitatorStageId)
   const meetingPhaseLabel = isCompleted
     ? 'Completed'
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
