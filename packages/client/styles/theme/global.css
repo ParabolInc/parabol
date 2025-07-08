@@ -656,8 +656,94 @@
     margin-top: 0;
   }
 
+  [data-highlight="header"] :has([data-active=true]) tr:first-child th::after,
+  [data-highlight="header"] :has([data-active=true]) tr:first-child td::after {
+    background: var(--color-sky-200);
+    opacity: 0.5;
+    content: "";
+    top: 0;
+    left: -5000px;
+    right: -5000px;
+    bottom: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+  [data-highlight="row"] th[data-active=true]::after,
+  [data-highlight="row"] td[data-active=true]::after {
+    background: var(--color-tomato-400);
+    opacity: 0.5;
+    content: "";
+    top: 0;
+    left: -5000px;
+    right: -5000px;
+    bottom: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+  [data-highlight="above"] th[data-active=true]::after,
+  [data-highlight="above"] td[data-active=true]::after {
+    background: var(--color-sky-200);
+    content: "";
+    top: -1px;
+    left: -5000px;
+    right: -5000px;
+    height: 2px;
+    pointer-events: none;
+    position: absolute;
+  }
+  [data-highlight="below"] th[data-active=true]::after,
+  [data-highlight="below"] td[data-active=true]::after {
+    background: var(--color-sky-200);
+    content: "";
+    bottom: -1px;
+    left: -5000px;
+    right: -5000px;
+    height: 2px;
+    pointer-events: none;
+    position: absolute;
+  }
+  [data-highlight="cell"] th[data-active=true],
+  [data-highlight="cell"] td[data-active=true] {
+    border: 2px solid var(--color-sky-200);
+  }
+  [data-highlight="column"] th[data-active=true]::after,
+  [data-highlight="column"] td[data-active=true]::after {
+    background: var(--color-tomato-400);
+    opacity: 0.5;
+    content: "";
+    left: 0;
+    right: 0;
+    top: -5000px;
+    bottom: -5000px;
+    pointer-events: none;
+    position: absolute;
+  }
+  [data-highlight="before"] th[data-active=true]::after,
+  [data-highlight="before"] td[data-active=true]::after {
+    background: var(--color-sky-200);
+    content: "";
+    left: -1px;
+    width: 2px;
+    top: -5000px;
+    bottom: -5000px;
+    pointer-events: none;
+    position: absolute;
+  }
+  [data-highlight="after"] th[data-active=true]::after,
+  [data-highlight="after"] td[data-active=true]::after {
+    background: var(--color-sky-200);
+    content: "";
+    right: -1px;
+    width: 2px;
+    top: -5000px;
+    bottom: -5000px;
+    pointer-events: none;
+    position: absolute;
+  }
+ 
   /* Table-specific styling */
   table {
+    background-color: var(--color-white);
     border-collapse: collapse;
     margin: 0;
     overflow: hidden;
