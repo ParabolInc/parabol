@@ -4,6 +4,10 @@ import DetailsContent from '@tiptap/extension-details-content'
 import DetailsSummary from '@tiptap/extension-details-summary'
 import BaseLink from '@tiptap/extension-link'
 import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
@@ -31,6 +35,10 @@ export const serverTipTapExtensions = [
   }),
   DetailsSummary,
   DetailsContent,
+  Table,
+  TableRow,
+  TableHeader,
+  TableCell,
   Underline,
   TaskList,
   TaskItem.configure({
