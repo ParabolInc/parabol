@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '54 14 * * 5'
 
+permissions:
+  pull-requests: read
+
 jobs:
   stats:
     runs-on: ubuntu-latest
@@ -11,4 +14,3 @@ jobs:
       - uses: Dschoordsch/slack-review-stats@v1.0.0
         with:
           slack-webhook: ${{ secrets.SLACK_WEBHOOK }}
-
