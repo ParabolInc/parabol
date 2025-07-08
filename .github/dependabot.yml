@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "production"
+
+  # Configuration for package.json files within direct subdirectories of 'packages/'
+  # Example: packages/my-feature/package.json
+  - package-ecosystem: "npm"
+    directory: "/packages/*"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "production"
