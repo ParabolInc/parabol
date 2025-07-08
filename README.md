@@ -33,8 +33,10 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 ### Prerequisites
 
 - [Node](https://nodejs.org/en/download/)
-- [pnpm](https://pnpm.io/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- [PostgreSQL 16.0+](https://www.postgresql.org/) (current specific version available in the [build action](./.github/workflows/build.yml)) with [pgvector plugin](https://github.com/pgvector/pgvector)
+- [Redis 7.0+](https://redis.io) (current specific version available in the [build action](./.github/workflows/build.yml))
+- [pnpm](https://pnpm.io/) (Development only)
+- [Docker Compose](https://docs.docker.com/compose/install/) (Development only)
 - [Watchman](https://facebook.github.io/watchman/docs/install.html) (Development only)
 
 ### Installation
@@ -64,7 +66,7 @@ $ pnpm dev
 - [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
 - [PostgreSQL](./packages/server/postgres/README.md)
 - [Shared Scripts](./packages/client/shared/README.md)
-- [VS Code Tips](.vscode/tips.md
+- [VS Code Tips](.vscode/tips.md)
 - [Tailwind CSS migration guide](./packages/client/README.md)
 
 ### Deploy
