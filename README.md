@@ -33,9 +33,15 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 ### Prerequisites
 
 - [Node](https://nodejs.org/en/download/)
-- [PostgreSQL 16.0+](https://www.postgresql.org/) (current specific version available in the [build action](./.github/workflows/build.yml)) with [pgvector plugin](https://github.com/pgvector/pgvector)
-- [Redis 7.0+](https://redis.io) (current specific version available in the [build action](./.github/workflows/build.yml))
-- [pnpm](https://pnpm.io/) (Development only)
+- [pnpm](https://pnpm.io/)
+
+#### Production
+
+- [PostgreSQL](https://www.postgresql.org/) (current specific version available in the [build action](./.github/workflows/build.yml)) with [pgvector plugin](https://github.com/pgvector/pgvector)
+- [Redis](https://redis.io) (current specific version available in the [build action](./.github/workflows/build.yml))
+
+#### Development
+
 - [Docker Compose](https://docs.docker.com/compose/install/) (Development only)
 - [Watchman](https://facebook.github.io/watchman/docs/install.html) (Development only)
 
