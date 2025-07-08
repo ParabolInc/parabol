@@ -4,7 +4,12 @@ name: Points Label to Project Field
 on:
   issues:
     types: [labeled]
-    
+
+permissions:
+  issues: read
+  contents: read
+  projects: write
+
 # Global configuration
 env:
   ORGANIZATION: ParabolInc
@@ -26,7 +31,7 @@ jobs:
           echo ::set-output name=match::true
         fi
       id: match-story-points-label
-      
+
     - name: Echo Label
       if: steps.match-story-points-label.outputs.match == 'true'
       run: |
@@ -64,7 +69,7 @@ jobs:
                     settings
                   }
                 }
-              }              
+              }
             }
             node(id: $issue) {
               ... on Issue {
@@ -81,12 +86,12 @@ jobs:
           echo ::set-output name=project-id::$(jq '.data.organization.projectNext.id' project_data.json)
           echo ::set-output name=sprint-points-id::$(jq --arg FIELD "$FIELD_NAME_TO_UPDATE" '.data.organization.projectNext.fields.nodes[] | select(.name == $FIELD) | .id' project_data.json)
           echo ::set-output name=project-item-id::$(jq '.data.node.projectNextItems.nodes[0].id' project_data.json)
-      id: get-project-data        
-        
+      id: get-project-data
+
   set-project-sprint-points-field:
     needs: [filter-issues, get-project-data]
     runs-on: ubuntu-latest
-    steps:        
+    steps:
     - name: Set Project Sprint Points Field
       env:
         GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
