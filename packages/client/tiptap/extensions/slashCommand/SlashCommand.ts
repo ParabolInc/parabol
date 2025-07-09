@@ -33,6 +33,7 @@ export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({
           const isParagraph = $from.parent.type.name === 'paragraph'
           const isStartOfNode = $from.parent.textContent?.charAt(0) === '/'
           const isInColumn = this.editor.isActive('column')
+          const isInDetails = this.editor.isActive('detailsContent')
 
           const afterContent = $from.parent.textContent?.substring(
             $from.parent.textContent?.indexOf('/')
@@ -41,7 +42,7 @@ export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({
 
           return (
             ((isRootDepth && isParagraph && isStartOfNode) ||
-              (isInColumn && isParagraph && isStartOfNode)) &&
+              ((isInColumn || isInDetails) && isParagraph && isStartOfNode)) &&
             isValidAfterContent
           )
         },
