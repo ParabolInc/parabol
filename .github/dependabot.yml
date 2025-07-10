@@ -5,6 +5,8 @@ updates:
       - "/"
       - "/packages/*"
     schedule:
-      interval: "daily"
+      interval: weekly
+      day: saturday
+    open-pull-requests-limit: 6
     allow:
       - dependency-type: "production"
