@@ -75,7 +75,7 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@sereneinserenade/tiptap-search-and-replace": "^0.1.1",
-    "@stripe/react-stripe-js": "^1.16.5",
+    "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^4.0.0",
     "@types/history": "^4.7.0",
     "chart.js": "^3.8.0",
