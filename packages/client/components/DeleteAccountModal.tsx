@@ -3,7 +3,7 @@ import * as React from 'react'
 import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
-import {ExternalLinks, LocalStorageKey} from '../types/constEnums'
+import {ExternalLinks} from '../types/constEnums'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -66,7 +66,7 @@ const DeleteAccountModal = () => {
   const handleDelete = () => {
     DeleteUserMutation(atmosphere, {userId: atmosphere.viewerId, reason: validReason})
     setTimeout(() => {
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+      atmosphere.setAuthToken(null)
       window.location.href = ExternalLinks.RESOURCES
     }, 100)
   }
