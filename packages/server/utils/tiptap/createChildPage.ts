@@ -1,7 +1,10 @@
 import {sql} from 'kysely'
+import {SubscriptionChannel} from '../../../client/types/constEnums'
+import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {analytics} from '../../utils/analytics/analytics'
+import publish from '../publish'
 import {validateParentPage} from './validateParentPage'
 
 export const createChildPage = async (parentPageId: number, userId: string) => {
@@ -70,24 +73,14 @@ export const createChildPage = async (parentPageId: number, userId: string) => {
     .selectNoFrom(sql`1`.as('t'))
     .execute()
   analytics.pageCreated(viewer, pageId)
-  // const {id: newPageId} = page
-  // const newPageCode = CipherId.encrypt(newPageId)
-  // await hocusPocusConn.transact((doc) => {
-  //   updateYDocNodes(
-  //     doc,
-  //     'pageLinkBlock',
-  //     {pageCode: NEW_PAGE_SENTINEL_CODE, canonical: true},
-  //     (node) => {
-  //       console.log('found new page, upating code', newPageCode)
-  //       node.setAttribute('pageCode', newPageCode as any)
-  //       // edge case: 2 new links are created, only handle the first by stopping after 1 is found
-  //       return 'DONE'
-  //     },
-  //     {maxDepth: 0}
-  //   )
-  // })
-  // const dataLoader = getNewDataLoader()
-  // const operationId = dataLoader.share()
-
+  const dataLoader = getNewDataLoader()
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId: undefined}
+  const data = {page}
+  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'CreatePagePayload', data, subOptions)
+  })
+  dataLoader.dispose()
   return page
 }

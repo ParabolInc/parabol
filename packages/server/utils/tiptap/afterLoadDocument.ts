@@ -77,16 +77,6 @@ const handleDeletedPageLink = async (
   }
 }
 
-const addNewCanonicalPage = async (
-  userId: string,
-  parentPageId: number,
-  pageLinkBlock: Y.XmlElement<PageLinkBlockAttributes>
-) => {
-  const newPage = await createChildPage(parentPageId, userId)
-  const pageCode = CipherId.encrypt(newPage.id)
-  pageLinkBlock.setAttribute('pageCode', pageCode)
-}
-
 export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   document,
   context,
@@ -106,7 +96,9 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
           const childPageCode = pageLink.getAttribute('pageCode')!
           if (childPageCode === -1) {
             pageLink.observe(setInitialBacklinks(pageId))
-            addNewCanonicalPage(userId, pageId, pageLink)
+            const newPage = await createChildPage(pageId, userId)
+            const pageCode = CipherId.encrypt(newPage.id)
+            pageLink.setAttribute('pageCode', pageCode)
           } else {
             // TODO remove the backlink from the old parentPageId & put the backlink on the new one
             await movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)

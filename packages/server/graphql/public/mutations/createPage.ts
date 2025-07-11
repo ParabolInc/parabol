@@ -1,9 +1,11 @@
 import {sql} from 'kysely'
 import {__START__} from '../../../../client/shared/sortOrder'
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
@@ -42,6 +44,13 @@ const createPage: MutationResolvers['createPage'] = async (
     .selectNoFrom(sql`1`.as('t'))
     .execute()
   analytics.pageCreated(viewer, pageId)
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId: undefined}
+  const data = {page}
+  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'CreatePagePayload', data, subOptions)
+  })
   return {page}
 }
 

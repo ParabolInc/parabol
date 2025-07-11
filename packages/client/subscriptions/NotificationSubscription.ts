@@ -28,6 +28,7 @@ import handleAddNotifications from '../mutations/handlers/handleAddNotifications
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {handleArchivePage} from '../mutations/useArchivePageMutation'
+import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
@@ -178,6 +179,9 @@ const subscription = graphql`
           enabled
         }
       }
+      CreatePagePayload {
+        ...useCreatePageMutation_notification @relay(mask: false)
+      }
     }
   }
 `
@@ -282,6 +286,12 @@ const archivePageNotificationUpdater: SharedUpdater<any> = (payload, context) =>
   handleArchivePage(archivedPageId, {...context, isHardDelete: !archivedPage})
 }
 
+const createPageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
+  // const archivedPageId = payload.getValue('pageId')
+  const newPage = payload.getLinkedRecord('page')
+  handleCreatePage(newPage, context)
+}
+
 const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
   AddNewFeaturePayload: addNewFeatureNotificationUpdater,
@@ -290,6 +300,7 @@ const updateHandlers = {
   AddedNotification: addedNotificationUpdater,
   ArchivePagePayload: archivePageNotificationUpdater,
   CreateTaskPayload: createTaskNotificationUpdater,
+  CreatePagePayload: createPageNotificationUpdater,
   EndCheckInSuccess: endCheckInNotificationUpdater,
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
   InviteToTeamPayload: inviteToTeamNotificationUpdater,
