@@ -1,17 +1,8 @@
 import type {Document} from '@hocuspocus/server'
 import * as Y from 'yjs'
-import {type PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
+import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import {CipherId} from '../CipherId'
 import {withDoc} from './withDoc'
-
-const createPageLinkElement = (pageCode: number, title: string) => {
-  const el = new Y.XmlElement<PageLinkBlockAttributes>()
-  el.nodeName = 'pageLinkBlock'
-  el.setAttribute('pageCode', pageCode)
-  el.setAttribute('title', title)
-  el.setAttribute('canonical', true)
-  return el
-}
 export const addCanonicalPageLink = async (
   parentPageId: number,
   pageId: number,

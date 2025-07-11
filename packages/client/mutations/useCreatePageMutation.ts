@@ -7,8 +7,8 @@ import {snackOnError} from './handlers/snackOnError'
 import {isPrivatePageConnectionLookup} from './useUpdatePageMutation'
 
 const mutation = graphql`
-  mutation useCreatePageMutation($parentPageId: ID, $teamId: ID) {
-    createPage(parentPageId: $parentPageId, teamId: $teamId) {
+  mutation useCreatePageMutation($teamId: ID) {
+    createPage(teamId: $teamId) {
       page {
         id
         title
@@ -27,14 +27,14 @@ export const useCreatePageMutation = () => {
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TCreatePageMutation>) => {
     const {variables} = config
-    const {parentPageId, teamId} = variables
+    const {teamId} = variables
     return commit({
       updater: (store) => {
         const viewer = store.getRoot().getLinkedRecord('viewer')
         if (!viewer) return
-        const connectionKey = parentPageId || teamId ? 'User_pages' : 'User_privatePages'
+        const connectionKey = teamId ? 'User_pages' : 'User_privatePages'
         const conn = ConnectionHandler.getConnection(viewer, connectionKey, {
-          parentPageId: parentPageId || null,
+          parentPageId: null,
           teamId: teamId || undefined,
           isPrivate: isPrivatePageConnectionLookup[connectionKey]
         })!

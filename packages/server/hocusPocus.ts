@@ -4,12 +4,12 @@ import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
 import getKysely from './postgres/getKysely'
-import {syncPageLinks} from './syncPageLinks'
 import {isAuthenticated} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import RedisInstance from './utils/RedisInstance'
+import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
 import {withBacklinks} from './utils/tiptap/hocusPocusHub'
 import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
@@ -55,6 +55,7 @@ export const server = Server.configure({
     }
     return {userId}
   },
+  afterLoadDocument,
   extensions: [
     new Database({
       // Return a Promise to retrieve data …
@@ -68,14 +69,11 @@ export const server = Server.configure({
           .executeTakeFirst()
         return res?.yDoc ?? null
       },
-      store: async ({documentName, state, document, context}) => {
+      store: async ({documentName, state, document}) => {
         const [dbId, pageCode] = CipherId.fromClient(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
-        const [{updatedTitle}] = await Promise.all([
-          updatePageContent(dbId, content, state),
-          syncPageLinks(context.userId, dbId, document, content)
-        ])
+        const [{updatedTitle}] = await Promise.all([updatePageContent(dbId, content, state)])
         if (updatedTitle) {
           await withBacklinks(dbId, (doc) => {
             updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {

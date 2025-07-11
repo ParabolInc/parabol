@@ -1,18 +1,10 @@
-import type {DirectConnection} from '@hocuspocus/server'
 import {sql} from 'kysely'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {analytics} from '../../utils/analytics/analytics'
-import {CipherId} from '../CipherId'
-import {NEW_PAGE_SENTINEL_CODE} from './constants'
-import {updateYDocNodes} from './updateYDocNodes'
 import {validateParentPage} from './validateParentPage'
 
-export const createChildPage = async (
-  parentPageId: number,
-  userId: string,
-  hocusPocusConn: DirectConnection
-) => {
+export const createChildPage = async (parentPageId: number, userId: string) => {
   const pg = getKysely()
   const parentPageWithRole = await validateParentPage(parentPageId, userId)
   const {isPrivate, ancestorIds} = parentPageWithRole
@@ -78,20 +70,24 @@ export const createChildPage = async (
     .selectNoFrom(sql`1`.as('t'))
     .execute()
   analytics.pageCreated(viewer, pageId)
-  const {id: newPageId} = page
-  const newPageCode = CipherId.encrypt(newPageId)
-  await hocusPocusConn.transact((doc) => {
-    updateYDocNodes(
-      doc,
-      'pageLinkBlock',
-      {pageCode: NEW_PAGE_SENTINEL_CODE, canonical: true},
-      (node) => {
-        node.setAttribute('pageCode', newPageCode as any)
-        // edge case: 2 new links are created, only handle the first by stopping after 1 is found
-        return 'DONE'
-      },
-      {maxDepth: 0}
-    )
-  })
+  // const {id: newPageId} = page
+  // const newPageCode = CipherId.encrypt(newPageId)
+  // await hocusPocusConn.transact((doc) => {
+  //   updateYDocNodes(
+  //     doc,
+  //     'pageLinkBlock',
+  //     {pageCode: NEW_PAGE_SENTINEL_CODE, canonical: true},
+  //     (node) => {
+  //       console.log('found new page, upating code', newPageCode)
+  //       node.setAttribute('pageCode', newPageCode as any)
+  //       // edge case: 2 new links are created, only handle the first by stopping after 1 is found
+  //       return 'DONE'
+  //     },
+  //     {maxDepth: 0}
+  //   )
+  // })
+  // const dataLoader = getNewDataLoader()
+  // const operationId = dataLoader.share()
+
   return page
 }

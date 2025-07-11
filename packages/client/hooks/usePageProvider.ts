@@ -59,7 +59,7 @@ export const usePageProvider = (pageId: string) => {
     }
     setIsLoaded(false)
 
-    const nextProvider = providerManager.register(pageId, atmosphere.authToken!)
+    const nextProvider = providerManager.register(pageId)
     const frag = nextProvider.document.getXmlFragment('default')
 
     const observeHeader = (headerBlock: Y.XmlText) => {
@@ -88,7 +88,7 @@ export const usePageProvider = (pageId: string) => {
       }
     })
     return nextProvider
-  }, [pageId, atmosphere.authToken])
+  }, [pageId])
 
   useEffect(() => {
     return () => {

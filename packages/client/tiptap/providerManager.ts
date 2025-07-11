@@ -2,15 +2,19 @@ import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/p
 import * as Y from 'yjs'
 
 class ProviderManager {
+  authToken: string | null = null
   socket: TiptapCollabProviderWebsocket | undefined = undefined
   providers: Record<string, {count: number; provider: TiptapCollabProvider}> = {}
-  getSocket(authToken: string) {
+  setAuthToken(authToken: string) {
+    this.authToken = authToken
+  }
+  getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
       const host = __PRODUCTION__
         ? `${window.location.host}/hocuspocus`
         : `${window.location.hostname}:${__HOCUS_POCUS_PORT__}`
-      const baseUrl = `${wsProtocol}//${host}?token=${authToken}`
+      const baseUrl = `${wsProtocol}//${host}?token=${this.authToken}`
       this.socket = new TiptapCollabProviderWebsocket({
         baseUrl
       })
@@ -25,11 +29,13 @@ class ProviderManager {
     }
     return null
   }
-  register(pageId: string, authToken: string) {
+  register(pageId: string) {
+    const existing = this.use(pageId)
+    if (existing) return existing
     const doc = new Y.Doc()
     // update the URL to match the title
     const provider = new TiptapCollabProvider({
-      websocketProvider: this.getSocket(authToken),
+      websocketProvider: this.getSocket(),
       name: pageId,
       document: doc
     })
@@ -43,6 +49,20 @@ class ProviderManager {
       setTimeout(() => {
         this.destroy(pageId!)
       }, delay)
+    }
+  }
+
+  async withDoc(pageId: string, callbackFn: (document: Y.Doc) => void | Promise<void>) {
+    const provider = this.register(pageId)
+    const callAndComplete = async () => {
+      const {document} = provider
+      await callbackFn(document)
+      this.unregister(pageId)
+    }
+    if (provider.synced) {
+      callAndComplete()
+    } else {
+      provider.on('synced', callAndComplete)
     }
   }
 

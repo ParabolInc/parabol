@@ -4,6 +4,7 @@ export type PageLinkBlockAttributes = {
   pageCode: number
   title: string
   canonical?: boolean
+  isMoving?: boolean
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

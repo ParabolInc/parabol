@@ -99,7 +99,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
             <LeftNavPageLink
               key={id}
               pageRef={node}
-              pageAncestors={[node.id]}
+              pageAncestors={[]}
               draggingPageId={draggingPageId}
               isLastChild={idx === edges.length - 1}
               dropIdx={idx}

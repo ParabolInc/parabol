@@ -21,17 +21,10 @@ const mutation = graphql`
   mutation useUpdatePageMutation(
     $pageId: ID!
     $sortOrder: String!
-    $parentPageId: ID
     $teamId: ID
     $makePrivate: Boolean
   ) {
-    updatePage(
-      pageId: $pageId
-      sortOrder: $sortOrder
-      parentPageId: $parentPageId
-      teamId: $teamId
-      makePrivate: $makePrivate
-    ) {
+    updatePage(pageId: $pageId, sortOrder: $sortOrder, teamId: $teamId, makePrivate: $makePrivate) {
       ...useUpdatePageMutation_payload @relay(mask: false)
     }
   }
@@ -61,7 +54,7 @@ export const useUpdatePageMutation = () => {
       variables,
       ...rest
     } = config
-    const {parentPageId: targetParentPageId, teamId: targetTeamId, pageId} = variables
+    const {teamId: targetTeamId, pageId} = variables
     return commit({
       updater: (store) => {
         const {viewerId} = atmosphere
@@ -79,7 +72,7 @@ export const useUpdatePageMutation = () => {
         ConnectionHandler.deleteNode(sourceConn, pageId)
 
         const targetConn = ConnectionHandler.getConnection(connParent, targetConnectionKey, {
-          parentPageId: targetParentPageId || null,
+          parentPageId: null,
           teamId: targetTeamId || undefined,
           isPrivate: isTargetPrivate
         })

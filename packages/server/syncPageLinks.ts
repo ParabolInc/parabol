@@ -20,12 +20,13 @@ export const getPageCodeFromLinkKey = (pageLinkKey: string) =>
 const archiveRemovedPages = (viewerId: string, document: Document, removedPageCodes: number[]) => {
   if (removedPageCodes.length === 0) return undefined
   const metadata = document.getMap('metadata')
-  const pendingDeletions = metadata.get('pendingDeletions') as Y.Array<number>
+  const pendingDeletions = metadata.get('pendingDeletions') as Y.Array<number> | undefined
+  if (!pendingDeletions || pendingDeletions.length === 0) return undefined
   const pendingDeletionsArr = pendingDeletions.toArray()
   const pageCodeBatch = removedPageCodes
     // filter out pages that were moved to another page
     .filter((pageCode) => pendingDeletionsArr.includes(pageCode))
-
+  if (pageCodeBatch.length === 0) return undefined
   pageCodeBatch
     // get the index as it exists in the pending deletions
     .map((pageCode) => pendingDeletionsArr.indexOf(pageCode))
@@ -99,7 +100,7 @@ const reconcileAddedCanonicalPageLinks = async (
         if (!docConnection) {
           docConnection = await server.openDirectConnection(parentPageKey, {})
         }
-        await createChildPage(pageId, viewerId, docConnection)
+        await createChildPage(pageId, viewerId)
       } else {
         // either a new page was just minted, or it came from another page (parent or parentless)
         // if there was an oldParent, this will remove the canonical PageLink on the parent
@@ -125,6 +126,8 @@ const reconcileCanonicalPageLinks = async (
   const newCanonicalLinkCodes = newPageLinkKeys
     .filter((key) => key.endsWith(':canonical'))
     .map((k) => getPageCodeFromLinkKey(k))
+
+  // TODO: if the new has duplicate codes, don't persist
   const childLinkDiffs = diffByLCS(oldCanonicalLinkCodes, newCanonicalLinkCodes)
   if (!childLinkDiffs) return
   await Promise.all([

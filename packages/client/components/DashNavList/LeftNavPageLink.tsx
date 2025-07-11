@@ -34,7 +34,7 @@ export const LeftNavPageLink = (props: Props) => {
     nextPeerId,
     connectionKey
   } = props
-  const depth = pageAncestors.length - 1
+  const depth = pageAncestors.length
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {

@@ -1,9 +1,14 @@
 import {getPageCodeFromLinkKey} from '../../syncPageLinks'
+import {NEW_PAGE_SENTINEL_CODE} from './constants'
 
 // Yes, this could be 4 lines, but it's lower level to be as fast as possible
 export const getPageLinkDiffs = (oldPageLinkKeys: string[], newPageLinkKeys: string[]) => {
-  const oldIds = oldPageLinkKeys.map(getPageCodeFromLinkKey)
-  const newIds = newPageLinkKeys.map(getPageCodeFromLinkKey)
+  const oldIds = oldPageLinkKeys
+    .map(getPageCodeFromLinkKey)
+    .filter((v) => v !== NEW_PAGE_SENTINEL_CODE)
+  const newIds = newPageLinkKeys
+    .map(getPageCodeFromLinkKey)
+    .filter((v) => v !== NEW_PAGE_SENTINEL_CODE)
   const oldIdSet = new Set(oldIds)
   const newIdSet = new Set(newIds)
   if (oldIdSet.size === newIdSet.size) {
