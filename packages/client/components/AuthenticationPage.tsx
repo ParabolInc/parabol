@@ -24,9 +24,8 @@ const AuthenticationPage = (props: Props) => {
   const {page} = props
   const atmosphere = useAtmosphere()
   const {authObj} = atmosphere
-  const token = window.localStorage.getItem('Action:token')
   useCanonical(page)
-  if (authObj && token) {
+  if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
     // always replace otherwise they could get stuck in a back-button loop
     setTimeout(() => history.replace(nextUrl))
