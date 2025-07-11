@@ -25,11 +25,11 @@ const useAuthRoute = (inOptions: Options = {}) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const options = useDeepEqual(inOptions)
-  const token = window.localStorage.getItem('Action:token')
-  useEffect(() => {
+
+  const checkAuth = () => {
     const {authObj} = atmosphere
     const {role, silent} = options
-    if (authObj && token) {
+    if (authObj) {
       // User is authenticated, check their authorization
       if (role && role !== authObj.rol) {
         atmosphere.eventEmitter.emit('addSnackbar', unauthorizedDefault)
@@ -47,7 +47,18 @@ const useAuthRoute = (inOptions: Options = {}) => {
         search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
       })
     }
-  }, [atmosphere, history, options, token])
+  }
+
+  useEffect(checkAuth, [atmosphere.authObj, history, options])
+
+  // Detect changes to the auth token in localStorage (e.g., user signs out from another tab)
+  const token = window.localStorage.getItem('Action:token')
+  useEffect(() => {
+    if (!token) {
+      atmosphere.setAuthToken(null)
+      checkAuth()
+    }
+  }, [token])
 }
 
 export default useAuthRoute
