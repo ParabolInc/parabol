@@ -25,15 +25,18 @@ const useAuthRoute = (inOptions: Options = {}) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const options = useDeepEqual(inOptions)
+  const token = window.localStorage.getItem('Action:token')
   useEffect(() => {
     const {authObj} = atmosphere
     const {role, silent} = options
-    if (authObj) {
+    if (authObj && token) {
+      // User is authenticated, check their authorization
       if (role && role !== authObj.rol) {
         atmosphere.eventEmitter.emit('addSnackbar', unauthorizedDefault)
         history.replace('/')
       }
     } else {
+      // User is not authenticated, redirect them to sign in
       if (!silent) {
         setTimeout(() => {
           atmosphere.eventEmitter.emit('addSnackbar', unauthenticatedDefault)
@@ -44,7 +47,7 @@ const useAuthRoute = (inOptions: Options = {}) => {
         search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
       })
     }
-  }, [atmosphere, history, options])
+  }, [atmosphere, history, options, token])
 }
 
 export default useAuthRoute
