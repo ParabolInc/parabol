@@ -55,7 +55,7 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
-  const {provider, isLoaded} = usePageProvider(pageId)
+  const {provider} = usePageProvider(pageId)
   const editor = useEditor(
     {
       content: '',
@@ -146,7 +146,7 @@ export const useTipTapPageEditor = (
 
   usePageLinkPlaceholder(editor!, placeholderRef)
 
-  return {editor, isLoaded}
+  return {editor, provider}
 }
 
 export const makeEditorFromYDoc = (document: Y.Doc) => {

@@ -17,9 +17,10 @@ export const Page = (props: Props) => {
   const {pageSlug} = params
   const pageCodeIdx = pageSlug.lastIndexOf('-')
   const pageId = `page:${Number(pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1))}`
-  const {editor, isLoaded} = useTipTapPageEditor(pageId, {viewerRef})
+  const {editor, provider} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
   if (!pageSlug) return <div>No page ID provided in route</div>
+  editor
   return (
     <div className='flex w-full flex-col items-center bg-white pt-2'>
       <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
@@ -41,7 +42,7 @@ export const Page = (props: Props) => {
         </div>
         <TipTapEditor
           editor={editor}
-          className={cn('page-editor flex w-full px-6 opacity-0', isLoaded && 'opacity-100')}
+          className={cn('page-editor flex w-full px-6 opacity-0', provider.synced && 'opacity-100')}
         />
       </div>
     </div>

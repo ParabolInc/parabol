@@ -1,6 +1,6 @@
 import {generateJSON, generateText} from '@tiptap/react'
 import type {History} from 'history'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
@@ -64,7 +64,6 @@ const updateUrlWithSlug = (
 
 export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
-  const [isLoaded, setIsLoaded] = useState(false)
   const {history} = useRouter<{meetingId: string}>()
   const pageCode = Number(pageId.split(':')[1])
   const prevPageIdRef = useRef<string | undefined>()
@@ -75,13 +74,7 @@ export const usePageProvider = (pageId: string) => {
 
     // if we've already opened a provider, use that
     const existingProvider = providerManager.use(pageId)
-    if (existingProvider) {
-      if (!isLoaded) {
-        setIsLoaded(true)
-      }
-      return existingProvider
-    }
-    setIsLoaded(false)
+    if (existingProvider) return existingProvider
 
     const nextProvider = providerManager.register(pageId)
     const frag = nextProvider.document.getXmlFragment('default')
@@ -92,9 +85,6 @@ export const usePageProvider = (pageId: string) => {
         })
       }
     })
-    nextProvider.on('synced', () => {
-      setIsLoaded(true)
-    })
     return nextProvider
   }, [pageId])
 
@@ -103,5 +93,5 @@ export const usePageProvider = (pageId: string) => {
       providerManager.unregister(prevPageIdRef.current)
     }
   }, [])
-  return {provider, isLoaded}
+  return {provider}
 }

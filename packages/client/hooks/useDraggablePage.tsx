@@ -113,15 +113,19 @@ export const useDraggablePage = (
     const targetParentPageId = targetParentPageIdOrTeamId?.startsWith('page:')
       ? targetParentPageIdOrTeamId
       : null
-    // -1 means at the end, 0 means at the beginning, else below whatever number is there
+    // null means a drop-in, -1 means at the beginning, else below whatever number is there
     const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
     const source = atmosphere.getStore().getSource()
     if (sourceParentPageId && sourceParentPageId === targetParentPageId) {
-      // it's a move, just move it, no GraphQL involved
+      // move within the same document
       const provider = providerManager.register(targetParentPageId)
       const {document} = provider
       const frag = document.getXmlFragment('default')
       const pageCode = Number(pageId.split('page:')[1])
+      // Yjs doesn't support moves
+      // You cannot delete an item and then insert it elsewhere because once an object is deleted it is gone
+      // Prosemirror accomplishes moves by swapping the attributes of every item between source and target
+      // So, we convert this to an editor and let it create that transaction
       const editor = makeEditorFromYDoc(document)
       const children = frag.toArray()
       const fromIdx = children.findIndex(
@@ -138,10 +142,8 @@ export const useDraggablePage = (
           if (dropIdx === -1) {
             // put it at the beginning
             toIdx = toIdx === undefined ? idx : toIdx
-          } else if (dropIdx === null) {
+          } else if (dropIdx === null || curCanonIdx === dropIdx) {
             // if we drop at the end, put it after the last one
-            toIdx = idx + 1
-          } else if (curCanonIdx === dropIdx) {
             // if we want to drop it after the current one, add 1 to it
             toIdx = idx + 1
           }
@@ -209,27 +211,27 @@ export const useDraggablePage = (
       })
     }
     if (sourceParentPageId) {
-      // if the source has a parent, let yjs handle it. the GQL subscription will propagate the removal
-      const provider = providerManager.register(sourceParentPageId)
-      const {document} = provider
-      const frag = document.getXmlFragment('default')
-      const pageCode = Number(pageId.split('page:')[1])
-      const idxToRemove = frag
-        .toArray()
-        .findIndex(
-          (node) =>
-            node instanceof Y.XmlElement &&
-            node.nodeName === 'pageLinkBlock' &&
-            (node.getAttribute('pageCode') as any) === pageCode &&
-            (node.getAttribute('canonical') as any) === true
-        )
-      if (idxToRemove === -1) {
-        console.warn('idx for source element not found')
-      } else {
-        frag.get(idxToRemove).setAttribute('isMoving', true)
-        frag.delete(idxToRemove)
-      }
-      providerManager.unregister(sourceParentPageId)
+      // if the source has a parent, remove the canonical page link. the GQL subscription will propagate the removal
+      providerManager.withDoc(sourceParentPageId, (document) => {
+        const frag = document.getXmlFragment('default')
+        const pageCode = Number(pageId.split('page:')[1])
+        const idxToRemove = frag
+          .toArray()
+          .findIndex(
+            (node) =>
+              node instanceof Y.XmlElement &&
+              node.nodeName === 'pageLinkBlock' &&
+              (node.getAttribute('pageCode') as any) === pageCode &&
+              (node.getAttribute('canonical') as any) === true
+          )
+        if (idxToRemove === -1) {
+          console.warn('idx for source element not found')
+        } else {
+          // first mark it as isMoving so the server doesn't delete the underlying page
+          frag.get(idxToRemove).setAttribute('isMoving', true)
+          frag.delete(idxToRemove)
+        }
+      })
     }
     cleanupDrag()
   })

@@ -64,7 +64,6 @@ export const SubPages = (props: Props) => {
   return (
     <>
       {children.map((node, idx) => {
-        // TODO: when adding things via yjs they don't get added in GraphQL land, so we should maybe create them?
         const nextPeer = children[idx + 1]
         const nextPeerId = nextPeer?.id ?? null
         return (

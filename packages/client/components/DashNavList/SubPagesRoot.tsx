@@ -20,13 +20,10 @@ export const SubPagesRoot = (props: Props) => {
     parentPageId,
     teamId
   })
-  // fetch the Yjs page contents and extract all the top-level blocks, which is the single source of truth for sortOrder
-  // PLUS use GraphQL to fetch meta like if the viewer has ownership so they can delete
-  // we can also locally write to the Relay store object. We do this in usePageProvider to update the title on keystroke
-  // so local title changes update before Yjs changes propagate since those are debouced on the server
-
+  // If it's not a top-level page, fetch the yjs document in addition to the GQL metadata
+  // Since the parentPageId will not change within the render tree, this hook is not called conditionally
   // eslint-disable-next-line
-  const pageLinks = teamId ? undefined : parentPageId ? usePageChildren(parentPageId) : null
+  const pageLinks = parentPageId ? usePageChildren(parentPageId) : undefined
   return (
     <Suspense fallback={<Loader />}>
       {queryRef && (
