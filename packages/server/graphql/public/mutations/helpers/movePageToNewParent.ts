@@ -1,8 +1,11 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
+import {SubscriptionChannel} from '../../../../../client/types/constEnums'
+import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {selectDescendantPages} from '../../../../postgres/select'
 import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
+import publish from '../../../../utils/publish'
 import {removeCanonicalPageLinkFromPage} from '../../../../utils/tiptap/removeCanonicalPageLinkFromPage'
 import {validateParentPage} from '../../../../utils/tiptap/validateParentPage'
 
@@ -265,4 +268,13 @@ export const movePageToNewParent = async (
       .execute()
   }
   await trx.commit().execute()
+  const dataLoader = getNewDataLoader()
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId: undefined}
+  const data = {pageId}
+  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePagePayload', data, subOptions)
+  })
+  dataLoader.dispose()
 }

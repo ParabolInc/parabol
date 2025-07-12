@@ -5,6 +5,7 @@ import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extens
 import {movePageToNewParent} from '../../graphql/public/mutations/helpers/movePageToNewParent'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
+import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createChildPage} from './createChildPage'
 import {removeBacklinkedPageLinkBlocks} from './hocusPocusHub'
 
@@ -34,31 +35,16 @@ const updateBacklinks = async (
   ])
 }
 
-const setInitialBacklinks = (pageId: number) => async (e: Y.YXmlEvent) => {
-  // this only needs to get called on freshly minted PageLinks because after the pageCode is set
-  for (const [key, change] of e.keys) {
-    if (key === 'pageCode') {
-      const {oldValue} = change
-      const newValue = (e.target as Y.XmlElement<PageLinkBlockAttributes>).getAttribute('pageCode')
-      const addToPageId = newValue && newValue !== -1 ? CipherId.decrypt(newValue) : null
-      const deleteToPageId = oldValue && oldValue !== -1 ? CipherId.decrypt(oldValue) : null
-      console.log('updating backlinks from', pageId, {addToPageId, deleteToPageId})
-      await updateBacklinks(pageId, addToPageId, deleteToPageId)
-    }
-  }
-}
-
 const handleDeletedPageLink = async (
   userId: string,
   parentPageId: number,
   node: Y.XmlElement<PageLinkBlockAttributes>
 ) => {
   const pg = getKysely()
-  const pageCode = node.getAttribute('pageCode')!
+  const pageCode = getUnsafeDeletedAttribute(node, 'pageCode')
+  const isMoving = getUnsafeDeletedAttribute(node, 'isMoving')
+  const isCanonical = getUnsafeDeletedAttribute(node, 'canonical')
   const pageId = CipherId.decrypt(pageCode)
-  const isMoving = node.getAttribute('isMoving') === true
-  const isCanonical = node.getAttribute('canonical') === true
-  console.log({isMoving})
   if (isCanonical && !isMoving) {
     await Promise.all([
       pg
@@ -69,11 +55,7 @@ const handleDeletedPageLink = async (
       removeBacklinkedPageLinkBlocks({pageId})
     ])
   } else {
-    await pg
-      .deleteFrom('PageBacklink')
-      .where('fromPageId', '=', parentPageId)
-      .where('toPageId', '=', pageId)
-      .execute()
+    await updateBacklinks(parentPageId, null, pageId)
   }
 }
 
@@ -87,30 +69,74 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   const root = document.getXmlFragment('default')
   root.observe(async (event) => {
     const {added, deleted} = event.changes
-    console.log('observe', event.changes.delta, added, deleted)
+    // watch for new PageLinks
+    // If it's a sentinel, mint a new page
+    // Then, add it to the backlinks table
+    // If it's canonical, update its parentPageId + access
     added.forEach(async (item) => {
       const [node] = item.content.getContent()
       if (node instanceof Y.XmlElement && node.nodeName === 'pageLinkBlock') {
         const pageLink = node as Y.XmlElement<PageLinkBlockAttributes>
+        const childPageCode = pageLink.getAttribute('pageCode')!
+        if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
+          // if a new PageLink was added to the doc, update the backlinks
+          const childPageId = CipherId.decrypt(childPageCode)
+          updateBacklinks(pageId, childPageId)
+        }
         if (pageLink.getAttribute('canonical') === true) {
-          const childPageCode = pageLink.getAttribute('pageCode')!
-          if (childPageCode === -1) {
-            pageLink.observe(setInitialBacklinks(pageId))
+          if (childPageCode === NEW_PAGE_SENTINEL_CODE) {
+            // mint a fresh page and assign it a real pageCode
+            const observer = async (e: Y.YXmlEvent) => {
+              pageLink.unobserve(observer)
+              // this only needs to get called on freshly minted PageLinks because after the pageCode is set
+              for (const [key] of e.keys) {
+                if (key === 'pageCode') {
+                  const newValue = (e.target as Y.XmlElement<PageLinkBlockAttributes>).getAttribute(
+                    'pageCode'
+                  )
+                  const addToPageId =
+                    newValue && newValue !== NEW_PAGE_SENTINEL_CODE
+                      ? CipherId.decrypt(newValue)
+                      : null
+                  if (addToPageId) {
+                    await updateBacklinks(pageId, addToPageId)
+                  }
+                }
+              }
+            }
+            pageLink.observe(observer)
             const newPage = await createChildPage(pageId, userId)
             const pageCode = CipherId.encrypt(newPage.id)
             pageLink.setAttribute('pageCode', pageCode)
           } else {
-            // TODO remove the backlink from the old parentPageId & put the backlink on the new one
             await movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)
           }
         }
       }
     })
+    // If a removed PageLink is canonical, remove it from all backlinked docs & archive it
+    // Else, remove its backlink
     deleted.forEach((item) => {
-      const node = item.content.getContent()
+      const [node] = item.content.getContent()
       if (node instanceof Y.XmlElement && node.nodeName === 'pageLinkBlock') {
         handleDeletedPageLink(context.userId, pageId, node)
       }
     })
   })
+}
+
+// XML attributes are stored as a yMap, which gets deleted when the element is deleted
+// This uses the undocumented internal yjs _map structure to access those attributes
+// It SHOULD be stable until GC, as long as it's called synchronously in the observer callback
+const getUnsafeDeletedAttribute = (node: Y.XmlElement<PageLinkBlockAttributes>, attr: string) => {
+  const attrMapEntry = node._map?.get(attr)
+  if (!attrMapEntry) {
+    console.error('[getUnsafeDeletedAttribute]: missing map entry')
+    return
+  }
+  const val = attrMapEntry.content.getContent()[0]
+  if (val === undefined) {
+    console.error('[getUnsafeDeletedAttribute]: map entry value is undefined')
+  }
+  return val
 }

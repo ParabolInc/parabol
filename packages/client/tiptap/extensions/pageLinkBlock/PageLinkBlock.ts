@@ -3,7 +3,6 @@ import {Plugin, TextSelection} from '@tiptap/pm/state'
 import {isNodeSelection, ReactNodeViewRenderer, type JSONContent} from '@tiptap/react'
 
 import {Slice} from '@tiptap/pm/model'
-import {ReplaceStep} from '@tiptap/pm/transform'
 import * as Y from 'yjs'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {PageLinkBlockView} from './PageLinkBlockView'
@@ -75,12 +74,11 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}>({
     })
   },
   addProseMirrorPlugins() {
-    const {yDoc} = this.options
     return [
       new Plugin({
         props: {
           handleKeyDown(view, event) {
-            // return false
+            // return false // false means you can backspace to delete pagelinks
             const isBackspace = event.key === 'Backspace'
             const isDelete = event.key === 'Delete'
             if (!isBackspace && !isDelete) return false
@@ -110,38 +108,6 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}>({
             dispatch(tr.setSelection(nextSelection).scrollIntoView())
             return true
           }
-        },
-        appendTransaction(transactions, oldState) {
-          const deletedPageCodes: number[] = []
-          transactions.forEach((tr) =>
-            tr.steps.forEach((step) => {
-              if (!(step instanceof ReplaceStep)) return
-              const {from, to} = step
-              // This means content was deleted
-              if (from >= to) return
-              const deletedFragment = oldState.doc.slice(step.from, step.to)
-
-              deletedFragment.content.descendants((node) => {
-                if (node.type.name === 'pageLinkBlock' && node.attrs.canonical === true) {
-                  deletedPageCodes.push(node.attrs.pageCode)
-                }
-              })
-            })
-          )
-
-          if (deletedPageCodes.length > 0) {
-            // Write to Yjs doc in a separate transaction
-            yDoc.transact(() => {
-              const metadataMap = yDoc.getMap('metadata')
-              let pendingDeletions = metadataMap.get('pendingDeletions') as Y.Array<number>
-              if (!pendingDeletions) {
-                pendingDeletions = new Y.Array()
-                metadataMap.set('pendingDeletions', pendingDeletions)
-              }
-              pendingDeletions.push(deletedPageCodes)
-            })
-          }
-          return undefined
         }
       })
     ]

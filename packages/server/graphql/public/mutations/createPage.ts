@@ -12,8 +12,10 @@ import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 const createPage: MutationResolvers['createPage'] = async (
   _source,
   {teamId},
-  {authToken, dataLoader}
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   // In the future, all user-defined pages will have a parent so we can get rid of the code below
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
@@ -44,8 +46,6 @@ const createPage: MutationResolvers['createPage'] = async (
     .selectNoFrom(sql`1`.as('t'))
     .execute()
   analytics.pageCreated(viewer, pageId)
-  const operationId = dataLoader.share()
-  const subOptions = {operationId, mutatorId: undefined}
   const data = {page}
   const access = await dataLoader.get('pageAccessByPageId').load(pageId)
   access.forEach(({userId}) => {

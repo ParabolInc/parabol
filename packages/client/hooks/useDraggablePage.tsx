@@ -15,7 +15,6 @@ import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 
-import safePutNodeInConn from '../mutations/handlers/safePutNodeInConn'
 import {makeEditorFromYDoc} from './useTipTapPageEditor'
 
 const makeDragRef = () => ({
@@ -154,18 +153,6 @@ export const useDraggablePage = (
       return
     }
     if (targetParentPageId) {
-      // we also want to insert the document into the GQL connection so we get metadata like access
-      commitLocalUpdate(atmosphere, (store) => {
-        const connParent = store.get(atmosphere.viewerId)!
-        const targetConn = ConnectionHandler.getConnection(connParent, 'User_pages', {
-          parentPageId: targetParentPageId
-        })!
-        const page = store.get(pageId)
-        if (!page) {
-          console.error('no page found')
-        }
-        safePutNodeInConn(targetConn, page!, store, 'sortOrder', true)
-      })
       // when making something a child page, we don't use GraphQL, we use yjs
       // in the future, I hope every user-defined page is a child so this is the only code path
       providerManager.withDoc(targetParentPageId, (doc) => {
@@ -222,7 +209,7 @@ export const useDraggablePage = (
       })
     }
     if (sourceParentPageId) {
-      // if the source has a parent, let yjs handle it
+      // if the source has a parent, let yjs handle it. the GQL subscription will propagate the removal
       const provider = providerManager.register(sourceParentPageId)
       const {document} = provider
       const frag = document.getXmlFragment('default')
@@ -243,18 +230,6 @@ export const useDraggablePage = (
         frag.delete(idxToRemove)
       }
       providerManager.unregister(sourceParentPageId)
-    } else {
-      // if no source, then remove it from the GraphQL connection locally
-      commitLocalUpdate(atmosphere, (store) => {
-        const connParent = store.get(atmosphere.viewerId)!
-        const isSourcePrivate = isPrivatePageConnectionLookup[sourceConnectionKey]
-        const sourceConn = ConnectionHandler.getConnection(connParent, sourceConnectionKey, {
-          parentPageId: null,
-          teamId: sourceTeamId || undefined,
-          isPrivate: isSourcePrivate
-        })!
-        ConnectionHandler.deleteNode(sourceConn, pageId)
-      })
     }
     cleanupDrag()
   })

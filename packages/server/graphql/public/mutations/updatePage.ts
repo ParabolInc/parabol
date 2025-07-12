@@ -1,7 +1,9 @@
 import {GraphQLError} from 'graphql'
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import publish from '../../../utils/publish'
 import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
 import {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
@@ -13,8 +15,10 @@ export const MAX_PAGE_DEPTH = 10
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, makePrivate},
-  {authToken, dataLoader}
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const [dbPageId] = CipherId.fromClient(pageId)
   if (makePrivate && teamId) {
@@ -51,7 +55,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
     await privatizePage(viewerId, dbPageId, nextSortOrder)
   } else if (teamId && teamId !== page.teamId) {
     await movePageToNewTeam(viewerId, dbPageId, teamId, nextSortOrder)
-  } else if (teamId === page.teamId || !page.parentPageId) {
+  } else if (teamId === page.teamId && !page.parentPageId) {
     // simple reorder
     await pg
       .updateTable('Page')
@@ -72,7 +76,12 @@ const updatePage: MutationResolvers['updatePage'] = async (
       removeCanonicalPageLinkFromPage(oldParentpageId, dbPageId)
     }, 5000)
   }
-  return {pageId: dbPageId}
+  const data = {pageId: dbPageId}
+  const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePagePayload', data, subOptions)
+  })
+  return data
 }
 
 export default updatePage
