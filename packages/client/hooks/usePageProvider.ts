@@ -8,9 +8,33 @@ import {getTitleFromPageText} from '../shared/tiptap/getTitleFromPageText'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {getPageSlug} from '../tiptap/getPageSlug'
 import {providerManager} from '../tiptap/providerManager'
-import type {FirstParam} from '../types/generics'
 import useAtmosphere from './useAtmosphere'
 import useRouter from './useRouter'
+
+let headerBlockObserver: null | (() => void) = null
+let currentHeaderBlock: Y.XmlElement | null = null
+
+function observeFirstInnerXmlText(frag: Y.XmlFragment, onChange: (headerBlock: Y.XmlText) => void) {
+  const newHeaderBlock = frag.firstChild as Y.XmlElement
+  if (newHeaderBlock === currentHeaderBlock) return
+
+  if (currentHeaderBlock && headerBlockObserver) {
+    currentHeaderBlock.unobserveDeep(headerBlockObserver)
+    headerBlockObserver = null
+  }
+
+  if (newHeaderBlock) {
+    headerBlockObserver = () => {
+      const newHeaderText = newHeaderBlock.firstChild as Y.XmlText | null
+      if (newHeaderText) {
+        onChange(newHeaderText)
+      }
+    }
+    headerBlockObserver()
+    newHeaderBlock.observeDeep(headerBlockObserver)
+  }
+  currentHeaderBlock = newHeaderBlock
+}
 
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText,
@@ -23,6 +47,10 @@ const updateUrlWithSlug = (
     serverTipTapExtensions
   )
   const {title} = getTitleFromPageText(plaintext)
+  commitLocalUpdate(atmosphere, (store) => {
+    const title = plaintext.slice(0, 255)
+    store.get(`page:${pageCode}`)?.setValue(title, 'title')
+  })
   const pageSlug = getPageSlug(pageCode, title)
   const {pathname} = location
   if (pathname.endsWith(pageSlug)) return
@@ -32,10 +60,6 @@ const updateUrlWithSlug = (
   if (currentRoutePageCode === pageCode) {
     history.replace(`/pages/${pageSlug}`)
   }
-  commitLocalUpdate(atmosphere, (store) => {
-    const title = plaintext.slice(0, 255)
-    store.get(`page:${pageCode}`)?.setValue(title, 'title')
-  })
 }
 
 export const usePageProvider = (pageId: string) => {
@@ -61,31 +85,15 @@ export const usePageProvider = (pageId: string) => {
 
     const nextProvider = providerManager.register(pageId)
     const frag = nextProvider.document.getXmlFragment('default')
-
-    const observeHeader = (headerBlock: Y.XmlText) => {
-      updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
-      headerBlock.observe(() => {
-        updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
-      })
-    }
-    const observeFragForHeader: FirstParam<Y.AbstractType<Y.YXmlEvent>['observeDeep']> = () => {
-      const headerElement = frag.get(0) as Y.XmlElement | null
-      const headerText = headerElement?.get(0) as Y.XmlText
-      if (headerText) {
-        observeHeader(headerText)
-        frag.unobserveDeep(observeFragForHeader)
+    frag.observe((event) => {
+      if (event.changes.added.size > 0 || event.changes.deleted.size > 0) {
+        observeFirstInnerXmlText(frag, (headerBlock) => {
+          updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
+        })
       }
-    }
+    })
     nextProvider.on('synced', () => {
       setIsLoaded(true)
-      const headerElement = frag.get(0) as Y.XmlElement | null
-      const headerText = headerElement?.get(0) as Y.XmlText
-      if (headerText) {
-        observeHeader(headerText)
-      } else {
-        // header doesn't exist yet, observe the whole doc
-        frag.observeDeep(observeFragForHeader)
-      }
     })
     return nextProvider
   }, [pageId])

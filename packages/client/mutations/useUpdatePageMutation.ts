@@ -18,6 +18,8 @@ graphql`
       parentPageId
       isPrivate
       isParentLinked
+      title
+      ...PageActions_page
     }
   }
 `
@@ -35,51 +37,44 @@ const mutation = graphql`
   }
 `
 
+const getPageConn = (
+  viewer: RecordProxy,
+  parentPageId: string | null | undefined,
+  teamId: string | null | undefined,
+  isPrivate: boolean | undefined
+) => {
+  const connKey =
+    parentPageId || teamId ? 'User_pages' : isPrivate ? 'User_privatePages' : 'User_sharedPages'
+
+  return ConnectionHandler.getConnection(viewer, connKey, {
+    parentPageId: parentPageId || null,
+    teamId: teamId || undefined,
+    isPrivate: isPrivatePageConnectionLookup[connKey]
+  })!
+}
 export const handleUpdatePage = (
   page: RecordProxy<useUpdatePageMutation_notification$data['page']>,
   {store}: {store: RecordSourceSelectorProxy}
 ) => {
   const connParent = store.getRoot().getLinkedRecord('viewer')!
   const pageId = page.getValue('id')
-  const oldRecord = getBaseRecord(store, pageId)
-  if (oldRecord) {
-    // if this record exists on the client, remove it
-    const {
-      parentPageId: sourceParentPageId,
-      teamId: sourceTeamId,
-      isPrivate: sourceIsPrivate
-    } = oldRecord
-    const sourceConnectionKey =
-      sourceParentPageId || sourceTeamId
-        ? 'User_pages'
-        : sourceIsPrivate
-          ? 'User_privatePages'
-          : 'User_sharedPages'
-    const isSourcePrivate = isPrivatePageConnectionLookup[sourceConnectionKey]
-    const sourceConn = ConnectionHandler.getConnection(connParent, sourceConnectionKey, {
-      parentPageId: sourceParentPageId || null,
-      teamId: sourceTeamId || undefined,
-      isPrivate: isSourcePrivate
-    })!
-    safeRemoveNodeFromConn(pageId, sourceConn)
-  }
+  const oldRecord = getBaseRecord(store, pageId) as
+    | {parentPageId: string | null; teamId: string | null; isPrivate: boolean}
+    | undefined
+  const {
+    parentPageId: sourceParentPageId,
+    teamId: sourceTeamId,
+    isPrivate: sourceIsPrivate
+  } = oldRecord || {}
+  const sourceConn = getPageConn(connParent, sourceParentPageId, sourceTeamId, sourceIsPrivate)
   const targetTeamId = page.getValue('teamId')
   const targetParentPageId = page.getValue('parentPageId')
   const targetIsPrivate = page.getValue('isPrivate')
-  const targetConnectionKey =
-    targetParentPageId || targetTeamId
-      ? 'User_pages'
-      : targetIsPrivate
-        ? 'User_privatePages'
-        : 'User_sharedPages'
-  const isTargetPrivate = isPrivatePageConnectionLookup[targetConnectionKey]
-
-  const targetConn = ConnectionHandler.getConnection(connParent, targetConnectionKey, {
-    parentPageId: targetParentPageId || null,
-    teamId: targetTeamId || undefined,
-    isPrivate: isTargetPrivate
-  })
-  safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
+  const targetConn = getPageConn(connParent, targetParentPageId, targetTeamId, targetIsPrivate)
+  if (sourceConn !== targetConn) {
+    safeRemoveNodeFromConn(pageId, sourceConn)
+    safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
+  }
 }
 
 export const isPrivatePageConnectionLookup = {

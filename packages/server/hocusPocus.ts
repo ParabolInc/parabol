@@ -3,11 +3,14 @@ import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
+import {SubscriptionChannel} from '../client/types/constEnums'
+import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
 import {isAuthenticated} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import publish from './utils/publish'
 import RedisInstance from './utils/RedisInstance'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
 import {withBacklinks} from './utils/tiptap/hocusPocusHub'
@@ -19,6 +22,19 @@ const {SERVER_ID, HOCUS_POCUS_PORT} = process.env
 const port = Number(HOCUS_POCUS_PORT)
 if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
+}
+
+const pushGQLTitleUpdates = async (pageId: number) => {
+  // This is necessary for titles of top-level items (shared, team, private) to propagate in real time
+  const dataLoader = getNewDataLoader()
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId: undefined}
+  const data = {pageId}
+  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePagePayload', data, subOptions)
+  })
+  dataLoader.dispose()
 }
 export const server = Server.configure({
   stopOnSignals: false,
@@ -75,11 +91,14 @@ export const server = Server.configure({
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const [{updatedTitle}] = await Promise.all([updatePageContent(dbId, content, state)])
         if (updatedTitle) {
-          await withBacklinks(dbId, (doc) => {
-            updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
-              node.setAttribute('title', updatedTitle)
+          await Promise.all([
+            pushGQLTitleUpdates,
+            withBacklinks(dbId, (doc) => {
+              updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
+                node.setAttribute('title', updatedTitle)
+              })
             })
-          })
+          ])
         }
       }
     }),
