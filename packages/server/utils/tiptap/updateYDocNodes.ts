@@ -1,9 +1,13 @@
 import * as Y from 'yjs'
+import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 
-export function updateYDocNodes(
+interface NodeAttributes {
+  pageLinkBlock: PageLinkBlockAttributes
+}
+export function updateYDocNodes<T extends keyof NodeAttributes>(
   doc: Y.Doc,
-  nodeName: string,
-  filters: Record<string, string | number | boolean>,
+  nodeName: T,
+  filters: Partial<NodeAttributes[T]>,
   callbackFn: (
     node: Y.XmlElement,
     idx: number,

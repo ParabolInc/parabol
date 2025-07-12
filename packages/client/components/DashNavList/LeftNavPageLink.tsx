@@ -34,7 +34,7 @@ export const LeftNavPageLink = (props: Props) => {
     nextPeerId,
     connectionKey
   } = props
-  const depth = pageAncestors.length - 1
+  const depth = pageAncestors.length
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {
@@ -46,7 +46,7 @@ export const LeftNavPageLink = (props: Props) => {
         isPrivate
         isDraggingFirstChild
         isDraggingLastChild
-        sortOrder # used implicityly in store traveral by useDraggingPage
+        sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,
     pageRef

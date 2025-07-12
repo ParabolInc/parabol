@@ -125,10 +125,6 @@ type Mutation {
     The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
     """
     teamId: ID
-    """
-    The parent page that this should be placed under. Mutally exclusive to teamId
-    """
-    parentPageId: ID
   ): CreatePagePayload!
   createTaskIntegration(
     """
@@ -2116,10 +2112,6 @@ type Mutation {
     The new sort order, as a fractional index
     """
     sortOrder: String!
-    """
-    The new parent If null, and no teamId, it will be top-level
-    """
-    parentPageId: ID
     """
     The new teamId, if moved to a team
     """

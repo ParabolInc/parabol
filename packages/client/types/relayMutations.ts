@@ -46,7 +46,7 @@ interface UpdaterContext {
 }
 
 export interface SharedUpdater<T> {
-  (payload: RecordProxy<Omit<T, ' $fragmentType'>>, context: UpdaterContext): void
+  (payload: RecordProxy<Omit<NonNullable<T>, ' $fragmentType'>>, context: UpdaterContext): void
 }
 
 export interface OnNextBaseContext {

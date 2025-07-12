@@ -26,6 +26,7 @@ import {
 import StrictEventEmitter from 'strict-event-emitter-types'
 import {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import {Snack, SnackbarRemoveFn} from './components/Snackbar'
+import {providerManager} from './tiptap/providerManager'
 import {AuthToken} from './types/AuthToken'
 import {LocalStorageKey} from './types/constEnums'
 import {createWSClient} from './utils/createWSClient'
@@ -284,6 +285,7 @@ export default class Atmosphere extends Environment {
 
   setAuthToken = async (authToken: string | null | undefined) => {
     this.authToken = authToken || null
+    providerManager.setAuthToken(authToken!)
     if (!authToken) {
       this.authObj = null
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

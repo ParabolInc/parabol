@@ -13,13 +13,12 @@ export const getPageNextSortOrder = async (
   sortOrder: string,
   viewerId: string,
   isPrivate: boolean,
-  teamId: string | null,
-  parentPageId: number | null
+  teamId: string | null
 ) => {
   const pg = getKysely()
   const buildPeers = () => {
     const query = pg.selectFrom('Page').select('sortOrder')
-    if (!teamId && !parentPageId) {
+    if (!teamId) {
       return query
         .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
         .where('teamId', 'is', null)
@@ -30,7 +29,6 @@ export const getPageNextSortOrder = async (
     }
     return query
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-      .$if(!!parentPageId, (qb) => qb.where('parentPageId', '=', parentPageId!))
       .where('deletedBy', 'is', null)
   }
 
