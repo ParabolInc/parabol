@@ -3,6 +3,7 @@ import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
+import {encodeStateAsUpdate} from 'yjs'
 import {SubscriptionChannel} from '../client/types/constEnums'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
@@ -83,7 +84,14 @@ export const server = Server.configure({
           .select('yDoc')
           .where('id', '=', dbId)
           .executeTakeFirst()
-        return res?.yDoc ?? null
+        if (res?.yDoc) return res.yDoc
+        // Return a page with a heading by default so we can insert child page links at position 1
+        // Without a heading at pos 0, position 1 is out of range
+        const yDoc = TiptapTransformer.toYdoc({
+          type: 'doc',
+          content: [{type: 'heading', attrs: {level: 1}, content: []}]
+        })
+        return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
         const [dbId, pageCode] = CipherId.fromClient(documentName)

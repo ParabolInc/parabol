@@ -170,6 +170,7 @@
   },
   "dependencies": {
     "@eslint/js": "^9.25.1",
+    "@hocuspocus/provider": "^2.15.2",
     "@module-federation/enhanced": "^0.13.0",
     "@sesamecare-oss/redlock": "^1.4.0",
     "@tiptap/core": "^2.11.7",
