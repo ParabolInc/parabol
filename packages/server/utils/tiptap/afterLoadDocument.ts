@@ -42,7 +42,7 @@ const handleDeletedPageLink = async (
 ) => {
   const pg = getKysely()
   const pageCode = getUnsafeDeletedAttribute(node, 'pageCode')
-  const isMoving = getUnsafeDeletedAttribute(node, 'isMoving')
+  const isMoving = getUnsafeDeletedAttribute(node, 'isMoving', true)
   const isCanonical = getUnsafeDeletedAttribute(node, 'canonical')
   const pageId = CipherId.decrypt(pageCode)
   if (isCanonical && !isMoving) {
@@ -128,11 +128,17 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
 // XML attributes are stored as a yMap, which gets deleted when the element is deleted
 // This uses the undocumented internal yjs _map structure to access those attributes
 // It SHOULD be stable until GC, as long as it's called synchronously in the observer callback
-const getUnsafeDeletedAttribute = (node: Y.XmlElement<PageLinkBlockAttributes>, attr: string) => {
+const getUnsafeDeletedAttribute = (
+  node: Y.XmlElement<PageLinkBlockAttributes>,
+  attr: string,
+  isOptional?: boolean
+) => {
   const attrMapEntry = node._map?.get(attr)
   if (!attrMapEntry) {
-    console.error('[getUnsafeDeletedAttribute]: missing map entry')
-    return
+    if (!isOptional) {
+      console.error(`[getUnsafeDeletedAttribute]: missing map entry ${attr}`)
+    }
+    return attrMapEntry
   }
   const val = attrMapEntry.content.getContent()[0]
   if (val === undefined) {

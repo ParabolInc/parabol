@@ -6,7 +6,7 @@ import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import {addCanonicalPageLink} from '../../../utils/tiptap/addCanonicalPageLink'
-import {hocusPocusHub} from '../../../utils/tiptap/hocusPocusHub'
+import {removeBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
 import {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
@@ -32,15 +32,14 @@ const archivePage: MutationResolvers['archivePage'] = async (
     if (page.parentPageId) {
       await removeCanonicalPageLinkFromPage(page.parentPageId, dbPageId)
       // In the future, all user-defined pages will have a parent so we can get rid of the code below
-      return {pageId: dbPageId, action}
     } else {
       await pg
         .updateTable('Page')
         .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
         .where('id', '=', dbPageId)
         .execute()
-      hocusPocusHub.emit('removeBacklinks', {pageId: dbPageId})
     }
+    removeBacklinkedPageLinkBlocks({pageId: dbPageId})
   } else {
     // When restoring, if the parent no longer exists, promote the orphan to the same level as its greatest ancestor
     let parentPageId: null | undefined = undefined
@@ -57,11 +56,8 @@ const archivePage: MutationResolvers['archivePage'] = async (
       } else if (parentPage) {
         // add the canonical page link & let the reconciler take care of the rest
         await addCanonicalPageLink(page.parentPageId, dbPageId, page.title)
-        return {pageId: dbPageId, action}
-        // In the future, all user-defined pages will have a parent so we can get rid of the code below
       }
     }
-
     const sortOrder = await getPageNextSortOrder(
       page.sortOrder,
       viewerId,

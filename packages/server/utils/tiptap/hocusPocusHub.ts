@@ -1,13 +1,8 @@
 import type {Document} from '@hocuspocus/server'
-import {EventEmitter} from 'tseep'
 import {server} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {updateYDocNodes} from './updateYDocNodes'
-
-export const hocusPocusHub = new EventEmitter<{
-  removeBacklinks: (params: {pageId: number}) => void
-}>()
 
 export const withBacklinks = async (
   pageId: number,
@@ -44,5 +39,3 @@ export const removeBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number})
     )
   })
 }
-
-hocusPocusHub.on('removeBacklinks', removeBacklinkedPageLinkBlocks)
