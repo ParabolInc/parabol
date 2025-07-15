@@ -122,7 +122,6 @@ module.exports = {
         mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
         mattermostGlobal: !!process.env.MATTERMOST_SECRET,
         msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
-        sentry: process.env.SENTRY_DSN,
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
         oauth2Redirect: makeOAuth2Redirect(),
@@ -144,7 +143,8 @@ module.exports = {
             ? process.env.GIF_PROVIDER
             : process.env.TENOR_SECRET
               ? 'tenor'
-              : ''
+              : '',
+        HUBSPOT_ERROR_FORM_URL: process.env.HUBSPOT_ERROR_FORM_URL
       })
     }),
     new ReactRefreshWebpackPlugin(),

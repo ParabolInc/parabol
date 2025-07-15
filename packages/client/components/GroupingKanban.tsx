@@ -1,4 +1,4 @@
-import {captureException} from '@sentry/browser'
+import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
 import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -134,7 +134,7 @@ const GroupingKanban = (props: Props) => {
       container[promptId] = container[promptId] ?? []
       container[promptId]!.push(group)
       if (!reflections) {
-        captureException(new Error('Invalid invariant: reflectionGroup.reflections is null'))
+        datadogRum.addError(new Error('Invalid invariant: reflectionGroup.reflections is null'))
       } else if (!isEditing && reflections.some((reflection) => reflection.isEditing)) {
         isEditing = true
       }

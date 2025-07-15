@@ -10,6 +10,7 @@ import './hocusPocus'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import {metricsHandler} from './metricsHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import {Logger} from './utils/Logger'
@@ -21,7 +22,20 @@ import {yoga} from './yoga'
 
 export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
-  : 60_000 // ms
+  : 60_000
+
+const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
+
+export const ENABLE_METRICS = process.env.ENABLE_METRICS === 'true'
+export const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT, 10) : NaN
+if (ENABLE_METRICS) {
+  if (isNaN(METRICS_PORT)) {
+    throw new Error('ENABLE_METRICS is true but METRICS_PORT is invalid')
+  }
+  if (METRICS_PORT === PORT) {
+    throw new Error('METRICS_PORT cannot be the same as PORT')
+  }
+}
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
@@ -34,8 +48,7 @@ process.on('SIGTERM', async (signal) => {
   process.exit()
 })
 
-const PORT = Number(__PRODUCTION__ ? process.env.PORT : process.env.SOCKET_PORT)
-uws
+const app = uws
   .App()
   .get('/favicon.ico', PWAHandler)
   .get('/sw.js', PWAHandler)
@@ -57,5 +70,24 @@ uws
   })
   .post('/saml/:domain', SAMLHandler)
   .ws('/*', wsHandler)
-  .any('/*', createSSR)
-  .listen(PORT, listenHandler)
+
+if (ENABLE_METRICS) {
+  uws
+    .App()
+    .get('/metrics', metricsHandler)
+    .get('/health', (res) => {
+      res.writeStatus('200 OK')
+      res.writeHeader('Content-Type', 'text/plain')
+      res.end('OK')
+    })
+    .listen(METRICS_PORT, (socket) => {
+      if (socket) {
+        console.log(`Metrics server listening on port ${METRICS_PORT}`)
+      } else {
+        console.error(`Failed to bind metrics server on port ${METRICS_PORT}`)
+        process.exit(1)
+      }
+    })
+}
+
+app.any('/*', createSSR).listen(PORT, listenHandler)

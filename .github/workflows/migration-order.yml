@@ -3,6 +3,11 @@ on:
   pull_request:
     paths:
       - packages/server/postgres/migrations/*.ts
+
+permissions:
+  pull-requests: read
+  contents: read
+
 jobs:
   migration-order:
     runs-on: ubuntu-latest

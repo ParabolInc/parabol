@@ -5,6 +5,75 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.12.6](https://github.com/ParabolInc/parabol/compare/v10.12.5...v10.12.6) (2025-07-07)
+
+
+### Fixed
+
+* drop stripe quantity mismatch logging not null constraint ([#11529](https://github.com/ParabolInc/parabol/issues/11529)) ([8dec804](https://github.com/ParabolInc/parabol/commit/8dec8041d7da556b09d6b39482225731036fe60c))
+
+
+### Changed
+
+* fix client schema types ([#11526](https://github.com/ParabolInc/parabol/issues/11526)) ([10df771](https://github.com/ParabolInc/parabol/commit/10df77123f742589e2887acbb512d29cebb0cb8b))
+
+## [10.12.5](https://github.com/ParabolInc/parabol/compare/v10.12.4...v10.12.5) (2025-07-07)
+
+
+### Fixed
+
+* show correct meeting phase in dashboard ([#11522](https://github.com/ParabolInc/parabol/issues/11522)) ([4e25d4d](https://github.com/ParabolInc/parabol/commit/4e25d4d40f3d1e144014711b1503ff52f2c38431))
+
+## [10.12.4](https://github.com/ParabolInc/parabol/compare/v10.12.3...v10.12.4) (2025-07-04)
+
+
+### Fixed
+
+* clear typing notification on submit ([#11518](https://github.com/ParabolInc/parabol/issues/11518)) ([9b6443a](https://github.com/ParabolInc/parabol/commit/9b6443ac81829f5cf1539a562036455c5556d64c))
+
+## [10.12.3](https://github.com/ParabolInc/parabol/compare/v10.12.2...v10.12.3) (2025-07-04)
+
+
+### Changed
+
+* Remove OrganizationUser.inactive ([#11504](https://github.com/ParabolInc/parabol/issues/11504)) ([9fb810f](https://github.com/ParabolInc/parabol/commit/9fb810f5981d49e749a85fce7733c68735a05034))
+
+## [10.12.2](https://github.com/ParabolInc/parabol/compare/v10.12.1...v10.12.2) (2025-07-02)
+
+
+### Changed
+
+* remove remains of Sentry ([#11502](https://github.com/ParabolInc/parabol/issues/11502)) ([8a73627](https://github.com/ParabolInc/parabol/commit/8a73627db15a361b235b1833e85740888333c9ef))
+* remove Sentry error logging ([#11340](https://github.com/ParabolInc/parabol/issues/11340)) ([d121d6f](https://github.com/ParabolInc/parabol/commit/d121d6f2a75d04b6d3531785ae6dc815488d2c69))
+
+## [10.12.1](https://github.com/ParabolInc/parabol/compare/v10.12.0...v10.12.1) (2025-07-01)
+
+
+### Changed
+
+* improve meeting series naming ([#11468](https://github.com/ParabolInc/parabol/issues/11468)) ([e15559f](https://github.com/ParabolInc/parabol/commit/e15559f53a477db49fa34492afb2f2708930dcb1))
+* Normalize User.tms ([#10992](https://github.com/ParabolInc/parabol/issues/10992)) ([a8934c5](https://github.com/ParabolInc/parabol/commit/a8934c5e4c493c17a8c8e6a8587a588224215f32))
+
+## [10.12.0](https://github.com/ParabolInc/parabol/compare/v10.11.1...v10.12.0) (2025-06-30)
+
+
+### Added
+
+* Prometheus metrics ([#11371](https://github.com/ParabolInc/parabol/issues/11371)) ([05257fd](https://github.com/ParabolInc/parabol/commit/05257fd676ccd43e1e30301d6348670363f6b76a))
+* zoom transcript proof of concept ([#11484](https://github.com/ParabolInc/parabol/issues/11484)) ([ea2d8d6](https://github.com/ParabolInc/parabol/commit/ea2d8d658d9f254ad30e8a623de570e05a700b8a))
+
+
+### Fixed
+
+* getSAMLForDomain domains field ([#11485](https://github.com/ParabolInc/parabol/issues/11485)) ([debd408](https://github.com/ParabolInc/parabol/commit/debd408abddcc9d953d0daff8a34a4b096526872))
+* use imported quietLofi file ([#11494](https://github.com/ParabolInc/parabol/issues/11494)) ([3914dd6](https://github.com/ParabolInc/parabol/commit/3914dd6acc2f6451e345db63cb1b28faca96c4bf))
+
+
+### Changed
+
+* avoid multiple size labels on PRs ([#11479](https://github.com/ParabolInc/parabol/issues/11479)) ([d4256ed](https://github.com/ParabolInc/parabol/commit/d4256edfe53d9f92f5aacb2914996723e6079a0c))
+* fix PR size labeler ([#11481](https://github.com/ParabolInc/parabol/issues/11481)) ([2638174](https://github.com/ParabolInc/parabol/commit/263817421c47435fc9c92208af5f901d6ae5e3ca))
+
 ## [10.11.1](https://github.com/ParabolInc/parabol/compare/v10.11.0...v10.11.1) (2025-06-23)
 
 

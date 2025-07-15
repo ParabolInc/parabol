@@ -7,7 +7,6 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
-import {createMeetingSeriesTitle} from '../../mutations/helpers/createMeetingSeriesTitle'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
@@ -47,11 +46,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     videoMeetingURL
   } = meetingSettings as typeof meetingSettings & {meetingType: 'retrospective'}
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
-  const meetingName = !name
-    ? `Retro #${meetingCount + 1}`
-    : rrule
-      ? createMeetingSeriesTitle(name, new Date(), 'UTC')
-      : name
+  const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
 
   const meeting = await safeCreateRetrospective(

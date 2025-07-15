@@ -56,11 +56,16 @@ const Company: CompanyResolvers = {
     const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(orgIds))
       .filter(isValid)
       .flat()
-    const activeOrganizationUsers = organizationUsers.filter((organizationUser) => {
-      const isActive = !organizationUser.inactive
-      const joinedAfter = after ? organizationUser.joinedAt > new Date(after) : true
-      return isActive && joinedAfter
-    })
+    const activeOrganizationUsers = (
+      await Promise.all(
+        organizationUsers.map(async (organizationUser) => {
+          if (after && organizationUser.joinedAt <= new Date(after)) return null
+          const user = await dataLoader.get('users').load(organizationUser.userId)
+          if (!user || user.inactive) return null
+          return organizationUser
+        })
+      )
+    ).filter(isValid)
     const userIds = activeOrganizationUsers.map((organizationUser) => organizationUser.userId)
     const uniqueUserIds = new Set(userIds)
     return uniqueUserIds.size
@@ -72,12 +77,11 @@ const Company: CompanyResolvers = {
     const organizations = await getSuggestedTierOrganizations(domain, authToken, dataLoader)
     const allOrgIds = organizations.map(({id}) => id)
     // get the organizationUsers
-    const organizationUsers = (await dataLoader.get('organizationUsersByOrgId').loadMany(allOrgIds))
+    const activeOrganizationUsers = (
+      await dataLoader.get('activeOrganizationUsersByOrgId').loadMany(allOrgIds)
+    )
       .flat()
       .filter(isValid)
-    const activeOrganizationUsers = organizationUsers.filter(
-      (organizationUser) => !organizationUser.inactive
-    )
     // if there aren't 2 active users, abort
     if (activeOrganizationUsers.length < 2) return 0
     // get the unarchived teams

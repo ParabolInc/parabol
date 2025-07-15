@@ -80,12 +80,6 @@ const removeTeamMember = async (
     .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
   const reassignedTasks = await pg
-    .with('UserUpdate', (qb) =>
-      qb
-        .updateTable('User')
-        .set(({fn, ref, val}) => ({tms: fn('ARRAY_REMOVE', [ref('tms'), val(teamId)])}))
-        .where('id', '=', userId)
-    )
     .updateTable('Task')
     .set({userId: nextTeamLead.userId})
     .where('userId', '=', userId)

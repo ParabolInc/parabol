@@ -227,7 +227,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         max={50}
       />
       {titleErr && <StyledError>{titleErr}</StyledError>}
-      <RecurrenceSettings title={title} rrule={rrule} onRruleUpdated={setRrule} />
+      <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
       <StyledCloseButton onClick={closeModal}>
         <CloseIcon />
       </StyledCloseButton>

@@ -170,7 +170,7 @@ const DiscussionThreadInput = (props: Props) => {
       threadSortOrder: getMaxSortOrder() + SORT_STEP
     }
     AddCommentMutation(atmosphere, {comment}, {onError, onCompleted})
-    editor?.commands.clearContent()
+    editor?.commands.clearOnSubmit()
     clearReplyingTo()
   }
   const addTask = () => {

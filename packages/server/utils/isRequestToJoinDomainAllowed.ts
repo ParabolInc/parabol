@@ -25,14 +25,15 @@ export const getEligibleOrgIdsByDomain = async (
     newOrgs.map(({id}) => dataLoader.get('isOrgVerified').load(id))
   )
   const verifiedOrgs = newOrgs.filter((_, idx) => verifiedOrgMask[idx])
-  const verifiedOrgUsers = await Promise.all(
-    verifiedOrgs.map((org) => dataLoader.get('organizationUsersByOrgId').load(org.id))
+  const verifiedOrgsWithActiveUserCount = await Promise.all(
+    verifiedOrgs.map(async (org) => {
+      const activeOrgUsers = await dataLoader.get('activeOrganizationUsersByOrgId').load(org.id)
+      return {
+        ...org,
+        activeMembers: activeOrgUsers.length
+      }
+    })
   )
-
-  const verifiedOrgsWithActiveUserCount = verifiedOrgs.map((org, idx) => ({
-    ...org,
-    activeMembers: verifiedOrgUsers[idx]?.filter((org) => !org.inactive).length ?? 0
-  }))
 
   const highestTierOrgs = verifiedOrgsWithActiveUserCount.reduce(
     (acc, org) => {

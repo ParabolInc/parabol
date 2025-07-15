@@ -59,7 +59,6 @@ const rewriteIndexHTML = () => {
     mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
     mattermostGlobal: !!process.env.MATTERMOST_SECRET,
     msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
-    sentry: process.env.SENTRY_DSN,
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
     publicPath: __webpack_public_path__,
@@ -82,7 +81,8 @@ const rewriteIndexHTML = () => {
         ? process.env.GIF_PROVIDER
         : process.env.TENOR_SECRET
           ? 'tenor'
-          : ''
+          : '',
+    HUBSPOT_ERROR_FORM_URL: process.env.HUBSPOT_ERROR_FORM_URL
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'skeleton.html'), 'utf8')

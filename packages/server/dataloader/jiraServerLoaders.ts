@@ -8,7 +8,7 @@ import getJiraServerDimensionFieldMap, {
   GetJiraServerDimensionFieldMapParams,
   JiraServerDimensionFieldMap
 } from '../postgres/queries/getJiraServerDimensionFieldMap'
-import sendToSentry from '../utils/sendToSentry'
+import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 
 export interface JiraServerIssueKey {
@@ -78,7 +78,7 @@ export const jiraServerIssue = (parent: RootDataLoader) => {
           const issue = await manager.getIssue(issueId)
 
           if (issue instanceof Error) {
-            sendToSentry(issue, {userId, tags: {issueId, teamId}})
+            logError(issue, {userId, tags: {issueId, teamId}})
             return null
           }
           const {project, issuetype, summary, description} = issue.fields

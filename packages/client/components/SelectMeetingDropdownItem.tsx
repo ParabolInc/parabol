@@ -1,10 +1,10 @@
+import {datadogRum} from '@datadog/browser-rum'
 import {
   ArrowForward as ArrowForwardIcon,
   ChangeHistory,
   GroupWork,
   History
 } from '@mui/icons-material'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
@@ -28,9 +28,11 @@ const SelectMeetingDropdownItem = (props: Props) => {
         phases {
           phaseType
           stages {
+            id
             isComplete
           }
         }
+        facilitatorStageId
         team {
           name
         }
@@ -39,11 +41,11 @@ const SelectMeetingDropdownItem = (props: Props) => {
     meetingRef
   )
   const {history} = useRouter()
-  const {name, team, id: meetingId, meetingType, phases} = meeting
+  const {name, team, id: meetingId, meetingType, phases, facilitatorStageId} = meeting
   if (!team) {
     // 95% sure there's a bug in relay causing this
     const errObj = {id: meetingId} as any
-    Sentry.captureException(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
+    datadogRum.addError(new Error(`Missing Team on Meeting ${JSON.stringify(errObj)}`))
     return null
   }
   const {name: teamName} = team
@@ -52,7 +54,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   }
   //FIXME 6062: change to React.ComponentType
   const IconOrSVG = meetingTypeToIcon[meetingType]!
-  const meetingPhase = getMeetingPhase(phases)
+  const meetingPhase = getMeetingPhase(phases, facilitatorStageId)
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   return (
@@ -75,7 +77,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
       <div className='flex flex-col px-2'>
         <div className='text-base font-semibold text-slate-700'>{name}</div>
         <div className='text-xs text-slate-600'>
-          {meetingPhaseLabel} • {teamName}
+          {teamName} • {meetingPhaseLabel}
         </div>
       </div>
       <div className='flex size-6 grow items-center justify-end'>
