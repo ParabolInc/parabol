@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -93,7 +94,10 @@ export const PageActions = (props: Props) => {
             }
           >
             <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
-              <MenuItem onClick={archivePage}>{'Delete page'}</MenuItem>
+              <MenuItem onClick={archivePage}>
+                <DeleteIcon className='text-slate-600' />
+                <span className='pl-1'>{'Delete page'}</span>
+              </MenuItem>
             </MenuContent>
           </Menu>
         </div>

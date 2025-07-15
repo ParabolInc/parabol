@@ -1,26 +1,89 @@
+import DeleteIcon from '@mui/icons-material/Delete'
 import DescriptionIcon from '@mui/icons-material/Description'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import {NodeSelection} from '@tiptap/pm/state'
 import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
 import {Link} from 'react-router-dom'
+import useAtmosphere from '../../../hooks/useAtmosphere'
+import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import type {PageLinkBlockAttributes} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import {Menu} from '../../../ui/Menu/Menu'
+import {MenuContent} from '../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../ui/Menu/MenuItem'
+import {Tooltip} from '../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {getPageSlug} from '../../getPageSlug'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
-  const {node} = props
+  const {node, getPos, view} = props
   const attrs = node.attrs as PageLinkBlockAttributes
   const {pageCode, title, canonical} = attrs
   const pageSlug = getPageSlug(pageCode, title)
   const Icon = canonical ? DescriptionIcon : FileOpenIcon
+  const [executeArchive] = useArchivePageMutation()
+  const atmosphere = useAtmosphere()
+  const focusLink = () => {
+    console.log('focus')
+    const pos = getPos()
+    const tr = view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos))
+    view.dispatch(tr)
+    view.focus()
+    console.log('focused view', view)
+  }
+  const archivePage = () => {
+    executeArchive({
+      variables: {pageId: `page:${pageCode}`, action: 'archive'},
+      onCompleted(_res, errors) {
+        const firstError = errors?.[0]?.message
+        if (firstError) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'PageActionsArchive',
+            message: firstError,
+            autoDismiss: 5
+          })
+        }
+      }
+    })
+  }
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
-    <NodeViewWrapper className={'group-[.ProseMirror-selectednode]:bg-slate-200'}>
+    <NodeViewWrapper className={'group group-[.ProseMirror-selectednode]:bg-slate-200'}>
       <Link
         draggable={false}
         to={`/pages/${pageSlug}`}
         className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-200'
       >
         <Icon />
-        <div className='pl-1'>{title}</div>
+        <div className='flex-1 pl-1'>{title}</div>
+        <Menu
+          onOpenChange={(open) => {
+            if (open) {
+              focusLink()
+            }
+          }}
+          trigger={
+            <div className='flex items-center pr-1'>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <MoreVertIcon
+                    className='size-5 opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
+                    onMouseDown={focusLink}
+                  />
+                </TooltipTrigger>
+                <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
+              </Tooltip>
+            </div>
+          }
+        >
+          <MenuContent align='end' side={'bottom'} sideOffset={8} className='max-h-80'>
+            <MenuItem onClick={archivePage}>
+              <DeleteIcon className='text-slate-600' />
+              <span className='pl-1'>{'Delete page'}</span>
+            </MenuItem>
+          </MenuContent>
+        </Menu>
       </Link>
     </NodeViewWrapper>
   )
