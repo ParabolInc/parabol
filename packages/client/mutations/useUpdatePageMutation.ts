@@ -71,10 +71,8 @@ export const handleUpdatePage = (
   const targetParentPageId = page.getValue('parentPageId')
   const targetIsPrivate = page.getValue('isPrivate')
   const targetConn = getPageConn(connParent, targetParentPageId, targetTeamId, targetIsPrivate)
-  if (sourceConn !== targetConn) {
-    safeRemoveNodeFromConn(pageId, sourceConn)
-    safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
-  }
+  safeRemoveNodeFromConn(pageId, sourceConn)
+  safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
 }
 
 export const isPrivatePageConnectionLookup = {
