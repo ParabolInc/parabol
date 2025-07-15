@@ -1,9 +1,10 @@
 import {mergeAttributes, Node} from '@tiptap/core'
 
 export type PageLinkBlockAttributes = {
-  pageId: number
+  pageCode: number
   title: string
-  auto?: boolean
+  canonical?: boolean
+  isMoving?: boolean
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -22,7 +23,34 @@ export const PageLinkBlockBase = Node.create({
 
   isolating: true,
   atom: true,
-
+  addAttributes() {
+    return {
+      pageCode: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-id'),
+        renderHTML: (attributes) => ({
+          'data-id': attributes.pageCode
+        })
+      },
+      title: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-title'),
+        renderHTML: (attributes) => ({
+          'data-title': attributes.title
+        })
+      },
+      canonical: {
+        parseHTML: (element) => {
+          return element.getAttribute('data-canonical') === '' ? true : false
+        },
+        renderHTML: (attributes) => {
+          return {
+            'data-canonical': attributes.canonical ? '' : undefined
+          }
+        }
+      }
+    }
+  },
   parseHTML() {
     return [
       {
@@ -35,8 +63,9 @@ export const PageLinkBlockBase = Node.create({
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   },
   renderText({node}) {
-    const pageId = node.attrs.pageId as string
-    const title = node.attrs.title || ('<Untitled>' as string)
-    return `[${title}](/pages/${pageId})`
+    const attrs = node.attrs as PageLinkBlockAttributes
+    const pageCode = attrs.pageCode
+    const title = attrs.title || '<Untitled>'
+    return `[${title}](/pages/${pageCode})`
   }
 })

@@ -1,4 +1,6 @@
-import {sendPublic, signUp} from './common'
+import type {YXmlEvent} from 'yjs'
+import {createPageLinkElement} from '../../client/shared/tiptap/createPageLinkElement'
+import {sendPublic, sendTipTap, signUp} from './common'
 
 const UPDATE_PAGE_ACCESS = `
       mutation UpdatePageAccess(
@@ -71,30 +73,34 @@ test('Access propagates to linked children', async () => {
     }
   })
   const parentPageId = parentPage.data.createPage.page.id
-  const childPage = await sendPublic({
-    query: `
-      mutation CreatePage($parentPageId: ID!) {
-        createPage(parentPageId: $parentPageId) {
-          page {
-            id
-            parentPageId
+
+  const provider = await sendTipTap({authToken, pageId: parentPageId})
+  const {document} = provider
+
+  const getChildPage = () => {
+    return new Promise((resolve) => {
+      provider.on('synced', () => {
+        const frag = document.getXmlFragment('default')
+        const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+        pageLinkBlock.observe((e: YXmlEvent) => {
+          for (const [key] of e.keys) {
+            if (key === 'pageCode') {
+              const pageCode = pageLinkBlock.getAttribute('pageCode')
+              resolve(pageCode)
+            }
           }
-        }
-      }
-    `,
-    variables: {parentPageId},
-    authToken
-  })
-  const childPageId = childPage.data.createPage.page.id
+        })
+        frag.insert(1, [pageLinkBlock] as any)
+      })
+    })
+  }
+
+  const childPageCode = await getChildPage()
+  provider.destroy()
+  const childPageId = `page:${childPageCode}`
+  const childPage = {childPageId}
   expect(childPage).toMatchObject({
-    data: {
-      createPage: {
-        page: {
-          id: expect.anything(),
-          parentPageId
-        }
-      }
-    }
+    childPageId: expect.toBeString()
   })
 
   const pageUpdatesUser = await sendPublic({

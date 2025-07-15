@@ -1,6 +1,7 @@
 import {toSlug} from '../shared/toSlug'
 
-export const getPageSlug = (clientPageNum: number, title: string) => {
+export const getPageSlug = (pageCode: number, title: string) => {
+  if (!title) return `${pageCode}`
   const slug = toSlug(title)
-  return slug ? `${slug}-${clientPageNum}` : `${clientPageNum}`
+  return slug ? `${slug}-${pageCode}` : `${pageCode}`
 }

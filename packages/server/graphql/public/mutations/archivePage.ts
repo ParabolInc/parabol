@@ -5,7 +5,9 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
-import {hocusPocusHub} from '../../../utils/tiptap/hocusPocusHub'
+import {addCanonicalPageLink} from '../../../utils/tiptap/addCanonicalPageLink'
+import {removeBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
+import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
 import {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
@@ -27,34 +29,40 @@ const archivePage: MutationResolvers['archivePage'] = async (
   if (action === 'delete') {
     await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
   } else if (action === 'archive') {
-    await pg
-      .updateTable('Page')
-      .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
-      .where('id', '=', dbPageId)
-      .execute()
-    hocusPocusHub.emit('removeBacklinks', {pageId: dbPageId})
+    if (page.parentPageId) {
+      await removeCanonicalPageLinkFromPage(page.parentPageId, dbPageId)
+      // In the future, all user-defined pages will have a parent so we can get rid of the code below
+    } else {
+      await pg
+        .updateTable('Page')
+        .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
+        .where('id', '=', dbPageId)
+        .execute()
+    }
+    removeBacklinkedPageLinkBlocks({pageId: dbPageId})
   } else {
     // When restoring, if the parent no longer exists, promote the orphan to the same level as its greatest ancestor
     let parentPageId: null | undefined = undefined
     let teamId: string | undefined = undefined
     if (page.parentPageId) {
       const parentPage = await dataLoader.get('pages').load(page.parentPageId)
-      if (parentPage?.deletedAt) {
+      if (!parentPage || parentPage.deletedAt) {
         parentPageId = null
         const topLevelAncestorPageId = page.ancestorIds[0]
         if (topLevelAncestorPageId) {
           const topLevelAncestorPage = await dataLoader.get('pages').load(topLevelAncestorPageId)
           teamId = topLevelAncestorPage?.teamId ?? undefined
         }
+      } else if (parentPage) {
+        // add the canonical page link & let the reconciler take care of the rest
+        await addCanonicalPageLink(page.parentPageId, dbPageId, page.title)
       }
     }
-
     const sortOrder = await getPageNextSortOrder(
       page.sortOrder,
       viewerId,
       page.isPrivate,
-      teamId === undefined ? page.teamId : teamId,
-      parentPageId === undefined ? page.parentPageId : parentPageId
+      teamId === undefined ? page.teamId : teamId
     )
     await pg
       .updateTable('Page')
@@ -76,16 +84,6 @@ const archivePage: MutationResolvers['archivePage'] = async (
           })
         )
         .execute()
-    }
-    const newParentPageId = parentPageId || page.parentPageId
-    if (newParentPageId) {
-      hocusPocusHub.emit('moveChildPageLink', {
-        oldParentPageId: null,
-        newParentPageId,
-        childPageId: dbPageId,
-        title: page.title,
-        sortOrder
-      })
     }
   }
   const data = {pageId: dbPageId, action}

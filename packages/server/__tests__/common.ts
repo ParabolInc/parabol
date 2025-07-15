@@ -1,7 +1,9 @@
+import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
 import base64url from 'base64url'
 import crypto from 'crypto'
 import faker from 'faker'
 import {sql} from 'kysely'
+import {Doc} from 'yjs'
 import ServerAuthToken from '../database/types/ServerAuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
@@ -53,6 +55,18 @@ const persistQuery = async (query: string) => {
   return id
 }
 
+export async function sendTipTap({authToken, pageId}: {authToken: string; pageId: string}) {
+  const socket = new TiptapCollabProviderWebsocket({
+    baseUrl: `ws://localhost:3003?token=${authToken}`
+  })
+  const doc = new Doc()
+  // update the URL to match the title
+  return new TiptapCollabProvider({
+    websocketProvider: socket,
+    name: pageId,
+    document: doc
+  })
+}
 export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>

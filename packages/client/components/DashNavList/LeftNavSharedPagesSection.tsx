@@ -70,7 +70,7 @@ export const LeftNavSharedPagesSection = (props: Props) => {
             <LeftNavPageLink
               key={id}
               pageRef={node}
-              pageAncestors={[node.id]}
+              pageAncestors={[]}
               draggingPageId={draggingPageId}
               dropIdx={idx}
               isLastChild={idx === edges.length - 1}

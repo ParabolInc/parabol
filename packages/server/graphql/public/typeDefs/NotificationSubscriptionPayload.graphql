@@ -28,4 +28,6 @@ type NotificationSubscriptionPayload {
   PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccess
   ToggleFeatureFlagSuccess: ToggleFeatureFlagSuccess
   ArchivePagePayload: ArchivePagePayload
+  CreatePagePayload: CreatePagePayload
+  UpdatePagePayload: UpdatePagePayload
 }

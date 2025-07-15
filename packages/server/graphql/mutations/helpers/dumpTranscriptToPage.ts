@@ -53,7 +53,7 @@ export const dumpTranscriptToPage = async (
   const pg = getKysely()
 
   const isPrivate = false
-  const sortOrder = await getPageNextSortOrder(__START__, viewerId, isPrivate, teamId, null)
+  const sortOrder = await getPageNextSortOrder(__START__, viewerId, isPrivate, teamId)
 
   const docText = generateText(jsonContent, serverTipTapExtensions)
   const {title, contentStartsAt} = getTitleFromPageText(docText)
