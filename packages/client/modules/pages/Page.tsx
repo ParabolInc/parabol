@@ -1,26 +1,42 @@
 import * as Popover from '@radix-ui/react-popover'
+import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
+import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import type {PageQuery} from '../../__generated__/PageQuery.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
-import useRouter from '../../hooks/useRouter'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
+import {PageBreadCrumbs} from './PageBreadCrumbs'
 import {PageSharingRoot} from './PageSharingRoot'
 
 interface Props {
   viewerRef: useTipTapPageEditor_viewer$key | null
+  queryRef: PreloadedQuery<PageQuery>
+  pageId: string
 }
 
 export const Page = (props: Props) => {
-  const {viewerRef} = props
-  const {match} = useRouter<{orgName: string; pageSlug: string}>()
-  const {params} = match
-  const {pageSlug} = params
-  const pageCodeIdx = pageSlug.lastIndexOf('-')
-  const pageId = `page:${Number(pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1))}`
+  const {viewerRef, queryRef, pageId} = props
+  const query = usePreloadedQuery<PageQuery>(
+    graphql`
+      query PageQuery($pageId: ID!) {
+        viewer {
+          ...usePageSharingAutocomplete_viewer
+          page(pageId: $pageId) {
+            ...PageBreadCrumbs_page
+            id
+            ancestorIds
+          }
+        }
+      }
+    `,
+    queryRef
+  )
+  const {viewer} = query
+  const {page} = viewer
   const {editor, provider} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
-  if (!pageSlug) return <div>No page ID provided in route</div>
   // keep track of the sync status of the current page so we can hide the placeholders & reduce flicker
   const [hasSyncedPageId, setHasSynced] = useState('')
   useEffect(() => {
@@ -29,14 +45,13 @@ export const Page = (props: Props) => {
     }
   }, [provider.synced, pageId])
   return (
-    <div className='flex w-full flex-col items-center bg-white pt-2'>
-      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
-        <div className='absolute top-0 right-12 flex'>
+    <div className='relative flex w-full flex-col items-center bg-white pt-2'>
+      <div className='flex w-full items-center justify-between'>
+        <PageBreadCrumbs pageRef={page} />
+        <div className='px-2'>
           <Popover.Root>
             <Popover.Trigger asChild>
-              <button className='text-md fixed cursor-pointer bg-white pt-1 font-semibold'>
-                Share
-              </button>
+              <button className='text-md cursor-pointer bg-white pt-1 font-semibold'>Share</button>
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>
@@ -47,6 +62,8 @@ export const Page = (props: Props) => {
             </Popover.Portal>
           </Popover.Root>
         </div>
+      </div>
+      <div className='flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
         <TipTapEditor
           editor={editor}
           className={cn(
