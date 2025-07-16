@@ -56,9 +56,12 @@ export const handleArchivePage = (
   if (isRestore) {
     safeRemoveNodeFromConn(pageId, archivedConn)
     safePutNodeInConn(conn, page, store, 'sortOrder', true)
+  } else if (isHardDelete) {
+    safeRemoveNodeFromConn(pageId, archivedConn)
   } else {
+    // archive
     safeRemoveNodeFromConn(pageId, conn)
-    if (!isHardDelete && page.getValue('deletedBy') === viewer.getDataID()) {
+    if (page.getValue('deletedBy') === viewer.getDataID()) {
       safePutNodeInConn(archivedConn, page, store, 'deletedAt', false)
     }
   }

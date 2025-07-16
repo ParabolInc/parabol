@@ -1,18 +1,25 @@
 import graphql from 'babel-plugin-relay/macro'
 import {ConnectionHandler, useMutation, UseMutationConfig} from 'react-relay'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {useUpdatePageMutation as TuseUpdatePageMutation} from '../__generated__/useUpdatePageMutation.graphql'
+import {useUpdatePageMutation_notification$data} from '../__generated__/useUpdatePageMutation_notification.graphql'
+
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
-import useAtmosphere from '../hooks/useAtmosphere'
+import getBaseRecord from '../utils/relay/getBaseRecord'
+import safeRemoveNodeFromConn from '../utils/relay/safeRemoveNodeFromConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 
 graphql`
-  fragment useUpdatePageMutation_payload on UpdatePagePayload {
+  fragment useUpdatePageMutation_notification on UpdatePagePayload {
     page {
+      id
       sortOrder
       teamId
       parentPageId
       isPrivate
       isParentLinked
+      title
+      ...PageActions_page
     }
   }
 `
@@ -21,21 +28,52 @@ const mutation = graphql`
   mutation useUpdatePageMutation(
     $pageId: ID!
     $sortOrder: String!
-    $parentPageId: ID
     $teamId: ID
     $makePrivate: Boolean
   ) {
-    updatePage(
-      pageId: $pageId
-      sortOrder: $sortOrder
-      parentPageId: $parentPageId
-      teamId: $teamId
-      makePrivate: $makePrivate
-    ) {
-      ...useUpdatePageMutation_payload @relay(mask: false)
+    updatePage(pageId: $pageId, sortOrder: $sortOrder, teamId: $teamId, makePrivate: $makePrivate) {
+      ...useUpdatePageMutation_notification @relay(mask: false)
     }
   }
 `
+
+const getPageConn = (
+  viewer: RecordProxy,
+  parentPageId: string | null | undefined,
+  teamId: string | null | undefined,
+  isPrivate: boolean | undefined
+) => {
+  const connKey =
+    parentPageId || teamId ? 'User_pages' : isPrivate ? 'User_privatePages' : 'User_sharedPages'
+
+  return ConnectionHandler.getConnection(viewer, connKey, {
+    parentPageId: parentPageId || null,
+    teamId: teamId || undefined,
+    isPrivate: isPrivatePageConnectionLookup[connKey]
+  })!
+}
+export const handleUpdatePage = (
+  page: RecordProxy<useUpdatePageMutation_notification$data['page']>,
+  {store}: {store: RecordSourceSelectorProxy}
+) => {
+  const connParent = store.getRoot().getLinkedRecord('viewer')!
+  const pageId = page.getValue('id')
+  const oldRecord = getBaseRecord(store, pageId) as
+    | {parentPageId: string | null; teamId: string | null; isPrivate: boolean}
+    | undefined
+  const {
+    parentPageId: sourceParentPageId,
+    teamId: sourceTeamId,
+    isPrivate: sourceIsPrivate
+  } = oldRecord || {}
+  const sourceConn = getPageConn(connParent, sourceParentPageId, sourceTeamId, sourceIsPrivate)
+  const targetTeamId = page.getValue('teamId')
+  const targetParentPageId = page.getValue('parentPageId')
+  const targetIsPrivate = page.getValue('isPrivate')
+  const targetConn = getPageConn(connParent, targetParentPageId, targetTeamId, targetIsPrivate)
+  safeRemoveNodeFromConn(pageId, sourceConn)
+  safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
+}
 
 export const isPrivatePageConnectionLookup = {
   User_privatePages: true,
@@ -43,7 +81,6 @@ export const isPrivatePageConnectionLookup = {
 } as Record<PageConnectionKey, boolean>
 
 export const useUpdatePageMutation = () => {
-  const atmosphere = useAtmosphere()
   const [commit, submitting] = useMutation<TuseUpdatePageMutation>(mutation)
   const execute = (
     config: UseMutationConfig<TuseUpdatePageMutation> & {
@@ -61,33 +98,12 @@ export const useUpdatePageMutation = () => {
       variables,
       ...rest
     } = config
-    const {parentPageId: targetParentPageId, teamId: targetTeamId, pageId} = variables
     return commit({
       updater: (store) => {
-        const {viewerId} = atmosphere
         const payload = store.getRootField('updatePage')
         if (!payload) return
-        const newPage = payload.getLinkedRecord('page')
-        const connParent = store.get(viewerId)!
-        const isSourcePrivate = isPrivatePageConnectionLookup[sourceConnectionKey]
-        const isTargetPrivate = isPrivatePageConnectionLookup[targetConnectionKey]
-        const sourceConn = ConnectionHandler.getConnection(connParent, sourceConnectionKey, {
-          parentPageId: sourceParentPageId || null,
-          teamId: sourceTeamId || undefined,
-          isPrivate: isSourcePrivate
-        })!
-        ConnectionHandler.deleteNode(sourceConn, pageId)
-
-        const targetConn = ConnectionHandler.getConnection(connParent, targetConnectionKey, {
-          parentPageId: targetParentPageId || null,
-          teamId: targetTeamId || undefined,
-          isPrivate: isTargetPrivate
-        })
-        if (!targetConn) {
-          // is the target is not expanded, no connection exists yet
-          return
-        }
-        safePutNodeInConn(targetConn, newPage, store, 'sortOrder', true)
+        const page = payload.getLinkedRecord('page')
+        handleUpdatePage(page, {store})
       },
       variables,
       ...rest

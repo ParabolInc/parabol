@@ -36,7 +36,7 @@ export const TipTapLinkMenu = (props: Props) => {
     return () => {
       editor.off('linkStateChange', updateState)
     }
-  }, [])
+  }, [editor])
 
   const {link, text} = useEditorState({
     editor,

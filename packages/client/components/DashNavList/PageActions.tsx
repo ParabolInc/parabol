@@ -1,12 +1,15 @@
 import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
+import * as Y from 'yjs'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
-import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
+import {createPageLinkElement} from '../../shared/tiptap/createPageLinkElement'
+import {providerManager} from '../../tiptap/providerManager'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -36,7 +39,6 @@ export const PageActions = (props: Props) => {
   const {id: pageId, access} = page
   const {viewer: viewerAccess} = access
   const history = useHistory()
-  const [execute, submitting] = useCreatePageMutation()
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const archivePage = () => {
@@ -57,17 +59,21 @@ export const PageActions = (props: Props) => {
 
   const addChildPage = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (submitting) return
-    execute({
-      variables: {parentPageId: pageId},
-      onCompleted: (response) => {
-        const {createPage} = response
-        const {page} = createPage
-        const {id} = page
-        const [_, pageId] = id.split(':')
-        history.push(`/pages/${pageId}`)
-        expandChildren()
+    providerManager.withDoc(pageId, (doc) => {
+      const frag = doc.getXmlFragment('default')
+      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+      const gotoNewPage = (e: Y.YXmlEvent) => {
+        for (const [key] of e.keys) {
+          if (key === 'pageCode') {
+            pageLinkBlock.unobserve(gotoNewPage)
+            const pageCode = pageLinkBlock.getAttribute('pageCode')
+            history.push(`/pages/${pageCode}`)
+            expandChildren()
+          }
+        }
       }
+      pageLinkBlock.observe(gotoNewPage)
+      frag.insert(1, [pageLinkBlock] as any)
     })
   }
 
@@ -88,7 +94,10 @@ export const PageActions = (props: Props) => {
             }
           >
             <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
-              <MenuItem onClick={archivePage}>{'Delete page'}</MenuItem>
+              <MenuItem onClick={archivePage}>
+                <DeleteIcon className='text-slate-600' />
+                <span className='pl-1'>{'Delete page'}</span>
+              </MenuItem>
             </MenuContent>
           </Menu>
         </div>
