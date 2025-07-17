@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.14.0](https://github.com/ParabolInc/parabol/compare/v10.13.0...v10.14.0) (2025-07-17)
+
+
+### Added
+
+* add breadcrumb to pages ([#11560](https://github.com/ParabolInc/parabol/issues/11560)) ([5d097b4](https://github.com/ParabolInc/parabol/commit/5d097b4142d6ea816902534a5b68143f4f5964e9))
+* add details block to pages ([#11520](https://github.com/ParabolInc/parabol/issues/11520)) ([7137743](https://github.com/ParabolInc/parabol/commit/7137743cf1a71415eaa59c25b09e965bc2396284))
+* add tables to pages ([#11545](https://github.com/ParabolInc/parabol/issues/11545)) ([5938265](https://github.com/ParabolInc/parabol/commit/59382650e05369dced5a3918bdccd6662f9b9a65))
+
 ## [10.13.0](https://github.com/ParabolInc/parabol/compare/v10.12.6...v10.13.0) (2025-07-15)
 
 
