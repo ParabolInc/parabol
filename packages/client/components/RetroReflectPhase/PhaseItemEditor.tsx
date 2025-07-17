@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
-import {MutableRefObject, RefObject, useEffect} from 'react'
+import {MutableRefObject, RefObject, useEffect, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -15,6 +15,7 @@ import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
+import {modEnter} from '../../utils/platform'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import SubmitReflectionButton from '../ReflectionCard/SubmitReflectionButton'
@@ -24,6 +25,10 @@ import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 import getBBox from './getBBox'
 
 const FLIGHT_TIME = 500
+
+const PLACEHOLDERS = ['share your thoughts', 'hit / for commands', `press ${modEnter} to submit`]
+let initialPlaceHolderIndex = 0
+
 const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
   ({isStart, transform}) => ({
     boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
@@ -146,15 +151,33 @@ const PhaseItemEditor = (props: Props) => {
       setTimeout(removeCardInFlight(content), FLIGHT_TIME)
     })
   })
+
+  const [placeholderIndex, setPlaceholderIndex] = useState(initialPlaceHolderIndex++)
+  const placeholder = useMemo(() => {
+    return PLACEHOLDERS[placeholderIndex % PLACEHOLDERS.length]
+  }, [placeholderIndex])
+
   const {editor} = useTipTapReflectionEditor(
     JSON.stringify({type: 'doc', content: [{type: 'paragraph'}]}),
     {
       atmosphere,
-      placeholder: 'Share your thoughts, hit / for commands',
+      placeholder,
       teamId,
-      readOnly: !!readOnly
+      readOnly: !!readOnly,
+      onModEnter: handleSubmit
     }
   )
+
+  useEffect(() => {
+    const nextPlaceholder = () => {
+      setPlaceholderIndex((idx) => idx + 1)
+    }
+
+    editor?.on('clearOnSubmit', nextPlaceholder)
+    return () => {
+      editor?.off('clearOnSubmit', nextPlaceholder)
+    }
+  }, [setPlaceholderIndex, editor])
 
   const isEditing = useIsEditing({
     editor,
