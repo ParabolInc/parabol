@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Editor} from '@tiptap/core'
+import {Editor, Extension} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
@@ -106,6 +106,17 @@ const PromptResponseEditor = (props: Props) => {
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
           openOnClick: false
+        }),
+        Extension.create({
+          name: 'promptEditorKeyboardShortcuts',
+          addKeyboardShortcuts(this) {
+            return {
+              'Mod-Enter': () => {
+                onSubmit()
+                return true
+              }
+            }
+          }
         })
       ],
       autofocus: autoFocus,
