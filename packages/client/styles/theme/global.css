@@ -534,7 +534,7 @@
   float: left;
   color: hsl(from var(--color-slate-700) h s l / 0.5);
   pointer-events: none;
-  height: 24px;
+  height: 0;
 }
 
 .ProseMirror-focused:focus {
