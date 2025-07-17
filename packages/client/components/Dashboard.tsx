@@ -45,7 +45,7 @@ const NewTeam = lazy(
     )
 )
 
-const Page = lazy(() => import(/* webpackChunkName: 'Page' */ '../modules/pages/Page'))
+const PageRoot = lazy(() => import(/* webpackChunkName: 'PageRoot' */ '../modules/pages/PageRoot'))
 const MakePage = lazy(() => import(/* webpackChunkName: 'MakePage' */ '../modules/pages/MakePage'))
 
 const ShareTopicRouterRoot = lazy(
@@ -175,7 +175,7 @@ const Dashboard = (props: Props) => {
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
             <Route
               path='/pages/:pageSlug'
-              render={(routeProps) => <Page {...routeProps} viewerRef={viewer} />}
+              render={(routeProps) => <PageRoot {...routeProps} viewerRef={viewer} />}
             />
             <Route path='/pages' component={MakePage} />
             <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRouterRoot} />
