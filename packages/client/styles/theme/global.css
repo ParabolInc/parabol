@@ -662,11 +662,12 @@
     opacity: 0.5;
     content: "";
     top: 0;
-    left: -5000px;
-    right: -5000px;
+    left: -100vw;
+    right: -100vw;
     bottom: 0;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
   [data-highlight="row"] th[data-active=true]::after,
   [data-highlight="row"] td[data-active=true]::after {
@@ -674,33 +675,36 @@
     opacity: 0.5;
     content: "";
     top: 0;
-    left: -5000px;
-    right: -5000px;
+    left: -100vw;
+    right: -100vw;
     bottom: 0;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
   [data-highlight="above"] th[data-active=true]::after,
   [data-highlight="above"] td[data-active=true]::after {
     background: var(--color-sky-200);
     content: "";
     top: -1px;
-    left: -5000px;
-    right: -5000px;
+    left: -100vw;
+    right: -100vw;
     height: 2px;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
   [data-highlight="below"] th[data-active=true]::after,
   [data-highlight="below"] td[data-active=true]::after {
     background: var(--color-sky-200);
     content: "";
     bottom: -1px;
-    left: -5000px;
-    right: -5000px;
+    left: -100vw;
+    right: -100vw;
     height: 2px;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
   [data-highlight="cell"] th[data-active=true],
   [data-highlight="cell"] td[data-active=true] {
@@ -713,10 +717,11 @@
     content: "";
     left: 0;
     right: 0;
-    top: -5000px;
-    bottom: -5000px;
+    top: -100vh;
+    bottom: -100vh;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
   [data-highlight="before"] th[data-active=true]::after,
   [data-highlight="before"] td[data-active=true]::after {
@@ -724,10 +729,11 @@
     content: "";
     left: -1px;
     width: 2px;
-    top: -5000px;
-    bottom: -5000px;
+    top: -100vh;
+    bottom: -100vh;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
   [data-highlight="after"] th[data-active=true]::after,
   [data-highlight="after"] td[data-active=true]::after {
@@ -735,10 +741,11 @@
     content: "";
     right: -1px;
     width: 2px;
-    top: -5000px;
-    bottom: -5000px;
+    top: -100vh;
+    bottom: -100vh;
     pointer-events: none;
     position: absolute;
+    z-index: 1;
   }
  
   /* Table-specific styling */

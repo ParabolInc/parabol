@@ -49,6 +49,29 @@ function Component(props: NodeViewProps) {
     return false
   }
 
+  const isHeader = () => {
+    const state = editor.view.state
+    const from = state.selection.from
+    const pos = state.doc.resolve(from)
+
+    for (let i = pos.depth; i > 0; i--) {
+      const node = pos.node(i)
+      if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
+        return node.type.name === 'tableHeader'
+      }
+    }
+
+    return false
+  }
+
+  const addRowAbove = () => {
+    if (isHeader()) {
+      editor.chain().focus().toggleHeaderRow().addRowBefore().toggleHeaderRow().run()
+    } else {
+      editor.chain().focus().addRowBefore().run()
+    }
+  }
+
   const selected = isActive()
 
   const onOpenChange = (open: boolean) => {
@@ -66,7 +89,7 @@ function Component(props: NodeViewProps) {
 
   return (
     <NodeViewWrapper className='relative' data-highlight={highlight}>
-      <NodeViewContent as='table' {...props} />
+      <NodeViewContent as='table' {...props.HTMLAttributes} />
       <DropdownMenu.Root onOpenChange={onOpenChange}>
         <DropdownMenu.Trigger asChild>
           <PlainButton
@@ -82,7 +105,7 @@ function Component(props: NodeViewProps) {
           <DropdownMenu.Content
             side='bottom'
             align='start'
-            className='rounded bg-white p-2 shadow-lg'
+            className='z-1 rounded bg-white p-2 shadow-lg'
           >
             <Item
               onFocus={focus('header')}
@@ -92,11 +115,7 @@ function Component(props: NodeViewProps) {
               <Toolbar />
               Toggle header row
             </Item>
-            <Item
-              onFocus={focus('above')}
-              onBlur={blur}
-              onSelect={() => editor.chain().focus().addRowBefore().run()}
-            >
+            <Item onFocus={focus('above')} onBlur={blur} onSelect={addRowAbove}>
               <AddRowAbove />
               Add row above
             </Item>
