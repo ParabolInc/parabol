@@ -1,6 +1,9 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
+import Details from '@tiptap/extension-details'
+import DetailsContent from '@tiptap/extension-details-content'
+import DetailsSummary from '@tiptap/extension-details-summary'
 import Document from '@tiptap/extension-document'
 import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
@@ -67,6 +70,14 @@ export const useTipTapPageEditor = (
           document: false,
           history: false
         }),
+        Details.configure({
+          persist: true,
+          HTMLAttributes: {
+            class: 'details'
+          }
+        }),
+        DetailsSummary,
+        DetailsContent,
         Underline,
         TaskList,
         TaskItem.configure({
@@ -99,6 +110,10 @@ export const useTipTapPageEditor = (
                 return 'New quote'
               case 'paragraph':
                 return "Press '/' for commands"
+              case 'detailsSummary':
+                return 'New summary'
+              case 'detailsContent':
+                return 'Add details, use / to add blocks'
               case 'bulletList':
               case 'listItem':
               case 'orderedList':

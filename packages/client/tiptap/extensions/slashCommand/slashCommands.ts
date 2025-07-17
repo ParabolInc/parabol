@@ -1,3 +1,4 @@
+import DetailsIcon from '@mui/icons-material/ArrowRight'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import CodeIcon from '@mui/icons-material/Code'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
@@ -113,6 +114,14 @@ export const slashCommands = [
         searchTerms: ['codeblock'],
         icon: CodeIcon,
         action: (editor: Editor) => editor.chain().focus().toggleCodeBlock().run()
+      },
+      {
+        title: 'Details',
+        description: 'Insert details',
+        searchTerms: ['details', 'accordion', 'expandable', 'toggle'],
+        icon: DetailsIcon,
+        action: (editor: Editor) =>
+          editor.chain().focus().setDetails().updateAttributes('details', {open: true}).run()
       },
       {
         title: 'Divider',

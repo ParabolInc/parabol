@@ -1,4 +1,7 @@
 import {mergeAttributes} from '@tiptap/core'
+import Details from '@tiptap/extension-details'
+import DetailsContent from '@tiptap/extension-details-content'
+import DetailsSummary from '@tiptap/extension-details-summary'
 import BaseLink from '@tiptap/extension-link'
 import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import {TaskItem} from '@tiptap/extension-task-item'
@@ -23,6 +26,11 @@ export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
 }
 export const serverTipTapExtensions = [
   StarterKit,
+  Details.configure({
+    persist: true
+  }),
+  DetailsSummary,
+  DetailsContent,
   Underline,
   TaskList,
   TaskItem.configure({
