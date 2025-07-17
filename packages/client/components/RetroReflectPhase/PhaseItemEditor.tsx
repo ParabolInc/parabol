@@ -26,7 +26,7 @@ import getBBox from './getBBox'
 
 const FLIGHT_TIME = 500
 
-const PLACEHOLDERS = ['share your thoughts', 'hit / for commands', `press ${modEnter} to submit`]
+const PLACEHOLDERS = ['Share your thoughts', 'Hit / for commands', `Press ${modEnter} to submit`]
 let initialPlaceHolderIndex = 0
 
 const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
