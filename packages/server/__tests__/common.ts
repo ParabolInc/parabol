@@ -55,16 +55,28 @@ const persistQuery = async (query: string) => {
   return id
 }
 
-export async function sendTipTap({authToken, pageId}: {authToken: string; pageId: string}) {
+export async function sendTipTap<T>(
+  {authToken, pageId}: {authToken: string; pageId: string},
+  cb: (doc: Doc) => Promise<T>
+) {
   const socket = new TiptapCollabProviderWebsocket({
     baseUrl: `ws://localhost:3003?token=${authToken}`
   })
   const doc = new Doc()
   // update the URL to match the title
-  return new TiptapCollabProvider({
+  const provider = new TiptapCollabProvider({
     websocketProvider: socket,
     name: pageId,
     document: doc
+  })
+  return new Promise((resolve) => {
+    provider.on('synced', async () => {
+      const res = await cb(provider.document)
+      // no great way to get these in an afterAll or globalTeardown, so we destroy them per-request
+      socket.destroy()
+      provider.destroy()
+      resolve(res)
+    })
   })
 }
 export async function sendPublic(req: {
@@ -75,6 +87,7 @@ export async function sendPublic(req: {
   const authToken = req.authToken ?? ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
+
   const docId = await persistQuery(query)
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
@@ -88,6 +101,7 @@ export async function sendPublic(req: {
       variables
     })
   })
+
   const body = await response.json()
   return body
 }
