@@ -1,6 +1,5 @@
 import * as amplitude from '@amplitude/analytics-browser'
 import {datadogRum} from '@datadog/browser-rum'
-import * as Sentry from '@sentry/browser'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import ReactGA from 'react-ga4'
@@ -37,7 +36,6 @@ declare global {
 }
 
 const {
-  sentry: dsn,
   datadogClientToken,
   datadogApplicationId,
   datadogService,
@@ -47,14 +45,6 @@ const ignoreErrors = [
   'Failed to update a ServiceWorker for scope',
   'ResizeObserver loop limit exceeded'
 ]
-if (dsn) {
-  Sentry.init({
-    dsn,
-    environment: 'client',
-    release: __APP_VERSION__,
-    ignoreErrors
-  })
-}
 
 const datadogEnabled =
   __PRODUCTION__ && datadogClientToken && datadogApplicationId && datadogService

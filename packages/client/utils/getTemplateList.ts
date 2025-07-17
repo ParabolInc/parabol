@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser'
+import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
 import {getTemplateList_template$key} from '../__generated__/getTemplateList_template.graphql'
@@ -23,7 +23,7 @@ const getTemplateList = (
   const {id: templateId, team} = template
   if (!team) {
     // https://sentry.io/share/issue/3e6e31cb053b44689eddd531858f1081/
-    Sentry.captureException(new Error(`NO TEAM ON TEMPLATE WTF. ${viewerTeamId}, ${templateId}`))
+    datadogRum.addError(new Error(`NO TEAM ON TEMPLATE WTF. ${viewerTeamId}, ${templateId}`))
     return 'TEAM'
   }
   const {id: teamId, orgId} = team

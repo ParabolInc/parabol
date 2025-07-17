@@ -17,7 +17,8 @@ export const LeftNavSharedPagesSection = (props: Props) => {
       fragment LeftNavSharedPagesSection_viewer on User {
         draggingPageId
         draggingPageIsPrivate
-        sharedPages: pages(first: 500, isPrivate: false) @connection(key: "User_sharedPages") {
+        sharedPages: pages(parentPageId: $nullId, first: 500, isPrivate: false)
+          @connection(key: "User_sharedPages") {
           edges {
             node {
               ...LeftNavPageLink_page
@@ -69,7 +70,7 @@ export const LeftNavSharedPagesSection = (props: Props) => {
             <LeftNavPageLink
               key={id}
               pageRef={node}
-              pageAncestors={[node.id]}
+              pageAncestors={[]}
               draggingPageId={draggingPageId}
               dropIdx={idx}
               isLastChild={idx === edges.length - 1}

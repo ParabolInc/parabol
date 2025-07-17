@@ -11,7 +11,7 @@ import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import MattermostServerManager from '../../../../utils/MattermostServerManager'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
-import sendToSentry from '../../../../utils/sendToSentry'
+import logError from '../../../../utils/logError'
 import {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 import {SlackNotificationEventEnum} from '../../../public/resolverTypes'
@@ -48,7 +48,7 @@ const notifyMattermost = async (
   const manager = new MattermostServerManager(notifyUrl, sharedSecret ?? undefined)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
-    sendToSentry(result, {userId: user.id, tags: {teamId, event, notifyUrl}})
+    logError(result, {userId: user.id, tags: {teamId, event, notifyUrl}})
     return {
       error: result
     }

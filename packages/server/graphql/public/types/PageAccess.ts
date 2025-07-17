@@ -44,6 +44,7 @@ const PageAccess: PageAccessResolvers = {
       .selectFrom('PageUserAccess')
       .select(['userId', 'role'])
       .where('pageId', '=', id)
+      .orderBy('userId') // for deterministic testing
       .execute()
     return access
   },

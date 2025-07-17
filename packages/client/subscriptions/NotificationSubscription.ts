@@ -8,7 +8,10 @@ import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimeli
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
 import Atmosphere from '../Atmosphere'
-import {NotificationSubscription as TNotificationSubscription} from '../__generated__/NotificationSubscription.graphql'
+import {
+  NotificationSubscription as TNotificationSubscription,
+  type NotificationSubscription$data
+} from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
@@ -27,6 +30,9 @@ import {
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
+import {handleArchivePage} from '../mutations/useArchivePageMutation'
+import {handleCreatePage} from '../mutations/useCreatePageMutation'
+import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
@@ -74,6 +80,9 @@ const subscription = graphql`
           ...NotificationPicker_notification @relay(mask: false)
         }
         ...popNotificationToast_notification @relay(mask: false)
+      }
+      ArchivePagePayload {
+        ...useArchivePageMutation_notification @relay(mask: false)
       }
       UpdatedNotification {
         updatedNotification {
@@ -174,6 +183,12 @@ const subscription = graphql`
           enabled
         }
       }
+      CreatePagePayload {
+        ...useCreatePageMutation_notification @relay(mask: false)
+      }
+      UpdatePagePayload {
+        ...useUpdatePageMutation_notification @relay(mask: false)
+      }
     }
   }
 `
@@ -272,13 +287,34 @@ const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {
   handleAddNotifications(notification, context.store)
 }
 
+const archivePageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
+  const archivedPageId = payload.getValue('pageId')
+  const archivedPage = payload.getLinkedRecord('page')
+  handleArchivePage(archivedPageId, {...context, isHardDelete: !archivedPage})
+}
+
+const createPageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
+  const newPage = payload.getLinkedRecord('page')
+  handleCreatePage(newPage, context)
+}
+
+const updatePageNotificationUpdater: SharedUpdater<
+  NotificationSubscription$data['notificationSubscription']['UpdatePagePayload']
+> = (payload, context) => {
+  const updatedPage = payload.getLinkedRecord('page')
+  handleUpdatePage(updatedPage, context)
+}
+
 const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
   AddNewFeaturePayload: addNewFeatureNotificationUpdater,
   AddOrgPayload: addOrgMutationNotificationUpdater,
   AddTeamPayload: addTeamMutationNotificationUpdater,
   AddedNotification: addedNotificationUpdater,
+  ArchivePagePayload: archivePageNotificationUpdater,
   CreateTaskPayload: createTaskNotificationUpdater,
+  CreatePagePayload: createPageNotificationUpdater,
+  UpdatePagePayload: updatePageNotificationUpdater,
   EndCheckInSuccess: endCheckInNotificationUpdater,
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
   InviteToTeamPayload: inviteToTeamNotificationUpdater,

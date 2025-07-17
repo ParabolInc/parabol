@@ -1,6 +1,7 @@
-import styled from '@emotion/styled'
+import {isNodeEmpty} from '@tiptap/core'
+import {Node as ProseMirrorNode} from '@tiptap/pm/model'
 import graphql from 'babel-plugin-relay/macro'
-import {MouseEvent, useEffect, useRef, useState} from 'react'
+import {MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {
   NewMeetingPhaseTypeEnum,
@@ -11,51 +12,26 @@ import isDemoRoute from '~/utils/isDemoRoute'
 import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
-import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
-import useTooltip from '../../hooks/useTooltip'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
-import {PALETTE} from '../../styles/paletteV3'
-import {Breakpoint, ZIndex} from '../../types/constEnums'
+import {Breakpoint} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
-import CardButton from '../CardButton'
 import {OpenSpotlight} from '../GroupingKanbanColumn'
-import IconLabel from '../IconLabel'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
+import DeleteReflectionButton from './DeleteReflectionButton'
 import ReactjiSection from './ReactjiSection'
 import ReflectionCardAuthor from './ReflectionCardAuthor'
-import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import ReflectionCardRoot from './ReflectionCardRoot'
-
-const StyledReacjis = styled(ReactjiSection)({
-  padding: '4px 16px 0'
-})
-
-const SpotlightIcon = styled(IconLabel)({
-  color: PALETTE.SLATE_700
-})
-
-const SpotlightButton = styled(CardButton)<{showSpotlight: boolean}>(({showSpotlight}) => ({
-  bottom: 2,
-  color: PALETTE.SLATE_700,
-  cursor: 'pointer',
-  opacity: 1,
-  position: 'absolute',
-  right: 2,
-  visibility: showSpotlight ? 'inherit' : 'hidden',
-  zIndex: ZIndex.TOOLTIP,
-  ':hover': {
-    backgroundColor: PALETTE.SLATE_200
-  }
-}))
+import SpotlightButton from './SpotlightButton'
+import SubmitReflectionButton from './SubmitReflectionButton'
 
 interface Props {
   isClipped?: boolean
@@ -63,7 +39,6 @@ interface Props {
   meetingRef: ReflectionCard_meeting$key
   openSpotlight?: OpenSpotlight
   stackCount?: number
-  showOriginFooter?: boolean
   showReactji?: boolean
   dataCy?: string
   showDragHintAnimation?: boolean
@@ -160,7 +135,8 @@ const ReflectionCard = (props: Props) => {
     meetingId,
     reactjis,
     reflectionGroupId,
-    creator
+    creator,
+    isEditing
   } = reflection
   const {
     localPhase,
@@ -193,15 +169,9 @@ const ReflectionCard = (props: Props) => {
   })
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {
-    tooltipPortal,
-    openTooltip,
-    closeTooltip,
-    originRef: tooltipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const handleEditorFocus = () => {
     if (isTempId(reflectionId)) return
-    if (reflection.isEditing) {
+    if (isEditing) {
       return
     }
     updateIsEditing(true)
@@ -248,8 +218,22 @@ const ReflectionCard = (props: Props) => {
     )
   }
 
+  const contentChanged = useMemo(() => {
+    if (!editor) return false
+    return !isEqualWhenSerialized(editor.getJSON(), JSON.parse(content))
+  }, [content, editor?.getJSON()])
+
+  const isFirstEdit = useMemo(() => {
+    if (!editor || !isEditing) return false
+    const node = ProseMirrorNode.fromJSON(editor.schema, JSON.parse(content))
+    return isNodeEmpty(node)
+  }, [editor, isEditing, content])
+
   const handleEditorBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     if (isTempId(reflectionId)) return
+    // Creating a reflection in the group phase is different than in reflect phase. We're creating an empty reflection and start editing it.
+    // For the user however we want to have a consistent behaviour with the reflect phase. This means when they blur without editing, we don't want to submit the reflection.
+    if (isFirstEdit) return
     const newFocusedElement = e.relatedTarget as Node
     // don't trigger a blur if a button inside the element is clicked
     if (e.currentTarget.contains(newFocusedElement)) return
@@ -260,6 +244,7 @@ const ReflectionCard = (props: Props) => {
     if (isClickInModal) {
       return
     }
+
     handleContentUpdate()
     updateIsEditing(false)
     EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
@@ -295,12 +280,21 @@ const ReflectionCard = (props: Props) => {
     }
   }
 
-  const showSpotlight =
-    phaseType === 'group' &&
-    !isSpotlightOpen &&
-    !isComplete &&
-    !isDemoRoute() &&
-    (isHovering || !isDesktop)
+  const preventPrematureBlur = (e: MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+  }
+
+  const handleDelete = () => {
+    if (readOnly || submitting) return
+    submitMutation()
+    RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
+  }
+
+  const enableSpotlight =
+    phaseType === 'group' && !isSpotlightOpen && !isComplete && !isDemoRoute() && !isEditing
+  const showSpotlight = enableSpotlight && (isHovering || !isDesktop)
+  const showEditButton = !readOnly && isFirstEdit
+
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const el = scrollRef.current
@@ -318,9 +312,10 @@ const ReflectionCard = (props: Props) => {
       showDragHintAnimation={showDragHintAnimation}
       ref={reflectionDivRef}
       className='py-3'
+      onFocus={handleEditorFocus}
+      onBlur={handleEditorBlur}
     >
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-
       <div
         ref={scrollRef}
         className={cn('relative w-full overflow-auto text-sm leading-5 text-slate-700')}
@@ -332,26 +327,33 @@ const ReflectionCard = (props: Props) => {
             readOnly ? (phaseType === 'discuss' ? 'select-text' : 'select-none') : undefined
           )}
           editor={editor}
-          onFocus={handleEditorFocus}
-          onBlur={handleEditorBlur}
         />
       </div>
+      <div
+        className={cn('flex flex-row-reverse items-center justify-between pr-2 pl-4', {
+          'h-0': !showEditButton && !disableAnonymity
+        })}
+      >
+        <div
+          className={cn('flex items-center gap-1 opacity-0', {
+            'opacity-100': showEditButton
+          })}
+        >
+          <SubmitReflectionButton
+            onClick={handleContentUpdate}
+            disabled={readOnly || !contentChanged || submitting}
+          />
+        </div>
+        {disableAnonymity && <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>}
+      </div>
+      {showReactji && (
+        <ReactjiSection className='pt-2 pr-2 pl-4' reactjis={reactjis} onToggle={onToggleReactji} />
+      )}
       {error && <StyledError onClick={clearError}>{error.message}</StyledError>}
       {!readOnly && (
-        <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
+        <DeleteReflectionButton onMouseDown={preventPrematureBlur} onClick={handleDelete} />
       )}
-      {disableAnonymity && <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>}
-      {showReactji && <StyledReacjis reactjis={reactjis} onToggle={onToggleReactji} />}
-      <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
-      <SpotlightButton
-        onClick={handleClickSpotlight}
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        showSpotlight={showSpotlight}
-      >
-        <SpotlightIcon ref={tooltipRef} icon='search' />
-      </SpotlightButton>
-      {tooltipPortal('Find similar')}
+      <SpotlightButton onClick={handleClickSpotlight} showSpotlight={showSpotlight} />
     </ReflectionCardRoot>
   )
 }

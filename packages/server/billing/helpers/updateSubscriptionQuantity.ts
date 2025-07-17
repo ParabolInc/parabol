@@ -1,7 +1,7 @@
 import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import RedisLockQueue from '../../utils/RedisLockQueue'
-import sendToSentry from '../../utils/sendToSentry'
+import logError from '../../utils/logError'
 import {getStripeManager} from '../../utils/stripe'
 
 /**
@@ -35,11 +35,12 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
 
     const [orgUserCountRes, teamSubscription] = await Promise.all([
       pg
-        .selectFrom('OrganizationUser')
-        .select(({fn}) => fn.count<number>('id').as('count'))
+        .selectFrom('OrganizationUser as ou')
+        .innerJoin('User as u', 'ou.userId', 'u.id')
+        .select(({fn}) => fn.count<number>('ou.id').as('count'))
         .where('orgId', '=', orgId)
-        .where('removedAt', 'is', null)
-        .where('inactive', '=', false)
+        .where('ou.removedAt', 'is', null)
+        .where('u.inactive', '=', false)
         .executeTakeFirstOrThrow(),
       manager.getSubscriptionItem(stripeSubscriptionId)
     ])
@@ -57,10 +58,9 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
           new Date(),
           'invoice.created',
           teamSubscription.quantity,
-          orgUserCount,
-          []
+          orgUserCount
         )
-        sendToSentry(new Error('Stripe Quantity Mismatch'), {
+        logError(new Error('Stripe Quantity Mismatch'), {
           tags: {
             quantity: orgUserCount,
             subscriptionQuantity: teamSubscription.quantity,

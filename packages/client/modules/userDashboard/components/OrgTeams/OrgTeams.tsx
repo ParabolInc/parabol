@@ -22,6 +22,7 @@ const OrgTeams = (props: Props) => {
       fragment OrgTeams_organization on Organization {
         id
         tier
+        isOrgAdmin
         teams {
           id
           name
@@ -46,7 +47,7 @@ const OrgTeams = (props: Props) => {
 
   const [sortBy, setSortBy] = useState<SortField>('lastMetAt')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-  const {teams, allTeamsCount, tier} = organization
+  const {teams, allTeamsCount, tier, isOrgAdmin} = organization
   const showingAllTeams = teams.length === allTeamsCount
   const viewerTeamCount = teams.length
 
@@ -132,7 +133,7 @@ const OrgTeams = (props: Props) => {
             </thead>
             <tbody>
               {sortedTeams.map((team) => (
-                <OrgTeamsRow key={team.id} teamRef={team} />
+                <OrgTeamsRow key={team.id} teamRef={team} isOrgAdmin={isOrgAdmin} />
               ))}
             </tbody>
           </table>

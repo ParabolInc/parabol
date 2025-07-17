@@ -51,7 +51,6 @@ const useMeetingMusicSync = (meetingId: string) => {
   const [currentTrackSrc, setCurrentTrackSrc] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [volume, setVolume] = useState<number>(0.5)
-  const [localOverride, setLocalOverride] = useState(false)
 
   // Stores track info when autoplay is blocked by browser, waits for user interaction to play
   const pendingPlay = useRef<{trackSrc: string} | null>(null)
@@ -59,7 +58,7 @@ const useMeetingMusicSync = (meetingId: string) => {
 
   // Sync music state from server for non-facilitators
   useEffect(() => {
-    if (isFacilitator || localOverride || !audioRef.current) return
+    if (isFacilitator || !audioRef.current) return
 
     const {musicSettings} = meeting || {}
     if (!musicSettings) return
@@ -70,7 +69,8 @@ const useMeetingMusicSync = (meetingId: string) => {
     const shouldStartPlaying = shouldPlay && !isPlaying
     const shouldStopPlaying = !shouldPlay && isPlaying
 
-    if (shouldStartPlaying || (trackChanged && shouldPlay)) {
+    // Override local control when facilitator plays a track
+    if (shouldStartPlaying) {
       playTrack(trackSrc || currentTrackSrc)
     } else if (shouldStopPlaying) {
       audioRef.current.pause()
@@ -81,7 +81,7 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current.load()
       setCurrentTrackSrc(trackSrc)
     }
-  }, [musicSettings?.trackSrc, musicSettings?.isPlaying, isFacilitator, localOverride])
+  }, [musicSettings?.trackSrc, musicSettings?.isPlaying, isFacilitator])
 
   // Initialize audio element and prepare for autoplay restrictions
   useEffect(() => {
@@ -89,9 +89,10 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current = new Audio()
       audioRef.current.volume = volume
       audioRef.current.setAttribute('playsinline', 'true')
+      audioRef.current.loop = true
       audioRef.current.muted = true
 
-      audioRef.current.src = '/static/sounds/quiet-lofi.mp3'
+      audioRef.current.src = quietLofi
       audioRef.current.load()
       audioRef.current
         .play()
@@ -104,13 +105,6 @@ const useMeetingMusicSync = (meetingId: string) => {
         if (pendingPlay.current) {
           audioRef.current!.muted = false
           audioRef.current!.volume = volume
-        }
-      })
-
-      audioRef.current.addEventListener('ended', () => {
-        if (audioRef.current && isPlaying) {
-          audioRef.current.currentTime = 0
-          audioRef.current.play()
         }
       })
     }
@@ -188,8 +182,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     if (isFacilitator) {
       syncMusicState(currentTrackSrc, false)
-    } else {
-      setLocalOverride(true)
     }
   }
 
@@ -203,8 +195,6 @@ const useMeetingMusicSync = (meetingId: string) => {
 
     if (isFacilitator) {
       syncMusicState(trackSrc, false)
-    } else {
-      setLocalOverride(true)
     }
   }
 

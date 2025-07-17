@@ -1,18 +1,14 @@
-import AddIcon from '@mui/icons-material/Add'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory, useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
-import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
-import {toSlug} from '../../shared/toSlug'
+import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {LeftNavItem} from './LeftNavItem'
-import {LeftNavItemButton} from './LeftNavItemButton'
-import {LeftNavItemButtons} from './LeftNavItemButtons'
+import {PageActions} from './PageActions'
 import {SubPagesRoot} from './SubPagesRoot'
 
 export type PageConnectionKey = 'User_privatePages' | 'User_sharedPages' | 'User_pages'
@@ -37,10 +33,11 @@ export const LeftNavPageLink = (props: Props) => {
     nextPeerId,
     connectionKey
   } = props
-  const depth = pageAncestors.length - 1
+  const depth = pageAncestors.length
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {
+        ...PageActions_page
         id
         title
         parentPageId
@@ -48,24 +45,29 @@ export const LeftNavPageLink = (props: Props) => {
         isPrivate
         isDraggingFirstChild
         isDraggingLastChild
-        sortOrder # used implicityly in store traveral by useDraggingPage
+        currentPageAncestorDepth
+        sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,
     pageRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild, teamId, isPrivate} =
-    page
-  const pageIdNum = id.split(':')[1]
-  const titleSlug = toSlug(title || '')
-  const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
-  const match = useRouteMatch(`/pages/:slug(.*)${pageIdNum}`)
-  const isActive = match?.isExact ?? false
+  const {
+    title,
+    id,
+    parentPageId,
+    isDraggingFirstChild,
+    isDraggingLastChild,
+    teamId,
+    isPrivate,
+    currentPageAncestorDepth
+  } = page
+  const pageCode = id.split(':')[1]
+  const slug = getPageSlug(Number(pageCode), title)
+
   const [showChildren, setShowChildren] = useState(false)
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
-  const history = useHistory()
-  const [execute, submitting] = useCreatePageMutation()
   const {onPointerDown, ref} = useDraggablePage(
     id,
     isPrivate,
@@ -75,21 +77,6 @@ export const LeftNavPageLink = (props: Props) => {
     dropIdx === 0,
     isLastChild
   )
-  const addChildPage = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (submitting) return
-    execute({
-      variables: {parentPageId: id},
-      onCompleted: (response) => {
-        const {createPage} = response
-        const {page} = createPage
-        const {id} = page
-        const [_, pageId] = id.split(':')
-        history.push(`/pages/${pageId}`)
-        setShowChildren(true)
-      }
-    })
-  }
   const nextPageAncestors = [...pageAncestors, id]
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const isSelf = draggingPageId === id
@@ -104,6 +91,7 @@ export const LeftNavPageLink = (props: Props) => {
     !isDraggingFirstChild &&
     !isNextPeer &&
     !isPrivateToTopLevelShared
+  const isActive = (currentPageAncestorDepth && !showChildren) || currentPageAncestorDepth === 0
   return (
     <div className='relative rounded-md' ref={ref}>
       <div
@@ -147,11 +135,9 @@ export const LeftNavPageLink = (props: Props) => {
             draggingPageId={isSelf ? null : draggingPageId}
           />
           <LeftNavItem>
-            <span>{title || '<Untitled>'}</span>
+            <span className='pl-1'>{title || '<Untitled>'}</span>
           </LeftNavItem>
-          <LeftNavItemButtons>
-            <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
-          </LeftNavItemButtons>
+          <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>
       </div>
       {showChildren && (

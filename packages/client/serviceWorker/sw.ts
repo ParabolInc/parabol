@@ -19,7 +19,7 @@ const cacheList = [STATIC_CACHE, DYNAMIC_CACHE]
 
 // this gets built in applyEnvVarToClientAssets
 const PUBLIC_PATH = `__PUBLIC_PATH__`.replace(/^\/{2,}/, 'https://')
-const waitUntil = (cb: (e: ExtendableEvent) => void) => (e: ExtendableEvent) => {
+const waitUntil = <T>(cb: (e: ExtendableEvent) => Promise<T>) => (e: ExtendableEvent) => {
   e.waitUntil(cb(e))
 }
 
@@ -46,7 +46,7 @@ const onInstall = async (_event: ExtendableEvent) => {
   await Promise.all(
     cachedResponses.map((res: Response | undefined, idx) => {
       if (!res) return
-      newCache.put(urls[idx], res)
+      newCache.put(urls[idx]!, res)
     })
   )
   return fetchCachedFiles(newUrls).catch(console.error)
@@ -67,12 +67,12 @@ const onFetch = async (event: FetchEvent) => {
   const {url} = request
   const isCacheable =
     url.startsWith('http') &&
-    url.match(/.(js|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
+    url.match(/.(js|json|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
   if (isCacheable) {
     const cachedRes = await caches.match(request.url)
     // all our assets are hashed, so if the hash matches, it's valid
     // let's skip opaque responses because we don't know whether they're valid
-    if (cachedRes && cachedRes.type !== 'opaque') {
+    if (cachedRes && cachedRes.type !== 'opaque' && cachedRes.ok) {
       return cachedRes
     }
     try {
@@ -84,6 +84,17 @@ const onFetch = async (event: FetchEvent) => {
       const req = isParabolHosted ? fetch(request.url, {cache: 'no-store'}) : fetch(request)
       const networkRes = await req
       const cache = await caches.open(DYNAMIC_CACHE)
+      if (isParabolHosted && networkRes.status === 404 && url.match(/.(js|json|mjs)/)) {
+        // If we encounter a 404 for a script file, we most likely have a stale dyanmic cache.
+        // We could clear the cache and the app probably will recover after a reload, however more likely the whole service worker is stale.
+        // Because failing to load a script file might prevent the code to refresh the service worker from loading, it's better to just harakiri.
+        console.error(`Parabol source file ${url} returned 404, updating service worker`)
+        self.registration.update().catch((error) => {
+          console.error('Failed to update service worker, unregistering it', error)
+          self.registration.unregister()
+        })
+        return networkRes
+      }
       // cloning here because I'm not sure if we must clone before reading the body
       cache.put(request.url, networkRes.clone()).catch(console.error)
       return networkRes
@@ -106,6 +117,15 @@ const onFetch = async (event: FetchEvent) => {
   return fetch(request)
 }
 
+const onMessage = async (event: MessageEvent) => {
+  if (event.data?.type === 'getVersion') {
+    const port = event.ports?.[0]
+    port?.postMessage({type: 'version', payload: `${__APP_VERSION__}`})
+    port?.close()
+  }
+}
+
+self.onmessage = onMessage
 self.oninstall = waitUntil(onInstall)
 self.onactivate = waitUntil(onActivate)
 self.onfetch = (e: FetchEvent) => {

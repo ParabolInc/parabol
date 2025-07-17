@@ -1,15 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import ms from 'ms'
-import {useEffect} from 'react'
 import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import useMutationProps from '~/hooks/useMutationProps'
-import CreateMassInvitationMutation from '~/mutations/CreateMassInvitationMutation'
 import {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import {PALETTE} from '../styles/paletteV3'
-import {Threshold} from '../types/constEnums'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 
@@ -29,9 +24,6 @@ interface Props {
   meetingId: string | undefined
   queryRef: PreloadedQuery<MassInvitationTokenLinkQuery>
 }
-
-const FIVE_MINUTES = ms('5m')
-const acceptableLifeLeft = Threshold.MASS_INVITATION_TOKEN_LIFESPAN - FIVE_MINUTES
 
 const query = graphql`
   query MassInvitationTokenLinkQuery($teamId: ID!, $meetingId: ID) {
@@ -54,29 +46,14 @@ const MassInvitationTokenLink = (props: Props) => {
   const {team} = viewer
   const {id: teamId, massInvitation} = team!
   const atmosphere = useAtmosphere()
-  const {expiration, id: token} = massInvitation!
-  const tokenLifeRemaining = new Date(expiration).getTime() - Date.now()
-  const isTokenValid = tokenLifeRemaining > acceptableLifeLeft
-  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  useEffect(() => {
-    if (isTokenValid) return
-    const doFetch = async () => {
-      if (submitting) return
-      submitMutation()
-      CreateMassInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
-    }
-    doFetch().catch(() => {
-      /*ignore*/
-    })
-  }, [isTokenValid, submitting])
+  const {id: token} = massInvitation!
   const onCopy = () => {
     SendClientSideEvent(atmosphere, 'Copied Invite Link', {
       teamId: teamId,
       meetingId: meetingId
     })
   }
-  const displayToken = isTokenValid ? token : '············'
-  const url = getMassInvitationUrl(displayToken)
+  const url = getMassInvitationUrl(token)
   const linkLabel = url.replace(/https?:\/\//, '')
   return (
     <StyledCopyShortLink

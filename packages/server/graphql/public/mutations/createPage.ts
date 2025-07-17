@@ -1,63 +1,56 @@
-import {GraphQLError} from 'graphql'
-import {positionBefore} from '../../../../client/shared/sortOrder'
+import {sql} from 'kysely'
+import {__START__} from '../../../../client/shared/sortOrder'
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import publish from '../../../utils/publish'
 import {MutationResolvers} from '../resolverTypes'
-import {MAX_PAGE_DEPTH} from './updatePage'
+import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
 const createPage: MutationResolvers['createPage'] = async (
   _source,
-  {parentPageId, teamId},
-  {authToken, dataLoader}
+  {teamId},
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
-  if (parentPageId && teamId) {
-    throw new GraphQLError('Can only provider either parentPageId OR teamId')
-  }
+  const operationId = dataLoader.share()
+  const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : undefined
-  const [viewer, parentPage] = await Promise.all([
-    dataLoader.get('users').loadNonNull(viewerId),
-    dbParentPageId ? dataLoader.get('pages').load(dbParentPageId) : null
-  ])
-  if (dbParentPageId && !parentPage) {
-    throw new GraphQLError('Invalid parentPageId')
-  }
-
-  if (parentPage && parentPage.ancestorIds.length >= MAX_PAGE_DEPTH) {
-    throw new GraphQLError(`Pages can only be nested ${MAX_PAGE_DEPTH} pages deep`, {
-      extensions: {code: 'MAX_PAGE_DEPTH_REACHED'}
-    })
-  }
+  // In the future, all user-defined pages will have a parent so we can get rid of the code below
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const pg = getKysely()
-  const topPage = await pg
-    .selectFrom('Page')
-    .select('sortOrder')
-    .innerJoin('PageAccess', 'pageId', 'Page.id')
-    .where('PageAccess.userId', '=', viewerId)
-    .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-    .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
-    .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
-    .$if(!teamId, (qb) => qb.where('isPrivate', '=', true))
-    .orderBy('sortOrder')
-    .limit(1)
-    .executeTakeFirst()
-  const sortOrder = positionBefore(topPage?.sortOrder ?? ' ')
-  const page = await getKysely()
+  const isPrivate = !teamId
+  const sortOrder = await getPageNextSortOrder(__START__, viewerId, isPrivate, teamId || null)
+  const page = await pg
     .insertInto('Page')
     .values({
       userId: viewerId,
-      parentPageId: dbParentPageId,
-      ancestorIds: parentPage?.ancestorIds.concat(dbParentPageId!) ?? [],
+      isPrivate,
       teamId,
       sortOrder
     })
     .returningAll()
     .executeTakeFirstOrThrow()
-
-  analytics.pageCreated(viewer, page.id)
+  const {id: pageId} = page
+  const viewerAccessPromise = pg
+    .insertInto('PageUserAccess')
+    .values({userId: viewerId, pageId, role: 'owner'})
+    .execute()
+  if (teamId) {
+    await pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
+  }
+  await viewerAccessPromise
+  await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
+    .selectNoFrom(sql`1`.as('t'))
+    .execute()
+  analytics.pageCreated(viewer, pageId)
+  const data = {page}
+  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'CreatePagePayload', data, subOptions)
+  })
   return {page}
 }
 

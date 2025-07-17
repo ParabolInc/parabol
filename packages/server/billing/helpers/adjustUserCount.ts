@@ -49,13 +49,7 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
     email,
     isActive: !inactive
   })
-  await pg
-    .with('User', (qb) => qb.updateTable('User').set({inactive}).where('id', '=', userId))
-    .updateTable('OrganizationUser')
-    .set({inactive})
-    .where('userId', '=', userId)
-    .where('removedAt', 'is', null)
-    .execute()
+  await pg.updateTable('User').set({inactive}).where('id', '=', userId).execute()
 }
 
 const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
@@ -75,7 +69,6 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
       oc.constraint('unique_org_user').doUpdateSet({
         joinedAt: sql`CURRENT_TIMESTAMP`,
         removedAt: null,
-        inactive: false,
         role: null,
         suggestedTier: null
       })

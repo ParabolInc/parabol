@@ -1,5 +1,7 @@
+import {sql} from 'kysely'
 import getKysely from '../../../../postgres/getKysely'
 import {selectDescendantPages} from '../../../../postgres/select'
+import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
 
 export const movePageToNewTeam = async (
   viewerId: string,
@@ -8,68 +10,71 @@ export const movePageToNewTeam = async (
   sortOrder: string
 ) => {
   const pg = getKysely()
-  // When moving to a new team, revoke all previous access then add editor access for the team for all descendants
-  await selectDescendantPages(pg, pageId)
-    // don't delete the user record because the insert will see the same snapshot as this CTE, so it must do nothing if it exists
+  const trx = await pg.startTransaction().execute()
+
+  await selectDescendantPages(trx, pageId)
     .with('delUsers', (qc) =>
       qc
         .deleteFrom('PageUserAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
+        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
         .where('userId', '!=', viewerId)
     )
     .with('delTeams', (qc) =>
       qc
         .deleteFrom('PageTeamAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
+        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
         .where('teamId', '!=', teamId)
     )
     .with('delOrgs', (qc) =>
       qc
         .deleteFrom('PageOrganizationAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
+        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
     )
     .with('delExts', (qc) =>
       qc
         .deleteFrom('PageExternalAccess')
-        .where('pageId', 'in', (qb) => qb.selectFrom('descendants').select('id'))
+        .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
     )
-    .with('reinsertOwner', (qc) =>
+    .with('upsertViewerOwner', (qc) =>
       qc
-        // viewer ownership may have come from a team/org, so re-add it here
         .insertInto('PageUserAccess')
         .columns(['pageId', 'userId', 'role'])
         .expression((eb) =>
           eb
-            .selectFrom('descendants')
-            .select(['id', eb.val(viewerId).as('userId'), eb.val('owner').as('role')])
+            .selectFrom('descendants as d')
+            .select((eb) => [
+              eb.ref('d.id').as('pageId'),
+              eb.val(viewerId).as('userId'),
+              sql`'owner'::"PageRoleEnum"`.as('role')
+            ])
         )
         .onConflict((oc) =>
           oc
             .columns(['pageId', 'userId'])
-            .doUpdateSet({role: 'owner'})
-            .where(({eb, ref}) => eb(ref('PageUserAccess.role'), '!=', ref('excluded.role')))
+            .doUpdateSet((eb) => ({
+              role: eb.ref('excluded.role')
+            }))
+            .whereRef('PageUserAccess.role', '!=', 'excluded.role')
         )
     )
-    .with('insertNewTeam', (qc) =>
+    .with('upsertTeamEditor', (qc) =>
       qc
         .insertInto('PageTeamAccess')
         .columns(['pageId', 'teamId', 'role'])
         .expression((eb) =>
           eb
             .selectFrom('descendants as d')
-            .select(({ref, val}) => [
-              ref('d.id').as('pageId'),
-              val(teamId).as('teamId'),
-              val('editor').as('role')
+            .select((eb) => [
+              eb.ref('d.id').as('pageId'),
+              eb.val(teamId).as('teamId'),
+              sql`'editor'::"PageRoleEnum"`.as('role')
             ])
         )
         .onConflict((oc) =>
           oc
             .columns(['pageId', 'teamId'])
-            .doUpdateSet((eb) => ({
-              role: eb.ref('excluded.role')
-            }))
-            .where((eb) => eb(eb.ref('PageTeamAccess.role'), '!=', eb.ref('excluded.role')))
+            .doUpdateSet({role: 'editor'})
+            .whereRef('PageTeamAccess.role', '!=', 'excluded.role')
         )
     )
     .updateTable('Page')
@@ -83,4 +88,9 @@ export const movePageToNewTeam = async (
     })
     .where('id', '=', pageId)
     .execute()
+
+  await updatePageAccessTable(trx, pageId, {skipUnionOrg: true})
+    .selectNoFrom(sql`1`.as('t'))
+    .execute()
+  await trx.commit().execute()
 }

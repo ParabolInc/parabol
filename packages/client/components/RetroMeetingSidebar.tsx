@@ -57,7 +57,7 @@ const RetroMeetingSidebar = (props: Props) => {
             isComplete
             isNavigable
             isNavigableByFacilitator
-            readyCount
+            readyUserIds
           }
         }
       }
@@ -103,11 +103,12 @@ const RetroMeetingSidebar = (props: Props) => {
               ? getSidebarItemStage(prevPhaseType, phases, facilitatorStageId)
               : null
 
-            const {isComplete: isPrevItemStageComplete = true, readyCount = 0} = prevItemStage ?? {}
+            const {isComplete: isPrevItemStageComplete = true, readyUserIds = []} =
+              prevItemStage ?? {}
 
             const activeCount = meetingMembers.length
             const isConfirmRequired =
-              isViewerFacilitator && readyCount < activeCount - 1 && activeCount > 1
+              isViewerFacilitator && readyUserIds.length < activeCount - 1 && activeCount > 1
 
             if (
               isComplete ||

@@ -4,7 +4,7 @@ import GoogleManager from 'parabol-client/utils/GoogleManager'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {stringify} from 'querystring'
 import appOrigin from '../appOrigin'
-import sendToSentry from './sendToSentry'
+import logError from './logError'
 
 interface OAuth2Response {
   access_token: string
@@ -59,7 +59,7 @@ export default class GoogleServerManager extends GoogleManager {
     // TODO: refactor to use authorizeOAuth2
     if ('error' in tokenJson) {
       const errorMessage = (tokenJson.error as string) || `Received null OAuth2 Error from ${uri}`
-      sendToSentry(new Error(errorMessage))
+      logError(new Error(errorMessage))
     }
     const {access_token: accessToken, id_token: idToken} = tokenJson
     const id = decode(idToken) as GoogleIDToken

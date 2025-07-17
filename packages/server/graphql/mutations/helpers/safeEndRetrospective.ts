@@ -8,7 +8,6 @@ import getKysely from '../../../postgres/getKysely'
 import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../../utils/Logger'
-import RecallAIServerManager from '../../../utils/RecallAIServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
@@ -16,6 +15,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
 import isValid from '../../isValid'
+import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
 import {generateRetroSummary} from './generateRetroSummary'
@@ -25,25 +25,23 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
-const getTranscription = async (recallBotId?: string | null) => {
-  if (!recallBotId) return
-  const manager = new RecallAIServerManager()
-  return await manager.getBotTranscript(recallBotId)
-}
-
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const {id: meetingId, phases, teamId, recallBotId} = meeting
   const pg = getKysely()
-  const [reflectionGroups, reflections, sentimentScore, transcription] = await Promise.all([
+
+  const [reflectionGroups, reflections, sentimentScore, transcriptResult] = await Promise.all([
     dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
     dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
     generateWholeMeetingSentimentScore(meetingId, dataLoader),
-    getTranscription(recallBotId),
+    dumpTranscriptToPage(recallBotId, meetingId, dataLoader),
     generateRetroSummary(meetingId, dataLoader)
   ])
+
+  const transcription = transcriptResult?.transcription
+
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
   const discussionIds = stages.map((stage) => stage.discussionId)
@@ -66,7 +64,7 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
       topicCount: reflectionGroupIds.length,
       reflectionCount: reflections.length,
       sentimentScore,
-      transcription
+      transcription: transcription ? JSON.stringify(transcription) : null
     })
     .where('id', '=', meetingId)
     .execute()

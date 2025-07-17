@@ -49,24 +49,17 @@ const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   flex: 1,
   flexDirection: 'column',
   height: '100%',
-  justifyContent: isDesktop ? 'space-between' : 'space-between',
+  justifyContent: 'space-between',
   margin: '0 auto',
   width: ElementWidth.REFLECTION_CARD,
+  paddingBottom: isDesktop ? '6px' : '4px',
   // must be greater than the highlighted el
   zIndex: 1
-}))
-
-const HeaderAndEditor = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  flex: isDesktop ? 0.3 : undefined
 }))
 
 const EditorSection = styled('div')({
   margin: `0 0 ${Gutters.ROW_INNER_GUTTER}`
 })
-
-const ReflectionStackSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  flex: isDesktop ? 0.3 : undefined
-}))
 
 const Description = styled('div')({
   color: PALETTE.SLATE_700,
@@ -115,12 +108,6 @@ interface EditorAndStatusProps {
 
 const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isGroupingComplete}) => ({
   visibility: isGroupingComplete ? 'hidden' : undefined
-}))
-
-const ChitSection = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  flex: isDesktop ? 0.3 : undefined,
-  margin: isDesktop ? undefined : `0 0 ${Gutters.ROW_INNER_GUTTER}`,
-  minHeight: isDesktop ? 96 : undefined
 }))
 
 export interface ReflectColumnCardInFlight {
@@ -265,7 +252,7 @@ const PhaseItemColumn = (props: Props) => {
       <ColumnHighlight isDesktop={isDesktop}>
         <ColumnColorDrop isDesktop={isDesktop} isFocused={isFocused} groupColor={groupColor} />
         <ColumnContent isDesktop={isDesktop}>
-          <HeaderAndEditor isDesktop={isDesktop}>
+          <div className='flex-1'>
             <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
               <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
                 <ColorSpacer />
@@ -293,8 +280,8 @@ const PhaseItemColumn = (props: Props) => {
                 />
               </EditorAndStatus>
             </EditorSection>
-          </HeaderAndEditor>
-          <ReflectionStackSection isDesktop={isDesktop}>
+          </div>
+          <div className='flex-1'>
             <ReflectionStack
               dataCy={`reflection-stack-${question}`}
               reflectionStack={reflectionStack}
@@ -304,13 +291,11 @@ const PhaseItemColumn = (props: Props) => {
               meeting={meeting}
               stackTopRef={stackTopRef}
             />
-          </ReflectionStackSection>
-          <ChitSection isDesktop={isDesktop}>
-            <PhaseItemChits
-              count={columnStack.length - reflectionStack.length}
-              editorCount={editorIds ? editorIds.length : 0}
-            />
-          </ChitSection>
+          </div>
+          <PhaseItemChits
+            count={columnStack.length - reflectionStack.length}
+            editorCount={editorIds ? editorIds.length : 0}
+          />
         </ColumnContent>
       </ColumnHighlight>
     </ColumnWrapper>

@@ -4,7 +4,6 @@ import {getTeamPromptResponsesByMeetingIds} from '../postgres/queries/getTeamPro
 import {
   selectAgendaItems,
   selectComments,
-  selectMassInvitations,
   selectMeetingMembers,
   selectNewMeetings,
   selectOrganizations,
@@ -145,7 +144,8 @@ export const organizationUsersByOrgId = foreignKeyLoaderMaker(
 export const scalesByTeamId = foreignKeyLoaderMaker('templateScales', 'teamId', async (teamIds) => {
   return selectTemplateScale()
     .where('teamId', 'in', teamIds)
-    .orderBy(['isStarter', 'name'])
+    .orderBy('isStarter')
+    .orderBy('name')
     .execute()
 })
 
@@ -283,17 +283,6 @@ export const meetingMembersByUserId = foreignKeyLoaderMaker(
   'userId',
   async (userIds) => {
     return selectMeetingMembers().where('userId', 'in', userIds).execute()
-  }
-)
-
-export const massInvitationsByTeamMemberId = foreignKeyLoaderMaker(
-  'massInvitations',
-  'teamMemberId',
-  async (teamMemberIds) => {
-    return selectMassInvitations()
-      .where('teamMemberId', 'in', teamMemberIds)
-      .orderBy('expiration', 'desc')
-      .execute()
   }
 )
 

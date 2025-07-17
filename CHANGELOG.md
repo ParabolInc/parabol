@@ -5,6 +5,224 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.13.0](https://github.com/ParabolInc/parabol/compare/v10.12.6...v10.13.0) (2025-07-15)
+
+
+### Added
+
+* add transcript to Page ([#11514](https://github.com/ParabolInc/parabol/issues/11514)) ([b602ce8](https://github.com/ParabolInc/parabol/commit/b602ce86b94fd05fc7d76b966d27b3c1c54ff37a))
+
+
+### Fixed
+
+* can click link when changing pages ([#11553](https://github.com/ParabolInc/parabol/issues/11553)) ([68adc47](https://github.com/ParabolInc/parabol/commit/68adc47a67d39789116e27bcae671b9908a27954))
+* **dependabot:** fix configuration file ([#11539](https://github.com/ParabolInc/parabol/issues/11539)) ([2bd3844](https://github.com/ParabolInc/parabol/commit/2bd38441cfa85d9822652963ba50a7c48674568f))
+* pages link shuffle correctly ([#11498](https://github.com/ParabolInc/parabol/issues/11498)) ([2e46817](https://github.com/ParabolInc/parabol/commit/2e468170bd29dc41440437c29832372a69fa4662))
+
+
+### Changed
+
+* **dependabot:** ignore devDependencies ([#11538](https://github.com/ParabolInc/parabol/issues/11538)) ([695808a](https://github.com/ParabolInc/parabol/commit/695808ac7daddc7f7db46656315a8a2de12e6e4a))
+* **dependabot:** run it only weekly and reduce the max number of PRs to 6 ([#11546](https://github.com/ParabolInc/parabol/issues/11546)) ([437f14f](https://github.com/ParabolInc/parabol/commit/437f14f37ff9620366436719de78dbd6df3efd17))
+* **github-actions:** explicit permissions added and unused workflows deleted ([#11535](https://github.com/ParabolInc/parabol/issues/11535)) ([1372aab](https://github.com/ParabolInc/parabol/commit/1372aab48553dd82aca6b4c9da5aab0ce02b1d0c))
+* **readme:** database versions explicit ([#11537](https://github.com/ParabolInc/parabol/issues/11537)) ([7680458](https://github.com/ParabolInc/parabol/commit/7680458ac3d82488e9078c12c87b61f941b547ff))
+
+## [10.12.6](https://github.com/ParabolInc/parabol/compare/v10.12.5...v10.12.6) (2025-07-07)
+
+
+### Fixed
+
+* drop stripe quantity mismatch logging not null constraint ([#11529](https://github.com/ParabolInc/parabol/issues/11529)) ([8dec804](https://github.com/ParabolInc/parabol/commit/8dec8041d7da556b09d6b39482225731036fe60c))
+
+
+### Changed
+
+* fix client schema types ([#11526](https://github.com/ParabolInc/parabol/issues/11526)) ([10df771](https://github.com/ParabolInc/parabol/commit/10df77123f742589e2887acbb512d29cebb0cb8b))
+
+## [10.12.5](https://github.com/ParabolInc/parabol/compare/v10.12.4...v10.12.5) (2025-07-07)
+
+
+### Fixed
+
+* show correct meeting phase in dashboard ([#11522](https://github.com/ParabolInc/parabol/issues/11522)) ([4e25d4d](https://github.com/ParabolInc/parabol/commit/4e25d4d40f3d1e144014711b1503ff52f2c38431))
+
+## [10.12.4](https://github.com/ParabolInc/parabol/compare/v10.12.3...v10.12.4) (2025-07-04)
+
+
+### Fixed
+
+* clear typing notification on submit ([#11518](https://github.com/ParabolInc/parabol/issues/11518)) ([9b6443a](https://github.com/ParabolInc/parabol/commit/9b6443ac81829f5cf1539a562036455c5556d64c))
+
+## [10.12.3](https://github.com/ParabolInc/parabol/compare/v10.12.2...v10.12.3) (2025-07-04)
+
+
+### Changed
+
+* Remove OrganizationUser.inactive ([#11504](https://github.com/ParabolInc/parabol/issues/11504)) ([9fb810f](https://github.com/ParabolInc/parabol/commit/9fb810f5981d49e749a85fce7733c68735a05034))
+
+## [10.12.2](https://github.com/ParabolInc/parabol/compare/v10.12.1...v10.12.2) (2025-07-02)
+
+
+### Changed
+
+* remove remains of Sentry ([#11502](https://github.com/ParabolInc/parabol/issues/11502)) ([8a73627](https://github.com/ParabolInc/parabol/commit/8a73627db15a361b235b1833e85740888333c9ef))
+* remove Sentry error logging ([#11340](https://github.com/ParabolInc/parabol/issues/11340)) ([d121d6f](https://github.com/ParabolInc/parabol/commit/d121d6f2a75d04b6d3531785ae6dc815488d2c69))
+
+## [10.12.1](https://github.com/ParabolInc/parabol/compare/v10.12.0...v10.12.1) (2025-07-01)
+
+
+### Changed
+
+* improve meeting series naming ([#11468](https://github.com/ParabolInc/parabol/issues/11468)) ([e15559f](https://github.com/ParabolInc/parabol/commit/e15559f53a477db49fa34492afb2f2708930dcb1))
+* Normalize User.tms ([#10992](https://github.com/ParabolInc/parabol/issues/10992)) ([a8934c5](https://github.com/ParabolInc/parabol/commit/a8934c5e4c493c17a8c8e6a8587a588224215f32))
+
+## [10.12.0](https://github.com/ParabolInc/parabol/compare/v10.11.1...v10.12.0) (2025-06-30)
+
+
+### Added
+
+* Prometheus metrics ([#11371](https://github.com/ParabolInc/parabol/issues/11371)) ([05257fd](https://github.com/ParabolInc/parabol/commit/05257fd676ccd43e1e30301d6348670363f6b76a))
+* zoom transcript proof of concept ([#11484](https://github.com/ParabolInc/parabol/issues/11484)) ([ea2d8d6](https://github.com/ParabolInc/parabol/commit/ea2d8d658d9f254ad30e8a623de570e05a700b8a))
+
+
+### Fixed
+
+* getSAMLForDomain domains field ([#11485](https://github.com/ParabolInc/parabol/issues/11485)) ([debd408](https://github.com/ParabolInc/parabol/commit/debd408abddcc9d953d0daff8a34a4b096526872))
+* use imported quietLofi file ([#11494](https://github.com/ParabolInc/parabol/issues/11494)) ([3914dd6](https://github.com/ParabolInc/parabol/commit/3914dd6acc2f6451e345db63cb1b28faca96c4bf))
+
+
+### Changed
+
+* avoid multiple size labels on PRs ([#11479](https://github.com/ParabolInc/parabol/issues/11479)) ([d4256ed](https://github.com/ParabolInc/parabol/commit/d4256edfe53d9f92f5aacb2914996723e6079a0c))
+* fix PR size labeler ([#11481](https://github.com/ParabolInc/parabol/issues/11481)) ([2638174](https://github.com/ParabolInc/parabol/commit/263817421c47435fc9c92208af5f901d6ae5e3ca))
+
+## [10.11.1](https://github.com/ParabolInc/parabol/compare/v10.11.0...v10.11.1) (2025-06-23)
+
+
+### Fixed
+
+* flashing placeholders on pages ([#11475](https://github.com/ParabolInc/parabol/issues/11475)) ([cb5eef6](https://github.com/ParabolInc/parabol/commit/cb5eef64048a6a1c4b545f4de2286e16d409d7fe))
+* ignore dismiss new feature after logout ([#11477](https://github.com/ParabolInc/parabol/issues/11477)) ([92499f2](https://github.com/ParabolInc/parabol/commit/92499f2fa5ca0d279b35f12b5ecfeb5be038c531))
+
+## [10.11.0](https://github.com/ParabolInc/parabol/compare/v10.10.1...v10.11.0) (2025-06-20)
+
+
+### Added
+
+* Automatic Table of Contents for child pages ([#11472](https://github.com/ParabolInc/parabol/issues/11472)) ([da6d962](https://github.com/ParabolInc/parabol/commit/da6d962f3dc93f5d875d973134f3d27683d55fbe))
+
+
+### Changed
+
+* background music loops ([#11446](https://github.com/ParabolInc/parabol/issues/11446)) ([6862768](https://github.com/ParabolInc/parabol/commit/6862768127ec7eec01e2b72f1a13ddd94d322220))
+
+## [10.10.1](https://github.com/ParabolInc/parabol/compare/v10.10.0...v10.10.1) (2025-06-19)
+
+
+### Fixed
+
+* **pages:** support null nodeBefore ([#11464](https://github.com/ParabolInc/parabol/issues/11464)) ([d7e8dd1](https://github.com/ParabolInc/parabol/commit/d7e8dd1e06e6558389a6c7cf4e2bcc5a41478854))
+
+## [10.10.0](https://github.com/ParabolInc/parabol/compare/v10.9.6...v10.10.0) (2025-06-18)
+
+
+### Added
+
+* **pages:** PageLinkBlock ([#11461](https://github.com/ParabolInc/parabol/issues/11461)) ([230afd0](https://github.com/ParabolInc/parabol/commit/230afd0c3bda63257f888b33f0dada6ca189572b))
+
+## [10.9.6](https://github.com/ParabolInc/parabol/compare/v10.9.5...v10.9.6) (2025-06-18)
+
+
+### Fixed
+
+* fix update button on team prompt response on second edit ([#11457](https://github.com/ParabolInc/parabol/issues/11457)) ([99bc600](https://github.com/ParabolInc/parabol/commit/99bc6003fe6b5503e03fae93ec2b1a83d3ffb3c6))
+
+
+### Changed
+
+* create ai titles for single reflections ([#11445](https://github.com/ParabolInc/parabol/issues/11445)) ([0391301](https://github.com/ParabolInc/parabol/commit/0391301c10ac224986c7bd0c04f3dc773beae072))
+
+## [10.9.5](https://github.com/ParabolInc/parabol/compare/v10.9.4...v10.9.5) (2025-06-18)
+
+
+### Fixed
+
+* show correct ready number if user goes offline ([#11454](https://github.com/ParabolInc/parabol/issues/11454)) ([f28da39](https://github.com/ParabolInc/parabol/commit/f28da393f074e0609ae8ded2e7b1a87809ed6e6d))
+
+
+### Changed
+
+* Minor pages nav list styling ([#11452](https://github.com/ParabolInc/parabol/issues/11452)) ([ee50340](https://github.com/ParabolInc/parabol/commit/ee50340ac69f0b2a860d5fed3ac3bda4bc882134))
+
+## [10.9.4](https://github.com/ParabolInc/parabol/compare/v10.9.3...v10.9.4) (2025-06-18)
+
+
+### Fixed
+
+* always refresh after app update ([#11449](https://github.com/ParabolInc/parabol/issues/11449)) ([547061d](https://github.com/ParabolInc/parabol/commit/547061d71eec3afbb70c18062d35554aa498550d))
+
+## [10.9.3](https://github.com/ParabolInc/parabol/compare/v10.9.2...v10.9.3) (2025-06-18)
+
+
+### Fixed
+
+* clear is typing status when moving to next discussion ([#11444](https://github.com/ParabolInc/parabol/issues/11444)) ([c44acbd](https://github.com/ParabolInc/parabol/commit/c44acbd694ff352d6edaf3635e1678933105a14f))
+* Update service worker when sources return 404 ([#11439](https://github.com/ParabolInc/parabol/issues/11439)) ([9ea0981](https://github.com/ParabolInc/parabol/commit/9ea098118e81322d799d92d45d91bd339d028135))
+
+
+### Changed
+
+* Make version in help menu clickable ([#11440](https://github.com/ParabolInc/parabol/issues/11440)) ([e635b8c](https://github.com/ParabolInc/parabol/commit/e635b8ca0150f7e40bd7de2c8d536031e4ec4752))
+
+## [10.9.2](https://github.com/ParabolInc/parabol/compare/v10.9.1...v10.9.2) (2025-06-14)
+
+
+### Changed
+
+* show app version in help menu ([#11435](https://github.com/ParabolInc/parabol/issues/11435)) ([1b53424](https://github.com/ParabolInc/parabol/commit/1b53424d4f3b41ec50d54acd96424cff0264f528))
+
+## [10.9.1](https://github.com/ParabolInc/parabol/compare/v10.9.0...v10.9.1) (2025-06-13)
+
+
+### Fixed
+
+* migration order for delete pages ([#11430](https://github.com/ParabolInc/parabol/issues/11430)) ([534d12f](https://github.com/ParabolInc/parabol/commit/534d12f924f58682cbd3cbbd2705ce958f938959))
+* refactor mass invitation to support org admin invites ([#11433](https://github.com/ParabolInc/parabol/issues/11433)) ([0086621](https://github.com/ParabolInc/parabol/commit/008662161b02719453844013f0d5b79229cbfac5))
+
+## [10.9.0](https://github.com/ParabolInc/parabol/compare/v10.8.2...v10.9.0) (2025-06-13)
+
+
+### Added
+
+* **pages:** support deleting pages ([#11417](https://github.com/ParabolInc/parabol/issues/11417)) ([e416bc4](https://github.com/ParabolInc/parabol/commit/e416bc4397fcd9fae43f3d3059a603f21faa0a95))
+
+
+### Changed
+
+* kysely orderBy(array) is deprecated ([#11426](https://github.com/ParabolInc/parabol/issues/11426)) ([7bd0d03](https://github.com/ParabolInc/parabol/commit/7bd0d036ee595eacad4158343fc6c390edbd5590))
+
+## [10.8.2](https://github.com/ParabolInc/parabol/compare/v10.8.1...v10.8.2) (2025-06-13)
+
+
+### Changed
+
+* Reflect phase restyling ([#11375](https://github.com/ParabolInc/parabol/issues/11375)) ([7fe329e](https://github.com/ParabolInc/parabol/commit/7fe329ec7d72a23fd1be4c1c4cae4701471d1dce))
+
+## [10.8.1](https://github.com/ParabolInc/parabol/compare/v10.8.0...v10.8.1) (2025-06-12)
+
+
+### Fixed
+
+* do not show hyperlink into team members page in OrgTeamsRow if the viewer is not part of the team ([#11387](https://github.com/ParabolInc/parabol/issues/11387)) ([549b4a7](https://github.com/ParabolInc/parabol/commit/549b4a7f8b2ad982f2ceeebd33cf85e45de96e4a))
+* rbac performance ([#11422](https://github.com/ParabolInc/parabol/issues/11422)) ([cc64f37](https://github.com/ParabolInc/parabol/commit/cc64f373f21c37221ecc8e89cc1863d52fc1a84a))
+
+
+### Changed
+
+* facilitator music overrides non facilitator's music ([#11418](https://github.com/ParabolInc/parabol/issues/11418)) ([3366582](https://github.com/ParabolInc/parabol/commit/3366582b68e5c413d7b026483e5e9fafe9de396e))
+* Hide password field after entering an SSO email ([#11419](https://github.com/ParabolInc/parabol/issues/11419)) ([ed0f9a8](https://github.com/ParabolInc/parabol/commit/ed0f9a8f2b3429f807391f07b21b4ab3de96fd42))
+* track background music activity ([#11408](https://github.com/ParabolInc/parabol/issues/11408)) ([3a3357b](https://github.com/ParabolInc/parabol/commit/3a3357b1aadefcf61e91eba4e9ccf3fde32eea66))
+
 ## [10.8.0](https://github.com/ParabolInc/parabol/compare/v10.7.2...v10.8.0) (2025-06-11)
 
 

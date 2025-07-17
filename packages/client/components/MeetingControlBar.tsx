@@ -185,6 +185,7 @@ const MeetingControlBar = (props: Props) => {
                 <BottomControlBarReady
                   {...tranProps}
                   isNext={isPoker ? true : isFacilitating}
+                  isFacilitating={isFacilitating}
                   isPoker={isPoker}
                   cancelConfirm={
                     isPoker ? undefined : confirmingButton === 'next' ? undefined : cancelConfirm

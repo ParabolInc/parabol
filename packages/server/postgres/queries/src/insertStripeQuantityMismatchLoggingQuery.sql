@@ -7,14 +7,12 @@ INSERT INTO "StripeQuantityMismatchLogging" (
     "eventTime",
     "eventType",
     "stripePreviousQuantity",
-    "stripeNextQuantity",
-    "orgUsers"
+    "stripeNextQuantity"
 ) VALUES (
     :orgId,
     :userId,
     :eventTime,
     :eventType,
     :stripePreviousQuantity,
-    :stripeNextQuantity,
-    :orgUsers
+    :stripeNextQuantity
 );

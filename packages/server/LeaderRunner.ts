@@ -1,4 +1,4 @@
-import Redlock, {type Lock} from 'redlock'
+import {Redlock, type Lock} from '@sesamecare-oss/redlock'
 import type RedisInstance from './utils/RedisInstance'
 
 export type LeaderRunnable = () => Promise<void> | void

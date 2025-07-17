@@ -1,76 +1,46 @@
-import {HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCaret from '@tiptap/extension-collaboration-caret'
+import Details from '@tiptap/extension-details'
+import DetailsContent from '@tiptap/extension-details-content'
+import DetailsSummary from '@tiptap/extension-details-summary'
+import Document from '@tiptap/extension-document'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
+import TableRow from '@tiptap/extension-table-row'
+import Underline from '@tiptap/extension-underline'
 import {Focus, Placeholder} from '@tiptap/extensions'
-import {generateJSON, generateText, useEditor} from '@tiptap/react'
+import {Editor, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-import type {History} from 'history'
-import {useMemo, useRef} from 'react'
-import {commitLocalUpdate, readInlineData} from 'relay-runtime'
+import {useRef} from 'react'
+import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
 import {Markdown} from 'tiptap-markdown'
 import * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
-import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
-import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
-import {toSlug} from '../shared/toSlug'
+import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
+import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
+import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
-import {TiptapCollabProvider} from '../tiptap/extensions/TiptapCollabProvider'
+import {Table} from '../tiptap/extensions/table/Table'
+import {TableCell} from '../tiptap/extensions/table/TableCell'
+import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {ElementWidth} from '../types/constEnums'
-import type {FirstParam} from '../types/generics'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
+import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
+import {usePageProvider} from './usePageProvider'
 
-let currentPrefix: string | undefined = undefined
-const updateUrlWithSlug = (
-  headerBlock: Y.XmlText,
-  pageIdNum: number,
-  history: History,
-  atmosphere: Atmosphere
-) => {
-  const plaintext = generateText(
-    generateJSON(headerBlock.toJSON(), serverTipTapExtensions),
-    serverTipTapExtensions
-  )
-  const slug = toSlug(plaintext)
-  const prefix = slug ? `${slug}-` : ''
-  if (prefix === currentPrefix) return
-  currentPrefix = prefix
-  history.replace(`/pages/${prefix}${pageIdNum}`)
-  commitLocalUpdate(atmosphere, (store) => {
-    const title = plaintext.slice(0, 255)
-    store.get(`page:${pageIdNum}`)?.setValue(title, 'title')
-  })
-}
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
-let socket: HocuspocusProviderWebsocket
-const makeHocusPocusSocket = (authToken: string | null) => {
-  if (!socket) {
-    const wsProtocol = window.location.protocol.replace('http', 'ws')
-    const host = __PRODUCTION__
-      ? `${window.location.host}/hocuspocus`
-      : `${window.location.hostname}:${__HOCUS_POCUS_PORT__}`
-    const baseUrl = `${wsProtocol}//${host}?token=${authToken}`
-    socket = new HocuspocusProviderWebsocket({
-      url: baseUrl
-    })
-  }
-  return socket
-}
-
 export const useTipTapPageEditor = (
   pageId: string,
   options: {
@@ -89,52 +59,8 @@ export const useTipTapPageEditor = (
   )
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
-  const {history} = useRouter<{meetingId: string}>()
-  const pageIdNum = Number(pageId.split(':')[1])
-  const providerRef = useRef<TiptapCollabProvider>()
-  // Connect to your Collaboration server
-  providerRef.current = useMemo(() => {
-    if (!pageId) return undefined
-    if (providerRef.current) {
-      providerRef.current.disconnect()
-    }
-    const doc = new Y.Doc()
-    const frag = doc.getXmlFragment('default')
-    // update the URL to match the title
-    const nextProvider = new TiptapCollabProvider({
-      websocketProvider: makeHocusPocusSocket(atmosphere.authToken),
-      name: pageId,
-      document: doc
-    })
-
-    const observeHeader = (headerBlock: Y.XmlText) => {
-      updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
-      headerBlock.observe(() => {
-        updateUrlWithSlug(headerBlock, pageIdNum, history, atmosphere)
-      })
-    }
-    const observeFragForHeader: FirstParam<Y.AbstractType<Y.YXmlEvent>['observeDeep']> = () => {
-      const headerElement = frag.get(0) as Y.XmlElement | null
-      const headerText = headerElement?.get(0) as Y.XmlText
-      if (headerText) {
-        observeHeader(headerText)
-        frag.unobserveDeep(observeFragForHeader)
-      }
-    }
-    nextProvider.on('synced', () => {
-      const headerElement = frag.get(0) as Y.XmlElement | null
-      const headerText = headerElement?.get(0) as Y.XmlText
-      if (headerText) {
-        observeHeader(headerText)
-      } else {
-        // header doesn't exist yet, observe the whole doc
-        frag.observeDeep(observeFragForHeader)
-      }
-    })
-    return nextProvider
-  }, [pageId, atmosphere.authToken])
-
-  const provider = providerRef.current
+  const placeholderRef = useRef<string | undefined>(undefined)
+  const {provider} = usePageProvider(pageId)
   const editor = useEditor(
     {
       content: '',
@@ -146,6 +72,21 @@ export const useTipTapPageEditor = (
         }).configure({
           undoRedo: false
         }),
+        Details.configure({
+          persist: true,
+          HTMLAttributes: {
+            class: 'details'
+          }
+        }),
+        DetailsSummary,
+        DetailsContent,
+        Table.configure({
+          allowTableNodeSelection: true
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
+        Underline,
         TaskList,
         TaskItem.configure({
           nested: true
@@ -162,6 +103,9 @@ export const useTipTapPageEditor = (
           showOnlyWhenEditable: false,
           includeChildren: true,
           placeholder: ({node, pos}) => {
+            if (placeholderRef.current) {
+              return placeholderRef.current
+            }
             const {type, attrs} = node
             const {name} = type
             switch (name) {
@@ -174,6 +118,10 @@ export const useTipTapPageEditor = (
                 return 'New quote'
               case 'paragraph':
                 return "Press '/' for commands"
+              case 'detailsSummary':
+                return 'New summary'
+              case 'detailsContent':
+                return 'Add details, use / to add blocks'
               case 'bulletList':
               case 'listItem':
               case 'orderedList':
@@ -207,12 +155,52 @@ export const useTipTapPageEditor = (
           html: true,
           transformPastedText: true,
           transformCopiedText: true
-        })
+        }),
+        PageLinkPicker.configure({
+          atmosphere
+        }),
+        PageLinkBlock.configure({yDoc: provider.document})
       ],
       autofocus: true,
       editable: true
     },
     [provider]
   )
-  return {editor}
+
+  usePageLinkPlaceholder(editor!, placeholderRef)
+
+  return {editor, provider}
+}
+
+export const makeEditorFromYDoc = (document: Y.Doc) => {
+  return new Editor({
+    extensions: [
+      Document.extend({
+        content: 'heading block*'
+      }),
+      StarterKit.configure({
+        document: false,
+        history: false
+      }),
+      Underline,
+      TaskList,
+      TaskItem.configure({
+        nested: true
+      }),
+      Focus,
+      ImageUpload,
+      ImageBlock,
+      LoomExtension,
+      Mention.configure(mentionConfig),
+      Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
+      TiptapLinkExtension.configure({
+        openOnClick: false
+      }),
+      Collaboration.configure({
+        document
+      }),
+      InsightsBlock,
+      PageLinkBlock.configure({yDoc: document})
+    ]
+  })
 }

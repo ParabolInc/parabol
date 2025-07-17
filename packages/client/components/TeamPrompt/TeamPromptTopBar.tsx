@@ -15,7 +15,7 @@ import IconLabel from '../IconLabel'
 import LogoBlock from '../LogoBlock/LogoBlock'
 import {IconGroupBlock, MeetingTopBarStyles} from '../MeetingTopBar'
 import {EndRecurringMeetingModal} from '../Recurrence/EndRecurringMeetingModal'
-import {HumanReadableRecurrenceRule} from '../Recurrence/HumanReadableRecurrenceRule'
+import MeetingDateLabel from '../Recurrence/MeetingDateLabel'
 import {UpdateRecurrenceSettingsModal} from '../Recurrence/UpdateRecurrenceSettingsModal'
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
@@ -111,6 +111,7 @@ const TeamPromptTopBar = (props: Props) => {
           cancelledAt
           recurrenceRule
         }
+        ...MeetingDateLabel_meeting
         ...TeamPromptOptions_meeting
         ...NewMeetingAvatarGroup_meeting
         ...TeamPromptMeetingStatus_meeting
@@ -213,11 +214,7 @@ const TeamPromptTopBar = (props: Props) => {
                 ) : (
                   <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
                 )}
-                {isRecurrenceEnabled && (
-                  <div className='hidden md:block'>
-                    <HumanReadableRecurrenceRule recurrenceRule={meetingSeries.recurrenceRule} />
-                  </div>
-                )}
+                <MeetingDateLabel meetingRef={meeting} />
               </div>
               {isRecurrenceEnabled && nextMeeting && (
                 <Link className='text-slate-600' to={`/meet/${nextMeeting.id}`}>

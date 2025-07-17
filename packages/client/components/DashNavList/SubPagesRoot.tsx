@@ -1,6 +1,7 @@
 import {Suspense} from 'react'
 import type {SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
 import query from '../../__generated__/SubPagesQuery.graphql'
+import {usePageChildren} from '../../hooks/usePageChildren'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {Loader} from '../../utils/relay/renderLoader'
 import {SubPages} from './SubPages'
@@ -19,7 +20,10 @@ export const SubPagesRoot = (props: Props) => {
     parentPageId,
     teamId
   })
-
+  // If it's not a top-level page, fetch the yjs document in addition to the GQL metadata
+  // Since the parentPageId will not change within the render tree, this hook is not called conditionally
+  // eslint-disable-next-line
+  const pageLinks = parentPageId ? usePageChildren(parentPageId) : undefined
   return (
     <Suspense fallback={<Loader />}>
       {queryRef && (
@@ -28,6 +32,7 @@ export const SubPagesRoot = (props: Props) => {
           pageAncestors={pageAncestors}
           draggingPageId={draggingPageId}
           draggingPageIsPrivate={draggingPageIsPrivate}
+          pageLinks={pageLinks}
         />
       )}
     </Suspense>

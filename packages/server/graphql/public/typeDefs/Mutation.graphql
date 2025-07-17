@@ -125,10 +125,6 @@ type Mutation {
     The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
     """
     teamId: ID
-    """
-    The parent page that this should be placed under. Mutally exclusive to teamId
-    """
-    parentPageId: ID
   ): CreatePagePayload!
   createTaskIntegration(
     """
@@ -146,26 +142,6 @@ type Mutation {
     """
     taskId: ID!
   ): CreateTaskIntegrationPayload
-
-  """
-  Create a new mass inivtation and optionally void old ones
-  """
-  createMassInvitation(
-    """
-    the specific meeting where the invite occurred, if any
-    """
-    meetingId: ID
-
-    """
-    The teamId to create the mass invitation for
-    """
-    teamId: ID!
-
-    """
-    If true, will void all existing mass invitations for the team member
-    """
-    voidOld: Boolean
-  ): CreateMassInvitationPayload!
 
   """
   Generate a new OAuth1 request token and encode it in the authorization URL to start an oauth1 flow
@@ -2137,10 +2113,6 @@ type Mutation {
     """
     sortOrder: String!
     """
-    The new parent If null, and no teamId, it will be top-level
-    """
-    parentPageId: ID
-    """
     The new teamId, if moved to a team
     """
     teamId: ID
@@ -2169,4 +2141,14 @@ type Mutation {
     """
     sortOrder: String!
   ): UpdateTeamSortOrderPayload
+  """
+  Move a page to the trash
+  """
+  archivePage(
+    pageId: ID!
+    """
+    The action to take on the page
+    """
+    action: ArchivePageActionEnum!
+  ): ArchivePagePayload
 }

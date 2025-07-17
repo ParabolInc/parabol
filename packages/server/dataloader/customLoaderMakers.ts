@@ -22,23 +22,23 @@ import getMeetingTaskEstimates, {
   MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {
+  selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
-  selectPageAccess,
-  selectPageUserSortOrder,
   selectTasks,
   selectTeams
 } from '../postgres/select'
 import {
   FeatureFlag,
   Insight,
+  MassInvitation,
   MeetingSettings,
   OrganizationUser,
   Task,
   Team
 } from '../postgres/types'
 import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
-import {Tierenum as TierEnum, type Pageroleenum} from '../postgres/types/pg'
+import {Tierenum as TierEnum} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
@@ -687,6 +687,35 @@ export const isOrgVerified = (parent: RootDataLoader, dependsOn: RegisterDepends
   )
 }
 
+export const activeOrganizationUsersByOrgId = (
+  parent: RootDataLoader,
+  dependsOn: RegisterDependsOn
+) => {
+  // this would be an easy query with a join, but we probably have most of the data already in the dataloader
+  dependsOn('organizationUsers')
+  dependsOn('users')
+  return new DataLoader<string, OrganizationUser[], string>(
+    async (orgIds) => {
+      return await Promise.all(
+        orgIds.map(async (orgId) => {
+          const orgUsers = await parent.get('organizationUsersByOrgId').load(orgId)
+          return (
+            await Promise.all(
+              orgUsers.map(async (orgUser) => {
+                const user = await parent.get('users').load(orgUser.userId)
+                return !user || user.inactive ? null : orgUser
+              })
+            )
+          ).filter(isValid)
+        })
+      )
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
 export const autoJoinTeamsByOrgId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('teams')
   return new DataLoader<string, Team[], string>(
@@ -1013,50 +1042,26 @@ export const highestTierForUserId = (parent: RootDataLoader) => {
   )
 }
 
-export const pageAccessByUserId = (parent: RootDataLoader) => {
-  return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
+export const massInvitationsByTeamIdUserId = (parent: RootDataLoader) => {
+  return new DataLoader<{teamId: string; userId: string}, MassInvitation[], string>(
     async (keys) => {
-      const res = await selectPageAccess()
+      const res = await selectMassInvitations()
         .where(({eb, refTuple, tuple}) =>
           eb(
-            refTuple('pageId', 'userId'),
+            refTuple('teamId', 'userId'),
             'in',
-            keys.map((key) => tuple(key.pageId, key.userId))
+            keys.map((key) => tuple(key.teamId, key.userId))
           )
         )
+        .orderBy('expiration', 'desc')
         .execute()
-      return keys.map((key) => {
-        const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
-        return rule?.role ?? null
-      })
+      return keys.map(
+        (key) => res.filter((doc) => doc.teamId === key.teamId && doc.userId === key.userId)!
+      )
     },
     {
       ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
-    }
-  )
-}
-
-export const pageUserSortOrder = (parent: RootDataLoader) => {
-  return new DataLoader<{pageId: number; userId: string}, string | null, string>(
-    async (keys) => {
-      const res = await selectPageUserSortOrder()
-        .where(({eb, refTuple, tuple}) =>
-          eb(
-            refTuple('pageId', 'userId'),
-            'in',
-            keys.map((key) => tuple(key.pageId, key.userId))
-          )
-        )
-        .execute()
-      return keys.map((key) => {
-        const rule = res.find(({pageId, userId}) => pageId === key.pageId && userId === key.userId)
-        return rule?.sortOrder ?? null
-      })
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
     }
   )
 }

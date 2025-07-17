@@ -2,6 +2,7 @@ import * as React from 'react'
 import {useRef} from 'react'
 import {commitLocalUpdate, ConnectionHandler} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
+import * as Y from 'yjs'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
 import {
@@ -9,8 +10,12 @@ import {
   useUpdatePageMutation
 } from '../mutations/useUpdatePageMutation'
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
+import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
+import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
+
+import {makeEditorFromYDoc} from './useTipTapPageEditor'
 
 const makeDragRef = () => ({
   startY: null as number | null,
@@ -107,37 +112,127 @@ export const useDraggablePage = (
 
     const targetParentPageId = targetParentPageIdOrTeamId?.startsWith('page:')
       ? targetParentPageIdOrTeamId
-      : undefined
-    const targetTeamId =
-      targetParentPageIdOrTeamId && !targetParentPageId ? targetParentPageIdOrTeamId : undefined
+      : null
+    // null means a drop-in, -1 means at the beginning, else below whatever number is there
     const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
-    const targetConnectionKey = targetParentPageIdOrTeamId ? 'User_pages' : topLevelConnectionKey
-    const {viewerId} = atmosphere
-    const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey!]
-    const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey!, {
-      isPrivate,
-      parentPageId: targetParentPageId,
-      teamId: targetTeamId
-    })
     const source = atmosphere.getStore().getSource()
-    const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
-    execute({
-      variables: {
-        pageId,
-        sortOrder,
+    if (sourceParentPageId && sourceParentPageId === targetParentPageId) {
+      // move within the same document
+      const provider = providerManager.register(targetParentPageId)
+      const {document} = provider
+      const frag = document.getXmlFragment('default')
+      const pageCode = Number(pageId.split('page:')[1])
+      // Yjs doesn't support moves
+      // You cannot delete an item and then insert it elsewhere because once an object is deleted it is gone
+      // Prosemirror accomplishes moves by swapping the attributes of every item between source and target
+      // So, we convert this to an editor and let it create that transaction
+      const editor = makeEditorFromYDoc(document)
+      const children = frag.toArray()
+      const fromIdx = children.findIndex(
+        (child) =>
+          child instanceof Y.XmlElement &&
+          child.getAttribute('pageCode') === (pageCode as any) &&
+          child.getAttribute('canonical') === (true as any)
+      )
+      let toIdx: number | undefined = undefined
+      let curCanonIdx = -1
+      children.forEach((child, idx) => {
+        if (child instanceof Y.XmlElement && child.getAttribute('canonical') === (true as any)) {
+          curCanonIdx++
+          if (dropIdx === -1) {
+            // put it at the beginning
+            toIdx = toIdx === undefined ? idx : toIdx
+          } else if (dropIdx === null || curCanonIdx === dropIdx) {
+            // if we drop at the end, put it after the last one
+            // if we want to drop it after the current one, add 1 to it
+            toIdx = idx + 1
+          }
+        }
+      })
+      editor.commands.movePageLink({fromIndex: fromIdx, toIndex: toIdx!})
+      providerManager.unregister(targetParentPageId)
+      cleanupDrag()
+      return
+    }
+    if (targetParentPageId) {
+      // when making something a child page, we don't use GraphQL, we use yjs
+      // in the future, I hope every user-defined page is a child so this is the only code path
+      providerManager.withDoc(targetParentPageId, (doc) => {
+        const pageCode = Number(pageId.split('page:')[1])
+        const title = source.get(pageId)?.title as string
+        const createPageLinkBlock = () => createPageLinkElement(pageCode, title)
+        const frag = doc.getXmlFragment('default')
+        let pageLinkCount = -1
+        const childArrIdxForDropIdx = frag.toArray().findIndex((node) => {
+          if (
+            node instanceof Y.XmlElement &&
+            node.nodeName === 'pageLinkBlock' &&
+            (node.getAttribute('canonical') as any) === true
+          ) {
+            pageLinkCount++
+            if (pageLinkCount === dropIdx) {
+              return true
+            }
+          }
+          return false
+        })
+
+        const nextIdx = childArrIdxForDropIdx === -1 ? 1 : childArrIdxForDropIdx + 1
+        frag.insert(nextIdx, [createPageLinkBlock() as any])
+      })
+    } else {
+      const targetTeamId =
+        targetParentPageIdOrTeamId && !targetParentPageId ? targetParentPageIdOrTeamId : undefined
+
+      const targetConnectionKey = targetParentPageIdOrTeamId ? 'User_pages' : topLevelConnectionKey
+      const {viewerId} = atmosphere
+      const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey!]
+      const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey!, {
+        isPrivate,
         parentPageId: targetParentPageId,
-        teamId: targetTeamId,
-        makePrivate:
-          !targetParentPageId &&
-          targetConnectionKey === 'User_privatePages' &&
-          sourceConnectionKey !== targetConnectionKey
-      },
-      onError: snackOnError(atmosphere, 'updatePageErr'),
-      sourceTeamId,
-      sourceParentPageId,
-      sourceConnectionKey,
-      targetConnectionKey
-    })
+        teamId: targetTeamId
+      })
+      const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
+      execute({
+        variables: {
+          pageId,
+          sortOrder,
+          teamId: targetTeamId,
+          makePrivate:
+            !targetParentPageId &&
+            targetConnectionKey === 'User_privatePages' &&
+            sourceConnectionKey !== targetConnectionKey
+        },
+        onError: snackOnError(atmosphere, 'updatePageErr'),
+        sourceTeamId,
+        sourceParentPageId,
+        sourceConnectionKey,
+        targetConnectionKey
+      })
+    }
+    if (sourceParentPageId) {
+      // if the source has a parent, remove the canonical page link. the GQL subscription will propagate the removal
+      providerManager.withDoc(sourceParentPageId, (document) => {
+        const frag = document.getXmlFragment('default')
+        const pageCode = Number(pageId.split('page:')[1])
+        const idxToRemove = frag
+          .toArray()
+          .findIndex(
+            (node) =>
+              node instanceof Y.XmlElement &&
+              node.nodeName === 'pageLinkBlock' &&
+              (node.getAttribute('pageCode') as any) === pageCode &&
+              (node.getAttribute('canonical') as any) === true
+          )
+        if (idxToRemove === -1) {
+          console.warn('idx for source element not found')
+        } else {
+          // first mark it as isMoving so the server doesn't delete the underlying page
+          frag.get(idxToRemove).setAttribute('isMoving', true)
+          frag.delete(idxToRemove)
+        }
+      })
+    }
     cleanupDrag()
   })
 

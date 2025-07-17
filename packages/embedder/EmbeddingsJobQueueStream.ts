@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
-import 'parabol-server/initSentry'
+import 'parabol-server/initLogging'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 import {DBJob} from './custom'
@@ -31,7 +31,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
             db
               .selectFrom('EmbeddingsJobQueue')
               .select('id')
-              .orderBy(['priority'])
+              .orderBy('priority')
               .$if(!isFailed, (db) => db.where('state', '=', 'queued'))
               .$if(isFailed, (db) =>
                 db

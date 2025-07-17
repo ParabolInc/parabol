@@ -1,4 +1,11 @@
-import {sendPublic, signUp} from './common'
+import type {Doc, YXmlEvent} from 'yjs'
+import {createPageLinkElement} from '../../client/shared/tiptap/createPageLinkElement'
+import getKysely from '../postgres/getKysely'
+import {sendPublic, sendTipTap, signUp} from './common'
+
+afterAll(async () => {
+  await getKysely().destroy()
+})
 
 const UPDATE_PAGE_ACCESS = `
       mutation UpdatePageAccess(
@@ -71,30 +78,30 @@ test('Access propagates to linked children', async () => {
     }
   })
   const parentPageId = parentPage.data.createPage.page.id
-  const childPage = await sendPublic({
-    query: `
-      mutation CreatePage($parentPageId: ID!) {
-        createPage(parentPageId: $parentPageId) {
-          page {
-            id
-            parentPageId
+
+  const childPageCode = await sendTipTap(
+    {authToken, pageId: parentPageId},
+    async (document: Doc) => {
+      return new Promise((resolve) => {
+        const frag = document.getXmlFragment('default')
+        const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+        pageLinkBlock.observe((e: YXmlEvent) => {
+          for (const [key] of e.keys) {
+            if (key === 'pageCode') {
+              const pageCode = pageLinkBlock.getAttribute('pageCode')
+              resolve(pageCode)
+            }
           }
-        }
-      }
-    `,
-    variables: {parentPageId},
-    authToken
-  })
-  const childPageId = childPage.data.createPage.page.id
-  expect(childPage).toMatchObject({
-    data: {
-      createPage: {
-        page: {
-          id: expect.anything(),
-          parentPageId
-        }
-      }
+        })
+        frag.insert(1, [pageLinkBlock] as any)
+      })
     }
+  )
+  const childPageId = `page:${childPageCode}`
+  const childPage = {childPageId}
+
+  expect(childPage).toMatchObject({
+    childPageId: expect.toBeString()
   })
 
   const pageUpdatesUser = await sendPublic({
@@ -313,21 +320,25 @@ test('Revoking access unlinks children', async () => {
     authToken
   })
   const parentPageId = parentPage.data.createPage.page.id
-  const childPage = await sendPublic({
-    query: `
-      mutation CreatePage($parentPageId: ID!) {
-        createPage(parentPageId: $parentPageId) {
-          page {
-            id
-            parentPageId
+  const childPageCode = await sendTipTap(
+    {authToken, pageId: parentPageId},
+    async (document: Doc) => {
+      return new Promise((resolve) => {
+        const frag = document.getXmlFragment('default')
+        const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+        pageLinkBlock.observe((e: YXmlEvent) => {
+          for (const [key] of e.keys) {
+            if (key === 'pageCode') {
+              const pageCode = pageLinkBlock.getAttribute('pageCode')
+              resolve(pageCode)
+            }
           }
-        }
-      }
-    `,
-    variables: {parentPageId},
-    authToken
-  })
-  const childPageId = childPage.data.createPage.page.id
+        })
+        frag.insert(1, [pageLinkBlock] as any)
+      })
+    }
+  )
+  const childPageId = `page:${childPageCode}`
 
   await sendPublic({
     query: UPDATE_PAGE_ACCESS,

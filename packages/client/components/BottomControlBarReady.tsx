@@ -21,6 +21,7 @@ import BottomNavIconLabel from './BottomNavIconLabel'
 interface Props {
   isNext: boolean
   isPoker: boolean
+  isFacilitating: boolean
   cancelConfirm: undefined | (() => void)
   isConfirming: boolean
   setConfirmingButton: (button: string) => void
@@ -56,6 +57,7 @@ const BottomControlBarReady = (props: Props) => {
     isConfirming,
     isPoker,
     isNext,
+    isFacilitating,
     setConfirmingButton,
     handleGotoNext,
     meeting: meetingRef,
@@ -112,6 +114,14 @@ const BottomControlBarReady = (props: Props) => {
     )
   }, [meetingMembers])
   const activeCount = connectedMeetingMembers.length
+  const readyUserIds = localStage.readyUserIds ?? []
+  const readyCount = useMemo(() => {
+    return readyUserIds.filter(
+      (userId) =>
+        (!isFacilitating || userId !== viewerId) &&
+        connectedMeetingMembers.find((member) => member.userId === userId)
+    ).length
+  }, [readyUserIds, connectedMeetingMembers, isFacilitating, viewerId])
 
   const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER,
@@ -119,7 +129,6 @@ const BottomControlBarReady = (props: Props) => {
       delay: Times.MEETING_CONFIRM_TOOLTIP_DELAY
     }
   )
-  const readyCount = localStage.readyCount || 0
   const isOnlyViewer = activeCount === 1 // viewer is the only active meeting member
   const progress = isOnlyViewer || isPoker ? 1.0 : readyCount / (activeCount - 1)
   const isLastStageInPhase = stages[stages.length - 1]?.id === localStage?.id
@@ -180,7 +189,7 @@ graphql`
   fragment BottomControlBarReadyStage on NewMeetingStage {
     id
     isComplete
-    readyCount
+    readyUserIds
     isViewerReady
     phaseType
   }

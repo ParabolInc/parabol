@@ -2,21 +2,22 @@ import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
-import {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react'
+import {MutableRefObject, RefObject, useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useIsEditing from '../../hooks/useIsEditing'
 import useMutationProps from '../../hooks/useMutationProps'
 import usePortal from '../../hooks/usePortal'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import {Elevation} from '../../styles/elevation'
-import {PALETTE} from '../../styles/paletteV3'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
+import SubmitReflectionButton from '../ReflectionCard/SubmitReflectionButton'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import HTMLReflection from './HTMLReflection'
 import {ReflectColumnCardInFlight} from './PhaseItemColumn'
@@ -33,21 +34,6 @@ const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStar
     zIndex: ZIndex.REFLECTION_IN_FLIGHT
   })
 )
-
-const EnterHint = styled('div')<{visible: boolean}>(({visible}) => ({
-  color: PALETTE.SLATE_600,
-  fontSize: 14,
-  fontStyle: 'italic',
-  fontWeight: 400,
-  lineHeight: '20px',
-  paddingLeft: 16,
-  cursor: 'pointer',
-  visibility: visible ? undefined : 'hidden',
-  opacity: visible ? 1 : 0,
-  height: visible ? 28 : 0,
-  overflow: 'hidden',
-  transition: 'height 300ms, opacity 300ms'
-}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -98,6 +84,7 @@ const PhaseItemEditor = (props: Props) => {
     meetingRef
   )
 
+  const draftStorageKey = `phaseItemEditor-${meetingId}-${promptId}`
   const {disableAnonymity, viewerMeetingMember, teamId} = meeting
   const {onCompleted, onError, submitMutation} = useMutationProps()
   const handleSubmit = useEventCallback(() => {
@@ -119,7 +106,17 @@ const PhaseItemEditor = (props: Props) => {
       sortOrder: nextSortOrder()
     }
     submitMutation()
-    CreateReflectionMutation(atmosphere, {input}, {onError, onCompleted})
+    CreateReflectionMutation(
+      atmosphere,
+      {input},
+      {
+        onError,
+        onCompleted: () => {
+          onCompleted()
+          window.localStorage.removeItem(draftStorageKey)
+        }
+      }
+    )
     const {top, left} = getBBox(phaseEditorRef.current)!
     const cardInFlight = {
       transform: `translate(${left}px,${top}px)`,
@@ -129,7 +126,7 @@ const PhaseItemEditor = (props: Props) => {
     }
     openPortal()
     cardsInFlightRef.current = [...cardsInFlightRef.current, cardInFlight]
-    editor.commands.clearContent()
+    editor.commands.clearOnSubmit()
     forceUpdateColumn()
     requestAnimationFrame(() => {
       const stackBBox = getBBox(stackTopRef.current)
@@ -155,82 +152,48 @@ const PhaseItemEditor = (props: Props) => {
       atmosphere,
       placeholder: 'Share your thoughts, hit / for commands',
       teamId,
-      readOnly: !!readOnly,
-      onEnter: handleSubmit
+      readOnly: !!readOnly
     }
   )
-  const [isEditing, setIsEditing] = useState(false)
-  const idleTimerIdRef = useRef<number>()
-  const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
-  useEffect(() => {
-    return () => {
-      window.clearTimeout(idleTimerIdRef.current)
+
+  const isEditing = useIsEditing({
+    editor,
+    onStartEditing: () => {
+      EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
+    },
+    onStopEditing: () => {
+      EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
     }
-  }, [idleTimerIdRef])
+  })
+  const isFocused = editor?.isFocused
 
-  const knowsHowToEnter = (viewerMeetingMember?.user?.timeline?.edges?.length ?? 0) > 1
-  const [isFocused, setIsFocused] = useState(false)
-  const [enterHint, setEnterHint] = useState('')
-  const hintTimerRef = useRef<number>()
-  const hintCharacterCountRef = useRef(0)
   useEffect(() => {
-    const showHint = !knowsHowToEnter && !isEditing && !editor?.isEmpty
-    const characterCount = editor?.storage.characterCount.characters()
+    if (!editor) return
 
-    if (characterCount !== hintCharacterCountRef.current) {
-      hintCharacterCountRef.current = characterCount
-      setEnterHint('')
+    const draft = window.localStorage.getItem(draftStorageKey)
+    if (draft && editor.isEmpty) {
+      const content = JSON.parse(draft)
+      editor?.commands.setContent(content)
+      window.localStorage.removeItem(draftStorageKey)
     }
 
-    if (showHint) {
-      const newEnterHint = isFocused
-        ? 'Press enter to add'
-        : 'Forgot to press enter? Click here to add 👆'
-      hintTimerRef.current = window.setTimeout(() => setEnterHint(newEnterHint), 1000)
-      return () => {
-        window.clearTimeout(hintTimerRef.current)
+    const storeDraft = () => {
+      if (editor.isEmpty) {
+        window.localStorage.removeItem(draftStorageKey)
+      } else {
+        window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
       }
-    } else {
-      return undefined
     }
-  }, [isFocused, isEditing, editor?.storage.characterCount.characters()])
 
-  const ensureNotEditing = () => {
-    if (!isEditing) return
-    window.clearTimeout(idleTimerIdRef.current)
-    idleTimerIdRef.current = undefined
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
-    setIsEditing(false)
-  }
-
-  const ensureEditing = () => {
-    if (!isEditing) {
-      EditReflectionMutation(atmosphere, {
-        isEditing: true,
-        meetingId,
-        promptId
-      })
-      setIsEditing(true)
+    editor.on('update', storeDraft)
+    return () => {
+      editor.off('update', storeDraft)
     }
-    window.clearTimeout(idleTimerIdRef.current)
-    idleTimerIdRef.current = window.setTimeout(() => {
-      EditReflectionMutation(atmosphere, {
-        isEditing: false,
-        meetingId,
-        promptId
-      })
-      setIsEditing(false)
-    }, 5000)
-  }
-  const onFocus = () => {
-    setIsFocused(true)
-    ensureEditing()
-    return null
-  }
-  const onBlur = () => {
-    setIsFocused(false)
-    ensureNotEditing()
-  }
+  }, [editor])
+
+  const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
+  const showButtons = isFocused || isEditing || (editor && !editor?.isEmpty)
+  const showFooter = showButtons || disableAnonymity
 
   const removeCardInFlight = (content: string) => () => {
     const idx = cardsInFlightRef.current.findIndex((card) => card.key === content)
@@ -247,41 +210,41 @@ const PhaseItemEditor = (props: Props) => {
   if (!editor) return null
   return (
     <>
-      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className=''>
+      <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='pb-2'>
         <TipTapEditor
-          className={cn(
-            'flex max-h-41 min-h-[6rem] overflow-auto px-4 pt-3',
-            disableAnonymity ? 'pb-0' : 'pb-3'
-          )}
+          className={cn('flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all', {
+            'min-h-16': isEditing || isFocused
+          })}
           editor={editor}
-          onBlur={onBlur}
-          onFocus={onFocus}
         />
-        {disableAnonymity && (
-          <div className='pb-3'>
+        <div
+          className={cn('flex w-full flex-row-reverse items-center justify-between pr-2 pl-4', {
+            hidden: !showFooter
+          })}
+        >
+          <SubmitReflectionButton
+            className={cn('opacity-100 transition-all', {'opacity-0': !showButtons})}
+            onClick={handleSubmit}
+            disabled={readOnly || editor.isEmpty}
+          />
+          {disableAnonymity && (
             <ReflectionCardAuthor>{viewerMeetingMember?.user.preferredName}</ReflectionCardAuthor>
-          </div>
-        )}
-        <EnterHint visible={!!enterHint} onClick={handleSubmit}>
-          {enterHint}
-        </EnterHint>
+          )}
+        </div>
       </ReflectionCardRoot>
       {portal(
         <>
           {cardsInFlightRef.current.map((card) => {
             return (
               <CardInFlightStyles
-                className=''
                 key={card.key}
                 transform={card.transform}
                 isStart={card.isStart}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
-                <div className='py-[2px]'>
-                  <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
-                </div>
+                <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
                 {disableAnonymity && (
-                  <div className='pb-3'>
+                  <div className='py-2 pl-4'>
                     <ReflectionCardAuthor>
                       {viewerMeetingMember?.user.preferredName}
                     </ReflectionCardAuthor>

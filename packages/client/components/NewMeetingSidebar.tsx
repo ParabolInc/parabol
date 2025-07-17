@@ -14,6 +14,7 @@ import EditableText from './EditableText'
 import Facilitator from './Facilitator'
 import LogoBlock from './LogoBlock/LogoBlock'
 import NewMeetingSidebarUpgradeBlock from './NewMeetingSidebarUpgradeBlock'
+import MeetingDateLabel from './Recurrence/MeetingDateLabel'
 import SidebarToggle from './SidebarToggle'
 import InactiveTag from './Tag/InactiveTag'
 
@@ -88,6 +89,7 @@ const NewMeetingSidebar = (props: Props) => {
     graphql`
       fragment NewMeetingSidebar_meeting on NewMeeting {
         ...Facilitator_meeting
+        ...MeetingDateLabel_meeting
         id
         endedAt
         facilitatorUserId
@@ -132,6 +134,7 @@ const NewMeetingSidebar = (props: Props) => {
           ) : (
             <MeetingName>{meetingName}</MeetingName>
           )}
+          <MeetingDateLabel meetingRef={meeting} />
           <TeamDashboardLink to={teamLink}>
             {'Team: '}
             {teamName}

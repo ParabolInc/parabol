@@ -1,7 +1,7 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
-import {sql} from 'kysely'
+import {sql, type NotNull} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
@@ -29,7 +29,7 @@ import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
-import sendToSentry from '../../../utils/sendToSentry'
+import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import {DataLoaderWorker} from '../../graphql'
@@ -723,7 +723,7 @@ const User: ReqResolvers<'User'> = {
         )
       }
     } else if (parabolActivities!.length + allUserActivities.length > 1000) {
-      sendToSentry(new Error('User.activities exceeds 1000 activities'), {
+      logError(new Error('User.activities exceeds 1000 activities'), {
         userId,
         extras: {numActivities: parabolActivities!.length + allUserActivities.length}
       })
@@ -857,27 +857,64 @@ const User: ReqResolvers<'User'> = {
   },
   pageInsights,
   aiPrompts,
-  page: async (_source, {pageId}, {dataLoader}) => {
+  page: async (_source, {pageId}, {authToken, dataLoader}) => {
     const [dbId] = CipherId.fromClient(pageId)
-    const page = await dataLoader.get('pages').load(dbId)
+    const [page, access] = await Promise.all([
+      dataLoader.get('pages').load(dbId),
+      dataLoader.get('pageAccessByUserId').load({pageId: dbId, userId: authToken.sub})
+    ])
     if (!page) throw new GraphQLError('Page not found')
+    if (!access)
+      throw new GraphQLError('Viewer does not have access to page', {
+        extensions: {code: 'UNAUTHORIZED'}
+      })
     return page
   },
   pages: async (
     _source,
-    {parentPageId, isPrivate, first, after, teamId},
+    {parentPageId, isPrivate, first, after, teamId, isArchived, textFilter},
     {authToken, dataLoader}
   ) => {
-    const isPrivateDefined = typeof isPrivate === 'boolean'
-    if ((parentPageId || teamId) && isPrivateDefined) {
-      throw new GraphQLError('isPrivate and parentPageId/teamId are mutually exclusive')
-    }
     if (parentPageId && teamId) {
       throw new GraphQLError('parentPageId and teamId are mutually exclusive')
     }
-    const isTopLevel = !parentPageId
+
+    const isTopLevel = parentPageId === null
     const viewerId = getUserId(authToken)
-    const dbParentPageId = parentPageId ? CipherId.fromClient(parentPageId)[0] : null
+    const dbParentPageId = parentPageId
+      ? CipherId.fromClient(parentPageId)[0]
+      : parentPageId === null
+        ? null
+        : undefined
+    const isPrivateDefined = typeof isPrivate === 'boolean'
+    if (isArchived) {
+      // this is a separate query because deletedBy is going to be a more exclusive index
+      // and archived items use deletedAt for their cursor instead of a sortOrder
+      const pagesPlusOne = await selectPages()
+        .where('deletedBy', '=', viewerId)
+        .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
+        .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+        .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
+        .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+        .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+        .orderBy('deletedAt', 'desc')
+        .$narrowType<{deletedAt: NotNull}>()
+        .execute()
+      const hasNextPage = pagesPlusOne.length > first
+      const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+      return {
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false,
+          startCursor: pages.at(0)?.deletedAt.toJSON(),
+          endCursor: pages.at(-1)?.deletedAt.toJSON()
+        },
+        edges: pages.map((page) => ({
+          node: page,
+          cursor: page.deletedAt.toJSON()
+        }))
+      }
+    }
 
     const pagesPlusOne = await selectPages()
       .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
@@ -885,9 +922,11 @@ const User: ReqResolvers<'User'> = {
       .where('PageAccess.userId', '=', viewerId)
       .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
       .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-      .$if(!dbParentPageId, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
       .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+      .where('deletedBy', 'is', null)
       .orderBy('sortOrder')
       .limit(first + 1)
       .execute()

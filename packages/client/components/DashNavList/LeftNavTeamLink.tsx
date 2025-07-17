@@ -51,8 +51,8 @@ export const LeftNavTeamLink = (props: Props) => {
         const {createPage} = response
         const {page} = createPage
         const {id} = page
-        const [_, pageId] = id.split(':')
-        history.push(`/pages/${pageId}`)
+        const [_, pageCode] = id.split(':')
+        history.push(`/pages/${pageCode}`)
         setShowChildren(true)
       }
     })
@@ -98,7 +98,7 @@ export const LeftNavTeamLink = (props: Props) => {
             icon={GroupIcon}
           />
           <LeftNavItem>
-            <span>{teamName}</span>
+            <span className='pl-1'>{teamName}</span>
           </LeftNavItem>
           <LeftNavItemButtons>
             <LeftNavItemButton

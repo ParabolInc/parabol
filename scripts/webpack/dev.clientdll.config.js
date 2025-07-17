@@ -12,7 +12,6 @@ module.exports = {
       '@emotion/core',
       '@emotion/styled',
       '@mattkrick/sanitize-svg',
-      '@sentry/browser',
       'debug',
       'email-addresses',
       'emoji-mart',

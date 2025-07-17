@@ -22,7 +22,8 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
       fragment LeftNavPrivatePagesSection_viewer on User {
         draggingPageId
         draggingPageIsPrivate
-        privatePages: pages(first: 500, isPrivate: true) @connection(key: "User_privatePages") {
+        privatePages: pages(parentPageId: $nullId, first: 500, isPrivate: true)
+          @connection(key: "User_privatePages") {
           edges {
             node {
               ...LeftNavPageLink_page
@@ -54,8 +55,8 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         const {createPage} = response
         const {page} = createPage
         const {id} = page
-        const [_, pageId] = id.split(':')
-        history.push(`/pages/${pageId}`)
+        const [_, pageCode] = id.split(':')
+        history.push(`/pages/${pageCode}`)
       }
     })
   }
@@ -98,7 +99,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
             <LeftNavPageLink
               key={id}
               pageRef={node}
-              pageAncestors={[node.id]}
+              pageAncestors={[]}
               draggingPageId={draggingPageId}
               isLastChild={idx === edges.length - 1}
               dropIdx={idx}

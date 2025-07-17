@@ -1,16 +1,53 @@
 import {GraphQLError} from 'graphql'
+import type {ControlledTransaction} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
+import type {DB} from '../../../postgres/types/pg'
+import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
+import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {MutationResolvers} from '../resolverTypes'
+import {MutationResolvers, type PageRoleEnum, type PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
+
+const getNextIsPrivate = async (
+  trx: ControlledTransaction<DB, []>,
+  pageId: number,
+  isPrivate: boolean,
+  role: PageRoleEnum | null,
+  viewerId: string,
+  subjectType: PageSubjectEnum,
+  subjectId: string
+) => {
+  if (isPrivate && role) {
+    return subjectType !== 'user' || subjectId !== viewerId ? false : undefined
+  }
+  if (isPrivate || role) return undefined
+  // only need to do the expensive query if removing access on a public page might make it private
+  const willBePrivateRes = await trx
+    .selectNoFrom(({and, not, exists, selectFrom}) => [
+      and([
+        selectFrom('PageUserAccess')
+          .select(({eb, fn}) => eb(fn.countAll(), '<=', 1).as('val'))
+          .where('pageId', '=', pageId)
+          .limit(2),
+        not(exists(selectFrom('PageTeamAccess').select('pageId').where('pageId', '=', pageId))),
+        not(
+          exists(selectFrom('PageOrganizationAccess').select('pageId').where('pageId', '=', pageId))
+        ),
+        not(exists(selectFrom('PageExternalAccess').select('pageId').where('pageId', '=', pageId)))
+      ]).as('isPrivate')
+    ])
+    .executeTakeFirstOrThrow()
+  return willBePrivateRes.isPrivate ? true : undefined
+}
 
 const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   _source,
   {pageId, subjectType, subjectId, role, unlinkApproved},
-  {dataLoader}
+  {authToken, dataLoader}
 ) => {
+  const viewerId = getUserId(authToken)
   const pg = getKysely()
   const [dbPageId] = CipherId.fromClient(pageId)
   const tableMap = {
@@ -90,30 +127,42 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         oc
           .columns(['pageId', typeId])
           .doUpdateSet({role})
-          .where(({eb, ref}) => eb(ref(`${table}.role`), '!=', ref('excluded.role')))
+          .whereRef(`${table}.role`, '!=', 'excluded.role')
       )
       .execute()
   }
 
-  const [atLeastOneOwner] = await Promise.all([
-    // only need to check the top-most page because all LINKED children are guaranteed to have at least the same access
-    trx
-      .selectFrom('PageAccess')
-      .select('role')
-      .where('pageId', '=', dbPageId)
-      .where('role', '=', 'owner')
-      .limit(1)
-      .executeTakeFirst(),
-    unlinkFromParent &&
-      trx.updateTable('Page').set({isParentLinked: false}).where('id', '=', dbPageId).execute()
-  ])
+  const strongestRole = await updatePageAccessTable(trx, dbPageId)
+    .selectFrom('PageAccess')
+    .select(({fn}) => fn.min('role').as('role'))
+    // since all children will have identical access, no need to query descendants
+    .where('pageId', '=', dbPageId)
+    .executeTakeFirst()
 
-  if (atLeastOneOwner) {
-    await trx.commit().execute()
-  } else {
+  if (!strongestRole || strongestRole.role !== 'owner') {
     await trx.rollback().execute()
     throw new GraphQLError('A Page must have at least one owner')
   }
+
+  const willBePrivate = await getNextIsPrivate(
+    trx,
+    dbPageId,
+    page.isPrivate,
+    role || null,
+    viewerId,
+    nextSubjectType,
+    nextSubjectId
+  )
+
+  if (willBePrivate !== undefined || unlinkFromParent) {
+    await trx
+      .updateTable('Page')
+      .set({isParentLinked: unlinkFromParent ? false : undefined, isPrivate: willBePrivate})
+      .where('id', '=', dbPageId)
+      .execute()
+  }
+
+  await trx.commit().execute()
   dataLoader.get('pages').clear(dbPageId)
   return {pageId: dbPageId}
 }

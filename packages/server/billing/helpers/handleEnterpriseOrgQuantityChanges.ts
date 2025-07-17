@@ -10,11 +10,11 @@ const sendEnterpriseOverageEvent = async (
   const manager = getStripeManager()
   const {id: orgId, stripeSubscriptionId} = organization
   if (!stripeSubscriptionId) return
-  const [orgUsers, subscriptionItem] = await Promise.all([
+  const [orgUsers, activeOrgUsers, subscriptionItem] = await Promise.all([
     dataLoader.get('organizationUsersByOrgId').load(orgId),
+    dataLoader.get('activeOrganizationUsersByOrgId').load(orgId),
     manager.getSubscriptionItem(stripeSubscriptionId)
   ])
-  const activeOrgUsers = orgUsers.filter(({inactive}) => !inactive)
   const orgUserCount = activeOrgUsers.length
   if (!subscriptionItem) return
 
