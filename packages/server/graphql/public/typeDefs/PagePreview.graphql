@@ -1,0 +1,4 @@
+type PagePreview implements PagePartial {
+  id: ID!
+  title: String
+}
