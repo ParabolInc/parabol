@@ -100,7 +100,7 @@ export const useTipTapReflectionEditor = (
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,
       editable: !readOnly
     },
-    [readOnly]
+    []
   )
   useEffect(() => {
     if (!editor) return
