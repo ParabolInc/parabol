@@ -18,6 +18,7 @@ import isValid from '../../isValid'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
+import {generateRetroMeetingSummaryPage} from './generateRetroMeetingSummaryPage'
 import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import handleCompletedStage from './handleCompletedStage'
@@ -69,6 +70,8 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
+  // make the summary in a Page format
+  generateRetroMeetingSummaryPage(meetingId, dataLoader)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)

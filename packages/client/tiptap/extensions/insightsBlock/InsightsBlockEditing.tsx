@@ -10,8 +10,8 @@ import {SpecificMeetingPickerRoot} from '../../../components/SpecificMeetingPick
 import {TeamPickerComboboxRoot} from '../../../components/TeamPickerComboboxRoot'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import {quickHash} from '../../../shared/utils/quickHash'
 import {Button} from '../../../ui/Button/Button'
-import {quickHash} from '../../../utils/quickHash'
 import type {InsightsBlockAttrs} from './InsightsBlock'
 import {InsightsBlockPromptRoot} from './InsightsBlockPromptRoot'
 
