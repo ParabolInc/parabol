@@ -10,6 +10,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
+import {modEnter} from '../../utils/platform'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
@@ -158,6 +159,8 @@ const PromptResponseEditor = (props: Props) => {
   }, [editor])
 
   if (!editor) return null
+
+  const buttonTitle = !content ? 'Submit' : 'Update'
   return (
     <>
       <TipTapEditor editor={editor} showBubbleMenu={!readOnly} />
@@ -166,7 +169,12 @@ const PromptResponseEditor = (props: Props) => {
         // about it.
         <div className='flex items-center justify-end'>
           {!!content && isEditing && (
-            <CancelButton onClick={() => onCancel()} size='medium'>
+            <CancelButton
+              onClick={() => onCancel()}
+              size='medium'
+              aria-label='Cancel changes'
+              title='Cancel changes'
+            >
               Cancel
             </CancelButton>
           )}
@@ -175,8 +183,10 @@ const PromptResponseEditor = (props: Props) => {
               onClick={() => onSubmit()}
               size='medium'
               disabled={!editor || editor.isEmpty}
+              aria-label={`${buttonTitle} your response`}
+              title={`${buttonTitle} your response ${modEnter}`}
             >
-              {!content ? 'Submit' : 'Update'}
+              {buttonTitle}
             </SubmitButton>
           )}
         </div>
