@@ -36,9 +36,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
       .load({pageId: dbPageId, userId: viewerId})
     dataLoader.get('pageAccessByUserId').clearAll()
     if (userRole !== 'owner') {
-      throw new GraphQLError('You must be an owner to move the page to a different parent', {
-        extensions: {code: 'FOOB_AR'}
-      })
+      throw new GraphQLError('You must be an owner to move the page to a different parent')
     }
   }
 

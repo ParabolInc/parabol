@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.13.0](https://github.com/ParabolInc/parabol/compare/v10.12.6...v10.13.0) (2025-07-15)
+
+
+### Added
+
+* add transcript to Page ([#11514](https://github.com/ParabolInc/parabol/issues/11514)) ([b602ce8](https://github.com/ParabolInc/parabol/commit/b602ce86b94fd05fc7d76b966d27b3c1c54ff37a))
+
+
+### Fixed
+
+* can click link when changing pages ([#11553](https://github.com/ParabolInc/parabol/issues/11553)) ([68adc47](https://github.com/ParabolInc/parabol/commit/68adc47a67d39789116e27bcae671b9908a27954))
+* **dependabot:** fix configuration file ([#11539](https://github.com/ParabolInc/parabol/issues/11539)) ([2bd3844](https://github.com/ParabolInc/parabol/commit/2bd38441cfa85d9822652963ba50a7c48674568f))
+* pages link shuffle correctly ([#11498](https://github.com/ParabolInc/parabol/issues/11498)) ([2e46817](https://github.com/ParabolInc/parabol/commit/2e468170bd29dc41440437c29832372a69fa4662))
+
+
+### Changed
+
+* **dependabot:** ignore devDependencies ([#11538](https://github.com/ParabolInc/parabol/issues/11538)) ([695808a](https://github.com/ParabolInc/parabol/commit/695808ac7daddc7f7db46656315a8a2de12e6e4a))
+* **dependabot:** run it only weekly and reduce the max number of PRs to 6 ([#11546](https://github.com/ParabolInc/parabol/issues/11546)) ([437f14f](https://github.com/ParabolInc/parabol/commit/437f14f37ff9620366436719de78dbd6df3efd17))
+* **github-actions:** explicit permissions added and unused workflows deleted ([#11535](https://github.com/ParabolInc/parabol/issues/11535)) ([1372aab](https://github.com/ParabolInc/parabol/commit/1372aab48553dd82aca6b4c9da5aab0ce02b1d0c))
+* **readme:** database versions explicit ([#11537](https://github.com/ParabolInc/parabol/issues/11537)) ([7680458](https://github.com/ParabolInc/parabol/commit/7680458ac3d82488e9078c12c87b61f941b547ff))
+
 ## [10.12.6](https://github.com/ParabolInc/parabol/compare/v10.12.5...v10.12.6) (2025-07-07)
 
 

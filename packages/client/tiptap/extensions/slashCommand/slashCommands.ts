@@ -1,9 +1,11 @@
+import DetailsIcon from '@mui/icons-material/ArrowRight'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import CodeIcon from '@mui/icons-material/Code'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
+import TableIcon from '@mui/icons-material/GridOn'
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule'
 import ImageIcon from '@mui/icons-material/Image'
 import InsightsIcon from '@mui/icons-material/Insights'
@@ -113,6 +115,22 @@ export const slashCommands = [
         searchTerms: ['codeblock'],
         icon: CodeIcon,
         action: (editor: Editor) => editor.chain().focus().toggleCodeBlock().run()
+      },
+      {
+        title: 'Details',
+        description: 'Insert details',
+        searchTerms: ['details', 'accordion', 'expandable', 'toggle'],
+        icon: DetailsIcon,
+        action: (editor: Editor) =>
+          editor.chain().focus().setDetails().updateAttributes('details', {open: true}).run()
+      },
+      {
+        title: 'Table',
+        description: 'Insert a table',
+        searchTerms: ['table', 'grid', 'spreadsheet', 'data'],
+        icon: TableIcon,
+        action: (editor: Editor) =>
+          editor.chain().focus().insertTable({rows: 3, cols: 3, withHeaderRow: true}).run()
       },
       {
         title: 'Divider',
