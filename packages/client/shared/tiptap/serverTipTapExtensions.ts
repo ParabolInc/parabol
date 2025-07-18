@@ -1,10 +1,8 @@
 import {mergeAttributes, type Extensions} from '@tiptap/core'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
+import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
-import {TaskItem} from '@tiptap/extension-task-item'
-import {TaskList} from '@tiptap/extension-task-list'
-import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
@@ -47,7 +45,6 @@ export const serverTipTapExtensions: Extensions = [
   TableRow,
   TableHeader,
   TableCell,
-  Underline,
   TaskList,
   TaskItem.configure({
     nested: true

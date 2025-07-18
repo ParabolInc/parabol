@@ -1,9 +1,9 @@
-import {convertTipTapTaskContent} from '../../../../client/shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import {getUserId} from '../../../utils/authorization'
 import resolveReactjis from '../../resolvers/resolveReactjis'
 import {CommentResolvers} from '../resolverTypes'
 
-const TOMBSTONE = convertTipTapTaskContent('[deleted]')
+const TOMBSTONE = JSON.stringify(plaintextToTipTap('[deleted]'))
 
 const Comment: CommentResolvers = {
   content: ({isActive, content}) => {

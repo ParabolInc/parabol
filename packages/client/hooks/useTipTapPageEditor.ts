@@ -6,7 +6,6 @@ import Document from '@tiptap/extension-document'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
-import Underline from '@tiptap/extension-underline'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Editor, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -84,7 +83,6 @@ export const useTipTapPageEditor = (
         TableRow,
         TableHeader,
         TableCell,
-        Underline,
         TaskList,
         TaskItem.configure({
           nested: true
@@ -178,9 +176,8 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
       }),
       StarterKit.configure({
         document: false,
-        history: false
+        undoRedo: false
       }),
-      Underline,
       TaskList,
       TaskItem.configure({
         nested: true

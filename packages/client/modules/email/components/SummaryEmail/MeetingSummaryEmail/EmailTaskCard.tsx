@@ -7,7 +7,7 @@ import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
-import {convertTipTapTaskContent} from '../../../../../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../../../../../shared/tiptap/plaintextToTipTap'
 import {serverTipTapExtensions} from '../../../../../shared/tiptap/serverTipTapExtensions'
 
 interface Props {
@@ -44,7 +44,7 @@ const statusStyle = (status: TaskStatusEnum) => ({
 })
 
 const deletedTask = {
-  content: convertTipTapTaskContent('<<TASK DELETED>>'),
+  content: JSON.stringify(plaintextToTipTap('<<TASK DELETED>>')),
   status: 'done',
   tags: [] as string[],
   user: {
