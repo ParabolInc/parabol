@@ -17,7 +17,7 @@ export const withBacklinks = async (
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {
       const pageKey = CipherId.toClient(fromPageId, 'page')
-      const docConnection = await server.openDirectConnection(pageKey, {})
+      const docConnection = await server.hocuspocus.openDirectConnection(pageKey, {})
       await docConnection.transact(fn)
       await docConnection.disconnect()
     })

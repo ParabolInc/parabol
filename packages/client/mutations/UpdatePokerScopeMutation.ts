@@ -7,7 +7,7 @@ import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__genera
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import LinearIssueId from '../shared/gqlIds/LinearIssueId'
-import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
 import {PALETTE} from '../styles/paletteV3'
@@ -176,7 +176,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
 
           // create a task if it doesn't exist
           const plaintextContent = contents[idx] ?? ''
-          const content = convertTipTapTaskContent(plaintextContent)
+          const content = JSON.stringify(plaintextToTipTap(plaintextContent))
           const {title, bodyContent} = splitTipTapContent(JSON.parse(content))
           const optimisticTask = createProxyRecord(store, 'Task', {
             createdBy: viewerId,

@@ -1,5 +1,5 @@
 import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
-import {convertTipTapTaskContent} from '../../../client/shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../../../client/shared/tiptap/plaintextToTipTap'
 import CheckInStage from './CheckInStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
@@ -18,7 +18,9 @@ export default class CheckInPhase extends GenericMeetingPhase {
     super('checkin')
     const {teamId, meetingCount, stages} = input
     this.checkInGreeting = makeCheckinGreeting(meetingCount, teamId)
-    this.checkInQuestion = convertTipTapTaskContent(makeCheckinQuestion(meetingCount, teamId))
+    this.checkInQuestion = JSON.stringify(
+      plaintextToTipTap(makeCheckinQuestion(meetingCount, teamId))
+    )
     this.stages = stages
   }
 }
