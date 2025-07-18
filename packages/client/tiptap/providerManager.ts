@@ -1,14 +1,10 @@
-import {
-  HocuspocusProviderWebsocket,
-  TiptapCollabProvider,
-  TiptapCollabProviderWebsocket
-} from '@hocuspocus/provider'
+import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import * as Y from 'yjs'
 
 class ProviderManager {
   authToken: string | null = null
-  socket: TiptapCollabProviderWebsocket | undefined = undefined
-  providers: Record<string, {count: number; provider: TiptapCollabProvider}> = {}
+  socket: HocuspocusProviderWebsocket | undefined = undefined
+  providers: Record<string, {count: number; provider: HocuspocusProvider}> = {}
   setAuthToken(authToken: string) {
     this.authToken = authToken
   }
@@ -38,7 +34,7 @@ class ProviderManager {
     if (existing) return existing
     const doc = new Y.Doc()
     // update the URL to match the title
-    const provider = new TiptapCollabProvider({
+    const provider = new HocuspocusProvider({
       websocketProvider: this.getSocket(),
       name: pageId,
       document: doc

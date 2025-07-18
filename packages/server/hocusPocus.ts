@@ -37,7 +37,7 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   })
   dataLoader.dispose()
 }
-export const server = Server.configure({
+export const server = new Server({
   stopOnSignals: false,
   port,
   quiet: true,

@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import TiptapTable, {TableOptions} from '@tiptap/extension-table'
+import {Table as TiptapTable, TableOptions} from '@tiptap/extension-table'
 import {
   NodeViewContent,
   NodeViewWrapper,
