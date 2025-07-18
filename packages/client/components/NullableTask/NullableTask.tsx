@@ -1,10 +1,15 @@
+import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useTaskChildFocus from '../../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import OutcomeCardContainer from '../../modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
+import DeleteTaskMutation from '../../mutations/DeleteTaskMutation'
+import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
+import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import isTaskArchived from '../../utils/isTaskArchived'
 import isTempId from '../../utils/relay/isTempId'
 import NullCard from '../NullCard/NullCard'
@@ -57,10 +62,35 @@ const NullableTask = (props: Props) => {
   const atmosphere = useAtmosphere()
   const isArchived = isTaskArchived(tags)
   const readOnly = isTempId(taskId) || isArchived || !!isDraggingOver || isIntegration
+
+  const {isTaskFocused} = useTaskChildFocus(taskId)
+
+  const handleCardUpdate = useEventCallback(() => {
+    if (!editor || readOnly) return
+    const isFocused = isTaskFocused()
+    if (editor.isEmpty && !isFocused) {
+      DeleteTaskMutation(atmosphere, {taskId})
+      return
+    }
+    const nextContentJSON = editor.getJSON()
+    if (isEqualWhenSerialized(JSON.parse(content), nextContentJSON)) return
+    const updatedTask = {
+      id: taskId,
+      content: JSON.stringify(nextContentJSON)
+    }
+    UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
+  })
+
+  const onModEnter = useEventCallback(() => {
+    handleCardUpdate()
+    editor?.commands.blur()
+  })
+
   const {editor} = useTipTapTaskEditor(content, {
     atmosphere,
     teamId,
-    readOnly
+    readOnly,
+    onModEnter: onModEnter
   })
 
   const showOutcome =
@@ -75,6 +105,7 @@ const NullableTask = (props: Props) => {
       task={task}
       isViewerMeetingSection={isViewerMeetingSection}
       meetingId={meetingId}
+      handleCardUpdate={handleCardUpdate}
     />
   ) : (
     <NullCard className={className} preferredName={preferredName} />
