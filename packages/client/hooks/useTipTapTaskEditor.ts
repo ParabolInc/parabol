@@ -28,7 +28,7 @@ export const useTipTapTaskEditor = (
     {
       content: contentJSON,
       extensions: [
-        StarterKit,
+        StarterKit.configure({link: false}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,

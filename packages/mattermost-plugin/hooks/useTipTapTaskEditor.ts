@@ -12,7 +12,7 @@ export const useTipTapTaskEditor = (content: string) => {
   editorRef.current = useEditor({
     content: contentJSON,
     extensions: [
-      StarterKit,
+      StarterKit.configure({link: false}),
       Placeholder.configure({
         showOnlyWhenEditable: false,
         placeholder: 'Describe what “Done” looks like'

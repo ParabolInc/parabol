@@ -94,7 +94,7 @@ const PromptResponseEditor = (props: Props) => {
     {
       content,
       extensions: [
-        StarterKit,
+        StarterKit.configure({link: false}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,

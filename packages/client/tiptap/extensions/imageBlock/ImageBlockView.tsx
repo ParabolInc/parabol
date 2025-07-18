@@ -13,7 +13,9 @@ export const ImageBlockView = (props: NodeViewProps) => {
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
 
   const onClick = useCallback(() => {
-    editor.commands.setNodeSelection(getPos())
+    const pos = getPos()
+    if (!pos) return
+    editor.commands.setNodeSelection(pos)
   }, [getPos, editor.commands])
 
   const [maxHeight, setMaxHeight] = useState(

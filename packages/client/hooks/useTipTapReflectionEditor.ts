@@ -39,7 +39,7 @@ export const useTipTapReflectionEditor = (
     {
       content: contentJSON,
       extensions: [
-        StarterKit,
+        StarterKit.configure({link: false}),
         TaskList,
         TaskItem.configure({
           nested: true

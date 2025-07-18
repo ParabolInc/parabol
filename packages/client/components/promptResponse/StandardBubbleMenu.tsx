@@ -26,7 +26,10 @@ export const StandardBubbleMenu = (props: Props) => {
     <div>
       <BubbleMenu
         editor={editor}
-        tippyOptions={{duration: 100, role: 'dialog'}}
+        options={{
+          offset: 6,
+          placement: 'top'
+        }}
         shouldShow={shouldShowBubbleMenu}
       >
         <div

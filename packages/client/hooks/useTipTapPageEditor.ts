@@ -67,7 +67,8 @@ export const useTipTapPageEditor = (
             content: 'heading block*'
           }
         }).configure({
-          undoRedo: false
+          undoRedo: false,
+          link: false
         }),
         Details.configure({
           persist: true,
@@ -176,6 +177,7 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
       }),
       StarterKit.configure({
         document: false,
+        link: false,
         undoRedo: false
       }),
       TaskList,
@@ -188,9 +190,6 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
       LoomExtension,
       Mention.configure(mentionConfig),
       Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
-      TiptapLinkExtension.configure({
-        openOnClick: false
-      }),
       Collaboration.configure({
         document
       }),
