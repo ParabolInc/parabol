@@ -75,7 +75,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@sereneinserenade/tiptap-search-and-replace": "^0.1.1",
     "@stripe/react-stripe-js": "^1.16.5",
-    "@stripe/stripe-js": "^4.0.0",
+    "@stripe/stripe-js": "^7.5.0",
     "@tiptap/extension-details": "^2.24.2",
     "@tiptap/extension-details-content": "^2.24.2",
     "@tiptap/extension-details-summary": "^2.24.2",
