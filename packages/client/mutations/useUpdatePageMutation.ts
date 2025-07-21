@@ -19,7 +19,7 @@ graphql`
       isPrivate
       isParentLinked
       title
-      ...PageActions_page
+      ...LeftNavPageLink_page
     }
   }
 `

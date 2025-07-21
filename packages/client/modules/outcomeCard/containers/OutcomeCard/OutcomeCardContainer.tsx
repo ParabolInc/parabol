@@ -10,9 +10,6 @@ import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
-import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
-import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
 
 const Wrapper = styled('div')({
@@ -29,6 +26,7 @@ interface Props {
   clearIsCreatingNewTask?: () => void
   isViewerMeetingSection?: boolean
   meetingId?: string
+  handleCardUpdate: () => void
 }
 
 const OutcomeCardContainer = memo((props: Props) => {
@@ -40,7 +38,8 @@ const OutcomeCardContainer = memo((props: Props) => {
     area,
     isAgenda,
     isViewerMeetingSection,
-    meetingId
+    meetingId,
+    handleCardUpdate
   } = props
   const task = useFragment(
     graphql`
@@ -48,14 +47,13 @@ const OutcomeCardContainer = memo((props: Props) => {
         editors {
           userId
         }
-        content
         id
         ...OutcomeCard_task @arguments(meetingId: $meetingId)
       }
     `,
     taskRef
   )
-  const {id: taskId, content} = task
+  const {id: taskId} = task
   const atmosphere = useAtmosphere()
   const ref = useRef<HTMLDivElement>(null)
   const [isTaskHovered, setIsTaskHovered] = useState(false)
@@ -72,21 +70,6 @@ const OutcomeCardContainer = memo((props: Props) => {
       isHighlighted
     })
   }, [isHighlighted])
-
-  const handleCardUpdate = () => {
-    const isFocused = isTaskFocused()
-    if (editor.isEmpty && !isFocused) {
-      DeleteTaskMutation(atmosphere, {taskId})
-      return
-    }
-    const nextContentJSON = editor.getJSON()
-    if (isEqualWhenSerialized(JSON.parse(content), nextContentJSON)) return
-    const updatedTask = {
-      id: taskId,
-      content: JSON.stringify(nextContentJSON)
-    }
-    UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
-  }
 
   useScrollIntoView(ref, editor.isEmpty)
   useClickAway(ref, () => setIsTaskHovered(false))

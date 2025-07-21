@@ -1,10 +1,14 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
+import Details from '@tiptap/extension-details'
+import DetailsContent from '@tiptap/extension-details-content'
+import DetailsSummary from '@tiptap/extension-details-summary'
 import Document from '@tiptap/extension-document'
 import Focus from '@tiptap/extension-focus'
 import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
+import TableRow from '@tiptap/extension-table-row'
 import {TaskItem} from '@tiptap/extension-task-item'
 import {TaskList} from '@tiptap/extension-task-list'
 import Underline from '@tiptap/extension-underline'
@@ -28,6 +32,9 @@ import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
+import {Table} from '../tiptap/extensions/table/Table'
+import {TableCell} from '../tiptap/extensions/table/TableCell'
+import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
@@ -67,6 +74,20 @@ export const useTipTapPageEditor = (
           document: false,
           history: false
         }),
+        Details.configure({
+          persist: true,
+          HTMLAttributes: {
+            class: 'details'
+          }
+        }),
+        DetailsSummary,
+        DetailsContent,
+        Table.configure({
+          allowTableNodeSelection: true
+        }),
+        TableRow,
+        TableHeader,
+        TableCell,
         Underline,
         TaskList,
         TaskItem.configure({
@@ -99,6 +120,10 @@ export const useTipTapPageEditor = (
                 return 'New quote'
               case 'paragraph':
                 return "Press '/' for commands"
+              case 'detailsSummary':
+                return 'New summary'
+              case 'detailsContent':
+                return 'Add details, use / to add blocks'
               case 'bulletList':
               case 'listItem':
               case 'orderedList':

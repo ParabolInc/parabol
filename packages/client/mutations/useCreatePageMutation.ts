@@ -16,7 +16,7 @@ graphql`
       sortOrder
       teamId
       parentPageId
-      ...PageActions_page
+      ...LeftNavPageLink_page
     }
   }
 `

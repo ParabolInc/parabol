@@ -12,6 +12,7 @@ import isDemoRoute from '~/utils/isDemoRoute'
 import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
+import useEventCallback from '../../hooks/useEventCallback'
 import useMutationProps from '../../hooks/useMutationProps'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
@@ -162,10 +163,18 @@ const ReflectionCard = (props: Props) => {
     phases,
     isSpotlightSource
   )
+
+  const handleModEnter = useEventCallback(() => {
+    handleContentUpdate()
+    updateIsEditing(false)
+    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+  })
+
   const {editor} = useTipTapReflectionEditor(content, {
     atmosphere,
     teamId,
-    readOnly: !!readOnly
+    readOnly: !!readOnly,
+    onModEnter: handleModEnter
   })
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
@@ -335,8 +344,8 @@ const ReflectionCard = (props: Props) => {
         })}
       >
         <div
-          className={cn('flex items-center gap-1 opacity-0', {
-            'opacity-100': showEditButton
+          className={cn('flex items-center gap-1', {
+            hidden: !showEditButton
           })}
         >
           <SubmitReflectionButton

@@ -20,9 +20,10 @@ const removeFromOrg = async (
     dataLoader.get('teamsByOrgIds').load(orgId),
     dataLoader.get('teamMembersByUserId').load(userId)
   ])
-  const teamIds = orgTeams.map((team) => team.id)
-  const teamMembers = allTeamMembers.filter((teamMember) => teamIds.includes(teamMember.teamId))
+  const orgTeamIds = orgTeams.map((team) => team.id)
+  const teamMembers = allTeamMembers.filter((teamMember) => orgTeamIds.includes(teamMember.teamId))
   const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
+  const teamIds = teamMembers.map((teamMember) => teamMember.teamId)
 
   const perTeamRes = await Promise.all(
     teamMemberIds.map((teamMemberId) => {

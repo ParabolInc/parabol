@@ -3,7 +3,7 @@ import * as React from 'react'
 import {cn} from '../cn'
 
 interface MenuItemProps {
-  onClick: (event: Event) => void
+  onClick?: (event: Event) => void
   isDisabled?: boolean
   className?: string
   children: React.ReactNode
