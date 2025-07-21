@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.14.0](https://github.com/ParabolInc/parabol/compare/v10.13.0...v10.14.0) (2025-07-21)
+
+
+### Added
+
+* add breadcrumb to pages ([#11560](https://github.com/ParabolInc/parabol/issues/11560)) ([5d097b4](https://github.com/ParabolInc/parabol/commit/5d097b4142d6ea816902534a5b68143f4f5964e9))
+* add details block to pages ([#11520](https://github.com/ParabolInc/parabol/issues/11520)) ([7137743](https://github.com/ParabolInc/parabol/commit/7137743cf1a71415eaa59c25b09e965bc2396284))
+* add tables to pages ([#11545](https://github.com/ParabolInc/parabol/issues/11545)) ([5938265](https://github.com/ParabolInc/parabol/commit/59382650e05369dced5a3918bdccd6662f9b9a65))
+* submit reflections, tasks and standup responses on Mod+Enter ([#11561](https://github.com/ParabolInc/parabol/issues/11561)) ([03fc4d2](https://github.com/ParabolInc/parabol/commit/03fc4d2fd23352407e40a974db98ccab1b70d672))
+
+
+### Fixed
+
+* return only affected team ids when removing org users ([#11569](https://github.com/ParabolInc/parabol/issues/11569)) ([06d8fea](https://github.com/ParabolInc/parabol/commit/06d8feaf94bf233b4c3442c62c8ebd3084c83379))
+
 ## [10.13.0](https://github.com/ParabolInc/parabol/compare/v10.12.6...v10.13.0) (2025-07-15)
 
 
