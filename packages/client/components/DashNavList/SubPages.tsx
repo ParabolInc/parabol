@@ -1,6 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
+import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {LeftNavPageLink} from './LeftNavPageLink'
 
 graphql`
@@ -12,7 +14,6 @@ graphql`
           node {
             ...LeftNavPageLink_page
             id
-            title
           }
         }
       }
@@ -24,37 +25,56 @@ interface Props {
   pageAncestors: string[]
   draggingPageId: string | null | undefined
   draggingPageIsPrivate: boolean | null
+  pageLinks: PageLinkBlockAttributes[] | null | undefined
 }
 
 export const SubPages = (props: Props) => {
   const connectionKey = 'User_pages'
-  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate} = props
+  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate, pageLinks} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {pages} = viewer
   const {edges} = pages
   const depth = pageAncestors.length
-  if (edges.length === 0) {
+  const children = useMemo(() => {
+    const nodes = edges.map((edge) => edge.node)
+    // this is for top-level i.e. teamId
+    if (pageLinks === undefined) return nodes
+    // Prefer the title from GraphQL
+    // yjs title changes propagate to GraphQL in usePageProvider
+    if (pageLinks === null) return null
+    return pageLinks
+      .map(({pageCode}) => {
+        const pageKey = `page:${pageCode}`
+        const node = nodes.find((node) => node.id === pageKey)!
+        return node
+      })
+      .filter(Boolean)!
+  }, [pageLinks, edges])
+
+  if (!children || children.length === 0) {
+    const noLinksMessage = !children ? 'Loading' : 'No pages inside'
     return (
       <div style={{paddingLeft: depth * 8 + 8}} className='text-sm font-medium text-slate-500'>
-        {'No pages inside'}
+        {noLinksMessage}
       </div>
     )
   }
+
   return (
     <>
-      {edges.map((edge, idx) => {
-        const {node} = edge
-        const {id} = node
+      {children.map((node, idx) => {
+        const nextPeer = children[idx + 1]
+        const nextPeerId = nextPeer?.id ?? null
         return (
           <LeftNavPageLink
-            key={id}
+            key={node.id}
             pageRef={node}
             pageAncestors={pageAncestors}
             draggingPageId={draggingPageId}
             dropIdx={idx}
-            isLastChild={idx === edges.length - 1}
-            nextPeerId={edges[idx + 1]?.node.id || null}
+            isLastChild={idx === children.length - 1}
+            nextPeerId={nextPeerId}
             connectionKey={connectionKey}
             draggingPageIsPrivate={draggingPageIsPrivate}
           />

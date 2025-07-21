@@ -1,16 +1,35 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
+import {SubscriptionChannel} from '../../../../../client/types/constEnums'
+import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {selectDescendantPages} from '../../../../postgres/select'
 import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
+import publish from '../../../../utils/publish'
+import {removeCanonicalPageLinkFromPage} from '../../../../utils/tiptap/removeCanonicalPageLinkFromPage'
+import {validateParentPage} from '../../../../utils/tiptap/validateParentPage'
 
 export const movePageToNewParent = async (
   viewerId: string,
   pageId: number,
-  parentPageId: number,
-  sortOrder: string,
-  ancestorIds: number[]
+  parentPageId: number
 ) => {
   const pg = getKysely()
+  const childPage = await pg
+    .selectFrom('Page')
+    .select('parentPageId')
+    .where('id', '=', pageId)
+    .executeTakeFirstOrThrow()
+  // the child page will already have the correct parent if we created a PageLink on the parent doc
+  if (childPage.parentPageId === parentPageId) return
+  const parentPageWithRole = await validateParentPage(parentPageId, viewerId)
+  const {ancestorIds, isPrivate} = parentPageWithRole
+  if (ancestorIds.includes(pageId) || parentPageId === pageId) {
+    throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)
+  }
+  if (childPage.parentPageId) {
+    removeCanonicalPageLinkFromPage(childPage.parentPageId, pageId)
+  }
   const trx = await pg.startTransaction().execute()
 
   await selectDescendantPages(trx, pageId)
@@ -178,14 +197,15 @@ export const movePageToNewParent = async (
         )
     )
     .updateTable('Page')
-    .set((eb) => ({
+    .set({
       teamId: null,
       parentPageId,
-      isPrivate: eb.selectFrom('Page').select('isPrivate').where('id', '=', parentPageId),
+      isPrivate,
       isParentLinked: true,
-      sortOrder,
-      ancestorIds: [...ancestorIds, parentPageId]
-    }))
+      // sortOrder is only for top-level pages. Else, we get the order by the parent's canonical page link
+      sortOrder: '',
+      ancestorIds: ancestorIds.concat(parentPageId)
+    })
     .where('id', '=', pageId)
     .execute()
 
@@ -248,4 +268,13 @@ export const movePageToNewParent = async (
       .execute()
   }
   await trx.commit().execute()
+  const dataLoader = getNewDataLoader()
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId: undefined}
+  const data = {pageId}
+  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
+  access.forEach(({userId}) => {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePagePayload', data, subOptions)
+  })
+  dataLoader.dispose()
 }

@@ -1,35 +1,29 @@
-import {ReactNodeViewRenderer, type JSONContent} from '@tiptap/react'
+import {GapCursor} from '@tiptap/pm/gapcursor'
+import {Plugin, TextSelection} from '@tiptap/pm/state'
+import {isNodeSelection, ReactNodeViewRenderer, type JSONContent} from '@tiptap/react'
+
+import {Slice} from '@tiptap/pm/model'
+import * as Y from 'yjs'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {PageLinkBlockView} from './PageLinkBlockView'
 
-export const PageLinkBlock = PageLinkBlockBase.extend({
-  addAttributes() {
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    movePageLink: {
+      movePageLink: (params: {fromIndex: number; toIndex: number}) => ReturnType
+    }
+  }
+}
+
+export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, {yDoc: Y.Doc}>({
+  addOptions: () => ({
+    // hack to enforce document
+    yDoc: undefined as any
+  }),
+  addStorage(this) {
+    const {options} = this
     return {
-      pageId: {
-        default: '',
-        parseHTML: (element) => element.getAttribute('data-id'),
-        renderHTML: (attributes) => ({
-          'data-id': attributes.pageId
-        })
-      },
-      title: {
-        default: '',
-        parseHTML: (element) => element.getAttribute('data-title'),
-        renderHTML: (attributes) => ({
-          'data-title': attributes.title
-        })
-      },
-      auto: {
-        default: false,
-        parseHTML: (element) => {
-          return element.getAttribute('data-auto') === '' ? true : false
-        },
-        renderHTML: (attributes) => {
-          return {
-            'data-auto': attributes.auto ? '' : undefined
-          }
-        }
-      }
+      yDoc: options.yDoc
     }
   },
   addCommands() {
@@ -39,34 +33,90 @@ export const PageLinkBlock = PageLinkBlockBase.extend({
         ({commands}) => {
           const content = [{type: 'pageLinkBlock', attrs}, {type: 'paragraph'}] as JSONContent[]
           return commands.insertContent(content)
+        },
+      movePageLink:
+        ({fromIndex, toIndex}) =>
+        ({state, dispatch}) => {
+          const blocks = state.doc.content.content
+          const blockCount = blocks.length
+
+          if (fromIndex < 0 || fromIndex >= blockCount) {
+            console.error(`movePageLink: Invalid fromIndex ${fromIndex}`)
+            return false
+          }
+
+          const block = blocks[fromIndex]!
+
+          // Calculate delete range
+          const fromPos = blocks.slice(0, fromIndex).reduce((pos, node) => pos + node.nodeSize, 0)
+          const toDeleteEnd = fromPos + block.nodeSize
+
+          let tr = state.tr.replace(fromPos, toDeleteEnd, Slice.empty)
+
+          // Adjust toIndex if the delete shifts subsequent positions
+          let adjustedToIndex = toIndex > fromIndex ? toIndex - 1 : toIndex
+          adjustedToIndex = Math.max(0, Math.min(tr.doc.childCount, adjustedToIndex))
+
+          // Compute insertion position
+          const newBlocks = tr.doc.content.content
+          const insertPos = newBlocks
+            .slice(0, adjustedToIndex)
+            .reduce((pos, node) => pos + node.nodeSize, 0)
+
+          tr = tr.insert(insertPos, block.copy())
+          dispatch?.(tr)
+          return true
         }
     }
   },
-
   addNodeView() {
     // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(PageLinkBlockView, {className: 'group'})
+    return ReactNodeViewRenderer(PageLinkBlockView, {
+      className: 'group',
+      stopEvent() {
+        // TipTap is being bad about intercepting drag/drop handling
+        //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110
+        return false
+      }
+    })
+  },
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleKeyDown(view, event) {
+            // return false // false means you can backspace to delete pagelinks
+            const isBackspace = event.key === 'Backspace'
+            const isDelete = event.key === 'Delete'
+            if (!isBackspace && !isDelete) return false
+            const {state, dispatch} = view
+            const {selection, tr} = state
+            const {$from, empty} = selection
+            // if the pageLinkBlock is currently selected, then that's our node
+            // if backspace is hit, look at the nodeBefore
+            // if delete is hit, look at the nodeAfter
+            const nextNode = empty
+              ? isBackspace
+                ? $from.nodeBefore
+                : $from.nodeAfter
+              : isNodeSelection(selection)
+                ? selection.node
+                : null
+            if (!nextNode || nextNode.type.name !== 'pageLinkBlock') return false
+            const offset = isBackspace
+              ? $from.pos - nextNode.nodeSize
+              : $from.pos + nextNode.nodeSize
+            // if hitting backspace would put us between 2 nodes with no gap, use a GapCursor
+            const pos = state.doc.resolve(offset)
+            const isGap = GapCursor.findFrom(pos, -1, false)
+            const nextSelection = isGap
+              ? new GapCursor(pos)
+              : TextSelection.create(state.doc, offset)
+            dispatch(tr.setSelection(nextSelection).scrollIntoView())
+            return true
+          }
+        }
+      })
+    ]
   }
-
-  // filterTransaction (transaction, state) {
-  //   let result = true // true for keep, false for stop transaction
-  //   const replaceSteps = []
-  //   transaction.steps.forEach((step, index) => {
-  //     if (step.jsonID === 'replace') {
-  //       replaceSteps.push(index)
-  //     }
-  //   })
-
-  //   replaceSteps.forEach(index => {
-  //     const map = transaction.mapping.maps[index]
-  //     const oldStart = map.ranges[0]
-  //     const oldEnd = map.ranges[0] + map.ranges[1]
-  //     state.doc.nodesBetween(oldStart, oldEnd, node => {
-  //       if (node.type.name === 'custom_block') {
-  //         result = false
-  //       }
-  //     })
-  //   })
-  //   return result
-  // }
 })

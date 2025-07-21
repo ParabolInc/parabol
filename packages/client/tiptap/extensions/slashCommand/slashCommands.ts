@@ -1,17 +1,20 @@
+import DetailsIcon from '@mui/icons-material/ArrowRight'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import CodeIcon from '@mui/icons-material/Code'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered'
 import FormatQuoteIcon from '@mui/icons-material/FormatQuote'
+import TableIcon from '@mui/icons-material/GridOn'
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule'
 import ImageIcon from '@mui/icons-material/Image'
 import InsightsIcon from '@mui/icons-material/Insights'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
 import TextFieldsIcon from '@mui/icons-material/TextFields'
 import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
-
+import {createPageLinkElement} from '../../../shared/tiptap/createPageLinkElement'
 declare module '@tiptap/core' {
   interface EditorEvents {
     pageLinkPicker: {willOpen: boolean}
@@ -114,6 +117,22 @@ export const slashCommands = [
         action: (editor: Editor) => editor.chain().focus().toggleCodeBlock().run()
       },
       {
+        title: 'Details',
+        description: 'Insert details',
+        searchTerms: ['details', 'accordion', 'expandable', 'toggle'],
+        icon: DetailsIcon,
+        action: (editor: Editor) =>
+          editor.chain().focus().setDetails().updateAttributes('details', {open: true}).run()
+      },
+      {
+        title: 'Table',
+        description: 'Insert a table',
+        searchTerms: ['table', 'grid', 'spreadsheet', 'data'],
+        icon: TableIcon,
+        action: (editor: Editor) =>
+          editor.chain().focus().insertTable({rows: 3, cols: 3, withHeaderRow: true}).run()
+      },
+      {
         title: 'Divider',
         description: 'Insert horizontal rule divider',
         searchTerms: ['horizontal rule', 'hr', 'divider', 'rule'],
@@ -123,10 +142,33 @@ export const slashCommands = [
       {
         title: 'Link to page',
         description: 'Link to an existing page',
-        searchTerms: ['link', 'hyperlink', 'url', 'anchor', 'href', 'page'],
+        searchTerms: ['link', 'hyperlink', 'url', 'anchor', 'href'],
         icon: FileOpenIcon,
         action: (editor: Editor) => {
           editor.emit('pageLinkPicker', {willOpen: true})
+        }
+      },
+      {
+        title: 'Create page',
+        description: 'Create a page within the current one',
+        searchTerms: [
+          'page',
+          'subpage',
+          'sub-page',
+          'doc',
+          'subdoc',
+          'sub-doc',
+          'subpage',
+          'sub-page',
+          'subdoc',
+          'child'
+        ],
+        icon: NoteAddIcon,
+        action: (editor: Editor) => {
+          const {yDoc} = editor.storage.pageLinkBlock
+          const frag = yDoc.getXmlFragment('default')
+          const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+          frag.insert(1, [pageLinkBlock] as any)
         }
       }
     ]

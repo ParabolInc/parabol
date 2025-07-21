@@ -1,11 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
-import {toSlug} from '../../shared/toSlug'
+import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {LeftNavItem} from './LeftNavItem'
@@ -34,7 +33,7 @@ export const LeftNavPageLink = (props: Props) => {
     nextPeerId,
     connectionKey
   } = props
-  const depth = pageAncestors.length - 1
+  const depth = pageAncestors.length
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {
@@ -46,18 +45,25 @@ export const LeftNavPageLink = (props: Props) => {
         isPrivate
         isDraggingFirstChild
         isDraggingLastChild
-        sortOrder # used implicityly in store traveral by useDraggingPage
+        currentPageAncestorDepth
+        sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,
     pageRef
   )
-  const {title, id, parentPageId, isDraggingFirstChild, isDraggingLastChild, teamId, isPrivate} =
-    page
-  const pageIdNum = id.split(':')[1]
-  const titleSlug = toSlug(title || '')
-  const slug = titleSlug ? `${titleSlug}-${pageIdNum}` : pageIdNum
-  const match = useRouteMatch(`/pages/:slug(.*)${pageIdNum}`)
-  const isActive = match?.isExact ?? false
+  const {
+    title,
+    id,
+    parentPageId,
+    isDraggingFirstChild,
+    isDraggingLastChild,
+    teamId,
+    isPrivate,
+    currentPageAncestorDepth
+  } = page
+  const pageCode = id.split(':')[1]
+  const slug = getPageSlug(Number(pageCode), title)
+
   const [showChildren, setShowChildren] = useState(false)
   const expandChildPages = () => {
     setShowChildren(!showChildren)
@@ -85,6 +91,7 @@ export const LeftNavPageLink = (props: Props) => {
     !isDraggingFirstChild &&
     !isNextPeer &&
     !isPrivateToTopLevelShared
+  const isActive = (currentPageAncestorDepth && !showChildren) || currentPageAncestorDepth === 0
   return (
     <div className='relative rounded-md' ref={ref}>
       <div
