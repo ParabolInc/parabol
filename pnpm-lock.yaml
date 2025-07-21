@@ -47,7 +47,7 @@ importers:
         version: 6.8.5(@envelop/core@5.2.3)(graphql-yoga@5.13.4(graphql@16.11.0))(graphql@16.11.0)(prom-client@15.1.3)
       '@hocuspocus/provider':
         specifier: ^3.2.0
-        version: 3.2.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+        version: 3.2.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       '@module-federation/enhanced':
         specifier: ^0.13.0
         version: 0.13.1(@rspack/core@1.3.8)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)(typescript@5.8.3)(webpack@5.99.8)
@@ -59,10 +59,10 @@ importers:
         version: 3.0.7(@tiptap/pm@3.0.7)
       '@tiptap/extension-collaboration':
         specifier: 3.0.7
-        version: 3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)
+        version: 3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)
       '@tiptap/extension-collaboration-caret':
         specifier: 3.0.7
-        version: 3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))
+        version: 3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))
       '@tiptap/extension-details':
         specifier: 3.0.7
         version: 3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/extension-text-style@2.26.1(@tiptap/core@3.0.7(@tiptap/pm@3.0.7)))(@tiptap/pm@3.0.7)
@@ -3035,6 +3035,9 @@ packages:
   '@hocuspocus/common@3.2.0':
     resolution: {integrity: sha512-nh3dB2KwBQZuGOJnub3Y8wH7rLEBgpWkwFtDG+nOK2aM2BSWkBmMEiuNytzCkOh1LFVEcZ+o5S1FDAp6A4nRbA==}
 
+  '@hocuspocus/common@3.2.1':
+    resolution: {integrity: sha512-I/6lm/DkwshGWMIVRbLfXacvCMqerEcf6+PwszcPKgvvubczi1+95AQaJBbOEwiih+K9fiHeqi8IcVBO/GVMfQ==}
+
   '@hocuspocus/extension-database@3.2.0':
     resolution: {integrity: sha512-4ZjAWK8XnuFr4WQ8bSLseKiYQGMIFVmlY+gIL9D68YatQzfHD0OsHv31NVOJSuWu+SsQcqOt21xW57bfxsEumw==}
     peerDependencies:
@@ -3049,8 +3052,8 @@ packages:
   '@hocuspocus/extension-throttle@3.2.0':
     resolution: {integrity: sha512-7+FVcg0ykqcCs9qWNKDJuUTzSii8oJ5ApLx3ESeQoea7lf92Qi139R+2MrV3NoAr8DMmBgdWpo6pkNrQL5ZHcg==}
 
-  '@hocuspocus/provider@3.2.0':
-    resolution: {integrity: sha512-N4ADmZWkTHD3FNnks3eOys35LAgf4Z53JTjv0ccaoX+t2wbaqwQyX2kBXsPDL1fKbV3o1jESOQ3CPLXRWkJpXg==}
+  '@hocuspocus/provider@3.2.1':
+    resolution: {integrity: sha512-LkkXo7hpD8isdeFM6bNF00HPBBaNlMidlipoPHfYjHyAjaZLHPs82b5lyzDHkydhY0QrfWhFQ5m7esdyNS4zmg==}
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
@@ -5799,8 +5802,8 @@ packages:
       '@tiptap/core': ^3.0.7
       '@tiptap/pm': ^3.0.7
 
-  '@tiptap/y-tiptap@3.0.0-beta.3':
-    resolution: {integrity: sha512-1U/MTG7mpkc2VEIRzVueXqpHpawflF0DUuqkPwTezmBst6HPZ+NnZuDbJGay8dh//KSXcrS1Vtu1Wqa2Z/1HTw==}
+  '@tiptap/y-tiptap@3.0.0':
+    resolution: {integrity: sha512-HIeJZCj+KYJde2x6fONzo4o6kd7gW7eonwhQsv2p2VQnUgwNXMVhN+D6Z3AH/2i541Sq33y1PO4U/1ThCPjqbA==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
       prosemirror-model: ^1.24.1
@@ -16876,6 +16879,10 @@ snapshots:
     dependencies:
       lib0: 0.2.105
 
+  '@hocuspocus/common@3.2.1':
+    dependencies:
+      lib0: 0.2.105
+
   '@hocuspocus/extension-database@3.2.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
       '@hocuspocus/server': 3.2.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
@@ -16909,9 +16916,9 @@ snapshots:
       - y-protocols
       - yjs
 
-  '@hocuspocus/provider@3.2.0(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
+  '@hocuspocus/provider@3.2.1(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
-      '@hocuspocus/common': 3.2.0
+      '@hocuspocus/common': 3.2.1
       '@lifeomic/attempt': 3.1.0
       lib0: 0.2.105
       ws: 8.18.1
@@ -19756,17 +19763,17 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.0.7(@tiptap/pm@3.0.7)
 
-  '@tiptap/extension-collaboration-caret@3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))':
+  '@tiptap/extension-collaboration-caret@3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))':
     dependencies:
       '@tiptap/core': 3.0.7(@tiptap/pm@3.0.7)
       '@tiptap/pm': 3.0.7
-      '@tiptap/y-tiptap': 3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      '@tiptap/y-tiptap': 3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
 
-  '@tiptap/extension-collaboration@3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)':
+  '@tiptap/extension-collaboration@3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)(@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
       '@tiptap/core': 3.0.7(@tiptap/pm@3.0.7)
       '@tiptap/pm': 3.0.7
-      '@tiptap/y-tiptap': 3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
+      '@tiptap/y-tiptap': 3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)
       yjs: 13.6.27
 
   '@tiptap/extension-details@3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/extension-text-style@2.26.1(@tiptap/core@3.0.7(@tiptap/pm@3.0.7)))(@tiptap/pm@3.0.7)':
@@ -19948,7 +19955,7 @@ snapshots:
       '@tiptap/core': 3.0.7(@tiptap/pm@3.0.7)
       '@tiptap/pm': 3.0.7
 
-  '@tiptap/y-tiptap@3.0.0-beta.3(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
+  '@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.1)(prosemirror-state@1.4.3)(prosemirror-view@1.39.3)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27)':
     dependencies:
       lib0: 0.2.105
       prosemirror-model: 1.25.1

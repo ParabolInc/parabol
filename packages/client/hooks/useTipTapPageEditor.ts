@@ -1,6 +1,6 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCaret from '@tiptap/extension-collaboration-caret'
+import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import Document from '@tiptap/extension-document'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
@@ -57,7 +57,7 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
-  const {provider} = usePageProvider(pageId)
+  const {provider, synced} = usePageProvider(pageId)
   const editor = useEditor(
     {
       content: '',
@@ -166,7 +166,7 @@ export const useTipTapPageEditor = (
 
   usePageLinkPlaceholder(editor!, placeholderRef)
 
-  return {editor, provider}
+  return {editor, provider, synced}
 }
 
 export const makeEditorFromYDoc = (document: Y.Doc) => {

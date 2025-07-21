@@ -39,6 +39,7 @@ class ProviderManager {
       name: pageId,
       document: doc
     })
+    provider.attach()
     this.providers[pageId] = {count: 1, provider}
     return provider
   }
