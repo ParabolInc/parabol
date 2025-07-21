@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.14.1](https://github.com/ParabolInc/parabol/compare/v10.14.0...v10.14.1) (2025-07-21)
+
+
+### Fixed
+
+* prevent access if token is missing ([#11548](https://github.com/ParabolInc/parabol/issues/11548)) ([96d5d8c](https://github.com/ParabolInc/parabol/commit/96d5d8cec4a83058721f48b79beef8e1f185aae3))
+
+
+### Changed
+
+* ignore users order in createPage test ([#11572](https://github.com/ParabolInc/parabol/issues/11572)) ([72e7e40](https://github.com/ParabolInc/parabol/commit/72e7e401b0b9de5e8543a27ccdea7fd69812ce05))
+
 ## [10.14.0](https://github.com/ParabolInc/parabol/compare/v10.13.0...v10.14.0) (2025-07-21)
 
 
