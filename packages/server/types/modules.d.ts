@@ -13,10 +13,6 @@ declare module '*.graphql' {
   export = value
 }
 
-declare module 'graphql-ws/use/uWebSockets' {
-  export * from 'graphql-ws/dist/use/uWebSockets'
-}
-
 declare module 'babel-plugin-relay/macro'
 declare module '@authenio/samlify-node-xmllint'
 declare module 'node-env-flag'

@@ -1,6 +1,6 @@
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Server} from '@hocuspocus/server'
+import {Server, type connectedPayload} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
 import {encodeStateAsUpdate} from 'yjs'
@@ -37,7 +37,7 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   })
   dataLoader.dispose()
 }
-export const server = Server.configure({
+export const server = new Server({
   stopOnSignals: false,
   port,
   quiet: true,
@@ -56,7 +56,9 @@ export const server = Server.configure({
     req.userId = authToken.sub
   },
   async onAuthenticate(data) {
-    const {documentName, connection, request} = data
+    const {documentName, request} = data
+    // TODO: see if this is another tiptap typing error
+    const connection = (data as any as connectedPayload).connection
     const userId = (request as any).userId as string
     const [dbId] = CipherId.fromClient(documentName)
     const pageAccess = await getKysely()

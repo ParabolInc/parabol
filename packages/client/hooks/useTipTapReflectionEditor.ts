@@ -1,12 +1,8 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
-import CharacterCount from '@tiptap/extension-character-count'
-import Focus from '@tiptap/extension-focus'
+import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import Placeholder from '@tiptap/extension-placeholder'
-import {TaskItem} from '@tiptap/extension-task-item'
-import {TaskList} from '@tiptap/extension-task-list'
-import Underline from '@tiptap/extension-underline'
-import {generateText, useEditor} from '@tiptap/react'
+import {CharacterCount, Focus, Placeholder} from '@tiptap/extensions'
+import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useEffect, useRef, useState} from 'react'
 import Atmosphere from '../Atmosphere'
@@ -33,9 +29,10 @@ export const useTipTapReflectionEditor = (
     teamId?: string
     readOnly?: boolean
     placeholder?: string
+    onModEnter?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, placeholder} = options
+  const {atmosphere, teamId, readOnly, placeholder, onModEnter} = options
   const [contentJSON] = useState(() => JSON.parse(content))
   const placeholderRef = useRef(placeholder)
   placeholderRef.current = placeholder
@@ -43,8 +40,7 @@ export const useTipTapReflectionEditor = (
     {
       content: contentJSON,
       extensions: [
-        StarterKit,
-        Underline,
+        StarterKit.configure({link: false}),
         TaskList,
         TaskItem.configure({
           nested: true
@@ -80,6 +76,20 @@ export const useTipTapReflectionEditor = (
         CharacterCount.configure({
           // this is a rough estimate because we store the JSON content as a string, not plaintext
           limit: 1900
+        }),
+        Extension.create({
+          name: 'reflectKeyboardShortcuts',
+          addKeyboardShortcuts(this) {
+            return {
+              'Mod-Enter': () => {
+                if (onModEnter) {
+                  onModEnter()
+                  return true
+                }
+                return false
+              }
+            }
+          }
         })
       ].filter(isValid),
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,

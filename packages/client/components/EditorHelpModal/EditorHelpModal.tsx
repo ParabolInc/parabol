@@ -1,12 +1,9 @@
 import styled from '@emotion/styled'
-import UserAgent from 'fbjs/lib/UserAgent'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius} from '../../types/constEnums'
+import {modKey} from '../../utils/platform'
 import IconButton from '../IconButton'
 import IconLabel from '../IconLabel'
-
-const isOSX = UserAgent.isPlatform('Mac OS X')
-const modKey = isOSX ? '⌘' : 'ctrl'
 
 const ModalHeader = styled('div')({
   alignItems: 'center',

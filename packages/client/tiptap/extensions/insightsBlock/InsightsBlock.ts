@@ -1,3 +1,4 @@
+import {Node} from '@tiptap/pm/model'
 import {TextSelection} from '@tiptap/pm/state'
 import {ReactNodeViewRenderer} from '@tiptap/react'
 import ms from 'ms'
@@ -26,8 +27,15 @@ declare module '@tiptap/core' {
       exitNode: () => ReturnType
     }
   }
+  interface Storage {
+    markdown: {
+      serializer: {
+        serialize: (node: Node) => string
+      }
+    }
+  }
 }
-export const InsightsBlock = InsightsBlockBase.extend<never, {markdown: MarkdownNodeSpec}>({
+export const InsightsBlock = InsightsBlockBase.extend<any, {markdown: MarkdownNodeSpec}>({
   addStorage() {
     return {
       markdown: {

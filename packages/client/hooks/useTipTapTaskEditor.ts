@@ -1,7 +1,6 @@
 import Mention from '@tiptap/extension-mention'
-import Placeholder from '@tiptap/extension-placeholder'
-import Underline from '@tiptap/extension-underline'
-import {generateText, useEditor} from '@tiptap/react'
+import {Placeholder} from '@tiptap/extensions'
+import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
@@ -21,16 +20,16 @@ export const useTipTapTaskEditor = (
     // onBlur here vs. on the component means when the component mounts with new editor content
     // (e.g. HeaderCard changes taskId) the onBlur won't fire, which is probably desireable
     onBlur?: () => void
+    onModEnter?: () => void
   }
 ) => {
-  const {atmosphere, teamId, readOnly, onBlur} = options
+  const {atmosphere, teamId, readOnly, onBlur, onModEnter} = options
   const [contentJSON, editorRef] = useTipTapEditorContent(content)
   editorRef.current = useEditor(
     {
       content: contentJSON,
       extensions: [
-        StarterKit,
-        Underline,
+        StarterKit.configure({link: false}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -43,6 +42,20 @@ export const useTipTapTaskEditor = (
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
           openOnClick: false
+        }),
+        Extension.create({
+          name: 'taskEditorKeyboardShortcuts',
+          addKeyboardShortcuts(this) {
+            return {
+              'Mod-Enter': () => {
+                if (onModEnter) {
+                  onModEnter()
+                  return true
+                }
+                return false
+              }
+            }
+          }
         })
       ],
       editable: !readOnly,

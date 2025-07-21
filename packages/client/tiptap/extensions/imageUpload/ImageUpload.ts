@@ -2,13 +2,20 @@ import {ReactNodeViewRenderer, type Editor} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 
+interface ImageUploadStorage {
+  editorWidth: number
+  editorHeight: number
+}
 declare module '@tiptap/core' {
   interface EditorEvents {
     enter: {editor: Editor}
   }
+  interface Storage {
+    imageUpload: ImageUploadStorage
+  }
 }
 
-export const ImageUpload = ImageUploadBase.extend<{editorWidth: number; editorHeight: number}>({
+export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage>({
   addOptions() {
     return {
       editorWidth: 300,

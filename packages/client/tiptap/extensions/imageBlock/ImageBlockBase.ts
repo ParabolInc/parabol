@@ -1,4 +1,4 @@
-import {mergeAttributes, Range} from '@tiptap/core'
+import {mergeAttributes, Range, type NodeConfig} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
 
 declare module '@tiptap/core' {
@@ -43,4 +43,5 @@ export const ImageBlockBase = Image.extend({
       ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
     ]
   }
-})
+  // TipTap v3 got some types wrong, this cast shouldn't be necessary
+} as NodeConfig)
