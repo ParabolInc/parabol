@@ -2,7 +2,6 @@ import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
-import Document from '@tiptap/extension-document'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
@@ -172,13 +171,13 @@ export const useTipTapPageEditor = (
 export const makeEditorFromYDoc = (document: Y.Doc) => {
   return new Editor({
     extensions: [
-      Document.extend({
-        content: 'heading block*'
-      }),
-      StarterKit.configure({
-        document: false,
-        link: false,
-        undoRedo: false
+      StarterKit.extend({
+        document: {
+          content: 'heading block*'
+        }
+      }).configure({
+        undoRedo: false,
+        link: false
       }),
       TaskList,
       TaskItem.configure({

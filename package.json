@@ -180,7 +180,6 @@
     "@tiptap/extension-collaboration-caret": "3.0.7",
     "@tiptap/extension-details": "3.0.7",
     "@tiptap/extension-table": "3.0.7",
-    "@tiptap/extension-document": "3.0.7",
     "@tiptap/extension-image": "3.0.7",
     "@tiptap/extension-link": "3.0.7",
     "@tiptap/extension-list": "3.0.7",

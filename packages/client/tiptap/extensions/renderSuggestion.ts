@@ -30,21 +30,26 @@ const renderSuggestion =
   (Component: ForwardRefExoticComponent<any>, options?: Options): SuggestionOptions['render'] =>
   () => {
     let component: ReactRenderer<any, any> & {element: HTMLElement}
+    const handlePointerDown = (event: PointerEvent) => {
+      const element = component?.element
+      // Skip if the element doesn't exist or the event target is inside it
+      if (!element || element.contains(event.target as Node)) return
+      options?.onHide?.()
+    }
     return {
       onStart: (props) => {
         component = new ReactRenderer(Component, {
           props,
           editor: props.editor
         }) as typeof component
-        if (!props.clientRect) return
         component.element.style.position = 'absolute'
         document.body.appendChild(component.element)
+        document.addEventListener('pointerdown', handlePointerDown)
         updatePosition(props.editor, component.element)
       },
 
       onUpdate(props) {
         component?.updateProps(props)
-        if (!props.clientRect) return
         if (!options?.isPopupFixed) {
           updatePosition(props.editor, component.element)
         }
@@ -52,6 +57,7 @@ const renderSuggestion =
 
       onKeyDown(props) {
         if (props.event.key === 'Escape') {
+          options?.onHide?.()
           component.destroy()
           return true
         }
@@ -59,6 +65,7 @@ const renderSuggestion =
       },
 
       onExit() {
+        document.removeEventListener('pointerdown', handlePointerDown)
         component.element.remove()
         component?.destroy()
       }
