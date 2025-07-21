@@ -88,6 +88,8 @@ export const TiptapLinkExtension = BaseLink.extend({
           .run()
       }
     return {
+      // https://github.com/ueberdosis/tiptap/issues/6670
+      ...(this as any).parent(),
       upsertLink,
       removeLink
     }

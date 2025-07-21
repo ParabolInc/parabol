@@ -1,72 +1,65 @@
 import {Link} from '@mui/icons-material'
 import {Editor} from '@tiptap/react'
 import {BubbleMenu} from '@tiptap/react/menus'
+import {getShouldShow, useBubbleMenuStates} from '../../hooks/useBubbleMenuStates'
 import {cn} from '../../ui/cn'
 import {BubbleMenuButton} from './BubbleMenuButton'
-import isTextSelected from './isTextSelected'
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   editor: Editor
 }
 export const StandardBubbleMenu = (props: Props) => {
   const {editor} = props
-  const shouldShowBubbleMenu = () => {
-    if (!editor || editor.isActive('link') || editor.isActive('pageLinkBlock')) return false
-    return isTextSelected(editor)
-  }
-
   const openLinkEditor = () => {
     editor.emit('linkStateChange', {editor, linkState: 'edit'})
   }
 
-  const shouldShow = shouldShowBubbleMenu()
-
-  // wrapping in div is necessary, https://github.com/ueberdosis/tiptap/issues/3784
+  const states = useBubbleMenuStates(editor)
+  const {isBold, isItalic, isStrike, isUnderline, isLink} = states
   return (
-    <div>
-      <BubbleMenu
-        editor={editor}
-        options={{
-          offset: 6,
-          placement: 'top'
-        }}
-        shouldShow={shouldShowBubbleMenu}
+    <BubbleMenu
+      editor={editor}
+      shouldShow={({editor}) => {
+        return getShouldShow(editor)
+      }}
+      options={{
+        offset: 6,
+        placement: 'top'
+      }}
+    >
+      <div
+        className={cn(
+          'flex items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]'
+        )}
       >
-        <div
-          className={cn(
-            'items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]',
-            shouldShow ? 'flex' : 'hidden' // hide this if not active or dnd height gets screwed up
-          )}
+        <BubbleMenuButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          isActive={isBold}
         >
-          <BubbleMenuButton
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            isActive={editor.isActive('bold')}
-          >
-            <b>B</b>
-          </BubbleMenuButton>
-          <BubbleMenuButton
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            isActive={editor.isActive('italic')}
-          >
-            <i>I</i>
-          </BubbleMenuButton>
-          <BubbleMenuButton
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            isActive={editor.isActive('underline')}
-          >
-            <u>U</u>
-          </BubbleMenuButton>
-          <BubbleMenuButton
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            isActive={editor.isActive('strike')}
-          >
-            <s>S</s>
-          </BubbleMenuButton>
-          <BubbleMenuButton onClick={openLinkEditor}>
-            <Link className='h-[18px] w-[18px]' />
-          </BubbleMenuButton>
-        </div>
-      </BubbleMenu>
-    </div>
+          <b>B</b>
+        </BubbleMenuButton>
+        <BubbleMenuButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          isActive={isItalic}
+        >
+          <i>I</i>
+        </BubbleMenuButton>
+        <BubbleMenuButton
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          isActive={isUnderline}
+        >
+          <u>U</u>
+        </BubbleMenuButton>
+        <BubbleMenuButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          isActive={isStrike}
+        >
+          <s>S</s>
+        </BubbleMenuButton>
+        <BubbleMenuButton onClick={openLinkEditor} isActive={isLink}>
+          <Link className='h-[18px] w-[18px]' />
+        </BubbleMenuButton>
+      </div>
+    </BubbleMenu>
   )
 }
