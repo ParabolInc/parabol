@@ -33,7 +33,6 @@ import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificat
 import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
-import {LocalStorageKey} from '../types/constEnums'
 import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
@@ -269,7 +268,7 @@ const invalidateSessionsNotificationOnNext: OnNextHandler<
   InvalidateSessionsMutation_notification$data,
   OnNextHistoryContext
 > = (_payload, {atmosphere, history}) => {
-  window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+  atmosphere.setAuthToken(null)
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: 'logOutJWT',
     message: 'You’ve been logged out from another device',
