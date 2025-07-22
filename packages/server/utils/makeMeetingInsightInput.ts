@@ -1,8 +1,12 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
 import {getComments} from '../graphql/public/mutations/helpers/getTopics'
-import type {NewMeeting} from '../postgres/types'
-import type {PokerMeeting, RetrospectiveMeeting, TeamPromptMeeting} from '../postgres/types/Meeting'
+import type {
+  AnyMeeting,
+  PokerMeeting,
+  RetrospectiveMeeting,
+  TeamPromptMeeting
+} from '../postgres/types/Meeting'
 import getPhase from './getPhase'
 import {Logger} from './Logger'
 
@@ -105,7 +109,7 @@ const makePokerMeetingInsightInput = async (
   return {meetingType, stories}
 }
 
-const makeMeetingInsightPart = async (meeting: NewMeeting, dataLoader: DataLoaderInstance) => {
+const makeMeetingInsightPart = async (meeting: AnyMeeting, dataLoader: DataLoaderInstance) => {
   const {meetingType} = meeting
   switch (meetingType) {
     case 'action':
@@ -120,7 +124,7 @@ const makeMeetingInsightPart = async (meeting: NewMeeting, dataLoader: DataLoade
 }
 
 export const makeMeetingInsightInput = async (
-  meeting: NewMeeting,
+  meeting: AnyMeeting,
   dataLoader: DataLoaderInstance
 ) => {
   const MIN_MEETING_MEMBERS = 2

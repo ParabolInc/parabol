@@ -26,8 +26,6 @@ overrides:
   parse-url: ^8.1.0
   recursive-readdir: ^2.2.3
   axios: ^1.7.8
-  prosemirror-model: ^1.24.1
-  prosemirror-view: ^1.38.0
   redux-offline: enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df
   react: 17.0.2
   react-dom: 17.0.2
@@ -123,6 +121,9 @@ importers:
       lodash.toarray:
         specifier: ^4.4.0
         version: 4.4.0
+      markdown-it:
+        specifier: ^14.1.0
+        version: 14.1.0
       ms:
         specifier: ^2.0.0
         version: 2.1.3
@@ -138,6 +139,9 @@ importers:
       react:
         specifier: 17.0.2
         version: 17.0.2
+      tiptap-markdown:
+        specifier: ^0.8.10
+        version: 0.8.10(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -589,15 +593,6 @@ importers:
       node-html-markdown-cloudflare:
         specifier: ^1.3.0
         version: 1.3.0
-      prosemirror-model:
-        specifier: ^1.24.1
-        version: 1.25.1
-      prosemirror-state:
-        specifier: ^1.4.3
-        version: 1.4.3
-      prosemirror-view:
-        specifier: ^1.38.0
-        version: 1.39.3
       react-beautiful-dnd:
         specifier: 13.1.1
         version: 13.1.1(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -676,9 +671,6 @@ importers:
       tiptap-extension-global-drag-handle:
         specifier: ^0.1.18
         version: 0.1.18
-      tiptap-markdown:
-        specifier: ^0.8.10
-        version: 0.8.10(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))
       tlds:
         specifier: ^1.192.0
         version: 1.259.0
@@ -1048,15 +1040,6 @@ importers:
       pg:
         specifier: ^8.5.1
         version: 8.16.0
-      prosemirror-model:
-        specifier: ^1.24.1
-        version: 1.25.1
-      prosemirror-state:
-        specifier: ^1.4.3
-        version: 1.4.3
-      prosemirror-view:
-        specifier: ^1.38.0
-        version: 1.39.3
       react-dom:
         specifier: 17.0.2
         version: 17.0.2(react@17.0.2)
@@ -5803,9 +5786,9 @@ packages:
     resolution: {integrity: sha512-HIeJZCj+KYJde2x6fONzo4o6kd7gW7eonwhQsv2p2VQnUgwNXMVhN+D6Z3AH/2i541Sq33y1PO4U/1ThCPjqbA==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
-      prosemirror-model: ^1.24.1
+      prosemirror-model: ^1.7.1
       prosemirror-state: ^1.2.3
-      prosemirror-view: ^1.38.0
+      prosemirror-view: ^1.9.10
       y-protocols: ^1.0.1
       yjs: ^13.5.38
 
@@ -11342,9 +11325,9 @@ packages:
   prosemirror-trailing-node@3.0.0:
     resolution: {integrity: sha512-xiun5/3q0w5eRnGYfNlW1uU9W6x5MoFKWwq/0TIRgt09lv7Hcser2QYV8t4muXbEr+Fwo0geYn79Xs4GKywrRQ==}
     peerDependencies:
-      prosemirror-model: ^1.24.1
+      prosemirror-model: ^1.22.1
       prosemirror-state: ^1.4.2
-      prosemirror-view: ^1.38.0
+      prosemirror-view: ^1.33.8
 
   prosemirror-transform@1.10.4:
     resolution: {integrity: sha512-pwDy22nAnGqNR1feOQKHxoFkkUtepoFAd3r2hbEDsnf4wp57kKA36hXsB3njA9FtONBEwSDnDeCiJe+ItD+ykw==}
@@ -13602,9 +13585,9 @@ packages:
     resolution: {integrity: sha512-qW8fXCb72L6H2BWiuhZdSJ6hiShHUog08gh6KvBqLjhK6Et9DxfDnMDvx6yyO3iCdnEhDfUJviRvaMAAXb0dNg==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
     peerDependencies:
-      prosemirror-model: ^1.24.1
+      prosemirror-model: ^1.7.1
       prosemirror-state: ^1.2.3
-      prosemirror-view: ^1.38.0
+      prosemirror-view: ^1.9.10
       y-protocols: ^1.0.1
       yjs: ^13.5.38
 
