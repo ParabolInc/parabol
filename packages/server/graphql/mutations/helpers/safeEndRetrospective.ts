@@ -18,16 +18,18 @@ import isValid from '../../isValid'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
-import {generateRetroMeetingSummaryPage} from './generateRetroMeetingSummaryPage'
 import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
+import {generateRetroMeetingSummaryPage} from './summaryPage/generateRetroMeetingSummaryPage'
+import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
-  const {dataLoader} = context
+  const {authToken, dataLoader, socketId} = context
+  const userId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const {id: meetingId, phases, teamId, recallBotId} = meeting
@@ -71,6 +73,7 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     .execute()
   dataLoader.clearAll('newMeetings')
   // make the summary in a Page format
+  publishSummaryPage(userId, meetingId, dataLoader, socketId)
   generateRetroMeetingSummaryPage(meetingId, dataLoader)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)

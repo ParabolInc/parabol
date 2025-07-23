@@ -17,7 +17,7 @@ export const getComments = async (reflectionGroupId: string, dataLoader: DataLoa
     .where('discussionTopicId', '=', reflectionGroupId)
     .limit(1)
     .executeTakeFirst()
-  if (!discussion) return null
+  if (!discussion) return []
   const {id: discussionId} = discussion
   const rawComments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
   const humanComments = rawComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!))

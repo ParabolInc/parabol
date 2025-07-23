@@ -1,6 +1,7 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
 import {getComments} from '../graphql/public/mutations/helpers/getTopics'
+import type {RetroReflection} from '../postgres/types'
 import type {
   AnyMeeting,
   PokerMeeting,
@@ -10,50 +11,83 @@ import type {
 import getPhase from './getPhase'
 import {Logger} from './Logger'
 
+const serializeReflections = async (
+  rawReflections: RetroReflection[],
+  disableAnonymity: boolean,
+  dataLoader: DataLoaderInstance
+) => {
+  return Promise.all(
+    rawReflections.map(async (reflection) => {
+      const {promptId, creatorId, plaintextContent} = reflection
+      const [prompt, creator] = await Promise.all([
+        dataLoader.get('reflectPrompts').loadNonNull(promptId),
+        creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
+      ])
+      const {question} = prompt
+      const creatorName = disableAnonymity && creator ? creator.preferredName : 'Anonymous'
+      return {
+        prompt: question,
+        author: creatorName,
+        text: plaintextContent
+      }
+    })
+  )
+}
+
+const serializeTasks = async (
+  discussionId: string | null | undefined,
+  dataLoader: DataLoaderInstance
+) => {
+  if (!discussionId) return []
+  const tasks = await dataLoader.get('tasksByDiscussionId').load(discussionId)
+  if (!tasks.length) return []
+  return Promise.all(
+    tasks.map(async (task) => {
+      const {createdBy, plaintextContent} = task
+      const creator = createdBy ? await dataLoader.get('users').loadNonNull(createdBy) : null
+      const taskAuthor = creator ? creator.preferredName : 'Anonymous'
+      return {
+        text: plaintextContent,
+        author: taskAuthor
+      }
+    })
+  )
+}
 const makeRetroMeetingInsightInput = async (
   meeting: RetrospectiveMeeting,
   dataLoader: DataLoaderInstance
 ) => {
   const MIN_REFLECTION_COUNT = 3
   const MIN_REFLECTION_GROUP_VOTES = 2
-  const {id: meetingId, meetingType, reflectionCount, disableAnonymity} = meeting
+  const {id: meetingId, meetingType, reflectionCount, disableAnonymity, phases} = meeting
   if (!reflectionCount || reflectionCount < MIN_REFLECTION_COUNT) return null
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const votedReflectionGroups = reflectionGroups.filter(
     (group) => group.voterIds.length >= MIN_REFLECTION_GROUP_VOTES
   )
+  const discussPhase = getPhase(phases, 'discuss')
+  const {stages} = discussPhase
   const topics = await Promise.all(
     votedReflectionGroups.map(async (group) => {
       const {id: reflectionGroupId, voterIds, title} = group
-      const [comments, rawReflections] = await Promise.all([
-        getComments(reflectionGroupId, dataLoader),
-        dataLoader.get('retroReflectionsByGroupId').load(group.id)
+      const [rawReflections, discussion] = await Promise.all([
+        dataLoader.get('retroReflectionsByGroupId').load(group.id),
+        dataLoader.get('discussions').load(group.id)
       ])
-      const reflections = await Promise.all(
-        rawReflections.map(async (reflection) => {
-          const {promptId, creatorId, plaintextContent} = reflection
-          const [prompt, creator] = await Promise.all([
-            dataLoader.get('reflectPrompts').loadNonNull(promptId),
-            creatorId ? dataLoader.get('users').loadNonNull(creatorId) : null
-          ])
-          const {question} = prompt
-          const creatorName = disableAnonymity && creator ? creator.preferredName : 'Anonymous'
-          return {
-            prompt: question,
-            author: creatorName,
-            text: plaintextContent
-          }
-        })
-      )
+
+      const [comments, reflections, tasks] = await Promise.all([
+        getComments(reflectionGroupId, dataLoader),
+        serializeReflections(rawReflections, disableAnonymity, dataLoader),
+        serializeTasks(discussion?.id, dataLoader)
+      ])
+
       const res = {
         voteCount: voterIds.length,
         title: title,
         comments,
-        reflections
-      }
-
-      if (!res.comments || !res.comments.length) {
-        delete (res as any).comments
+        reflections,
+        tasks,
+        stageNumber: stages.findIndex((stage) => stage.reflectionGroupId === reflectionGroupId) + 1
       }
       return res
     })
