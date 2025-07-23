@@ -23,6 +23,7 @@ import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
+import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
@@ -145,7 +146,10 @@ export const useTipTapPageEditor = (
           }
         }),
         InsightsBlock,
-        GlobalDragHandle,
+        GlobalDragHandle.configure({
+          // hide handle on blocks inside a taskBlock
+          excludedTags: ['div.node-taskBlock *']
+        }),
         AutoJoiner,
         Markdown.configure({
           html: true,
@@ -155,7 +159,8 @@ export const useTipTapPageEditor = (
         PageLinkPicker.configure({
           atmosphere
         }),
-        PageLinkBlock.configure({yDoc: provider.document})
+        PageLinkBlock.configure({yDoc: provider.document}),
+        TaskBlock
       ],
       autofocus: true,
       editable: true
@@ -193,7 +198,8 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
         document
       }),
       InsightsBlock,
-      PageLinkBlock.configure({yDoc: document})
+      PageLinkBlock.configure({yDoc: document}),
+      TaskBlock
     ]
   })
 }

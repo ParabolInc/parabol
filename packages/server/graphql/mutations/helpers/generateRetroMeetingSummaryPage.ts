@@ -10,6 +10,7 @@ import type {Team} from '../../../postgres/types'
 import type {AnyMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
+import isValid from '../../isValid'
 
 const insightsPrompt = `You are an expert in agile retrospectives and project management.
 Your team has just completed a retrospective and it is your job to generate insights from the data and report to senior management.
@@ -23,7 +24,7 @@ The format:
 - (silver emoji) bold text as highlight: expanded explanation and/or suggested action
 - (copper emoji) bold text as highlight: expanded explanation and/or suggested action
 `
-const generateSummaryInsightContent = async (
+const generateSummaryInsightBlocks = async (
   meeting: AnyMeeting,
   team: Team,
   dataLoader: DataLoaderInstance
@@ -63,6 +64,29 @@ const generateSummaryInsightContent = async (
   return content
 }
 
+const getTaskBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
+  const tasks = await dataLoader.get('tasksByMeetingId').load(meetingId)
+  const taskBlocks = await Promise.all(
+    tasks.map(async (task) => {
+      const {content, userId, status, integration} = task
+      if (!userId) return null
+      const user = await dataLoader.get('users').loadNonNull(userId)
+      const {preferredName, picture} = user
+      return {
+        type: 'taskBlock' as const,
+        attrs: {
+          content,
+          preferredName,
+          avatar: picture,
+          service: integration?.service,
+          status
+        }
+      }
+    })
+  )
+  return taskBlocks.filter(isValid)
+}
+
 export const generateRetroMeetingSummaryPage = async (
   meetingId: string,
   dataLoader: DataLoaderInstance
@@ -97,500 +121,416 @@ export const generateRetroMeetingSummaryPage = async (
   const endTimeRange = endTime.add(1, 'hour').toISOString()
 
   const insightsHash = await quickHash([...meetingId, insightsPrompt])
-  const insightsContent = await generateSummaryInsightContent(meeting, team, dataLoader)
+  const insightsContent = await generateSummaryInsightBlocks(meeting, team, dataLoader)
+  const taskBlocks = await getTaskBlocks(meetingId, dataLoader)
+  const title = {
+    type: 'heading',
+    attrs: {level: 1},
+    content: [{type: 'text', text: `${meetingName} - ${endLabel}`}]
+  }
+  const subtitle = {
+    type: 'paragraph',
+    content: [
+      {
+        type: 'text',
+        text: teamName,
+        marks: [
+          {
+            type: 'link',
+            attrs: {
+              href: teamHomeURL,
+              target: '_blank',
+              rel: 'noopener noreferrer nofollow',
+              class: 'link'
+            }
+          },
+          {type: 'bold', attrs: {}}
+        ]
+      },
+      {
+        type: 'text',
+        text: ` — ${durationLabel}`,
+        marks: [{type: 'bold', attrs: {}}]
+      }
+    ]
+  }
+  const meetingMeta = {
+    type: 'paragraph',
+    content: [
+      {
+        type: 'text',
+        text: `${topicLabel} - ${taskLabel} - ${reflectionLabel} - ${participantLabel}`
+      }
+    ]
+  }
+
+  const insightsBlock = {
+    type: 'insightsBlock',
+    attrs: {
+      id: crypto.randomUUID(),
+      editing: false,
+      teamIds: [teamId],
+      meetingTypes: ['retrospective'],
+      after: startTimeRange,
+      before: endTimeRange,
+      meetingIds: [meetingId],
+      title: 'Top Topics',
+      hash: insightsHash,
+      prompt: insightsPrompt
+    },
+    content: insightsContent
+  }
+
+  const taskHeader = !taskCount
+    ? null
+    : {
+        type: 'heading',
+        attrs: {level: 2},
+        content: [{type: 'text', text: `${taskCount} ${plural(taskCount, 'Task')}`}]
+      }
+
+  const topicHeader = !topicCount
+    ? null
+    : {
+        type: 'heading',
+        attrs: {level: 2},
+        content: [{type: 'text', text: `${topicCount} ${plural(topicCount, 'Topic')}`}]
+      }
+
+  const content = [
+    title,
+    subtitle,
+    meetingMeta,
+    {type: 'paragraph'},
+    insightsBlock,
+    taskHeader,
+    ...taskBlocks,
+    topicHeader,
+    {
+      type: 'bulletList',
+      attrs: {tight: true},
+      content: [
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        },
+        {
+          type: 'listItem',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Demo and Advocate Conversion',
+                  marks: [
+                    {
+                      type: 'link',
+                      attrs: {
+                        href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
+                        target: '_blank',
+                        rel: 'noopener noreferrer nofollow',
+                        class: 'link'
+                      }
+                    },
+                    {type: 'bold', attrs: {}}
+                  ]
+                },
+                {type: 'hardBreak'},
+                {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      type: 'heading',
+      attrs: {level: 2},
+      content: [{type: 'text', text: '7 Participants'}]
+    },
+    {
+      type: 'bulletList',
+      attrs: {tight: true},
+      content: [
+        {
+          type: 'listItem',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Bruce Tian'}]}]
+        },
+        {
+          type: 'listItem',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Drew'}]}]
+        },
+        {
+          type: 'listItem',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Grayson Crickman'}]}]
+        },
+        {
+          type: 'listItem',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Jordan'}]}]
+        },
+        {
+          type: 'listItem',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Kendra Dixon'}]}]
+        },
+        {
+          type: 'listItem',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'matt 🙈 '}]}]
+        }
+      ]
+    }
+  ]
 
   return {
     type: 'doc',
-    content: [
-      {
-        type: 'heading',
-        attrs: {level: 1},
-        content: [{type: 'text', text: `${meetingName} - ${endLabel}`}]
-      },
-      {
-        type: 'paragraph',
-        content: [
-          {
-            type: 'text',
-            text: teamName,
-            marks: [
-              {
-                type: 'link',
-                attrs: {
-                  href: teamHomeURL,
-                  target: '_blank',
-                  rel: 'noopener noreferrer nofollow',
-                  class: 'link'
-                }
-              },
-              {type: 'bold', attrs: {}}
-            ]
-          },
-          {
-            type: 'text',
-            text: ` — ${durationLabel}`,
-            marks: [{type: 'bold', attrs: {}}]
-          }
-        ]
-      },
-      {
-        type: 'paragraph',
-        content: [
-          {
-            type: 'text',
-            text: `${topicLabel} - ${taskLabel} - ${reflectionLabel} - ${participantLabel}`
-          }
-        ]
-      },
-      {type: 'paragraph'},
-      {
-        type: 'insightsBlock',
-        attrs: {
-          id: crypto.randomUUID(),
-          editing: false,
-          teamIds: [teamId],
-          meetingTypes: ['retrospective'],
-          after: startTimeRange,
-          before: endTimeRange,
-          meetingIds: [meetingId],
-          title: 'Top Topics',
-          hash: insightsHash,
-          prompt: insightsPrompt
-        },
-        content: insightsContent
-      },
-      {type: 'heading', attrs: {level: 2}, content: [{type: 'text', text: '3 Tasks'}]},
-      {
-        type: 'heading',
-        attrs: {level: 3},
-        content: [
-          {type: 'text', text: '(1) Terry re: ', marks: [{type: 'bold', attrs: {}}]},
-          {
-            type: 'text',
-            text: 'Demo and Advocate Conversion',
-            marks: [
-              {
-                type: 'link',
-                attrs: {
-                  href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                  target: '_blank',
-                  rel: 'noopener noreferrer nofollow',
-                  class: 'link'
-                }
-              },
-              {type: 'bold', attrs: {}}
-            ]
-          }
-        ]
-      },
-      {
-        type: 'paragraph',
-        content: [
-          {
-            type: 'text',
-            text: 'This is the task 1 verbatim. This is the task 1 verbatim. This is the task 1 verbatim.'
-          }
-        ]
-      },
-      {
-        type: 'heading',
-        attrs: {level: 3},
-        content: [
-          {type: 'text', text: '(2) Terry re: ', marks: [{type: 'bold', attrs: {}}]},
-          {
-            type: 'text',
-            text: 'Demo and Advocate Conversion',
-            marks: [
-              {
-                type: 'link',
-                attrs: {
-                  href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                  target: '_blank',
-                  rel: 'noopener noreferrer nofollow',
-                  class: 'link'
-                }
-              },
-              {type: 'bold', attrs: {}}
-            ]
-          }
-        ]
-      },
-      {
-        type: 'paragraph',
-        content: [
-          {
-            type: 'text',
-            text: 'This is the task 1 verbatim. This is the task 1 verbatim. This is the task 1 verbatim.'
-          }
-        ]
-      },
-      {
-        type: 'heading',
-        attrs: {level: 3},
-        content: [
-          {type: 'text', text: '(3) Terry re: ', marks: [{type: 'bold', attrs: {}}]},
-          {
-            type: 'text',
-            text: 'Demo and Advocate Conversion',
-            marks: [
-              {
-                type: 'link',
-                attrs: {
-                  href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                  target: '_blank',
-                  rel: 'noopener noreferrer nofollow',
-                  class: 'link'
-                }
-              },
-              {type: 'bold', attrs: {}}
-            ]
-          }
-        ]
-      },
-      {
-        type: 'heading',
-        attrs: {level: 3},
-        content: [{type: 'text', text: 'Task title verbatim'}]
-      },
-      {
-        type: 'paragraph',
-        content: [{type: 'text', text: 'This is the task 1 verbatim. This is the task 1 verbatim.'}]
-      },
-      {
-        type: 'imageBlock',
-        attrs: {
-          src: 'https://media.tenor.com/CypRS6CS1OwAAAAm/guatemala-soccer-players-doing-brazilian-dance-on-pexico.webp',
-          height: 88,
-          width: 153,
-          align: 'left'
-        }
-      },
-      {
-        type: 'paragraph',
-        content: [{type: 'text', text: 'This is the task 1 verbatim. This is the task 1 verbatim.'}]
-      },
-      {type: 'heading', attrs: {level: 2}, content: [{type: 'text', text: '10 Topics'}]},
-      {
-        type: 'bulletList',
-        attrs: {tight: true},
-        content: [
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          },
-          {
-            type: 'listItem',
-            content: [
-              {
-                type: 'paragraph',
-                content: [
-                  {
-                    type: 'text',
-                    text: 'Demo and Advocate Conversion',
-                    marks: [
-                      {
-                        type: 'link',
-                        attrs: {
-                          href: 'https://action.parabol.co/meet/H2feA3owPS/discuss/1',
-                          target: '_blank',
-                          rel: 'noopener noreferrer nofollow',
-                          class: 'link'
-                        }
-                      },
-                      {type: 'bold', attrs: {}}
-                    ]
-                  },
-                  {type: 'hardBreak'},
-                  {type: 'text', text: '10 Votes, 3 Tasks, 4 Comments, 5 Reflections'}
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        type: 'heading',
-        attrs: {level: 2},
-        content: [{type: 'text', text: '7 Participants'}]
-      },
-      {
-        type: 'bulletList',
-        attrs: {tight: true},
-        content: [
-          {
-            type: 'listItem',
-            content: [{type: 'paragraph', content: [{type: 'text', text: 'Bruce Tian'}]}]
-          },
-          {
-            type: 'listItem',
-            content: [{type: 'paragraph', content: [{type: 'text', text: 'Drew'}]}]
-          },
-          {
-            type: 'listItem',
-            content: [{type: 'paragraph', content: [{type: 'text', text: 'Grayson Crickman'}]}]
-          },
-          {
-            type: 'listItem',
-            content: [{type: 'paragraph', content: [{type: 'text', text: 'Jordan'}]}]
-          },
-          {
-            type: 'listItem',
-            content: [{type: 'paragraph', content: [{type: 'text', text: 'Kendra Dixon'}]}]
-          },
-          {
-            type: 'listItem',
-            content: [{type: 'paragraph', content: [{type: 'text', text: 'matt 🙈 '}]}]
-          }
-        ]
-      }
-    ]
+    content: content.filter(isValid)
   }
 }
