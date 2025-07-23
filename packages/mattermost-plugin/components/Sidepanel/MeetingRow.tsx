@@ -7,7 +7,7 @@ import {useFragment} from 'react-relay'
 import {
   MeetingRow_meeting$key,
   MeetingTypeEnum
-} from '../../__generated__/MeetingRow_meeting.graphql'
+} from '../../../client/__generated__/MeetingRow_meeting.graphql'
 import {useConfig} from '../../hooks/useConfig'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
 

@@ -10,7 +10,7 @@ import Select from '../Select'
 import MeetingSettings from './MeetingSettings'
 
 import styled from 'styled-components'
-import {StartActivityModalQuery} from '../../__generated__/StartActivityModalQuery.graphql'
+import {StartActivityModalQuery} from '../../../client/__generated__/StartActivityModalQuery.graphql'
 import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import LoadingSpinner from '../LoadingSpinner'

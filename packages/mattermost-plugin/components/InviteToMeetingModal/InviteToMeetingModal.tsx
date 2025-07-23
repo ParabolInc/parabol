@@ -7,7 +7,7 @@ import {closeInviteToMeetingModal} from '../../reducers'
 
 import Select from '../Select'
 
-import {InviteToMeetingModalQuery} from '../../__generated__/InviteToMeetingModalQuery.graphql'
+import {InviteToMeetingModalQuery} from '../../../client/__generated__/InviteToMeetingModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
 import LoadingSpinner from '../LoadingSpinner'
