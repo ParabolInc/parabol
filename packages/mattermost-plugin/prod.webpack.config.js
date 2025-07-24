@@ -24,7 +24,7 @@ const clientTransformRules = (pluginRoot) => {
     {
       test: /\.tsx?$/,
       // things that need the relay plugin
-      include: pluginRoot,
+      include: [pluginRoot, CLIENT_ROOT],
       use: [
         {
           loader: 'babel-loader',
@@ -36,7 +36,7 @@ const clientTransformRules = (pluginRoot) => {
                 'macros',
                 {
                   relay: {
-                    artifactDirectory: path.join(pluginRoot, '__generated__')
+                    artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
                   }
                 }
               ]

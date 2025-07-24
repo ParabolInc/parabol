@@ -3,7 +3,7 @@ import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 
 import {useLazyLoadQuery} from 'react-relay'
-import {ConfigureNotificationsModalQuery} from '../../__generated__/ConfigureNotificationsModalQuery.graphql'
+import {ConfigureNotificationsModalQuery} from '../../../client/__generated__/ConfigureNotificationsModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {closeConfigureNotificationsModal} from '../../reducers'
 import {

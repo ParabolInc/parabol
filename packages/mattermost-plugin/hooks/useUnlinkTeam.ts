@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
 import {useMutation} from 'react-relay'
-import {useUnlinkTeamMutation} from '../__generated__/useUnlinkTeamMutation.graphql'
+import {useUnlinkTeamMutation} from '../../client/__generated__/useUnlinkTeamMutation.graphql'
 import {useCurrentChannel} from './useCurrentChannel'
 
 graphql`
