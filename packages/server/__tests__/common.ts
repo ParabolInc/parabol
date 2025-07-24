@@ -69,6 +69,7 @@ export async function sendTipTap<T>(
     name: pageId,
     document: doc
   })
+  provider.attach()
   return new Promise((resolve) => {
     provider.on('synced', async () => {
       const res = await cb(provider.document)
