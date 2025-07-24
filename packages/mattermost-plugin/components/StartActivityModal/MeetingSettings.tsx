@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useLazyLoadQuery, useMutation} from 'react-relay'
-import {MeetingSettingsMutation} from '../../__generated__/MeetingSettingsMutation.graphql'
-import {MeetingSettingsQuery} from '../../__generated__/MeetingSettingsQuery.graphql'
+import {MeetingSettingsMutation} from '../../../client/__generated__/MeetingSettingsMutation.graphql'
+import {MeetingSettingsQuery} from '../../../client/__generated__/MeetingSettingsQuery.graphql'
 
 interface Props {
   teamId: string

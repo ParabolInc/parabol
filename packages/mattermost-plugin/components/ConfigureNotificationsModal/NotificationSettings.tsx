@@ -5,8 +5,8 @@ import {useFragment, useMutation} from 'react-relay'
 import {
   NotificationSettings_teamSettings$key,
   SlackNotificationEventEnum
-} from '../../__generated__/NotificationSettings_teamSettings.graphql'
-import {NotificationSettingsMutation} from '../../__generated__/NotificationSettingsMutation.graphql'
+} from '../../../client/__generated__/NotificationSettings_teamSettings.graphql'
+import {NotificationSettingsMutation} from '../../../client/__generated__/NotificationSettingsMutation.graphql'
 
 const EVENTS = [
   'meetingStart',
