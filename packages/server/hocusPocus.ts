@@ -3,6 +3,7 @@ import {Throttle} from '@hocuspocus/extension-throttle'
 import {Server, type connectedPayload} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
+import StarterKit from '@tiptap/starter-kit'
 import {encodeStateAsUpdate} from 'yjs'
 import {SubscriptionChannel} from '../client/types/constEnums'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
@@ -89,10 +90,14 @@ export const server = new Server({
         if (res?.yDoc) return res.yDoc
         // Return a page with a heading by default so we can insert child page links at position 1
         // Without a heading at pos 0, position 1 is out of range
-        const yDoc = TiptapTransformer.toYdoc({
-          type: 'doc',
-          content: [{type: 'heading', attrs: {level: 1}, content: []}]
-        })
+        const yDoc = TiptapTransformer.toYdoc(
+          {
+            type: 'doc',
+            content: [{type: 'heading', attrs: {level: 1}, content: []}]
+          },
+          undefined,
+          [StarterKit]
+        )
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {

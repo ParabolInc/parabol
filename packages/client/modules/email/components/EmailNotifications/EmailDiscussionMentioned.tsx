@@ -1,9 +1,8 @@
-import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailDiscussionMentioned_notification$key} from 'parabol-client/__generated__/EmailDiscussionMentioned_notification.graphql'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
-import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
+import {useTipTapContext} from '../../../../components/TipTapProvider'
 import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.png'
@@ -35,6 +34,7 @@ interface Props {
 
 const EmailDiscussionMentioned = (props: Props) => {
   const {notificationRef, appOrigin} = props
+  const {generateHTML} = useTipTapContext()
   const notification = useFragment(
     graphql`
       fragment EmailDiscussionMentioned_notification on NotifyDiscussionMentioned {
@@ -87,7 +87,7 @@ const EmailDiscussionMentioned = (props: Props) => {
     searchParams
   })
 
-  const htmlContent = generateHTML(JSON.parse(comment.content), serverTipTapExtensions)
+  const htmlContent = generateHTML(JSON.parse(comment.content))
   return (
     <EmailNotificationTemplate
       avatar={authorPicture}
