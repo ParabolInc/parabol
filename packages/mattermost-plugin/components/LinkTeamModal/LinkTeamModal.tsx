@@ -3,7 +3,7 @@ import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 
 import {useLazyLoadQuery} from 'react-relay'
-import {LinkTeamModalQuery} from '../../__generated__/LinkTeamModalQuery.graphql'
+import {LinkTeamModalQuery} from '../../../client/__generated__/LinkTeamModalQuery.graphql'
 import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useLinkTeam} from '../../hooks/useLinkTeam'

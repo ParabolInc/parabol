@@ -27,6 +27,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const focusLink = () => {
     console.log('focus')
     const pos = getPos()
+    if (!pos) return
     const tr = view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos))
     view.dispatch(tr)
     view.focus()

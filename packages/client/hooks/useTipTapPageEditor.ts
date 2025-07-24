@@ -1,17 +1,11 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import Details from '@tiptap/extension-details'
-import DetailsContent from '@tiptap/extension-details-content'
-import DetailsSummary from '@tiptap/extension-details-summary'
-import Document from '@tiptap/extension-document'
-import Focus from '@tiptap/extension-focus'
+import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
+import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
+import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import Placeholder from '@tiptap/extension-placeholder'
-import TableRow from '@tiptap/extension-table-row'
-import {TaskItem} from '@tiptap/extension-task-item'
-import {TaskList} from '@tiptap/extension-task-list'
-import Underline from '@tiptap/extension-underline'
+import {TableRow} from '@tiptap/extension-table'
+import {Focus, Placeholder} from '@tiptap/extensions'
 import {Editor, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
@@ -62,17 +56,18 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
-  const {provider} = usePageProvider(pageId)
+  const {provider, synced} = usePageProvider(pageId)
   const editor = useEditor(
     {
       content: '',
       extensions: [
-        Document.extend({
-          content: 'heading block*'
-        }),
-        StarterKit.configure({
-          document: false,
-          history: false
+        StarterKit.extend({
+          document: {
+            content: 'heading block*'
+          }
+        }).configure({
+          undoRedo: false,
+          link: false
         }),
         Details.configure({
           persist: true,
@@ -88,7 +83,6 @@ export const useTipTapPageEditor = (
         TableRow,
         TableHeader,
         TableCell,
-        Underline,
         TaskList,
         TaskItem.configure({
           nested: true
@@ -143,7 +137,7 @@ export const useTipTapPageEditor = (
         Collaboration.configure({
           document: provider?.document
         }),
-        CollaborationCursor.configure({
+        CollaborationCaret.configure({
           provider,
           user: {
             name: preferredName,
@@ -171,20 +165,20 @@ export const useTipTapPageEditor = (
 
   usePageLinkPlaceholder(editor!, placeholderRef)
 
-  return {editor, provider}
+  return {editor, provider, synced}
 }
 
 export const makeEditorFromYDoc = (document: Y.Doc) => {
   return new Editor({
     extensions: [
-      Document.extend({
-        content: 'heading block*'
+      StarterKit.extend({
+        document: {
+          content: 'heading block*'
+        }
+      }).configure({
+        undoRedo: false,
+        link: false
       }),
-      StarterKit.configure({
-        document: false,
-        history: false
-      }),
-      Underline,
       TaskList,
       TaskItem.configure({
         nested: true
@@ -195,9 +189,6 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
       LoomExtension,
       Mention.configure(mentionConfig),
       Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
-      TiptapLinkExtension.configure({
-        openOnClick: false
-      }),
       Collaboration.configure({
         document
       }),

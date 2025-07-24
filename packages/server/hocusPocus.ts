@@ -1,8 +1,9 @@
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Server} from '@hocuspocus/server'
+import {Server, type connectedPayload} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {type JSONContent} from '@tiptap/core'
+import StarterKit from '@tiptap/starter-kit'
 import {encodeStateAsUpdate} from 'yjs'
 import {SubscriptionChannel} from '../client/types/constEnums'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
@@ -37,7 +38,7 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   })
   dataLoader.dispose()
 }
-export const server = Server.configure({
+export const server = new Server({
   stopOnSignals: false,
   port,
   quiet: true,
@@ -56,7 +57,9 @@ export const server = Server.configure({
     req.userId = authToken.sub
   },
   async onAuthenticate(data) {
-    const {documentName, connection, request} = data
+    const {documentName, request} = data
+    // TODO: see if this is another tiptap typing error
+    const connection = (data as any as connectedPayload).connection
     const userId = (request as any).userId as string
     const [dbId] = CipherId.fromClient(documentName)
     const pageAccess = await getKysely()
@@ -87,10 +90,14 @@ export const server = Server.configure({
         if (res?.yDoc) return res.yDoc
         // Return a page with a heading by default so we can insert child page links at position 1
         // Without a heading at pos 0, position 1 is out of range
-        const yDoc = TiptapTransformer.toYdoc({
-          type: 'doc',
-          content: [{type: 'heading', attrs: {level: 1}, content: []}]
-        })
+        const yDoc = TiptapTransformer.toYdoc(
+          {
+            type: 'doc',
+            content: [{type: 'heading', attrs: {level: 1}, content: []}]
+          },
+          undefined,
+          [StarterKit]
+        )
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {

@@ -10,7 +10,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
-import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
 import NotificationTemplate from './NotificationTemplate'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
@@ -58,7 +58,7 @@ interface Props {
 }
 
 const deletedTask = {
-  content: convertTipTapTaskContent('<<TASK DELETED>>'),
+  content: JSON.stringify(plaintextToTipTap('<<TASK DELETED>>')),
   status: 'done',
   tags: [] as string[],
   user: {

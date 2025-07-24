@@ -17,7 +17,7 @@ import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import JiraIssueId from '../shared/gqlIds/JiraIssueId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
-import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {CompletedHandler} from '../types/relayMutations'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
@@ -199,7 +199,7 @@ const NewJiraIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertTipTapTaskContent(newIssueTitle, ['archived']),
+      content: JSON.stringify(plaintextToTipTap(newIssueTitle, {taskTags: ['archived']})),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {

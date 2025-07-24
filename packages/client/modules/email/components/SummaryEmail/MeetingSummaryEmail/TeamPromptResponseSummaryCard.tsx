@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
-import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
 import {TeamPromptResponseSummaryCard_stage$key} from 'parabol-client/__generated__/TeamPromptResponseSummaryCard_stage.graphql'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {serverTipTapExtensions} from '../../../../../shared/tiptap/serverTipTapExtensions'
+import {useTipTapContext} from '../../../../../components/TipTapProvider'
 
 const responseSummaryCardStyles: React.CSSProperties = {
   padding: '12px',
@@ -112,7 +111,8 @@ const TeamPromptResponseSummaryCard = (props: Props) => {
   const {user} = teamMember
   const {rasterPicture, preferredName} = user
   const contentJSON = response ? JSON.parse(response.content) : null
-  const html = generateHTML(contentJSON, serverTipTapExtensions)
+  const {generateHTML} = useTipTapContext()
+  const html = generateHTML(contentJSON)
 
   return (
     <div style={responseSummaryCardStyles}>

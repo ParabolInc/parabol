@@ -24,8 +24,6 @@ const generateGraphQLArtifacts = async () => {
   Logger.log('codegen complete')
   await runCompiler(process.cwd())
   Logger.log('relay compiler client complete')
-  await runCompiler(`${process.cwd()}/packages/mattermost-plugin`)
-  Logger.log('relay compiler mattermost-plugin complete')
   persistServer.close()
 }
 

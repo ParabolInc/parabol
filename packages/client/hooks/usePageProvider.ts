@@ -1,6 +1,6 @@
 import {generateJSON, generateText} from '@tiptap/react'
 import type {History} from 'history'
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
@@ -67,16 +67,24 @@ export const usePageProvider = (pageId: string) => {
   const {history} = useRouter<{meetingId: string}>()
   const pageCode = Number(pageId.split(':')[1])
   const prevPageIdRef = useRef<string | undefined>()
+  const [isSynced, setIsSynced] = useState(false)
   // Connect to your Collaboration server
   const provider = useMemo(() => {
     providerManager.unregister(prevPageIdRef.current)
+    setIsSynced(false)
     prevPageIdRef.current = pageId
 
     // if we've already opened a provider, use that
     const existingProvider = providerManager.use(pageId)
-    if (existingProvider) return existingProvider
+    if (existingProvider) {
+      setIsSynced(true)
+      return existingProvider
+    }
 
     const nextProvider = providerManager.register(pageId)
+    nextProvider.on('synced', () => {
+      setIsSynced(true)
+    })
     const frag = nextProvider.document.getXmlFragment('default')
     frag.observe((event) => {
       if (event.changes.added.size > 0 || event.changes.deleted.size > 0) {
@@ -93,5 +101,5 @@ export const usePageProvider = (pageId: string) => {
       providerManager.unregister(prevPageIdRef.current)
     }
   }, [])
-  return {provider}
+  return {provider, synced: isSynced}
 }

@@ -1,6 +1,5 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
-import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -11,7 +10,6 @@ import {
   RemoteReflection_reflection$key
 } from '../../__generated__/RemoteReflection_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
 import {DeepNonNullable} from '../../types/generics'
@@ -21,6 +19,7 @@ import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import getBBox from '../RetroReflectPhase/getBBox'
 import HTMLReflection from '../RetroReflectPhase/HTMLReflection'
+import {useTipTapContext} from '../TipTapProvider'
 import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
 
 const circleAnimation = (transform?: string) => keyframes`
@@ -212,8 +211,9 @@ const RemoteReflection = (props: Props) => {
   const remoteDrag = reflection.remoteDrag as DeepNonNullable<
     RemoteReflection_reflection$data['remoteDrag']
   >
+  const {generateHTML} = useTipTapContext()
   const ref = useRef<HTMLDivElement>(null)
-  const [html] = useState(() => generateHTML(JSON.parse(content), serverTipTapExtensions))
+  const [html] = useState(() => generateHTML(JSON.parse(content)))
   const timeoutRef = useRef(0)
   const atmosphere = useAtmosphere()
   const spotlightResultGroups = useSpotlightResults(meeting)

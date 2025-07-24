@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
-import {convertTipTapTaskContent} from '../../../client/shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../../../client/shared/tiptap/plaintextToTipTap'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
@@ -47,7 +47,9 @@ export default {
     // VALIDATION
     const normalizedCheckInQuestion =
       checkInQuestion ||
-      convertTipTapTaskContent(makeCheckinQuestion(Math.floor(Math.random() * 1000), teamId))
+      JSON.stringify(
+        plaintextToTipTap(makeCheckinQuestion(Math.floor(Math.random() * 1000), teamId))
+      )
 
     // RESOLUTION
     const checkInPhase = getPhase(phases, 'checkin')
