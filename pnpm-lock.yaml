@@ -224,6 +224,9 @@ importers:
       '@types/lodash.toarray':
         specifier: ^4.4.7
         version: 4.4.9
+      '@types/markdown-it':
+        specifier: ^14.1.2
+        version: 14.1.2
       '@types/ms':
         specifier: ^0.7.34
         version: 0.7.34

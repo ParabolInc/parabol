@@ -3,6 +3,7 @@ import {type JSONContent} from '@tiptap/core'
 import {sql} from 'kysely'
 import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {SubscriptionChannel} from '../../../client/types/constEnums'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
@@ -25,7 +26,9 @@ export const createTopLevelPage = async (
   const isPrivate = !teamId
   const sortOrder = await getPageNextSortOrder(__START__, viewerId, isPrivate, teamId || null)
   const yDoc = content
-    ? Buffer.from(encodeStateAsUpdate(TiptapTransformer.toYdoc(content)))
+    ? Buffer.from(
+        encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))
+      )
     : undefined
   const contentRes = content ? getPlaintextFromTipTap(content) : {}
   const page = await pg

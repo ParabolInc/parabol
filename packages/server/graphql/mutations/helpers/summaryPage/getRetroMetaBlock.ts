@@ -8,10 +8,10 @@ export const getRetroMetaBlock = async (
 ) => {
   const {id: meetingId, topicCount, taskCount, reflectionCount} = meeting
   const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-  const topicLabel = plural(topicCount || 0, 'Topic')
-  const taskLabel = plural(taskCount || 0, 'New Task')
-  const reflectionLabel = plural(reflectionCount || 0, 'Reflection')
-  const participantLabel = plural(meetingMembers.length, 'Participant')
+  const topicLabel = `${topicCount} ${plural(topicCount || 0, 'Topic')}`
+  const taskLabel = `${taskCount} ${plural(taskCount || 0, 'New Task')}`
+  const reflectionLabel = `${reflectionCount} ${plural(reflectionCount || 0, 'Reflection')}`
+  const participantLabel = `${meetingMembers.length} ${plural(meetingMembers.length, 'Participant')}`
   return {
     type: 'paragraph',
     content: [

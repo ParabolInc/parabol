@@ -1,4 +1,6 @@
-import {Node} from '@tiptap/react'
+import {generateText} from '@tiptap/core'
+import {mergeAttributes, Node} from '@tiptap/react'
+import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
 export interface TaskBlockAttrs {
   id: string
@@ -64,6 +66,14 @@ export const TaskBlockBase = Node.create({
         tag: `div[data-type="${this.name}"]`
       }
     ]
+  },
+  renderHTML({HTMLAttributes}) {
+    return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
+  },
+  renderText({node}) {
+    const attrs = node.attrs as TaskBlockAttrs
+    const {content} = attrs
+    const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
+    return `Task: ${plaintextContent}`
   }
-  // render via React, no renderHTML necessary
 })

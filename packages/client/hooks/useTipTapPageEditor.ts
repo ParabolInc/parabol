@@ -147,8 +147,8 @@ export const useTipTapPageEditor = (
         }),
         InsightsBlock,
         GlobalDragHandle.configure({
-          // hide handle on blocks inside a taskBlock
-          excludedTags: ['div.node-taskBlock *']
+          // hide handle on custom block contents
+          excludedTags: ['taskBlock', 'insightsBlock'].map((name) => `div.node-${name} *`)
         }),
         AutoJoiner,
         Markdown.configure({

@@ -18,7 +18,7 @@ export const TaskBlockView = (props: NodeViewProps) => {
           className='mb-1'
         />
         {editor && <EditorContent editor={editor} />}
-        <div className='py-2'>
+        <div className='pt-2'>
           <div className='flex'>
             <Avatar className='size-6' picture={avatar} />
             <div className='pl-2 text-xs leading-6 font-semibold break-words text-slate-600'>
