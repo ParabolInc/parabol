@@ -19,11 +19,12 @@ The format:
 - (silver emoji) bold text as highlight: expanded explanation and/or suggested action
 - (copper emoji) bold text as highlight: expanded explanation and/or suggested action
 `
+const FAILED_SUMMARY_BLOCK = [{type: 'text', text: 'Not enough data to generate insights'}]
+
 const getInsightsContent = async (
   meetingInsightObject: Awaited<ReturnType<typeof makeMeetingInsightInput>>,
   team: Team
 ) => {
-  const FAILED_SUMMARY_BLOCK = [{type: 'text', text: 'Not enough data to generate insights'}]
   if (!meetingInsightObject) {
     return FAILED_SUMMARY_BLOCK
   }
@@ -67,8 +68,12 @@ export const getInsightsBlocks = async (
   const startTime = dayjs(createdAt)
   const endTime = dayjs(endedAt)
   const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const {orgId} = team
+  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  const {useAI} = organization
   const startTimeRange = startTime.subtract(1, 'hour').toISOString()
   const endTimeRange = endTime.add(1, 'hour').toISOString()
+  const content = useAI ? await getInsightsContent(meetingInsightObject, team) : null
   return [
     {type: 'paragraph'},
     {
@@ -83,9 +88,10 @@ export const getInsightsBlocks = async (
         meetingIds: [meetingId],
         title: 'Top Topics',
         hash: await quickHash([...meetingId, insightsPrompt]),
-        prompt: insightsPrompt
+        prompt: insightsPrompt,
+        error: !useAI ? 'disabled' : content === FAILED_SUMMARY_BLOCK ? 'nodata' : undefined
       },
-      content: await getInsightsContent(meetingInsightObject, team)
+      content
     }
   ]
 }

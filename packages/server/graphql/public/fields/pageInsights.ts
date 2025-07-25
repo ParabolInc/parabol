@@ -44,6 +44,13 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
     throw new GraphQLError('You must be a member of the team for each requested meetingId')
   }
   const teams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+  const orgIds = [...new Set(teams.map((t) => t.orgId))]
+  const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
+  const aiDisabledOrg = organizations.find((org) => !org.useAI)
+  if (aiDisabledOrg) {
+    const {name: orgName} = aiDisabledOrg
+    throw new GraphQLError(`AI is disabled for organization: ${orgName}. It must be enabled in Org Settings`)
+  }
   const dataByTeam = await Promise.all(
     teams.map(async (team) => {
       const {id: teamId, name: teamName} = team

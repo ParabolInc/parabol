@@ -8,6 +8,7 @@ import {InsightsBlockView} from './InsightsBlockView'
 
 export interface InsightsBlockAttrs {
   editing: boolean
+  error?: 'disabled' | 'nodata'
   teamIds: string[]
   meetingTypes: MeetingTypeEnum[]
   after: string

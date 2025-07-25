@@ -27,6 +27,7 @@ export const InsightsBlockBase = Node.create({
           'data-id': attributes.id
         })
       },
+
       editing: {
         default: true,
         parseHTML: (element) => {
@@ -96,6 +97,12 @@ export const InsightsBlockBase = Node.create({
         parseHTML: (element) => element.getAttribute('data-prompt'),
         renderHTML: (attributes) => ({
           'data-prompt': attributes.prompt
+        })
+      },
+      error: {
+        parseHTML: (element) => element.getAttribute('data-error'),
+        renderHTML: (attributes) => ({
+          'data-error': attributes.error
         })
       }
     }
