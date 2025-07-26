@@ -13,9 +13,15 @@ declare module '@tiptap/core' {
       movePageLink: (params: {fromIndex: number; toIndex: number}) => ReturnType
     }
   }
+  interface Storage {
+    pageLinkBlock: PageLinkBlockStorage
+  }
 }
 
-export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, {yDoc: Y.Doc}>({
+interface PageLinkBlockStorage {
+  yDoc: Y.Doc
+}
+export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlockStorage>({
   addOptions: () => ({
     // hack to enforce document
     yDoc: undefined as any

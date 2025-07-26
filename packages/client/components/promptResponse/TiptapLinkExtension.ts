@@ -1,4 +1,4 @@
-import {getMarkRange, getMarkType, mergeAttributes, type Editor} from '@tiptap/core'
+import {getMarkRange, getMarkType, type Editor, type RawCommands} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import {EditorState, Plugin} from '@tiptap/pm/state'
 
@@ -37,67 +37,67 @@ export const TiptapLinkExtension = BaseLink.extend({
       }
     }
   },
-  addCommands(this) {
-    return {
-      ...this.parent?.(),
-      upsertLink:
-        ({text, url}) =>
-        ({chain, state}) => {
-          const range = getRangeForType(state, 'link')
-          if (!range) {
-            const {selection} = state
-            const {from} = selection
-            const nextTo = from + text.length
-            // adding a new link
-            return chain()
-              .focus()
-              .command(({tr}) => {
-                tr.insertText(text)
-                return true
-              })
-              .setTextSelection({
-                from,
-                to: nextTo
-              })
-              .setLink({href: url, target: '_blank'})
-              .setTextSelection({from: nextTo, to: nextTo})
-              .run()
-          }
-          const {from} = range
-          const to = from + text.length
+  addCommands() {
+    const upsertLink: RawCommands['upsertLink'] =
+      ({text, url}) =>
+      ({chain, state}) => {
+        const range = getRangeForType(state, 'link')
+        if (!range) {
+          const {selection} = state
+          const {from} = selection
+          const nextTo = from + text.length
+          // adding a new link
           return chain()
             .focus()
-            .setTextSelection(range)
-            .insertContent(text)
+            .command(({tr}) => {
+              tr.insertText(text)
+              return true
+            })
             .setTextSelection({
               from,
-              to
+              to: nextTo
             })
             .setLink({href: url, target: '_blank'})
-            .setTextSelection({from: to, to})
-            .run()
-        },
-      removeLink:
-        () =>
-        ({state, chain}) => {
-          const range = getRangeForType(state, 'link')
-          if (!range) return false
-          return chain()
-            .focus()
-            .extendMarkRange('link')
-            .unsetLink()
-            .setTextSelection({from: range.to, to: range.to})
+            .setTextSelection({from: nextTo, to: nextTo})
             .run()
         }
+        const {from} = range
+        const to = from + text.length
+        return chain()
+          .focus()
+          .setTextSelection(range)
+          .insertContent(text)
+          .setTextSelection({
+            from,
+            to
+          })
+          .setLink({href: url, target: '_blank'})
+          .setTextSelection({from: to, to})
+          .run()
+      }
+    const removeLink: RawCommands['removeLink'] =
+      () =>
+      ({state, chain}) => {
+        const range = getRangeForType(state, 'link')
+        if (!range) return false
+        return chain()
+          .focus()
+          .extendMarkRange('link')
+          .unsetLink()
+          .setTextSelection({from: range.to, to: range.to})
+          .run()
+      }
+    return {
+      // https://github.com/ueberdosis/tiptap/issues/6670
+      ...(this as any).parent(),
+      upsertLink,
+      removeLink
     }
   },
   parseHTML() {
     return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
   },
 
-  renderHTML({HTMLAttributes}) {
-    return ['a', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}), 0]
-  },
   onSelectionUpdate() {
     const href = this.editor.getAttributes('link').href
     const linkState = href ? 'preview' : null
@@ -106,7 +106,6 @@ export const TiptapLinkExtension = BaseLink.extend({
   addProseMirrorPlugins() {
     const {editor} = this
     return [
-      ...(this.parent?.() || []),
       new Plugin({
         props: {
           handleKeyDown: (_view, event) => {

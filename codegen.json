@@ -48,6 +48,7 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "EndRetrospectiveSuccess": "./types/EndRetrospectiveSuccess#EndRetrospectiveSuccessSource",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",
           "ActionMeeting": "../../postgres/types/Meeting#CheckInMeeting",

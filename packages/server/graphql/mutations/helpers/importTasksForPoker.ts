@@ -1,7 +1,7 @@
 import IntegrationHash from 'parabol-client/shared/gqlIds/IntegrationHash'
 import {isNotNull} from 'parabol-client/utils/predicates'
-import {convertTipTapTaskContent} from '../../../../client/shared/tiptap/convertTipTapTaskContent'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
+import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import dndNoise from '../../../../client/utils/dndNoise'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -45,7 +45,7 @@ const importTasksForPoker = async (
       }
       const integrationHash = IntegrationHash.join(integration)
       const plaintextContent = `Task imported from ${integration.service} #archived`
-      const content = convertTipTapTaskContent(plaintextContent)
+      const content = JSON.stringify(plaintextToTipTap(plaintextContent, {taskTags: ['archived']}))
       return {
         id: generateUID(),
         content,

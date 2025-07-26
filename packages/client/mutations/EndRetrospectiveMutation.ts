@@ -20,6 +20,7 @@ import popEndMeetingToast from './toasts/popEndMeetingToast'
 graphql`
   fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
     isKill
+    gotoPageSummary
     meeting {
       id
       endedAt
@@ -43,6 +44,7 @@ graphql`
       phases {
         phaseType
       }
+      summaryPageId
     }
     team {
       ...TeamInsights_team
@@ -91,10 +93,10 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   EndRetrospectiveMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
-  const {isKill, meeting} = payload
+  const {isKill, meeting, gotoPageSummary} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId, reflectionGroups, phases, organization} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases, organization, summaryPageId} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -106,6 +108,9 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
     if (isKill) {
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
+    } else if (gotoPageSummary && summaryPageId) {
+      const pageCode = Number(summaryPageId.split('page:')[1])
+      history.push(`/pages/${pageCode}`)
     } else {
       const reflections = reflectionGroups.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
       const hasMoreThanOneReflection = reflections.length > 1

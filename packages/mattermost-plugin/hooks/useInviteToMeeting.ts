@@ -7,7 +7,7 @@ import {useFragment} from 'react-relay'
 import {
   MeetingTypeEnum,
   useInviteToMeeting_meeting$key
-} from '../__generated__/useInviteToMeeting_meeting.graphql'
+} from '../../client/__generated__/useInviteToMeeting_meeting.graphql'
 import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'

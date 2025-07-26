@@ -1,4 +1,3 @@
-import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
@@ -7,9 +6,9 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import anonymousAvatar from '~/styles/theme/images/anonymous-avatar.svg'
 import {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
 import useRouter from '../hooks/useRouter'
-import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationTemplate from './NotificationTemplate'
+import {useTipTapContext} from './TipTapProvider'
 
 interface Props {
   notification: Mentioned_notification$key
@@ -38,7 +37,7 @@ const Mentioned = (props: Props) => {
   )
   const {history} = useRouter()
   const atmosphere = useAtmosphere()
-
+  const {generateHTML} = useTipTapContext()
   const {
     senderName,
     senderPicture,
@@ -80,9 +79,7 @@ const Mentioned = (props: Props) => {
     history.push(actionUrl)
   }
 
-  const htmlContent = previewContent
-    ? generateHTML(JSON.parse(previewContent), serverTipTapExtensions)
-    : ''
+  const htmlContent = previewContent ? generateHTML(JSON.parse(previewContent)) : ''
 
   return (
     <NotificationTemplate

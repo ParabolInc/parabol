@@ -4,7 +4,7 @@ import {Post} from 'mattermost-redux/types/posts'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useCallback} from 'react'
 import {useFragment} from 'react-relay'
-import {useInviteToTeam_team$key} from '../__generated__/useInviteToTeam_team.graphql'
+import {useInviteToTeam_team$key} from '../../client/__generated__/useInviteToTeam_team.graphql'
 import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 

@@ -5,7 +5,7 @@ import {DeleteCommentMutation_meeting$data} from '~/__generated__/DeleteCommentM
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
 import {DeleteCommentMutation as TDeleteCommentMutation} from '../__generated__/DeleteCommentMutation.graphql'
-import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
@@ -62,7 +62,7 @@ const handleDeleteComment = (
     return
   }
   if (replies && replies.length > 0) {
-    const TOMBSTONE = convertTipTapTaskContent('[deleted]')
+    const TOMBSTONE = JSON.stringify(plaintextToTipTap('[deleted]'))
     comment.setValue(TOMBSTONE, 'content')
     comment.setValue(false, 'isActive')
   } else {

@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import {Editor, Extension} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
-import Placeholder from '@tiptap/extension-placeholder'
-import Underline from '@tiptap/extension-underline'
+import {Placeholder} from '@tiptap/extensions'
 import {JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -96,8 +95,7 @@ const PromptResponseEditor = (props: Props) => {
     {
       content,
       extensions: [
-        StarterKit,
-        Underline,
+        StarterKit.configure({link: false}),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,

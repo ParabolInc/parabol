@@ -14,7 +14,7 @@ import useInitialLocalState from '../hooks/useInitialLocalState'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import {useTipTapTypingStatus} from '../hooks/useTipTapTypingStatus'
 import CreateTaskMutation from '../mutations/CreateTaskMutation'
-import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
@@ -121,7 +121,7 @@ const DiscussionThreadInput = (props: Props) => {
   const [initialContent] = useState(() => {
     return replyingTo?.createdByUser && replyingTo.createdByUser.id !== viewerId
       ? JSON.stringify(makeReplyTo(replyingTo.createdByUser))
-      : convertTipTapTaskContent('')
+      : JSON.stringify(plaintextToTipTap(''))
   })
 
   const allowTasks = allowedThreadables.includes('task')

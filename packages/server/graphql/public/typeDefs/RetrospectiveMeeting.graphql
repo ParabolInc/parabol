@@ -208,4 +208,5 @@ type RetrospectiveMeeting implements NewMeeting {
   The sum total of the votes remaining for the meeting members that are present in the meeting
   """
   votesRemaining: Int!
+  summaryPageId: ID
 }

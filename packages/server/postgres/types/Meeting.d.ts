@@ -35,6 +35,7 @@ type BaseNewMeeting = Pick<
   | 'sentimentScore'
   | 'slackTs'
   | 'engagement'
+  | 'summaryPageId'
 > & {phases: NewMeetingPhase[]; usedReactjis: UsedReactjis | null}
 
 export type RetrospectiveMeeting = BaseNewMeeting &

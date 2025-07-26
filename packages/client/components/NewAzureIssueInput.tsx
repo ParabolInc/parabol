@@ -16,7 +16,7 @@ import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
 import useTimedState from '../hooks/useTimedState'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {convertTipTapTaskContent} from '../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {CompletedHandler} from '../types/relayMutations'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
@@ -187,7 +187,7 @@ const NewAzureIssueInput = (props: Props) => {
       teamId,
       userId,
       meetingId,
-      content: convertTipTapTaskContent(newIssueTitle, ['archived']),
+      content: JSON.stringify(plaintextToTipTap(newIssueTitle, {taskTags: ['archived']})),
       plaintextContent: newIssueTitle,
       status: 'active' as const,
       integration: {
