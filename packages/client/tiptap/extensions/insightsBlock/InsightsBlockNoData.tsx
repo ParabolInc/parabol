@@ -17,9 +17,9 @@ export const InsightsBlockNoData = (props: NodeViewProps) => {
         </div>
         <div className=''>
           <button
-            className='font-semibold text-sky-500 bg-inherit cursor-pointer'
+            className='cursor-pointer bg-inherit font-semibold text-sky-500'
             onClick={() => {
-              updateAttributes({editing: true})
+              updateAttributes({editing: true, error: undefined})
             }}
           >
             Try different selections

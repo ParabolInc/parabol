@@ -30,7 +30,6 @@ import editTask from './mutations/editTask'
 import emailPasswordReset from './mutations/emailPasswordReset'
 import endCheckIn from './mutations/endCheckIn'
 import endDraggingReflection from './mutations/endDraggingReflection'
-import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import invalidateSessions from './mutations/invalidateSessions'
@@ -128,7 +127,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       editTask,
       endCheckIn,
       endDraggingReflection,
-      endRetrospective,
       flagReadyToAdvance,
       invalidateSessions,
       inviteToTeam,

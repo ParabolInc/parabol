@@ -260,6 +260,7 @@ export const selectNewMeetings = () =>
       'videoMeetingURL',
       'templateRefId',
       'meetingPrompt',
+      'summaryPageId',
       fn('to_json', ['phases']).as('phases'),
       fn('to_json', ['usedReactjis']).as('usedReactjis'),
       fn('to_json', ['transcription']).as('transcription'),

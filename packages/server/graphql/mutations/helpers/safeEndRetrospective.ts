@@ -10,11 +10,9 @@ import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {InternalContext} from '../../graphql'
-import isValid from '../../isValid'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
@@ -23,58 +21,31 @@ import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentS
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
-import {generateRetroMeetingSummaryPage} from './summaryPage/generateRetroMeetingSummaryPage'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
-  const {authToken, dataLoader, socketId} = context
-  const userId = getUserId(authToken)
+  const {dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId}
-  const {id: meetingId, phases, teamId, recallBotId} = meeting
+  const {id: meetingId, teamId, recallBotId} = meeting
   const pg = getKysely()
 
-  const [reflectionGroups, reflections, sentimentScore, transcriptResult] = await Promise.all([
-    dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId),
-    dataLoader.get('retroReflectionsByMeetingId').load(meetingId),
+  const [sentimentScore, transcriptResult] = await Promise.all([
     generateWholeMeetingSentimentScore(meetingId, dataLoader),
     dumpTranscriptToPage(recallBotId, meetingId, dataLoader),
     generateRetroSummary(meetingId, dataLoader)
   ])
-
   const transcription = transcriptResult?.transcription
-
-  const discussPhase = getPhase(phases, 'discuss')
-  const {stages} = discussPhase
-  const discussionIds = stages.map((stage) => stage.discussionId)
-
-  const reflectionGroupIds = reflectionGroups.map(({id}) => id)
-  const commentCounts = (
-    await dataLoader.get('commentCountByDiscussionId').loadMany(discussionIds)
-  ).filter(isValid)
-  const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
-  const taskCountRes = await pg
-    .selectFrom('Task')
-    .select(({fn}) => fn.count<bigint>('id').as('count'))
-    .where('discussionId', 'in', discussionIds)
-    .executeTakeFirst()
   await pg
     .updateTable('NewMeeting')
     .set({
-      commentCount,
-      taskCount: Number(taskCountRes?.count ?? 0),
-      topicCount: reflectionGroupIds.length,
-      reflectionCount: reflections.length,
       sentimentScore,
       transcription: transcription ? JSON.stringify(transcription) : null
     })
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
-  // make the summary in a Page format
-  publishSummaryPage(userId, meetingId, dataLoader, socketId)
-  generateRetroMeetingSummaryPage(meetingId, dataLoader)
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   sendNewMeetingSummary(meeting, context).catch(Logger.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
@@ -109,14 +80,19 @@ const safeEndRetrospective = async ({
   }
   const phase = getMeetingPhase(phases)
 
-  const insights = await gatherInsights(meeting, dataLoader)
+  const {engagement, usedReactjis, commentCount, taskCount, topicCount, reflectionCount} =
+    await gatherInsights(meeting, dataLoader)
   await getKysely()
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
       phases: JSON.stringify(phases),
-      usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement,
+      usedReactjis: JSON.stringify(usedReactjis),
+      engagement,
+      commentCount,
+      taskCount,
+      topicCount,
+      reflectionCount,
       summary: '<loading>' // set as "<loading>" while the AI summary is being generated
     })
     .where('id', '=', meetingId)
@@ -139,7 +115,7 @@ const safeEndRetrospective = async ({
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
-  summarizeRetroMeeting(completedRetrospective, context)
+  await summarizeRetroMeeting(completedRetrospective, context)
   analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
   const events = teamMembers.map(
     (teamMember) =>
@@ -169,15 +145,19 @@ const safeEndRetrospective = async ({
       )
     }
   }
-
+  const [gotoPageSummary] = await Promise.all([
+    dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
+    // the promise only creates the initial page, the page blocks are generated and sent after resolving
+    publishSummaryPage(viewerId, meetingId, dataLoader, mutatorId)
+  ])
   const data = {
+    gotoPageSummary,
     meetingId,
     teamId,
     isKill: !!(phase && phase.phaseType !== DISCUSS),
     removedTaskIds
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
-
   return data
 }
 

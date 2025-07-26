@@ -7,10 +7,12 @@ import type {Team} from '../../../../postgres/types'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
 
+const FAIL_TEXT = 'Not enough data to generate insights'
+
 const insightsPrompt = `You are an expert in agile retrospectives and project management.
 Your team has just completed a retrospective and it is your job to generate insights from the data and report to senior management.
 Senior management wants to know where to best focus their time, so be concise and focus on next steps to take.
-If there is not enough data to generate insightful findings, respond with "Not enough data to generate insights.".
+If there is not enough data to generate insightful findings, respond with "${FAIL_TEXT}".
 It should include at most 3 topics that are the most important highlights, takeaways, or areas that may need their attention.
 Below I will provide you with a user-defined prompt and data containing meeting discussions, work completed, and agile stories with points, all in YAML format.
 Your response should be in markdown format. Do not use horizontal rules to separate sections.
@@ -19,7 +21,8 @@ The format:
 - (silver emoji) bold text as highlight: expanded explanation and/or suggested action
 - (copper emoji) bold text as highlight: expanded explanation and/or suggested action
 `
-const FAILED_SUMMARY_BLOCK = [{type: 'text', text: 'Not enough data to generate insights'}]
+
+const FAILED_SUMMARY_BLOCK = [{type: 'paragraph', content: [{type: 'text', text: FAIL_TEXT}]}]
 
 const getInsightsContent = async (
   meetingInsightObject: Awaited<ReturnType<typeof makeMeetingInsightInput>>,
@@ -51,7 +54,7 @@ const getInsightsContent = async (
     ]
   })
   const responseContent = response.choices[0]?.message?.content?.trim()
-  if (!responseContent || responseContent.includes('Not enough data to generate insights')) {
+  if (!responseContent || responseContent.includes(FAIL_TEXT)) {
     return FAILED_SUMMARY_BLOCK
   }
   const content = markdownToTipTap(responseContent)
@@ -73,7 +76,7 @@ export const getInsightsBlocks = async (
   const {useAI} = organization
   const startTimeRange = startTime.subtract(1, 'hour').toISOString()
   const endTimeRange = endTime.add(1, 'hour').toISOString()
-  const content = useAI ? await getInsightsContent(meetingInsightObject, team) : null
+  const content = useAI ? await getInsightsContent(meetingInsightObject, team) : []
   return [
     {type: 'paragraph'},
     {
