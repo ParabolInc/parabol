@@ -3,7 +3,6 @@ import crypto from 'crypto'
 import fs from 'fs'
 import http, {RequestListener, Server} from 'http'
 import path from 'path'
-import mattermostPluginConfig from '../packages/mattermost-plugin/relay.config'
 import clientConfig from '../relay.config'
 
 export default class RelayPersistServer {
@@ -85,6 +84,5 @@ export default class RelayPersistServer {
       }
     }
     prepare(clientConfig)
-    prepare(mattermostPluginConfig)
   }
 }

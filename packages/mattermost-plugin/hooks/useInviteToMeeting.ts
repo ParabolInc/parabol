@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
 import {Post} from 'mattermost-redux/types/posts'
-import {PALETTE} from 'parabol-client/styles/paletteV3'
-import {useCallback} from 'react'
-import {useFragment} from 'react-relay'
 import {
   MeetingTypeEnum,
   useInviteToMeeting_meeting$key
-} from '../__generated__/useInviteToMeeting_meeting.graphql'
+} from 'parabol-client/__generated__/useInviteToMeeting_meeting.graphql'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {useCallback} from 'react'
+import {useFragment} from 'react-relay'
 import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 import useMassInvitationToken from './useMassInvitationToken'
