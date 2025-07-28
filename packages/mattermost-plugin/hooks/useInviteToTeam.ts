@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
 import {Post} from 'mattermost-redux/types/posts'
+import {useInviteToTeam_team$key} from 'parabol-client/__generated__/useInviteToTeam_team.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useCallback} from 'react'
 import {useFragment} from 'react-relay'
-import {useInviteToTeam_team$key} from '../../client/__generated__/useInviteToTeam_team.graphql'
 import {useConfig} from './useConfig'
 import {useCurrentChannel} from './useCurrentChannel'
 
