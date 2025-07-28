@@ -12,6 +12,7 @@ import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
+import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
@@ -58,5 +59,6 @@ export const serverTipTapExtensions: Extensions = [
   InsightsBlockBase,
   UniqueID,
   PageLinkBlockBase,
-  TaskBlockBase
+  TaskBlockBase,
+  ThinkingBlockBase
 ]

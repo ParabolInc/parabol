@@ -24,6 +24,7 @@ import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
+import {ThinkingBlock} from '../tiptap/extensions/insightsBlock/ThinkingBlock'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
@@ -160,7 +161,8 @@ export const useTipTapPageEditor = (
           atmosphere
         }),
         PageLinkBlock.configure({yDoc: provider.document}),
-        TaskBlock
+        TaskBlock,
+        ThinkingBlock
       ],
       autofocus: true,
       editable: true
@@ -199,7 +201,8 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
       }),
       InsightsBlock,
       PageLinkBlock.configure({yDoc: document}),
-      TaskBlock
+      TaskBlock,
+      ThinkingBlock
     ]
   })
 }

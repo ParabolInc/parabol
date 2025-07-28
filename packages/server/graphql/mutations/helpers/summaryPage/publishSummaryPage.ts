@@ -1,4 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
+import {sleep} from 'openai/core.mjs'
 import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
 import {server} from '../../../../hocusPocus'
@@ -31,6 +32,12 @@ const streamSummaryBlocksToPage = async (
   const contentGenerator = generateRetroMeetingSummaryPage(meetingId, dataLoader)
   const name = CipherId.toClient(pageId, 'page')
   const conn = await server.hocuspocus.openDirectConnection(name, {})
+  await conn.transact((doc) => {
+    const frag = doc.getXmlFragment('default')
+    const el = new XmlElement()
+    el.nodeName = 'thinkingBlock'
+    frag.push([el])
+  })
   for await (const rawContent of contentGenerator) {
     if (!rawContent) continue
     const content = rawContent.filter(Boolean)
@@ -48,6 +55,9 @@ const streamSummaryBlocksToPage = async (
       const frag = doc.getXmlFragment('default')
       for (let i = frag.length - 1; i >= 0; i--) {
         const node = frag.get(i) as XmlElement
+        if (node.nodeName === 'thinkingBlock') {
+          continue
+        }
         if (node.length === 0 && ['paragraph', 'heading'].includes(node.nodeName)) {
           // delete tailing empty headings or paragraphs that may have been added by the user
           frag.delete(i)
@@ -56,10 +66,24 @@ const streamSummaryBlocksToPage = async (
         }
       }
       for (const block of blocks) {
-        frag.push([cloneBlock(block)])
+        // insert it before the thinking block
+        frag.insert(frag.length - 1, [cloneBlock(block)])
       }
     })
+    // not necessary, just to make it look like it is streaming lol
+    await sleep(100)
   }
+  await conn.transact((doc) => {
+    // remove the thinking block now that we're done
+    const frag = doc.getXmlFragment('default')
+    for (let i = frag.length - 1; i >= 0; i--) {
+      const node = frag.get(i) as XmlElement
+      if (node.nodeName === 'thinkingBlock') {
+        frag.delete(i)
+        break
+      }
+    }
+  })
   await conn.disconnect()
 }
 
