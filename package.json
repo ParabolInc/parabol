@@ -97,7 +97,6 @@
     "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",
     "@types/jscodeshift": "^0.11.3",
-    "@types/lodash.toarray": "^4.4.7",
     "@types/ms": "^0.7.34",
     "@types/pg": "^8.11.10",
     "@types/react": "17.0.2",
