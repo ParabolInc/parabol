@@ -199,7 +199,6 @@
     "graphql-ws": "^6.0.4",
     "html-minifier-terser": "^5.1.1",
     "kysely": "^0.28.2",
-    "lodash.toarray": "^4.4.0",
     "ms": "^2.0.0",
     "openai": "^4.86.1",
     "pg": "^8.13.0",
