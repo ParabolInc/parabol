@@ -1,4 +1,4 @@
-import {ReasonToDowngradeEnum} from '../../../client/__generated__/DowngradeToStarterMutation.graphql'
+import {ReasonToDowngradeEnum} from 'parabol-client/__generated__/DowngradeToStarterMutation.graphql'
 import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
 import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'

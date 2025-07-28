@@ -19,12 +19,12 @@ const normalizeName = (pathData) => {
     .replace(/ +/g, '-')
 }
 
-const clientTransformRules = (pluginRoot) => {
+const clientTransformRules = () => {
   return [
     {
       test: /\.tsx?$/,
       // things that need the relay plugin
-      include: [pluginRoot, CLIENT_ROOT],
+      include: [PLUGIN_ROOT],
       use: [
         {
           loader: 'babel-loader',
@@ -88,7 +88,7 @@ module.exports = (config) => {
     },
     module: {
       rules: [
-        ...clientTransformRules(PLUGIN_ROOT),
+        ...clientTransformRules(),
         {
           test: /\.tsx?$/,
           loader: 'babel-loader',

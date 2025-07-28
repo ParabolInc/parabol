@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useStartMeetingCheckInMutation} from 'parabol-client/__generated__/useStartMeetingCheckInMutation.graphql'
+import {useStartMeetingRetrospectiveMutation} from 'parabol-client/__generated__/useStartMeetingRetrospectiveMutation.graphql'
+import {useStartMeetingSprintPokerMutation} from 'parabol-client/__generated__/useStartMeetingSprintPokerMutation.graphql'
+import {useStartMeetingTeamPromptMutation} from 'parabol-client/__generated__/useStartMeetingTeamPromptMutation.graphql'
 import {useCallback} from 'react'
 import {useMutation} from 'react-relay'
 import {RecordSourceProxy} from 'relay-runtime'
-import {useStartMeetingCheckInMutation} from '../../client/__generated__/useStartMeetingCheckInMutation.graphql'
-import {useStartMeetingRetrospectiveMutation} from '../../client/__generated__/useStartMeetingRetrospectiveMutation.graphql'
-import {useStartMeetingSprintPokerMutation} from '../../client/__generated__/useStartMeetingSprintPokerMutation.graphql'
-import {useStartMeetingTeamPromptMutation} from '../../client/__generated__/useStartMeetingTeamPromptMutation.graphql'
 
 graphql`
   fragment useStartMeeting_retrospective on StartRetrospectiveSuccess {

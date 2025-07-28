@@ -7,7 +7,7 @@ import {closeInviteToTeamModal} from '../../reducers'
 
 import Select from '../Select'
 
-import {InviteToTeamModalQuery} from '../../../client/__generated__/InviteToTeamModalQuery.graphql'
+import {InviteToTeamModalQuery} from 'parabol-client/__generated__/InviteToTeamModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import LoadingSpinner from '../LoadingSpinner'

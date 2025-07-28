@@ -3,11 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import CardsSVG from 'parabol-client/components/CardsSVG'
 import {ReactNode, useState} from 'react'
 
-import {useFragment} from 'react-relay'
 import {
   MeetingRow_meeting$key,
   MeetingTypeEnum
-} from '../../../client/__generated__/MeetingRow_meeting.graphql'
+} from 'parabol-client/__generated__/MeetingRow_meeting.graphql'
+import {useFragment} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
 
