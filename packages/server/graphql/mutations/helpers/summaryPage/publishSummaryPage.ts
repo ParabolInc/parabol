@@ -1,5 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import type {XmlElement} from 'yjs'
+import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
 import {server} from '../../../../hocusPocus'
 import getKysely from '../../../../postgres/getKysely'
@@ -7,6 +7,21 @@ import {CipherId} from '../../../../utils/CipherId'
 import {createTopLevelPage} from '../../../../utils/tiptap/createTopLevelPage'
 import type {DataLoaderWorker} from '../../../graphql'
 import {generateRetroMeetingSummaryPage} from './generateRetroMeetingSummaryPage'
+
+// native clone method only clones attributes that are strings
+const cloneBlock = (elToClone: XmlElement) => {
+  const {nodeName} = elToClone
+  const el = new XmlElement(nodeName)
+  const attrs = elToClone.getAttributes()
+  Object.entries(attrs).forEach(([key, value]) => {
+    el.setAttribute(key, value as string)
+  })
+  el.insert(
+    0,
+    elToClone.toArray().map((item) => (item instanceof AbstractType ? item.clone() : (item as any)))
+  )
+  return el
+}
 
 const streamSummaryBlocksToPage = async (
   pageId: number,
@@ -41,7 +56,7 @@ const streamSummaryBlocksToPage = async (
         }
       }
       for (const block of blocks) {
-        frag.push([block.clone()])
+        frag.push([cloneBlock(block)])
       }
     })
   }

@@ -28,7 +28,6 @@ const endRetrospective: MutationResolvers['endRetrospective'] = async (
 
   // RESOLUTION
   const res = await safeEndRetrospective({meeting, now, context})
-  console.log('mut res', res)
   return res
 }
 

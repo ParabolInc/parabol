@@ -79,7 +79,6 @@ const safeEndRetrospective = async ({
     stage.endAt = now
   }
   const phase = getMeetingPhase(phases)
-
   const {engagement, usedReactjis, commentCount, taskCount, topicCount, reflectionCount} =
     await gatherInsights(meeting, dataLoader)
   await getKysely()
@@ -115,7 +114,7 @@ const safeEndRetrospective = async ({
   ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
-  await summarizeRetroMeeting(completedRetrospective, context)
+  summarizeRetroMeeting(completedRetrospective, context)
   analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
   const events = teamMembers.map(
     (teamMember) =>
