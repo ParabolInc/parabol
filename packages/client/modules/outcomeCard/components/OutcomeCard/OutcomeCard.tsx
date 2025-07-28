@@ -4,7 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
@@ -14,7 +14,7 @@ import TaskWatermark from '../../../../components/TaskWatermark'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
+import {cardFocusShadow, cardHoverShadow, cardShadow} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
 import {Card} from '../../../../types/constEnums'
 import isTaskArchived from '../../../../utils/isTaskArchived'
@@ -26,24 +26,21 @@ import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCar
 const RootCard = styled('div')<{
   isTaskHovered: boolean
   isTaskFocused: boolean
-  isDragging: boolean
   isTaskHighlighted: boolean
-}>(({isTaskHovered, isTaskFocused, isDragging, isTaskHighlighted}) => ({
+}>(({isTaskHovered, isTaskFocused, isTaskHighlighted}) => ({
   ...cardRootStyles,
   borderTop: 0,
   outline: isTaskHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none',
   padding: `${Card.PADDING} 0 0`,
   transition: `box-shadow 100ms ease-in`,
   // hover before focus, it matters
-  boxShadow: isDragging
-    ? Elevation.CARD_DRAGGING
-    : isTaskHighlighted
-      ? cardHoverShadow
-      : isTaskFocused
-        ? cardFocusShadow
-        : isTaskHovered
-          ? cardHoverShadow
-          : cardShadow
+  boxShadow: isTaskHighlighted
+    ? cardHoverShadow
+    : isTaskFocused
+      ? cardFocusShadow
+      : isTaskHovered
+        ? cardHoverShadow
+        : cardShadow
 }))
 
 const ContentBlock = styled('div')({
@@ -61,7 +58,6 @@ interface Props {
   editor: Editor
   handleCardUpdate: () => void
   isAgenda: boolean
-  isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCard_task$key
   useTaskChild: UseTaskChild
   addTaskChild(name: string): void
@@ -78,7 +74,6 @@ const OutcomeCard = memo((props: Props) => {
     editor,
     handleCardUpdate,
     isAgenda,
-    isDraggingOver,
     task: taskRef,
     useTaskChild
   } = props
@@ -97,6 +92,7 @@ const OutcomeCard = memo((props: Props) => {
         }
         status
         tags
+        content
         # grab userId to ensure sorting on connections works
         userId
         isHighlighted(meetingId: $meetingId)
@@ -153,7 +149,6 @@ const OutcomeCard = memo((props: Props) => {
     <RootCard
       isTaskHovered={isTaskHovered}
       isTaskFocused={isTaskFocused}
-      isDragging={!!isDraggingOver}
       isTaskHighlighted={!!isHighlighted}
     >
       <TaskWatermark type={type} />
@@ -165,7 +160,7 @@ const OutcomeCard = memo((props: Props) => {
           useTaskChild={useTaskChild}
         >
           <StatusIndicatorBlock title={statusIndicatorTitle}>
-            <OutcomeCardStatusIndicator status={isDraggingOver || status} />
+            <OutcomeCardStatusIndicator status={status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </StatusIndicatorBlock>

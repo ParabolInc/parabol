@@ -1,8 +1,9 @@
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
+import DraggableTaskWrapper from '../../containers/TaskCard/DraggableTaskWrapper'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
@@ -14,15 +15,23 @@ import isTaskArchived from '../../utils/isTaskArchived'
 import isTempId from '../../utils/relay/isTempId'
 import NullCard from '../NullCard/NullCard'
 
-interface Props {
+type Props = {
   area: AreaEnum
   className?: string
   isAgenda?: boolean
-  isDraggingOver?: TaskStatusEnum
   task: NullableTask_task$key
   isViewerMeetingSection?: boolean
   meetingId?: string
-}
+} & (
+  | {
+      isDraggable?: false | undefined
+      draggableIndex?: undefined
+    }
+  | {
+      isDraggable: true
+      draggableIndex: number
+    }
+)
 
 const NullableTask = (props: Props) => {
   const {
@@ -30,9 +39,10 @@ const NullableTask = (props: Props) => {
     className,
     isAgenda,
     task: taskRef,
-    isDraggingOver,
     isViewerMeetingSection,
-    meetingId
+    meetingId,
+    isDraggable,
+    draggableIndex
   } = props
   const task = useFragment(
     graphql`
@@ -42,6 +52,7 @@ const NullableTask = (props: Props) => {
         id
         content
         createdBy
+        sortOrder
         createdByUser {
           preferredName
         }
@@ -61,7 +72,7 @@ const NullableTask = (props: Props) => {
   const {preferredName} = createdByUser
   const atmosphere = useAtmosphere()
   const isArchived = isTaskArchived(tags)
-  const readOnly = isTempId(taskId) || isArchived || !!isDraggingOver || isIntegration
+  const readOnly = isTempId(taskId) || isArchived || isIntegration
 
   const {isTaskFocused} = useTaskChildFocus(taskId)
 
@@ -90,17 +101,17 @@ const NullableTask = (props: Props) => {
     atmosphere,
     teamId,
     readOnly,
-    onModEnter: onModEnter
+    onModEnter: onModEnter,
+    onBlur: handleCardUpdate
   })
 
   const showOutcome =
     editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
-  return showOutcome ? (
+  const renderTask = showOutcome ? (
     <OutcomeCardContainer
       area={area}
       className={className}
       editor={editor}
-      isDraggingOver={isDraggingOver}
       isAgenda={isAgenda}
       task={task}
       isViewerMeetingSection={isViewerMeetingSection}
@@ -110,6 +121,14 @@ const NullableTask = (props: Props) => {
   ) : (
     <NullCard className={className} preferredName={preferredName} />
   )
+  if (isDraggable) {
+    return (
+      <DraggableTaskWrapper draggableId={taskId} index={draggableIndex}>
+        {renderTask}
+      </DraggableTaskWrapper>
+    )
+  }
+  return renderTask
 }
 
 export default NullableTask
