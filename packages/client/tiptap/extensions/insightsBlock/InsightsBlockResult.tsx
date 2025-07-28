@@ -1,5 +1,5 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import ModelTrainingIcon from '@mui/icons-material/ModelTraining'
+import EditIcon from '@mui/icons-material/Edit'
 import {Fragment} from '@tiptap/pm/model'
 import {getHTMLFromFragment, NodeViewContent, type NodeViewProps} from '@tiptap/react'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
@@ -13,12 +13,11 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
   const {id} = attrs
   return (
     <>
-      <NodeViewContent className='px-4 outline-hidden' />
-      <div className='absolute top-0 right-0 flex justify-end space-x-2 p-4'>
+      <div className='flex justify-end space-x-2'>
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='cursor-pointer text-slate-600'
+              className='cursor-pointer text-slate-600 hover:text-slate-700'
               onClick={async () => {
                 const nodePos = editor.$node('insightsBlock', {id})!
                 // Leaving the comment here in case we want to switch back to plain text
@@ -45,19 +44,20 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='cursor-pointer text-slate-600'
+              className='cursor-pointer text-slate-600 hover:text-slate-700'
               onClick={() => {
                 updateAttributes({editing: true})
               }}
             >
-              <ModelTrainingIcon />
+              <EditIcon />
             </button>
           </TooltipTrigger>
           <TooltipContent side='bottom' align='center'>
-            {'Start over'}
+            {'Edit query'}
           </TooltipContent>
         </Tooltip>
       </div>
+      <NodeViewContent className='px-4 outline-hidden' />
     </>
   )
 }

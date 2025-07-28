@@ -90,7 +90,7 @@ export const getInsightsBlocks = async (
         before: endTimeRange,
         meetingIds: [meetingId],
         title: 'Top Topics',
-        hash: await quickHash([...meetingId, insightsPrompt]),
+        hash: await quickHash([meetingId, insightsPrompt]),
         prompt: insightsPrompt,
         error: !useAI ? 'disabled' : content === FAILED_SUMMARY_BLOCK ? 'nodata' : undefined
       },
