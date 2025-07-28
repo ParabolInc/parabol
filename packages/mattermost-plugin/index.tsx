@@ -16,8 +16,8 @@ import rootReducer, {
 import {getAssetsUrl, getPluginServerRoute, isAuthorized} from './selectors'
 import {ContextArgs, PluginRegistry} from './types/mattermost-webapp'
 
-import {generateHTML, generateJSON} from '@tiptap/html/server'
-import {TipTapProvider} from '../client/components/TiptapProvider'
+import {generateHTML, generateJSON} from '@tiptap/core'
+import {TipTapProvider} from '../client/components/TipTapProvider'
 import {serverTipTapExtensions} from '../client/shared/tiptap/serverTipTapExtensions'
 import {createEnvironment} from './Atmosphere'
 import AtmosphereProvider from './AtmosphereProvider'
