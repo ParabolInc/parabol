@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.14.1](https://github.com/ParabolInc/parabol/compare/v10.14.0...v10.14.1) (2025-07-29)
+
+
+### Fixed
+
+* mattermost generated files ([#11580](https://github.com/ParabolInc/parabol/issues/11580)) ([39f240f](https://github.com/ParabolInc/parabol/commit/39f240f48d42503b517fd5e6d0290c9b24a0d7b9))
+* prevent access if token is missing ([#11548](https://github.com/ParabolInc/parabol/issues/11548)) ([96d5d8c](https://github.com/ParabolInc/parabol/commit/96d5d8cec4a83058721f48b79beef8e1f185aae3))
+* save edited task content on drag & drop ([#11583](https://github.com/ParabolInc/parabol/issues/11583)) ([b2eb9ab](https://github.com/ParabolInc/parabol/commit/b2eb9aba85f9021a0d2e0c39a98f2296e81678c0))
+
+
+### Changed
+
+* bump node to 22.17.1 ([#11587](https://github.com/ParabolInc/parabol/issues/11587)) ([f432b87](https://github.com/ParabolInc/parabol/commit/f432b876ee5347eb97702f723dc905985220e2d7))
+* ignore users order in createPage test ([#11572](https://github.com/ParabolInc/parabol/issues/11572)) ([72e7e40](https://github.com/ParabolInc/parabol/commit/72e7e401b0b9de5e8543a27ccdea7fd69812ce05))
+* remove api package dependency ([#11585](https://github.com/ParabolInc/parabol/issues/11585)) ([4a191a8](https://github.com/ParabolInc/parabol/commit/4a191a821248c53a36499fad703629a7beddde25))
+* remove direct lodash dependencies ([#11584](https://github.com/ParabolInc/parabol/issues/11584)) ([76cb657](https://github.com/ParabolInc/parabol/commit/76cb657084f1cbfe50d63ddb61f087ac254e27ef))
+* update franc-min to 6.2.0 ([#11586](https://github.com/ParabolInc/parabol/issues/11586)) ([7fa6647](https://github.com/ParabolInc/parabol/commit/7fa6647b3d2a5296281e8bb086386aefdb578a2d))
+
 ## [10.14.0](https://github.com/ParabolInc/parabol/compare/v10.13.0...v10.14.0) (2025-07-21)
 
 
