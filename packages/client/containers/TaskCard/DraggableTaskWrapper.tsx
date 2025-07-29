@@ -1,21 +1,19 @@
 import styled from '@emotion/styled'
 import {Draggable, DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
-import {Elevation} from '../../styles/elevation'
 
-const DraggableStyles = styled('div')(({isDragging}: {isDragging: boolean}) => ({
+const DraggableStyles = styled('div')({
   // sometimes the default blue fuzzies show up around the containing div
   outline: 'none',
-  padding: `6px 12px`,
-  // apply the dragging shadow here so we don't need to pass the dragging state down
-  '& > *': {
-    boxShadow: isDragging ? Elevation.CARD_DRAGGING : undefined
-  }
-}))
+  padding: `6px 12px`
+})
 
 interface Props {
   draggableId: string
   index: number
-  children?: React.ReactNode
+  children(
+    provided: DraggableProvided,
+    snapshot: DraggableStateSnapshot
+  ): React.ReactElement<HTMLElement>
 }
 
 const DraggableTaskWrapper = (props: Props) => {
@@ -27,9 +25,8 @@ const DraggableTaskWrapper = (props: Props) => {
           ref={dragProvided.innerRef}
           {...dragProvided.draggableProps}
           {...dragProvided.dragHandleProps}
-          isDragging={!!dragSnapshot.draggingOver}
         >
-          {children}
+          {children(dragProvided, dragSnapshot)}
         </DraggableStyles>
       )}
     </Draggable>

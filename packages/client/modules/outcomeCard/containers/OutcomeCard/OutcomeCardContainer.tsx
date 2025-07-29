@@ -4,7 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {memo, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {OutcomeCardContainer_task$key} from '~/__generated__/OutcomeCardContainer_task.graphql'
-import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
@@ -21,6 +21,7 @@ interface Props {
   editor: Editor
   className?: string
   isAgenda: boolean | undefined
+  isDraggingOver: TaskStatusEnum | undefined
   task: OutcomeCardContainer_task$key
   clearIsCreatingNewTask?: () => void
   isViewerMeetingSection?: boolean
@@ -32,6 +33,7 @@ const OutcomeCardContainer = memo((props: Props) => {
   const {
     editor,
     className,
+    isDraggingOver,
     task: taskRef,
     area,
     isAgenda,
@@ -58,7 +60,7 @@ const OutcomeCardContainer = memo((props: Props) => {
 
   const {useTaskChild, isTaskFocused, addTaskChild, removeTaskChild} = useTaskChildFocus(taskId)
 
-  const isHighlighted = isTaskHovered
+  const isHighlighted = isTaskHovered || !!isDraggingOver
   useEffect(() => {
     if (!isViewerMeetingSection || !meetingId) return
 
@@ -87,6 +89,7 @@ const OutcomeCardContainer = memo((props: Props) => {
         isTaskFocused={isTaskFocused()}
         isTaskHovered={isTaskHovered}
         isAgenda={!!isAgenda}
+        isDraggingOver={isDraggingOver}
         task={task}
         useTaskChild={useTaskChild}
         addTaskChild={addTaskChild}

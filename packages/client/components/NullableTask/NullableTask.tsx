@@ -1,7 +1,8 @@
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
+import {DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'
 import DraggableTaskWrapper from '../../containers/TaskCard/DraggableTaskWrapper'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -107,20 +108,22 @@ const NullableTask = (props: Props) => {
 
   const showOutcome =
     editor && (!editor.isEmpty || createdBy === atmosphere.viewerId || isIntegration)
-  const renderTask = showOutcome ? (
-    <OutcomeCardContainer
-      area={area}
-      className={className}
-      editor={editor}
-      isAgenda={isAgenda}
-      task={task}
-      isViewerMeetingSection={isViewerMeetingSection}
-      meetingId={meetingId}
-      handleCardUpdate={handleCardUpdate}
-    />
-  ) : (
-    <NullCard className={className} preferredName={preferredName} />
-  )
+  const renderTask = (_dragProvided?: DraggableProvided, dragSnapshot?: DraggableStateSnapshot) =>
+    showOutcome ? (
+      <OutcomeCardContainer
+        area={area}
+        className={className}
+        editor={editor}
+        isDraggingOver={dragSnapshot?.draggingOver as TaskStatusEnum}
+        isAgenda={isAgenda}
+        task={task}
+        isViewerMeetingSection={isViewerMeetingSection}
+        meetingId={meetingId}
+        handleCardUpdate={handleCardUpdate}
+      />
+    ) : (
+      <NullCard className={className} preferredName={preferredName} />
+    )
   if (isDraggable) {
     return (
       <DraggableTaskWrapper draggableId={taskId} index={draggableIndex}>
@@ -128,7 +131,7 @@ const NullableTask = (props: Props) => {
       </DraggableTaskWrapper>
     )
   }
-  return renderTask
+  return renderTask()
 }
 
 export default NullableTask
