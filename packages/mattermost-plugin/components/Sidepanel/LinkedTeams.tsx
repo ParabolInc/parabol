@@ -56,7 +56,9 @@ const LinkedTeams = () => {
         <p className='p-2 font-semibold'>There are no teams linked to this channel</p>
       )}
       <div className='flex flex-col overflow-y-scroll'>
-        {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}
+        {linkedTeams?.map((team) => (
+          <TeamRow key={team.id} teamRef={team} />
+        ))}
       </div>
     </>
   )
