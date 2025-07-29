@@ -49,7 +49,7 @@ const TopBarHelpMenu = (props: Props) => {
       />
       <MenuItem
         label={
-          <div className='py-1 pl-4 text-xs text-slate-500'>
+          <div className='py-1 pl-4 text-slate-500 text-xs'>
             Version {__APP_VERSION__}
             {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
           </div>

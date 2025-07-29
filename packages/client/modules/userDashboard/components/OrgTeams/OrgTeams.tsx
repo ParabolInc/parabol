@@ -81,7 +81,7 @@ const OrgTeams = (props: Props) => {
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
         <div>
-          <h1 className='text-2xl leading-7 font-semibold'>Teams</h1>
+          <h1 className='font-semibold text-2xl leading-7'>Teams</h1>
         </div>
         <div className='ml-auto'>
           <Button
@@ -107,7 +107,7 @@ const OrgTeams = (props: Props) => {
         <div className='w-full overflow-x-auto px-4'>
           <table className='w-full table-fixed border-collapse md:table-auto'>
             <thead>
-              <tr className='border-b border-slate-300'>
+              <tr className='border-slate-300 border-b'>
                 <th
                   className='w-[60%] cursor-pointer p-3 text-left font-semibold'
                   onClick={() => handleSort('name')}

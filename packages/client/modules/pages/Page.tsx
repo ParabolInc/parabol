@@ -43,7 +43,7 @@ export const Page = (props: Props) => {
         <div className='px-2'>
           <Popover.Root>
             <Popover.Trigger asChild>
-              <button className='text-md cursor-pointer bg-white pt-1 font-semibold'>Share</button>
+              <button className='cursor-pointer bg-white pt-1 font-semibold text-md'>Share</button>
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>

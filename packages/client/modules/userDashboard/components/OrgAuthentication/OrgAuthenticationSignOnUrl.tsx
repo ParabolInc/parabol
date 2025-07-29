@@ -25,10 +25,10 @@ const OrgAuthenticationSignOutUrl = (props: Props) => {
   return (
     <>
       <div className='px-6 pb-3'>
-        <div className='flex text-base leading-6 font-semibold text-slate-700'>
+        <div className='flex font-semibold text-base text-slate-700 leading-6'>
           Set up your Identity Provider
         </div>
-        <div className={'flex items-center text-sm text-slate-700'}>
+        <div className={'flex items-center text-slate-700 text-sm'}>
           Paste the following URLs into your Identity Provider’s SAML configuration
         </div>
       </div>

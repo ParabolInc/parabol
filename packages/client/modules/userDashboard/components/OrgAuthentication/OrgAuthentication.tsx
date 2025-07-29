@@ -43,7 +43,7 @@ const OrgAuthentication = (props: Props) => {
     <StyledPanel>
       <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
       <OrgAuthenticationSSOFrame samlRef={saml} />
-      <div className={disabled ? 'pointer-events-none opacity-40 select-none' : ''}>
+      <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
         <OrgAuthenticationSignOnUrl samlRef={saml} />
         <OrgAuthenticationMetadata samlRef={saml} />
       </div>

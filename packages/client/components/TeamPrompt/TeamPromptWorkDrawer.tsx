@@ -146,9 +146,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
   return (
     <>
       <div className='pt-4'>
-        <div className='border-b border-solid border-slate-300'>
+        <div className='border-slate-300 border-b border-solid'>
           <div className='flex justify-between px-4'>
-            <div className='text-base font-semibold'>Your Work</div>
+            <div className='font-semibold text-base'>Your Work</div>
             <div
               className='cursor-pointer text-slate-600 hover:opacity-50'
               onClick={onToggleDrawer}

@@ -140,7 +140,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     >
       {label && (
         <>
-          <div className='p-2 pt-2 pb-0 text-sm text-slate-600'>{label}</div>
+          <div className='p-2 pt-2 pb-0 text-slate-600 text-sm'>{label}</div>
           <MenuItemHR />
         </>
       )}

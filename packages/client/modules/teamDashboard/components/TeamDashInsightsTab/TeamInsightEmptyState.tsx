@@ -68,7 +68,7 @@ const TeamInsightEmptyState = (props: Props) => {
         </button>
       )}
       {error && (
-        <div className='mt-2 pr-4 text-xs font-semibold text-tomato-500'>{error.message}</div>
+        <div className='mt-2 pr-4 font-semibold text-tomato-500 text-xs'>{error.message}</div>
       )}
     </div>
   )

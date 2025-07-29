@@ -54,7 +54,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
       <Link
         draggable={false}
         to={`/pages/${pageSlug}`}
-        className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-200'
+        className='no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200'
       >
         <Icon />
         <div className='flex-1 pl-1'>{title}</div>

@@ -101,7 +101,7 @@ const TeamHealth = (props: Props) => {
                       }}
                     >
                       <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
-                      <label className='text-center text-xl font-semibold text-white'>
+                      <label className='text-center font-semibold text-white text-xl'>
                         {votes[index]}
                       </label>
                     </div>

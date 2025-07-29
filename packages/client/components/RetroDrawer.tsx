@@ -74,7 +74,7 @@ const RetroDrawer = (props: Props) => {
         >
           <div className='py-4'>
             <div className='flex justify-between px-4'>
-              <div className='pb-4 text-base font-semibold'>Templates</div>
+              <div className='pb-4 font-semibold text-base'>Templates</div>
               <div
                 className='cursor-pointer text-slate-600 hover:opacity-50'
                 onClick={toggleDrawer}

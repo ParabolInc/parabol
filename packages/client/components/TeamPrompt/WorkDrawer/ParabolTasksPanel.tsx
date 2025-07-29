@@ -65,7 +65,7 @@ const ParabolTasksPanel = (props: Props) => {
             <div
               key={status}
               className={cn(
-                'shrink-0 cursor-pointer rounded-full px-4 py-2 text-sm leading-3 text-slate-800',
+                'shrink-0 cursor-pointer rounded-full px-4 py-2 text-slate-800 text-sm leading-3',
                 status === selectedStatus
                   ? 'bg-grape-700 font-semibold text-white focus:text-white'
                   : 'border border-slate-300 bg-white'
@@ -81,7 +81,7 @@ const ParabolTasksPanel = (props: Props) => {
         </div>
       </div>
       <ParabolTasksResultsRoot selectedStatus={selectedStatus} />
-      <div className='flex items-center justify-center border-t border-solid border-slate-200 p-2'>
+      <div className='flex items-center justify-center border-slate-200 border-t border-solid p-2'>
         <AddTaskButton onClick={handleAddTask} />
       </div>
     </>

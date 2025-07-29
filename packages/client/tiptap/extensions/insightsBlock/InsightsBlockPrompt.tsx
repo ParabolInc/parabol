@@ -76,7 +76,7 @@ export const InsightsBlockPrompt = (props: Props) => {
                       <div className='w-72 overflow-hidden text-ellipsis whitespace-nowrap'>
                         {title}
                       </div>
-                      <div className='text-xs font-bold text-slate-600'>{subtitle}</div>
+                      <div className='font-bold text-slate-600 text-xs'>{subtitle}</div>
                       {}
                     </MenuItem>
                   )

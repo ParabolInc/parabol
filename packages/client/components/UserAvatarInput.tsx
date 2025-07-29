@@ -71,7 +71,7 @@ const UserAvatarInput = (props: Props) => {
     <ModalBoundary>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
         <DialogTitle className='text-slate-700'>{'Upload a New Photo'}</DialogTitle>
-        <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
+        <Close onClick={handleClose} className='text-slate-600 text-xl hover:cursor-pointer' />
       </div>
       <div>
         {/* upload */}

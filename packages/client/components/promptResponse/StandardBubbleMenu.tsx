@@ -29,7 +29,7 @@ export const StandardBubbleMenu = (props: Props) => {
     >
       <div
         className={cn(
-          'flex items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]'
+          'flex items-center rounded-sm border-[1px] border-slate-600 border-solid bg-white p-[3px]'
         )}
       >
         <BubbleMenuButton

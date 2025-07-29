@@ -9,7 +9,7 @@ interface Props {
 const ActivityDetailsBadge = (props: Props) => {
   const {className, children} = props
   return (
-    <div className={cn('w-max rounded-full px-3 py-1 text-xs font-semibold', className)}>
+    <div className={cn('w-max rounded-full px-3 py-1 font-semibold text-xs', className)}>
       {children}
     </div>
   )

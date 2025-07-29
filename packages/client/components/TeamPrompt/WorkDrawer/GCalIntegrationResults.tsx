@@ -66,7 +66,7 @@ const GCalIntegrationResults = (props: Props) => {
               const date = new Date(dayString)
               return (
                 <div key={dayString} className='flex flex-col gap-y-2'>
-                  <div className='text-sm font-medium text-slate-600'>
+                  <div className='font-medium text-slate-600 text-sm'>
                     {date.toLocaleDateString('en-US', {
                       weekday: 'long',
                       month: 'long',
@@ -81,7 +81,7 @@ const GCalIntegrationResults = (props: Props) => {
             })}
             <a
               href='https://calendar.google.com'
-              className='mb-4 flex items-center justify-center text-sm font-semibold text-sky-500 hover:text-sky-400'
+              className='mb-4 flex items-center justify-center font-semibold text-sky-500 text-sm hover:text-sky-400'
               target='_blank'
               rel='noopener noreferrer'
             >

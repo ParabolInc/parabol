@@ -75,7 +75,7 @@ const NewMeetingCheckinPrompt = (props: Props) => {
   return (
     <PromptBlock>
       <AvatarBlock>
-        <Avatar picture={picture} className={`h-32 w-32 sidebar-left:h-40 sidebar-left:w-40`} />
+        <Avatar picture={picture} className={`h-32 sidebar-left:h-40 sidebar-left:w-40 w-32`} />
       </AvatarBlock>
       <CheckInBlock>
         <NewMeetingCheckInGreeting checkInGreetingRef={checkInGreeting!} userRef={user} />

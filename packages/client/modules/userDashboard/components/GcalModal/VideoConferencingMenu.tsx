@@ -21,7 +21,7 @@ const VideoConferencingMenu = (props: Props) => {
         label={
           <div className='flex items-center p-3 hover:cursor-pointer'>
             <GoogleMeetProviderLogo />
-            <label className='text-gray-500 pl-2 text-sm font-normal hover:cursor-pointer'>
+            <label className='pl-2 font-normal text-gray-500 text-sm hover:cursor-pointer'>
               Google Meet
             </label>
           </div>
@@ -32,7 +32,7 @@ const VideoConferencingMenu = (props: Props) => {
         label={
           <div className='flex items-center p-3 hover:cursor-not-allowed'>
             <ZoomProviderLogo />
-            <label className='text-gray-500 pl-2 text-sm font-normal hover:cursor-not-allowed'>
+            <label className='pl-2 font-normal text-gray-500 text-sm hover:cursor-not-allowed'>
               Zoom (Coming Soon!)
             </label>
           </div>

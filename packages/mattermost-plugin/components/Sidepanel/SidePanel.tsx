@@ -69,7 +69,7 @@ const SidePanel = () => {
     <div className='flex h-full flex-col items-stretch overflow-hidden px-2'>
       <Tabs
         activeIdx={Object.keys(panels).indexOf(activePanel)}
-        className='w-full max-w-none border-b border-slate-300'
+        className='w-full max-w-none border-slate-300 border-b'
       >
         {Object.entries(panels).map(([key, {icon, label}]) => (
           <Tab

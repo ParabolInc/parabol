@@ -261,7 +261,7 @@ const NewLinearIssueInput = (props: Props) => {
         <Checkbox active disabled />
         <div className='flex w-full flex-col pl-4'>
           <div className='w-full text-left text-sm text-tomato-500'>{createTaskError}</div>
-          <a className='block text-xs leading-5 text-sky-500 no-underline hover:underline focus:underline'>
+          <a className='block text-sky-500 text-xs leading-5 no-underline hover:underline focus:underline'>
             {selectedProjectAndId.name}
           </a>
         </div>
@@ -295,7 +295,7 @@ const NewLinearIssueInput = (props: Props) => {
             onMouseDown={togglePortal}
             className='m-0 flex w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
           >
-            <a className='block text-xs leading-5 text-sky-500 no-underline hover:underline focus:underline'>
+            <a className='block text-sky-500 text-xs leading-5 no-underline hover:underline focus:underline'>
               {selectedProjectAndId.name}
             </a>
             <ExpandMore className='h-5 w-5 p-0 text-sky-500' />

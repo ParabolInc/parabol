@@ -145,7 +145,7 @@ const TeamPickerModal = (props: Props) => {
             <button
               className={cn(
                 ACTION_BUTTON_CLASSES,
-                'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
+                'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-200'
               )}
               onClick={closeModal}
             >

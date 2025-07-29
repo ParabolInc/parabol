@@ -52,7 +52,7 @@ export const PageSharing = (props: Props) => {
         setAnchorEl={setAnchorEl}
         value={value}
       />
-      {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>}
+      {error && <div className='mt-2 font-semibold text-sm text-tomato-500'>{error}</div>}
       {groupedOptions.length ? (
         <PageSharingInviteOptions
           getListboxProps={getListboxProps}

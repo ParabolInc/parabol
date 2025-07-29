@@ -94,7 +94,7 @@ function Component(props: NodeViewProps) {
         <DropdownMenu.Trigger asChild>
           <PlainButton
             className={cn(
-              'absolute -top-8 right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
+              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
               {hidden: !selected}
             )}
           >

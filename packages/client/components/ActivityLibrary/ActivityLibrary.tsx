@@ -349,14 +349,14 @@ export const ActivityLibrary = (props: Props) => {
           </Link>
         </div>
 
-        <div className='border-b-solid mt-4 flex flex-1 flex-col items-center border-b-[1px] border-slate-300 pb-4 lg:mr-[15%]'>
+        <div className='mt-4 flex flex-1 flex-col items-center border-slate-300 border-b-[1px] border-b-solid pb-4 lg:mr-[15%]'>
           <div className='mx-auto flex w-full items-center justify-between gap-14 px-2 md:px-4'>
             <div className='flex items-center'>
               <Link className='mr-6 block lg:hidden' title='My Dashboard' to='/meetings'>
                 <IconLabel icon={'arrow_back'} iconLarge />
               </Link>
               <img className='mr-3 w-8' crossOrigin='' alt='Parabol' src={logoMarkPurple} />
-              <div className='hidden shrink-0 text-lg font-semibold md:block lg:text-xl'>
+              <div className='hidden shrink-0 font-semibold text-lg md:block lg:text-xl'>
                 Start Activity
               </div>
             </div>
@@ -371,7 +371,7 @@ export const ActivityLibrary = (props: Props) => {
             </div>
 
             <Link
-              className='rounded-full bg-sky-500 px-4 py-2 text-sm font-medium text-white hover:bg-sky-600'
+              className='rounded-full bg-sky-500 px-4 py-2 font-medium text-sm text-white hover:bg-sky-600'
               to={`/activity-library/new-activity/${categoryId}`}
             >
               Create custom activity
@@ -396,7 +396,7 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={cn(
-                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-sm leading-9 text-slate-800',
+                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-slate-800 text-sm leading-9',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,
@@ -440,7 +440,7 @@ export const ActivityLibrary = (props: Props) => {
                     subCategoryTemplates.length > 0 ? (
                       <Fragment key={subCategory}>
                         {subCategory && (
-                          <div className='mt-8 ml-4 text-xl font-bold text-slate-700'>
+                          <div className='mt-8 ml-4 font-bold text-slate-700 text-xl'>
                             {subCategory}
                           </div>
                         )}
@@ -474,7 +474,7 @@ export const ActivityLibrary = (props: Props) => {
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation='vertical'
-          className='flex h-full w-2.5 touch-none border-l border-l-transparent p-[1px] transition-colors select-none'
+          className='flex h-full w-2.5 touch-none select-none border-l border-l-transparent p-[1px] transition-colors'
         >
           <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-slate-600`} />
         </ScrollArea.Scrollbar>

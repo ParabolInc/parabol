@@ -48,7 +48,7 @@ export const LeftNavSharedPagesSection = (props: Props) => {
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
         className={cn(
-          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold data-[drop-in]:hover:bg-sky-300/70',
+          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 data-[drop-in]:hover:bg-sky-300/70',
           !draggingPageId && 'hover:bg-slate-300'
         )}
       >
@@ -57,7 +57,7 @@ export const LeftNavSharedPagesSection = (props: Props) => {
       <div className={cn('relative hidden', showChildren && 'block')}>
         <div
           className={cn(
-            'absolute -top-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
           )}
           data-drop-below={canDropBelow ? '' : undefined}

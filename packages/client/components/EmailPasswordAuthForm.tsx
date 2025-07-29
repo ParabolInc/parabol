@@ -277,7 +277,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
             />
           </FieldBlock>
           {ssoMessage && (
-            <div className='absolute w-full text-center text-sm font-medium'>{ssoMessage}</div>
+            <div className='absolute w-full text-center font-medium text-sm'>{ssoMessage}</div>
           )}
           {isInternalAuthEnabled && (
             <FieldBlock isSSO={isSSO}>

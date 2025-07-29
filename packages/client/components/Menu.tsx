@@ -168,7 +168,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     <div
       role='menu'
       aria-label={ariaLabel}
-      className={twMerge('max-h-56 max-w-md outline-none select-none', className)}
+      className={twMerge('max-h-56 max-w-md select-none outline-none', className)}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}

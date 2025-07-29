@@ -123,7 +123,7 @@ const TaskColumn = (props: Props) => {
               <StatusLabel>{label}</StatusLabel>
               {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
               {status === DONE && (
-                <a onClick={togglePortal} className='ml-auto cursor-pointer text-sm text-slate-600'>
+                <a onClick={togglePortal} className='ml-auto cursor-pointer text-slate-600 text-sm'>
                   Archive all
                 </a>
               )}

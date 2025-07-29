@@ -43,7 +43,7 @@ const TeamInsights = (props: Props) => {
 
   return (
     <div className='mb-8 space-y-6'>
-      <p className='mt-[20px] mb-6 text-sm text-slate-900'>
+      <p className='mt-[20px] mb-6 text-slate-900 text-sm'>
         Only you (as <span className='font-bold'>Team Lead</span>) can see Team Insights. Insights
         are auto-generated.{' '}
         <a

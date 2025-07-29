@@ -196,7 +196,7 @@ const TeamDashHeader = (props: Props) => {
       </TeamHeaderAndAvatars>
       <Tabs
         activeIdx={activeIdx}
-        className='full-w max-w-none border-b border-solid border-slate-300'
+        className='full-w max-w-none border-slate-300 border-b border-solid'
       >
         {tabs.map((tab) => (
           <Tab key={tab.path} label={tab.label} onClick={() => handleTabClick(tab.path)} />

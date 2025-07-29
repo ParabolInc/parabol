@@ -115,9 +115,9 @@ export const ActivityCard = (props: ActivityCardProps) => {
               side='bottom'
               align='center'
               sideOffset={20}
-              className='max-w-md rounded-lg bg-white p-4 text-left whitespace-normal text-slate-700 shadow-lg hover:cursor-pointer sm:max-w-sm'
+              className='max-w-md whitespace-normal rounded-lg bg-white p-4 text-left text-slate-700 shadow-lg hover:cursor-pointer sm:max-w-sm'
             >
-              <div className='mb-2 text-left text-lg font-semibold'>{title}</div>
+              <div className='mb-2 text-left font-semibold text-lg'>{title}</div>
               <ActivityLibraryCardDescription templateRef={template} />
             </TooltipContent>
           </Tooltip>
@@ -125,7 +125,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
-          <div className='truncate pb-1 text-lg leading-5 text-slate-800'>{title}</div>
+          <div className='truncate pb-1 text-lg text-slate-800 leading-5'>{title}</div>
           <div className={cn('font-semibold italic', `${theme.text}`)}>{upperFirst(category)}</div>
         </div>
       )}

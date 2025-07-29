@@ -165,13 +165,13 @@ const ShareTopicModal = (props: Props) => {
 
   const comingSoonBadge = (
     <div className='flex items-center justify-center rounded-full bg-slate-300 px-3 py-1'>
-      <div className='text-center text-xs font-semibold text-slate-600'>coming soon</div>
+      <div className='text-center font-semibold text-slate-600 text-xs'>coming soon</div>
     </div>
   )
 
   const connectButton = (
     <div className='flex cursor-pointer items-center justify-center rounded-full border bg-white px-3 py-1'>
-      <div className='text-center text-xs font-semibold text-slate-700'>connect</div>
+      <div className='text-center font-semibold text-slate-700 text-xs'>connect</div>
     </div>
   )
 

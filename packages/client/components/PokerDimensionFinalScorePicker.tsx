@@ -57,7 +57,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const focusInput = () => inputRef.current!.focus()
   return (
-    <div className='flex w-full flex-wrap items-center select-none'>
+    <div className='flex w-full select-none flex-wrap items-center'>
       {isFacilitator ? (
         canUpdate ? (
           <LinkButton
@@ -82,16 +82,16 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
       <div className={`flex flex-1 justify-end ${isDesktop ? '' : 'flex-col-reverse items-end'}`}>
         {error && (
           <div
-            className={`text-tomato-500 ${isDesktop ? 'pl-2 text-left text-sm font-semibold' : 'pt-2 text-right text-xs font-normal'}`}
+            className={`text-tomato-500 ${isDesktop ? 'pl-2 text-left font-semibold text-sm' : 'pt-2 text-right font-normal text-xs'}`}
           >
             {error}
           </div>
         )}
         <div className='flex items-center'>
           {isDesktop ? (
-            <div className='flex px-2 text-sm font-semibold'>{`${title} Label: `}</div>
+            <div className='flex px-2 font-semibold text-sm'>{`${title} Label: `}</div>
           ) : (
-            <div className='flex pr-1 text-sm font-semibold'>Label:</div>
+            <div className='flex pr-1 font-semibold text-sm'>Label:</div>
           )}
 
           {integrationType === '_xGitHubIssue' && (

@@ -39,7 +39,9 @@
       "recommended": false,
       "nursery": {
         "useSortedClasses": {
-          "level": "off",
+          "level": "error",
+          // technically this is NOT safe! but safe means it will run on save
+          "fix": "safe",
           "options": {
             "attributes": ["classList"],
             "functions": ["cn", "clsx", "cva", "tw", "tw.*"]

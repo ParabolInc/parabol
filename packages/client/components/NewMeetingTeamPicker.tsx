@@ -63,7 +63,7 @@ const NewMeetingTeamPicker = (props: Props) => {
           </div>
           <div className='grow pl-2'>
             <div className='text-sm leading-4'>Team</div>
-            <div className='text-xl leading-5 font-semibold'>{name}</div>
+            <div className='font-semibold text-xl leading-5'>{name}</div>
           </div>
           <div className='s-6 p-2 pl-0'>
             <ExpandMore className='text-4xl text-slate-600 transition-transform group-data-[state=open]:rotate-180' />
@@ -87,7 +87,7 @@ const NewMeetingTeamPicker = (props: Props) => {
               <button
                 onClick={onShareToOrg}
                 className={
-                  'mt-4 flex w-max cursor-pointer items-center rounded-full border border-solid border-slate-400 bg-white px-3 py-2 text-center font-sans text-sm font-semibold text-slate-700 hover:bg-slate-100'
+                  'mt-4 flex w-max cursor-pointer items-center rounded-full border border-slate-400 border-solid bg-white px-3 py-2 text-center font-sans font-semibold text-slate-700 text-sm hover:bg-slate-100'
                 }
               >
                 <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
@@ -96,10 +96,10 @@ const NewMeetingTeamPicker = (props: Props) => {
             </div>
           ) : (
             <>
-              <DropdownMenu.Label className='px-3 py-2 text-base font-semibold'>
+              <DropdownMenu.Label className='px-3 py-2 font-semibold text-base'>
                 Select Team:
               </DropdownMenu.Label>
-              <DropdownMenu.Separator className='border-b border-slate-300' />
+              <DropdownMenu.Separator className='border-slate-300 border-b' />
               <div className='py-2'>
                 {teams.map((team) => {
                   return (

@@ -63,7 +63,7 @@ const TeamRow = ({teamRef}: Props) => {
       </div>
       <div className='flex grow flex-col items-start p-2'>
         <div className='flex w-full flex-col'>
-          <a href={`${parabolUrl}/team/${id}`} target='_blank' className='text-2xl font-bold'>
+          <a href={`${parabolUrl}/team/${id}`} target='_blank' className='font-bold text-2xl'>
             {name}
           </a>
           <div className='font-semibold text-slate-400'>

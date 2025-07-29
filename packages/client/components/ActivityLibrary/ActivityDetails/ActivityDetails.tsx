@@ -98,7 +98,7 @@ const ActivityDetails = (props: Props) => {
                 <IconLabel icon={'arrow_back'} iconLarge />
               </Link>
             </div>
-            <div className='w-max text-xl font-semibold'>Start Activity</div>
+            <div className='w-max font-semibold text-xl'>Start Activity</div>
           </div>
           <div className='mx-auto'>
             <div className='flex flex-col justify-start pr-4 pl-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>

@@ -232,13 +232,13 @@ export const CreateNewActivity = (props: Props) => {
           <Link className='p-4' to={`/activity-library/`} replace={true}>
             <IconLabel icon={'arrow_back'} iconLarge />
           </Link>
-          <div className='hidden shrink-0 text-lg font-semibold lg:text-xl xl:block'>
+          <div className='hidden shrink-0 font-semibold text-lg lg:text-xl xl:block'>
             Create New Activity
           </div>
         </div>
       </div>
       <div className='flex flex-1 flex-col items-center gap-y-8'>
-        <h1 className='text-lg font-normal'>
+        <h1 className='font-normal text-lg'>
           Choose an <span className='font-semibold'>Activity Format:</span>
         </h1>
         <RadioGroup.Root
@@ -306,7 +306,7 @@ export const CreateNewActivity = (props: Props) => {
 
               <RaisedButton
                 palette='pink'
-                className='h-12 px-4 text-lg font-semibold text-white focus:ring-2 focus:ring-offset-2 focus:outline-hidden'
+                className='h-12 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
                 onClick={handleUpgrade}
               >
                 Upgrade to Team Plan
@@ -314,7 +314,7 @@ export const CreateNewActivity = (props: Props) => {
             </div>
           ) : (
             <BaseButton
-              className='mx-auto h-12 rounded-full bg-sky-500 text-lg font-semibold text-white hover:bg-sky-600 focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 focus:outline-hidden active:ring-sky-600'
+              className='mx-auto h-12 rounded-full bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
               onClick={createCustomActivityLookup[selectedActivity.type]}
             >
               Confirm Format & Team

@@ -129,7 +129,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   return (
     <div contentEditable={false}>
       <input
-        className='bg-inherit p-4 text-lg ring-0 outline-0'
+        className='bg-inherit p-4 text-lg outline-0 ring-0'
         onChange={(e) => {
           updateAttributes({title: e.target.value})
         }}
@@ -150,7 +150,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
       )}
       <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
-      <div className='flex justify-end p-4 select-none'>
+      <div className='flex select-none justify-end p-4'>
         <Button
           variant='secondary'
           shape='pill'

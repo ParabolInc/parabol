@@ -112,7 +112,7 @@ const LinearIntegrationResults = (props: Props) => {
               src={halloweenRetrospectiveTemplate}
               alt='No results illustration'
             />
-            <div className='text-gray-600 dark:text-gray-400 mt-7 w-2/3 text-sm'>
+            <div className='mt-7 w-2/3 text-gray-600 text-sm dark:text-gray-400'>
               {errors?.[0]?.message
                 ? `Error fetching Linear issues: ${errors[0].message}`
                 : `Looks like no Linear issues match your filter.`}
@@ -129,7 +129,7 @@ const LinearIntegrationResults = (props: Props) => {
         {lastItem}
 
         {hasNext && (
-          <div className='mx-auto -mt-4 mb-4 h-8 text-2xl' key={'loadingNext'}>
+          <div className='-mt-4 mx-auto mb-4 h-8 text-2xl' key={'loadingNext'}>
             <Ellipsis />
           </div>
         )}

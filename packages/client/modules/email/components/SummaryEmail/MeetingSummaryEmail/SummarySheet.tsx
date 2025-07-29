@@ -199,7 +199,7 @@ const SummarySheet = (props: Props) => {
                                     <Link
                                       to={emailCSVUrl}
                                       className={
-                                        'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                        'flex cursor-pointer items-center gap-2 rounded-full border border-slate-400 border-solid bg-white px-5 py-2 text-center font-sans font-semibold text-sm hover:bg-slate-100'
                                       }
                                     >
                                       <TableChart
@@ -214,7 +214,7 @@ const SummarySheet = (props: Props) => {
                                     <button
                                       onClick={downloadPDF}
                                       className={
-                                        'flex cursor-pointer items-center gap-2 rounded-full border border-solid border-slate-400 bg-white px-5 py-2 text-center font-sans text-sm font-semibold hover:bg-slate-100'
+                                        'flex cursor-pointer items-center gap-2 rounded-full border border-slate-400 border-solid bg-white px-5 py-2 text-center font-sans font-semibold text-sm hover:bg-slate-100'
                                       }
                                     >
                                       <PictureAsPdf

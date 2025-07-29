@@ -36,7 +36,7 @@ const GitLabProviderRow = (props: Props) => {
 
   return (
     <>
-      <div key={id} className='flex-center flex items-center border-t border-slate-300 p-4'>
+      <div key={id} className='flex flex-center items-center border-slate-300 border-t p-4'>
         <div className='flex flex-col px-2'>
           <div className='font-semibold text-slate-700'>
             {serverBaseUrl.replace(/https:\/\//, '')}

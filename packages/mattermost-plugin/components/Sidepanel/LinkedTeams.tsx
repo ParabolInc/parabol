@@ -46,7 +46,7 @@ const LinkedTeams = () => {
 
   return (
     <>
-      <div className='flex items-center justify-between py-3 text-2xl font-semibold'>
+      <div className='flex items-center justify-between py-3 font-semibold text-2xl'>
         Linked Teams
         <button className='btn btn-primary' onClick={handleLink}>
           Link Team

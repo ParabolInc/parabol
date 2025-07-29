@@ -73,8 +73,8 @@ const JiraObjectCard = (props: Props) => {
   const {summary, url, issueKey, project, cloudName, issueIcon, lastUpdated} = result
 
   return (
-    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-xs text-slate-600'>
+    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
+      <div className='flex gap-2 text-slate-600 text-xs'>
         <img src={issueIcon} />
         <a
           href={url}
@@ -107,7 +107,7 @@ const JiraObjectCard = (props: Props) => {
             <a
               href={`https://${cloudName}.atlassian.net/browse/${project.key}`}
               target='_blank'
-              className='text-xs text-slate-600 hover:underline'
+              className='text-slate-600 text-xs hover:underline'
               rel='noreferrer'
               onClick={trackLinkClick}
             >

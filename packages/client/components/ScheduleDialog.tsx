@@ -139,11 +139,11 @@ export const ScheduleDialog = (props: Props) => {
   const subTitle = `Create a ${withRecurrence ? 'recurring meeting series' : 'meeting'}${gcal?.cloudProvider ? ' or add the meeting to your calendar.' : '.'}`
   return (
     <div className='space-y-4 overflow-auto p-4'>
-      <div className='text-lg leading-none font-semibold'>Schedule Your Meeting</div>
-      <div className='text-sm text-slate-800'>{subTitle}</div>
+      <div className='font-semibold text-lg leading-none'>Schedule Your Meeting</div>
+      <div className='text-slate-800 text-sm'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
-          className='form-input rounded-sm border border-solid border-slate-500 p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:ring-1 focus:ring-slate-600 focus:outline-hidden'
+          className='form-input rounded-sm border border-slate-500 border-solid p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-hidden focus:ring-1 focus:ring-slate-600'
           type='text'
           name='title'
           placeholder={placeholder}
@@ -163,7 +163,7 @@ export const ScheduleDialog = (props: Props) => {
           >
             <Collapsible.Trigger className='flex cursor-pointer items-center bg-transparent p-2'>
               <img src={gcalLogo} className='mr-2 h-6 w-6' />
-              <div className='grow text-left text-lg leading-none font-semibold'>
+              <div className='grow text-left font-semibold text-lg leading-none'>
                 {gcalInput.start.format('MMM D, h:mm A')} - {gcalInput.end.format('h:mm A')}
                 {gcalInput.invitees.length > 0 &&
                   `, ${gcalInput.invitees.length} ${plural(gcalInput.invitees.length, 'invitee')}`}
@@ -190,7 +190,7 @@ export const ScheduleDialog = (props: Props) => {
         >
           <Collapsible.Trigger className='flex cursor-pointer items-center justify-between bg-transparent p-2'>
             <EventRepeat className='mr-2 text-slate-600' />
-            <div className='grow text-left text-lg leading-none font-semibold'>
+            <div className='grow text-left font-semibold text-lg leading-none'>
               {rrule
                 ? toHumanReadable(rrule, {
                     useShortNames: true,

@@ -85,7 +85,7 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
             key={itemId}
             label={
               <MenuItemLabel className=''>
-                <Checkbox className='mr-2 -ml-2' active={isSelected} />
+                <Checkbox className='-ml-2 mr-2' active={isSelected} />
                 <TypeAheadLabel query={searchQuery} label={itemLabel} />
               </MenuItemLabel>
             }

@@ -73,7 +73,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
       >
         <div className='flex-1 pr-1'>
           <div
-            className={`m-0 text-sm leading-5 font-normal text-slate-700 transition-all duration-300 ${
+            className={`m-0 font-normal text-slate-700 text-sm leading-5 transition-all duration-300 ${
               isExpanded ? 'overflow-y-auto' : 'overflow-y-hidden'
             }`}
             style={{maxHeight: editorMaxHeight}}

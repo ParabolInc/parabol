@@ -49,7 +49,7 @@ const PublicTeamsModal = (props: Props) => {
         <div className='overflow-auto pr-6'>
           {sortedTeams.map((team) => (
             <Fragment key={team.id}>
-              <hr className='my-2 border-t border-slate-300' />
+              <hr className='my-2 border-slate-300 border-t' />
               <PublicTeamItem teamRef={team} />
             </Fragment>
           ))}

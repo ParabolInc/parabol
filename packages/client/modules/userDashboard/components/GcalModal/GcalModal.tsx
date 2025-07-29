@@ -233,7 +233,7 @@ const GcalModal = (props: Props) => {
       <DialogTitle>
         <div className='flex flex-col'>
           <div className='text-lg'>{'Schedule Your Meeting'}</div>
-          <div className='text-gray-500 mt-1 text-sm font-normal'>
+          <div className='mt-1 font-normal text-gray-500 text-sm'>
             Create a Google Calendar event with a link to the Parabol meeting in the description
           </div>
         </div>
@@ -273,7 +273,7 @@ const GcalModal = (props: Props) => {
           {hasTeamMemberEmails && (
             <div className='flex cursor-pointer items-center pt-1' onClick={handleToggleInviteAll}>
               <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
                 {`Invite team members from ${teamName}`}
               </label>
             </div>

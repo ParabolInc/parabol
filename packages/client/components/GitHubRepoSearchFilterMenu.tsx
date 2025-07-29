@@ -77,7 +77,7 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
       isDropdown={isDropdown}
     >
       {menuLabel && (
-        <div className='mx-2 mb-2 text-sm font-semibold text-slate-600'>{menuLabel}</div>
+        <div className='mx-2 mb-2 font-semibold text-slate-600 text-sm'>{menuLabel}</div>
       )}
       <SearchMenuItem
         placeholder='Search your GitHub repos'

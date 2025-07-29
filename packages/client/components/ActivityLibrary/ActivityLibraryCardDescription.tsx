@@ -23,8 +23,8 @@ export const RetroDescription = (props: RetroDescriptionProps) => {
             style={{backgroundColor: prompt.groupColor}}
           />
           <div className='flex min-w-0 grow flex-col'>
-            <div className='text-sm font-semibold'>{prompt.question}</div>
-            <div className='text-sm font-normal'>{prompt.description}</div>
+            <div className='font-semibold text-sm'>{prompt.question}</div>
+            <div className='font-normal text-sm'>{prompt.description}</div>
           </div>
         </div>
       ))}
@@ -46,8 +46,8 @@ const PokerDescription = (props: PokerDescriptionProps) => {
             <LinearScale className='h-4 w-4' />
           </div>
           <div className='flex min-w-0 grow flex-col'>
-            <div className='text-sm font-semibold'>{dimension.name}</div>
-            <div className='text-sm font-normal'>{dimension.selectedScale.name}</div>
+            <div className='font-semibold text-sm'>{dimension.name}</div>
+            <div className='font-normal text-sm'>{dimension.selectedScale.name}</div>
           </div>
         </div>
       ))}
@@ -73,7 +73,7 @@ const ActionDescription = () => {
         <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
           <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
           <div className='flex min-w-0 grow flex-col'>
-            <div className='text-sm font-normal'>{item.description}</div>
+            <div className='font-normal text-sm'>{item.description}</div>
           </div>
         </div>
       ))}
@@ -95,7 +95,7 @@ const TeamPromptDescription = () => {
         <div key={index} className='mb-1 flex items-start py-1 sm:flex-row'>
           <div className='mr-4 flex shrink-0 items-center self-start'>{item.icon}</div>
           <div className='flex min-w-0 grow flex-col'>
-            <div className='text-sm font-normal'>{item.description}</div>
+            <div className='font-normal text-sm'>{item.description}</div>
           </div>
         </div>
       ))}

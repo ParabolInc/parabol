@@ -53,7 +53,7 @@ const TaskIntegrationLink = (props: Props) => {
         target='_blank'
         title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
         className={twMerge(
-          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
       >
@@ -75,7 +75,7 @@ const TaskIntegrationLink = (props: Props) => {
         target='_blank'
         title={`GitHub Issue #${number} on ${nameWithOwner}`}
         className={twMerge(
-          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
       >
@@ -93,7 +93,7 @@ const TaskIntegrationLink = (props: Props) => {
         target='_blank'
         title={`GitLab Issue #${iid} on ${fullPath}`}
         className={twMerge(
-          'focus:underline, block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline',
+          'focus:underline, block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline',
           className
         )}
       >
@@ -111,7 +111,7 @@ const TaskIntegrationLink = (props: Props) => {
         target='_blank'
         title={`Azure Item #${id} on ${teamProject}`}
         className={twMerge(
-          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
       >
@@ -134,7 +134,7 @@ const TaskIntegrationLink = (props: Props) => {
         target='_blank'
         title={`Linear Issue #${identifier} on ${nameWithTeam}`}
         className={twMerge(
-          'block px-4 text-[14px] leading-5 text-slate-700 underline hover:underline focus:underline',
+          'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
       >

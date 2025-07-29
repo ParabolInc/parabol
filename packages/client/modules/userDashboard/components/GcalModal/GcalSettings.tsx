@@ -172,7 +172,7 @@ const GcalSettings = (props: Props) => {
       {hasTeamMemberEmails && (
         <div className='flex cursor-pointer items-center pt-1' onClick={handleToggleInviteAll}>
           <Checkbox active={inviteAll} />
-          <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+          <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
             {`Invite team members from ${teamName}`}
           </label>
         </div>

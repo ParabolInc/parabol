@@ -77,7 +77,7 @@ export const PageBreadCrumbs = (props: Props) => {
   )
 
   return (
-    <nav className='flex items-center pl-2 text-sm text-slate-600'>
+    <nav className='flex items-center pl-2 text-slate-600 text-sm'>
       {/* Oldest ancestor (if any) */}
       {visibleAncestors.length > 0 && renderBreadcrumbItem(visibleAncestors[0]!)}
 

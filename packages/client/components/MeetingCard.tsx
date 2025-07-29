@@ -314,7 +314,7 @@ const MeetingCard = (props: Props) => {
             {isRecurring && (
               <span
                 className={cn(
-                  'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 text-[11px] leading-3 font-medium',
+                  'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
                   RECURRING_LABEL_COLORS[meetingType]
                 )}
               >
@@ -349,7 +349,7 @@ const MeetingCard = (props: Props) => {
               </Options>
             </div>
             <Link to={meetingLink}>
-              <span className='block pt-1 pb-2 text-sm wrap-break-word text-slate-600'>
+              <span className='wrap-break-word block pt-1 pb-2 text-slate-600 text-sm'>
                 {teamName} • {meetingPhaseLabel}
               </span>
             </Link>

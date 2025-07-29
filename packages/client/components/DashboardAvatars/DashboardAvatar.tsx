@@ -73,7 +73,7 @@ const DashboardAvatar = (props: Props) => {
         onClick={handleClick}
         picture={picture}
         ref={originRef}
-        className={`h-7 w-7 border-2 border-solid border-slate-200 after:absolute after:h-full after:w-full after:content-[""] hover:after:bg-white/30 ${!isConnected && 'after:bg-white/60'}`}
+        className={`h-7 w-7 border-2 border-slate-200 border-solid after:absolute after:h-full after:w-full after:content-[""] hover:after:bg-white/30 ${!isConnected && 'after:bg-white/60'}`}
       />
       {tooltipPortal(preferredName)}
     </AvatarWrapper>

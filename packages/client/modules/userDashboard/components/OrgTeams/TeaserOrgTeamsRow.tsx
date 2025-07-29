@@ -19,7 +19,7 @@ const TeaserOrgTeamsRow = (props: Props) => {
     <div className='block cursor-default select-none'>
       <div className='flex items-center p-4'>
         <div className='flex flex-1 flex-col py-1'>
-          <div className='flex items-center text-lg font-bold'>
+          <div className='flex items-center font-bold text-lg'>
             {hiddenTeamCount} {plural(hiddenTeamCount, 'Hidden Team')}
           </div>
           <div className='flex items-center justify-between'>

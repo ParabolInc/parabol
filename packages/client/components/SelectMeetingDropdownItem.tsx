@@ -75,8 +75,8 @@ const SelectMeetingDropdownItem = (props: Props) => {
         </div>
       )}
       <div className='flex flex-col px-2'>
-        <div className='text-base font-semibold text-slate-700'>{name}</div>
-        <div className='text-xs text-slate-600'>
+        <div className='font-semibold text-base text-slate-700'>{name}</div>
+        <div className='text-slate-600 text-xs'>
           {teamName} • {meetingPhaseLabel}
         </div>
       </div>

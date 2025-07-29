@@ -337,9 +337,9 @@ const NewTeamForm = (props: Props) => {
             <div className='flex flex-1 items-start'>
               <div>
                 <div className='flex items-center'>
-                  <div className='text-sm font-medium text-slate-700'>Team Privacy</div>
+                  <div className='font-medium text-slate-700 text-sm'>Team Privacy</div>
                 </div>
-                <div className='mt-1 w-full text-xs text-slate-600'>
+                <div className='mt-1 w-full text-slate-600 text-xs'>
                   {isPublic ? (
                     <>
                       <div>
@@ -399,7 +399,7 @@ const NewTeamForm = (props: Props) => {
           {showInviteAll && (
             <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
               <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
                 {`Invite team members from ${selectedOrg.name}`}
               </label>
             </div>

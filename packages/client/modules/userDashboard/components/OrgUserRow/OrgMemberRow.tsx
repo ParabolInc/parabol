@@ -190,7 +190,7 @@ const OrgMemberRow = (props: Props) => {
   }
 
   return (
-    <tr className='border-b border-slate-300 last:border-b-0'>
+    <tr className='border-slate-300 border-b last:border-b-0'>
       <td className='px-2 py-3 align-middle'>
         <div className='flex items-center justify-center'>
           {isViewerOrgAdmin && (

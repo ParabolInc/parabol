@@ -23,7 +23,7 @@ const Label = ({
   ...rest
 }: PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) => {
   return (
-    <label className={cn('text-sm font-semibold text-slate-800', className)} {...rest}>
+    <label className={cn('font-semibold text-slate-800 text-sm', className)} {...rest}>
       {children}
     </label>
   )
@@ -80,7 +80,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={cn('text-sm break-words text-slate-600 italic', className)} {...rest}>
+    <div className={cn('break-words text-slate-600 text-sm italic', className)} {...rest}>
       {children}
     </div>
   )
@@ -176,7 +176,7 @@ export const RecurrenceSettings = (props: Props) => {
     <div className='space-y-4 p-4'>
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          <label className='block text-sm text-slate-800' htmlFor='series-interval'>
+          <label className='block text-slate-800 text-sm' htmlFor='series-interval'>
             Restarts every
           </label>
           <Input

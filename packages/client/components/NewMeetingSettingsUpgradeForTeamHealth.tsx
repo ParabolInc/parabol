@@ -65,7 +65,7 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   return (
     <ButtonRow className={className} onClick={handleUpgrade}>
       <div className='mt-1 flex w-full flex-col'>
-        <div className='flex-1 overflow-hidden text-xl font-semibold text-ellipsis whitespace-nowrap text-slate-600'>
+        <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-slate-600 text-xl'>
           Health Check
         </div>
         <div className='w-full text-slate-800'>

@@ -60,7 +60,7 @@ const LinearFieldDimensionDropdown = (props: Props) => {
   return (
     <>
       <PlainButton
-        className={`flex text-slate-700 select-none ${isFacilitator ? 'hover:opacity-50 focus:opacity-50 active:opacity-50' : 'cursor-default'} ${!isFacilitator ? 'pr-2' : ''}`}
+        className={`flex select-none text-slate-700 ${isFacilitator ? 'hover:opacity-50 focus:opacity-50 active:opacity-50' : 'cursor-default'} ${!isFacilitator ? 'pr-2' : ''}`}
         onClick={onClick}
         ref={originRef}
       >

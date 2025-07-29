@@ -14,9 +14,9 @@ const EditableAvatar = (props: Props) => {
     <div className='relative cursor-pointer' onClick={onClick} aria-label='click to update photo'>
       <Avatar
         picture={picture}
-        className={cn(`h-16 w-16 border-4 border-solid border-slate-200`, className)}
+        className={cn(`h-16 w-16 border-4 border-slate-200 border-solid`, className)}
       />
-      <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full bg-slate-400 text-sm font-semibold text-slate-800 opacity-0 transition-opacity duration-300 hover:opacity-75'>
+      <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full bg-slate-400 font-semibold text-slate-800 text-sm opacity-0 transition-opacity duration-300 hover:opacity-75'>
         EDIT
       </div>
       <div

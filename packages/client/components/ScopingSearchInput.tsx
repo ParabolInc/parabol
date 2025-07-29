@@ -60,7 +60,7 @@ const ScopingSearchInput = (props: Props) => {
   return (
     <div className='flex flex-1 items-center'>
       <input
-        className='m-0 w-full appearance-none border-l border-none border-slate-400 bg-transparent p-3 text-base text-slate-700 outline-none placeholder:text-slate-500'
+        className='m-0 w-full appearance-none border-slate-400 border-l border-none bg-transparent p-3 text-base text-slate-700 outline-none placeholder:text-slate-500'
         value={queryString}
         placeholder={placeholder}
         onChange={handleOnChange}

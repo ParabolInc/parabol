@@ -52,7 +52,7 @@ const ScopePhaseAreaAddLinear = (props: Props) => {
     <div className='flex h-full flex-col items-center justify-center'>
       <button
         onClick={authLinear}
-        className='text-gray-900 flex items-center justify-center rounded bg-white px-4 py-2 whitespace-pre-wrap shadow transition-shadow duration-100 hover:shadow-md'
+        className='flex items-center justify-center whitespace-pre-wrap rounded bg-white px-4 py-2 text-gray-900 shadow transition-shadow duration-100 hover:shadow-md'
       >
         <LinearSVG />
         Import issues from Linear

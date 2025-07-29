@@ -175,13 +175,13 @@ const ProviderList = (props: Props) => {
         </div>
 
         {connectedIntegrations.length > 0 && (
-          <div className='text-base font-semibold text-slate-700'>Connected</div>
+          <div className='font-semibold text-base text-slate-700'>Connected</div>
         )}
 
         {connectedIntegrations}
 
         {availableIntegrations.length > 0 && (
-          <div className='pt-4 text-base font-semibold text-slate-700'>Available</div>
+          <div className='pt-4 font-semibold text-base text-slate-700'>Available</div>
         )}
 
         {availableIntegrations}

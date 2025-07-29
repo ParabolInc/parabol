@@ -69,8 +69,8 @@ const JiraServerObjectCard = (props: Props) => {
   const {summary, url, issueKey, projectName, updatedAt} = result
 
   return (
-    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-xs text-slate-600'>
+    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
+      <div className='flex gap-2 text-slate-600 text-xs'>
         <a
           href={url}
           target='_blank'
@@ -98,7 +98,7 @@ const JiraServerObjectCard = (props: Props) => {
           <div className='h-4 w-4'>
             <img src={jiraSVG} />
           </div>
-          <div className='text-xs text-slate-600'>{projectName}</div>
+          <div className='text-slate-600 text-xs'>{projectName}</div>
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div

@@ -100,7 +100,7 @@ const DashSidebar = (props: Props) => {
                   exact
                 />
                 <div className='mt-4 mb-1 flex min-h-[32px] items-center'>
-                  <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
+                  <span className='flex-1 pl-3 font-semibold text-base text-slate-700 leading-6'>
                     {name}
                   </span>
                 </div>

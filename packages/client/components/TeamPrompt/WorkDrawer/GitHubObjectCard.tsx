@@ -125,8 +125,8 @@ const GitHubObjectCard = (props: Props) => {
       : PR_STATUS_MAP[modifiedStatus]
 
   return (
-    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-xs text-slate-600'>
+    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
+      <div className='flex gap-2 text-slate-600 text-xs'>
         {statusImg && <img src={statusImg} />}
         <a
           href={url}
@@ -158,7 +158,7 @@ const GitHubObjectCard = (props: Props) => {
           <a
             href={repoUrl}
             target='_blank'
-            className='text-xs text-slate-600 hover:underline'
+            className='text-slate-600 text-xs hover:underline'
             rel='noreferrer'
             onClick={trackLinkClick}
           >

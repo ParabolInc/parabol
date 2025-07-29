@@ -78,7 +78,7 @@ const TemplateSharing = (props: Props) => {
   return (
     <>
       <HR />
-      <div className='pr-auto ly-2 ml-4 py-2 pl-0'>
+      <div className='ly-2 ml-4 py-2 pr-auto pl-0'>
         <UnstyledTemplateSharing {...props} />
       </div>
     </>

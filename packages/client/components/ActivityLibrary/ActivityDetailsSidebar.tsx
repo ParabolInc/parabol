@@ -118,7 +118,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   // user has no teams
   if (!selectedTeam)
     return (
-      <div className='flex w-full flex-col items-center border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
+      <div className='flex w-full flex-col items-center border-slate-300 border-t border-solid bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
         <div className='self-center italic'>You have no teams to start a meeting with!</div>
         <StyledLink to='/newteam'>Create a team</StyledLink>
       </div>
@@ -206,9 +206,9 @@ const ActivityDetailsSidebar = (props: Props) => {
 
   return (
     <>
-      <div className='sticky bottom-0 flex w-full flex-col border-t border-solid border-slate-300 bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
+      <div className='sticky bottom-0 flex w-full flex-col border-slate-300 border-t border-solid bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
         <div className='grow'>
-          <div className='flex items-center justify-between pt-2 text-xl font-semibold lg:pt-0'>
+          <div className='flex items-center justify-between pt-2 font-semibold text-xl lg:pt-0'>
             Settings
             <span
               className='hover:cursor-pointer lg:hidden'

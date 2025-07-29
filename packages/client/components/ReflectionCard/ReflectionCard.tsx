@@ -339,7 +339,7 @@ const ReflectionCard = (props: Props) => {
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <div
         ref={scrollRef}
-        className={cn('relative w-full overflow-auto text-sm leading-5 text-slate-700')}
+        className={cn('relative w-full overflow-auto text-slate-700 text-sm leading-5')}
       >
         <TipTapEditor
           className={cn(

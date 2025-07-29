@@ -13,7 +13,7 @@ export const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(
     return (
       <DropdownMenu.Content
         className={cn(
-          'z-10 max-h-56 w-auto max-w-[400px] min-w-[200px] overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up',
+          'z-10 max-h-56 w-auto min-w-[200px] max-w-[400px] overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up',
           className
         )}
         ref={ref}

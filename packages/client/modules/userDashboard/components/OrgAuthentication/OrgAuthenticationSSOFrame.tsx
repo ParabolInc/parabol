@@ -97,7 +97,7 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
                 <div
                   key={domain}
                   className={
-                    'bg w-max rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-800 select-none'
+                    'bg w-max select-none rounded-full bg-slate-200 px-3 py-1 font-semibold text-slate-800 text-xs'
                   }
                 >
                   {domain}
