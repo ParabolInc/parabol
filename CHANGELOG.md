@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.14.2](https://github.com/ParabolInc/parabol/compare/v10.14.1...v10.14.2) (2025-07-29)
+
+
+### Changed
+
+* fix error log message format for Datadog ([#11591](https://github.com/ParabolInc/parabol/issues/11591)) ([cc7916c](https://github.com/ParabolInc/parabol/commit/cc7916cae3d953b7d869a7f576e8d2be38df9e84))
+
 ## [10.14.1](https://github.com/ParabolInc/parabol/compare/v10.14.0...v10.14.1) (2025-07-29)
 
 
