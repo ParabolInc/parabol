@@ -8,7 +8,7 @@ export type AddReactjiToReactableSuccessSource = {
 
 const AddReactjiToReactableSuccess: AddReactjiToReactableSuccessResolvers = {
   reactable: async ({reactableId, reactableType}, _args: unknown, {dataLoader}) => {
-    return getReactable(reactableId, reactableType, dataLoader)
+    return getReactable(reactableId, reactableType, dataLoader) as any
   }
 }
 

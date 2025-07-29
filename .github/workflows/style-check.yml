@@ -46,4 +46,4 @@ jobs:
           pnpm install --frozen-lockfile
 
       - name: Check Code Quality
-        run: pnpm biome ci
+        run: pnpm exec biome ci

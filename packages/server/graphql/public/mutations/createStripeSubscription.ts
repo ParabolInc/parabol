@@ -49,7 +49,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
-  const clientSecret = paymentIntent.client_secret
+  const clientSecret = paymentIntent.client_secret!
 
   analytics.organizationUpgradeAttempted(viewer, orgId)
   const data = {stripeSubscriptionClientSecret: clientSecret}

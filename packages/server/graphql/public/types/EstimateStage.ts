@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import LinearProjectId from '../../../../client/shared/gqlIds/LinearProjectId'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
@@ -245,7 +246,7 @@ const EstimateStage: EstimateStageResolvers = {
 
   dimensionRef: async ({meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'poker') return null
+    if (meeting.meetingType !== 'poker') throw new GraphQLError('Not a poker meeting')
     const {templateRefId} = meeting
     const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
     const {dimensions} = templateRef

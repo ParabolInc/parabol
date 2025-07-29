@@ -5,6 +5,11 @@ import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 import type {DomainJoinRequestResolvers} from '../resolverTypes'
 
+export interface DomainJoinRequestSource {
+  id: number
+  createdBy: string
+}
+
 const DomainJoinRequest: DomainJoinRequestResolvers = {
   id: ({id}) => {
     return DomainJoinRequestId.join(id)

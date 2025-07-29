@@ -56,6 +56,11 @@
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
+        "noUnusedImports": {
+          "level": "error",
+          "fix": "safe",
+          "options": {}
+        },
         "useExhaustiveDependencies": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",

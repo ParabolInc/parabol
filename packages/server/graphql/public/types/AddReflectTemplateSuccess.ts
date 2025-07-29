@@ -1,13 +1,13 @@
 import {getUserId} from '../../../utils/authorization'
-import type {AddReflectTemplateSuccessResolvers, ReflectTemplate} from '../resolverTypes'
+import type {AddReflectTemplateSuccessResolvers} from '../resolverTypes'
 
-export type AddPokerTemplateSuccessSource = {
+export type AddReflectTemplateSuccessSource = {
   templateId: string
 }
 
-const AddPokerTemplateSuccess: AddReflectTemplateSuccessResolvers = {
+const AddReflectTemplateSuccess: AddReflectTemplateSuccessResolvers = {
   reflectTemplate: async ({templateId}, _args, {dataLoader}) => {
-    return (await dataLoader.get('meetingTemplates').load(templateId)) as ReflectTemplate
+    return dataLoader.get('meetingTemplates').loadNonNull(templateId)
   },
   user: async (_src, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
@@ -15,4 +15,4 @@ const AddPokerTemplateSuccess: AddReflectTemplateSuccessResolvers = {
   }
 }
 
-export default AddPokerTemplateSuccess
+export default AddReflectTemplateSuccess

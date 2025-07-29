@@ -4,7 +4,8 @@
   "editor.tabSize": 2,
   "npm.packageManager": "pnpm",
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit"
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
   "editor.defaultFormatter": "biomejs.biome",
   "javascript.format.semicolons": "remove",

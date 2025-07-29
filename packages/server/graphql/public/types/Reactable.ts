@@ -21,7 +21,7 @@ const Reactable: ReactableResolvers = {
     } as const
     return lookup[reactableType]
   },
-  reactjis: resolveReactjis
+  reactjis: resolveReactjis as any
 }
 
 export default Reactable

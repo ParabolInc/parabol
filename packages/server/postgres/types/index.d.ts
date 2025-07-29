@@ -20,7 +20,8 @@ import {
   selectTemplateScaleRef,
   type selectDiscussion,
   type selectMassInvitations,
-  type selectPages
+  type selectPages,
+  type selectTemplateDimension
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
@@ -94,6 +95,7 @@ export type FeatureFlag = Selectable<FeatureFlagPG>
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
 
 export type SlackAuth = ExtractTypeFromQueryBuilderSelect<typeof selectSlackAuths>
+export type TemplateDimension = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateDimension>
 
 export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>
 

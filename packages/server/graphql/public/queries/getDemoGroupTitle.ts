@@ -13,7 +13,7 @@ const getDemoGroupTitle: QueryResolvers['getDemoGroupTitle'] = async (
   }))
   try {
     const title = await manager.generateGroupTitle(reflections)
-    return {title}
+    return {title: title!}
   } catch {
     // If OpenAI fails, fall back to using the first reflection as the title
     const fallbackTitle = getSimpleGroupTitle(reflections)

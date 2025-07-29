@@ -2,7 +2,11 @@ import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 import normalizeSlugName from './helpers/normalizeSlugName'
 
-const updateSAML: MutationResolvers['updateSAML'] = async (_source, {slug, samlOrgAttribute}) => {
+const updateSAML: MutationResolvers['updateSAML'] = async (
+  _source,
+  {slug, samlOrgAttribute},
+  {dataLoader}
+) => {
   const pg = getKysely()
 
   // VALIDATION
@@ -31,7 +35,8 @@ const updateSAML: MutationResolvers['updateSAML'] = async (_source, {slug, samlO
       }
     }
   }
-  return {saml}
+  const samlWithDomains = await dataLoader.get('saml').loadNonNull(slugName)
+  return {saml: samlWithDomains}
 }
 
 export default updateSAML

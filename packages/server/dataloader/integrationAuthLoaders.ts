@@ -3,25 +3,24 @@ import {type Selectable, sql} from 'kysely'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
-import type {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import getIntegrationProvidersByIds, {
   type TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
 import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../postgres/select'
 import type {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
-import type {TeamNotificationSettings} from '../postgres/types/pg'
+import type {Integrationproviderserviceenum, TeamNotificationSettings} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
 import type RootDataLoader from './RootDataLoader'
 import type {RegisterDependsOn} from './RootDataLoader'
 
 interface TeamMemberIntegrationAuthServiceTeamUserKey {
-  service: IntegrationProviderServiceEnum
+  service: Integrationproviderserviceenum
   teamId: string
   userId: string
 }
 
 interface SharedIntegrationProviderKey {
-  service: IntegrationProviderServiceEnum
+  service: Integrationproviderserviceenum
   /// Query with 'org' scope by orgId
   orgIds: string[]
   /// Query with 'team' scope by teamId
@@ -168,7 +167,7 @@ export const slackNotificationsByTeamIdAndEvent = (parent: RootDataLoader) => {
 
 export const teamMemberIntegrationAuthsByTeamIdAndService = (parent: RootDataLoader) => {
   return new DataLoader<
-    {teamId: string; service: IntegrationProviderServiceEnum},
+    {teamId: string; service: Integrationproviderserviceenum},
     TeamMemberIntegrationAuth[],
     string
   >(

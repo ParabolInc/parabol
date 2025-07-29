@@ -45,7 +45,7 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
             return {
               ...userWorkItem,
               updatedAt: new Date()
-            }
+            } as any
           })
         )
         return connectionFromTasks(workItems, first, undefined)
