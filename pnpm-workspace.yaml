@@ -1,6 +1,5 @@
 packages:
   - packages/*
-
 onlyBuiltDependencies:
   - '@datadog/native-appsec'
   - '@datadog/native-iast-taint-tracking'
@@ -9,6 +8,7 @@ onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@scarf/scarf'
   - '@swc/core'
+  - '@tailwindcss/oxide'
   - core-js
   - core-js-pure
   - cpu-features
