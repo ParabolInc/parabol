@@ -17,7 +17,7 @@ import {CreateTaskModalMutation} from 'parabol-client/__generated__/CreateTaskMo
 import {CreateTaskModalQuery} from 'parabol-client/__generated__/CreateTaskModalQuery.graphql'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
-import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from 'parabol-client/shared/tiptap/plaintextToTipTap'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useConfig} from '../../hooks/useConfig'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
@@ -164,7 +164,7 @@ const CreateTaskModal = () => {
     handleClose()
   })
 
-  const {editor} = useTipTapTaskEditor(convertTipTapTaskContent(''))
+  const {editor} = useTipTapTaskEditor(JSON.stringify(plaintextToTipTap('')))
   if (!editor) {
     return null
   }

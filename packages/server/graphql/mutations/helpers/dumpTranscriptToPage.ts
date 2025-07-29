@@ -1,5 +1,5 @@
 import {type JSONContent, generateText} from '@tiptap/core'
-import {generateJSON} from '@tiptap/html'
+import {generateJSON} from '@tiptap/html/server'
 import {sql} from 'kysely'
 import {__START__} from 'parabol-client/shared/sortOrder'
 import {getTitleFromPageText} from 'parabol-client/shared/tiptap/getTitleFromPageText'

@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import TiptapTable, {TableOptions} from '@tiptap/extension-table'
+import {TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
 import {
   NodeViewContent,
   NodeViewWrapper,
@@ -89,7 +89,7 @@ function Component(props: NodeViewProps) {
 
   return (
     <NodeViewWrapper className='relative' data-highlight={highlight}>
-      <NodeViewContent as='table' {...props.HTMLAttributes} />
+      <NodeViewContent as={'table' as 'div'} {...props.HTMLAttributes} />
       <DropdownMenu.Root onOpenChange={onOpenChange}>
         <DropdownMenu.Trigger asChild>
           <PlainButton

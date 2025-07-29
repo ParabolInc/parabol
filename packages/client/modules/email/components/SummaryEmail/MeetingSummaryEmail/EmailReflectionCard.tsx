@@ -1,11 +1,10 @@
-import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
-import {serverTipTapExtensions} from '../../../../../shared/tiptap/serverTipTapExtensions'
+import {useTipTapContext} from '../../../../../components/TipTapProvider'
 
 interface Props {
   reflection: EmailReflectionCard_reflection$key
@@ -56,7 +55,8 @@ const EmailReflectionCard = (props: Props) => {
   )
   const {content, prompt} = reflection
   const {question} = prompt
-  const htmlContent = generateHTML(JSON.parse(content), serverTipTapExtensions)
+  const {generateHTML} = useTipTapContext()
+  const htmlContent = generateHTML(JSON.parse(content))
   return (
     <tr>
       <td>

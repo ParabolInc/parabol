@@ -98,7 +98,7 @@ module.exports = {
       // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
       'react/jsx-runtime': require.resolve('react/jsx-runtime')
     },
-    extensions: ['.js', '.json', '.ts', '.tsx'],
+    extensions: ['.js', '.cjs', '.json', '.ts', '.tsx'],
     fallback: {
       assert: false,
       os: false

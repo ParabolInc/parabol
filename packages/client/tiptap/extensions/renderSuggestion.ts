@@ -1,71 +1,72 @@
-import {ReactRenderer, type Editor} from '@tiptap/react'
+import {computePosition, flip, shift} from '@floating-ui/dom'
+import {posToDOMRect, ReactRenderer, type Editor} from '@tiptap/react'
 import type {SuggestionOptions} from '@tiptap/suggestion'
 import type {ForwardRefExoticComponent} from 'react'
-import tippy, {type Instance, type LifecycleHooks, type Props} from 'tippy.js'
-
 interface Options {
-  onHide?: LifecycleHooks['onHide']
+  // TODO fix onHide
+  onHide?: () => void
   isPopupFixed?: boolean
+}
+
+export const updatePosition = (editor: Editor, element: HTMLElement) => {
+  const virtualElement = {
+    getBoundingClientRect: () =>
+      posToDOMRect(editor.view, editor.state.selection.from, editor.state.selection.to)
+  }
+
+  computePosition(virtualElement, element, {
+    placement: 'bottom-start',
+    strategy: 'absolute',
+    middleware: [shift(), flip()]
+  }).then(({x, y, strategy}) => {
+    element.style.width = 'max-content'
+    element.style.position = strategy
+    element.style.left = `${x}px`
+    element.style.top = `${y}px`
+  })
 }
 
 const renderSuggestion =
   (Component: ForwardRefExoticComponent<any>, options?: Options): SuggestionOptions['render'] =>
   () => {
-    type GetReferenceClientRect = () => DOMRect
-    let component: ReactRenderer<any, any> | undefined
-    let popup: Instance<Props>
-    const defaultGetClientRect = (editor: Editor) => () => {
-      // if the character is 0-space, then the decorationId attribute can't be applied to the node
-      // which means clientRect won't be provided
-      const box = editor.view.coordsAtPos(editor.state.selection.from)
-      return {
-        left: box.left,
-        top: box.top,
-        width: box.right - box.left,
-        height: box.bottom - box.top
-      }
+    let component: ReactRenderer<any, any> & {element: HTMLElement}
+    const handlePointerDown = (event: PointerEvent) => {
+      const element = component?.element
+      // Skip if the element doesn't exist or the event target is inside it
+      if (!element || element.contains(event.target as Node)) return
+      options?.onHide?.()
     }
     return {
       onStart: (props) => {
         component = new ReactRenderer(Component, {
           props,
           editor: props.editor
-        })
-
-        const clientRect = props.clientRect || defaultGetClientRect(props.editor)
-        popup = tippy(document.body, {
-          animation: false,
-          getReferenceClientRect: clientRect as GetReferenceClientRect,
-          appendTo: () => document.body,
-          content: component.element,
-          onHide: options?.onHide,
-          showOnCreate: true,
-          interactive: true,
-          trigger: 'manual',
-          placement: 'bottom-start'
-        })
+        }) as typeof component
+        component.element.style.position = 'absolute'
+        document.body.appendChild(component.element)
+        document.addEventListener('pointerdown', handlePointerDown)
+        updatePosition(props.editor, component.element)
       },
 
       onUpdate(props) {
         component?.updateProps(props)
         if (!options?.isPopupFixed) {
-          const clientRect = props.clientRect || defaultGetClientRect(props.editor)
-          popup?.setProps({
-            getReferenceClientRect: clientRect as GetReferenceClientRect
-          })
+          updatePosition(props.editor, component.element)
         }
       },
 
       onKeyDown(props) {
         if (props.event.key === 'Escape') {
-          popup?.hide()
+          options?.onHide?.()
+          component.destroy()
           return true
         }
         return component?.ref?.onKeyDown(props)
       },
 
       onExit() {
-        popup?.destroy()
+        document.removeEventListener('pointerdown', handlePointerDown)
+        component.element.remove()
         component?.destroy()
       }
     }

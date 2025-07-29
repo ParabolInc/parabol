@@ -1,6 +1,5 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
 import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
 import type {PageQuery} from '../../__generated__/PageQuery.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
@@ -35,15 +34,8 @@ export const Page = (props: Props) => {
   )
   const {viewer} = query
   const {page} = viewer
-  const {editor, provider} = useTipTapPageEditor(pageId, {viewerRef})
+  const {editor, synced} = useTipTapPageEditor(pageId, {viewerRef})
   if (!editor) return <div>No editor</div>
-  // keep track of the sync status of the current page so we can hide the placeholders & reduce flicker
-  const [hasSyncedPageId, setHasSynced] = useState('')
-  useEffect(() => {
-    if (provider.synced && hasSyncedPageId !== pageId) {
-      setHasSynced(pageId)
-    }
-  }, [provider.synced, pageId])
   return (
     <div className='relative flex w-full flex-col items-center bg-white pt-2'>
       <div className='flex w-full items-center justify-between'>
@@ -68,7 +60,7 @@ export const Page = (props: Props) => {
           editor={editor}
           className={cn(
             'page-editor flex w-full px-6 opacity-0 delay-300',
-            hasSyncedPageId === pageId && 'opacity-100'
+            synced && 'opacity-100'
           )}
         />
       </div>

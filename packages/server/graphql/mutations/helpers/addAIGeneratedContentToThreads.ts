@@ -1,5 +1,5 @@
 import {generateText, type JSONContent} from '@tiptap/core'
-import {generateJSON} from '@tiptap/html'
+import {generateJSON} from '@tiptap/html/server'
 import {Insertable} from 'kysely'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'

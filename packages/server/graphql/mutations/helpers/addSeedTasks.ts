@@ -1,4 +1,4 @@
-import {generateJSON} from '@tiptap/html'
+import {generateJSON} from '@tiptap/html/server'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
