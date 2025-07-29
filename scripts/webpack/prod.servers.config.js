@@ -114,7 +114,7 @@ module.exports = (config) => {
             // copy sharp's libvips to the output
             from: path.resolve(
               PROJECT_ROOT,
-              `node_modules/.pnpm/sharp@0.34.1/node_modules/@img/sharp-libvips-${runtimePlatform}`
+              `node_modules/.pnpm/sharp@0.34.3/node_modules/@img/sharp-libvips-${runtimePlatform}`
             ),
             to: `sharp-libvips-${runtimePlatform}`
           },
