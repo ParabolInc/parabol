@@ -95,11 +95,19 @@ export const useDatadogTracing = (config: Config): Plugin<PluginContext> => {
         })
       )
     },
-    onExecute({args, extendContext, executeFn, setExecuteFn}) {
+    onExecute({args, extendContext, executeFn, setExecuteFn, context}) {
       const operationAst = getOperationAST(args.document, args.operationName)!
       const operationType = operationAst.operation
       const operationName = operationAst.name?.value || 'anonymous'
       const resourceName = `${operationType} ${operationName}`
+
+      const {authToken} = context
+      if (authToken && typeof authToken === 'object') {
+        tracer.setUser({
+          id: authToken.sub,
+          tms: JSON.stringify(authToken?.tms)
+        })
+      }
       const rootSpan = tracer.startSpan('graphql', {
         tags: {
           'service.name': 'web-graphql',
