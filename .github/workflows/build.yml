@@ -112,6 +112,8 @@ jobs:
           context: .
           build-args: |
             "_NODE_VERSION=${{ env.NODE_VERSION }}"
+            "DD_GIT_REPOSITORY_URL=${{ github.repositoryUrl }}"
+            "DD_GIT_COMMIT_SHA=${{ github.sha }}"
           push: true
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"

@@ -1,6 +1,11 @@
 ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION}-bookworm-slim as base
 
+ARG DD_GIT_REPOSITORY_URL
+ARG DD_GIT_COMMIT_SHA
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} 
+ENV DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
+
 # Install Fontconfig for SVG rendering
 RUN apt-get update && apt-get install -y fontconfig
 
