@@ -102,8 +102,7 @@ const NullableTask = (props: Props) => {
     atmosphere,
     teamId,
     readOnly,
-    onModEnter: onModEnter,
-    onBlur: handleCardUpdate
+    onModEnter: onModEnter
   })
 
   const showOutcome =
