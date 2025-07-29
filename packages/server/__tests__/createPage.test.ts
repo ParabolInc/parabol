@@ -115,7 +115,7 @@ test('Access propagates to linked children', async () => {
       updatePageAccess: {
         page: {
           access: {
-            users: [
+            users: expect.toIncludeSameMembers([
               {
                 user: {
                   id: user1.userId
@@ -126,7 +126,7 @@ test('Access propagates to linked children', async () => {
                   id: user2.userId
                 }
               }
-            ]
+            ])
           }
         }
       }

@@ -12,13 +12,13 @@ import Select from '../Select'
 import SimpleSelect from '../SimpleSelect'
 
 import {Post} from 'mattermost-redux/types/posts'
+import type {TaskStatusEnum} from 'parabol-client/__generated__/CreateTaskModalMutation.graphql'
+import {CreateTaskModalMutation} from 'parabol-client/__generated__/CreateTaskModalMutation.graphql'
+import {CreateTaskModalQuery} from 'parabol-client/__generated__/CreateTaskModalQuery.graphql'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
 import {convertTipTapTaskContent} from 'parabol-client/shared/tiptap/convertTipTapTaskContent'
-import {PALETTE} from '../../../client/styles/paletteV3'
-import type {TaskStatusEnum} from '../../__generated__/CreateTaskModalMutation.graphql'
-import {CreateTaskModalMutation} from '../../__generated__/CreateTaskModalMutation.graphql'
-import {CreateTaskModalQuery} from '../../__generated__/CreateTaskModalQuery.graphql'
+import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {useConfig} from '../../hooks/useConfig'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
 import LoadingSpinner from '../LoadingSpinner'
@@ -187,7 +187,7 @@ const CreateTaskModal = () => {
         <label className='control-label' htmlFor='description'>
           Description<span className='error-text'> *</span>
         </label>
-        {/* className='channel-switch-modal' is a hack to not lose focus on key press, see 
+        {/* className='channel-switch-modal' is a hack to not lose focus on key press, see
             https://github.com/mattermost/mattermost/blob/dc06bb21558aca05dbe330f25459528b39247c32/webapp/channels/src/components/advanced_text_editor/use_textbox_focus.tsx#L63 */}
         <TipTapEditor
           id='description'

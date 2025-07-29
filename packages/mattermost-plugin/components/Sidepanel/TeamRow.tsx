@@ -2,8 +2,8 @@ import {Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 
+import {TeamRow_team$key} from 'parabol-client/__generated__/TeamRow_team.graphql'
 import {useFragment} from 'react-relay'
-import {TeamRow_team$key} from '../../__generated__/TeamRow_team.graphql'
 
 import {useDispatch} from 'react-redux'
 import MoreMenu from '../Menu'

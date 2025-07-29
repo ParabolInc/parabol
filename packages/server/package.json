@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.14.0",
+  "version": "10.14.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -75,7 +75,6 @@
     "@tiptap/html": "^2.11.7",
     "@tiptap/pm": "^2.11.7",
     "adaptivecards": "2.10.0",
-    "api": "^5.0.7",
     "axios": "^1.8.4",
     "bcryptjs": "^2.4.3",
     "cheerio": "1.0.0",
@@ -99,7 +98,6 @@
     "js-yaml": "^4.1.0",
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
-    "lodash.pick": "^4.4.0",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^9.3.0",
     "md-to-adf": "^0.6.4",

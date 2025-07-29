@@ -1,6 +1,6 @@
 {
   "name": "parabol-embedder",
-  "version": "10.14.0",
+  "version": "10.14.1",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Jordan Husney <jordan.husney@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/embedder#readme",
@@ -22,12 +22,11 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@types/franc": "^5.0.3",
     "@types/node": "^22.14.0",
     "openapi-fetch": "^0.10.0"
   },
   "dependencies": {
     "dd-trace": "^5.0.0",
-    "franc-min": "^5.0.0"
+    "franc-min": "^6.2.0"
   }
 }
