@@ -15,7 +15,6 @@
   "scripts": {
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
-    "biome": "pnpm exec biome check",
     "precommit": "lint-staged",
     "test": "jest --verbose",
     "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
