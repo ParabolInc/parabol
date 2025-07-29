@@ -14,7 +14,7 @@ export const InsightsBlockView = (props: NodeViewProps) => {
       <div className='relative m-0 w-full p-0 text-slate-900'>
         <div className='flex flex-col rounded-sm bg-slate-200 p-4'>
           {error === 'disabled' && <InsightsBlockDisabled />}
-          {error === 'nodata' && <InsightsBlockNoData {...props}/>}
+          {error === 'nodata' && <InsightsBlockNoData {...props} />}
           {!error &&
             (editing ? <InsightsBlockEditing {...props} /> : <InsightsBlockResult {...props} />)}
         </div>
