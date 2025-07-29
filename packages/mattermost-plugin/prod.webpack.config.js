@@ -24,7 +24,7 @@ const clientTransformRules = () => {
     {
       test: /\.tsx?$/,
       // things that need the relay plugin
-      include: [PLUGIN_ROOT],
+      include: [PLUGIN_ROOT, CLIENT_ROOT],
       use: [
         {
           loader: 'babel-loader',

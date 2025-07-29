@@ -16,6 +16,9 @@ import rootReducer, {
 import {getAssetsUrl, getPluginServerRoute, isAuthorized} from './selectors'
 import {ContextArgs, PluginRegistry} from './types/mattermost-webapp'
 
+import {generateHTML, generateJSON} from '@tiptap/core'
+import {TipTapProvider} from '../client/components/TipTapProvider'
+import {serverTipTapExtensions} from '../client/shared/tiptap/serverTipTapExtensions'
 import {createEnvironment} from './Atmosphere'
 import AtmosphereProvider from './AtmosphereProvider'
 import AutoLogin from './components/AutoLogin'
@@ -36,7 +39,13 @@ export const init = async (registry: PluginRegistry, store: Store<GlobalState, A
   registry.registerRootComponent(() => (
     <AtmosphereProvider environment={environment}>
       <Tooltip.Provider>
-        <ModalRoot />
+        <TipTapProvider
+          generateHTML={generateHTML}
+          generateJSON={generateJSON}
+          extensions={serverTipTapExtensions}
+        >
+          <ModalRoot />
+        </TipTapProvider>
       </Tooltip.Provider>
     </AtmosphereProvider>
   ))

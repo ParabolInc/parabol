@@ -10,11 +10,14 @@
   This file accepts resolvers and permissions and applies permissions as higher order functions to those resolvers
 */
 import {defaultFieldResolver, GraphQLError} from 'graphql'
+import type {IRules} from 'graphql-shield'
 import {allow} from 'graphql-shield'
-import type {ShieldRule} from 'graphql-shield/typings/types'
 import hash from 'object-hash'
 import {Logger} from '../utils/Logger'
 import {ResolverFn} from './private/resolverTypes'
+
+// hack to get ShieldRule since it's not exported from graphql-shield
+export type ShieldRule = Extract<IRules, {resolve: any}>
 
 type Resolver = ResolverFn<any, any, any, any>
 

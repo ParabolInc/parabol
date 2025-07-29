@@ -1,8 +1,7 @@
-import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailResponseReplied_notification$key} from 'parabol-client/__generated__/EmailResponseReplied_notification.graphql'
 import {useFragment} from 'react-relay'
-import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
+import {useTipTapContext} from '../../../../components/TipTapProvider'
 import {cardShadow} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import anonymousAvatar from '../../../../styles/theme/images/anonymous-avatar.png'
@@ -69,8 +68,8 @@ const EmailResponseReplied = (props: Props) => {
       responseId: response.id
     }
   })
-
-  const htmlContent = generateHTML(JSON.parse(comment.content), serverTipTapExtensions)
+  const {generateHTML} = useTipTapContext()
+  const htmlContent = generateHTML(JSON.parse(comment.content))
 
   return (
     <EmailNotificationTemplate

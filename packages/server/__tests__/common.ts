@@ -1,4 +1,4 @@
-import {TiptapCollabProvider, TiptapCollabProviderWebsocket} from '@hocuspocus/provider'
+import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import base64url from 'base64url'
 import crypto from 'crypto'
 import faker from 'faker'
@@ -59,16 +59,17 @@ export async function sendTipTap<T>(
   {authToken, pageId}: {authToken: string; pageId: string},
   cb: (doc: Doc) => Promise<T>
 ) {
-  const socket = new TiptapCollabProviderWebsocket({
-    baseUrl: `ws://localhost:3003?token=${authToken}`
+  const socket = new HocuspocusProviderWebsocket({
+    url: `ws://localhost:3003?token=${authToken}`
   })
   const doc = new Doc()
   // update the URL to match the title
-  const provider = new TiptapCollabProvider({
+  const provider = new HocuspocusProvider({
     websocketProvider: socket,
     name: pageId,
     document: doc
   })
+  provider.attach()
   return new Promise((resolve) => {
     provider.on('synced', async () => {
       const res = await cb(provider.document)

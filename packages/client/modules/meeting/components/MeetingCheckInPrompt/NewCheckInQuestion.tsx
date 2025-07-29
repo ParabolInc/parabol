@@ -16,7 +16,7 @@ import {useTipTapIcebreakerEditor} from '../../../../hooks/useTipTapIcebreakerEd
 import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewCheckInQuestionMutation'
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
 import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
-import {convertTipTapTaskContent} from '../../../../shared/tiptap/convertTipTapTaskContent'
+import {plaintextToTipTap} from '../../../../shared/tiptap/plaintextToTipTap'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
@@ -82,9 +82,12 @@ const NewCheckInQuestion = (props: Props) => {
   const {viewerId} = atmosphere
   const isFacilitating = facilitatorUserId === viewerId
 
-  const {editor} = useTipTapIcebreakerEditor(checkInQuestion || convertTipTapTaskContent(''), {
-    readOnly: !isFacilitating
-  })
+  const {editor} = useTipTapIcebreakerEditor(
+    checkInQuestion || JSON.stringify(plaintextToTipTap('')),
+    {
+      readOnly: !isFacilitating
+    }
+  )
   const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
 
   const updateQuestion = () => {
@@ -132,7 +135,7 @@ const NewCheckInQuestion = (props: Props) => {
       atmosphere,
       {
         meetingId,
-        checkInQuestion: convertTipTapTaskContent(aiUpdatedIcebreaker)
+        checkInQuestion: JSON.stringify(plaintextToTipTap(aiUpdatedIcebreaker))
       },
       {onCompleted, onError}
     )

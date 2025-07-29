@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.15.0](https://github.com/ParabolInc/parabol/compare/v10.14.3...v10.15.0) (2025-07-29)
+
+
+### Added
+
+* **pages:** Upgrade TipTap to V3 ([#11429](https://github.com/ParabolInc/parabol/issues/11429)) ([93d3c71](https://github.com/ParabolInc/parabol/commit/93d3c719f3f581b58e0045d1e3c5b036b4d1d480))
+
+
+### Changed
+
+* bump sharp version in webpack ([#11599](https://github.com/ParabolInc/parabol/issues/11599)) ([e740114](https://github.com/ParabolInc/parabol/commit/e7401148a50760a12f750ef5be1157e54139220e))
+* **deps:** bump form-data from 4.0.2 to 4.0.4 ([#11573](https://github.com/ParabolInc/parabol/issues/11573)) ([d9e4ec4](https://github.com/ParabolInc/parabol/commit/d9e4ec48c81f70b2fa62ce2d41d1a17becc99bb7))
+
 ## [10.14.3](https://github.com/ParabolInc/parabol/compare/v10.14.2...v10.14.3) (2025-07-29)
 
 

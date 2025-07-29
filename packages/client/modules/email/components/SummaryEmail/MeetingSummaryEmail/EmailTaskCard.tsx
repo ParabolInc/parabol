@@ -1,4 +1,3 @@
-import {generateHTML} from '@tiptap/html'
 import graphql from 'babel-plugin-relay/macro'
 import {EmailTaskCard_task$key} from 'parabol-client/__generated__/EmailTaskCard_task.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
@@ -7,8 +6,8 @@ import {taskStatusColors} from 'parabol-client/utils/taskStatus'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import {TaskStatusEnum} from '../../../../../__generated__/EmailTaskCard_task.graphql'
-import {convertTipTapTaskContent} from '../../../../../shared/tiptap/convertTipTapTaskContent'
-import {serverTipTapExtensions} from '../../../../../shared/tiptap/serverTipTapExtensions'
+import {useTipTapContext} from '../../../../../components/TipTapProvider'
+import {plaintextToTipTap} from '../../../../../shared/tiptap/plaintextToTipTap'
 
 interface Props {
   task: EmailTaskCard_task$key | null
@@ -44,7 +43,7 @@ const statusStyle = (status: TaskStatusEnum) => ({
 })
 
 const deletedTask = {
-  content: convertTipTapTaskContent('<<TASK DELETED>>'),
+  content: JSON.stringify(plaintextToTipTap('<<TASK DELETED>>')),
   status: 'done',
   tags: [] as string[],
   user: {
@@ -65,7 +64,8 @@ const EmailTaskCard = (props: Props) => {
     taskRef
   )
   const {content, status} = task || deletedTask
-  const htmlContent = generateHTML(JSON.parse(content), serverTipTapExtensions)
+  const {generateHTML} = useTipTapContext()
+  const htmlContent = generateHTML(JSON.parse(content))
   return (
     <tr>
       <td>

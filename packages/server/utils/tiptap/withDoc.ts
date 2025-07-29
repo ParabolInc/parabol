@@ -7,7 +7,7 @@ export const withDoc = async (
   fn: (doc: Document) => void | Promise<void>
 ) => {
   const name = CipherId.toClient(parentPageId, 'page')
-  const conn = await server.openDirectConnection(name, {})
+  const conn = await server.hocuspocus.openDirectConnection(name, {})
   await conn.transact(fn)
   await conn.disconnect()
 }
