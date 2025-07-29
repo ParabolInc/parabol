@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {ContentCopy, Delete, Edit} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {PALETTE} from '../styles/paletteV3'

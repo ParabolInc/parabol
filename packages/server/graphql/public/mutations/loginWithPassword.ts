@@ -1,7 +1,7 @@
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   _source,

@@ -1,7 +1,7 @@
-import {FlatCompat} from '@eslint/eslintrc'
-import js from '@eslint/js'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
+import {FlatCompat} from '@eslint/eslintrc'
+import js from '@eslint/js'
 import base from '../../eslint.config.mjs'
 
 const __filename = fileURLToPath(import.meta.url)

@@ -1,4 +1,4 @@
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import safetyPatchRes from '../safetyPatchRes'
 import getReqAuth from '../utils/getReqAuth'
 import logError from '../utils/logError'

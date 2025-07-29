@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import SetDefaultSlackChannelMutation from '~/mutations/SetDefaultSlackChannelMutation'
-import {
+import type {
   SlackNotificationEventEnum,
   SlackNotificationList_viewer$key
 } from '../../../../__generated__/SlackNotificationList_viewer.graphql'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
-import {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
+import type {SlackChannelDropdownOnClick} from '../../../../components/SlackChannelDropdown'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useEventCallback from '../../../../hooks/useEventCallback'

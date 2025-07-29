@@ -5,8 +5,8 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import TemplateScaleInput, {TemplateScaleInputType} from '../types/TemplateScaleInput'
+import type {GQLContext} from '../graphql'
+import TemplateScaleInput, {type TemplateScaleInputType} from '../types/TemplateScaleInput'
 import UpdatePokerTemplateScaleValuePayload from '../types/UpdatePokerTemplateScaleValuePayload'
 import {validateColorValue, validateScaleLabel} from './helpers/validateScaleValue'
 
@@ -45,7 +45,9 @@ const updatePokerTemplateScaleValue = {
     // AUTH
     const existingScale = await dataLoader.get('templateScales').load(scaleId)
     if (!existingScale || existingScale.removedAt) {
-      return standardError(new Error('Did not find an active scale'), {userId: viewerId})
+      return standardError(new Error('Did not find an active scale'), {
+        userId: viewerId
+      })
     }
     if (!isTeamMember(authToken, existingScale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -55,7 +57,9 @@ const updatePokerTemplateScaleValue = {
     const {label: oldScaleLabel} = oldScaleValue
     const {label: newScaleLabel} = newScaleValue
     if (isSpecialPokerLabel(oldScaleLabel) && oldScaleLabel !== newScaleLabel) {
-      return {error: {message: 'Cannot change the label for a special scale value'}}
+      return {
+        error: {message: 'Cannot change the label for a special scale value'}
+      }
     }
 
     const {values: oldScaleValues} = existingScale
@@ -70,10 +74,14 @@ const updatePokerTemplateScaleValue = {
 
     const {color, label} = newScaleValue
     if (!validateColorValue(color)) {
-      return standardError(new Error('Invalid scale color'), {userId: viewerId})
+      return standardError(new Error('Invalid scale color'), {
+        userId: viewerId
+      })
     }
     if (!isSpecialPokerLabel(label) && !validateScaleLabel(label)) {
-      return standardError(new Error('Invalid scale label'), {userId: viewerId})
+      return standardError(new Error('Invalid scale label'), {
+        userId: viewerId
+      })
     }
     await pg
       .updateTable('TemplateScaleValue')

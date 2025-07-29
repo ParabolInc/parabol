@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {RouteComponentProps} from 'react-router'
+import type {RouteComponentProps} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -14,7 +14,10 @@ import PrimaryButton from './PrimaryButton'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props
-  extends RouteComponentProps<{verificationToken: string; invitationToken?: string}> {}
+  extends RouteComponentProps<{
+    verificationToken: string
+    invitationToken?: string
+  }> {}
 
 const VerifyEmail = (props: Props) => {
   const {history, match} = props
@@ -27,7 +30,11 @@ const VerifyEmail = (props: Props) => {
     submitMutation()
     VerifyEmailMutation(
       atmosphere,
-      {verificationToken, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
+      {
+        verificationToken,
+        invitationToken: invitationToken || '',
+        isInvitation: !!invitationToken
+      },
       {onCompleted, onError, history}
     )
   }, [])

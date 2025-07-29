@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {ToggleFavoriteTemplateSuccessResolvers} from '../resolverTypes'
+import type {ToggleFavoriteTemplateSuccessResolvers} from '../resolverTypes'
 
 export type ToggleFavoriteTemplateSuccessSource = Record<string, any>
 

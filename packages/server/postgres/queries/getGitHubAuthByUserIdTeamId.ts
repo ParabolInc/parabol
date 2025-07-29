@@ -1,7 +1,7 @@
 import getPg from '../getPg'
 import {
   getGitHubAuthByUserIdTeamIdQuery,
-  IGetGitHubAuthByUserIdTeamIdQueryResult
+  type IGetGitHubAuthByUserIdTeamIdQueryResult
 } from './generated/getGitHubAuthByUserIdTeamIdQuery'
 
 // if we want to query multiple userIds/teamIds, just call this multiple times

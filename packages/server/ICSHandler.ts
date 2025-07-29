@@ -1,6 +1,6 @@
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {createICS} from 'parabol-client/utils/makeCalendarInvites'
 import qs from 'querystring'
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 
 const ICSHandler = (res: HttpResponse, req: HttpRequest) => {
   const query = req.getQuery()

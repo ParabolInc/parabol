@@ -1,7 +1,7 @@
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
-import {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
+import type {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
 
 export type AzureDevOpsIntegrationSource = {
   teamId: string

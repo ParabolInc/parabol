@@ -26,11 +26,20 @@ const getParser = () => {
       blockquote: {block: 'blockquote'},
       paragraph: {block: 'paragraph'},
       list_item: {block: 'listItem'},
-      ordered_list: {block: 'orderedList', getAttrs: (t) => ({order: +t.attrGet('order')! || 1})},
+      ordered_list: {
+        block: 'orderedList',
+        getAttrs: (t) => ({order: +t.attrGet('order')! || 1})
+      },
       bullet_list: {block: 'bulletList'},
-      heading: {block: 'heading', getAttrs: (t) => ({level: +t.tag.slice(1)})},
+      heading: {
+        block: 'heading',
+        getAttrs: (t) => ({level: +t.tag.slice(1)})
+      },
       code_block: {block: 'codeBlock'},
-      fence: {block: 'codeBlock', getAttrs: (t) => ({language: t.info || null})},
+      fence: {
+        block: 'codeBlock',
+        getAttrs: (t) => ({language: t.info || null})
+      },
       hr: {node: 'horizontalRule'},
       image: {
         node: 'imageBlock',

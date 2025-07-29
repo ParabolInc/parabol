@@ -1,6 +1,6 @@
 import {Search} from '@mui/icons-material'
 import {cn} from '../../ui/cn'
-import {PlainButtonProps} from '../PlainButton/PlainButton'
+import type {PlainButtonProps} from '../PlainButton/PlainButton'
 import ReflectionCardButton from './ReflectionCardButton'
 
 type Props = {

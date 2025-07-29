@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
   _source,
@@ -11,7 +11,9 @@ const toggleAllowInsights: MutationResolvers['toggleAllowInsights'] = async (
   const organizations = await dataLoader.get('organizationsByActiveDomain').load(domain)
   if (organizations.length === 0) {
     return {
-      error: {message: `No organizations match ${domain}. First call 'setOrganizationDomain'`}
+      error: {
+        message: `No organizations match ${domain}. First call 'setOrganizationDomain'`
+      }
     }
   }
   const orgIds = organizations.map(({id}) => id)

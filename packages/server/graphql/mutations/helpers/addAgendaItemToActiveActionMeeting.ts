@@ -1,7 +1,7 @@
 import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 /*
  * NewMeetings have a predefined set of stages, we need to add the new agenda item manually

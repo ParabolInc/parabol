@@ -15,7 +15,7 @@ import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/Agenda
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
+import type {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 

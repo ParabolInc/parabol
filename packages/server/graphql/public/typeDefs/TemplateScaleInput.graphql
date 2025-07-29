@@ -2,13 +2,13 @@
 A value for a scale
 """
 input TemplateScaleInput {
-  """
-  The color used to visually group a scale value
-  """
-  color: String!
+	"""
+	The color used to visually group a scale value
+	"""
+	color: String!
 
-  """
-  The label for this value, e.g., XS, M, L
-  """
-  label: String!
+	"""
+	The label for this value, e.g., XS, M, L
+	"""
+	label: String!
 }

@@ -1,12 +1,12 @@
 /* eslint-env jest */
-import {Insertable} from 'kysely'
+import type {Insertable} from 'kysely'
 import {createPGTables, truncatePGTables} from '../../__tests__/common'
 import RootDataLoader from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
-import {TierEnum} from '../../graphql/public/resolverTypes'
+import type {TierEnum} from '../../graphql/public/resolverTypes'
 import getKysely from '../../postgres/getKysely'
-import {OrganizationUser} from '../../postgres/types'
-import {User} from '../../postgres/types/pg'
+import type {OrganizationUser} from '../../postgres/types'
+import type {User} from '../../postgres/types/pg'
 import getRedis from '../getRedis'
 import {getEligibleOrgIdsByDomain} from '../isRequestToJoinDomainAllowed'
 

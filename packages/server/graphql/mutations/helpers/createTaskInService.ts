@@ -1,5 +1,5 @@
-import {JSONContent} from '@tiptap/core'
-import {GraphQLResolveInfo} from 'graphql'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
@@ -11,8 +11,8 @@ import JiraProjectId from '../../../../client/shared/gqlIds/JiraProjectId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import LinearIssueId from '../../../../client/shared/gqlIds/LinearIssueId'
 import {removeNodeByType} from '../../../../client/shared/tiptap/removeNodeByType'
-import {GQLContext} from '../../graphql'
-import {CreateTaskIntegrationInput} from '../createTask'
+import type {GQLContext} from '../../graphql'
+import type {CreateTaskIntegrationInput} from '../createTask'
 import createAzureTask from './createAzureTask'
 import createGitHubTask from './createGitHubTask'
 import createGitLabTask from './createGitLabTask'
@@ -36,13 +36,19 @@ const createTaskInService = async (
       .get('freshAtlassianAuth')
       .load({userId: accessUserId, teamId})
     if (!atlassianAuth) {
-      return {error: new Error('Cannot create jira task without a valid jira token')}
+      return {
+        error: new Error('Cannot create jira task without a valid jira token')
+      }
     }
     const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
     const jiraTaskRes = await createJiraTask(taglessContentJSON, cloudId, projectKey, atlassianAuth)
     if (jiraTaskRes.error) return {error: jiraTaskRes.error}
     const {issueKey} = jiraTaskRes
-    const integrationRepoId = IntegrationRepoId.join({cloudId, projectKey, service})
+    const integrationRepoId = IntegrationRepoId.join({
+      cloudId,
+      projectKey,
+      service
+    })
     return {
       integration: {
         service: 'jira' as const,
@@ -58,7 +64,9 @@ const createTaskInService = async (
     const {repoOwner, repoName} = GitHubRepoId.split(serviceProjectHash)
     const githubAuth = await dataLoader.get('githubAuth').load({userId: accessUserId, teamId})
     if (!githubAuth) {
-      return {error: new Error('Cannot create GitHub task without a valid GitHub token')}
+      return {
+        error: new Error('Cannot create GitHub task without a valid GitHub token')
+      }
     }
     const githubTaskRes = await createGitHubTask(
       taglessContentJSON,
@@ -72,7 +80,10 @@ const createTaskInService = async (
       return {error: githubTaskRes.error}
     }
     const {issueNumber} = githubTaskRes
-    const integrationRepoId = IntegrationRepoId.join({nameWithOwner: serviceProjectHash, service})
+    const integrationRepoId = IntegrationRepoId.join({
+      nameWithOwner: serviceProjectHash,
+      service
+    })
     return {
       integration: {
         service: 'github' as const,
@@ -86,7 +97,9 @@ const createTaskInService = async (
   } else if (service === 'gitlab') {
     const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: accessUserId})
     if (!gitlabAuth) {
-      return {error: new Error('Cannot create GitLab task without a valid GitLab token')}
+      return {
+        error: new Error('Cannot create GitLab task without a valid GitLab token')
+      }
     }
     const gitlabTaskRes = await createGitLabTask(
       taglessContentJSON,
@@ -117,7 +130,9 @@ const createTaskInService = async (
       .get('freshAzureDevOpsAuth')
       .load({teamId, userId: accessUserId})
     if (!azureAuth) {
-      return {error: new Error('Cannot create Azure task without a valid token')}
+      return {
+        error: new Error('Cannot create Azure task without a valid token')
+      }
     }
     const azureTaskRes = await createAzureTask(
       taglessContentJSON,
@@ -129,7 +144,11 @@ const createTaskInService = async (
     const {integrationHash} = azureTaskRes
     const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(integrationHash)
     // TODO: fix inconsistencies with projectKey & projectId: https://github.com/ParabolInc/parabol/issues/7073
-    const integrationRepoId = IntegrationRepoId.join({instanceId, projectId: projectKey, service})
+    const integrationRepoId = IntegrationRepoId.join({
+      instanceId,
+      projectId: projectKey,
+      service
+    })
     return {
       integration: {
         service: 'azureDevOps' as const,
@@ -146,7 +165,9 @@ const createTaskInService = async (
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'linear', teamId, userId: accessUserId})
     if (!linearAuth?.accessToken) {
-      return {error: new Error('Cannot create Linear task without a valid token')}
+      return {
+        error: new Error('Cannot create Linear task without a valid token')
+      }
     }
     const linearTaskRes = await createLinearTask(
       taglessContentJSON,
@@ -159,7 +180,11 @@ const createTaskInService = async (
       return {error: linearTaskRes.error}
     }
     const {issueId, repoId} = linearTaskRes
-    const integrationRepoId = IntegrationRepoId.join({teamId, id: issueId, service})
+    const integrationRepoId = IntegrationRepoId.join({
+      teamId,
+      id: issueId,
+      service
+    })
     return {
       integration: {
         service: 'linear' as const,

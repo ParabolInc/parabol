@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetPokerSpectateMutation as TSetPokerSpectateMutation} from '../__generated__/SetPokerSpectateMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {SetPokerSpectateMutation as TSetPokerSpectateMutation} from '../__generated__/SetPokerSpectateMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment SetPokerSpectateMutation_team on SetPokerSpectateSuccess {

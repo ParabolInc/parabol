@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {PayloadError} from 'relay-runtime'
-import {WithMutationProps} from '../utils/relay/withMutationProps'
+import type {PayloadError} from 'relay-runtime'
+import type {WithMutationProps} from '../utils/relay/withMutationProps'
 
 interface MutationServerError {
   message: string
@@ -38,7 +38,9 @@ const useMutationProps = () => {
 
   const onCompleted = useCallback(
     (
-      res?: null | {[operationNames: string]: {error?: MutationServerError}},
+      res?: null | {
+        [operationNames: string]: {error?: MutationServerError}
+      },
       errors?: readonly PayloadError[] | null
     ) => {
       if (isMountedRef.current) {

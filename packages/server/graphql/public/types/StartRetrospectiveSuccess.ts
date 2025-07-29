@@ -1,4 +1,4 @@
-import {StartRetrospectiveSuccessResolvers} from '../resolverTypes'
+import type {StartRetrospectiveSuccessResolvers} from '../resolverTypes'
 
 export type StartRetrospectiveSuccessSource = {
   meetingId: string

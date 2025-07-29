@@ -40,7 +40,6 @@ export type {TaskTag} from 'parabol-client/shared/types'
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never
 
-export type Discussion = Selectable<DiscussionPG>
 export type ReactjiDB = {id: string; userId: string}
 
 export type JiraDimensionField = {
@@ -87,7 +86,9 @@ export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTe
 
 export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
 export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
-export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}
+export type RetrospectiveMeetingSettings = MeetingSettings & {
+  meetingType: 'retrospective'
+}
 export type FeatureFlag = Selectable<FeatureFlagPG>
 
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
@@ -108,7 +109,9 @@ export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
 export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages>
-export type PagePartial = Pick<Page, 'id' | 'title'> & {__typename: 'PagePartial'}
+export type PagePartial = Pick<Page, 'id' | 'title'> & {
+  __typename: 'PagePartial'
+}
 export type MassInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectMassInvitations>
 export type PageExternalAccess = Selectable<PageExternalAccessPG>
 export type PageAccessUser = Omit<Selectable<PageUserAccessPG>, 'pageId'>

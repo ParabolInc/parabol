@@ -1,8 +1,8 @@
 import {DatePicker, TimePicker} from '@mui/x-date-pickers'
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
-import {Dayjs} from 'dayjs'
-import * as React from 'react'
+import type {Dayjs} from 'dayjs'
+import type * as React from 'react'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const customStyles = {
@@ -51,7 +51,10 @@ const DateTimePickers = (props: Props) => {
   const {startValue, endValue, handleChangeStart, handleChangeEnd} = props
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const date = new Date()
-  const dateTimeString = date.toLocaleString('en-US', {timeZone: timeZone, timeZoneName: 'short'})
+  const dateTimeString = date.toLocaleString('en-US', {
+    timeZone: timeZone,
+    timeZoneName: 'short'
+  })
   const timeZoneShort = dateTimeString.split(' ').pop()
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

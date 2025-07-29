@@ -1,4 +1,4 @@
-import DataLoader, {CacheMap} from 'dataloader'
+import DataLoader, {type CacheMap} from 'dataloader'
 
 /**
  * Adds an ability to update specific properties of a cached item. Uses a custom cache object for that.

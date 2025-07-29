@@ -2,57 +2,57 @@
 A discussion thread
 """
 type Discussion {
-  id: ID!
-  teamId: ID!
+	id: ID!
+	teamId: ID!
 
-  """
-  Team
-  """
-  team: Team!
-  meetingId: ID!
+	"""
+	Team
+	"""
+	team: Team!
+	meetingId: ID!
 
-  """
-  time the thread was created
-  """
-  createdAt: DateTime!
+	"""
+	time the thread was created
+	"""
+	createdAt: DateTime!
 
-  """
-  The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId, teamMemberId
-  """
-  discussionTopicId: ID!
+	"""
+	The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId, teamMemberId
+	"""
+	discussionTopicId: ID!
 
-  """
-  The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue
-  """
-  discussionTopicType: DiscussionTopicTypeEnum!
+	"""
+	The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue
+	"""
+	discussionTopicType: DiscussionTopicTypeEnum!
 
-  """
-  The stage where the discussion is
-  """
-  stage: NewMeetingStage
+	"""
+	The stage where the discussion is
+	"""
+	stage: NewMeetingStage
 
-  """
-  The number of comments contained in the thread
-  """
-  commentCount: Int!
+	"""
+	The number of comments contained in the thread
+	"""
+	commentCount: Int!
 
-  """
-  The users writing a comment right now
-  """
-  commentors: [User!]!
+	"""
+	The users writing a comment right now
+	"""
+	commentors: [User!]!
 
-  """
-  The comments & tasks thread in the discussion
-  """
-  thread(
-    """
-    How many items to show. optional if only comments are desired
-    """
-    first: Int
+	"""
+	The comments & tasks thread in the discussion
+	"""
+	thread(
+		"""
+		How many items to show. optional if only comments are desired
+		"""
+		first: Int
 
-    """
-    the incrementing sort order in string format
-    """
-    after: String
-  ): ThreadableConnection!
+		"""
+		the incrementing sort order in string format
+		"""
+		after: String
+	): ThreadableConnection!
 }

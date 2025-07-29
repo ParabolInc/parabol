@@ -1,9 +1,9 @@
 import DataLoader from 'dataloader'
 import getGitHubAuthByUserIdTeamId, {
-  GitHubAuth
+  type GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
-  GitHubDimensionFieldMap
+  type GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 import type RootDataLoader from './RootDataLoader'
 

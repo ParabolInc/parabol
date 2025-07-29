@@ -6,7 +6,7 @@ import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {LeftNavHeader} from './LeftNavHeader'
 
-interface Props {}
+type Props = {}
 export const LeftNavPagesTrash = (_props: Props) => {
   return (
     <Tooltip>

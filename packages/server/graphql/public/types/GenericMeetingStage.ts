@@ -1,4 +1,4 @@
-import {GenericMeetingStageResolvers} from '../resolverTypes'
+import type {GenericMeetingStageResolvers} from '../resolverTypes'
 
 const GenericMeetingStage: GenericMeetingStageResolvers = {
   __isTypeOf: ({phaseType}) =>

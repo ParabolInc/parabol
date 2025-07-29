@@ -1,4 +1,8 @@
-import {ConnectionHandler, ReadOnlyRecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {
+  ConnectionHandler,
+  type ReadOnlyRecordProxy,
+  type RecordSourceSelectorProxy
+} from 'relay-runtime'
 import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 
 const getScopingTasksConn = (

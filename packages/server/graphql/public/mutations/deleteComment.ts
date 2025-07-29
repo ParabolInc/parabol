@@ -4,7 +4,7 @@ import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const deleteComment: MutationResolvers['deleteComment'] = async (
   _source,
@@ -35,7 +35,11 @@ const deleteComment: MutationResolvers['deleteComment'] = async (
     return {error: {message: `Comment is not from this meeting`}}
   }
   if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
-    return {error: {message: 'Can only delete your own comment or Parabol AI comments'}}
+    return {
+      error: {
+        message: 'Can only delete your own comment or Parabol AI comments'
+      }
+    }
   }
 
   await getKysely()

@@ -1,4 +1,4 @@
-import {SuggestedActionTryRetroMeetingResolvers} from '../resolverTypes'
+import type {SuggestedActionTryRetroMeetingResolvers} from '../resolverTypes'
 
 const SuggestedActionTryRetroMeeting: SuggestedActionTryRetroMeetingResolvers = {
   __isTypeOf: ({type}) => type === 'tryRetroMeeting',

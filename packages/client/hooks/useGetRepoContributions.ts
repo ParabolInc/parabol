@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {useGetRepoContributions_teamMember$key} from './../__generated__/useGetRepoContributions_teamMember.graphql'
+import type {useGetRepoContributions_teamMember$key} from './../__generated__/useGetRepoContributions_teamMember.graphql'
 
 export type Repo = {
   readonly id: string

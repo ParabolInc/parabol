@@ -1,12 +1,12 @@
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
 import {selectNewMeetings} from '../../../postgres/select'
-import {TeamPromptMeeting as TeamPromptMeetingSource} from '../../../postgres/types/Meeting'
+import type {TeamPromptMeeting as TeamPromptMeetingSource} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import isValid from '../../isValid'
-import {TeamPromptMeetingResolvers} from '../resolverTypes'
+import type {TeamPromptMeetingResolvers} from '../resolverTypes'
 
 const TeamPromptMeeting: TeamPromptMeetingResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'teamPrompt',

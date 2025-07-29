@@ -1,4 +1,4 @@
-import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
+import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import type {InsightsBlockAttrs} from './InsightsBlock'
 import {InsightsBlockDisabled} from './InsightsBlockDisabled'
 import {InsightsBlockEditing} from './InsightsBlockEditing'

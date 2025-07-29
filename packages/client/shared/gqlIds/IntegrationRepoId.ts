@@ -78,7 +78,11 @@ const IntegrationRepoId = {
       }
     }
 
-    return {service, providerId: parseInt(parts[1]!, 10), repositoryId: parts[2]!}
+    return {
+      service,
+      providerId: parseInt(parts[1]!, 10),
+      repositoryId: parts[2]!
+    }
   }
 }
 

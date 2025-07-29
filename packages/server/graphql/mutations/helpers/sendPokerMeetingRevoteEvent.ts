@@ -1,7 +1,7 @@
-import {TeamMember} from '../../../postgres/types'
-import {AnyMeeting, AnyMeetingMember} from '../../../postgres/types/Meeting'
+import type {TeamMember} from '../../../postgres/types'
+import type {AnyMeeting, AnyMeetingMember} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 const sendPokerMeetingRevoteEvent = async (
   meeting: AnyMeeting,

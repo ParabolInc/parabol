@@ -4,7 +4,11 @@ import getIntegrationProvidersByIds from '../../../postgres/queries/getIntegrati
 import upsertIntegrationSearchQuery from '../../../postgres/queries/upsertIntegrationSearchQuery'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {JiraSearchQueryInput, JiraServerSearchQueryInput, MutationResolvers} from '../resolverTypes'
+import type {
+  JiraSearchQueryInput,
+  JiraServerSearchQueryInput,
+  MutationResolvers
+} from '../resolverTypes'
 
 const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearchQuery'] = async (
   _source,

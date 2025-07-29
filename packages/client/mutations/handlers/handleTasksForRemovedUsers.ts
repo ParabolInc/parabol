@@ -1,4 +1,4 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import handleRemoveTasks from './handleRemoveTasks'
 import handleUpsertTasks from './handleUpsertTasks'
 

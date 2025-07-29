@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
-import {LinearIntegrationResultsRootQuery} from '../../../__generated__/LinearIntegrationResultsRootQuery.graphql'
+import type {LinearIntegrationResultsRootQuery} from '../../../__generated__/LinearIntegrationResultsRootQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {makeLinearIssueFilter} from '../../../utils/makeLinearIssueFilter'
 import ErrorBoundary from '../../ErrorBoundary'

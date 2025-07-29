@@ -1,4 +1,4 @@
-import {AGENDA_ITEMS, AGENDA_ITEM_LABEL} from 'parabol-client/utils/constants'
+import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from 'parabol-client/utils/constants'
 import plural from 'parabol-client/utils/plural'
 
 interface Meeting {
@@ -29,7 +29,10 @@ const makeActionStats = (meeting: Meeting) => {
 
   return [
     {value: doneTaskCount, label: `${plural(doneTaskCount, 'Task')} Done`},
-    {value: agendaItemsCompleted, label: plural(agendaItemsCompleted, AGENDA_ITEM_LABEL)},
+    {
+      value: agendaItemsCompleted,
+      label: plural(agendaItemsCompleted, AGENDA_ITEM_LABEL)
+    },
     {value: newTaskCount, label: plural(newTaskCount, 'New Task')},
     {value: meetingMembersCount, label: 'Participants'}
   ]

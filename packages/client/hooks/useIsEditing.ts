@@ -1,4 +1,4 @@
-import {Editor} from '@tiptap/core'
+import type {Editor} from '@tiptap/core'
 import {useEffect, useRef, useState} from 'react'
 import useEventCallback from './useEventCallback'
 

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {
+import type {
   WholeMeetingSummary_meeting$data,
   WholeMeetingSummary_meeting$key
 } from 'parabol-client/__generated__/WholeMeetingSummary_meeting.graphql'

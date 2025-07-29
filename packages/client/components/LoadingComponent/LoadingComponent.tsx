@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {forwardRef, useEffect} from 'react'
-import {LoadingDelayRef} from '../../hooks/useLoadingDelay'
+import type {LoadingDelayRef} from '../../hooks/useLoadingDelay'
 import useTimeout from '../../hooks/useTimeout'
 import Spinner from '../../modules/spinner/components/Spinner/Spinner'
 import {PALETTE} from '../../styles/paletteV3'

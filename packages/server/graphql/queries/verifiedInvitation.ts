@@ -1,13 +1,13 @@
-import dns, {MxRecord} from 'dns'
+import dns, {type MxRecord} from 'dns'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
-import IUser from '../../postgres/types/IUser'
+import type IUser from '../../postgres/types/IUser'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 
@@ -20,7 +20,7 @@ const getIsGoogleProvider = async (user: IUser | null, email: string) => {
   let res
   try {
     res = await dns.promises.resolveMx(domain)
-  } catch (e) {
+  } catch {
     return false
   }
   const [mxRecord] = res as MxRecord[]

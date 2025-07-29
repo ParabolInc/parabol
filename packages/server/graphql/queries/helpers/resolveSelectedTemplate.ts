@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
-import {MeetingSettings} from '../../../postgres/types'
-import {GQLContext} from '../../graphql'
+import type {MeetingSettings} from '../../../postgres/types'
+import type {GQLContext} from '../../graphql'
 
 const resolveSelectedTemplate =
   <TMeetingTypeEnum>(fallbackTemplateId: string) =>

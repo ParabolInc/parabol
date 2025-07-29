@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import {toEpochSeconds} from '../epochTime'
 import {Logger} from '../Logger'
 import StripeManager from './StripeManager'

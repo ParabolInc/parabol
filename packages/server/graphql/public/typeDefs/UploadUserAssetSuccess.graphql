@@ -1,6 +1,6 @@
 type UploadUserAssetSuccess {
-  """
-  the URL for the newly uploaded asset
-  """
-  url: String!
+	"""
+	the URL for the newly uploaded asset
+	"""
+	url: String!
 }

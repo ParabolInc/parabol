@@ -1,4 +1,6 @@
 """
 Return object for addTeamMemberIntegrationAuth
 """
-union AddTeamMemberIntegrationAuthPayload = ErrorPayload | AddTeamMemberIntegrationAuthSuccess
+union AddTeamMemberIntegrationAuthPayload =
+	| ErrorPayload
+	| AddTeamMemberIntegrationAuthSuccess

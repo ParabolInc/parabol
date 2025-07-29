@@ -1,13 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import useRouter from '~/hooks/useRouter'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
-import {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
-import {AddTeamDialog_viewer$key} from '../__generated__/AddTeamDialog_viewer.graphql'
-import {AdhocTeamMultiSelect, Option} from '../components/AdhocTeamMultiSelect/AdhocTeamMultiSelect'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
+import type {AddTeamDialog_viewer$key} from '../__generated__/AddTeamDialog_viewer.graphql'
+import type {AddTeamDialogQuery} from '../__generated__/AddTeamDialogQuery.graphql'
+import {
+  AdhocTeamMultiSelect,
+  type Option
+} from '../components/AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {Dialog} from '../ui/Dialog/Dialog'

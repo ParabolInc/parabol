@@ -1,31 +1,37 @@
 query getProjectIssues(
-  $fullPath: ID!
-  $first: Int!
-  $after: String
-  $searchQuery: String
-  $sort: IssueSort
-  $state: IssuableState
+	$fullPath: ID!
+	$first: Int!
+	$after: String
+	$searchQuery: String
+	$sort: IssueSort
+	$state: IssuableState
 ) {
-  project(fullPath: $fullPath) {
-    fullPath
-    issues(first: $first, after: $after, search: $searchQuery, sort: $sort, state: $state) {
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      edges {
-        cursor
-        node {
-          __typename
-          id
-          iid
-          descriptionHtml
-          webPath
-          updatedAt
-          title
-          webUrl
-        }
-      }
-    }
-  }
+	project(fullPath: $fullPath) {
+		fullPath
+		issues(
+			first: $first
+			after: $after
+			search: $searchQuery
+			sort: $sort
+			state: $state
+		) {
+			pageInfo {
+				hasNextPage
+				endCursor
+			}
+			edges {
+				cursor
+				node {
+					__typename
+					id
+					iid
+					descriptionHtml
+					webPath
+					updatedAt
+					title
+					webUrl
+				}
+			}
+		}
+	}
 }

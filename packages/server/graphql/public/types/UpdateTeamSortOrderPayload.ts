@@ -1,4 +1,4 @@
-import {UpdateTeamSortOrderPayloadResolvers} from '../resolverTypes'
+import type {UpdateTeamSortOrderPayloadResolvers} from '../resolverTypes'
 
 export type UpdateTeamSortOrderPayloadSource = {teamId: string}
 

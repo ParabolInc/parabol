@@ -1,6 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {AiPromptResolvers} from '../resolverTypes'
+import type {AiPromptResolvers} from '../resolverTypes'
 
 const AIPrompt: AiPromptResolvers = {
   id: ({id}) => CipherId.toClient(id, 'AIPrompt'),

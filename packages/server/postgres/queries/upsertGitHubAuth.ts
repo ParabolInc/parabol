@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IUpsertGitHubAuthQueryParams,
+  type IUpsertGitHubAuthQueryParams,
   upsertGitHubAuthQuery
 } from './generated/upsertGitHubAuthQuery'
 

@@ -1,4 +1,4 @@
-import {DiscussionThreadStageResolvers} from '../resolverTypes'
+import type {DiscussionThreadStageResolvers} from '../resolverTypes'
 
 const DiscussionThreadStage: DiscussionThreadStageResolvers = {
   discussion: async ({discussionId}, _args, {dataLoader}) => {

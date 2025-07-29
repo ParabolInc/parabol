@@ -1,5 +1,5 @@
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
-import {RetroDiscussStageResolvers} from '../resolverTypes'
+import type {RetroDiscussStageResolvers} from '../resolverTypes'
 
 // note: this is the GraphQL type, not source DB type
 const DUMMY_DISCUSSION = {

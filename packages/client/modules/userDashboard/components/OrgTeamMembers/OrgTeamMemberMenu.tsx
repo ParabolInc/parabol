@@ -2,11 +2,11 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {OrgTeamMemberMenu_teamMember$key} from '../../../../__generated__/OrgTeamMemberMenu_teamMember.graphql'
+import type {OrgTeamMemberMenu_teamMember$key} from '../../../../__generated__/OrgTeamMemberMenu_teamMember.graphql'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import MenuItemLabel from '../../../../components/MenuItemLabel'
-import {MenuProps} from '../../../../hooks/useMenu'
+import type {MenuProps} from '../../../../hooks/useMenu'
 
 interface OrgTeamMemberMenuProps {
   isLead: boolean

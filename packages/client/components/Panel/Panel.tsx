@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {CSSProperties, ReactNode} from 'react'
+import type {CSSProperties, ReactNode} from 'react'
 import {panelShadow} from '../../styles/elevation'
 import {Layout} from '../../types/constEnums'
 import LabelHeading from '../LabelHeading/LabelHeading'
@@ -21,7 +21,9 @@ const PanelHeader = styled('div')({
   width: '100%'
 })
 
-const PanelLabel = styled(LabelHeading)<{casing: CSSProperties['textTransform']}>(({casing}) => ({
+const PanelLabel = styled(LabelHeading)<{
+  casing: CSSProperties['textTransform']
+}>(({casing}) => ({
   padding: `8px ${Layout.ROW_GUTTER}px`,
   textTransform: casing ? casing : 'uppercase'
 }))

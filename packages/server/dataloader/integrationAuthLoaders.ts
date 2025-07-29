@@ -1,17 +1,18 @@
 import DataLoader from 'dataloader'
-import {Selectable, sql} from 'kysely'
+import {type Selectable, sql} from 'kysely'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
-import {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
+import type {IntegrationProviderServiceEnum} from '../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
 import getIntegrationProvidersByIds, {
-  TIntegrationProvider
+  type TIntegrationProvider
 } from '../postgres/queries/getIntegrationProvidersByIds'
 import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../postgres/select'
-import {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
-import {TeamNotificationSettings} from '../postgres/types/pg'
+import type {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
+import type {TeamNotificationSettings} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
-import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
+import type RootDataLoader from './RootDataLoader'
+import type {RegisterDependsOn} from './RootDataLoader'
 
 interface TeamMemberIntegrationAuthServiceTeamUserKey {
   service: IntegrationProviderServiceEnum

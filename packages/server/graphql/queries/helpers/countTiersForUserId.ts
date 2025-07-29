@@ -1,4 +1,4 @@
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import isValid from '../../isValid'
 
 // breaking this out into its own helper so it can be used directly to

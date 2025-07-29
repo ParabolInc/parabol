@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useMeetingMemberAvatars_meeting$key} from '../__generated__/useMeetingMemberAvatars_meeting.graphql'
+import type {useMeetingMemberAvatars_meeting$key} from '../__generated__/useMeetingMemberAvatars_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
 
 const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key) => {

@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {LinkTeamModalQuery} from 'parabol-client/__generated__/LinkTeamModalQuery.graphql'
 import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-
-import {LinkTeamModalQuery} from 'parabol-client/__generated__/LinkTeamModalQuery.graphql'
 import {useLazyLoadQuery} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'

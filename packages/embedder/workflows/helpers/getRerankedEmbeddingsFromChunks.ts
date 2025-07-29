@@ -1,8 +1,8 @@
 import ms from 'ms'
 import getKysely from '../../../server/postgres/getKysely'
-import {JobQueueError} from '../../JobQueueError'
-import {AbstractEmbeddingsModel} from '../../ai_models/AbstractEmbeddingsModel'
+import type {AbstractEmbeddingsModel} from '../../ai_models/AbstractEmbeddingsModel'
 import numberVectorToString from '../../indexing/numberVectorToString'
+import {JobQueueError} from '../../JobQueueError'
 
 /*
  * Overview on how we find related discussions:

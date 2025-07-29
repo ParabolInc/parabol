@@ -1,6 +1,6 @@
 import generateUID from '../../generateUID'
 import {TEAM_NAME_LIMIT} from '../../postgres/constants'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import type {MeetingTypeEnum} from '../../postgres/types/Meeting'
 
 interface Input {
   id?: string

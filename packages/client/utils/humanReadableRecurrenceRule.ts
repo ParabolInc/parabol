@@ -1,4 +1,4 @@
-import {Frequency, RRule, Weekday} from 'rrule'
+import {Frequency, RRule, type Weekday} from 'rrule'
 import plural from './plural'
 
 export type DayFullName =

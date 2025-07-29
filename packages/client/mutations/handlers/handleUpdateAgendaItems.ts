@@ -1,4 +1,4 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
 
 const handleUpdateAgendaItems = (store: RecordSourceSelectorProxy, teamId: string) => {
   const team = store.get(teamId)

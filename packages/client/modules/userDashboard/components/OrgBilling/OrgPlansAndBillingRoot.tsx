@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import orgPlansAndBillingQuery, {
-  OrgPlansAndBillingQuery
+  type OrgPlansAndBillingQuery
 } from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
-import {OrgPlansAndBillingRoot_organization$key} from '../../../../__generated__/OrgPlansAndBillingRoot_organization.graphql'
+import type {OrgPlansAndBillingRoot_organization$key} from '../../../../__generated__/OrgPlansAndBillingRoot_organization.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import OrgPlansAndBilling from './OrgPlansAndBilling'
 

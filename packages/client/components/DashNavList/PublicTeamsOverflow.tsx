@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PublicTeamsOverflow_viewer$key} from '../../__generated__/PublicTeamsOverflow_viewer.graphql'
+import type {PublicTeamsOverflow_viewer$key} from '../../__generated__/PublicTeamsOverflow_viewer.graphql'
 import plural from '../../utils/plural'
 import PublicTeamsModal from './PublicTeamsModal'
 

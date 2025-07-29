@@ -8,7 +8,7 @@ import base from '../../eslint.config.mjs'
 export default [
   ...base,
   {
-    ignores: ['__generated__/*'],
+    ignores: ['__generated__/*']
   },
   {
     plugins: {

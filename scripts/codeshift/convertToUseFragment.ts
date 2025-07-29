@@ -7,7 +7,7 @@
  migrations.
 */
 
-import {Transform} from 'jscodeshift/src/core'
+import type {Transform} from 'jscodeshift/src/core'
 
 const transform: Transform = (fileInfo, api, options) => {
   const j = api.jscodeshift
@@ -68,7 +68,9 @@ const transform: Transform = (fileInfo, api, options) => {
   })
 
   // Find the declaration of the component we're changing
-  const componentVarDeclaration = root.find(j.VariableDeclarator, {id: {name: componentName}})
+  const componentVarDeclaration = root.find(j.VariableDeclarator, {
+    id: {name: componentName}
+  })
   const componentDeclaration =
     componentVarDeclaration.size() === 1
       ? componentVarDeclaration

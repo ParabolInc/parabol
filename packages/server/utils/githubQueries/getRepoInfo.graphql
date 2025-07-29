@@ -1,9 +1,13 @@
-query getRepoInfo($assigneeLogin: String!, $repoOwner: String!, $repoName: String!) {
-  user(login: $assigneeLogin) {
-    id
-    avatarUrl
-  }
-  repository(owner: $repoOwner, name: $repoName) {
-    id
-  }
+query getRepoInfo(
+	$assigneeLogin: String!
+	$repoOwner: String!
+	$repoName: String!
+) {
+	user(login: $assigneeLogin) {
+		id
+		avatarUrl
+	}
+	repository(owner: $repoOwner, name: $repoName) {
+		id
+	}
 }

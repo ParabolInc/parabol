@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
-import * as React from 'react'
+import type * as React from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   OrgMemberRow_organization$data,
   OrgMemberRow_organization$key
 } from '../../../../__generated__/OrgMemberRow_organization.graphql'
-import {
+import type {
   OrgMemberRow_organizationUser$data,
   OrgMemberRow_organizationUser$key
 } from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'

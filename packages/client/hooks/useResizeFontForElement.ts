@@ -1,4 +1,4 @@
-import {RefObject, useEffect} from 'react'
+import {type RefObject, useEffect} from 'react'
 import useForceUpdate from './useForceUpdate'
 
 const useResizeFontForElement = <T extends HTMLElement = HTMLInputElement>(

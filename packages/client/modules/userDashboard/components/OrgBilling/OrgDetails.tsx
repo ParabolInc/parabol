@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
+import type {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import EditableOrgName from '../../../../components/EditableOrgName'

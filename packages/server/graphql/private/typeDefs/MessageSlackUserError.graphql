@@ -2,10 +2,10 @@
 An error from sending a message to a Slack user
 """
 type MessageSlackUserError {
-  userId: ID!
+	userId: ID!
 
-  """
-  The error message received from Slack
-  """
-  error: String!
+	"""
+	The error message received from Slack
+	"""
+	error: String!
 }

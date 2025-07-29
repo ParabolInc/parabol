@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {PokerRevealVotesMutation as TPokerRevealVotesMutation} from '../__generated__/PokerRevealVotesMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {PokerRevealVotesMutation as TPokerRevealVotesMutation} from '../__generated__/PokerRevealVotesMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment PokerRevealVotesMutation_meeting on PokerRevealVotesSuccess {

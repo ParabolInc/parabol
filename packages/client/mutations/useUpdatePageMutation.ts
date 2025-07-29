@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ConnectionHandler, useMutation, UseMutationConfig} from 'react-relay'
+import {ConnectionHandler, type UseMutationConfig, useMutation} from 'react-relay'
 import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {useUpdatePageMutation as TuseUpdatePageMutation} from '../__generated__/useUpdatePageMutation.graphql'
-import {useUpdatePageMutation_notification$data} from '../__generated__/useUpdatePageMutation_notification.graphql'
+import type {useUpdatePageMutation as TuseUpdatePageMutation} from '../__generated__/useUpdatePageMutation.graphql'
+import type {useUpdatePageMutation_notification$data} from '../__generated__/useUpdatePageMutation_notification.graphql'
 
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import getBaseRecord from '../utils/relay/getBaseRecord'

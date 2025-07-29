@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
+import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
 import Team from './Team'
-import makeMutationPayload from './makeMutationPayload'
 export const UpdateGitHubDimensionFieldSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'UpdateGitHubDimensionFieldSuccess',
   fields: () => ({

@@ -1,5 +1,5 @@
 import {DefaultHandlerProvider} from 'relay-runtime'
-import {HandlerProvider} from 'relay-runtime/lib/handlers/RelayDefaultHandlerProvider'
+import type {HandlerProvider} from 'relay-runtime/lib/handlers/RelayDefaultHandlerProvider'
 import LocalPokerHandler from './LocalPokerHandler'
 import LocalTimeHandler from './LocalTimeHandler'
 

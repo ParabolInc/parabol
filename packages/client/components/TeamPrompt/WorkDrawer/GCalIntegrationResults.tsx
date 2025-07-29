@@ -1,9 +1,9 @@
 import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
+import type {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
 import GCalEventCard from './GCalEventCard'
 
 interface Props {
@@ -42,21 +42,20 @@ const GCalIntegrationResults = (props: Props) => {
     gcalResults?.reverse()
   }
 
-  const gcalEventsByDay = gcalResults?.reduce<{[day: string]: typeof gcalResults}>(
-    (eventsByDate, event) => {
-      const eventDate = event.startDate ?? event.endDate
-      const parsedEventDate = eventDate ? new Date(eventDate) : new Date()
-      const eventDay = new Date(parsedEventDate.setHours(0, 0, 0, 0)).toJSON()
-      const eventsForDay = eventsByDate[eventDay]
-      if (eventsForDay) {
-        eventsForDay.push(event)
-      } else {
-        eventsByDate[eventDay] = [event]
-      }
-      return eventsByDate
-    },
-    {}
-  )
+  const gcalEventsByDay = gcalResults?.reduce<{
+    [day: string]: typeof gcalResults
+  }>((eventsByDate, event) => {
+    const eventDate = event.startDate ?? event.endDate
+    const parsedEventDate = eventDate ? new Date(eventDate) : new Date()
+    const eventDay = new Date(parsedEventDate.setHours(0, 0, 0, 0)).toJSON()
+    const eventsForDay = eventsByDate[eventDay]
+    if (eventsForDay) {
+      eventsForDay.push(event)
+    } else {
+      eventsByDate[eventDay] = [event]
+    }
+    return eventsByDate
+  }, {})
 
   return (
     <>

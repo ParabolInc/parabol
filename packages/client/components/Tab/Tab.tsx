@@ -1,4 +1,4 @@
-import {forwardRef, ReactNode, Ref} from 'react'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 import {cn} from '../../ui/cn'
 
 interface Props {

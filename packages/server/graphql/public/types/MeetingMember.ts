@@ -1,5 +1,5 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {MeetingMemberResolvers} from '../resolverTypes'
+import type {MeetingMemberResolvers} from '../resolverTypes'
 
 const MeetingMember: MeetingMemberResolvers = {
   teamMember: ({teamId, userId}, _args, {dataLoader}) => {

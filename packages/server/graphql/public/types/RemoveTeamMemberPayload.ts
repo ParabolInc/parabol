@@ -1,9 +1,9 @@
 import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
-import {KickedOutNotification} from '../../../postgres/types/Notification'
+import type {KickedOutNotification} from '../../../postgres/types/Notification'
 import {getUserId} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
-import {RemoveTeamMemberPayloadResolvers} from '../resolverTypes'
+import type {RemoveTeamMemberPayloadResolvers} from '../resolverTypes'
 
 export type RemoveTeamMemberPayloadSource = {
   teamMemberId: string

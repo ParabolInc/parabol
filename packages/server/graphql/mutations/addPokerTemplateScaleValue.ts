@@ -5,9 +5,9 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import AddPokerTemplateScaleValuePayload from '../types/AddPokerTemplateScaleValuePayload'
-import AddTemplateScaleInput, {AddTemplateScaleInputType} from '../types/AddTemplateScaleInput'
+import AddTemplateScaleInput, {type AddTemplateScaleInputType} from '../types/AddTemplateScaleInput'
 import {validateColorValue, validateScaleLabel} from './helpers/validateScaleValue'
 
 const addPokerTemplateScaleValue = {
@@ -34,7 +34,9 @@ const addPokerTemplateScaleValue = {
     // AUTH
     const existingScale = await dataLoader.get('templateScales').load(scaleId)
     if (!existingScale || existingScale.removedAt) {
-      return standardError(new Error('Did not find an active scale'), {userId: viewerId})
+      return standardError(new Error('Did not find an active scale'), {
+        userId: viewerId
+      })
     }
     if (!isTeamMember(authToken, existingScale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -43,10 +45,14 @@ const addPokerTemplateScaleValue = {
     // VALIDATION
     const {color, label} = scaleValue
     if (!validateColorValue(color)) {
-      return standardError(new Error('Invalid scale color'), {userId: viewerId})
+      return standardError(new Error('Invalid scale color'), {
+        userId: viewerId
+      })
     }
     if (!validateScaleLabel(label)) {
-      return standardError(new Error('Invalid scale label'), {userId: viewerId})
+      return standardError(new Error('Invalid scale label'), {
+        userId: viewerId
+      })
     }
     const {values} = existingScale
     const endCardIdx = values.findIndex(({label}) => ['?', 'Pass'].includes(label))
@@ -63,7 +69,11 @@ const addPokerTemplateScaleValue = {
         .execute()
     } catch (e) {
       if ((e as any).constraint === 'TemplateScaleValue_templateScaleId_label_key') {
-        return {error: {message: 'Scale labels and/or numerical values are not unique'}}
+        return {
+          error: {
+            message: 'Scale labels and/or numerical values are not unique'
+          }
+        }
       }
       return {error: {message: 'Could not add scale value'}}
     }

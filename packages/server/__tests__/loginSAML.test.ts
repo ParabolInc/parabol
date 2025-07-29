@@ -85,7 +85,9 @@ test.skip('SAML', async () => {
   `
   const samlResponse = Buffer.from(response).toString('base64url')
   const relayState = Buffer.from(
-    JSON.stringify({metadataURL: 'https://idp.example.com/app/sso/saml/metadata'})
+    JSON.stringify({
+      metadataURL: 'https://idp.example.com/app/sso/saml/metadata'
+    })
   ).toString('base64url')
   const saml = await sendIntranet({
     query: `

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AcceptTeamInvitationMutation_notification$data} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
+import type {AcceptTeamInvitationMutation_notification$data} from '~/__generated__/AcceptTeamInvitationMutation_notification.graphql'
 import {InvitationTokenError, LOCKED_MESSAGE} from '~/types/constEnums'
-import Atmosphere from '../Atmosphere'
-import {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
-import {AcceptTeamInvitationMutation_team$data} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
-import {
+import type {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from '../__generated__/AcceptTeamInvitationMutation.graphql'
+import type {AcceptTeamInvitationMutation_team$data} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
+import type Atmosphere from '../Atmosphere'
+import type {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   SharedUpdater,
@@ -119,14 +119,22 @@ export const acceptTeamInvitationNotificationUpdater: SharedUpdater<
   const viewer = store.getRoot().getLinkedRecord('viewer')
   if (viewer) {
     // if they checked canAccess before, we need to update it
-    viewer.setValue(true, 'canAccess', {entity: 'Team', id: team.getValue('id')})
+    viewer.setValue(true, 'canAccess', {
+      entity: 'Team',
+      id: team.getValue('id')
+    })
 
     // the viewer could have requested the meeting & had it return null
     const requestedMeeting = payload.getLinkedRecord('meeting')
     if (requestedMeeting) {
       const requestedMeetingId = requestedMeeting.getValue('id')
-      viewer.setLinkedRecord(requestedMeeting, 'meeting', {meetingId: requestedMeetingId})
-      viewer.setValue(true, 'canAccess', {entity: 'Meeting', id: requestedMeetingId})
+      viewer.setLinkedRecord(requestedMeeting, 'meeting', {
+        meetingId: requestedMeetingId
+      })
+      viewer.setValue(true, 'canAccess', {
+        entity: 'Meeting',
+        id: requestedMeetingId
+      })
     }
     const activeMeetings = team.getLinkedRecords('activeMeetings')
     activeMeetings.forEach((activeMeeting) => {

@@ -1,15 +1,15 @@
 import {generateHTML} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import JiraProjectId from '~/shared/gqlIds/JiraProjectId'
-import {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import type {CreateTaskIntegrationMutation as TCreateTaskIntegrationMutation} from '../__generated__/CreateTaskIntegrationMutation.graphql'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../shared/tiptap/splitTipTapContent'
-import {StandardMutation} from '../types/relayMutations'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
+import type {StandardMutation} from '../types/relayMutations'
 import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import createProxyRecord from '../utils/relay/createProxyRecord'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 graphql`
   fragment CreateTaskIntegrationMutation_task on CreateTaskIntegrationPayload {

@@ -4,9 +4,9 @@ type _xLinearTeam implements RepoIntegration
 type _xLinearProject implements RepoIntegration
 
 extend type _xLinearProject {
-  service: IntegrationProviderServiceEnum!
+	service: IntegrationProviderServiceEnum!
 }
 
 extend type _xLinearTeam {
-  service: IntegrationProviderServiceEnum!
+	service: IntegrationProviderServiceEnum!
 }

@@ -1,8 +1,8 @@
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {MenuProps} from '../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import type {MenuProps} from '../../../../hooks/useMenu'
+import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import RemoveIntegrationProviderMutation from '../../../../mutations/RemoveIntegrationProviderMutation'
 import {Duration} from '../../../../types/constEnums'
 

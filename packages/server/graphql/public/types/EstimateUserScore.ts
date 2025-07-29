@@ -1,5 +1,5 @@
 import EstimateUserScoreId from '../../../../client/shared/gqlIds/EstimateUserScoreId'
-import {EstimateUserScoreResolvers} from '../resolverTypes'
+import type {EstimateUserScoreResolvers} from '../resolverTypes'
 
 const EstimateUserScore: EstimateUserScoreResolvers = {
   id: ({stageId, userId}) => {

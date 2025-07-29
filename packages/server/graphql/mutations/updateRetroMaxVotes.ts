@@ -6,7 +6,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import UpdateRetroMaxVotesPayload from '../types/UpdateRetroMaxVotesPayload'
 
 const updateRetroMaxVotes = {
@@ -69,7 +69,9 @@ const updateRetroMaxVotes = {
     }
 
     if (isPhaseComplete('vote', phases)) {
-      return standardError(new Error('Vote phase already completed'), {userId: viewerId})
+      return standardError(new Error('Vote phase already completed'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
@@ -118,7 +120,9 @@ const updateRetroMaxVotes = {
           .with('MeetingMemberUpdates', (qb) =>
             qb
               .updateTable('MeetingMember')
-              .set((eb) => ({votesRemaining: eb('votesRemaining', '+', delta)}))
+              .set((eb) => ({
+                votesRemaining: eb('votesRemaining', '+', delta)
+              }))
               .where('meetingId', '=', meetingId)
           )
           .with('NewMeetingUpdates', (qb) =>

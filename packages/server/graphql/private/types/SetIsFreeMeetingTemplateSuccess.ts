@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {SetIsFreeMeetingTemplateSuccessResolvers} from '../../private/resolverTypes'
+import type {SetIsFreeMeetingTemplateSuccessResolvers} from '../../private/resolverTypes'
 
 export type SetIsFreeMeetingTemplateSuccessSource = {
   updatedTemplateIds: string[]

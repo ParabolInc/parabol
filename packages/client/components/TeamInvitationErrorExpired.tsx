@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TeamInvitationErrorExpired_verifiedInvitation$key} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
+import type {TeamInvitationErrorExpired_verifiedInvitation$key} from '../__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {PALETTE} from '../styles/paletteV3'
 import DialogContent from './DialogContent'

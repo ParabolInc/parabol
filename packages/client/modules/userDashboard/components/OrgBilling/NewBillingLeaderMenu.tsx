@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef, useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   NewBillingLeaderMenu_organization$data,
   NewBillingLeaderMenu_organization$key
 } from '~/__generated__/NewBillingLeaderMenu_organization.graphql'
@@ -13,7 +13,7 @@ import MenuItemLabel from '../../../../components/MenuItemLabel'
 import TypeAheadLabel from '../../../../components/TypeAheadLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useFilteredItems from '../../../../hooks/useFilteredItems'
-import {MenuProps} from '../../../../hooks/useMenu'
+import type {MenuProps} from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import SetOrgUserRoleMutation from '../../../../mutations/SetOrgUserRoleMutation'
 

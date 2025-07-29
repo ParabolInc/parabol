@@ -1,6 +1,6 @@
 import fs from 'fs'
 import inspector from 'inspector'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 let session: inspector.Session
 

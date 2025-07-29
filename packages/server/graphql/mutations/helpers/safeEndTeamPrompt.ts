@@ -3,12 +3,12 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamPromptComplete from '../../../database/types/TimelineEventTeamPromptComplete'
 import getKysely from '../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
-import {Logger} from '../../../utils/Logger'
+import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
-import publish, {SubOptions} from '../../../utils/publish'
+import {Logger} from '../../../utils/Logger'
+import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {InternalContext} from '../../graphql'
+import type {InternalContext} from '../../graphql'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
@@ -50,7 +50,10 @@ const safeEndTeamPrompt = async ({
 
   const {endedAt, id: meetingId, teamId} = meeting
 
-  if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+  if (endedAt)
+    return standardError(new Error('Meeting already ended'), {
+      userId: viewerId
+    })
 
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)

@@ -1,7 +1,7 @@
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import generateUID from '../../../generateUID'
-import {ReflectPrompt} from '../../../postgres/types'
+import type {ReflectPrompt} from '../../../postgres/types'
 import getTemplateIllustrationUrl from './getTemplateIllustrationUrl'
 
 interface TemplatePrompt {

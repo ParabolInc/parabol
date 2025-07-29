@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {AddReflectTemplateSuccessResolvers, ReflectTemplate} from '../resolverTypes'
+import type {AddReflectTemplateSuccessResolvers, ReflectTemplate} from '../resolverTypes'
 
 export type AddPokerTemplateSuccessSource = {
   templateId: string

@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'

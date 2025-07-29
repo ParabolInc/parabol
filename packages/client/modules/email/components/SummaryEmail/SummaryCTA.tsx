@@ -1,5 +1,5 @@
 import CreateAccountSection from 'parabol-client/modules/demo/components/CreateAccountSection'
-import {CSSProperties, Fragment} from 'react'
+import {type CSSProperties, Fragment} from 'react'
 import {Link} from 'react-router-dom'
 import {emailPrimaryButtonStyle, emailRuleStyle} from '../../styles'
 

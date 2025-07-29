@@ -2,13 +2,13 @@
 The type of event for a slack notification
 """
 enum SlackNotificationEventTypeEnum {
-  """
-  notification that concerns the whole team
-  """
-  team
+	"""
+	notification that concerns the whole team
+	"""
+	team
 
-  """
-  notification that concerns a single member on the team
-  """
-  member
+	"""
+	notification that concerns a single member on the team
+	"""
+	member
 }

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Component, createRef, ReactNode} from 'react'
+import {Component, createRef, type ReactNode} from 'react'
 import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {

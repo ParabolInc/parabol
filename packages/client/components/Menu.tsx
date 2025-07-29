@@ -1,19 +1,18 @@
+import type * as React from 'react'
 import {
   Children,
   cloneElement,
   forwardRef,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState
 } from 'react'
-
-import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
-import {PortalStatus} from '../hooks/usePortal'
+import type {PortalStatus} from '../hooks/usePortal'
 import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick

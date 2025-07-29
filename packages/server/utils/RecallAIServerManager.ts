@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {TranscriptBlock} from '../postgres/types'
+import type {TranscriptBlock} from '../postgres/types'
 import logError from './logError'
 
 const RECALL_API_BASE_URL = 'https://us-west-2.recall.ai/api/v1'

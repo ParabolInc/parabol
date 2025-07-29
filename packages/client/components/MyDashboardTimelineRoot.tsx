@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import myDashboardTimelineQuery, {
-  MyDashboardTimelineQuery
+  type MyDashboardTimelineQuery
 } from '../__generated__/MyDashboardTimelineQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'

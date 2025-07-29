@@ -1,5 +1,5 @@
-import {AbstractEmbeddingsModel, EmbeddingsTableName} from './AbstractEmbeddingsModel'
-import {AbstractGenerationModel} from './AbstractGenerationModel'
+import type {AbstractEmbeddingsModel, EmbeddingsTableName} from './AbstractEmbeddingsModel'
+import type {AbstractGenerationModel} from './AbstractGenerationModel'
 import OpenAIGeneration from './OpenAIGeneration'
 import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
@@ -27,7 +27,7 @@ export class ModelManager {
     let models
     try {
       models = JSON.parse(envValue)
-    } catch (e) {
+    } catch {
       throw new Error(`Invalid Env Var: ${envVar}. Must be a valid JSON`)
     }
 

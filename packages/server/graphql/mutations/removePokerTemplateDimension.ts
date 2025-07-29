@@ -4,7 +4,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RemovePokerTemplateDimensionPayload from '../types/RemovePokerTemplateDimensionPayload'
 
 const removePokerTemplateDimension = {
@@ -29,7 +29,9 @@ const removePokerTemplateDimension = {
 
     // AUTH
     if (!dimension || dimension.removedAt) {
-      return standardError(new Error('Dimension not found'), {userId: viewerId})
+      return standardError(new Error('Dimension not found'), {
+        userId: viewerId
+      })
     }
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -40,7 +42,9 @@ const removePokerTemplateDimension = {
     const dimensions = await dataLoader.get('templateDimensionsByTemplateId').load(templateId)
 
     if (dimensions.length <= 1) {
-      return standardError(new Error('No dimensions remain'), {userId: viewerId})
+      return standardError(new Error('No dimensions remain'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {PageSharingQuery} from '../../__generated__/PageSharingQuery.graphql'
 import {PageSharingAccessList} from './PageSharingAccessList'
 import {PageSharingInput} from './PageSharingInput'

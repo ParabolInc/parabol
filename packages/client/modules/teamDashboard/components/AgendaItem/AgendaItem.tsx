@@ -1,19 +1,19 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   AgendaItem_meeting$data,
   AgendaItem_meeting$key
 } from '~/__generated__/AgendaItem_meeting.graphql'
-import {AgendaItem_agendaItem$key} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
+import type {AgendaItem_agendaItem$key} from '../../../../__generated__/AgendaItem_agendaItem.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import IconButton from '../../../../components/IconButton'
 import MeetingSubnavItem from '../../../../components/MeetingSubnavItem'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
-import useGotoStageId from '../../../../hooks/useGotoStageId'
+import type useGotoStageId from '../../../../hooks/useGotoStageId'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import useTooltip from '../../../../hooks/useTooltip'
 import RemoveAgendaItemMutation from '../../../../mutations/RemoveAgendaItemMutation'

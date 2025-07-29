@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import {cn} from '../../ui/cn'
 
 import {ActivityCard} from './ActivityCard'
-import {AllCategoryID, CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from './Categories'
+import {type AllCategoryID, CATEGORY_ID_TO_NAME, CATEGORY_THEMES} from './Categories'
 
 interface Props {
   className?: string

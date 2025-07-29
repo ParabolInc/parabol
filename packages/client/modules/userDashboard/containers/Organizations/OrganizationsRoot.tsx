@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import organizationsQuery, {
-  OrganizationsQuery
+  type OrganizationsQuery
 } from '../../../../__generated__/OrganizationsQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../../types/constEnums'

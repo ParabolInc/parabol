@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UpdateRetroMaxVotesMutation as TUpdateRetroMaxVotesMutation} from '../__generated__/UpdateRetroMaxVotesMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {UpdateRetroMaxVotesMutation as TUpdateRetroMaxVotesMutation} from '../__generated__/UpdateRetroMaxVotesMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateRetroMaxVotesMutation_meeting on UpdateRetroMaxVotesSuccess {

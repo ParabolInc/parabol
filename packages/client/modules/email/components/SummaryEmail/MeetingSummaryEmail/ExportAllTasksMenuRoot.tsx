@@ -1,14 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
+import type {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
 import exportAllTasksMenuQuery, {
-  ExportAllTasksMenuQuery
+  type ExportAllTasksMenuQuery
 } from '../../../../../__generated__/ExportAllTasksMenuQuery.graphql'
-import {ExportAllTasksMenuRoot_meeting$key} from '../../../../../__generated__/ExportAllTasksMenuRoot_meeting.graphql'
+import type {ExportAllTasksMenuRoot_meeting$key} from '../../../../../__generated__/ExportAllTasksMenuRoot_meeting.graphql'
 import LoadingComponent from '../../../../../components/LoadingComponent/LoadingComponent'
-import {MenuProps} from '../../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../../hooks/useMutationProps'
+import type {MenuProps} from '../../../../../hooks/useMenu'
+import type {MenuMutationProps} from '../../../../../hooks/useMutationProps'
 import useQueryLoaderNow from '../../../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../../../types/constEnums'
 import ExportAllTasksMenu from './ExportAllTasksMenu'

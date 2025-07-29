@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {EditableTemplateScaleValueLabel_scale$key} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
-import {EditableTemplateScaleValueLabel_scaleValue$key} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
+import type {EditableTemplateScaleValueLabel_scale$key} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
+import type {EditableTemplateScaleValueLabel_scaleValue$key} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import EditableText from '../../../components/EditableText'
@@ -12,7 +12,9 @@ import {Threshold} from '../../../types/constEnums'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import Legitity from '../../../validation/Legitity'
 
-const StyledEditableText = styled(EditableText)<{disabled: boolean | undefined}>(({disabled}) => ({
+const StyledEditableText = styled(EditableText)<{
+  disabled: boolean | undefined
+}>(({disabled}) => ({
   fontFamily: PALETTE.SLATE_700,
   fontSize: 14,
   lineHeight: '24px',

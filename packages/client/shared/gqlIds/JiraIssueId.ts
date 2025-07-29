@@ -1,4 +1,5 @@
 import JiraProjectKeyId from './JiraProjectKeyId'
+
 const JiraIssueId = {
   join: (cloudId: string, issueKey: string) => `${cloudId}:${issueKey}`,
   split: (id: string) => {

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
-import {ArchiveTeamMutation_team$data} from '../__generated__/ArchiveTeamMutation_team.graphql'
-import {
+import type {ArchiveTeamMutation as TArchiveTeamMutation} from '../__generated__/ArchiveTeamMutation.graphql'
+import type {ArchiveTeamMutation_team$data} from '../__generated__/ArchiveTeamMutation_team.graphql'
+import type {
   HistoryLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
@@ -12,10 +12,10 @@ import {
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
-import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {

@@ -1,4 +1,4 @@
-import {AddReactjiToReactableSuccessResolvers, ReactableEnum} from '../../public/resolverTypes'
+import type {AddReactjiToReactableSuccessResolvers, ReactableEnum} from '../../public/resolverTypes'
 import {getReactable} from '../mutations/addReactjiToReactable'
 
 export type AddReactjiToReactableSuccessSource = {

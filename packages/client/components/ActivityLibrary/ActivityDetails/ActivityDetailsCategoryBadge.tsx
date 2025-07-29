@@ -2,11 +2,11 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
+import type {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
 import useTemplateCategoryMutation from '../../../mutations/UpdateTemplateCategoryMutation'
 import {cn} from '../../../ui/cn'
 import PlainButton from '../../PlainButton/PlainButton'
-import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, MAIN_CATEGORIES} from '../Categories'
+import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, type CategoryID, MAIN_CATEGORIES} from '../Categories'
 import ActivityDetailsBadge from './ActivityDetailsBadge'
 
 interface Props {

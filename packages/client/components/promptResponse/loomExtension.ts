@@ -1,5 +1,5 @@
 import {Node} from '@tiptap/core'
-import {JSONContent, mergeAttributes} from '@tiptap/react'
+import {type JSONContent, mergeAttributes} from '@tiptap/react'
 
 const LOOM_REGEX = /^(?:https?:\/\/)?(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/g
 

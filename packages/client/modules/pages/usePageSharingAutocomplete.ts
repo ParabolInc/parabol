@@ -215,7 +215,10 @@ export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete
       const autocompletedEmail = autocompleteEmail(params.inputValue, viewerDomain)
       const isAlreadyInvited = guests.some((guest) => guest.email === autocompletedEmail)
       if (inputValue.length > 0 && !isAlreadyInvited) {
-        filtered.unshift({type: 'external' as const, email: autocompletedEmail})
+        filtered.unshift({
+          type: 'external' as const,
+          email: autocompletedEmail
+        })
       }
       return filtered
     }

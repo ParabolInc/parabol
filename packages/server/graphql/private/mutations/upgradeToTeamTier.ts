@@ -9,7 +9,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 // included here to codegen has access to it
 export type UpgradeToTeamTierSuccessSource = {
@@ -34,7 +34,9 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
   const orgId = customer.metadata.orgId
   if (!orgId) {
-    return standardError(new Error('Customer does not have an orgId'), {userId})
+    return standardError(new Error('Customer does not have an orgId'), {
+      userId
+    })
   }
 
   const pg = getKysely()

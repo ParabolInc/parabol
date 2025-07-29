@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import JiraDimensionFieldId from '../../../client/shared/gqlIds/JiraDimensionFieldId'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 
 const JiraDimensionField = new GraphQLObjectType<any, GQLContext>({
   name: 'JiraDimensionField',

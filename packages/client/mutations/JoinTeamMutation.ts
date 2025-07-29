@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {JoinTeamMutation as TJoinTeamMutation} from '../__generated__/JoinTeamMutation.graphql'
-import {JoinTeamMutation_team$data} from '../__generated__/JoinTeamMutation_team.graphql'
-import {OnNextHandler, StandardMutation} from '../types/relayMutations'
+import type {JoinTeamMutation as TJoinTeamMutation} from '../__generated__/JoinTeamMutation.graphql'
+import type {JoinTeamMutation_team$data} from '../__generated__/JoinTeamMutation_team.graphql'
+import type {OnNextHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment JoinTeamMutation_team on JoinTeamSuccess {

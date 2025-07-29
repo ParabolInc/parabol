@@ -5,7 +5,7 @@ import HelpMenuContent from './HelpMenuContent'
 import HelpMenuHeader from './HelpMenuHeader'
 
 let permShow = 0
-interface Props {}
+type Props = {}
 
 const DemoGroupHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref

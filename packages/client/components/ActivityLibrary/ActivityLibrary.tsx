@@ -2,19 +2,19 @@ import * as ScrollArea from '@radix-ui/react-scroll-area'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useState} from 'react'
 import {
-  PreloadedQuery,
   commitLocalUpdate,
   fetchQuery,
+  type PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment
 } from 'react-relay'
 import {Redirect} from 'react-router'
 import {Link} from 'react-router-dom'
-import {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
-import {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
-import {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityLibraryTemplateSearch_query.graphql'
-import {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
-import {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
+import type {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
+import type {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
+import type {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
+import type {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/ActivityLibraryTemplateSearch_query.graphql'
+import type {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import useRouter from '../../hooks/useRouter'
@@ -27,11 +27,11 @@ import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import ActivityGrid from './ActivityGrid'
 import ActivityLibraryEmptyState from './ActivityLibraryEmptyState'
 import {
-  AllCategoryID,
+  type AllCategoryID,
   CATEGORY_ID_TO_NAME,
   CATEGORY_THEMES,
+  type CategoryID,
   CUSTOM_CATEGORY_ID,
-  CategoryID,
   QUICK_START_CATEGORY_ID
 } from './Categories'
 import SearchBar from './SearchBar'
@@ -140,10 +140,12 @@ const getTemplateDocumentValue = (
     template.type,
     template.team.name,
     CATEGORY_KEYWORDS[template.category as CategoryID] ?? [],
-    template.dimensions
-      ?.map((dimension) => [dimension.name, dimension.description, dimension.selectedScale.name])
-      .flat() ?? [],
-    template.prompts?.map((prompt) => [prompt.question, prompt.description]).flat() ?? []
+    template.dimensions?.flatMap((dimension) => [
+      dimension.name,
+      dimension.description,
+      dimension.selectedScale.name
+    ]) ?? [],
+    template.prompts?.flatMap((prompt) => [prompt.question, prompt.description]) ?? []
   ]
     .flat()
     .join('-')
@@ -259,7 +261,9 @@ export const ActivityLibrary = (props: Props) => {
       setIsSearching(true)
       // Avoid suspense while refreshing the search results, see
       // https://relay.dev/docs/guided-tour/refetching/refetching-fragments-with-different-data/#if-you-need-to-avoid-suspense
-      fetchQuery(atmosphere, templateSearchQuery, {search: debouncedSearchQuery}).subscribe({
+      fetchQuery(atmosphere, templateSearchQuery, {
+        search: debouncedSearchQuery
+      }).subscribe({
         complete: () => {
           refetchTemplateSearch({search: debouncedSearchQuery}, {fetchPolicy: 'store-only'})
           setIsSearching(false)

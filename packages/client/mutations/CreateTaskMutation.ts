@@ -1,15 +1,15 @@
-import {generateJSON, generateText, JSONContent} from '@tiptap/core'
+import {generateJSON, generateText, type JSONContent} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
-import Atmosphere from '../Atmosphere'
-import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
-import {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
-import {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
+import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import type {CreateTaskMutation_notification$data} from '../__generated__/CreateTaskMutation_notification.graphql'
+import type {CreateTaskMutation_task$data} from '../__generated__/CreateTaskMutation_task.graphql'
+import type Atmosphere from '../Atmosphere'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
-import {
+import type {
   OnNextHandler,
   OnNextHistoryContext,
   OptionalHandlers,

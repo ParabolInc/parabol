@@ -1,12 +1,11 @@
 import {ChangeHistory, GroupWork, History} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import CardsSVG from 'parabol-client/components/CardsSVG'
-import {ReactNode, useState} from 'react'
-
-import {
+import type {
   MeetingRow_meeting$key,
   MeetingTypeEnum
 } from 'parabol-client/__generated__/MeetingRow_meeting.graphql'
+import CardsSVG from 'parabol-client/components/CardsSVG'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'

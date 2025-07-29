@@ -1,5 +1,5 @@
 import countTiersForUserId from '../../queries/helpers/countTiersForUserId'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const suCountTiersForUser: QueryResolvers['suCountTiersForUser'] = async (
   _source,

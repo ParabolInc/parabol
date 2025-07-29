@@ -1,9 +1,9 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
-import {ReactElement} from 'react'
+import type {ReactElement} from 'react'
 import {useFragment} from 'react-relay'
-import {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
-import useGotoStageId from '~/hooks/useGotoStageId'
+import type {TeamHealth_meeting$key} from '~/__generated__/TeamHealth_meeting.graphql'
+import type useGotoStageId from '~/hooks/useGotoStageId'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
@@ -96,7 +96,9 @@ const TeamHealth = (props: Props) => {
                     <div
                       key={label}
                       className='m-3 flex h-32 w-20 flex-col justify-start rounded-sm'
-                      style={{backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)}}
+                      style={{
+                        backgroundColor: getTeamHealthVoteColor(votes, votes[index]!)
+                      }}
                     >
                       <div className='flex h-24 items-center justify-center text-4xl'>{label}</div>
                       <label className='text-center text-xl font-semibold text-white'>

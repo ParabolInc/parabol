@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {EndRetrospectiveMutation_notification$data} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
-import {EndRetrospectiveMutation_team$data} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
+import type {RecordProxy} from 'relay-runtime'
+import type {EndRetrospectiveMutation_notification$data} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
+import type {EndRetrospectiveMutation_team$data} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__generated__/EndRetrospectiveMutation.graphql'
+import type {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__generated__/EndRetrospectiveMutation.graphql'
 import {RetroDemo} from '../types/constEnums'
-import {
+import type {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
@@ -167,7 +167,10 @@ const EndRetrospectiveMutation: StandardMutation<
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endRetrospectiveTeamOnNext(res.endRetrospective as any, {atmosphere, history})
+      endRetrospectiveTeamOnNext(res.endRetrospective as any, {
+        atmosphere,
+        history
+      })
     },
     onError
   })

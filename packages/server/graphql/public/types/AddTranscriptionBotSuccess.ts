@@ -1,4 +1,4 @@
-import {AddTranscriptionBotSuccessResolvers} from '../resolverTypes'
+import type {AddTranscriptionBotSuccessResolvers} from '../resolverTypes'
 
 export type AddTranscriptionBotSuccessSource = {
   meetingId: string

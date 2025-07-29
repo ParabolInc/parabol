@@ -1,5 +1,5 @@
 import {Close} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import {cn} from '../cn'
 
 interface Props {

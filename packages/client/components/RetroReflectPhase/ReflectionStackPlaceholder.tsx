@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {forwardRef, Ref} from 'react'
+import {forwardRef, type Ref} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import {Breakpoint, Card, ElementHeight, ElementWidth, Gutters} from '../../types/constEnums'
 

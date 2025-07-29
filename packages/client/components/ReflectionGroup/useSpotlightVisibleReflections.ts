@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import type {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
 
 const useSpotlightVisibleReflections = (
   reflections: ReflectionGroup_reflectionGroup$data['reflections'],

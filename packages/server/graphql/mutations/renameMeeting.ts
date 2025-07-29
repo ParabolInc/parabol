@@ -5,7 +5,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RenameMeetingPayload from '../types/RenameMeetingPayload'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 
@@ -38,7 +38,9 @@ const renameMeeting = {
     const {facilitatorUserId, teamId} = meeting
     const viewerId = getUserId(authToken)
     if (viewerId !== facilitatorUserId) {
-      return {error: {message: 'Only the facilitator can change the meeting name'}}
+      return {
+        error: {message: 'Only the facilitator can change the meeting name'}
+      }
     }
 
     // VALIDATION
@@ -48,7 +50,9 @@ const renameMeeting = {
 
     const links = linkify.match(name)
     if (links) {
-      return standardError(new Error('Name cannot be a hyperlink'), {userId: viewerId})
+      return standardError(new Error('Name cannot be a hyperlink'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailDiscussionMentioned_notification$key} from 'parabol-client/__generated__/EmailDiscussionMentioned_notification.graphql'
-import * as React from 'react'
+import type {EmailDiscussionMentioned_notification$key} from 'parabol-client/__generated__/EmailDiscussionMentioned_notification.graphql'
+import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import {useTipTapContext} from '../../../../components/TipTapProvider'
 import {cardShadow} from '../../../../styles/elevation'

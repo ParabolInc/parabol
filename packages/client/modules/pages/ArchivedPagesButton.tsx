@@ -3,6 +3,7 @@ import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+
 interface Props {
   Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
   tooltip: string

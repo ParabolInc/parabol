@@ -1,1 +1,3 @@
-union SetIsFreeMeetingTemplatePayload = ErrorPayload | SetIsFreeMeetingTemplateSuccess
+union SetIsFreeMeetingTemplatePayload =
+	| ErrorPayload
+	| SetIsFreeMeetingTemplateSuccess

@@ -27,7 +27,7 @@ import {
   WebAsset,
   Widgets
 } from '@mui/icons-material'
-import {ReactNode, forwardRef} from 'react'
+import {forwardRef, type ReactNode} from 'react'
 
 const LabelBlock = styled('div')({
   alignItems: 'center',
@@ -43,18 +43,19 @@ const Label = styled('div')<{iconAfter?: boolean}>(({iconAfter}) => ({
   whiteSpace: 'nowrap'
 }))
 
-const StyledIcon = styled('div')<{iconAfter: boolean | undefined; iconLarge: boolean | undefined}>(
-  ({iconAfter, iconLarge}) => ({
-    color: 'inherit',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    order: iconAfter ? 2 : undefined,
-    svg: {
-      fontSize: iconLarge ? 24 : 18
-    }
-  })
-)
+const StyledIcon = styled('div')<{
+  iconAfter: boolean | undefined
+  iconLarge: boolean | undefined
+}>(({iconAfter, iconLarge}) => ({
+  color: 'inherit',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  order: iconAfter ? 2 : undefined,
+  svg: {
+    fontSize: iconLarge ? 24 : 18
+  }
+}))
 
 interface Props {
   //FIXME 6062: change to React.ComponentType

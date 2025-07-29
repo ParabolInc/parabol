@@ -1,4 +1,4 @@
-import {NotifyPromptToJoinOrgResolvers} from '../resolverTypes'
+import type {NotifyPromptToJoinOrgResolvers} from '../resolverTypes'
 
 const NotifyPromptToJoinOrg: NotifyPromptToJoinOrgResolvers = {
   __isTypeOf: ({type}) => type === 'PROMPT_TO_JOIN_ORG'

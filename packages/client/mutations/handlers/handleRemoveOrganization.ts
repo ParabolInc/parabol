@@ -1,4 +1,4 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 
 const handleRemoveOrganization = (orgId: string, store: RecordSourceSelectorProxy) => {

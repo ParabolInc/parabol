@@ -6,7 +6,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RemoveReflectionPayload from '../types/RemoveReflectionPayload'
 
 export default {
@@ -31,7 +31,9 @@ export default {
     const reflection = await dataLoader.get('retroReflections').load(reflectionId)
     dataLoader.get('retroReflections').clear(reflectionId)
     if (!reflection) {
-      return standardError(new Error('Reflection not found'), {userId: viewerId})
+      return standardError(new Error('Reflection not found'), {
+        userId: viewerId
+      })
     }
     const {creatorId, meetingId, reflectionGroupId} = reflection
     if (creatorId !== viewerId) {
@@ -42,9 +44,14 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
     if (isPhaseComplete('group', phases)) {
-      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+      return standardError(new Error('Meeting phase already completed'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

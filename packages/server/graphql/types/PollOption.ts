@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import PollId from 'parabol-client/shared/gqlIds/PollId'
 import PollOptionId from '../../../client/shared/gqlIds/PollOptionId'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Poll from './Poll'
 

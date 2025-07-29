@@ -2,7 +2,7 @@ import {sql} from 'kysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import standardError from '../../../utils/standardError'
 import {generateRetroSummary} from '../../mutations/helpers/generateRetroSummary'
-import {MutationResolvers, RetrospectiveMeeting} from '../resolverTypes'
+import type {MutationResolvers, RetrospectiveMeeting} from '../resolverTypes'
 
 const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = async (
   _source,

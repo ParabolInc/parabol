@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
-import {useMeeting_meeting$key} from '~/__generated__/useMeeting_meeting.graphql'
+import type {useMeeting_meeting$key} from '~/__generated__/useMeeting_meeting.graphql'
 import isDemoRoute from '~/utils/isDemoRoute'
 import {Breakpoint} from '../types/constEnums'
 import useAutoCheckIn from './useAutoCheckIn'

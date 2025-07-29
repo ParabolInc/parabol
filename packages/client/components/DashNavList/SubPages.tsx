@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
 import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {LeftNavPageLink} from './LeftNavPageLink'

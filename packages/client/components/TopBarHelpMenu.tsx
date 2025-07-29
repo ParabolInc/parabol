@@ -1,6 +1,6 @@
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint, ExternalLinks} from '~/types/constEnums'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import useSWVersion from '../hooks/useSWVersion'
 import Menu from './Menu'
 import MenuItem from './MenuItem'

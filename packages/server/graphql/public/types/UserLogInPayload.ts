@@ -1,4 +1,4 @@
-import {UserLogInPayloadResolvers} from '../resolverTypes'
+import type {UserLogInPayloadResolvers} from '../resolverTypes'
 
 export type UserLogInPayloadSource =
   | {

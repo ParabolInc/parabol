@@ -1,4 +1,4 @@
-import {AcceptRequestToJoinDomainSuccessResolvers} from '../resolverTypes'
+import type {AcceptRequestToJoinDomainSuccessResolvers} from '../resolverTypes'
 
 export type AcceptRequestToJoinDomainSuccessSource = {
   viewerId: string

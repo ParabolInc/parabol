@@ -2,7 +2,7 @@ import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {verifyMassInviteToken} from '../../../utils/massInviteToken'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 const handleMassInviteToken = async (
   invitationToken: string,

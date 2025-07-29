@@ -1,9 +1,9 @@
 import {Close} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {twMerge} from 'tailwind-merge'
-import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
+import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 

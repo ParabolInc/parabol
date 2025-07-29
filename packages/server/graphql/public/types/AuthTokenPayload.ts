@@ -1,6 +1,6 @@
 import AuthToken from '../../../database/types/AuthToken'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
-import {AuthTokenPayloadResolvers} from '../resolverTypes'
+import type {AuthTokenPayloadResolvers} from '../resolverTypes'
 
 export type AuthTokenPayloadSource = {
   tms: string[]

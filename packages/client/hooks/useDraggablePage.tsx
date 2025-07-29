@@ -1,6 +1,6 @@
-import * as React from 'react'
+import type * as React from 'react'
 import {useRef} from 'react'
-import {commitLocalUpdate, ConnectionHandler} from 'relay-runtime'
+import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
@@ -89,7 +89,9 @@ export const useDraggablePage = (
     }
     document.addEventListener('pointermove', onPointerMove)
     document.addEventListener('pointerup', onPointerUp, {once: true})
-    document.addEventListener('pointercancel', () => cleanupDrag(), {once: true})
+    document.addEventListener('pointercancel', () => cleanupDrag(), {
+      once: true
+    })
     window.addEventListener('blur', cleanupDrag, {once: true})
   })
 
@@ -134,7 +136,7 @@ export const useDraggablePage = (
           child.getAttribute('pageCode') === (pageCode as any) &&
           child.getAttribute('canonical') === (true as any)
       )
-      let toIdx: number | undefined = undefined
+      let toIdx: number | undefined
       let curCanonIdx = -1
       children.forEach((child, idx) => {
         if (child instanceof Y.XmlElement && child.getAttribute('canonical') === (true as any)) {

@@ -1,6 +1,6 @@
-import {Updateable} from 'kysely'
+import type {Updateable} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
-import {DB} from '../../../postgres/types/pg'
+import type {DB} from '../../../postgres/types/pg'
 
 type FilterType = Omit<Updateable<DB['ScheduledJob']>, 'runAt'>
 

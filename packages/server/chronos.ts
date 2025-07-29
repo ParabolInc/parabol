@@ -95,7 +95,9 @@ const chronos = (leaderRunner: LeaderRunner) => {
     updateTokens: {
       onTick: () => {
         const query = `mutation UpdateOAuthTokens($updatedBefore: DateTime!) { updateOAuthRefreshTokens(updatedBefore: $updatedBefore) }`
-        const variables = {updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()}
+        const variables = {
+          updatedBefore: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toJSON()
+        }
         return callGQL(query, variables)
       },
       cronTime: CHRONOS_UPDATE_TOKENS

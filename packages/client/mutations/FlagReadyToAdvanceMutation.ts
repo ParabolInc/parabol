@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {FlagReadyToAdvanceMutation as TFlagReadyToAdvanceMutation} from '../__generated__/FlagReadyToAdvanceMutation.graphql'
-import {SimpleMutation} from '../types/relayMutations'
+import type {FlagReadyToAdvanceMutation as TFlagReadyToAdvanceMutation} from '../__generated__/FlagReadyToAdvanceMutation.graphql'
+import type {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment FlagReadyToAdvanceMutation_meeting on FlagReadyToAdvanceSuccess {

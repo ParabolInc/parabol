@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {EndTeamPromptSuccessResolvers} from '../resolverTypes'
+import type {EndTeamPromptSuccessResolvers} from '../resolverTypes'
 
 export type EndTeamPromptSuccessSource = {
   meetingId: string

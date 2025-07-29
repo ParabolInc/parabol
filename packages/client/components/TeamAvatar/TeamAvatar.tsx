@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import {themeBackgroundColors} from '../../shared/themeBackgroundColors'
 import {cn} from '../../ui/cn'
 

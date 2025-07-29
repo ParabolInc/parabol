@@ -1,8 +1,8 @@
-import {ExpressionOrFactory, SqlBool, sql} from 'kysely'
-import {DB} from 'parabol-server/postgres/types/pg'
+import {type ExpressionOrFactory, type SqlBool, sql} from 'kysely'
+import type {DB} from 'parabol-server/postgres/types/pg'
 import {Logger} from 'parabol-server/utils/Logger'
 import getKysely from '../server/postgres/getKysely'
-import {AddEmbeddingsMetadataParams} from './addEmbeddingsMetadata'
+import type {AddEmbeddingsMetadataParams} from './addEmbeddingsMetadata'
 import {insertDiscussionsIntoMetadataAndQueue} from './insertDiscussionsIntoMetadataAndQueue'
 
 export interface DiscussionMeta {

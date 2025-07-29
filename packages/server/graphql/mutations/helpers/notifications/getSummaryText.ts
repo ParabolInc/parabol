@@ -1,7 +1,7 @@
 import relativeDate from 'parabol-client/utils/date/relativeDate'
 import plural from 'parabol-client/utils/plural'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {AnyMeeting} from '../../../../postgres/types/Meeting'
+import type {AnyMeeting} from '../../../../postgres/types/Meeting'
 import logError from '../../../../utils/logError'
 
 const getSummaryText = async (meeting: AnyMeeting) => {

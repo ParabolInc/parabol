@@ -1,6 +1,6 @@
 import fromTeamMemberId from '../../../../client/utils/relay/fromTeamMemberId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {NewMeetingTeamMemberStageResolvers} from '../resolverTypes'
+import type {NewMeetingTeamMemberStageResolvers} from '../resolverTypes'
 
 const NewMeetingTeamMemberStage: NewMeetingTeamMemberStageResolvers = {
   meetingMember: async ({meetingId, teamMemberId}, _args, {dataLoader}) => {

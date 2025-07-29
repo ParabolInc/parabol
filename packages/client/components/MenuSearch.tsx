@@ -1,11 +1,7 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import {useCallback, useRef} from 'react'
 import {PALETTE} from '../styles/paletteV3'
-
-interface Props {
-  placeholder: string
-}
 
 const Input = styled('input')({
   appearance: 'none',

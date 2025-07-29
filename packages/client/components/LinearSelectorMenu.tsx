@@ -1,6 +1,6 @@
 import {CircularProgress} from '@mui/material'
-import {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
-import {MenuProps} from '../hooks/useMenu'
+import type {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
+import type {MenuProps} from '../hooks/useMenu'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'

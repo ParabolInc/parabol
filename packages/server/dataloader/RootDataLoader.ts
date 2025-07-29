@@ -1,4 +1,4 @@
-import DataLoader from 'dataloader'
+import type DataLoader from 'dataloader'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'

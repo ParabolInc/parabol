@@ -1,5 +1,5 @@
 import {sign} from 'jsonwebtoken'
-import AuthToken from '../database/types/AuthToken'
+import type AuthToken from '../database/types/AuthToken'
 
 const SERVER_SECRET = process.env.SERVER_SECRET!
 const encodeAuthToken = (authToken: AuthToken) => {

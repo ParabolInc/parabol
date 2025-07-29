@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
 import {useState} from 'react'
-import {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
+import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
 import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
@@ -72,47 +72,49 @@ const StyledIcon = styled('span')({
   }
 })
 
-const Plan = styled('div')<{tier: TierEnum; isTablet: boolean; isActive: boolean}>(
-  ({tier, isTablet, isActive}) => ({
-    background:
-      tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
-    fontSize: 12,
-    fontWeight: 600,
-    lineHeight: '16px',
-    textTransform: 'capitalize',
-    textAlign: 'center',
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginBottom: isTablet ? 0 : '8px',
-    marginRight: isTablet ? '8px' : 0,
-    padding: '16px 8px',
-    borderRadius: 4,
-    border: '2px solid white',
-    outline: isActive
-      ? tier === 'starter'
-        ? `2px solid ${PALETTE.GRAPE_500}`
+const Plan = styled('div')<{
+  tier: TierEnum
+  isTablet: boolean
+  isActive: boolean
+}>(({tier, isTablet, isActive}) => ({
+  background:
+    tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
+  fontSize: 12,
+  fontWeight: 600,
+  lineHeight: '16px',
+  textTransform: 'capitalize',
+  textAlign: 'center',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  alignItems: 'center',
+  marginBottom: isTablet ? 0 : '8px',
+  marginRight: isTablet ? '8px' : 0,
+  padding: '16px 8px',
+  borderRadius: 4,
+  border: '2px solid white',
+  outline: isActive
+    ? tier === 'starter'
+      ? `2px solid ${PALETTE.GRAPE_500}`
+      : tier === 'team'
+        ? `2px solid ${PALETTE.AQUA_400}`
+        : `2px solid ${PALETTE.TOMATO_400}`
+    : '2px solid transparent',
+  transition: 'all ease 0.5s',
+  '&:hover': {
+    outline: `2px solid ${
+      tier === 'starter'
+        ? PALETTE.GRAPE_500
         : tier === 'team'
-          ? `2px solid ${PALETTE.AQUA_400}`
-          : `2px solid ${PALETTE.TOMATO_400}`
-      : '2px solid transparent',
-    transition: 'all ease 0.5s',
-    '&:hover': {
-      outline: `2px solid ${
-        tier === 'starter'
-          ? PALETTE.GRAPE_500
-          : tier === 'team'
-            ? PALETTE.AQUA_400
-            : PALETTE.TOMATO_500
-      }`
-    },
-    '&:last-of-type': {
-      marginBottom: 0,
-      marginRight: 0
-    }
-  })
-)
+          ? PALETTE.AQUA_400
+          : PALETTE.TOMATO_500
+    }`
+  },
+  '&:last-of-type': {
+    marginBottom: 0,
+    marginRight: 0
+  }
+}))
 
 const CTAButton = styled(BaseButton)<{
   buttonStyle: 'disabled' | 'primary' | 'secondary'

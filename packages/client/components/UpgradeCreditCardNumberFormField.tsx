@@ -1,6 +1,6 @@
 import {CreditCard} from '@mui/icons-material'
 import Cleave from 'cleave.js/react'
-import * as React from 'react'
+import type * as React from 'react'
 import UpgradeCreditCardFormFieldBlock from './UpgradeCreditCardFormFieldBlock'
 import UpgradeCreditCardFormFieldIcon from './UpgradeCreditCardFormFieldIcon'
 

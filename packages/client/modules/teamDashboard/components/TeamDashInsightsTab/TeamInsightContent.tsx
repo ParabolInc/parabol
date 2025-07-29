@@ -2,8 +2,9 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import {useFragment} from 'react-relay'
-import {TeamInsightContent_team$key} from '../../../../__generated__/TeamInsightContent_team.graphql'
+import type {TeamInsightContent_team$key} from '../../../../__generated__/TeamInsightContent_team.graphql'
 import renderMarkdown from '../../../../utils/renderMarkdown'
+
 interface Props {
   teamName: string
   insightRef: TeamInsightContent_team$key
@@ -78,7 +79,9 @@ const TeamInsightContent = (props: Props) => {
               <li key={index} className='text-sm text-slate-700'>
                 <span
                   className='link-style'
-                  dangerouslySetInnerHTML={{__html: renderMarkdown(challenge)}}
+                  dangerouslySetInnerHTML={{
+                    __html: renderMarkdown(challenge)
+                  }}
                 />
               </li>
             ))}

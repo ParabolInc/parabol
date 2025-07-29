@@ -18,7 +18,7 @@ import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 import {getIsEmailApprovedByOrg} from '../../public/mutations/helpers/getIsEmailApprovedByOrg'
 
@@ -54,7 +54,9 @@ const inviteToTeamHelper = async (
   const accepted = total - pending
   // if no one has accepted one of their 100+ invites, don't trust them
   if (accepted === 0 && total + invitees.length >= 100) {
-    return standardError(new Error('Exceeded unaccepted invitation limit'), {userId: viewerId})
+    return standardError(new Error('Exceeded unaccepted invitation limit'), {
+      userId: viewerId
+    })
   }
 
   const untrustedDomains = ['tempmail.cn', 'qq.com']

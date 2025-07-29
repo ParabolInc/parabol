@@ -1,5 +1,5 @@
+import type {HttpRequest} from 'uWebSockets.js'
 import qs from 'querystring'
-import {HttpRequest} from 'uWebSockets.js'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
 
 const getQueryToken = (req: HttpRequest, ignoreExp?: boolean) => {

@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ScopePhaseAreaJiraScoping_meeting$key} from '../__generated__/ScopePhaseAreaJiraScoping_meeting.graphql'
+import type {ScopePhaseAreaJiraScoping_meeting$key} from '../__generated__/ScopePhaseAreaJiraScoping_meeting.graphql'
 import JiraScopingSearchBar from './JiraScopingSearchBar'
 import JiraScopingSearchResultsRoot from './JiraScopingSearchResultsRoot'
+
 interface Props {
   meetingRef: ScopePhaseAreaJiraScoping_meeting$key
 }

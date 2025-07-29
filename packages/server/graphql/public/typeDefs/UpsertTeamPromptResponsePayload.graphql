@@ -1,1 +1,3 @@
-union UpsertTeamPromptResponsePayload = UpsertTeamPromptResponseSuccess | ErrorPayload
+union UpsertTeamPromptResponsePayload =
+	| UpsertTeamPromptResponseSuccess
+	| ErrorPayload

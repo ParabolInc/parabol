@@ -2,14 +2,14 @@ import graphql from 'babel-plugin-relay/macro'
 import jwtDecode from 'jwt-decode'
 import {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import type {AtlassianProviderRow_viewer$key} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
-import {AtlassianProviderRow_viewer$key} from '../../../../__generated__/AtlassianProviderRow_viewer.graphql'
 import AtlassianConfigMenu from '../../../../components/AtlassianConfigMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {AuthToken} from '../../../../types/AuthToken'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
+import type {AuthToken} from '../../../../types/AuthToken'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../../../utils/AtlassianClientManager'
 import ProviderRow from './ProviderRow'
@@ -53,7 +53,12 @@ const AtlassianProviderRow = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, error, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const mutationProps = {
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {atlassian} = integrations

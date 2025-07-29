@@ -1,4 +1,4 @@
-import {RecordProxy, Variables} from 'relay-runtime'
+import type {RecordProxy, Variables} from 'relay-runtime'
 
 export const getDescendingIdx = (
   newName: string | number,

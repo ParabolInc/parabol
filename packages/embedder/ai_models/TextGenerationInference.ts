@@ -1,8 +1,8 @@
 import {Logger} from '../../server/utils/Logger'
 import {
   AbstractGenerationModel,
-  GenerationModelParams,
-  GenerationOptions
+  type GenerationModelParams,
+  type GenerationOptions
 } from './AbstractGenerationModel'
 import fetchWithRetry from './helpers/fetchWithRetry'
 

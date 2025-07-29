@@ -2,15 +2,15 @@ import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
+import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import GitHubClientManager from '../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
-import JiraSVG from '../JiraSVG'
 import JiraServerSVG from '../JiraServerSVG'
+import JiraSVG from '../JiraSVG'
 import LinearSVG from '../LinearSVG'
 import ParabolLogoSVG from '../ParabolLogoSVG'
 import Tab from '../Tab/Tab'
@@ -110,7 +110,14 @@ const TeamPromptWorkDrawer = (props: Props) => {
         ]
       : []),
     ...(AtlassianClientManager.isAvailable
-      ? [{icon: <JiraSVG />, service: 'jira', label: 'Jira', Component: JiraIntegrationPanel}]
+      ? [
+          {
+            icon: <JiraSVG />,
+            service: 'jira',
+            label: 'Jira',
+            Component: JiraIntegrationPanel
+          }
+        ]
       : []),
     ...(hasLinear
       ? [

@@ -1,4 +1,4 @@
-import {DeleteCommentSuccessResolvers} from '../resolverTypes'
+import type {DeleteCommentSuccessResolvers} from '../resolverTypes'
 
 export type DeleteCommentSuccessSource = {
   commentId: string

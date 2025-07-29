@@ -1,5 +1,5 @@
-import {Repo} from '~/hooks/useGetRepoContributions'
-import {MenuProps} from '~/hooks/useMenu'
+import type {Repo} from '~/hooks/useGetRepoContributions'
+import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'

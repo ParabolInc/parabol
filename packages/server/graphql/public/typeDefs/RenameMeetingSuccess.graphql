@@ -1,6 +1,6 @@
 type RenameMeetingSuccess {
-  """
-  the renamed meeting
-  """
-  meeting: NewMeeting!
+	"""
+	the renamed meeting
+	"""
+	meeting: NewMeeting!
 }

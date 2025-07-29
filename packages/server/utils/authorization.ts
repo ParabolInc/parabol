@@ -1,6 +1,6 @@
-import AuthToken from '../database/types/AuthToken'
-import {DataLoaderWorker} from '../graphql/graphql'
-import {OrganizationUser} from '../postgres/types'
+import type AuthToken from '../database/types/AuthToken'
+import type {DataLoaderWorker} from '../graphql/graphql'
+import type {OrganizationUser} from '../postgres/types'
 
 export const getUserId = (authToken: any) => {
   return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''

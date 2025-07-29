@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
+import type {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {FilterLabels} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {useQueryParameterParser} from '../utils/useQueryParameterParser'
-import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
+import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 
 const TeamFilterMenu = lazyPreload(
   () =>

@@ -3,7 +3,7 @@ import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const PAGE_ROLES = ['owner', 'editor', 'commenter', 'viewer'] as const

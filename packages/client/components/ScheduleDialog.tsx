@@ -3,25 +3,25 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import * as React from 'react'
-import {ChangeEvent, useState} from 'react'
+import {type ChangeEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {RRule} from 'rrule'
-import {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
-import {CreateGcalEventInput} from '../__generated__/StartRetrospectiveMutation.graphql'
+import type {RRule} from 'rrule'
+import type {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
+import type {CreateGcalEventInput} from '../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import GcalSettings, {
-  GcalEventInput
+  type GcalEventInput
 } from '../modules/userDashboard/components/GcalModal/GcalSettings'
-import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
 import logo from '../styles/theme/images/graphics/google.svg'
-import {DialogActions} from '../ui/Dialog/DialogActions'
+import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../ui/cn'
+import {DialogActions} from '../ui/Dialog/DialogActions'
 import GcalClientManager from '../utils/GcalClientManager'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import plural from '../utils/plural'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Legitity from '../validation/Legitity'
 import PrimaryButton from './PrimaryButton'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
@@ -192,7 +192,10 @@ export const ScheduleDialog = (props: Props) => {
             <EventRepeat className='mr-2 text-slate-600' />
             <div className='grow text-left text-lg leading-none font-semibold'>
               {rrule
-                ? toHumanReadable(rrule, {useShortNames: true, shortDayNameAfter: 1})
+                ? toHumanReadable(rrule, {
+                    useShortNames: true,
+                    shortDayNameAfter: 1
+                  })
                 : 'Does not restart'}
             </div>
             <ExpandMore className={cn(openRecurrence && 'rotate-180')} />

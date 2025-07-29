@@ -1,11 +1,11 @@
-import {JSONContent} from '@tiptap/core'
-import {GraphQLResolveInfo} from 'graphql'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import LinearProjectId from '../../../../client/shared/gqlIds/LinearProjectId'
 import {splitTipTapContent} from '../../../../client/shared/tiptap/splitTipTapContent'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
-import {TeamMemberIntegrationAuth} from '../../../postgres/types'
+import type {TeamMemberIntegrationAuth} from '../../../postgres/types'
 import {convertTipTapToMarkdown} from '../../../utils/convertTipTapToMarkdown'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 const createLinearTask = async (
   rawContentJSON: JSONContent,

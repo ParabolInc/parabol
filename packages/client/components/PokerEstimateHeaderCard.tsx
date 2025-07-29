@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {
+import type {
   PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
@@ -8,7 +8,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import renderMarkdown from '../utils/renderMarkdown'
 import PokerEstimateHeaderCardContent, {
-  PokerEstimateHeaderCardContentProps
+  type PokerEstimateHeaderCardContentProps
 } from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
@@ -26,7 +26,7 @@ const getHeaderFields = (
   const {__typename} = integration
   switch (__typename) {
     case 'JiraServerIssue':
-    case 'JiraIssue':
+    case 'JiraIssue': {
       const name = __typename === 'JiraIssue' ? 'Jira' : 'Jira Data Center'
       const {summary, descriptionHTML, jiraUrl, issueKey} = integration
       return {
@@ -36,7 +36,8 @@ const getHeaderFields = (
         linkTitle: `${name} Issue #${issueKey}`,
         linkText: issueKey
       }
-    case '_xGitHubIssue':
+    }
+    case '_xGitHubIssue': {
       const {number, title: githubTitle, bodyHTML, ghUrl} = integration
       return {
         cardTitle: githubTitle,
@@ -45,7 +46,8 @@ const getHeaderFields = (
         linkTitle: `GitHub Issue #${number}`,
         linkText: `#${number}`
       }
-    case 'AzureDevOpsWorkItem':
+    }
+    case 'AzureDevOpsWorkItem': {
       const {
         title: azureDevOpsTitle,
         url: azureDevOpsUrl,
@@ -59,7 +61,8 @@ const getHeaderFields = (
         linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
         linkText: `#${workItemId}`
       }
-    case '_xGitLabIssue':
+    }
+    case '_xGitLabIssue': {
       const {iid, title: gitlabTitle, descriptionHtml, webUrl} = integration
       return {
         cardTitle: gitlabTitle,
@@ -68,7 +71,8 @@ const getHeaderFields = (
         linkTitle: `GitLab Issue #${iid}`,
         linkText: `#${iid}`
       }
-    case '_xLinearIssue':
+    }
+    case '_xLinearIssue': {
       const {identifier, title: linearTitle, description, url} = integration
       const linearDescHTML = renderMarkdown(description ?? '_no description found_')
       return {
@@ -78,6 +82,7 @@ const getHeaderFields = (
         linkTitle: `Linear Issue #${identifier}`,
         linkText: `#${identifier}`
       }
+    }
   }
   return null
 }

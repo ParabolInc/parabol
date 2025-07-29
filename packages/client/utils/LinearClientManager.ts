@@ -1,6 +1,6 @@
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import {OAUTH_LOCAL_STORAGE_KEY} from '../components/AuthProvider'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
@@ -22,7 +22,11 @@ class LinearClientManager {
 
     const hash = Math.random().toString(36).substring(5)
     const providerState = btoa(
-      JSON.stringify({hash, origin: window.location.origin, service: 'linear'})
+      JSON.stringify({
+        hash,
+        origin: window.location.origin,
+        service: 'linear'
+      })
     )
 
     const redirectUri = makeHref(LinearClientManager.REDIRECT_PATH)

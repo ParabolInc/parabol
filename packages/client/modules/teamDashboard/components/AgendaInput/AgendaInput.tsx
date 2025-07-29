@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {AgendaInput_team$key} from '../../../../__generated__/AgendaInput_team.graphql'
+import type {AgendaInput_team$key} from '../../../../__generated__/AgendaInput_team.graphql'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAtmosphereListener from '../../../../hooks/useAtmosphereListener'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -61,7 +61,9 @@ const InputField = styled('input')<{disabled: boolean}>(
     return (
       !disabled && {
         cursor: 'text',
-        ...makeFieldColorPalette('cool', true, {backgroundColor: 'transparent'})
+        ...makeFieldColorPalette('cool', true, {
+          backgroundColor: 'transparent'
+        })
       }
     )
   }

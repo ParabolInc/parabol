@@ -1,7 +1,7 @@
-import {RefObject, useEffect, useState} from 'react'
+import {type RefObject, useEffect, useState} from 'react'
 import {MAX_SPOTLIGHT_COLUMNS} from '~/utils/constants'
+import type {SpotlightResultsQuery} from './../__generated__/SpotlightResultsQuery.graphql'
 import {ElementWidth} from '../types/constEnums'
-import {SpotlightResultsQuery} from './../__generated__/SpotlightResultsQuery.graphql'
 import useInitialRender from './useInitialRender'
 import useResizeObserver from './useResizeObserver'
 

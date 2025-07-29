@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {BatchArchiveTasksSuccessResolvers} from '../resolverTypes'
+import type {BatchArchiveTasksSuccessResolvers} from '../resolverTypes'
 
 export type BatchArchiveTasksSuccessSource = {
   archivedTaskIds: string[]

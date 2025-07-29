@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {FormEvent, useEffect, useRef, useState} from 'react'
+import type * as React from 'react'
+import {type FormEvent, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
-import {
+import type {
   NewTemplateScaleValueLabelInput_scale$data,
   NewTemplateScaleValueLabelInput_scale$key
 } from '../../../__generated__/NewTemplateScaleValueLabelInput_scale.graphql'

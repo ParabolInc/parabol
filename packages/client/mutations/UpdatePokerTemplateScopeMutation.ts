@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {UpdatePokerTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdatePokerTemplateScopeMutation.graphql'
-import {
+import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
+import type {UpdatePokerTemplateScopeMutation as TUpdateTemplateScopeMutation} from '../__generated__/UpdatePokerTemplateScopeMutation.graphql'
+import type {
   SharingScopeEnum,
   UpdatePokerTemplateScopeMutation_organization$data
 } from '../__generated__/UpdatePokerTemplateScopeMutation_organization.graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import getBaseRecord from '../utils/relay/getBaseRecord'
 import getCachedRecord from '../utils/relay/getCachedRecord'
@@ -99,7 +99,9 @@ const handleUpdateTemplateScope = (
   teamIds.forEach((teamId) => {
     const team = store.get(teamId)
     if (!team) return
-    const meetingSettings = team.getLinkedRecord('meetingSettings', {meetingType: 'poker'})
+    const meetingSettings = team.getLinkedRecord('meetingSettings', {
+      meetingType: 'poker'
+    })
     if (!meetingSettings) return
     // this is on the ORG subscription, so this won't affect anything on a PUBLIC list because they're at least on the same org
     const scopeList = teamId === templateTeamId ? 'TEAM' : 'ORGANIZATION'
@@ -140,7 +142,10 @@ const UpdatePokerTemplateScopeMutation: StandardMutation<TUpdateTemplateScopeMut
     updater: (store) => {
       const payload = store.getRootField('updateTemplateScope')
       if (!payload) return
-      updateTemplateScopeOrganizationUpdater(payload as any, {atmosphere, store})
+      updateTemplateScopeOrganizationUpdater(payload as any, {
+        atmosphere,
+        store
+      })
     },
     optimisticUpdater: (store) => {
       const {scope, templateId} = variables

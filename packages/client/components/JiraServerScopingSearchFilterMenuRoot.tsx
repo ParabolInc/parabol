@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useLazyLoadQuery} from 'react-relay'
-import {JiraServerScopingSearchFilterMenuRootQuery} from '../__generated__/JiraServerScopingSearchFilterMenuRootQuery.graphql'
-import {MenuProps} from '../hooks/useMenu'
+import type {JiraServerScopingSearchFilterMenuRootQuery} from '../__generated__/JiraServerScopingSearchFilterMenuRootQuery.graphql'
+import type {MenuProps} from '../hooks/useMenu'
 import JiraScopingSearchFilterMenu from './JiraScopingSearchFilterMenu'
 
 const query = graphql`

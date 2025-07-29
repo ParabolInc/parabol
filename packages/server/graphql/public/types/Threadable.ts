@@ -1,4 +1,4 @@
-import {ResolversParentTypes, ThreadableResolvers} from '../resolverTypes'
+import type {ResolversParentTypes, ThreadableResolvers} from '../resolverTypes'
 
 export type ThreadableSource = (ResolversParentTypes['Task'] | ResolversParentTypes['Comment']) & {
   threadParentId: string

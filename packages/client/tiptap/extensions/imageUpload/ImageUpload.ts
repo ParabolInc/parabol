@@ -1,4 +1,4 @@
-import {ReactNodeViewRenderer, type Editor} from '@tiptap/react'
+import {type Editor, ReactNodeViewRenderer} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 

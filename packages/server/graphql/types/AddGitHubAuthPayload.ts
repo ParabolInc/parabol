@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import GitHubIntegration from './GitHubIntegration'
 import StandardMutationError from './StandardMutationError'
 import TeamMember from './TeamMember'

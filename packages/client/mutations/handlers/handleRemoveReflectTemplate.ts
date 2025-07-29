@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getReflectTemplateOrgConn from '../connections/getReflectTemplateOrgConn'

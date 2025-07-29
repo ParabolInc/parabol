@@ -1,8 +1,8 @@
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
-import {GetProjectIssuesQuery, IssuableState, IssueSort} from '../../../types/gitlabTypes'
+import type {GetProjectIssuesQuery, IssuableState, IssueSort} from '../../../types/gitlabTypes'
 import logError from '../../../utils/logError'
 import fetchGitLabProjects from '../../queries/helpers/fetchGitLabProjects'
-import {GitLabIntegrationResolvers} from '../resolverTypes'
+import type {GitLabIntegrationResolvers} from '../resolverTypes'
 
 export type GitLabIntegrationSource = {
   teamId: string
@@ -52,7 +52,10 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
     const {projectsIds} = args
     const after = args?.after ?? ''
     const {dataLoader} = context
-    const emptyConnection = {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
+    const emptyConnection = {
+      edges: [],
+      pageInfo: {hasNextPage: false, hasPreviousPage: false}
+    }
     const auth = await dataLoader
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'gitlab', teamId, userId})
@@ -78,7 +81,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
     let parsedAfter: CursorDetails[] | null
     try {
       parsedAfter = after.length ? JSON.parse(after) : null
-    } catch (e) {
+    } catch {
       logError(new Error('Error parsing after'), {userId, tags: {after}})
       return emptyConnection
     }

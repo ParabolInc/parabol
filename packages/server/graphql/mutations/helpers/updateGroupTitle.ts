@@ -1,6 +1,6 @@
 import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
-import {DataLoaderWorker} from '../../graphql'
-import {RetroReflection} from '../../public/resolverTypes'
+import type {DataLoaderWorker} from '../../graphql'
+import type {RetroReflection} from '../../public/resolverTypes'
 import canAccessAI from './canAccessAI'
 import generateAIGroupTitle from './generateAIGroupTitle'
 import updateSmartGroupTitle from './updateReflectionLocation/updateSmartGroupTitle'

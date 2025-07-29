@@ -2,7 +2,7 @@
  * No need to mess with this unless we add subscriptions to the private schema
  */
 import importAll from '../../utils/importAll'
-import {Resolvers} from './resolverTypes'
+import type {Resolvers} from './resolverTypes'
 
 const resolvers: Resolvers = {
   Mutation: {

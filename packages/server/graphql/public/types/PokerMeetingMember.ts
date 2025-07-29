@@ -1,4 +1,4 @@
-import {PokerMeetingMemberResolvers} from '../resolverTypes'
+import type {PokerMeetingMemberResolvers} from '../resolverTypes'
 
 const PokerMeetingMember: PokerMeetingMemberResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'poker'

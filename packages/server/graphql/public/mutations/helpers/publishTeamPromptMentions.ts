@@ -1,7 +1,7 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import generateUID from '../../../../generateUID'
 import getKysely from '../../../../postgres/getKysely'
-import {TeamPromptResponse} from '../../../../postgres/types'
+import type {TeamPromptResponse} from '../../../../postgres/types'
 
 const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
   if (content.type === 'mention' && content.attrs?.id) {
@@ -12,7 +12,7 @@ const getMentionedUserIdsFromContent = (content: JSONContent): string[] => {
     return []
   }
 
-  return content.content.map(getMentionedUserIdsFromContent).flat()
+  return content.content.flatMap(getMentionedUserIdsFromContent)
 }
 
 const createTeamPromptMentionNotifications = async (

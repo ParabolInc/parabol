@@ -2,18 +2,18 @@
 A connection to a list of items.
 """
 type GitLabIntegrationConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
+	"""
+	Information to aid in pagination.
+	"""
+	pageInfo: PageInfo!
 
-  """
-  A list of edges.
-  """
-  edges: [GitLabIntegrationEdge!]!
+	"""
+	A list of edges.
+	"""
+	edges: [GitLabIntegrationEdge!]!
 
-  """
-  An error with the connection, if any
-  """
-  error: StandardMutationError
+	"""
+	An error with the connection, if any
+	"""
+	error: StandardMutationError
 }

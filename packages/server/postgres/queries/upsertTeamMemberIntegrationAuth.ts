@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IntegrationProviderServiceEnum,
+  type IntegrationProviderServiceEnum,
   upsertTeamMemberIntegrationAuthQuery
 } from './generated/upsertTeamMemberIntegrationAuthQuery'
 

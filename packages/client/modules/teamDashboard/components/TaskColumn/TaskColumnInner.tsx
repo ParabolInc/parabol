@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import {useFragment} from 'react-relay'
-import {TaskColumnInner_tasks$key} from '~/__generated__/TaskColumnInner_tasks.graphql'
-import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import type {TaskColumnInner_tasks$key} from '~/__generated__/TaskColumnInner_tasks.graphql'
+import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 
 interface Props {

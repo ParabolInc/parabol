@@ -1,8 +1,8 @@
-import {JSONContent} from '@tiptap/core'
-import {GraphQLResolveInfo} from 'graphql'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
-import {GQLContext} from '../../graphql/graphql'
+import type {GQLContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createLabel from '../../graphql/nestedSchema/GitLab/mutations/createLabel.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
@@ -13,8 +13,8 @@ import getProfile from '../../graphql/nestedSchema/GitLab/queries/getProfile.gra
 import getProjectIssues from '../../graphql/nestedSchema/GitLab/queries/getProjectIssues.graphql'
 import getProjects from '../../graphql/nestedSchema/GitLab/queries/getProjects.graphql'
 import {gitlabRequest} from '../../graphql/public/rootSchema'
-import {TeamMemberIntegrationAuth} from '../../postgres/types'
-import {
+import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {
   CreateIssueMutation,
   CreateLabelMutation,
   CreateLabelMutationVariables,
@@ -30,7 +30,7 @@ import {
 } from '../../types/gitlabTypes'
 import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
 import makeCreateGitLabTaskComment from '../../utils/makeCreateGitLabTaskComment'
-import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
@@ -83,7 +83,10 @@ class GitLabServerManager implements TaskIntegrationManager {
       teamName,
       teamDashboardUrl
     )
-    const [noteData, noteError] = await this.createNote({body: comment, noteableId: issueId})
+    const [noteData, noteError] = await this.createNote({
+      body: comment,
+      noteableId: issueId
+    })
     if (noteError) return noteError
     const noteId = noteData.createNote?.note?.id
     if (!noteId) return new Error('Unable to create GitLab comment')

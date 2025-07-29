@@ -1,11 +1,11 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import AgendaItemsStage from '../../../database/types/AgendaItemsStage'
+import type AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
   _source,

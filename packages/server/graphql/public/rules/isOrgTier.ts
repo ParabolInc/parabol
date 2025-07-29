@@ -1,7 +1,7 @@
 import {rule} from 'graphql-shield'
-import {GQLContext} from '../../graphql'
-import {TierEnum} from '../resolverTypes'
-import {ResolverDotPath, getResolverDotPath} from './getResolverDotPath'
+import type {GQLContext} from '../../graphql'
+import type {TierEnum} from '../resolverTypes'
+import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isOrgTier = <T>(orgIdDotPath: ResolverDotPath<T>, requiredTier: TierEnum) =>
   rule(`isViewerOnOrg-${orgIdDotPath}-${requiredTier}`, {cache: 'strict'})(

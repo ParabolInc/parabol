@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef} from 'react'
 import handleHotkey from '../utils/meetings/handleHotkey'
 import useGotoPrev from './useGotoPrev'
-import useGotoStageId from './useGotoStageId'
+import type useGotoStageId from './useGotoStageId'
 import useHotkey from './useHotkey'
 
 const useGotoPrevHotkey = (meetingRef: any, gotoStageId: ReturnType<typeof useGotoStageId>) => {

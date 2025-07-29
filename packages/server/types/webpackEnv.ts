@@ -11,9 +11,7 @@
  */
 
 declare namespace __WebpackModuleApi {
-  interface RequireResolve {
-    (id: string): string | number
-  }
+  type RequireResolve = (id: string) => string | number
 
   interface RequireContext {
     keys(): string[]

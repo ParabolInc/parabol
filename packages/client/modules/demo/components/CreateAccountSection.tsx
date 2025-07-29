@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type * as React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {ExternalLinks, LocalStorageKey} from '~/types/constEnums'
 import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'

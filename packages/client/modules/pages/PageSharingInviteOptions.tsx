@@ -7,8 +7,8 @@ import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import {
   getOptionLabel,
   getOptionValue,
-  usePageSharingAutocomplete,
-  type Option
+  type Option,
+  type usePageSharingAutocomplete
 } from './usePageSharingAutocomplete'
 
 interface Props {
@@ -40,7 +40,10 @@ export const PageSharingInviteOptions = (props: Props) => {
               <div className='text-xs font-bold text-slate-700'>{groupLabels[group]}</div>
             </li>
             {options.map((option, idx) => {
-              const optionProps = getOptionProps({option, index: index + idx})
+              const optionProps = getOptionProps({
+                option,
+                index: index + idx
+              })
               const isSelected = optionProps['aria-selected']
               const {type} = option
               return (
@@ -62,7 +65,9 @@ export const PageSharingInviteOptions = (props: Props) => {
                       <div className='relative mr-2 h-6 w-6 rounded-sm border border-slate-100'>
                         <div
                           className='h-6 w-6 rounded-full bg-cover bg-center bg-no-repeat'
-                          style={{backgroundImage: `url('${option.picture}')`}}
+                          style={{
+                            backgroundImage: `url('${option.picture}')`
+                          }}
                         />
                       </div>
                     )}

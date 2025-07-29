@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {TeamDashActivityTab_team$key} from '~/__generated__/TeamDashActivityTab_team.graphql'
+import type {TeamDashActivityTab_team$key} from '~/__generated__/TeamDashActivityTab_team.graphql'
 import DemoMeetingCard from '../../../../components/DemoMeetingCard'
 import MeetingCard from '../../../../components/MeetingCard'
 import TutorialMeetingCard from '../../../../components/TutorialMeetingCard'

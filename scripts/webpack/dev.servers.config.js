@@ -60,14 +60,35 @@ module.exports = {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
     }),
     // if we need canvas for SSR we can just install it to our own package.json
-    new webpack.IgnorePlugin({resourceRegExp: /^canvas$/, contextRegExp: /jsdom$/}),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^canvas$/,
+      contextRegExp: /jsdom$/
+    }),
     // native bindings might be faster, but abandonware & not currently used
-    new webpack.IgnorePlugin({resourceRegExp: /^pg-native$/, contextRegExp: /pg\/lib/}),
-    new webpack.IgnorePlugin({resourceRegExp: /^pg-cloudflare$/, contextRegExp: /pg\/lib/}),
-    new webpack.IgnorePlugin({resourceRegExp: /^exiftool-vendored$/, contextRegExp: /@dicebear/}),
-    new webpack.IgnorePlugin({resourceRegExp: /^@resvg\/resvg-js$/, contextRegExp: /@dicebear/}),
-    new webpack.IgnorePlugin({resourceRegExp: /inter-regular.otf$/, contextRegExp: /@dicebear/}),
-    new webpack.IgnorePlugin({resourceRegExp: /inter-bold.otf$/, contextRegExp: /@dicebear/})
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^pg-native$/,
+      contextRegExp: /pg\/lib/
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^pg-cloudflare$/,
+      contextRegExp: /pg\/lib/
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^exiftool-vendored$/,
+      contextRegExp: /@dicebear/
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^@resvg\/resvg-js$/,
+      contextRegExp: /@dicebear/
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /inter-regular.otf$/,
+      contextRegExp: /@dicebear/
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /inter-bold.otf$/,
+      contextRegExp: /@dicebear/
+    })
   ],
   module: {
     rules: [

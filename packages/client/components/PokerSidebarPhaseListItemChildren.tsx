@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {
+import type {
   NewMeetingPhaseTypeEnum,
   PokerSidebarPhaseListItemChildren_meeting$key
 } from '~/__generated__/PokerSidebarPhaseListItemChildren_meeting.graphql'
-import useGotoStageId from '~/hooks/useGotoStageId'
+import type useGotoStageId from '~/hooks/useGotoStageId'
 import MeetingSidebarTeamMemberStageItems from './MeetingSidebarTeamMemberStageItems'
 import PokerSidebarEstimateSection from './PokerSidebarEstimateSection'
 

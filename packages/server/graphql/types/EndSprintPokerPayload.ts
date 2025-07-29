@@ -1,6 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../../utils/authorization'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
 import PokerMeeting from './PokerMeeting'
 import Team from './Team'

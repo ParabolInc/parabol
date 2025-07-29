@@ -2,14 +2,14 @@ import {Link} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
-import {JiraObjectCard_result$key} from '../../../__generated__/JiraObjectCard_result.graphql'
+import type {JiraObjectCard_result$key} from '../../../__generated__/JiraObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
 import jiraSVG from '../../../styles/theme/images/graphics/jira.svg'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import relativeDate from '../../../utils/date/relativeDate'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   resultRef: JiraObjectCard_result$key

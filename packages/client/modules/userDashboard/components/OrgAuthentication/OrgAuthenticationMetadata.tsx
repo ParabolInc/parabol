@@ -1,12 +1,12 @@
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import orgAuthenticationMetadataQuery, {
-  OrgAuthenticationMetadataQuery
+  type OrgAuthenticationMetadataQuery
 } from '../../../../__generated__/OrgAuthenticationMetadataQuery.graphql'
-import {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'

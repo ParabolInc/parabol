@@ -3,10 +3,10 @@ import ms from 'ms'
 import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
-import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
+import type AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import EmailPassWordResetPayload from '../types/EmailPasswordResetPayload'
 import processEmailPasswordReset from './helpers/processEmailPasswordReset'
@@ -55,7 +55,9 @@ const emailPasswordReset = {
           .executeTakeFirstOrThrow()
       ])
       if (failOnAccount.res || failOnTime.res) {
-        return {error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}}
+        return {
+          error: {message: AuthenticationError.EXCEEDED_RESET_THRESHOLD}
+        }
       }
       const domain = getSSODomainFromEmail(email)
       const saml = domain ? await dataLoader.get('samlByDomain').load(domain) : null
@@ -71,7 +73,10 @@ const emailPasswordReset = {
       const microsoftIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.MICROSOFT
       )
-      if (microsoftIdentity) return {error: {message: AuthenticationError.USER_EXISTS_MICROSOFT}}
+      if (microsoftIdentity)
+        return {
+          error: {message: AuthenticationError.USER_EXISTS_MICROSOFT}
+        }
 
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL

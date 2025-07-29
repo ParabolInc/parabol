@@ -1,7 +1,7 @@
 import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
 import gitHubIntegrationResultsQuery, {
-  GitHubIntegrationResultsQuery
+  type GitHubIntegrationResultsQuery
 } from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import ErrorBoundary from '../../ErrorBoundary'

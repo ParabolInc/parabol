@@ -1,5 +1,5 @@
 import isTaskPrivate from '../../../../client/utils/isTaskPrivate'
-import {RetrospectiveMeetingMemberResolvers} from '../resolverTypes'
+import type {RetrospectiveMeetingMemberResolvers} from '../resolverTypes'
 
 const RetrospectiveMeetingMember: RetrospectiveMeetingMemberResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'retrospective',

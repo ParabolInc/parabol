@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useUnlinkTeamMutation} from 'parabol-client/__generated__/useUnlinkTeamMutation.graphql'
+import type {useUnlinkTeamMutation} from 'parabol-client/__generated__/useUnlinkTeamMutation.graphql'
 import {useCallback} from 'react'
 import {useMutation} from 'react-relay'
 import {useCurrentChannel} from './useCurrentChannel'

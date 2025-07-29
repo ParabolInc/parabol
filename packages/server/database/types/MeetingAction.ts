@@ -1,4 +1,4 @@
-import {CheckInMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type {CheckInMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import Meeting from './Meeting'
 
 interface Input {

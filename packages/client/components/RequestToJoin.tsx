@@ -1,7 +1,7 @@
 import {Lock, MailOutline} from '@mui/icons-material'
 import {useState} from 'react'
 import {useRouteMatch} from 'react-router'
-import {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
+import type {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
@@ -17,7 +17,9 @@ const RequestToJoinComponent = () => {
 
   const handleRequestJoin = () => {
     if (!teamId) return
-    SendClientSideEvent(atmosphere, 'Sent request to join from public teams', {teamId})
+    SendClientSideEvent(atmosphere, 'Sent request to join from public teams', {
+      teamId
+    })
     PushInvitationMutation(
       atmosphere,
       {teamId},

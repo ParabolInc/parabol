@@ -1,10 +1,10 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {DB} from 'parabol-server/postgres/types/pg'
+import type {DB} from 'parabol-server/postgres/types/pg'
 import isValid from '../../server/graphql/isValid'
 import {Logger} from '../../server/utils/Logger'
 import {getEmbedderPriority} from '../getEmbedderPriority'
-import {ISO6391} from '../iso6393To1'
+import type {ISO6391} from '../iso6393To1'
 import {URLRegex} from '../regex'
 import {AbstractModel} from './AbstractModel'
 

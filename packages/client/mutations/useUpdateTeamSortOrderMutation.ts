@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMutation, UseMutationConfig} from 'react-relay'
+import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {RecordSourceSelectorProxy} from 'relay-runtime'
-import {useUpdateTeamSortOrderMutation as TuseUpdateTeamSortOrderMutation} from '../__generated__/useUpdateTeamSortOrderMutation.graphql'
+import type {useUpdateTeamSortOrderMutation as TuseUpdateTeamSortOrderMutation} from '../__generated__/useUpdateTeamSortOrderMutation.graphql'
 
 const mutation = graphql`
   mutation useUpdateTeamSortOrderMutation($teamId: ID!, $sortOrder: String!) {

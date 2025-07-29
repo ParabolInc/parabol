@@ -3,19 +3,19 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
-import {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
-import {SlackNotification, Team} from '../../../../postgres/types'
-import IUser from '../../../../postgres/types/IUser'
-import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
+import type {IntegrationProviderMSTeams as IIntegrationProviderMSTeams} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import type {SlackNotification, Team} from '../../../../postgres/types'
+import type IUser from '../../../../postgres/types/IUser'
+import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {analytics} from '../../../../utils/analytics/analytics'
 import logError from '../../../../utils/logError'
-import {DataLoaderWorker} from '../../../graphql'
+import MSTeamsServerManager from '../../../../utils/MSTeamsServerManager'
+import type {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
-import {SlackNotificationEventEnum} from '../../../public/resolverTypes'
-import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
-import {createNotifier} from './Notifier'
+import type {SlackNotificationEventEnum} from '../../../public/resolverTypes'
 import getSummaryText from './getSummaryText'
+import type {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
+import {createNotifier} from './Notifier'
 
 const notifyMSTeams = async (
   event: SlackNotification['event'],
@@ -37,8 +37,13 @@ const notifyMSTeams = async (
   return 'success'
 }
 
-type IntegrationProviderMSTeams = IIntegrationProviderMSTeams & {teamId: string}
-export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {userId: string; email: string}
+type IntegrationProviderMSTeams = IIntegrationProviderMSTeams & {
+  teamId: string
+}
+export type MSTeamsNotificationAuth = IntegrationProviderMSTeams & {
+  userId: string
+  email: string
+}
 
 const createTeamPromptMeetingTitle = (meetingName: string) => `*${meetingName}* is open 💬`
 const createGenericMeetingTitle = () => `Meeting Started 👋`

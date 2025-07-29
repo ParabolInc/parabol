@@ -18,8 +18,8 @@ import {samlXMLValidator} from '../../../utils/samlXMLValidator'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import getSignOnURL from '../../public/mutations/helpers/SAMLHelpers/getSignOnURL'
-import {SSORelayState} from '../../public/queries/SAMLIdP'
-import {MutationResolvers} from '../resolverTypes'
+import type {SSORelayState} from '../../public/queries/SAMLIdP'
+import type {MutationResolvers} from '../resolverTypes'
 import {generateIdenticon} from './helpers/generateIdenticon'
 import {shouldRefreshMetadata} from './helpers/shouldRefreshMetadata'
 
@@ -36,7 +36,7 @@ const getRelayState = (body: querystring.ParsedUrlQuery) => {
   let relayState = {} as SSORelayState
   try {
     relayState = JSON.parse(base64url.decode(body.RelayState as string))
-  } catch (e) {
+  } catch {
     // ignore
   }
   return relayState
@@ -83,7 +83,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   const shouldRefresh = shouldRefreshMetadata(doc)
   const fetchMetadataUrl = newMetadataURL || (shouldRefresh ? existingMetadataURL : null)
   if (fetchMetadataUrl) {
-    console.log('Fetching new SAML metadata', {shouldRefresh, newMetadataURL})
+    console.log('Fetching new SAML metadata', {
+      shouldRefresh,
+      newMetadataURL
+    })
   }
 
   const newMetadata = fetchMetadataUrl ? await getSSOMetadataFromURL(fetchMetadataUrl) : undefined
@@ -92,12 +95,16 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
   const metadata = newMetadata || existingMetadata
   if (!metadata) {
-    return {error: {message: 'No metadata found! Please contact customer service'}}
+    return {
+      error: {message: 'No metadata found! Please contact customer service'}
+    }
   }
   const idp = samlify.IdentityProvider({metadata})
   let loginResponse
   try {
-    loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {body})
+    loginResponse = await serviceProvider.parseLoginResponse(idp, 'post', {
+      body
+    })
   } catch (e) {
     if (e instanceof Error) {
       return standardError(e)
@@ -106,7 +113,9 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     return standardError(new Error(message), {extras: {body}})
   }
   if (!loginResponse) {
-    return standardError(new Error('Error with query from identity provider'), {extras: {body}})
+    return standardError(new Error('Error with query from identity provider'), {
+      extras: {body}
+    })
   }
 
   const {extract} = loginResponse

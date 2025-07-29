@@ -1,6 +1,6 @@
 import {RetroDemo} from '../../types/constEnums'
 import DemoGenericMeetingStage from './DemoGenericMeetingStage'
-import {DemoDiscussion} from './initDB'
+import type {DemoDiscussion} from './initDB'
 
 export default class DemoDiscussStage extends DemoGenericMeetingStage {
   __typename = 'RetroDiscussStage'

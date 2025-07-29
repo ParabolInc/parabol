@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import {generateHTML} from '@tiptap/html/server'
 import {NodeHtmlMarkdown} from 'node-html-markdown-cloudflare'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'

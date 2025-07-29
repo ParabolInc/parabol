@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {
+import type {
   NotificationSettings_teamSettings$key,
   SlackNotificationEventEnum
 } from 'parabol-client/__generated__/NotificationSettings_teamSettings.graphql'
-import {NotificationSettingsMutation} from 'parabol-client/__generated__/NotificationSettingsMutation.graphql'
+import type {NotificationSettingsMutation} from 'parabol-client/__generated__/NotificationSettingsMutation.graphql'
 import Toggle from 'parabol-client/components/Toggle/Toggle'
 import {MeetingLabels} from 'parabol-client/types/constEnums'
 import {useFragment, useMutation} from 'react-relay'

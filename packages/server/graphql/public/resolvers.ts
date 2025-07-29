@@ -2,7 +2,7 @@
  * You shouldn't need to edit this
  */
 import importAll from '../../utils/importAll'
-import {Resolvers} from './resolverTypes'
+import type {Resolvers} from './resolverTypes'
 
 const resolvers: Resolvers = {
   Mutation: {

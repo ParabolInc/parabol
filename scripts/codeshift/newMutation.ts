@@ -133,7 +133,10 @@ const addSuccessSourceToCodegen = async (camelMutationName: string) => {
   // stable stringify first to sort
   const stableString = stringify(codegenJSON)
   const options = await prettier.resolveConfig(codegenPath)
-  const prettyStableString = await prettier.format(stableString, {...options, parser: 'json'})
+  const prettyStableString = await prettier.format(stableString, {
+    ...options,
+    parser: 'json'
+  })
   fs.writeFileSync(codegenPath, prettyStableString)
 }
 
@@ -191,7 +194,9 @@ const addDummyPermission = (camelMutationName: string) => {
     docWithBadSpacing.slice(0, start) +
     // recast prints extra lines that prettier won't fix
     // https://github.com/benjamn/recast/issues/242
-    docWithBadSpacing.slice(start, end).replace(/\n\n/g, '\n') +
+    docWithBadSpacing
+      .slice(start, end)
+      .replace(/\n\n/g, '\n') +
     docWithBadSpacing.slice(end)
   fs.writeFileSync(permissionPath, docWithGoodSpacing)
 }

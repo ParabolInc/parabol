@@ -1,8 +1,8 @@
 import {Redlock} from '@sesamecare-oss/redlock'
-import {GraphQLResolveInfo} from 'graphql'
+import type {GraphQLResolveInfo} from 'graphql'
 import getRedis from '../../../../utils/getRedis'
 import standardError from '../../../../utils/standardError'
-import {ErrorPayload, ResolverFn} from '../../resolverTypes'
+import type {ErrorPayload, ResolverFn} from '../../resolverTypes'
 
 /**
  * Check if a resolver is already running for this mutation and if so, return an error.
@@ -20,7 +20,7 @@ export const checkSequential =
       return await redlock.using([`checkSequential_${fieldName}`], 10_000, async () => {
         return resolver(parent, args, context, info)
       })
-    } catch (error) {
+    } catch {
       return standardError(new Error(`Mutation ${fieldName} is already running`))
     }
   }

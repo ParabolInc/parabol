@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import PollId from '../../../client/shared/gqlIds/PollId'
-import {GQLContext} from './../graphql'
+import type {GQLContext} from './../graphql'
 import PollOption from './PollOption'
 import Team from './Team'
 import User from './User'

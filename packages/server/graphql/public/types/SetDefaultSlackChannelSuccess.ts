@@ -1,5 +1,5 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {SetDefaultSlackChannelSuccessResolvers} from '../resolverTypes'
+import type {SetDefaultSlackChannelSuccessResolvers} from '../resolverTypes'
 
 export type SetDefaultSlackChannelSuccessSource = {
   slackChannelId: string

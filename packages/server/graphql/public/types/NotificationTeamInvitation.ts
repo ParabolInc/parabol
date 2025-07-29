@@ -1,4 +1,4 @@
-import {NotificationTeamInvitationResolvers} from '../resolverTypes'
+import type {NotificationTeamInvitationResolvers} from '../resolverTypes'
 
 const NotificationTeamInvitation: NotificationTeamInvitationResolvers = {
   __isTypeOf: ({type}) => type === 'TEAM_INVITATION',

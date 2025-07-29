@@ -46,7 +46,7 @@ export default class LocalFileStoreManager extends FileStoreManager {
     try {
       await fs.promises.access(fullPath)
       return true
-    } catch (e) {
+    } catch {
       return false
     }
   }

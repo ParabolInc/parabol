@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import normalizeSlugName from './helpers/normalizeSlugName'
 
 const updateSAML: MutationResolvers['updateSAML'] = async (_source, {slug, samlOrgAttribute}) => {
@@ -11,7 +11,9 @@ const updateSAML: MutationResolvers['updateSAML'] = async (_source, {slug, samlO
 
   const normalizedSamlOrgAttribute = samlOrgAttribute?.trim()
   if (normalizedSamlOrgAttribute === '') {
-    return {error: {message: 'The attribute name cannot be an empty string'}}
+    return {
+      error: {message: 'The attribute name cannot be an empty string'}
+    }
   }
 
   const saml = await pg

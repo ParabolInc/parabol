@@ -1,4 +1,4 @@
-import {RefObject, useEffect, useLayoutEffect, useState} from 'react'
+import {type RefObject, useEffect, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
 
 const usePokerDeckLeftEdge = (estimateAreaRef: RefObject<HTMLDivElement>, isVoting: boolean) => {

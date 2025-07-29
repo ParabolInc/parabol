@@ -1,5 +1,5 @@
 type RemoveReflectTemplatePromptPayload {
-  error: StandardMutationError
-  reflectTemplate: ReflectTemplate
-  prompt: ReflectPrompt
+	error: StandardMutationError
+	reflectTemplate: ReflectTemplate
+	prompt: ReflectPrompt
 }

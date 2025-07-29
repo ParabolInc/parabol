@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import PokerTemplate from './PokerTemplate'
 import StandardMutationError from './StandardMutationError'
 import TemplateDimension from './TemplateDimension'

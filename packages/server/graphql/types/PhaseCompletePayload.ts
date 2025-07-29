@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import {GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import GroupPhaseCompletePayload from './GroupPhaseCompletePayload'
 import ReflectPhaseCompletePayload from './ReflectPhaseCompletePayload'
 import VotePhaseCompletePayload from './VotePhaseCompletePayload'

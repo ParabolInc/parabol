@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
 import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
-import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
+import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
+import type {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
@@ -40,12 +40,13 @@ const InfoRowRight = styled('div')({
   textAlign: 'right'
 })
 
-const StyledDate = styled('span')<{styledToPay?: boolean; styledPaid?: boolean}>(
-  ({styledToPay, styledPaid}) => ({
-    fontSize: 13,
-    color: styledToPay || styledPaid ? PALETTE.SLATE_600 : PALETTE.TOMATO_500
-  })
-)
+const StyledDate = styled('span')<{
+  styledToPay?: boolean
+  styledPaid?: boolean
+}>(({styledToPay, styledPaid}) => ({
+  fontSize: 13,
+  color: styledToPay || styledPaid ? PALETTE.SLATE_600 : PALETTE.TOMATO_500
+}))
 
 const PayURL = styled('a')({
   color: PALETTE.SKY_500,

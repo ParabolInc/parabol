@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {AddIntegrationProviderSuccessResolvers} from '../resolverTypes'
+import type {AddIntegrationProviderSuccessResolvers} from '../resolverTypes'
 
 export type AddIntegrationProviderSuccessSource = {
   providerId: number

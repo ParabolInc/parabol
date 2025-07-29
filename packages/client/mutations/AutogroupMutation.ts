@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AutogroupMutation as TAutogroupMutation} from '../__generated__/AutogroupMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {AutogroupMutation as TAutogroupMutation} from '../__generated__/AutogroupMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment AutogroupMutation_meeting on AutogroupSuccess {

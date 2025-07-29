@@ -1,8 +1,8 @@
 import DataLoader from 'dataloader'
 import type {Selectable} from 'kysely'
 import {selectPageAccess, selectPageUserSortOrder} from '../postgres/select'
-import {type PageAccess, type Pageroleenum} from '../postgres/types/pg'
-import RootDataLoader from './RootDataLoader'
+import type {PageAccess, Pageroleenum} from '../postgres/types/pg'
+import type RootDataLoader from './RootDataLoader'
 
 export const pageAccessByPageId = (parent: RootDataLoader) => {
   return new DataLoader<number, Selectable<PageAccess>[], number>(

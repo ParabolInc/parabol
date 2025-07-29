@@ -1,19 +1,17 @@
-import {Client4} from 'mattermost-redux/client'
-import {getPost} from 'mattermost-redux/selectors/entities/posts'
-import {GlobalState} from 'mattermost-redux/types/store'
-import React, {useEffect, useMemo} from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import {useLazyLoadQuery, useMutation} from 'react-relay'
-
 import {generateJSON, mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
-
-import {Post} from 'mattermost-redux/types/posts'
-import {PushReflectionModalMutation} from 'parabol-client/__generated__/PushReflectionModalMutation.graphql'
-import {PushReflectionModalQuery} from 'parabol-client/__generated__/PushReflectionModalQuery.graphql'
+import {Client4} from 'mattermost-redux/client'
+import {getPost} from 'mattermost-redux/selectors/entities/posts'
+import type {Post} from 'mattermost-redux/types/posts'
+import type {GlobalState} from 'mattermost-redux/types/store'
+import type {PushReflectionModalMutation} from 'parabol-client/__generated__/PushReflectionModalMutation.graphql'
+import type {PushReflectionModalQuery} from 'parabol-client/__generated__/PushReflectionModalQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import React, {useEffect, useMemo} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {useLazyLoadQuery, useMutation} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useCurrentUser} from '../../hooks/useCurrentUser'
@@ -118,13 +116,19 @@ const PushReflectionModal = () => {
       StarterKit,
       BaseLink.extend({
         parseHTML() {
-          return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+          return [
+            {
+              tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'
+            }
+          ]
         },
 
         renderHTML({HTMLAttributes}) {
           return [
             'a',
-            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {class: 'link'}),
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+              class: 'link'
+            }),
             0
           ]
         }
@@ -324,9 +328,17 @@ const PushReflectionModal = () => {
           <Select
             label='Choose Prompt'
             required={true}
-            value={selectedPrompt && {id: selectedPrompt.id, name: selectedPrompt.question}}
+            value={
+              selectedPrompt && {
+                id: selectedPrompt.id,
+                name: selectedPrompt.question
+              }
+            }
             options={
-              reflectPhase?.reflectPrompts?.map(({id, question}) => ({id, name: question})) ?? []
+              reflectPhase?.reflectPrompts?.map(({id, question}) => ({
+                id,
+                name: question
+              })) ?? []
             }
             onChange={(selected) =>
               selected &&

@@ -1,5 +1,6 @@
-import {SuggestionProps} from '@tiptap/suggestion'
-import React, {forwardRef, Fragment, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import type {SuggestionProps} from '@tiptap/suggestion'
+import type React from 'react'
+import {Fragment, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import type {SlashCommandGroup} from './slashCommands'
 
 export const SlashCommandMenu = forwardRef(

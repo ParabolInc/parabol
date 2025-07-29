@@ -1,5 +1,5 @@
 import {cn} from 'parabol-client/ui/cn'
-import React from 'react'
+import type React from 'react'
 
 type Props = {
   text?: React.ReactNode

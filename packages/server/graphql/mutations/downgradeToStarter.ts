@@ -3,8 +3,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
+import type {GQLContext} from '../graphql'
+import type {ReasonToDowngradeEnum as TReasonToDowngradeEnum} from '../public/resolverTypes'
 import DowngradeToStarterPayload from '../types/DowngradeToStarterPayload'
 import ReasonToDowngradeEnum from '../types/ReasonToDowngrade'
 import resolveDowngradeToStarter from './helpers/resolveDowngradeToStarter'
@@ -33,7 +33,11 @@ export default {
       orgId,
       reasonsForLeaving,
       otherTool
-    }: {orgId: string; reasonsForLeaving?: TReasonToDowngradeEnum[]; otherTool?: string},
+    }: {
+      orgId: string
+      reasonsForLeaving?: TReasonToDowngradeEnum[]
+      otherTool?: string
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const operationId = dataLoader.share()
@@ -46,19 +50,25 @@ export default {
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!isSuperUser(authToken) && !isBillingLeader) {
-      return standardError(new Error('Not organization leader'), {userId: viewerId})
+      return standardError(new Error('Not organization leader'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
     if (otherTool && otherTool?.length > 100) {
-      return standardError(new Error('Other tool name is too long'), {userId: viewerId})
+      return standardError(new Error('Other tool name is too long'), {
+        userId: viewerId
+      })
     }
 
     const {stripeSubscriptionId, tier} = await dataLoader.get('organizations').loadNonNull(orgId)
     dataLoader.get('organizations').clear(orgId)
 
     if (tier === 'starter') {
-      return standardError(new Error('Already on free tier'), {userId: viewerId})
+      return standardError(new Error('Already on free tier'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

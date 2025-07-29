@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData, useLazyLoadQuery} from 'react-relay'
-import {useSpotlightResultsLocalQuery} from './../__generated__/useSpotlightResultsLocalQuery.graphql'
-import {useSpotlightResults_meeting$key} from './../__generated__/useSpotlightResults_meeting.graphql'
+import type {useSpotlightResults_meeting$key} from './../__generated__/useSpotlightResults_meeting.graphql'
+import type {useSpotlightResultsLocalQuery} from './../__generated__/useSpotlightResultsLocalQuery.graphql'
 
 const useSpotlightResults = (meetingRef: useSpotlightResults_meeting$key) => {
   const meeting = readInlineData(

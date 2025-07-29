@@ -1,4 +1,4 @@
-import {NewMeetingPhase} from '../postgres/types/NewMeetingPhase'
+import type {NewMeetingPhase} from '../postgres/types/NewMeetingPhase'
 
 const getPhase = <T extends NewMeetingPhase['phaseType']>(
   phases: NewMeetingPhase[],

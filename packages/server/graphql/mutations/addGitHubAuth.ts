@@ -1,13 +1,13 @@
-import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLID, GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
 import upsertGitHubAuth from '../../postgres/queries/upsertGitHubAuth'
-import {GetProfileQuery} from '../../types/githubTypes'
-import GitHubServerManager from '../../utils/GitHubServerManager'
+import type {GetProfileQuery} from '../../types/githubTypes'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import GitHubServerManager from '../../utils/GitHubServerManager'
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import getProfile from '../../utils/githubQueries/getProfile.graphql'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import updateRepoIntegrationsCacheByPerms from '../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import AddGitHubAuthPayload from '../types/AddGitHubAuthPayload'
 
@@ -33,7 +33,9 @@ export default {
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
+      return standardError(new Error('Attempted teamId spoof'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -56,7 +58,13 @@ export default {
     const {viewer: gitHubViewer} = data
     const {login} = gitHubViewer
 
-    await upsertGitHubAuth({accessToken, login, teamId, userId: viewerId, scope: scopes})
+    await upsertGitHubAuth({
+      accessToken,
+      login,
+      teamId,
+      userId: viewerId,
+      scope: scopes
+    })
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
     analytics.integrationAdded(viewer, teamId, 'github')
 

@@ -1,7 +1,7 @@
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
-import {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
-import {DataLoaderWorker} from '../../graphql'
+import type {AnyMeeting} from '../../../postgres/types/Meeting'
+import type {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 
 const collectReactjis = async (meeting: AnyMeeting, dataLoader: DataLoaderWorker) => {

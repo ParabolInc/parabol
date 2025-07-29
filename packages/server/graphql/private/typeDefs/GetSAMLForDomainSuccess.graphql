@@ -1,6 +1,6 @@
 type GetSAMLForDomainSuccess {
-  """
-  The SAML configuration
-  """
-  saml: SAML!
+	"""
+	The SAML configuration
+	"""
+	saml: SAML!
 }

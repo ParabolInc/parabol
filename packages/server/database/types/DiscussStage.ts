@@ -1,5 +1,5 @@
 import generateUID from '../../generateUID'
-import GenericMeetingStage, {GenericMeetingStageInput} from './GenericMeetingStage'
+import GenericMeetingStage, {type GenericMeetingStageInput} from './GenericMeetingStage'
 
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   sortOrder: number

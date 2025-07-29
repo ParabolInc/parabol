@@ -5,16 +5,18 @@ import MeetingPoker from '../../database/types/MeetingPoker'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import {MeetingTypeEnum, PokerMeeting} from '../../postgres/types/Meeting'
-import {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type {MeetingTypeEnum, PokerMeeting} from '../../postgres/types/Meeting'
+import type {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getHashAndJSON from '../../utils/getHashAndJSON'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../graphql'
+import type {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
-import CreateGcalEventInput, {CreateGcalEventInputType} from '../public/types/CreateGcalEventInput'
+import CreateGcalEventInput, {
+  type CreateGcalEventInputType
+} from '../public/types/CreateGcalEventInput'
 import StartSprintPokerPayload from '../types/StartSprintPokerPayload'
 import createGcalEvent from './helpers/createGcalEvent'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
@@ -35,7 +37,10 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
     isValid
   )
   const templateScales = uniqueScales.map(({name, values}) => {
-    const scale = {name, values: values.map(({color, label}) => ({color, label}))}
+    const scale = {
+      name,
+      values: values.map(({color, label}) => ({color, label}))
+    }
     const {id, str} = getHashAndJSON(scale)
     return {id, scale: str}
   })
@@ -92,7 +97,11 @@ export default {
       teamId,
       name,
       gcalInput
-    }: {teamId: string; name: string | null | undefined; gcalInput?: CreateGcalEventInputType},
+    }: {
+      teamId: string
+      name: string | null | undefined
+      gcalInput?: CreateGcalEventInputType
+    },
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const pg = getKysely()
@@ -178,7 +187,11 @@ export default {
       viewerId,
       dataLoader
     })
-    const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
+    const data = {
+      teamId,
+      meetingId: meetingId,
+      hasGcalError: !!error?.message
+    }
     publish(SubscriptionChannel.TEAM, teamId, 'StartSprintPokerSuccess', data, subOptions)
     return data
   }

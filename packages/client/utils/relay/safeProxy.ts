@@ -1,4 +1,4 @@
-import {RecordProxy, Variables} from 'relay-runtime'
+import type {RecordProxy, Variables} from 'relay-runtime'
 
 type Unproxy<T> = T extends RecordProxy<infer U> ? U : T
 // type UndefinedIfNull<T> = null extends T ? undefined : never

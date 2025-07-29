@@ -1,4 +1,4 @@
-import {PayloadError} from 'relay-runtime/lib/network/RelayNetworkTypes'
+import type {PayloadError} from 'relay-runtime/lib/network/RelayNetworkTypes'
 
 const getServerError = (errors: ReadonlyArray<PayloadError> | null | undefined) =>
   (errors && errors[0]) || undefined

@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {RouteProps, matchPath} from 'react-router'
+import {matchPath, type RouteProps} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
-import {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
+import type {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 
 const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
   const {pathname} = location

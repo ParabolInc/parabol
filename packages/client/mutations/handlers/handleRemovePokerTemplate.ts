@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import pluralizeHandler from './pluralizeHandler'
 

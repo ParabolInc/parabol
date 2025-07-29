@@ -1,6 +1,6 @@
-import User from '../database/types/User'
+import type User from '../database/types/User'
 import generateUID from '../generateUID'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
 import getDomainFromEmail from './getDomainFromEmail'
 import isRequestToJoinDomainAllowed from './isRequestToJoinDomainAllowed'

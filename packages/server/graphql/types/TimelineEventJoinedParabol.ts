@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {JOINED_PARABOL} from './TimelineEventTypeEnum'
 

@@ -1,4 +1,4 @@
-import {RecordSourceProxy} from 'relay-runtime'
+import type {RecordSourceProxy} from 'relay-runtime'
 
 const handleMoveTemplatePrompt = (store: RecordSourceProxy, templateId: string) => {
   const template = store.get(templateId)

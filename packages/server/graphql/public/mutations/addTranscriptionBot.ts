@@ -3,7 +3,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import addRecallBot from '../../mutations/helpers/addRecallBot'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
   _source,

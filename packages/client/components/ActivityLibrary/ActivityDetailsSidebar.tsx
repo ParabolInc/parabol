@@ -4,14 +4,14 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import {RRule} from 'rrule'
-import {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
-import {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
+import type {RRule} from 'rrule'
+import type {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
+import type {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
-import {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
-import {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
+import type {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
+import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
@@ -144,7 +144,11 @@ const ActivityDetailsSidebar = (props: Props) => {
         gcalInput
       }
 
-      StartCheckInMutation(atmosphere, variables, {history, onError, onCompleted})
+      StartCheckInMutation(atmosphere, variables, {
+        history,
+        onError,
+        onCompleted
+      })
     } else {
       SelectTemplateMutation(
         atmosphere,

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation} from 'react-relay'
-import {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../__generated__/UpdateTemplateCategoryMutation.graphql'
+import type {UpdateTemplateCategoryMutation as TUpdateTemplateCategoryMutation} from '../__generated__/UpdateTemplateCategoryMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 graphql`

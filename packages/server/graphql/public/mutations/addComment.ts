@@ -4,10 +4,9 @@ import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
-import GenericMeetingPhase, {
-  NewMeetingPhaseTypeEnum
-} from '../../../database/types/GenericMeetingPhase'
-import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
+import type GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import type {NewMeetingPhaseTypeEnum} from '../../../database/types/GenericMeetingPhase'
+import type GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {Discussion} from '../../../postgres/types'
@@ -16,7 +15,7 @@ import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 
 const getMentionNotifications = (
@@ -62,7 +61,9 @@ const addComment: MutationResolvers['addComment'] = async (
   }
   const {meetingId} = discussion
   if (!meetingId) {
-    return {error: {message: 'Discussion does not take place in a meeting'}}
+    return {
+      error: {message: 'Discussion does not take place in a meeting'}
+    }
   }
   const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
   const [meeting, viewerMeetingMember, viewer] = await Promise.all([

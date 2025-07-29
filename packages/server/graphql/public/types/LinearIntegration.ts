@@ -1,4 +1,4 @@
-import {LinearIntegrationResolvers} from '../resolverTypes'
+import type {LinearIntegrationResolvers} from '../resolverTypes'
 
 const LinearIntegration: LinearIntegrationResolvers = {
   auth: async ({teamId, userId}, _args, {dataLoader}) => {

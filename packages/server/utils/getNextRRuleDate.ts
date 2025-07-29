@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import {fromDateTime, toDateTime} from 'parabol-client/shared/rruleUtil'
-import {DateTime, RRuleSet} from 'rrule-rust'
+import {DateTime, type RRuleSet} from 'rrule-rust'
 
 export const getNextRRuleDate = (rrule: RRuleSet) => {
   const {tzid} = rrule

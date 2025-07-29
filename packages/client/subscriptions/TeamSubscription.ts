@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {RouterProps} from 'react-router'
+import type {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
 import {endCheckInTeamOnNext, endCheckInTeamUpdater} from '~/mutations/EndCheckInMutation'
 import {
@@ -7,11 +7,11 @@ import {
   endRetrospectiveTeamUpdater
 } from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
-import Atmosphere from '../Atmosphere'
-import {
-  TeamSubscription as TTeamSubscription,
-  TeamSubscription$variables
+import type {
+  TeamSubscription$variables,
+  TeamSubscription as TTeamSubscription
 } from '../__generated__/TeamSubscription.graphql'
+import type Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater

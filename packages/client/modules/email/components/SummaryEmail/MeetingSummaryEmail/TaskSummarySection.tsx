@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {TaskSummarySection_tasks$key} from 'parabol-client/__generated__/TaskSummarySection_tasks.graphql'
+import type {TaskSummarySection_tasks$key} from 'parabol-client/__generated__/TaskSummarySection_tasks.graphql'
 import useEmailItemGrid from 'parabol-client/hooks/useEmailItemGrid'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'

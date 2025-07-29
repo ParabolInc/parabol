@@ -1,4 +1,4 @@
-import {AuthIdentityMicrosoftResolvers} from '../resolverTypes'
+import type {AuthIdentityMicrosoftResolvers} from '../resolverTypes'
 
 const AuthIdentityMicrosoft: AuthIdentityMicrosoftResolvers = {
   __isTypeOf: ({type}) => type === 'MICROSOFT'

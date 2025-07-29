@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 import getJiraIssuesConn from '../connections/getJiraIssuesConn'

@@ -3,7 +3,7 @@ import {NavigateNext} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
+import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const Wrapper = styled('div')({

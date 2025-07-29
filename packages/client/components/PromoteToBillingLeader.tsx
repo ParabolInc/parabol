@@ -1,10 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PromoteToBillingLeader_notification$key} from '~/__generated__/PromoteToBillingLeader_notification.graphql'
+import type {PromoteToBillingLeader_notification$key} from '~/__generated__/PromoteToBillingLeader_notification.graphql'
 import useRouter from '~/hooks/useRouter'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
+
 interface Props {
   notification: PromoteToBillingLeader_notification$key
 }

@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {DataLoaderInstance} from '../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import getKysely from '../postgres/getKysely'
 
 // Only does something if the organization is empty & not paid

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SelectTemplateMutation as TSelectTemplateMutation} from '../__generated__/SelectTemplateMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {SelectTemplateMutation as TSelectTemplateMutation} from '../__generated__/SelectTemplateMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment SelectTemplateMutation_team on SelectTemplatePayload {

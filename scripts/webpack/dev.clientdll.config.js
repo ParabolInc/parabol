@@ -59,7 +59,10 @@ module.exports = {
     library: '[name]'
   },
   plugins: [
-    new webpack.DllPlugin({name: '[name]', path: path.join(DLL_ROOT, '[name].json')}) // eslint-disable-line no-new
+    new webpack.DllPlugin({
+      name: '[name]',
+      path: path.join(DLL_ROOT, '[name].json')
+    }) // eslint-disable-line no-new
   ],
   module: {
     rules: [

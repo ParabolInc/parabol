@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Children, cloneElement, Component, ReactElement, ReactNode} from 'react'
+import {Children, Component, cloneElement, type ReactElement, type ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import getBBox from '../RetroReflectPhase/getBBox'
 

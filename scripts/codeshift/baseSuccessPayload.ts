@@ -1,4 +1,4 @@
-import {SUCCESS_PAYLOADResolvers} from '../resolverTypes'
+import type {SUCCESS_PAYLOADResolvers} from '../resolverTypes'
 
 export type SUCCESS_PAYLOADSource = {
   id: string

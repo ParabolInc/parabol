@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetStageTimerMutation_meeting$data} from '~/__generated__/SetStageTimerMutation_meeting.graphql'
-import {SetStageTimerMutation as _SetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
-import {RelayDateHack, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {SetStageTimerMutation_meeting$data} from '~/__generated__/SetStageTimerMutation_meeting.graphql'
+import type {SetStageTimerMutation as _SetStageTimerMutation} from '../__generated__/SetStageTimerMutation.graphql'
+import type {RelayDateHack, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import LocalTimeHandler from '../utils/relay/LocalTimeHandler'
 
 graphql`

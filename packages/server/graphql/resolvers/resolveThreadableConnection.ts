@@ -1,6 +1,6 @@
-import {Comment, Task} from '../../postgres/types'
-import {ThreadableSource} from '../public/types/Threadable'
-import {DataLoaderWorker} from './../graphql'
+import type {Comment, Task} from '../../postgres/types'
+import type {DataLoaderWorker} from './../graphql'
+import type {ThreadableSource} from '../public/types/Threadable'
 
 const resolveThreadableConnection = async (
   discussionId: string,
@@ -8,11 +8,15 @@ const resolveThreadableConnection = async (
 ) => {
   const [comments, tasks] = await Promise.all([
     dataLoader.get('commentsByDiscussionId').load(discussionId),
-    dataLoader.get('tasksByDiscussionId').load(discussionId)
+    dataLoader
+      .get('tasksByDiscussionId')
+      .load(discussionId)
     // dataLoader.get('pollsByDiscussionId').load(discussionId)
   ])
   const threadables = [...comments, ...tasks] as ThreadableSource[]
-  const threadablesByParentId = {} as {[parentId: string]: ThreadableSource[]}
+  const threadablesByParentId = {} as {
+    [parentId: string]: ThreadableSource[]
+  }
 
   const rootThreadables = [] as ThreadableSource[]
   const filteredThreadables = [] as ThreadableSource[]

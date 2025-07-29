@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'react-relay'
-import {readInlineData, RecordSourceProxy} from 'relay-runtime'
-import {updateLocalStage_meeting$key} from '~/__generated__/updateLocalStage_meeting.graphql'
-import Atmosphere from '../../Atmosphere'
+import {type RecordSourceProxy, readInlineData} from 'relay-runtime'
+import type {updateLocalStage_meeting$key} from '~/__generated__/updateLocalStage_meeting.graphql'
+import type Atmosphere from '../../Atmosphere'
 import findBestNavigableStage from '../meetings/findBestNavigableStage'
 import findStageById from '../meetings/findStageById'
 

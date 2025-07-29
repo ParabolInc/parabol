@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type GitLabIntegrationEdge {
-  """
-  The item at the end of the edge
-  """
-  node: TaskIntegration!
-  cursor: String
+	"""
+	The item at the end of the edge
+	"""
+	node: TaskIntegration!
+	cursor: String
 }

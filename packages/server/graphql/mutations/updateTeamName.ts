@@ -6,9 +6,9 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
+import UpdatedTeamInput, {type UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 import UpdateTeamNamePayload from '../types/UpdateTeamNamePayload'
-import UpdatedTeamInput, {UpdatedTeamInputType} from '../types/UpdatedTeamInput'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -45,7 +45,9 @@ export default {
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(newName, orgTeamNames)
     if (error) {
-      return standardError(new Error('Failed validation'), {userId: viewerId})
+      return standardError(new Error('Failed validation'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

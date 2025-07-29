@@ -5,7 +5,7 @@ import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import FlagReadyToAdvancePayload from '../types/FlagReadyToAdvancePayload'
 
 const flagReadyToAdvance = {

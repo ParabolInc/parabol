@@ -1,4 +1,4 @@
-import {AddSlackAuthPayloadResolvers} from '../resolverTypes'
+import type {AddSlackAuthPayloadResolvers} from '../resolverTypes'
 
 export type AddSlackAuthPayloadSource =
   | {

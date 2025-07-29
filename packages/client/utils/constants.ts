@@ -5,10 +5,10 @@
  - Does the variable come from the GraphQL schema? If so, import it from a file in the __generated__ folder
  - Is the variable a string? Create a string union & pass in a plain string to get type safety
 */
-import {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
-import {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
-import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
-import {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
+import type {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
+import type {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
+import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
+import type {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import {Threshold} from '../types/constEnums'
 
 /* Meeting Misc. */

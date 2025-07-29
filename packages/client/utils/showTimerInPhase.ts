@@ -1,4 +1,4 @@
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
+import type {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 
 const noTimerPhases: NewMeetingPhaseTypeEnum[] = [
   'lobby',

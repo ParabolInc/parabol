@@ -2,8 +2,8 @@ import {sql} from 'kysely'
 import getMailManager from '../../../../email/getMailManager'
 import newMeetingSummaryEmailCreator from '../../../../email/newMeetingSummaryEmailCreator'
 import getKysely from '../../../../postgres/getKysely'
-import {AnyMeeting} from '../../../../postgres/types/Meeting'
-import {type InternalContext} from '../../../graphql'
+import type {AnyMeeting} from '../../../../postgres/types/Meeting'
+import type {InternalContext} from '../../../graphql'
 import isValid from '../../../isValid'
 
 export default async function sendNewMeetingSummary(

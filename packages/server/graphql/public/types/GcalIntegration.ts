@@ -1,6 +1,6 @@
 import {google} from 'googleapis'
 import appOrigin from '../../../appOrigin'
-import {GcalIntegrationResolvers} from '../resolverTypes'
+import type {GcalIntegrationResolvers} from '../resolverTypes'
 
 export type GcalIntegrationSource = {
   teamId: string

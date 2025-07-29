@@ -1,4 +1,4 @@
-import {HttpRequest} from 'uWebSockets.js'
+import type {HttpRequest} from 'uWebSockets.js'
 
 const uwsGetHeaders = (req: HttpRequest) => {
   const reqHeaders: Record<string, string> = {}

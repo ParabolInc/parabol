@@ -2,7 +2,7 @@ import {Suspense, useCallback, useEffect} from 'react'
 import {useHistory, useLocation} from 'react-router'
 import ReviewRequestToJoinOrgModal from '~/components/ReviewRequestToJoinOrgModal'
 import reviewRequestToJoinOrgModalQuery, {
-  ReviewRequestToJoinOrgModalQuery
+  type ReviewRequestToJoinOrgModalQuery
 } from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useModal from '../hooks/useModal'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'

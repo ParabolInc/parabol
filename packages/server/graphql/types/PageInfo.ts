@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 
 const PageInfo = new GraphQLObjectType<any, GQLContext>({
   name: 'PageInfo',

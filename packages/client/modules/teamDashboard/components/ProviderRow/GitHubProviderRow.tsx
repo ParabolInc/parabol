@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
+import type {GitHubProviderRow_viewer$key} from '../../../../__generated__/GitHubProviderRow_viewer.graphql'
 import GitHubConfigMenu from '../../../../components/GitHubConfigMenu'
 import GitHubProviderLogo from '../../../../components/GitHubProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import GitHubClientManager from '../../../../utils/GitHubClientManager'
 import ProviderRow from './ProviderRow'
@@ -34,7 +34,12 @@ const GitHubProviderRow = (props: Props) => {
   )
   const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const mutationProps = {
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {github} = integrations

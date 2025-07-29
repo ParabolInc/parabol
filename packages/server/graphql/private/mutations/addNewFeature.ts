@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import getRedis from '../../../utils/getRedis'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addNewFeature: MutationResolvers['addNewFeature'] = async (
   _source,
@@ -23,11 +23,18 @@ const addNewFeature: MutationResolvers['addNewFeature'] = async (
       qb.insertInto('NewFeature').values({actionButtonCopy, snackbarMessage, url}).returning('id')
     )
     .updateTable('User')
-    .set((eb) => ({newFeatureId: eb.selectFrom('NewFeatureInsert').select('NewFeatureInsert.id')}))
+    .set((eb) => ({
+      newFeatureId: eb.selectFrom('NewFeatureInsert').select('NewFeatureInsert.id')
+    }))
     .returning((eb) => [eb.selectFrom('NewFeatureInsert').select('NewFeatureInsert.id').as('id')])
     .executeTakeFirstOrThrow()
 
-  const newFeature = {actionButtonCopy, snackbarMessage, url, id: newFeatureRes.id!}
+  const newFeature = {
+    actionButtonCopy,
+    snackbarMessage,
+    url,
+    id: newFeatureRes.id!
+  }
   const onlineUserIds = new Set()
   const stream = redis.scanStream({match: 'presence:*'})
   stream.on('data', (keys) => {

@@ -4,8 +4,8 @@ import path from 'path'
 import {promisify} from 'util'
 import getPg from '../../packages/server/postgres/getPg'
 import getPgConfig from '../../packages/server/postgres/getPgConfig'
-import getProjectRoot from '../webpack/utils/getProjectRoot'
 import {Logger} from '../../packages/server/utils/Logger'
+import getProjectRoot from '../webpack/utils/getProjectRoot'
 
 async function pgRestore() {
   const exec = promisify(cp.exec)

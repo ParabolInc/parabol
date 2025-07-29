@@ -1,4 +1,4 @@
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {type RouteComponentProps, withRouter} from 'react-router-dom'
 import hasToken from '../utils/hasToken'
 import PrimaryButton from './PrimaryButton'
 

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PublicTeamItem_team$key} from '../../__generated__/PublicTeamItem_team.graphql'
+import type {PublicTeamItem_team$key} from '../../__generated__/PublicTeamItem_team.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import JoinTeamMutation from '../../mutations/JoinTeamMutation'

@@ -4,7 +4,11 @@ const JiraServerIssueId = {
   split: (id: string) => {
     const parts = id.split(':')
     // Assume the input is valid
-    return {providerId: parseInt(parts[0]!, 10), repositoryId: parts[1]!, issueId: parts[2]!}
+    return {
+      providerId: parseInt(parts[0]!, 10),
+      repositoryId: parts[1]!,
+      issueId: parts[2]!
+    }
   }
 }
 

@@ -1,7 +1,7 @@
-import {ReactjiDB} from '../../postgres/types'
+import type {ReactjiDB} from '../../postgres/types'
 import {getUserId} from '../../utils/authorization'
 import getGroupedReactjis from '../../utils/getGroupedReactjis'
-import {GQLContext} from './../graphql'
+import type {GQLContext} from './../graphql'
 
 const resolveReactjis = (
   {reactjis, id}: {reactjis: ReactjiDB[]; id: string},

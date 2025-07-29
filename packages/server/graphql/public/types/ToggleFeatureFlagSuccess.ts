@@ -1,4 +1,4 @@
-import {ToggleFeatureFlagSuccessResolvers} from '../resolverTypes'
+import type {ToggleFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type ToggleFeatureFlagSuccessSource = {
   featureFlagId: string

@@ -1,5 +1,5 @@
-import {DataLoaderWorker} from '../../graphql/graphql'
-import {Organization} from '../../postgres/types'
+import type {DataLoaderWorker} from '../../graphql/graphql'
+import type {Organization} from '../../postgres/types'
 import {analytics} from '../../utils/analytics/analytics'
 import {getStripeManager} from '../../utils/stripe'
 

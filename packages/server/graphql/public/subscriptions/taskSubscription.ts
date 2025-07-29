@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {broadcastSubscription} from '../broadcastSubscription'
-import {SubscriptionResolvers} from '../resolverTypes'
+import type {SubscriptionResolvers} from '../resolverTypes'
 
 const taskSubscription: SubscriptionResolvers['taskSubscription'] = {
   subscribe: async (_source, _args, context) => {

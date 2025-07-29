@@ -1,5 +1,5 @@
 import {fetch} from '@whatwg-node/fetch'
-import {OAuth2Error, OAuth2Success} from '../../types/custom'
+import type {OAuth2Error, OAuth2Success} from '../../types/custom'
 
 type OAuth2Response = OAuth2Success | OAuth2Error
 

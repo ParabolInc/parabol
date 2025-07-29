@@ -1,4 +1,4 @@
-import {UpdateRecurrenceSettingsSuccessResolvers} from '../resolverTypes'
+import type {UpdateRecurrenceSettingsSuccessResolvers} from '../resolverTypes'
 
 export type UpdateRecurrenceSettingsSuccessSource = {
   meetingId: string

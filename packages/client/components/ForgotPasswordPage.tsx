@@ -3,7 +3,7 @@
  *
  */
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
@@ -16,7 +16,7 @@ import {emailRegex} from '../validation/regex'
 import AuthenticationDialog from './AuthenticationDialog'
 import DialogTitle from './DialogTitle'
 import EmailInputField from './EmailInputField'
-import {GotoAuthPage} from './GenericAuthentication'
+import type {GotoAuthPage} from './GenericAuthentication'
 import PlainButton from './PlainButton/PlainButton'
 import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'

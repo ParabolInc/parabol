@@ -4,8 +4,8 @@ import {markdownToTipTap} from '../../../../../client/shared/tiptap/markdownToTi
 import {quickHash} from '../../../../../client/shared/utils/quickHash'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import type {Team} from '../../../../postgres/types'
+import type {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
-import {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
 
 const FAIL_TEXT = 'Not enough data to generate insights'
 

@@ -7,7 +7,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = async (
   _source,
@@ -22,7 +22,9 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
 
   // AUTH
   if (!template || !template.isActive) {
-    return standardError(new Error('Template not found'), {userId: viewerId})
+    return standardError(new Error('Template not found'), {
+      userId: viewerId
+    })
   }
   if (!isTeamMember(authToken, template.teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})

@@ -1,4 +1,4 @@
 type UpdateTeamSortOrderPayload {
-  team: Team!
-  user: User!
+	team: Team!
+	user: User!
 }

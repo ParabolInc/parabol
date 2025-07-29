@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {matchPath} from 'react-router-dom'
-import {Disposable, RecordSourceProxy} from 'relay-runtime'
-import {StartDraggingReflectionMutation_meeting$data} from '~/__generated__/StartDraggingReflectionMutation_meeting.graphql'
-import Atmosphere from '../Atmosphere'
-import {StartDraggingReflectionMutation as TStartDraggingReflectionMutation} from '../__generated__/StartDraggingReflectionMutation.graphql'
-import {ClientRetroReflection} from '../types/clientSchema'
-import {LocalHandlers, SharedUpdater} from '../types/relayMutations'
+import type {Disposable, RecordSourceProxy} from 'relay-runtime'
+import type {StartDraggingReflectionMutation_meeting$data} from '~/__generated__/StartDraggingReflectionMutation_meeting.graphql'
+import type {StartDraggingReflectionMutation as TStartDraggingReflectionMutation} from '../__generated__/StartDraggingReflectionMutation.graphql'
+import type Atmosphere from '../Atmosphere'
+import type {ClientRetroReflection} from '../types/clientSchema'
+import type {LocalHandlers, SharedUpdater} from '../types/relayMutations'
 
 graphql`
   fragment StartDraggingReflectionMutation_meeting on StartDraggingReflectionPayload {

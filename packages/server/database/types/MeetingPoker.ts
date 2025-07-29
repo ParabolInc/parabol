@@ -1,4 +1,4 @@
-import {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type {PokerMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import Meeting from './Meeting'
 
 interface Input {

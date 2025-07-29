@@ -1,8 +1,8 @@
 import getPg from '../getPg'
 import {
   getJiraDimensionFieldMapQuery,
-  IGetJiraDimensionFieldMapQueryParams,
-  IGetJiraDimensionFieldMapQueryResult
+  type IGetJiraDimensionFieldMapQueryParams,
+  type IGetJiraDimensionFieldMapQueryResult
 } from './generated/getJiraDimensionFieldMapQuery'
 
 export interface JiraDimensionFieldMap extends IGetJiraDimensionFieldMapQueryResult {}

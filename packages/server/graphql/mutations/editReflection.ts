@@ -4,7 +4,7 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import EditReflectionPayload from '../types/EditReflectionPayload'
 
 export default {
@@ -34,14 +34,24 @@ export default {
     // AUTH
     const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
     if (!reflectPrompt) {
-      return standardError(new Error('Category not found'), {userId: viewerId})
+      return standardError(new Error('Category not found'), {
+        userId: viewerId
+      })
     }
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {endedAt, phases} = meeting
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
     if (isPhaseComplete('group', phases)) {
-      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+      return standardError(new Error('Meeting phase already completed'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

@@ -1,4 +1,4 @@
-import {AddReflectTemplatePromptPayloadResolvers} from '../resolverTypes'
+import type {AddReflectTemplatePromptPayloadResolvers} from '../resolverTypes'
 
 export type AddReflectTemplatePromptPayloadSource =
   | {

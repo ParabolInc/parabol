@@ -7,7 +7,7 @@ import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import addAgendaItemToActiveActionMeeting from '../../mutations/helpers/addAgendaItemToActiveActionMeeting'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addAgendaItem: MutationResolvers['addAgendaItem'] = async (
   _source,

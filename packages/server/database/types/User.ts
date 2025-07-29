@@ -1,7 +1,7 @@
-import {AuthTokenRole} from 'parabol-client/types/constEnums'
+import type {AuthTokenRole} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
 import {USER_PREFERRED_NAME_LIMIT} from '../../postgres/constants'
-import AuthIdentity from './AuthIdentity'
+import type AuthIdentity from './AuthIdentity'
 
 interface Input {
   id?: string

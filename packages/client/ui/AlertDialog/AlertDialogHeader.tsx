@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type * as React from 'react'
 import {cn} from '../cn'
 
 const AlertDialogHeader = ({className, ...props}: React.HTMLAttributes<HTMLDivElement>) => (

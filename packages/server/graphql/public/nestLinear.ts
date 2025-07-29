@@ -1,6 +1,6 @@
-import {GraphQLSchema} from 'graphql'
-import {IntegrationProviderLinear} from '../../postgres/queries/getIntegrationProvidersByIds'
-import {GQLContext} from '../graphql'
+import type {GraphQLSchema} from 'graphql'
+import type {IntegrationProviderLinear} from '../../postgres/queries/getIntegrationProvidersByIds'
+import type {GQLContext} from '../graphql'
 import linearSchema from '../nestedSchema/Linear/linearSchema.graphql'
 import nestLinearEndpoint from '../nestedSchema/nestLinearEndpoint'
 

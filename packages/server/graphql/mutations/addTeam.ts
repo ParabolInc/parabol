@@ -9,12 +9,12 @@ import {getUserId, isUserInOrg} from '../../utils/authorization'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import AddTeamPayload from '../types/AddTeamPayload'
 import GraphQLEmailType from '../types/GraphQLEmailType'
-import NewTeamInput, {NewTeamInputType} from '../types/NewTeamInput'
 import {getFeatureTier} from '../types/helpers/getFeatureTier'
+import NewTeamInput, {type NewTeamInputType} from '../types/NewTeamInput'
 import addTeamValidation from './helpers/addTeamValidation'
 import createTeamAndLeader from './helpers/createTeamAndLeader'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'
@@ -48,7 +48,9 @@ export default {
       const viewerId = getUserId(authToken)
 
       if (!(await isUserInOrg(viewerId, orgId, dataLoader))) {
-        return standardError(new Error('Organization not found'), {userId: viewerId})
+        return standardError(new Error('Organization not found'), {
+          userId: viewerId
+        })
       }
 
       // VALIDATION
@@ -70,16 +72,22 @@ export default {
             }
           }
         }
-        return standardError(new Error('Failed input validation'), {userId: viewerId})
+        return standardError(new Error('Failed input validation'), {
+          userId: viewerId
+        })
       }
       if (orgTeams.length >= Threshold.MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').loadNonNull(orgId)
         if (getFeatureTier(organization) === 'starter') {
-          return standardError(new Error('Max free teams reached'), {userId: viewerId})
+          return standardError(new Error('Max free teams reached'), {
+            userId: viewerId
+          })
         }
       }
       if (organization.lockedAt) {
-        return standardError(new Error('Organization is locked'), {userId: viewerId})
+        return standardError(new Error('Organization is locked'), {
+          userId: viewerId
+        })
       }
 
       // RESOLUTION
@@ -90,7 +98,9 @@ export default {
       // MUTATIVE
       tms.push(teamId)
       analytics.newTeam(viewer, orgId, teamId, orgTeams.length + 1)
-      publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+      publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
+        tms
+      })
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {
         orgId,

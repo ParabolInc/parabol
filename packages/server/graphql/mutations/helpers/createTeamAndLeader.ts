@@ -2,10 +2,10 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {MeetingSettingsThreshold} from '../../../../client/types/constEnums'
 import Team from '../../../database/types/Team'
 import TimelineEventCreatedTeam from '../../../database/types/TimelineEventCreatedTeam'
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import IUser from '../../../postgres/types/IUser'
+import type IUser from '../../../postgres/types/IUser'
 
 interface ValidNewTeam {
   id: string

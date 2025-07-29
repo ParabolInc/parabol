@@ -6,7 +6,7 @@ import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import VoteForReflectionGroupPayload from '../types/VoteForReflectionGroupPayload'
 import safelyCastVote from './helpers/safelyCastVote'
 import safelyWithdrawVote from './helpers/safelyWithdrawVote'
@@ -49,16 +49,23 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
     if (isPhaseComplete(VOTE, phases)) {
-      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+      return standardError(new Error('Meeting phase already completed'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
     const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!meetingMember) {
-      return standardError(new Error('Meeting member not found'), {userId: viewerId})
+      return standardError(new Error('Meeting member not found'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

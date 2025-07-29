@@ -1,15 +1,15 @@
 import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {
+import type {
   RetroSidebarDiscussSection_meeting$data,
   RetroSidebarDiscussSection_meeting$key
 } from '~/__generated__/RetroSidebarDiscussSection_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useGotoStageId from '~/hooks/useGotoStageId'
-import {DeepNonNullable} from '~/types/generics'
+import type useGotoStageId from '~/hooks/useGotoStageId'
+import type {DeepNonNullable} from '~/types/generics'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {navItemRaised} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'

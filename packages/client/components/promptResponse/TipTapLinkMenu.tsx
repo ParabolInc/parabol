@@ -1,10 +1,10 @@
 import * as Popover from '@radix-ui/react-popover'
 import type {EditorEvents} from '@tiptap/core'
-import {Editor, getTextBetween, useEditorState} from '@tiptap/react'
+import {type Editor, getTextBetween, useEditorState} from '@tiptap/react'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {TipTapLinkEditor} from './TipTapLinkEditor'
 import {TipTapLinkPreview} from './TipTapLinkPreview'
-import {getRangeForType, LinkMenuState} from './TiptapLinkExtension'
+import {getRangeForType, type LinkMenuState} from './TiptapLinkExtension'
 
 const getContent = (editor: Editor, typeOrName: string) => {
   const range = getRangeForType(editor.state, typeOrName)

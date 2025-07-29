@@ -2,7 +2,7 @@ import {Suspense, useCallback} from 'react'
 import {useHistory, useLocation} from 'react-router'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import shareTopicModalQuery, {
-  ShareTopicModalQuery
+  type ShareTopicModalQuery
 } from '../__generated__/ShareTopicModalQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useRouter from '../hooks/useRouter'

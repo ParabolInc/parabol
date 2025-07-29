@@ -1,5 +1,5 @@
 import {TenorManager} from '../../../utils/TenorManager'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 export interface SSORelayState {
   isInvited?: boolean

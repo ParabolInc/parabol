@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react'
-import {usePaginationFragmentHookType} from 'react-relay/relay-hooks/usePaginationFragment'
+import type {usePaginationFragmentHookType} from 'react-relay/relay-hooks/usePaginationFragment'
 
 const useLoadNextOnScrollBottom = (
   paginationRes: usePaginationFragmentHookType<any, any, any>,

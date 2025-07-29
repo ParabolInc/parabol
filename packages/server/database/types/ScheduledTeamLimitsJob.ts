@@ -1,4 +1,4 @@
-import ScheduledJob, {ScheduledJobType} from './ScheduledJob'
+import ScheduledJob, {type ScheduledJobType} from './ScheduledJob'
 
 export default class ScheduledTeamLimitsJob extends ScheduledJob {
   constructor(

@@ -3,16 +3,16 @@ import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {
-  AtlassianError,
+  type AtlassianError,
   RateLimitError
 } from 'parabol-client/utils/AtlassianManager'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
-import {
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
+import type {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import {Logger} from './Logger'
 import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 
@@ -154,7 +154,12 @@ interface JiraIssueBean<F = {description: any; summary: string; created: string}
 }
 
 export type JiraIssueRaw = JiraIssueBean<
-  {description: string; summary: string; issuetype: {id: string; iconUrl: string}; created: string},
+  {
+    description: string
+    summary: string
+    issuetype: {id: string; iconUrl: string}
+    created: string
+  },
   {description: string}
 >
 
@@ -358,7 +363,7 @@ class AtlassianServerManager extends AtlassianManager {
         imageBuffer: Buffer.from(arrayBuffer),
         contentType: imageRes.headers.get('content-type')
       }
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -599,7 +604,7 @@ class AtlassianServerManager extends AtlassianManager {
     } as const
     const timeTrackingFieldName =
       timeTrackingFieldLookup[fieldId as keyof typeof timeTrackingFieldLookup]
-    if (!!timeTrackingFieldName) {
+    if (timeTrackingFieldName) {
       payload = {
         update: {
           [timeTrackingFieldId]: [

@@ -1,5 +1,5 @@
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {NotifyResponseRepliedResolvers} from '../resolverTypes'
+import type {NotifyResponseRepliedResolvers} from '../resolverTypes'
 
 const NotifyResponseReplied: NotifyResponseRepliedResolvers = {
   __isTypeOf: ({type}) => type === 'RESPONSE_REPLIED',

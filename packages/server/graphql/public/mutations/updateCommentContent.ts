@@ -8,7 +8,7 @@ import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
   _source,
@@ -37,7 +37,11 @@ const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
     return {error: {message: `Comment is not from this meeting`}}
   }
   if (createdBy !== viewerId && createdBy !== PARABOL_AI_USER_ID) {
-    return {error: {message: 'Can only update your own comment or Parabol AI comments'}}
+    return {
+      error: {
+        message: 'Can only update your own comment or Parabol AI comments'
+      }
+    }
   }
 
   // VALIDATION

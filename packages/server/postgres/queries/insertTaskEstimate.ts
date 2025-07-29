@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IInsertTaskEstimateQueryParams,
+  type IInsertTaskEstimateQueryParams,
   insertTaskEstimateQuery
 } from './generated/insertTaskEstimateQuery'
 

@@ -15,6 +15,7 @@ import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
 import {createPageLinkElement} from '../../../shared/tiptap/createPageLinkElement'
+
 declare module '@tiptap/core' {
   interface EditorEvents {
     pageLinkPicker: {willOpen: boolean}

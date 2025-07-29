@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {UpdatedNotificationResolvers} from '../resolverTypes'
+import type {UpdatedNotificationResolvers} from '../resolverTypes'
 
 export type UpdatedNotificationSource = {updatedNotificationId: string}
 

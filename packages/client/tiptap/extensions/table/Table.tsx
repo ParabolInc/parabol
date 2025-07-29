@@ -1,10 +1,10 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
+import {type TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
 import {
   NodeViewContent,
+  type NodeViewProps,
   NodeViewWrapper,
-  ReactNodeViewRenderer,
-  type NodeViewProps
+  ReactNodeViewRenderer
 } from '@tiptap/react'
 import {useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'

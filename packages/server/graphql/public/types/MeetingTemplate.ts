@@ -1,6 +1,6 @@
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
-import {MeetingTemplateResolvers} from '../resolverTypes'
+import type {MeetingTemplateResolvers} from '../resolverTypes'
 
 const RECOMMENDED_TEMPLATES = ['startStopContinueTemplate', 'estimatedEffortTemplate']
 

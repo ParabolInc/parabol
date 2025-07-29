@@ -1,7 +1,7 @@
 import FormData from 'form-data'
 import Mailgun from 'mailgun.js'
 import logError from '../utils/logError'
-import MailManager, {MailManagerOptions} from './MailManager'
+import MailManager, {type MailManagerOptions} from './MailManager'
 
 export default class MailManagerMailgun extends MailManager {
   mailgun = new Mailgun(FormData)

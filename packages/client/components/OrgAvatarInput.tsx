@@ -60,7 +60,9 @@ const OrgAvatarInput = (props: Props) => {
       }
       const png = await svgToPng(file)
       if (png) {
-        file = new File([png], file.name.slice(0, -3) + 'png', {type: png.type})
+        file = new File([png], file.name.slice(0, -3) + 'png', {
+          type: png.type
+        })
       }
     }
     submitMutation()

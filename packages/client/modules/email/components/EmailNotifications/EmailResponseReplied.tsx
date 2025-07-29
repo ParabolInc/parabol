@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailResponseReplied_notification$key} from 'parabol-client/__generated__/EmailResponseReplied_notification.graphql'
+import type {EmailResponseReplied_notification$key} from 'parabol-client/__generated__/EmailResponseReplied_notification.graphql'
 import {useFragment} from 'react-relay'
 import {useTipTapContext} from '../../../../components/TipTapProvider'
 import {cardShadow} from '../../../../styles/elevation'

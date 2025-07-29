@@ -1,6 +1,6 @@
 import type {NodeViewProps} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {TeamPickerComboboxQuery} from '../__generated__/TeamPickerComboboxQuery.graphql'
 import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Menu} from '../ui/Menu/Menu'

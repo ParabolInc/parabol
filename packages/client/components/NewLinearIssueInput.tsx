@@ -1,8 +1,8 @@
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {FormEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {type FormEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   NewLinearIssueInput_viewer$data,
   NewLinearIssueInput_viewer$key
 } from '~/__generated__/NewLinearIssueInput_viewer.graphql'
@@ -12,7 +12,7 @@ import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import getNonNullEdges from '~/utils/getNonNullEdges'
-import {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
+import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
 import useTimedState from '../hooks/useTimedState'
@@ -20,8 +20,8 @@ import CreateTaskMutation from '../mutations/CreateTaskMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
-import {DeepNonNullable} from '../types/generics'
-import {CompletedHandler} from '../types/relayMutations'
+import type {DeepNonNullable} from '../types/generics'
+import type {CompletedHandler} from '../types/relayMutations'
 import getUniqueEdges from '../utils/getUniqueEdges'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
@@ -51,7 +51,9 @@ type Team = TeamEdge['node']
 
 const getProjectId = (item: Project | Team) => {
   if ('teams' in item) {
-    const {id: teamId} = (item as Project).teams?.nodes?.[0] ?? {id: undefined}
+    const {id: teamId} = (item as Project).teams?.nodes?.[0] ?? {
+      id: undefined
+    }
     if (!teamId) return null
     const {id: projectId} = item
     return LinearProjectId.join(teamId, projectId)

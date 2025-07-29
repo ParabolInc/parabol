@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TopBarAvatar_viewer$key} from '~/__generated__/TopBarAvatar_viewer.graphql'
+import type {TopBarAvatar_viewer$key} from '~/__generated__/TopBarAvatar_viewer.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'

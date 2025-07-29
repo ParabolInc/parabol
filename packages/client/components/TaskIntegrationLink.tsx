@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {twMerge} from 'tailwind-merge'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
-import {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
 import JiraIssueLink from './JiraIssueLink'
 
 interface Props {

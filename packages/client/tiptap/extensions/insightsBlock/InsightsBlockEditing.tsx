@@ -1,4 +1,4 @@
-import {type NodeViewProps} from '@tiptap/react'
+import type {NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {GraphQLError} from 'graphql'
 import {marked} from 'marked'
@@ -90,7 +90,9 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
             }
             return
           }
-          const freshInsightsNode = editor.$node('insightsBlock', {id: blockId})
+          const freshInsightsNode = editor.$node('insightsBlock', {
+            id: blockId
+          })
           if (!freshInsightsNode) return
           if (first) {
             first = false

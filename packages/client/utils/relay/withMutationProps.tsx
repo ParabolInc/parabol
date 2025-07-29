@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {Component, Ref} from 'react'
-import {Subtract} from '../../types/generics'
+import {Component, type Ref} from 'react'
+import type {Subtract} from '../../types/generics'
 import getDisplayName from '../getDisplayName'
 import getGraphQLError from './getGraphQLError'
 

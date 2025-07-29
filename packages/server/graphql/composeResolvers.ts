@@ -14,7 +14,7 @@ import type {IRules} from 'graphql-shield'
 import {allow} from 'graphql-shield'
 import hash from 'object-hash'
 import {Logger} from '../utils/Logger'
-import {ResolverFn} from './private/resolverTypes'
+import type {ResolverFn} from './private/resolverTypes'
 
 // hack to get ShieldRule since it's not exported from graphql-shield
 export type ShieldRule = Extract<IRules, {resolve: any}>

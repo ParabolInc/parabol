@@ -1,5 +1,6 @@
-import {SuggestionProps} from '@tiptap/suggestion'
-import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import type {SuggestionProps} from '@tiptap/suggestion'
+import type React from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
 
 export const PageLinkMenu = forwardRef(
   (props: SuggestionProps<{pageId: string; title: string}>, ref) => {

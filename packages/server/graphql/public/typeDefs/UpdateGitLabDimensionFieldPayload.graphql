@@ -1,1 +1,3 @@
-union UpdateGitLabDimensionFieldPayload = ErrorPayload | UpdateGitLabDimensionFieldSuccess
+union UpdateGitLabDimensionFieldPayload =
+	| ErrorPayload
+	| UpdateGitLabDimensionFieldSuccess

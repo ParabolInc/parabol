@@ -1,6 +1,6 @@
 import {USER_OVERLIMIT_COPY_LIMIT} from '../../../postgres/constants'
 import updateUser from '../../../postgres/queries/updateUser'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const flagOverLimit: MutationResolvers['flagOverLimit'] = async (
   _source,
@@ -12,7 +12,11 @@ const flagOverLimit: MutationResolvers['flagOverLimit'] = async (
   if (organizationUsers.length === 0) return {error: {message: 'OrgId has no members'}}
 
   if (copy.length > USER_OVERLIMIT_COPY_LIMIT) {
-    return {error: {message: `copy must be ${USER_OVERLIMIT_COPY_LIMIT} chars or less`}}
+    return {
+      error: {
+        message: `copy must be ${USER_OVERLIMIT_COPY_LIMIT} chars or less`
+      }
+    }
   }
 
   // RESOLUTION

@@ -1,5 +1,5 @@
-import Redis from 'ioredis'
-import SubscriptionIterator, {SubscriptionListener} from './SubscriptionIterator'
+import type Redis from 'ioredis'
+import SubscriptionIterator, {type SubscriptionListener} from './SubscriptionIterator'
 
 interface ListenersByChannel {
   [channel: string]: SubscriptionListener[]

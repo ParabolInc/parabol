@@ -3,8 +3,8 @@ import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initLogging'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {WorkflowOrchestrator} from './WorkflowOrchestrator'
-import {DBJob} from './custom'
+import type {DBJob} from './custom'
+import type {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
 export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
   [Symbol.asyncIterator]() {
@@ -58,7 +58,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
       }
       await this.orchestrator.runStep(job)
       return {done: false, value: job}
-    } catch (e) {
+    } catch {
       await sleep(1000)
       return this.next()
     }

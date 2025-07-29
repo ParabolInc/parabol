@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IUpsertAtlassianAuthsQueryParams,
+  type IUpsertAtlassianAuthsQueryParams,
   upsertAtlassianAuthsQuery
 } from './generated/upsertAtlassianAuthsQuery'
 

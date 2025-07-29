@@ -3,7 +3,7 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   _source,

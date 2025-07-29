@@ -1,6 +1,6 @@
 type StartRetrospectiveSuccess {
-  meeting: RetrospectiveMeeting!
-  meetingId: ID!
-  team: Team!
-  hasGcalError: Boolean
+	meeting: RetrospectiveMeeting!
+	meetingId: ID!
+	team: Team!
+	hasGcalError: Boolean
 }

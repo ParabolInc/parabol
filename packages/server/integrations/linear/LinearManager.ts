@@ -1,9 +1,9 @@
 import {URL} from 'url'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
-  OAuth2AuthorizationParams,
-  OAuth2AuthorizeResponse,
-  OAuth2RefreshAuthorizationParams
+  type OAuth2AuthorizationParams,
+  type OAuth2AuthorizeResponse,
+  type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
 export default class LinearManager extends OAuth2Manager {

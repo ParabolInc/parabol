@@ -3,555 +3,559 @@ directive @stream_HACK on FIELD
 The user account profile
 """
 type User {
-  """
-  The userId provided by us
-  """
-  id: ID!
-
-  """
-  The optional pseudoId for the user
-  """
-  pseudoId: String
-  archivedTasks(
-    first: Int!
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    The unique team ID
-    """
-    teamId: ID!
-  ): TaskConnection
-  archivedTasksCount(
-    """
-    The unique team ID
-    """
-    teamId: ID!
-  ): Int
-
-  """
-  The timestamp the user was created
-  """
-  createdAt: DateTime!
-
-  """
-  The user email
-  """
-  email: Email!
-
-  """
-  An array of objects with information about the user's identities.
-        More than one will exists in case accounts are linked
-  """
-  identities: [AuthIdentity]
-
-  """
-  true if the user is not currently being billed for service. removed on every websocket handshake
-  """
-  inactive: Boolean
-  invoices(
-    first: Int!
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    The id of the organization
-    """
-    orgId: ID!
-  ): InvoiceConnection!
-
-  """
-  true if the user is a billing leader on any organization, else false
-  """
-  isAnyBillingLeader: Boolean!
-
-  """
-  true if the user is currently online
-  """
-  isConnected: Boolean
-
-  """
-  true if the user is the first to sign up from their domain, else false
-  """
-  isPatient0: Boolean!
-
-  """
-  true if the user is the first to sign up from their domain, else false
-  """
-  isPatientZero: Boolean! @deprecated(reason: "Use isPatient0 instead")
-
-  """
-  the reason the user account was removed
-  """
-  reasonRemoved: String
-
-  """
-  true if the user was removed from parabol, else false
-  """
-  isRemoved: Boolean!
-
-  """
-  true if all user sessions are being recorded in LogRocket, else false
-  """
-  isWatched: Boolean!
-
-  """
-  the endedAt timestamp of the most recent meeting they were a member of
-  """
-  lastMetAt: DateTime
-
-  """
-  The number of meetings the user has attended
-  """
-  meetingCount: Int!
-
-  """
-  The largest number of consecutive months the user has checked into a meeting
-  """
-  monthlyStreakMax: Int!
-
-  """
-  The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
-  """
-  monthlyStreakCurrent: Int!
-
-  """
-  the most important actions for the user to perform
-  """
-  suggestedActions: [SuggestedAction!]!
-
-  """
-  The timeline of important events for the viewer
-  """
-  timeline(
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    the number of timeline events to return
-    """
-    first: Int!
-
-    """
-    a list of team Ids that you want timeline events for. if null, will return timeline events for all possible active teams
-    """
-    teamIds: [ID!]
-    eventTypes: [TimelineEventEnum!]
-
-    """
-    true to only return archived timeline events; false to return active ones
-    """
-    archived: Boolean = false
-  ): TimelineEventConnection!
-
-  """
-  the comments and tasks created from the discussion
-  """
-  discussion(
-    """
-    The ID of the discussion
-    """
-    id: ID!
-  ): Discussion
-
-  """
-  the ID of the newest feature, null if the user has dismissed it
-  """
-  newFeatureId: ID
-
-  """
-  The new feature released by Parabol. null if the user already hid it
-  """
-  newFeature: NewFeatureBroadcast
-
-  """
-  The application-specific name, defaults to email before the tld
-  """
-  preferredName: String!
-
-  """
-  The last day the user connected via websocket or navigated to a common area
-  """
-  lastSeenAt: DateTime!
-
-  """
-  The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
-  """
-  lastSeenAtURLs: [String]
-
-  """
-  The meeting member associated with this user, if a meeting is currently in progress
-  """
-  meetingMember(
-    """
-    The specific meeting ID
-    """
-    meetingId: ID!
-  ): MeetingMember
-
-  """
-  A previous meeting that the user was in (present or absent)
-  """
-  meeting(
-    """
-    The meeting ID
-    """
-    meetingId: ID!
-  ): NewMeeting
-
-  """
-  all the notifications for a single user
-  """
-  notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!
-
-  """
-  get a single organization
-  """
-  organization(
-    """
-    the orgId
-    """
-    orgId: ID!
-  ): Organization
-
-  """
-  The connection between a user and an organization
-  """
-  organizationUser(
-    """
-    the orgId
-    """
-    orgId: ID!
-  ): OrganizationUser
-
-  """
-  A single user that is connected to a single organization
-  """
-  organizationUsers: [OrganizationUser!]!
-
-  """
-  Get the list of all organizations a user belongs to
-  """
-  organizations: [Organization!]!
-
-  """
-  a string with message stating that the user is over the free tier limit, else null
-  """
-  overLimitCopy: String
-
-  """
-  Whether the user should receive a meeting summary email
-  """
-  sendSummaryEmail: Boolean!
-
-  """
-  The reflection groups that are similar to the selected reflection in the Spotlight
-  """
-  similarReflectionGroups(
-    """
-    The id of the selected reflection group in the Spotlight
-    """
-    reflectionGroupId: ID!
-
-    """
-    Only return reflection groups that match the search query
-    """
-    searchQuery: String!
-  ): [RetroReflectionGroup!]!
-  tasks(
-    """
-    the number of tasks to return
-    """
-    first: Int!
-
-    """
-    the datetime cursor
-    """
-    after: DateTime
-
-    """
-    a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.
-    """
-    userIds: [ID!]
-
-    """
-    a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
-    """
-    teamIds: [ID!]
-
-    """
-    true to only return archived tasks; false to return active tasks
-    """
-    archived: Boolean = false
-
-    """
-    filter tasks by the chosen statuses
-    """
-    statusFilters: [TaskStatusEnum!]
-
-    """
-    only return tasks which match the given filter query
-    """
-    filterQuery: String
-
-    """
-    if true, include unassigned tasks. If false, only return assigned tasks
-    """
-    includeUnassigned: Boolean = false
-  ): TaskConnection!
-
-  """
-  A query for a team
-  """
-  team(
-    """
-    The team ID for the desired team
-    """
-    teamId: ID!
-  ): Team
-
-  """
-  The invitation sent to the user, even if it was sent before they were a user
-  """
-  teamInvitation(
-    """
-    The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)
-    """
-    meetingId: ID
-
-    """
-    The teamId to check for the invitation
-    """
-    teamId: ID
-  ): TeamInvitationPayload!
-
-  """
-  all the teams the user is on that the viewer can see.
-  """
-  teams(
-    """
-    If true, returns archived teams as well; otherwise only return active teams. Default to false.
-    """
-    includeArchived: Boolean = false
-  ): [Team!]!
-
-  """
-  The team member associated with this user
-  """
-  teamMember(
-    """
-    The team the user is on
-    """
-    teamId: ID!
-
-    """
-    If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.
-    """
-    userId: ID
-  ): TeamMember
-
-  """
-  all the teams the user is a part of that the viewer can see
-  """
-  tms: [ID!]!
-
-  """
-  The timestamp the user was last updated
-  """
-  updatedAt: DateTime
-  userOnTeam(
-    """
-    The other user
-    """
-    userId: ID!
-  ): User
-
-  """
-  The assumed company this organizaiton belongs to
-  """
-  company: Company
-
-  """
-  The domains the user is a lead of
-  """
-  domains: [Company!]!
-
-  """
-  Domain join request
-  """
-  domainJoinRequest(requestId: ID!): DomainJoinRequest
-
-  """
-  The user's favorite meeting templates
-  """
-  favoriteTemplates: [MeetingTemplate!]!
-
-  """
-  Whether the user has a feature flag enabled or not
-  """
-  featureFlag(featureName: String!): Boolean!
-
-  """
-  url of user’s profile picture
-  """
-  picture: URL!
-
-  """
-  url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
-  """
-  rasterPicture: URL!
-
-  """
-  Check whether the viewer can access a given entity. This can be used to distinguish errors from unauthorized access which requires an invite.
-  """
-  canAccess(
-    """
-    the entity to check
-    """
-    entity: CanAccessEntity!
-
-    """
-    the id of the entity
-    """
-    id: ID!
-  ): Boolean!
-
-  """
-  The highest tier of all the user's organizations
-  """
-  highestTier: TierEnum!
-
-  """
-  A connection of activities available to the user
-  """
-  availableTemplates(
-    first: Int!
-
-    """
-    The cursor, which is the templateId
-    """
-    after: ID
-
-    """
-    An optional argument to filter by template type
-    """
-    type: MeetingTypeEnum
-  ): MeetingTemplateConnection!
-
-  """
-  Activities available to the user matching the search
-  """
-  templateSearch(
-    """
-    Search query
-    """
-    search: String!
-  ): [MeetingTemplate!]!
-
-  """
-  A prototype for a team experience. Includes meeting templates and meeting types that have no templates
-  """
-  activity(
-    """
-    The ID of the activity. templateId or standup or checkin
-    """
-    activityId: ID!
-  ): MeetingTemplate
-
-  """
-  A query to parse/validate SAML metadata for a given domain
-  """
-  parseSAMLMetadata(
-    """
-    URL of a blob of XML from the IdP describing how to handle authentication
-    """
-    metadataURL: String!
-
-    """
-    The name of the company, used as a slug in signon URLs
-    """
-    domain: String!
-  ): ParseSAMLMetadataPayload!
-
-  """
-  The number of free custom retro templates remaining
-  """
-  freeCustomRetroTemplatesRemaining: Int!
-
-  """
-  The number of free custom poker templates remaining
-  """
-  freeCustomPokerTemplatesRemaining: Int!
-  """
-  AI-provided Insights
-  """
-  pageInsights(
-    meetingIds: [ID!]!
-    prompt: String!
-    responseFormat: ContentFormatEnum = markdown
-  ): [String!]!
-
-  """
-  Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared
-  """
-  aiPrompts: [AIPrompt!]!
-  meetings(
-    """
-    The max number of meetings to return
-    """
-    first: Int!
-    teamIds: [ID!]!
-    meetingTypes: [MeetingTypeEnum!]!
-    """
-    The createdAt DateTime used as a cursor
-    """
-    after: DateTime
-    """
-    The createdAt DateTime used as an end cursor
-    """
-    before: DateTime!
-  ): MeetingConnection!
-
-  """
-  A single page accessible by the User
-  """
-  page(pageId: ID!): Page!
-  """
-  All the pages accessible by a user
-  """
-  pages(
-    teamId: ID
-    """
-    a null value means parentPageId = null. not provided (undefined) means it is unfiltered
-    """
-    parentPageId: ID
-    """
-    The first n records to return
-    """
-    first: Int!
-    """
-    The pagination cursor, if any
-    """
-    after: String
-    """
-    true to query top-level private pages. false to query top-level shard pages. ignored if parentPageId or teamId is present
-    """
-    isPrivate: Boolean
-    """
-    true is the page has been archived and is ready for deletion
-    """
-    isArchived: Boolean
-    """
-    A string of text to filter the results. If an empty string is provided, it returns top suggestions
-    """
-    textFilter: String
-  ): PageConnection!
+	"""
+	The userId provided by us
+	"""
+	id: ID!
+
+	"""
+	The optional pseudoId for the user
+	"""
+	pseudoId: String
+	archivedTasks(
+		first: Int!
+
+		"""
+		the datetime cursor
+		"""
+		after: DateTime
+
+		"""
+		The unique team ID
+		"""
+		teamId: ID!
+	): TaskConnection
+	archivedTasksCount(
+		"""
+		The unique team ID
+		"""
+		teamId: ID!
+	): Int
+
+	"""
+	The timestamp the user was created
+	"""
+	createdAt: DateTime!
+
+	"""
+	The user email
+	"""
+	email: Email!
+
+	"""
+	An array of objects with information about the user's identities.
+	      More than one will exists in case accounts are linked
+	"""
+	identities: [AuthIdentity]
+
+	"""
+	true if the user is not currently being billed for service. removed on every websocket handshake
+	"""
+	inactive: Boolean
+	invoices(
+		first: Int!
+
+		"""
+		the datetime cursor
+		"""
+		after: DateTime
+
+		"""
+		The id of the organization
+		"""
+		orgId: ID!
+	): InvoiceConnection!
+
+	"""
+	true if the user is a billing leader on any organization, else false
+	"""
+	isAnyBillingLeader: Boolean!
+
+	"""
+	true if the user is currently online
+	"""
+	isConnected: Boolean
+
+	"""
+	true if the user is the first to sign up from their domain, else false
+	"""
+	isPatient0: Boolean!
+
+	"""
+	true if the user is the first to sign up from their domain, else false
+	"""
+	isPatientZero: Boolean! @deprecated(reason: "Use isPatient0 instead")
+
+	"""
+	the reason the user account was removed
+	"""
+	reasonRemoved: String
+
+	"""
+	true if the user was removed from parabol, else false
+	"""
+	isRemoved: Boolean!
+
+	"""
+	true if all user sessions are being recorded in LogRocket, else false
+	"""
+	isWatched: Boolean!
+
+	"""
+	the endedAt timestamp of the most recent meeting they were a member of
+	"""
+	lastMetAt: DateTime
+
+	"""
+	The number of meetings the user has attended
+	"""
+	meetingCount: Int!
+
+	"""
+	The largest number of consecutive months the user has checked into a meeting
+	"""
+	monthlyStreakMax: Int!
+
+	"""
+	The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
+	"""
+	monthlyStreakCurrent: Int!
+
+	"""
+	the most important actions for the user to perform
+	"""
+	suggestedActions: [SuggestedAction!]!
+
+	"""
+	The timeline of important events for the viewer
+	"""
+	timeline(
+		"""
+		the datetime cursor
+		"""
+		after: DateTime
+
+		"""
+		the number of timeline events to return
+		"""
+		first: Int!
+
+		"""
+		a list of team Ids that you want timeline events for. if null, will return timeline events for all possible active teams
+		"""
+		teamIds: [ID!]
+		eventTypes: [TimelineEventEnum!]
+
+		"""
+		true to only return archived timeline events; false to return active ones
+		"""
+		archived: Boolean = false
+	): TimelineEventConnection!
+
+	"""
+	the comments and tasks created from the discussion
+	"""
+	discussion(
+		"""
+		The ID of the discussion
+		"""
+		id: ID!
+	): Discussion
+
+	"""
+	the ID of the newest feature, null if the user has dismissed it
+	"""
+	newFeatureId: ID
+
+	"""
+	The new feature released by Parabol. null if the user already hid it
+	"""
+	newFeature: NewFeatureBroadcast
+
+	"""
+	The application-specific name, defaults to email before the tld
+	"""
+	preferredName: String!
+
+	"""
+	The last day the user connected via websocket or navigated to a common area
+	"""
+	lastSeenAt: DateTime!
+
+	"""
+	The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
+	"""
+	lastSeenAtURLs: [String]
+
+	"""
+	The meeting member associated with this user, if a meeting is currently in progress
+	"""
+	meetingMember(
+		"""
+		The specific meeting ID
+		"""
+		meetingId: ID!
+	): MeetingMember
+
+	"""
+	A previous meeting that the user was in (present or absent)
+	"""
+	meeting(
+		"""
+		The meeting ID
+		"""
+		meetingId: ID!
+	): NewMeeting
+
+	"""
+	all the notifications for a single user
+	"""
+	notifications(
+		first: Int!
+		after: DateTime
+		types: [NotificationEnum!]
+	): NotificationConnection!
+
+	"""
+	get a single organization
+	"""
+	organization(
+		"""
+		the orgId
+		"""
+		orgId: ID!
+	): Organization
+
+	"""
+	The connection between a user and an organization
+	"""
+	organizationUser(
+		"""
+		the orgId
+		"""
+		orgId: ID!
+	): OrganizationUser
+
+	"""
+	A single user that is connected to a single organization
+	"""
+	organizationUsers: [OrganizationUser!]!
+
+	"""
+	Get the list of all organizations a user belongs to
+	"""
+	organizations: [Organization!]!
+
+	"""
+	a string with message stating that the user is over the free tier limit, else null
+	"""
+	overLimitCopy: String
+
+	"""
+	Whether the user should receive a meeting summary email
+	"""
+	sendSummaryEmail: Boolean!
+
+	"""
+	The reflection groups that are similar to the selected reflection in the Spotlight
+	"""
+	similarReflectionGroups(
+		"""
+		The id of the selected reflection group in the Spotlight
+		"""
+		reflectionGroupId: ID!
+
+		"""
+		Only return reflection groups that match the search query
+		"""
+		searchQuery: String!
+	): [RetroReflectionGroup!]!
+	tasks(
+		"""
+		the number of tasks to return
+		"""
+		first: Int!
+
+		"""
+		the datetime cursor
+		"""
+		after: DateTime
+
+		"""
+		a list of user Ids that you want tasks for. if null, will return tasks for all possible team members. An id is null if it is not assigned to anyone.
+		"""
+		userIds: [ID!]
+
+		"""
+		a list of team Ids that you want tasks for. if null, will return tasks for all possible active teams
+		"""
+		teamIds: [ID!]
+
+		"""
+		true to only return archived tasks; false to return active tasks
+		"""
+		archived: Boolean = false
+
+		"""
+		filter tasks by the chosen statuses
+		"""
+		statusFilters: [TaskStatusEnum!]
+
+		"""
+		only return tasks which match the given filter query
+		"""
+		filterQuery: String
+
+		"""
+		if true, include unassigned tasks. If false, only return assigned tasks
+		"""
+		includeUnassigned: Boolean = false
+	): TaskConnection!
+
+	"""
+	A query for a team
+	"""
+	team(
+		"""
+		The team ID for the desired team
+		"""
+		teamId: ID!
+	): Team
+
+	"""
+	The invitation sent to the user, even if it was sent before they were a user
+	"""
+	teamInvitation(
+		"""
+		The meetingId to check for the invitation, if teamId not available (e.g. on a meeting route)
+		"""
+		meetingId: ID
+
+		"""
+		The teamId to check for the invitation
+		"""
+		teamId: ID
+	): TeamInvitationPayload!
+
+	"""
+	all the teams the user is on that the viewer can see.
+	"""
+	teams(
+		"""
+		If true, returns archived teams as well; otherwise only return active teams. Default to false.
+		"""
+		includeArchived: Boolean = false
+	): [Team!]!
+
+	"""
+	The team member associated with this user
+	"""
+	teamMember(
+		"""
+		The team the user is on
+		"""
+		teamId: ID!
+
+		"""
+		If null, defaults to the team member for this user. Else, will grab the team member. Returns null if not on team.
+		"""
+		userId: ID
+	): TeamMember
+
+	"""
+	all the teams the user is a part of that the viewer can see
+	"""
+	tms: [ID!]!
+
+	"""
+	The timestamp the user was last updated
+	"""
+	updatedAt: DateTime
+	userOnTeam(
+		"""
+		The other user
+		"""
+		userId: ID!
+	): User
+
+	"""
+	The assumed company this organizaiton belongs to
+	"""
+	company: Company
+
+	"""
+	The domains the user is a lead of
+	"""
+	domains: [Company!]!
+
+	"""
+	Domain join request
+	"""
+	domainJoinRequest(requestId: ID!): DomainJoinRequest
+
+	"""
+	The user's favorite meeting templates
+	"""
+	favoriteTemplates: [MeetingTemplate!]!
+
+	"""
+	Whether the user has a feature flag enabled or not
+	"""
+	featureFlag(featureName: String!): Boolean!
+
+	"""
+	url of user’s profile picture
+	"""
+	picture: URL!
+
+	"""
+	url of user’s raster profile picture (if user profile pic is an SVG, raster will be a PNG)
+	"""
+	rasterPicture: URL!
+
+	"""
+	Check whether the viewer can access a given entity. This can be used to distinguish errors from unauthorized access which requires an invite.
+	"""
+	canAccess(
+		"""
+		the entity to check
+		"""
+		entity: CanAccessEntity!
+
+		"""
+		the id of the entity
+		"""
+		id: ID!
+	): Boolean!
+
+	"""
+	The highest tier of all the user's organizations
+	"""
+	highestTier: TierEnum!
+
+	"""
+	A connection of activities available to the user
+	"""
+	availableTemplates(
+		first: Int!
+
+		"""
+		The cursor, which is the templateId
+		"""
+		after: ID
+
+		"""
+		An optional argument to filter by template type
+		"""
+		type: MeetingTypeEnum
+	): MeetingTemplateConnection!
+
+	"""
+	Activities available to the user matching the search
+	"""
+	templateSearch(
+		"""
+		Search query
+		"""
+		search: String!
+	): [MeetingTemplate!]!
+
+	"""
+	A prototype for a team experience. Includes meeting templates and meeting types that have no templates
+	"""
+	activity(
+		"""
+		The ID of the activity. templateId or standup or checkin
+		"""
+		activityId: ID!
+	): MeetingTemplate
+
+	"""
+	A query to parse/validate SAML metadata for a given domain
+	"""
+	parseSAMLMetadata(
+		"""
+		URL of a blob of XML from the IdP describing how to handle authentication
+		"""
+		metadataURL: String!
+
+		"""
+		The name of the company, used as a slug in signon URLs
+		"""
+		domain: String!
+	): ParseSAMLMetadataPayload!
+
+	"""
+	The number of free custom retro templates remaining
+	"""
+	freeCustomRetroTemplatesRemaining: Int!
+
+	"""
+	The number of free custom poker templates remaining
+	"""
+	freeCustomPokerTemplatesRemaining: Int!
+	"""
+	AI-provided Insights
+	"""
+	pageInsights(
+		meetingIds: [ID!]!
+		prompt: String!
+		responseFormat: ContentFormatEnum = markdown
+	): [String!]!
+
+	"""
+	Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared
+	"""
+	aiPrompts: [AIPrompt!]!
+	meetings(
+		"""
+		The max number of meetings to return
+		"""
+		first: Int!
+		teamIds: [ID!]!
+		meetingTypes: [MeetingTypeEnum!]!
+		"""
+		The createdAt DateTime used as a cursor
+		"""
+		after: DateTime
+		"""
+		The createdAt DateTime used as an end cursor
+		"""
+		before: DateTime!
+	): MeetingConnection!
+
+	"""
+	A single page accessible by the User
+	"""
+	page(pageId: ID!): Page!
+	"""
+	All the pages accessible by a user
+	"""
+	pages(
+		teamId: ID
+		"""
+		a null value means parentPageId = null. not provided (undefined) means it is unfiltered
+		"""
+		parentPageId: ID
+		"""
+		The first n records to return
+		"""
+		first: Int!
+		"""
+		The pagination cursor, if any
+		"""
+		after: String
+		"""
+		true to query top-level private pages. false to query top-level shard pages. ignored if parentPageId or teamId is present
+		"""
+		isPrivate: Boolean
+		"""
+		true is the page has been archived and is ready for deletion
+		"""
+		isArchived: Boolean
+		"""
+		A string of text to filter the results. If an empty string is provided, it returns top suggestions
+		"""
+		textFilter: String
+	): PageConnection!
 }

@@ -6,7 +6,7 @@
  * where it left off, making it look seamless.
  */
 
-import {MutableRefObject, useRef} from 'react'
+import {type MutableRefObject, useRef} from 'react'
 import useForceUpdate from './useForceUpdate'
 
 export type LoadingDelayRef = MutableRefObject<{

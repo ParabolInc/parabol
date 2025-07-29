@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import PollId from '../../../client/shared/gqlIds/PollId'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import Poll from './../types/Poll'
 import makeMutationPayload from './makeMutationPayload'
 

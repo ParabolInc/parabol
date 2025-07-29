@@ -1,8 +1,8 @@
 import {Suspense} from 'react'
 import meetingCardOptionsMenuQuery, {
-  MeetingCardOptionsMenuQuery
+  type MeetingCardOptionsMenuQuery
 } from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MeetingCardOptionsMenu from './MeetingCardOptionsMenu'
 

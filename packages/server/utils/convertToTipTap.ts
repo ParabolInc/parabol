@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 
 const emptyDoc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
 export const convertToTipTap = (contentStr: string | null | undefined) => {
@@ -6,7 +6,7 @@ export const convertToTipTap = (contentStr: string | null | undefined) => {
   let parsedContent: JSONContent
   try {
     parsedContent = JSON.parse(contentStr)
-  } catch (e) {
+  } catch {
     return emptyDoc
   }
   return parsedContent

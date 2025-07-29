@@ -1,6 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
-import {CreateTaskPayloadResolvers} from '../resolverTypes'
+import type {CreateTaskPayloadResolvers} from '../resolverTypes'
 
 export type CreateTaskPayloadSource = {
   error?: Error

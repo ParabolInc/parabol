@@ -1,5 +1,5 @@
 import {rule} from 'graphql-shield'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isTeamMember = <T>(dotPath: ResolverDotPath<T>) =>

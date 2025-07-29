@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 
 const Banner = styled('div')({

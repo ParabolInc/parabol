@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import * as React from 'react'
+import type * as React from 'react'
 import {useCallback, useMemo, useState} from 'react'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
-import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
-import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
-import User from '../../../../../server/database/types/User'
+import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import type {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
+import type {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
+import type {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
+import type User from '../../../../../server/database/types/User'
 import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../../server/postgres/constants'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import useModal from '../../../../hooks/useModal'
@@ -187,7 +187,10 @@ const OrgMembers = (props: Props) => {
         'Last Seen At': formattedLastSeenAt
       }
     })
-    const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
+    const parser = new Parser({
+      withBOM: true,
+      eol: '\n'
+    }) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date()
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208

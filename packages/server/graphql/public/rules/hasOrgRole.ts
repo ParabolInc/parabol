@@ -2,8 +2,8 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Orguserroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
-import {ResolverDotPath, getResolverDotPath} from './getResolverDotPath'
+import type {GQLContext} from '../../graphql'
+import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const hasOrgRole = <T>(orgIdDotPath: ResolverDotPath<T>, role: Orguserroleenum) =>
   rule(`hasOrgRole-${orgIdDotPath}`, {cache: 'strict'})(

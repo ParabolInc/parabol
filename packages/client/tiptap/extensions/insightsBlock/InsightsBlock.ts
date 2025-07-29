@@ -1,4 +1,4 @@
-import {Node} from '@tiptap/pm/model'
+import type {Node} from '@tiptap/pm/model'
 import {TextSelection} from '@tiptap/pm/state'
 import {ReactNodeViewRenderer} from '@tiptap/react'
 import type {MarkdownNodeSpec} from 'tiptap-markdown'

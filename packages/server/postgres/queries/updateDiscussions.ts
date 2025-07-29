@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IUpdateDiscussionsQueryParams,
+  type IUpdateDiscussionsQueryParams,
   updateDiscussionsQuery
 } from './generated/updateDiscussionsQuery'
 

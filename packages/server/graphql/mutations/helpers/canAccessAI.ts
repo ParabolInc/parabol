@@ -1,6 +1,6 @@
 import {Threshold} from 'parabol-client/types/constEnums'
-import {Team} from '../../../postgres/types'
-import {DataLoaderWorker} from '../../graphql'
+import type {Team} from '../../../postgres/types'
+import type {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 const canAccessAI = async (team: Team, dataLoader: DataLoaderWorker) => {

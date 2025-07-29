@@ -2,6 +2,6 @@
 Option to add or delete
 """
 enum AddOrDeleteEnum {
-  ADD
-  DELETE
+	ADD
+	DELETE
 }

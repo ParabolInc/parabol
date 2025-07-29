@@ -2,10 +2,11 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
 import DescriptionIcon from '@mui/icons-material/Description'
 import UndoIcon from '@mui/icons-material/Undo'
 import graphql from 'babel-plugin-relay/macro'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {ArchivedPagesButton} from './ArchivedPagesButton'
+
 interface Props {
   queryRef: PreloadedQuery<ArchivedPagesQuery>
 }

@@ -1,9 +1,9 @@
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
-import {DomainJoinRequestResolvers} from '../resolverTypes'
+import type {DomainJoinRequestResolvers} from '../resolverTypes'
 
 const DomainJoinRequest: DomainJoinRequestResolvers = {
   id: ({id}) => {

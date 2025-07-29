@@ -1,6 +1,6 @@
 import getPg from '../../postgres/getPg'
 import {
-  IUpdateTeamByTeamIdQueryParams,
+  type IUpdateTeamByTeamIdQueryParams,
   updateTeamByTeamIdQuery
 } from './generated/updateTeamByTeamIdQuery'
 

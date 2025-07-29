@@ -2,8 +2,8 @@
 The payment status of the invoice
 """
 enum InvoiceStatusEnum {
-  PENDING
-  PAID
-  FAILED
-  UPCOMING
+	PENDING
+	PAID
+	FAILED
+	UPCOMING
 }

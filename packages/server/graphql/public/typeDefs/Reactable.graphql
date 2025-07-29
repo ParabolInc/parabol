@@ -2,13 +2,13 @@
 An item that can have reactjis
 """
 interface Reactable {
-  """
-  shortid
-  """
-  id: ID!
+	"""
+	shortid
+	"""
+	id: ID!
 
-  """
-  All the reactjis for the given reflection
-  """
-  reactjis: [Reactji!]!
+	"""
+	All the reactjis for the given reflection
+	"""
+	reactjis: [Reactji!]!
 }

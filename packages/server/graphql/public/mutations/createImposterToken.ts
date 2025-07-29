@@ -1,7 +1,7 @@
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const createImposterToken: MutationResolvers['createImposterToken'] = async (
   _source,

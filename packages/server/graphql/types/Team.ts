@@ -9,12 +9,12 @@ import {
 } from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import ITeam from '../../database/types/Team'
+import type ITeam from '../../database/types/Team'
 import {getUserId, isSuperUser, isTeamMember, isUserBillingLeader} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
+import type {GQLContext} from './../graphql'
 import isValid from '../isValid'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import {GQLContext} from './../graphql'
 import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MeetingTypeEnum from './MeetingTypeEnum'
@@ -246,7 +246,9 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
       description: 'All the team members actively associated with the team',
       async resolve({id: teamId, orgId}, args: any, {authToken, dataLoader}) {
         const viewerId = getUserId(authToken)
-        const {sortBy = 'preferredName'} = args as {sortBy?: 'preferredName'}
+        const {sortBy = 'preferredName'} = args as {
+          sortBy?: 'preferredName'
+        }
         const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
         const canViewAllMembers =
           isBillingLeader || isSuperUser(authToken) || isTeamMember(authToken, teamId)

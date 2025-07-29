@@ -1,25 +1,25 @@
 import DataLoader from 'dataloader'
-import {SqlBool, sql} from 'kysely'
+import {type SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
-import MeetingTemplate from '../database/types/MeetingTemplate'
+import type MeetingTemplate from '../database/types/MeetingTemplate'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import isValid from '../graphql/isValid'
-import {ReactableEnum} from '../graphql/public/resolverTypes'
-import {SAMLSource} from '../graphql/public/types/SAML'
+import type {ReactableEnum} from '../graphql/public/resolverTypes'
+import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
-import {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import type {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getGitHubAuthByUserIdTeamId, {
-  GitHubAuth
+  type GitHubAuth
 } from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
-  GitHubDimensionFieldMap
+  type GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
 import getGitLabDimensionFieldMaps, {
-  GitLabDimensionFieldMap
+  type GitLabDimensionFieldMap
 } from '../postgres/queries/getGitLabDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
-  MeetingTaskEstimatesResult
+  type MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {
   selectMassInvitations,
@@ -28,7 +28,7 @@ import {
   selectTasks,
   selectTeams
 } from '../postgres/select'
-import {
+import type {
   FeatureFlag,
   Insight,
   MassInvitation,
@@ -37,15 +37,16 @@ import {
   Task,
   Team
 } from '../postgres/types'
-import {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
-import {Tierenum as TierEnum} from '../postgres/types/pg'
-import {Logger} from '../utils/Logger'
+import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
+import type {Tierenum as TierEnum} from '../postgres/types/pg'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
+import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
-import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
 import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
+import type RootDataLoader from './RootDataLoader'
+import type {RegisterDependsOn} from './RootDataLoader'
 
 export interface MeetingSettingsKey {
   teamId: string
@@ -227,7 +228,12 @@ export const githubAuth = (parent: RootDataLoader) => {
 
 export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
   return new DataLoader<
-    {teamId: string; dimensionName: string; projectId: number; providerId: number},
+    {
+      teamId: string
+      dimensionName: string
+      projectId: number
+      providerId: number
+    },
     GitLabDimensionFieldMap | null,
     string
   >(

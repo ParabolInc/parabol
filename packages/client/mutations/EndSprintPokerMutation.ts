@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {EndSprintPokerMutation_team$data} from '~/__generated__/EndSprintPokerMutation_team.graphql'
+import type {RecordProxy} from 'relay-runtime'
+import type {EndSprintPokerMutation_team$data} from '~/__generated__/EndSprintPokerMutation_team.graphql'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndSprintPokerMutation as TEndSprintPokerMutation} from '../__generated__/EndSprintPokerMutation.graphql'
-import {
+import type {EndSprintPokerMutation as TEndSprintPokerMutation} from '../__generated__/EndSprintPokerMutation.graphql'
+import type {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
@@ -114,7 +114,10 @@ const EndSprintPokerMutation: StandardMutation<
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endSprintPokerTeamOnNext(res.endSprintPoker as any, {atmosphere, history})
+      endSprintPokerTeamOnNext(res.endSprintPoker as any, {
+        atmosphere,
+        history
+      })
     },
     onError
   })

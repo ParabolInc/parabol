@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {InvitationLinkQuery} from '../__generated__/InvitationLinkQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {InvitationLinkQuery} from '../__generated__/InvitationLinkQuery.graphql'
 import InvitationLinkDialog from './InvitationLinkDialog'
 import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 

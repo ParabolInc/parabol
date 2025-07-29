@@ -2,16 +2,18 @@ import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
+import type {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import withMutationProps, {WithMutationProps} from 'parabol-client/utils/relay/withMutationProps'
+import withMutationProps, {
+  type WithMutationProps
+} from 'parabol-client/utils/relay/withMutationProps'
 import {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
-import {CorsOptions} from '../../../../types/cors'
+import type {CorsOptions} from '../../../../types/cors'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
-import {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
+import type {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
 interface Props extends WithMutationProps {
   meetingId: string
@@ -345,7 +347,9 @@ const ExportToCSV = (props: Props) => {
     const {meetingId, submitMutation, submitting, onCompleted} = props
     if (submitting) return
     submitMutation()
-    const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {meetingId})
+    const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {
+      meetingId
+    })
     onCompleted()
     if (!data || data instanceof Error) return
     const {viewer} = data
@@ -356,7 +360,10 @@ const ExportToCSV = (props: Props) => {
     const {endedAt, team, meetingType} = newMeeting
     const {name: teamName} = team
     const label = meetingType[0]?.toUpperCase() + meetingType.slice(1)
-    const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
+    const parser = new Parser({
+      withBOM: true,
+      eol: '\n'
+    }) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`

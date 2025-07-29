@@ -5,7 +5,7 @@ import {
   isUserOrgAdmin
 } from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
-import {OrganizationResolvers} from '../resolverTypes'
+import type {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
 
 const Organization: OrganizationResolvers = {

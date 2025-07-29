@@ -1,15 +1,15 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {ComponentPropsWithoutRef, useState} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type * as React from 'react'
+import {type ComponentPropsWithoutRef, useState} from 'react'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
-import {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
+import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
-import {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
-import {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
+import type {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
+import type {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useRouter from '../../../hooks/useRouter'
@@ -24,7 +24,12 @@ import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
 import RaisedButton from '../../RaisedButton'
 import {ActivityBadge} from '../ActivityBadge'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
-import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, DEFAULT_CARD_THEME} from '../Categories'
+import {
+  CATEGORY_ID_TO_NAME,
+  CATEGORY_THEMES,
+  type CategoryID,
+  DEFAULT_CARD_THEME
+} from '../Categories'
 
 const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props

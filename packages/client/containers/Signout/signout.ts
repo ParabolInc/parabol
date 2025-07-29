@@ -1,4 +1,4 @@
-import Atmosphere from '../../Atmosphere'
+import type Atmosphere from '../../Atmosphere'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const signout = (atmosphere: Atmosphere, history: any) => {

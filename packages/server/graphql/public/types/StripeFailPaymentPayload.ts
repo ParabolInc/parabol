@@ -1,5 +1,5 @@
-import {PaymentRejectedNotification} from '../../../postgres/types/Notification'
-import {StripeFailPaymentPayloadResolvers} from '../resolverTypes'
+import type {PaymentRejectedNotification} from '../../../postgres/types/Notification'
+import type {StripeFailPaymentPayloadResolvers} from '../resolverTypes'
 
 export type StripeFailPaymentPayloadSource = {
   orgId: string

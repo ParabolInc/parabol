@@ -1,10 +1,10 @@
 import {google} from 'googleapis'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
-import {RRuleSet} from 'rrule-rust'
+import type {RRuleSet} from 'rrule-rust'
 import appOrigin from '../../../appOrigin'
 import standardError from '../../../utils/standardError'
-import {DataLoaderWorker} from '../../graphql'
-import {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
+import type {DataLoaderWorker} from '../../graphql'
+import type {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
 
 const emailRemindMinsBeforeMeeting = 24 * 60
 const popupRemindMinsBeforeMeeting = 10
@@ -44,7 +44,9 @@ const createGcalEvent = async (
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId: viewerId})
   if (!gcalAuth) {
-    return standardError(new Error('Could not retrieve Google Calendar auth'), {userId: viewerId})
+    return standardError(new Error('Could not retrieve Google Calendar auth'), {
+      userId: viewerId
+    })
   }
   const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
   const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID
@@ -126,7 +128,9 @@ export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
   if (!gcalAuth) {
-    return standardError(new Error('Could not retrieve Google Calendar auth'), {userId})
+    return standardError(new Error('Could not retrieve Google Calendar auth'), {
+      userId
+    })
   }
   const {accessToken: access_token, refreshToken: refresh_token, expiresAt} = gcalAuth
   const CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID

@@ -6,15 +6,15 @@ import {
   useElements,
   useStripe
 } from '@stripe/react-stripe-js'
-import {
+import type {
   StripeCardNumberElement,
   StripeCardNumberElementOptions,
   StripeElementChangeEvent
 } from '@stripe/stripe-js'
-import * as React from 'react'
-import {MutableRefObject, useState} from 'react'
+import type * as React from 'react'
+import {type MutableRefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
+import type {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'

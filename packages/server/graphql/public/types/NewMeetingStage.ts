@@ -1,7 +1,7 @@
 import isValidDate from '../../../../client/utils/isValidDate'
-import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
+import type GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import {getUserId} from '../../../utils/authorization'
-import {NewMeetingPhaseTypeEnum, NewMeetingStageResolvers} from '../resolverTypes'
+import type {NewMeetingPhaseTypeEnum, NewMeetingStageResolvers} from '../resolverTypes'
 
 export interface NewMeetingStageSource extends GenericMeetingStage {
   meetingId: string

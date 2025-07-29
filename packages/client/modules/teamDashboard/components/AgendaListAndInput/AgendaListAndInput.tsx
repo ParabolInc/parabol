@@ -1,32 +1,35 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {
+import type {
   AgendaListAndInput_meeting$data,
   AgendaListAndInput_meeting$key
 } from '~/__generated__/AgendaListAndInput_meeting.graphql'
-import {AgendaListAndInput_team$key} from '../../../../__generated__/AgendaListAndInput_team.graphql'
-import useGotoStageId from '../../../../hooks/useGotoStageId'
+import type {AgendaListAndInput_team$key} from '../../../../__generated__/AgendaListAndInput_team.graphql'
+import type useGotoStageId from '../../../../hooks/useGotoStageId'
 import AgendaInput from '../AgendaInput/AgendaInput'
 import AgendaList from '../AgendaList/AgendaList'
 
-const RootStyles = styled('div')<{isMeeting: boolean | undefined; disabled: boolean}>(
-  ({disabled, isMeeting}) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    paddingRight: isMeeting ? 0 : 8,
-    paddingTop: 0,
-    position: 'relative',
-    width: '100%',
-    minHeight: 0, // required for FF68
-    cursor: disabled ? 'not-allowed' : undefined,
-    filter: disabled ? 'blur(3px)' : undefined,
-    pointerEvents: disabled ? 'none' : undefined,
-    height: isMeeting ? '100%' : undefined // 100% is required due to the flex logo in the meeting sidebar
-  })
-)
+const RootStyles = styled('div')<{
+  isMeeting: boolean | undefined
+  disabled: boolean
+}>(({disabled, isMeeting}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  paddingRight: isMeeting ? 0 : 8,
+  paddingTop: 0,
+  position: 'relative',
+  width: '100%',
+  minHeight: 0, // required for FF68
+  cursor: disabled ? 'not-allowed' : undefined,
+  filter: disabled ? 'blur(3px)' : undefined,
+  pointerEvents: disabled ? 'none' : undefined,
+  height: isMeeting ? '100%' : undefined // 100% is required due to the flex logo in the meeting sidebar
+}))
 
-const StyledAgendaInput = styled(AgendaInput)<{isMeeting: boolean | undefined}>(({isMeeting}) => ({
+const StyledAgendaInput = styled(AgendaInput)<{
+  isMeeting: boolean | undefined
+}>(({isMeeting}) => ({
   paddingRight: isMeeting ? 8 : undefined
 }))
 

@@ -1,6 +1,7 @@
-import {MentionNodeAttrs} from '@tiptap/extension-mention'
-import {SuggestionProps} from '@tiptap/suggestion'
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import type {MentionNodeAttrs} from '@tiptap/extension-mention'
+import type {SuggestionProps} from '@tiptap/suggestion'
+import type React from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import Avatar from './Avatar/Avatar'
 import TypeAheadLabel from './TypeAheadLabel'
 

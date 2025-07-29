@@ -1,4 +1,4 @@
-import {UpdateMeetingPromptSuccessResolvers} from '../resolverTypes'
+import type {UpdateMeetingPromptSuccessResolvers} from '../resolverTypes'
 
 export type UpdateMeetingPromptSuccessSource = {
   meetingId: string

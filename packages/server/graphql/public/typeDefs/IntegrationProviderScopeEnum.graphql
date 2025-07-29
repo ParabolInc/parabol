@@ -2,7 +2,7 @@
 The scope this provider was created on (globally, org-wide, or on the team)
 """
 enum IntegrationProviderScopeEnum {
-  global
-  org
-  team
+	global
+	org
+	team
 }

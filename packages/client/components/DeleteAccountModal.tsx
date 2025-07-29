@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
@@ -64,7 +64,10 @@ const DeleteAccountModal = () => {
   }
   const validReason = reason.trim().slice(0, 20000)
   const handleDelete = () => {
-    DeleteUserMutation(atmosphere, {userId: atmosphere.viewerId, reason: validReason})
+    DeleteUserMutation(atmosphere, {
+      userId: atmosphere.viewerId,
+      reason: validReason
+    })
     setTimeout(() => {
       atmosphere.setAuthToken(null)
       window.location.href = ExternalLinks.RESOURCES

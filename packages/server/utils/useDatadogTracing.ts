@@ -1,10 +1,10 @@
-import {handleStreamOrSingleExecutionResult, type ExecutionArgs} from '@envelop/core'
-import {useOnResolve, type Resolver} from '@envelop/on-resolve'
+import {type ExecutionArgs, handleStreamOrSingleExecutionResult} from '@envelop/core'
+import {type Resolver, useOnResolve} from '@envelop/on-resolve'
 import tracer, {type opentelemetry, type Span} from 'dd-trace'
-import {defaultFieldResolver, getNamedType, getOperationAST, type GraphQLResolveInfo} from 'graphql'
+import {defaultFieldResolver, type GraphQLResolveInfo, getNamedType, getOperationAST} from 'graphql'
+import type {Path} from 'graphql/jsutils/Path'
 import type {ExecutionResult} from 'graphql-ws'
 import type {Plugin} from 'graphql-yoga'
-import {Path} from 'graphql/jsutils/Path'
 import type {ServerContext} from '../yoga'
 import {extractErrorIntoSpanEvent} from './extractErrorIntoSpanEvent'
 
@@ -225,7 +225,6 @@ function pathToArray(path: Path) {
 }
 
 function withCollapse(responsePathAsArray: typeof pathToArray) {
-  return function (path: Path) {
-    return responsePathAsArray(path).map((segment) => (typeof segment === 'number' ? '*' : segment))
-  }
+  return (path: Path) =>
+    responsePathAsArray(path).map((segment) => (typeof segment === 'number' ? '*' : segment))
 }

@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useLazyLoadQuery} from 'react-relay'
-
-import {useMassInvitationTokenQuery} from 'parabol-client/__generated__/useMassInvitationTokenQuery.graphql'
+import type {useMassInvitationTokenQuery} from 'parabol-client/__generated__/useMassInvitationTokenQuery.graphql'
 import {useCallback} from 'react'
+import {useLazyLoadQuery} from 'react-relay'
 
 const useMassInvitationToken = ({teamId, meetingId}: {teamId?: string; meetingId?: string}) => {
   const data = useLazyLoadQuery<useMassInvitationTokenQuery>(

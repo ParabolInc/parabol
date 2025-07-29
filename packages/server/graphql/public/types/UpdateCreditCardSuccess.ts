@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {UpdateCreditCardSuccessResolvers} from '../resolverTypes'
+import type {UpdateCreditCardSuccessResolvers} from '../resolverTypes'
 
 export type UpdateCreditCardSuccessSource = {
   orgId: string

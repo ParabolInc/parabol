@@ -1,6 +1,6 @@
 import {Kind} from 'graphql'
 import {Frequency, RRuleSet} from 'rrule-rust'
-import {RRuleScalarConfig} from '../resolverTypes'
+import type {RRuleScalarConfig} from '../resolverTypes'
 
 const isRRuleValid = (rrule: RRuleSet) => {
   const {tzid, rrules} = rrule
@@ -30,7 +30,7 @@ const isRRuleValid = (rrule: RRuleSet) => {
 
   try {
     Intl.DateTimeFormat(undefined, {timeZone: tzid!})
-  } catch (e) {
+  } catch {
     throw new Error('RRULE time zone is invalid')
   }
 }

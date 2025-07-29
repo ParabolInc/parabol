@@ -7,7 +7,7 @@ import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
-import {EstimateStageResolvers} from '../resolverTypes'
+import type {EstimateStageResolvers} from '../resolverTypes'
 
 const EstimateStage: EstimateStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'ESTIMATE',
@@ -40,9 +40,14 @@ const EstimateStage: EstimateStageResolvers = {
       const projectKey = JiraProjectKeyId.join(issueKey)
       const [dimensionName, jiraIssue] = await Promise.all([
         getDimensionName(meetingId),
-        dataLoader
-          .get('jiraIssue')
-          .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
+        dataLoader.get('jiraIssue').load({
+          teamId,
+          userId: accessUserId,
+          cloudId,
+          issueKey,
+          taskId,
+          viewerId
+        })
       ])
       if (!jiraIssue) return NULL_FIELD
       const {issueType, possibleEstimationFields} = jiraIssue

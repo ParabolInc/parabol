@@ -1,6 +1,7 @@
-import {MentionNodeAttrs} from '@tiptap/extension-mention'
-import {SuggestionProps} from '@tiptap/suggestion'
-import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import type {MentionNodeAttrs} from '@tiptap/extension-mention'
+import type {SuggestionProps} from '@tiptap/suggestion'
+import type React from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import TypeAheadLabel from './TypeAheadLabel'
 
 export default forwardRef(

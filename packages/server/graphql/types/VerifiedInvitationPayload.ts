@@ -1,5 +1,5 @@
 import {GraphQLBoolean, GraphQLID, GraphQLObjectType, GraphQLString} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveUser} from '../resolvers'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import TeamInvitation from './TeamInvitation'

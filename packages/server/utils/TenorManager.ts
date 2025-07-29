@@ -52,7 +52,9 @@ export class TenorManager {
 
   private async get<T>(url: string): Promise<T | Error> {
     try {
-      const res = await fetch(url, {signal: AbortSignal.timeout(MAX_REQUEST_TIME)})
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+      })
       if (res.status !== 200) {
         return new Error(`${res.status}: ${res.statusText}`)
       }

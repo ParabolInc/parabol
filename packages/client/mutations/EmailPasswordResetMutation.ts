@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__generated__/EmailPasswordResetMutation.graphql'
+import type {EmailPasswordResetMutation as TEmailPasswordResetMutation} from '../__generated__/EmailPasswordResetMutation.graphql'
 import {AuthenticationError} from '../types/constEnums'
-import {LocalHandlers, StandardMutation} from '../types/relayMutations'
+import type {LocalHandlers, StandardMutation} from '../types/relayMutations'
 
 export enum ForgotPasswordResType {
   GOOGLE = 'goog',

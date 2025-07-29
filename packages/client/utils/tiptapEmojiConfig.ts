@@ -1,9 +1,8 @@
-import {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
-import EmojiDropdown from '../components/EmojiDropdown'
-
-import data, {Emoji} from '@emoji-mart/data'
+import data, {type Emoji} from '@emoji-mart/data'
+import type {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import {PluginKey} from '@tiptap/pm/state'
 import {init, SearchIndex} from 'emoji-mart'
+import EmojiDropdown from '../components/EmojiDropdown'
 import renderSuggestion from '../tiptap/extensions/renderSuggestion'
 
 init({data})

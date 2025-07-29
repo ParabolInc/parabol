@@ -10,7 +10,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import makeRetroTemplates from '../../mutations/helpers/makeRetroTemplates'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   _source,
@@ -47,19 +47,25 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   if (parentTemplateId) {
     const parentTemplate = await dataLoader.get('meetingTemplates').load(parentTemplateId)
     if (!parentTemplate) {
-      return standardError(new Error('Parent template not found'), {userId: viewerId})
+      return standardError(new Error('Parent template not found'), {
+        userId: viewerId
+      })
     }
     const {name, scope} = parentTemplate
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, parentTemplate.teamId))
-        return standardError(new Error('Template is scoped to team'), {userId: viewerId})
+        return standardError(new Error('Template is scoped to team'), {
+          userId: viewerId
+        })
     } else if (scope === 'ORGANIZATION') {
       const parentTemplateTeam = await dataLoader.get('teams').load(parentTemplate.teamId)
       const isInOrg =
         parentTemplateTeam &&
         (await isUserInOrg(getUserId(authToken), parentTemplateTeam?.orgId, dataLoader))
       if (!isInOrg) {
-        return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
+        return standardError(new Error('Template is scoped to organization'), {
+          userId: viewerId
+        })
       }
     }
     const copyName = `${name} Copy`
@@ -94,7 +100,12 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       pg
         .with('MeetingTemplateInsert', (qc) => qc.insertInto('MeetingTemplate').values(newTemplate))
         .insertInto('ReflectPrompt')
-        .values(newTemplatePrompts.map((p) => ({...p, sortOrder: String(p.sortOrder)})))
+        .values(
+          newTemplatePrompts.map((p) => ({
+            ...p,
+            sortOrder: String(p.sortOrder)
+          }))
+        )
         .execute(),
       decrementFreeTemplatesRemaining(viewerId, 'retro')
     ])

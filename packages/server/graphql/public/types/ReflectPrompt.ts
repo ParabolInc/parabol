@@ -1,4 +1,4 @@
-import {ReflectPromptResolvers} from '../resolverTypes'
+import type {ReflectPromptResolvers} from '../resolverTypes'
 
 const ReflectPrompt: ReflectPromptResolvers = {
   team: ({teamId}, _args, {dataLoader}) => {

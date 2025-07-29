@@ -1,4 +1,4 @@
-import {NotifyPromoteToOrgLeaderResolvers} from '../resolverTypes'
+import type {NotifyPromoteToOrgLeaderResolvers} from '../resolverTypes'
 
 const NotifyPromoteToOrgLeader: NotifyPromoteToOrgLeaderResolvers = {
   __isTypeOf: ({type}) => type === 'PROMOTE_TO_BILLING_LEADER',

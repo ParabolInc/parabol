@@ -1,9 +1,9 @@
 import ms from 'ms'
 import {getUserId} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import {ReflectTemplateResolvers} from '../resolverTypes'
+import type {ReflectTemplateResolvers} from '../resolverTypes'
 
 const POPULAR_RETROS = [
   'workingStuckTemplate',

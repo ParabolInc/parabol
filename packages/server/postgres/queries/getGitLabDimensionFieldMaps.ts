@@ -1,7 +1,7 @@
 import getPg from '../getPg'
 import {
   getGitLabDimensionFieldMapsQuery,
-  IGetGitLabDimensionFieldMapsQueryResult
+  type IGetGitLabDimensionFieldMapsQueryResult
 } from './generated/getGitLabDimensionFieldMapsQuery'
 
 export interface GitLabDimensionFieldMap extends IGetGitLabDimensionFieldMapsQueryResult {}

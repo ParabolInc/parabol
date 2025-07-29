@@ -3,16 +3,16 @@ import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
-import {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
+import type {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getSimilarTaskEstimate from '../../../postgres/queries/getSimilarTaskEstimate'
 import insertTaskEstimate from '../../../postgres/queries/insertTaskEstimate'
-import {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
+import type {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
 import {getUserId} from '../../../utils/authorization'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getIssueLabels from '../../../utils/githubQueries/getIssueLabels.graphql'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
-import {ReqResolvers} from './ReqResolvers'
+import type {ReqResolvers} from './ReqResolvers'
 
 const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
   __isTypeOf: ({status}) => !!status,
@@ -39,9 +39,14 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
     if (integration?.service === 'jira') {
       const {accessUserId, cloudId, issueKey} = integration
       // this dataloader has the side effect of guaranteeing fresh estimates
-      await dataLoader
-        .get('jiraIssue')
-        .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
+      await dataLoader.get('jiraIssue').load({
+        teamId,
+        userId: accessUserId,
+        cloudId,
+        issueKey,
+        taskId,
+        viewerId
+      })
     } else if (integration?.service === 'azureDevOps') {
       const {accessUserId, instanceId, projectKey, issueKey} = integration
       await dataLoader.get('azureDevOpsWorkItem').load({
@@ -128,9 +133,14 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
     const {accessUserId} = integration
     if (integration.service === 'jira') {
       const {cloudId, issueKey} = integration
-      return dataLoader
-        .get('jiraIssue')
-        .load({teamId, userId: accessUserId, cloudId, issueKey, taskId, viewerId})
+      return dataLoader.get('jiraIssue').load({
+        teamId,
+        userId: accessUserId,
+        cloudId,
+        issueKey,
+        taskId,
+        viewerId
+      })
     } else if (integration.service === 'jiraServer') {
       const {issueId} = JiraServerIssueId.split(integrationHash!)
       const issue = await dataLoader.get('jiraServerIssue').load({

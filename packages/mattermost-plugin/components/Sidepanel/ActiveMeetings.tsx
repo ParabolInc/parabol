@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ActiveMeetingsQuery} from 'parabol-client/__generated__/ActiveMeetingsQuery.graphql'
+import type {ActiveMeetingsQuery} from 'parabol-client/__generated__/ActiveMeetingsQuery.graphql'
 import {useMemo} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'

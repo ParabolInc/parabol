@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useNewFeatureSnackbar_viewer$key} from '../__generated__/useNewFeatureSnackbar_viewer.graphql'
+import type {useNewFeatureSnackbar_viewer$key} from '../__generated__/useNewFeatureSnackbar_viewer.graphql'
 import DismissNewFeatureMutation from '../mutations/DismissNewFeatureMutation'
 import useAtmosphere from './useAtmosphere'
 import useMutationProps from './useMutationProps'

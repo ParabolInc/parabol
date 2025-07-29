@@ -9,7 +9,7 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 
 export default {
   type: new GraphQLNonNull(
@@ -43,7 +43,9 @@ export default {
     const isTeamLead = teamMember?.isLead
     const isOrgAdmin = await isUserOrgAdmin(viewerId, teamToArchive.orgId, dataLoader)
     if (!isTeamLead && !isSuperUser(authToken) && !isOrgAdmin) {
-      return standardError(new Error('Not team lead or org admin'), {userId: viewerId})
+      return standardError(new Error('Not team lead or org admin'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -51,7 +53,9 @@ export default {
     const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 
     if (!team) {
-      return standardError(new Error('Already archived team'), {userId: viewerId})
+      return standardError(new Error('Already archived team'), {
+        userId: viewerId
+      })
     }
 
     const teamTemplates = await dataLoader.get('meetingTemplatesByTeamId').load(teamId)
@@ -85,7 +89,9 @@ export default {
     users.forEach((user) => {
       if (!user) return
       const {id, tms} = user
-      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
+      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
+        tms
+      })
     })
 
     return data

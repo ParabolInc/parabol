@@ -1,12 +1,10 @@
 import {Suspense} from 'react'
-
+import createNewActivityQuery, {
+  type CreateNewActivityQuery
+} from '~/__generated__/CreateNewActivityQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {Loader} from '../../../utils/relay/renderLoader'
 import {CreateNewActivity} from './CreateNewActivity'
-
-import createNewActivityQuery, {
-  CreateNewActivityQuery
-} from '~/__generated__/CreateNewActivityQuery.graphql'
 
 const CreateNewActivityRoute = () => {
   const queryRef = useQueryLoaderNow<CreateNewActivityQuery>(createNewActivityQuery)

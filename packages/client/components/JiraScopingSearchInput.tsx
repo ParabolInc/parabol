@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {JiraScopingSearchInput_meeting$key} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
+import type {JiraScopingSearchInput_meeting$key} from '../__generated__/JiraScopingSearchInput_meeting.graphql'
 import ScopingSearchInput from './ScopingSearchInput'
 
 interface Props {

@@ -1,12 +1,12 @@
 import ms from 'ms'
 import appOrigin from '../../../appOrigin'
 import AuthToken from '../../../database/types/AuthToken'
-import ServerEnvironment from '../../../email/ServerEnvironment'
 import getMailManager from '../../../email/getMailManager'
 import notificationSummaryCreator from '../../../email/notificationSummaryCreator'
+import ServerEnvironment from '../../../email/ServerEnvironment'
 import getKysely from '../../../postgres/getKysely'
 import isValid from '../../isValid'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmails'] = async (
   _source,
@@ -47,7 +47,11 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
       const {email, tms, preferredName} = user
       const notificationCount = userNotificationMap.get(user.id)!
 
-      const authToken = new AuthToken({sub: user.id, tms, rol: 'impersonate'})
+      const authToken = new AuthToken({
+        sub: user.id,
+        tms,
+        rol: 'impersonate'
+      })
       const environment = new ServerEnvironment({...context, authToken})
       const {subject, html, body} = await notificationSummaryCreator({
         preferredName,

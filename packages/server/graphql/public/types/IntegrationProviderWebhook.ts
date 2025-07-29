@@ -1,5 +1,5 @@
-import {TIntegrationProvider} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import {IntegrationProviderWebhookResolvers} from '../resolverTypes'
+import type {TIntegrationProvider} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderWebhookResolvers} from '../resolverTypes'
 import IntegrationProvider from './IntegrationProvider'
 
 export type IntegrationProviderWebhookSource = TIntegrationProvider

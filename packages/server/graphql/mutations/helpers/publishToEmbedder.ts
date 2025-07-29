@@ -6,7 +6,9 @@ export interface MessageToEmbedderRelatedDiscussions {
   data: {meetingId: string}
 }
 
-export type MessageToEmbedder = {priority: number} & MessageToEmbedderRelatedDiscussions
+export type MessageToEmbedder = {
+  priority: number
+} & MessageToEmbedderRelatedDiscussions
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
 export const publishToEmbedder = ({jobType, data, priority}: MessageToEmbedder) => {

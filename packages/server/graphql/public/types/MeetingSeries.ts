@@ -1,6 +1,6 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {selectNewMeetings} from '../../../postgres/select'
-import {MeetingSeriesResolvers} from '../resolverTypes'
+import type {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
   id: ({id}, _args, _context) => {

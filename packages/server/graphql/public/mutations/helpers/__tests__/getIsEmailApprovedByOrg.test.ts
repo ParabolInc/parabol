@@ -26,7 +26,13 @@ beforeAll(async () => {
     .with('User', (qc) => qc.insertInto('User').values(user))
     .with('Organization', (qc) => qc.insertInto('Organization').values(org))
     .insertInto('OrganizationApprovedDomain')
-    .values(approvedDomains.map((domain) => ({orgId: org.id, addedByUserId: user.id, domain})))
+    .values(
+      approvedDomains.map((domain) => ({
+        orgId: org.id,
+        addedByUserId: user.id,
+        domain
+      }))
+    )
     .execute()
 })
 

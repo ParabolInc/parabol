@@ -1,11 +1,10 @@
 import {useAutocomplete} from '@mui/base/useAutocomplete'
+import {Send as SendIcon} from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-
-import {Send as SendIcon} from '@mui/icons-material'
-import {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
+import type {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
 import {Chip} from '../../ui/Chip/Chip'
 import {emailRegex} from '../../validation/regex'
 

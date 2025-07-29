@@ -1,7 +1,7 @@
 import dndNoise from '../../../../../client/utils/dndNoise'
 import ReflectionGroup from '../../../../database/types/ReflectionGroup'
 import getKysely from '../../../../postgres/getKysely'
-import {GQLContext} from '../../../graphql'
+import type {GQLContext} from '../../../graphql'
 import updateGroupTitle from '../updateGroupTitle'
 
 const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQLContext) => {
@@ -40,7 +40,11 @@ const removeReflectionFromGroup = async (reflectionId: string, {dataLoader}: GQL
     newSortOrder = (oldSortOrder + afterSortOrder) / 2 + dndNoise()
   }
 
-  const reflectionGroup = new ReflectionGroup({meetingId, promptId, sortOrder: newSortOrder})
+  const reflectionGroup = new ReflectionGroup({
+    meetingId,
+    promptId,
+    sortOrder: newSortOrder
+  })
   const {id: reflectionGroupId} = reflectionGroup
   await Promise.all([
     pg

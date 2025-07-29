@@ -1,29 +1,28 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
-import {useEffect, useMemo, useState} from 'react'
-import {useDispatch} from 'react-redux'
-import {useLazyLoadQuery, useMutation} from 'react-relay'
-
-import {closeCreateTaskModal} from '../../reducers'
-
-import {useCurrentChannel} from '../../hooks/useCurrentChannel'
-import {useCurrentUser} from '../../hooks/useCurrentUser'
-import Select from '../Select'
-import SimpleSelect from '../SimpleSelect'
-
-import {Post} from 'mattermost-redux/types/posts'
-import type {TaskStatusEnum} from 'parabol-client/__generated__/CreateTaskModalMutation.graphql'
-import {CreateTaskModalMutation} from 'parabol-client/__generated__/CreateTaskModalMutation.graphql'
-import {CreateTaskModalQuery} from 'parabol-client/__generated__/CreateTaskModalQuery.graphql'
+import type {Post} from 'mattermost-redux/types/posts'
+import type {
+  CreateTaskModalMutation,
+  TaskStatusEnum
+} from 'parabol-client/__generated__/CreateTaskModalMutation.graphql'
+import type {CreateTaskModalQuery} from 'parabol-client/__generated__/CreateTaskModalQuery.graphql'
 import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
 import {plaintextToTipTap} from 'parabol-client/shared/tiptap/plaintextToTipTap'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
+import {useEffect, useMemo, useState} from 'react'
+import {useDispatch} from 'react-redux'
+import {useLazyLoadQuery, useMutation} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
+import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import {useCurrentUser} from '../../hooks/useCurrentUser'
 import {useTipTapTaskEditor} from '../../hooks/useTipTapTaskEditor'
+import {closeCreateTaskModal} from '../../reducers'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
+import Select from '../Select'
+import SimpleSelect from '../SimpleSelect'
 
 const TaskStatus: TaskStatusEnum[] = ['active', 'done', 'future', 'stuck']
 

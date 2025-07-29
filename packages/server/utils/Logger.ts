@@ -17,7 +17,11 @@ function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
 
   const span = tracer.scope().active()
   const time = new Date().toISOString()
-  const record = {time, level, message: util.format(message, ...optionalParameters)}
+  const record = {
+    time,
+    level,
+    message: util.format(message, ...optionalParameters)
+  }
 
   if (span) {
     tracer.inject(span.context(), formats.LOG, record)

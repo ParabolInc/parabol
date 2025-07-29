@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {UpgradeToTeamTierSuccessResolvers} from '../../private/resolverTypes'
+import type {UpgradeToTeamTierSuccessResolvers} from '../../private/resolverTypes'
 
 export type UpgradeToTeamTierSuccessSource = {
   orgId: string

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
+import type {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import useRouter from '../../../../hooks/useRouter'
 

@@ -134,7 +134,10 @@ const TutorialMeetingCard = (props: Props) => {
     SendClientSideEvent(atmospehere, 'Tutorial Meeting Card Closed')
   }, [])
 
-  const {togglePortal: toggleModal, modalPortal} = useModal({onOpen, onClose})
+  const {togglePortal: toggleModal, modalPortal} = useModal({
+    onOpen,
+    onClose
+  })
 
   return (
     <>

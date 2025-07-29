@@ -1,6 +1,6 @@
 type UpdateCommentContentSuccess {
-  """
-  the comment with updated content
-  """
-  comment: Comment!
+	"""
+	the comment with updated content
+	"""
+	comment: Comment!
 }

@@ -1,4 +1,6 @@
 """
 Return object for PersistJiraSearchQueryPayload
 """
-union PersistJiraSearchQueryPayload = ErrorPayload | PersistJiraSearchQuerySuccess
+union PersistJiraSearchQueryPayload =
+	| ErrorPayload
+	| PersistJiraSearchQuerySuccess

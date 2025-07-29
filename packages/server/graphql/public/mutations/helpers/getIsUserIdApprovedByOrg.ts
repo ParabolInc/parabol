@@ -1,5 +1,5 @@
 import createEmailVerficationForExistingUser from '../../../../email/createEmailVerficationForExistingUser'
-import {DataLoaderWorker} from '../../../graphql'
+import type {DataLoaderWorker} from '../../../graphql'
 import {getIsEmailApprovedByOrg} from './getIsEmailApprovedByOrg'
 
 export const getIsUserIdApprovedByOrg = async (

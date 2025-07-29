@@ -4,15 +4,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import Atmosphere from '../Atmosphere'
-import {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
-import {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
+import type {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
+import type {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
+import type Atmosphere from '../Atmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {CompletedHandler} from '../types/relayMutations'
+import type {CompletedHandler} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
-import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import withMutationProps, {type WithMutationProps} from '../utils/relay/withMutationProps'
 import FlatButton from './FlatButton'
 
 interface Props extends WithMutationProps {
@@ -41,19 +41,20 @@ const StyledIcon = styled('div')({
   userSelect: 'none'
 })
 
-const UpvoteButton = styled(FlatButton)<{isExpanded: boolean; disabled: boolean}>(
-  ({isExpanded, disabled}) => ({
-    color: isExpanded ? '#fff' : PALETTE.SLATE_600,
-    height: 24,
-    lineHeight: '24px',
-    padding: 0,
-    width: 24,
-    ':hover,:focus,:active': {
-      backgroundColor: !disabled ? (isExpanded ? PALETTE.SLATE_500 : PALETTE.SLATE_200) : undefined,
-      boxShadow: 'none'
-    }
-  })
-)
+const UpvoteButton = styled(FlatButton)<{
+  isExpanded: boolean
+  disabled: boolean
+}>(({isExpanded, disabled}) => ({
+  color: isExpanded ? '#fff' : PALETTE.SLATE_600,
+  height: 24,
+  lineHeight: '24px',
+  padding: 0,
+  width: 24,
+  ':hover,:focus,:active': {
+    backgroundColor: !disabled ? (isExpanded ? PALETTE.SLATE_500 : PALETTE.SLATE_200) : undefined,
+    boxShadow: 'none'
+  }
+}))
 
 const Votes = styled('span')<{voteCount: number; isExpanded: boolean}>(
   ({voteCount, isExpanded}) => ({

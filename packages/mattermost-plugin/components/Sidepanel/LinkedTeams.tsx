@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {LinkedTeamsQuery} from 'parabol-client/__generated__/LinkedTeamsQuery.graphql'
+import type {LinkedTeamsQuery} from 'parabol-client/__generated__/LinkedTeamsQuery.graphql'
 import {useMemo} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'

@@ -4,7 +4,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RenamePokerTemplateScalePayload from '../types/RenamePokerTemplateScalePayload'
 
 const renamePokerTemplateScale = {
@@ -44,7 +44,9 @@ const renamePokerTemplateScale = {
 
     const allScales = await dataLoader.get('scalesByTeamId').load(teamId)
     if (allScales.find((scale) => scale.name === normalizedName)) {
-      return standardError(new Error('Duplicate name scale'), {userId: viewerId})
+      return standardError(new Error('Duplicate name scale'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

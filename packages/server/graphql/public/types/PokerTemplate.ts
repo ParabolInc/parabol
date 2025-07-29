@@ -1,4 +1,4 @@
-import {PokerTemplateResolvers} from '../resolverTypes'
+import type {PokerTemplateResolvers} from '../resolverTypes'
 
 const PokerTemplate: PokerTemplateResolvers = {
   __isTypeOf: ({type}) => type === 'poker',

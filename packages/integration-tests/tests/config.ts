@@ -1,4 +1,4 @@
-import {Page} from '@playwright/test'
+import type {Page} from '@playwright/test'
 import {newConfig, number, string} from 'ts-app-env'
 import '../../../scripts/webpack/utils/dotenv'
 

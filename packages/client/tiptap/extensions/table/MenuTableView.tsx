@@ -1,5 +1,5 @@
 import {TableView, updateColumns} from '@tiptap/extension-table'
-import {Node as ProseMirrorNode} from '@tiptap/pm/model'
+import type {Node as ProseMirrorNode} from '@tiptap/pm/model'
 
 export class MenuTableView extends TableView {
   constructor(node: ProseMirrorNode, cellMinWidth: number) {

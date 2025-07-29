@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import {SetDefaultSlackChannelMutation as TSetDefaultSlackChannelMutation} from '../__generated__/SetDefaultSlackChannelMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {SetDefaultSlackChannelMutation as TSetDefaultSlackChannelMutation} from '../__generated__/SetDefaultSlackChannelMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment SetDefaultSlackChannelMutation_team on SetDefaultSlackChannelSuccess {

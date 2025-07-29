@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {forwardRef, ReactNode, Ref} from 'react'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 
 const DesktopWrapper = styled('div')({
   display: 'flex',

@@ -3,9 +3,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {MSTeamsNotifier} from '../../mutations/helpers/notifications/MSTeamsNotifier'
 import {MattermostNotifier} from '../../mutations/helpers/notifications/MattermostNotifier'
-import {MutationResolvers} from '../resolverTypes'
+import {MSTeamsNotifier} from '../../mutations/helpers/notifications/MSTeamsNotifier'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] = async (
   _source,
@@ -45,10 +45,18 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
   ])
 
   if (newScope === 'global' && (newTeamId || newOrgId)) {
-    return {error: {message: 'Global providers must not have an `orgId` nor `teamId`'}}
+    return {
+      error: {
+        message: 'Global providers must not have an `orgId` nor `teamId`'
+      }
+    }
   }
   if (newScope === 'org' && (!newOrgId || newTeamId)) {
-    return {error: {message: 'Organization providers must have an `orgId` and no `teamId`'}}
+    return {
+      error: {
+        message: 'Organization providers must have an `orgId` and no `teamId`'
+      }
+    }
   }
   if (newScope === 'team' && !newTeamId) {
     return {error: {message: 'Team providers must have a `teamId`'}}
@@ -57,7 +65,9 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
   // AUTH
   if (!isSuperUser(authToken)) {
     if (oldScope === 'global' || newScope === 'global') {
-      return {error: {message: 'Must be a super user to add a global provider'}}
+      return {
+        error: {message: 'Must be a super user to add a global provider'}
+      }
     }
     if (
       (oldScope === 'org' && !(await isUserOrgAdmin(viewerId, oldOrgId!, dataLoader))) ||
@@ -78,7 +88,11 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
         !isTeamMember(authToken, newTeamId!) &&
         !(await isUserOrgAdmin(viewerId, newTeam!.orgId, dataLoader)))
     ) {
-      return {error: {message: 'Must be on the team for the integration provider'}}
+      return {
+        error: {
+          message: 'Must be on the team for the integration provider'
+        }
+      }
     }
   }
 

@@ -2,7 +2,7 @@
  * Sometimes a node may exist in 1 of many different connections.
  * This removes it from the first one it is found in
  */
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import findConnectionWithNodeId from './findConnectionWithNodeId'
 import getAllConnections from './getAllConnections'
 import safeRemoveNodeFromConn from './safeRemoveNodeFromConn'

@@ -1,7 +1,7 @@
 import {ArrowUpward} from '@mui/icons-material'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
-import PlainButton, {PlainButtonProps} from '../PlainButton/PlainButton'
+import PlainButton, {type PlainButtonProps} from '../PlainButton/PlainButton'
 
 const SubmitReflectionButton = (props: Omit<PlainButtonProps, 'children'>) => {
   const {className, ...rest} = props

@@ -1,7 +1,7 @@
-import AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
-import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
-import AuthIdentityMicrosoft from '../../database/types/AuthIdentityMicrosoft'
-import {IGetUsersByIdsQueryResult} from '../queries/generated/getUsersByIdsQuery'
+import type AuthIdentityGoogle from '../../database/types/AuthIdentityGoogle'
+import type AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
+import type AuthIdentityMicrosoft from '../../database/types/AuthIdentityMicrosoft'
+import type {IGetUsersByIdsQueryResult} from '../queries/generated/getUsersByIdsQuery'
 
 interface IUser extends Omit<IGetUsersByIdsQueryResult, 'identities'> {
   identities: (AuthIdentityGoogle | AuthIdentityLocal | AuthIdentityMicrosoft)[]

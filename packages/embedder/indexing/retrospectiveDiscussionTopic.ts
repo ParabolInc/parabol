@@ -1,8 +1,8 @@
-import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
 import prettier from 'prettier'
-import {Comment} from '../../server/postgres/types'
+import type {Comment} from '../../server/postgres/types'
 import {inferLanguage} from '../inferLanguage'
-import {ISO6391} from '../iso6393To1'
+import type {ISO6391} from '../iso6393To1'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -127,7 +127,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
    * objectType: 'retrospectiveDiscussionNoSummary' or something and do a bit of testing.
    */
 
-  let language: ISO6391 | undefined = undefined
+  let language: ISO6391 | undefined
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {

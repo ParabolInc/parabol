@@ -1,8 +1,8 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
 import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
-import {forwardRef, ReactElement, Ref} from 'react'
-import useMenu from '../hooks/useMenu'
+import {forwardRef, type ReactElement, type Ref} from 'react'
+import type useMenu from '../hooks/useMenu'
 import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
 import {PALETTE} from '../styles/paletteV3'
 import ui from '../styles/ui'

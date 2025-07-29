@@ -1,7 +1,7 @@
 import base64url from 'base64url'
 import getSSODomainFromEmail from 'parabol-client/utils/getSSODomainFromEmail'
 import {URL} from 'url'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import getSignOnURL from '../graphql/public/mutations/helpers/SAMLHelpers/getSignOnURL'
 import getKysely from '../postgres/getKysely'
 

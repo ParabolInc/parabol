@@ -1,5 +1,5 @@
 import {ExternalLinks} from '../../../../types/constEnums'
-import {CorsOptions} from '../../../../types/cors'
+import type {CorsOptions} from '../../../../types/cors'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {emailTableBase} from '../../styles'
 

@@ -1,4 +1,4 @@
-import {GraphQLResolveInfo} from 'graphql'
+import type {GraphQLResolveInfo} from 'graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
@@ -7,8 +7,8 @@ import appOrigin from '../../../appOrigin'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import getPhase from '../../../utils/getPhase'
 import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
-import {GQLContext} from '../../graphql'
-import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import type {GQLContext} from '../../graphql'
+import type {ITaskEstimateInput} from '../../types/TaskEstimateInput'
 
 const pushEstimateToGitLab = async (
   taskEstimate: ITaskEstimateInput,
@@ -60,7 +60,10 @@ const pushEstimateToGitLab = async (
       discussionURL
     )
     if (!provider?.serverBaseUrl) return new Error('Invalid GitLab provider')
-    const [, commentError] = await manager.createNote({body, noteableId: gid})
+    const [, commentError] = await manager.createNote({
+      body,
+      noteableId: gid
+    })
     if (commentError) return commentError
   } else if (
     labelTemplate === SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE ||
@@ -86,7 +89,11 @@ const pushEstimateToGitLab = async (
       const weight = parseInt(value)
       if (isNaN(weight) || weight < 0 || `${weight}` !== value.trim())
         return new Error('Weight must be a whole positive number')
-      const [, updateError] = await manager.updateIssue({iid, projectPath: fullPath, weight})
+      const [, updateError] = await manager.updateIssue({
+        iid,
+        projectPath: fullPath,
+        weight
+      })
       if (updateError) return updateError
     }
   } else {

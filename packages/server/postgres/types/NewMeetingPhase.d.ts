@@ -131,8 +131,6 @@ interface AgendaItemPhase extends GenericMeetingPhase {
   stages: AgendaItemStage[]
 }
 
-const a: AgendaItemPhase
-
 interface CheckInPhase extends GenericMeetingPhase {
   phaseType: 'checkin'
   stages: [CheckInStage, ...CheckInStage[]]

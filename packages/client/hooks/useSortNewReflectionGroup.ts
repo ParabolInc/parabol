@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import type {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import useAtmosphere from './useAtmosphere'
 
 interface SubColumnIdxs {

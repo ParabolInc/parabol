@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import DismissSuggestedActionPayload from '../types/DismissSuggestedActionPayload'
 
 export default {
@@ -25,11 +25,15 @@ export default {
     // AUTH
     const suggestedAction = await dataLoader.get('suggestedActions').load(suggestedActionId)
     if (!suggestedAction) {
-      return standardError(new Error('Suggested action not found'), {userId: viewerId})
+      return standardError(new Error('Suggested action not found'), {
+        userId: viewerId
+      })
     }
     const {userId} = suggestedAction
     if (userId !== viewerId) {
-      return standardError(new Error('Not authenticated'), {userId: viewerId})
+      return standardError(new Error('Not authenticated'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

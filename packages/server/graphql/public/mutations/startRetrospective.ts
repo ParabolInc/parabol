@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -11,7 +11,7 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import {createMeetingMember} from '../../mutations/joinMeeting'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
@@ -44,7 +44,9 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     maxVotesPerGroup,
     disableAnonymity,
     videoMeetingURL
-  } = meetingSettings as typeof meetingSettings & {meetingType: 'retrospective'}
+  } = meetingSettings as typeof meetingSettings & {
+    meetingType: 'retrospective'
+  }
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName

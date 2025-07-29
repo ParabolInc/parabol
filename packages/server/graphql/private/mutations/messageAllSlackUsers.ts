@@ -1,7 +1,7 @@
 import {selectSlackAuths} from '../../../postgres/select'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 interface MessageSlackUserError {
   userId: string

@@ -5,7 +5,7 @@
 // WARNING: the lexicographical sort assumes a C collation (i.e. compare strings via ASCII code)
 // CloudSQL assumes a utf-8 (byte-code) comparision by default, so make sure the column is collated correctly!
 
-import {MaybeReadonly} from '../types/generics'
+import type {MaybeReadonly} from '../types/generics'
 
 const START_CHAR_CODE = 32
 const END_CHAR_CODE = 126

@@ -1,6 +1,6 @@
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
 import {getInstanceId} from '../../../utils/azureDevOps/azureDevOpsFieldTypeToId'
-import {AzureDevOpsWorkItemResolvers} from '../resolverTypes'
+import type {AzureDevOpsWorkItemResolvers} from '../resolverTypes'
 
 const AzureDevOpsWorkItem: AzureDevOpsWorkItemResolvers = {
   __isTypeOf: ({service}) => service === 'azureDevOps',

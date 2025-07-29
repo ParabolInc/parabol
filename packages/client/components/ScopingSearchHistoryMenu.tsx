@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {MouseEvent} from 'react'
-import {MenuProps} from '../hooks/useMenu'
+import type {MouseEvent} from 'react'
+import type {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'

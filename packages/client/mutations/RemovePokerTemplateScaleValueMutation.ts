@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
-import {RemovePokerTemplateScaleValueMutation as IRemovePokerTemplateScaleValueMutation} from '../__generated__/RemovePokerTemplateScaleValueMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {RemovePokerTemplateScaleValueMutation as IRemovePokerTemplateScaleValueMutation} from '../__generated__/RemovePokerTemplateScaleValueMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment RemovePokerTemplateScaleValueMutation_scale on RemovePokerTemplateScaleValuePayload {

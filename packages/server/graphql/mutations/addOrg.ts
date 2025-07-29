@@ -50,11 +50,15 @@ export default {
       errors
     } = addOrgValidation()(args) as any
     if (Object.keys(errors).length) {
-      return standardError(new Error('Failed input validation'), {userId: viewerId})
+      return standardError(new Error('Failed input validation'), {
+        userId: viewerId
+      })
     }
     const viewer = await dataLoader.get('users').load(viewerId)
     if (!viewer) {
-      return standardError(new Error('Authorization error'), {userId: viewerId})
+      return standardError(new Error('Authorization error'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -72,7 +76,9 @@ export default {
     // MUTATIVE
     tms.push(teamId)
     analytics.newOrg(viewer, orgId, teamId, false)
-    publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+    publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
+      tms
+    })
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const data = {

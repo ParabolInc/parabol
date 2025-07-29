@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ReflectTemplatePromptUpdateGroupColorMutation as TReflectTemplatePromptUpdateGroupColorMutation} from '../__generated__/ReflectTemplatePromptUpdateGroupColorMutation.graphql'
-import {SimpleMutation} from '../types/relayMutations'
+import type {ReflectTemplatePromptUpdateGroupColorMutation as TReflectTemplatePromptUpdateGroupColorMutation} from '../__generated__/ReflectTemplatePromptUpdateGroupColorMutation.graphql'
+import type {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment ReflectTemplatePromptUpdateGroupColorMutation_team on ReflectTemplatePromptUpdateGroupColorPayload {

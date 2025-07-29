@@ -1,5 +1,5 @@
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 
 interface ErrorRes {
   error: InvitationTokenError

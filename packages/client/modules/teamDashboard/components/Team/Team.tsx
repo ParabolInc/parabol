@@ -1,15 +1,16 @@
 import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {lazy, ReactNode, Suspense} from 'react'
+import {lazy, type ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {Layout} from '~/types/constEnums'
-import {Team_team$key} from '../../../../__generated__/Team_team.graphql'
+import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import FlatButton from '../../../../components/FlatButton'
 import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
+
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
 const IconButton = styled(FlatButton)({

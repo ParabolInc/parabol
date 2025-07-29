@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
 import {stripeCardToDBCard} from './stripeCardToDBCard'

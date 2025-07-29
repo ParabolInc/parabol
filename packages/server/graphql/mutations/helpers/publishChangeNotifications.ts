@@ -1,8 +1,8 @@
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {Task} from '../../../postgres/types'
-import {TaskInvolvesNotification} from '../../../postgres/types/Notification'
+import type {Task} from '../../../postgres/types'
+import type {TaskInvolvesNotification} from '../../../postgres/types/Notification'
 import {analytics} from '../../../utils/analytics/analytics'
 
 const publishChangeNotifications = async (

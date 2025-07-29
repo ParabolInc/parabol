@@ -1,4 +1,4 @@
-import {EstimatePhaseResolvers} from '../resolverTypes'
+import type {EstimatePhaseResolvers} from '../resolverTypes'
 
 const EstimatePhase: EstimatePhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'ESTIMATE'

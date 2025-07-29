@@ -1,5 +1,12 @@
 import styled from '@emotion/styled'
-import {ReactElement, ReactNode, ReactPortal, RefObject, Suspense, useEffect} from 'react'
+import {
+  type ReactElement,
+  type ReactNode,
+  type ReactPortal,
+  type RefObject,
+  Suspense,
+  useEffect
+} from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import Menu from '../components/Menu'
@@ -7,8 +14,8 @@ import MenuContents from '../components/MenuContents'
 import ModalError from '../components/ModalError'
 import {Duration, ZIndex} from '../types/constEnums'
 import MenuBackground from './MenuBackground'
-import {MenuPosition, UseCoordsValue} from './useCoords'
-import {LoadingDelayRef} from './useLoadingDelay'
+import type {MenuPosition, UseCoordsValue} from './useCoords'
+import type {LoadingDelayRef} from './useLoadingDelay'
 import {PortalStatus} from './usePortal'
 
 const MenuBlock = styled('div')({

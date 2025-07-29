@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {
+import type {
   MeetingMembersWithoutTasks_meeting$key,
   MeetingTypeEnum
 } from 'parabol-client/__generated__/MeetingMembersWithoutTasks_meeting.graphql'

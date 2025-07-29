@@ -1,7 +1,7 @@
 import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
 import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import removeFromOrg from './removeFromOrg'
 import removeSlackAuths from './removeSlackAuths'
 

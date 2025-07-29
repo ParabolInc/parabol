@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {
+import type {
   NotificationSettings_settings$key,
   SlackNotificationEventEnum
 } from '../../../../__generated__/NotificationSettings_settings.graphql'

@@ -6,7 +6,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import AddPokerTemplateDimensionPayload from '../types/AddPokerTemplateDimensionPayload'
 
 const addPokerTemplateDimension = {
@@ -33,7 +33,9 @@ const addPokerTemplateDimension = {
 
     // AUTH
     if (!template || !template.isActive) {
-      return standardError(new Error('Template not found'), {userId: viewerId})
+      return standardError(new Error('Template not found'), {
+        userId: viewerId
+      })
     }
     if (!isTeamMember(authToken, template.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -42,7 +44,9 @@ const addPokerTemplateDimension = {
     // VALIDATION
     const {teamId} = template
     if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLATE_DIMENSIONS) {
-      return standardError(new Error('Too many dimensions'), {userId: viewerId})
+      return standardError(new Error('Too many dimensions'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

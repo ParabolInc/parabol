@@ -1,6 +1,6 @@
-import {RefObject, useMemo, useState} from 'react'
+import {type RefObject, useMemo, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import type {GroupingKanbanColumn_reflectionGroups$data} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import getBBox from '~/components/RetroReflectPhase/getBBox'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'

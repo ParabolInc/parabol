@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import teamSettingsQuery, {
-  TeamSettingsQuery
+  type TeamSettingsQuery
 } from '../../../__generated__/TeamSettingsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import {LoaderSize} from '../../../types/constEnums'
@@ -12,7 +12,9 @@ interface Props {
 }
 
 const TeamSettingsRoot = ({teamId}: Props) => {
-  const queryRef = useQueryLoaderNow<TeamSettingsQuery>(teamSettingsQuery, {teamId})
+  const queryRef = useQueryLoaderNow<TeamSettingsQuery>(teamSettingsQuery, {
+    teamId
+  })
   return (
     <Suspense fallback={<Loader size={LoaderSize.PANEL} />}>
       {queryRef && <TeamSettings queryRef={queryRef} />}

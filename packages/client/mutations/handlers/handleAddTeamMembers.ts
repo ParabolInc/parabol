@@ -1,4 +1,4 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import fromTeamMemberId from '../../utils/relay/fromTeamMemberId'
 import pluralizeHandler from './pluralizeHandler'

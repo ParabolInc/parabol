@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
+import type {TierEnum} from '../../__generated__/OrganizationSubscription.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {TierLabel} from '../../types/constEnums'
 import BaseTag from './BaseTag'

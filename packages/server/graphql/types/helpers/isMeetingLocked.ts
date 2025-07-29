@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from './getFeatureTier'
 
 /*

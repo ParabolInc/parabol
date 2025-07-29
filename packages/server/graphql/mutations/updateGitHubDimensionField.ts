@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertGitHubDimensionFieldMap from '../../postgres/queries/upsertGitHubDimensionFieldMap'
-import {Logger} from '../../utils/Logger'
 import {isTeamMember} from '../../utils/authorization'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import UpdateGitHubDimensionFieldPayload from '../types/UpdateGitHubDimensionFieldPayload'
 
 interface Args {

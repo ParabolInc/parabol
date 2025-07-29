@@ -1,18 +1,16 @@
 import {Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import type {TeamRow_team$key} from 'parabol-client/__generated__/TeamRow_team.graphql'
+import plural from 'parabol-client/utils/plural'
 import {useState} from 'react'
 
-import {TeamRow_team$key} from 'parabol-client/__generated__/TeamRow_team.graphql'
-import {useFragment} from 'react-relay'
-
 import {useDispatch} from 'react-redux'
-import MoreMenu from '../Menu'
-
-import plural from 'parabol-client/utils/plural'
+import {useFragment} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
 import {useInviteToTeam} from '../../hooks/useInviteToTeam'
 import {useUnlinkTeam} from '../../hooks/useUnlinkTeam'
 import {openConfigureNotificationsModal} from '../../reducers'
+import MoreMenu from '../Menu'
 
 type Props = {
   teamRef: TeamRow_team$key
@@ -48,7 +46,7 @@ const TeamRow = ({teamRef}: Props) => {
     setError(undefined)
     try {
       await unlinkTeam(id)
-    } catch (error) {
+    } catch {
       setError('Failed to unlink team')
       setTimeout(() => setError(undefined), 5000)
     }

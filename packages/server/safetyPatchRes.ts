@@ -1,4 +1,4 @@
-import {HttpResponse, RecognizedString} from 'uWebSockets.js'
+import type {HttpResponse, RecognizedString} from 'uWebSockets.js'
 import {Logger} from './utils/Logger'
 
 type Header = [key: RecognizedString, value: RecognizedString]

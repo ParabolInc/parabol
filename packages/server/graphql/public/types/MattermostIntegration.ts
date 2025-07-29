@@ -1,6 +1,6 @@
 import {isNotNull} from '../../../../client/utils/predicates'
-import {DataLoaderWorker} from '../../graphql'
-import {MattermostIntegrationResolvers} from '../resolverTypes'
+import type {DataLoaderWorker} from '../../graphql'
+import type {MattermostIntegrationResolvers} from '../resolverTypes'
 
 export type MattermostIntegrationSource = {
   teamId: string

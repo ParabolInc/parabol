@@ -1,6 +1,6 @@
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 interface RateLimitOptions {
   perMinute: number

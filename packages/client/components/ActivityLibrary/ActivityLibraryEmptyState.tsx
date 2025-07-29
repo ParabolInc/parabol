@@ -1,7 +1,7 @@
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import favoriteImg from '../../../../static/images/illustrations/favorite-empty-state.png'
 import halloweenRetrospectiveTemplate from '../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {AllCategoryID, QUICK_START_CATEGORY_ID} from './Categories'
+import {type AllCategoryID, QUICK_START_CATEGORY_ID} from './Categories'
 import CreateActivityCard from './CreateActivityCard'
 
 type Props = {

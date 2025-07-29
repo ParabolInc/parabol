@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import {useFragment} from 'react-relay'
-import {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
+import type {EmojiUsersReaction_reactji$key} from '~/__generated__/EmojiUsersReaction_reactji.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {PALETTE} from '../../styles/paletteV3'
 

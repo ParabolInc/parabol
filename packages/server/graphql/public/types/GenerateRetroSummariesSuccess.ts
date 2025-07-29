@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {GenerateRetroSummariesSuccessResolvers} from '../resolverTypes'
+import type {GenerateRetroSummariesSuccessResolvers} from '../resolverTypes'
 
 export type GenerateRetroSummariesSuccessSource = {
   meetingIds: string[]

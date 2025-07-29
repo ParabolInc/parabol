@@ -1,7 +1,7 @@
 import addTagToTask from '../../client/shared/tiptap/addTagToTask'
 import {getTagsFromTipTapTask} from '../../client/shared/tiptap/getTagsFromTipTapTask'
 import getKysely from '../postgres/getKysely'
-import {Task} from '../postgres/types/index.d'
+import type {Task} from '../postgres/types/index.d'
 import {convertToTipTap} from '../utils/convertToTipTap'
 
 const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
@@ -28,7 +28,11 @@ const archiveTasksForDB = async (tasks: Task[], doneMeetingId?: string) => {
     tasksToArchive.map((t) =>
       pg
         .updateTable('Task')
-        .set({content: t.content, tags: t.tags, doneMeetingId: t.doneMeetingId})
+        .set({
+          content: t.content,
+          tags: t.tags,
+          doneMeetingId: t.doneMeetingId
+        })
         .where('id', '=', t.id)
         .execute()
     )

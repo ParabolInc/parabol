@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
-import {ReactNode, useRef} from 'react'
+import type * as React from 'react'
+import {type ReactNode, useRef} from 'react'
 import useScrollIntoView from '../hooks/useScrollIntoVIew'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar} from '../types/constEnums'

@@ -2,211 +2,211 @@
 A retrospective meeting
 """
 type RetrospectiveMeeting implements NewMeeting {
-  """
-  The unique meeting id. shortid.
-  """
-  id: ID!
+	"""
+	The unique meeting id. shortid.
+	"""
+	id: ID!
 
-  """
-  The suggested reflection groups created by OpenAI
-  """
-  autogroupReflectionGroups: [AutogroupReflectionGroup!]
+	"""
+	The suggested reflection groups created by OpenAI
+	"""
+	autogroupReflectionGroups: [AutogroupReflectionGroup!]
 
-  """
-  The groups that existed before the autogrouping
-  """
-  resetReflectionGroups: [AutogroupReflectionGroup!]
+	"""
+	The groups that existed before the autogrouping
+	"""
+	resetReflectionGroups: [AutogroupReflectionGroup!]
 
-  """
-  The Zoom meeting URL for the meeting
-  """
-  videoMeetingURL: String
+	"""
+	The Zoom meeting URL for the meeting
+	"""
+	videoMeetingURL: String
 
-  """
-  The transcription of the meeting
-  """
-  transcription: [TranscriptBlock!]
+	"""
+	The transcription of the meeting
+	"""
+	transcription: [TranscriptBlock!]
 
-  """
-  The timestamp the meeting was created
-  """
-  createdAt: DateTime!
+	"""
+	The timestamp the meeting was created
+	"""
+	createdAt: DateTime!
 
-  """
-  The id of the user that created the meeting, null if user was hard deleted
-  """
-  createdBy: ID
+	"""
+	The id of the user that created the meeting, null if user was hard deleted
+	"""
+	createdBy: ID
 
-  """
-  The user that created the meeting, null if user was hard deleted
-  """
-  createdByUser: User
+	"""
+	The user that created the meeting, null if user was hard deleted
+	"""
+	createdByUser: User
 
-  """
-  Disables anonymity of reflections
-  """
-  disableAnonymity: Boolean!
+	"""
+	Disables anonymity of reflections
+	"""
+	disableAnonymity: Boolean!
 
-  """
-  The timestamp the meeting officially ended
-  """
-  endedAt: DateTime
+	"""
+	The timestamp the meeting officially ended
+	"""
+	endedAt: DateTime
 
-  """
-  The location of the facilitator in the meeting
-  """
-  facilitatorStageId: ID!
+	"""
+	The location of the facilitator in the meeting
+	"""
+	facilitatorStageId: ID!
 
-  """
-  The userId (or anonymousId) of the most recent facilitator
-  """
-  facilitatorUserId: ID!
+	"""
+	The userId (or anonymousId) of the most recent facilitator
+	"""
+	facilitatorUserId: ID!
 
-  """
-  The facilitator team member
-  """
-  facilitator: TeamMember!
+	"""
+	The facilitator team member
+	"""
+	facilitator: TeamMember!
 
-  """
-  If the AI generated summary is loading
-  """
-  isLoadingSummary: Boolean!
+	"""
+	If the AI generated summary is loading
+	"""
+	isLoadingSummary: Boolean!
 
-  """
-  The team members that were active during the time of the meeting
-  """
-  meetingMembers: [RetrospectiveMeetingMember!]!
+	"""
+	The team members that were active during the time of the meeting
+	"""
+	meetingMembers: [RetrospectiveMeetingMember!]!
 
-  """
-  The auto-incrementing meeting number for the team
-  """
-  meetingNumber: Int!
+	"""
+	The auto-incrementing meeting number for the team
+	"""
+	meetingNumber: Int!
 
-  """
-  The id of the meeting series this meeting belongs to
-  """
-  meetingSeriesId: ID
+	"""
+	The id of the meeting series this meeting belongs to
+	"""
+	meetingSeriesId: ID
 
-  """
-  The meeting series this meeting is associated with if the meeting is recurring
-  """
-  meetingSeries: MeetingSeries
-  meetingType: MeetingTypeEnum!
+	"""
+	The meeting series this meeting is associated with if the meeting is recurring
+	"""
+	meetingSeries: MeetingSeries
+	meetingType: MeetingTypeEnum!
 
-  """
-  The name of the meeting
-  """
-  name: String!
+	"""
+	The name of the meeting
+	"""
+	name: String!
 
-  """
-  The organization this meeting belongs to
-  """
-  organization: Organization!
+	"""
+	The organization this meeting belongs to
+	"""
+	organization: Organization!
 
-  """
-  The phases the meeting will go through, including all phase-specific state
-  """
-  phases: [NewMeetingPhase!]!
+	"""
+	The phases the meeting will go through, including all phase-specific state
+	"""
+	phases: [NewMeetingPhase!]!
 
-  """
-  If meeting has a meeting series associated, this is the time the meeting will end
-  """
-  scheduledEndTime: DateTime
+	"""
+	If meeting has a meeting series associated, this is the time the meeting will end
+	"""
+	scheduledEndTime: DateTime
 
-  """
-  The OpenAI generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
-  """
-  summary: String
+	"""
+	The OpenAI generated summary of all the content in the meeting, such as reflections, tasks, and comments. Undefined if the user doesnt have access to the feature or it's unavailable in this meeting type`
+	"""
+	summary: String
 
-  """
-  The time the meeting summary was emailed to the team
-  """
-  summarySentAt: DateTime
-  teamId: ID!
+	"""
+	The time the meeting summary was emailed to the team
+	"""
+	summarySentAt: DateTime
+	teamId: ID!
 
-  """
-  The team that ran the meeting
-  """
-  team: Team!
+	"""
+	The team that ran the meeting
+	"""
+	team: Team!
 
-  """
-  The last time a meeting was updated (stage completed, finished, etc)
-  """
-  updatedAt: DateTime
+	"""
+	The last time a meeting was updated (stage completed, finished, etc)
+	"""
+	updatedAt: DateTime
 
-  """
-  The retrospective meeting member of the viewer
-  """
-  viewerMeetingMember: RetrospectiveMeetingMember
+	"""
+	The retrospective meeting member of the viewer
+	"""
+	viewerMeetingMember: RetrospectiveMeetingMember
 
-  """
-  the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
-  """
-  autoGroupThreshold: Float
+	"""
+	the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
+	"""
+	autoGroupThreshold: Float
 
-  """
-  The number of comments generated in the meeting
-  """
-  commentCount: Int!
+	"""
+	The number of comments generated in the meeting
+	"""
+	commentCount: Int!
 
-  """
-  Is this locked for starter plans?
-  """
-  locked: Boolean!
+	"""
+	Is this locked for starter plans?
+	"""
+	locked: Boolean!
 
-  """
-  the number of votes allowed for each participant to cast on a single group
-  """
-  maxVotesPerGroup: Int!
+	"""
+	the number of votes allowed for each participant to cast on a single group
+	"""
+	maxVotesPerGroup: Int!
 
-  """
-  the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
-  """
-  nextAutoGroupThreshold: Float
+	"""
+	the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
+	"""
+	nextAutoGroupThreshold: Float
 
-  """
-  The number of reflections generated in the meeting
-  """
-  reflectionCount: Int!
+	"""
+	The number of reflections generated in the meeting
+	"""
+	reflectionCount: Int!
 
-  """
-  a single reflection group
-  """
-  reflectionGroup(reflectionGroupId: ID!): RetroReflectionGroup
+	"""
+	a single reflection group
+	"""
+	reflectionGroup(reflectionGroupId: ID!): RetroReflectionGroup
 
-  """
-  The grouped reflections
-  """
-  reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
+	"""
+	The grouped reflections
+	"""
+	reflectionGroups(sortBy: ReflectionGroupSortEnum): [RetroReflectionGroup!]!
 
-  """
-  The number of tasks generated in the meeting
-  """
-  taskCount: Int!
+	"""
+	The number of tasks generated in the meeting
+	"""
+	taskCount: Int!
 
-  """
-  The tasks created within the meeting
-  """
-  tasks: [Task!]!
+	"""
+	The tasks created within the meeting
+	"""
+	tasks: [Task!]!
 
-  """
-  The ID of the template used for the meeting
-  """
-  templateId: ID!
+	"""
+	The ID of the template used for the meeting
+	"""
+	templateId: ID!
 
-  """
-  The number of topics generated in the meeting
-  """
-  topicCount: Int!
+	"""
+	The number of topics generated in the meeting
+	"""
+	topicCount: Int!
 
-  """
-  the total number of votes allowed for each participant
-  """
-  totalVotes: Int!
+	"""
+	the total number of votes allowed for each participant
+	"""
+	totalVotes: Int!
 
-  """
-  The sum total of the votes remaining for the meeting members that are present in the meeting
-  """
-  votesRemaining: Int!
-  summaryPageId: ID
+	"""
+	The sum total of the votes remaining for the meeting members that are present in the meeting
+	"""
+	votesRemaining: Int!
+	summaryPageId: ID
 }

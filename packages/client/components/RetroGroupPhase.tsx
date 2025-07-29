@@ -1,12 +1,12 @@
-import graphql from 'babel-plugin-relay/macro'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
+import type {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
@@ -26,7 +26,7 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PrimaryButton from './PrimaryButton'
-import {RetroMeetingPhaseProps} from './RetroMeeting'
+import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 
 const ButtonWrapper = styled('div')({

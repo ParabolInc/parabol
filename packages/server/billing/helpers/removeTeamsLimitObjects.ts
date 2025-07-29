@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../../graphql/graphql'
+import type {DataLoaderWorker} from '../../graphql/graphql'
 import updateNotification from '../../graphql/public/mutations/helpers/updateNotification'
 import getKysely from '../../postgres/getKysely'
 

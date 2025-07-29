@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
@@ -25,7 +25,7 @@ import Legitity from '../validation/Legitity'
 import {emailRegex} from '../validation/regex'
 import EmailInputField from './EmailInputField'
 import ErrorAlert from './ErrorAlert/ErrorAlert'
-import {AuthPageSlug} from './GenericAuthentication'
+import type {AuthPageSlug} from './GenericAuthentication'
 import PasswordInputField from './PasswordInputField'
 import PlainButton from './PlainButton/PlainButton'
 import PrimaryButton from './PrimaryButton'
@@ -231,7 +231,12 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     if (isSignin) {
       LoginWithPasswordMutation(
         atmosphere,
-        {email, password, invitationToken: invitationToken || '', isInvitation: !!invitationToken},
+        {
+          email,
+          password,
+          invitationToken: invitationToken || '',
+          isInvitation: !!invitationToken
+        },
         {onError, onCompleted, history}
       )
     } else {

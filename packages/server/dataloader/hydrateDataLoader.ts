@@ -1,6 +1,6 @@
 import type DataLoader from 'dataloader'
 import {unpack} from 'msgpackr'
-import {type Loaders} from '../dataloader/RootDataLoader'
+import type {Loaders} from '../dataloader/RootDataLoader'
 import {dataLoaderCache} from './RootDataLoader'
 
 export const hydrateDataLoader = (id: string, packedDataloader: Buffer) => {

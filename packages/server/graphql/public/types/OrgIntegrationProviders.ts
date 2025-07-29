@@ -1,6 +1,6 @@
 import OrgIntegrationProvidersId from '../../../../client/shared/gqlIds/OrgIntegrationProvidersId'
 import {getUserId, isUserInOrg} from '../../../utils/authorization'
-import {OrgIntegrationProvidersResolvers} from '../resolverTypes'
+import type {OrgIntegrationProvidersResolvers} from '../resolverTypes'
 
 export type OrgIntegrationProvidersSource = {
   orgId: string

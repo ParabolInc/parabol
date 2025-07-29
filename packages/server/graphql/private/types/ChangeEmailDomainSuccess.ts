@@ -1,5 +1,5 @@
 import isValid from '../../../graphql/isValid'
-import {ChangeEmailDomainSuccessResolvers} from '../../private/resolverTypes'
+import type {ChangeEmailDomainSuccessResolvers} from '../../private/resolverTypes'
 
 export type ChangeEmailDomainSuccessSource = {
   usersUpdatedIds: string[]

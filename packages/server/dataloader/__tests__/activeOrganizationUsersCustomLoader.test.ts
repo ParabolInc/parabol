@@ -1,10 +1,10 @@
-import {Insertable} from 'kysely'
+import type {Insertable} from 'kysely'
 import '../../../../scripts/webpack/utils/dotenv'
 import {createPGTables, truncatePGTables} from '../../__tests__/common'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
-import {OrganizationUser} from '../../postgres/types'
-import {User} from '../../postgres/types/pg'
+import type {OrganizationUser} from '../../postgres/types'
+import type {User} from '../../postgres/types/pg'
 import getRedis from '../../utils/getRedis'
 import {getNewDataLoader} from '../getNewDataLoader'
 

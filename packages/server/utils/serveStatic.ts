@@ -1,6 +1,6 @@
+import type {HttpResponse} from 'uWebSockets.js'
 import fs from 'fs'
 import path from 'path'
-import {HttpResponse} from 'uWebSockets.js'
 import pipeStreamOverResponse from '../pipeStreamOverResponse'
 import StaticServer from './StaticServer'
 

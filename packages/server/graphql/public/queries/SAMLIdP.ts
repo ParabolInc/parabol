@@ -1,5 +1,5 @@
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 export interface SSORelayState {
   isInvited?: boolean

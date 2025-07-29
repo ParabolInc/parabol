@@ -1,7 +1,7 @@
 import getKysely from '../../../postgres/getKysely'
-import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import logError from '../../../utils/logError'
-import {DataLoaderWorker} from '../../graphql'
+import OpenAIServerManager from '../../../utils/OpenAIServerManager'
+import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 
 const generateDiscussionPrompt = async (

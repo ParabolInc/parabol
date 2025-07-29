@@ -10,7 +10,7 @@ import {
 } from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 
 const removeReflectTemplate = {
@@ -34,7 +34,9 @@ const removeReflectTemplate = {
 
     // AUTH
     if (!template || !template.isActive) {
-      return standardError(new Error('Template not found'), {userId: viewerId})
+      return standardError(new Error('Template not found'), {
+        userId: viewerId
+      })
     }
     const [isBillingLeader, isOrgAdmin] = await Promise.all([
       isUserBillingLeader(viewerId, template.orgId, dataLoader),

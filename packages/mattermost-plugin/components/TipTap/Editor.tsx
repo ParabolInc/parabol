@@ -1,4 +1,4 @@
-import {Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
+import {type Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
 import {StandardBubbleMenu} from 'parabol-client/components/promptResponse/StandardBubbleMenu'
 import {cn} from 'parabol-client/ui/cn'
 import TipTapLinkMenu from './LinkMenu'

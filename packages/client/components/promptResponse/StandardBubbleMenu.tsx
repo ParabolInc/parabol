@@ -1,5 +1,5 @@
 import {Link} from '@mui/icons-material'
-import {Editor} from '@tiptap/react'
+import type {Editor} from '@tiptap/react'
 import {BubbleMenu} from '@tiptap/react/menus'
 import {getShouldShow, useBubbleMenuStates} from '../../hooks/useBubbleMenuStates'
 import {cn} from '../../ui/cn'

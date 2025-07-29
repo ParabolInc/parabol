@@ -5,7 +5,7 @@ import {StandardRetryStrategy} from '@smithy/util-retry'
 import mime from 'mime-types'
 import path from 'path'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {FileAssetDir} from './FileStoreManager'
+import FileStoreManager, {type FileAssetDir} from './FileStoreManager'
 
 class CloudflareRetry extends StandardRetryStrategy {
   public async refreshRetryTokenForRetry(
@@ -66,7 +66,10 @@ export default class S3Manager extends FileStoreManager {
     // credentials are optional since the file store could be public & not need a key to write
     const credentials =
       AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY
-        ? {accessKeyId: AWS_ACCESS_KEY_ID, secretAccessKey: AWS_SECRET_ACCESS_KEY}
+        ? {
+            accessKeyId: AWS_ACCESS_KEY_ID,
+            secretAccessKey: AWS_SECRET_ACCESS_KEY
+          }
         : undefined
     this.s3 = new S3Client({
       credentials,
@@ -120,7 +123,9 @@ export default class S3Manager extends FileStoreManager {
     // Important to decodeURI so `getSignedUrl` doesn't double encode e.g. local|123/avatars/123.jpg
     const key = decodeURI(url.slice(this.baseUrl.length))
     const command = new GetObjectCommand({Bucket: this.bucket, Key: key})
-    const encodedUri = await getSignedUrl(this.s3, command, {expiresIn: 604800})
+    const encodedUri = await getSignedUrl(this.s3, command, {
+      expiresIn: 604800
+    })
     return encodedUri
   }
 }

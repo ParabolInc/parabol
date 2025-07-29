@@ -1,6 +1,6 @@
+import type {HttpResponse} from 'uWebSockets.js'
 import {usePrometheus} from '@graphql-yoga/plugin-prometheus'
-import {Gauge, Histogram, Registry, collectDefaultMetrics} from 'prom-client'
-import {HttpResponse} from 'uWebSockets.js'
+import {collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
 import {activeClients} from './activeClients'
 
 const register = new Registry()

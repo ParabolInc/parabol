@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {
+import type {
   ParabolTasksResultsQuery,
   TaskStatusEnum
 } from '../../../__generated__/ParabolTasksResultsQuery.graphql'

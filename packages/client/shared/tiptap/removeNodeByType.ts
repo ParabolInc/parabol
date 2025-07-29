@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 
 export const removeNodeByType = (json: JSONContent, nodeTypeToRemove: string): JSONContent => {
   if (Array.isArray(json)) {

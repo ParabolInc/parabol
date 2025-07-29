@@ -3,13 +3,13 @@ import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
-import {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_event.graphql'
+import type {GCalEventCard_event$key} from '../../../__generated__/GCalEventCard_event.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
 import {cn} from '../../../ui/cn'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 interface Props {
   eventRef: GCalEventCard_event$key
@@ -18,7 +18,11 @@ interface Props {
 const formatTime = (time: Date, excludeAmPm?: boolean | null) => {
   return (
     time
-      .toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', hour12: true})
+      .toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true
+      })
       // 'XX:YY AM' -> 'XX:YYam'
       .replace(/ (PM|AM)/, excludeAmPm ? '' : '$1')
       .toLowerCase()

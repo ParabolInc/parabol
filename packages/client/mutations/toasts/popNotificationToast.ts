@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {
+import type {
   NotificationEnum,
   popNotificationToast_notification$data
 } from '../../__generated__/popNotificationToast_notification.graphql'
-import {Snack} from '../../components/Snackbar'
-import {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
+import type {Snack} from '../../components/Snackbar'
+import type {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapMentionedToToast from './mapMentionedToToast'

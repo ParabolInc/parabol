@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {getAtlassianAuthsByUserIdQuery} from './generated/getAtlassianAuthsByUserId'
-import {AtlassianAuth} from './getAtlassianAuthByUserIdTeamId'
+import type {AtlassianAuth} from './getAtlassianAuthByUserIdTeamId'
 
 const getAtlassianAuthsByUserId = async (userId: string) => {
   const res = await getAtlassianAuthsByUserIdQuery.run({userId}, getPg())

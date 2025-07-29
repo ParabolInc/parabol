@@ -8,7 +8,7 @@ import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
-import {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
+import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import useAnimatedCard from '../hooks/useAnimatedCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
@@ -119,17 +119,17 @@ const RECURRING_LABEL_COLORS = {
   poker: 'text-tomato-600',
   teamPrompt: 'text-jade-600'
 }
-const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
-  ({meetingType}) => ({
-    background: BACKGROUND_COLORS[meetingType],
-    borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-    display: 'block',
-    position: 'absolute',
-    top: 0,
-    bottom: '6px',
-    width: '100%'
-  })
-)
+const MeetingImgBackground = styled.div<{
+  meetingType: keyof typeof BACKGROUND_COLORS
+}>(({meetingType}) => ({
+  background: BACKGROUND_COLORS[meetingType],
+  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+  display: 'block',
+  position: 'absolute',
+  top: 0,
+  bottom: '6px',
+  width: '100%'
+}))
 
 const MeetingImgWrapper = styled('div')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,

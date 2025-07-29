@@ -1,14 +1,14 @@
-import dayjs, {Dayjs} from 'dayjs'
+import dayjs, {type Dayjs} from 'dayjs'
 import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
 import * as React from 'react'
-import {PropsWithChildren, useEffect} from 'react'
+import {type PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import {fromRRuleDateTime, toRRuleDateTime} from '../../shared/rruleUtil'
 import {cn} from '../../ui/cn'
-import {ALL_DAYS, Day, toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
+import {ALL_DAYS, type Day, toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
 import plural from '../../utils/plural'
 import DropdownMenuToggle from '../DropdownMenuToggle'
 import {RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
@@ -36,7 +36,10 @@ const Input = ({
   hasError,
   ...rest
 }: PropsWithChildren<
-  {label?: React.ReactNode; hasError: boolean} & React.InputHTMLAttributes<HTMLInputElement>
+  {
+    label?: React.ReactNode
+    hasError: boolean
+  } & React.InputHTMLAttributes<HTMLInputElement>
 >) => {
   const focusStyles =
     'focus:outline-hidden focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
@@ -141,7 +144,7 @@ export const RecurrenceSettings = (props: Props) => {
 
       setRecurrenceInterval(interval)
       setIntervalError(error)
-    } catch (error) {
+    } catch {
       setIntervalError('Interval must be number')
     }
   }

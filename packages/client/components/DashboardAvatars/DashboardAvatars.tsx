@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
 import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
-import {
+import type {
   DashboardAvatars_team$data,
   DashboardAvatars_team$key
 } from '../../__generated__/DashboardAvatars_team.graphql'

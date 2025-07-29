@@ -9,7 +9,7 @@ import {getUserId} from '../../../utils/authorization'
 import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import isValid from '../../isValid'
-import {UserResolvers} from '../resolverTypes'
+import type {UserResolvers} from '../resolverTypes'
 
 export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   _source,

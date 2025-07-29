@@ -1,12 +1,12 @@
 import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {Task as ITask} from '../../server/postgres/types/index.d'
-import {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
-import {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
+import type {Task as ITask} from '../../server/postgres/types/index.d'
+import type {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
+import type {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
-import {
+import type {
   OnNextHandler,
   OnNextHistoryContext,
   OptionalHandlers,

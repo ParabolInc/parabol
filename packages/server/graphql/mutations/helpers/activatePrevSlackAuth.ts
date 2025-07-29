@@ -1,5 +1,5 @@
 import ms from 'ms'
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
 import SlackServerManager from '../../../utils/SlackServerManager'

@@ -1,22 +1,27 @@
 // Remove after PR gets merged: https://github.com/ueberdosis/hocuspocus/pull/958
 import {
-  afterLoadDocumentPayload,
-  afterStoreDocumentPayload,
-  beforeBroadcastStatelessPayload,
-  Document,
-  Extension,
-  Hocuspocus,
+  type afterLoadDocumentPayload,
+  type afterStoreDocumentPayload,
+  type beforeBroadcastStatelessPayload,
+  type Document,
+  type Extension,
+  type Hocuspocus,
   IncomingMessage,
   MessageReceiver,
-  onAwarenessUpdatePayload,
-  onChangePayload,
-  onConfigurePayload,
-  onDisconnectPayload,
-  onStoreDocumentPayload,
-  OutgoingMessage
+  OutgoingMessage,
+  type onAwarenessUpdatePayload,
+  type onChangePayload,
+  type onConfigurePayload,
+  type onDisconnectPayload,
+  type onStoreDocumentPayload
 } from '@hocuspocus/server'
-import {Redlock, type ExecutionResult, type Lock} from '@sesamecare-oss/redlock'
-import RedisClient, {ClusterNode, ClusterOptions, RedisOptions, type Cluster} from 'ioredis'
+import {type ExecutionResult, type Lock, Redlock} from '@sesamecare-oss/redlock'
+import RedisClient, {
+  type Cluster,
+  type ClusterNode,
+  type ClusterOptions,
+  type RedisOptions
+} from 'ioredis'
 import {v4 as uuid} from 'uuid'
 
 export type RedisInstance = RedisClient | Cluster
@@ -278,7 +283,10 @@ export class Redis implements Extension {
       resolveFunction()
     }, this.configuration.disconnectDelay)
 
-    this.pendingAfterStoreDocumentResolves.set(documentName, {timeout, resolve: resolveFunction})
+    this.pendingAfterStoreDocumentResolves.set(documentName, {
+      timeout,
+      resolve: resolveFunction
+    })
     await delayedPromise
   }
 

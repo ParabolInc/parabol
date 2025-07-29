@@ -1,14 +1,14 @@
 enum ArchivePageActionEnum {
-  """
-  Move the page to the trash
-  """
-  archive
-  """
-  Permanently delete the page from trash
-  """
-  delete
-  """
-  Restore the page from the trash
-  """
-  restore
+	"""
+	Move the page to the trash
+	"""
+	archive
+	"""
+	Permanently delete the page from trash
+	"""
+	delete
+	"""
+	Restore the page from the trash
+	"""
+	restore
 }

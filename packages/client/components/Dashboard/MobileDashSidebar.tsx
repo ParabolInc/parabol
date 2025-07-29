@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
-import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
+import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {GlobalBanner, NavSidebar} from '../../types/constEnums'
 import {

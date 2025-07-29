@@ -1,21 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {StartActivityModalQuery} from 'parabol-client/__generated__/StartActivityModalQuery.graphql'
 import {Suspense, useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
-
-import useStartMeeting from '../../hooks/useStartMeeting'
-import {closeStartActivityModal} from '../../reducers'
-
-import Select from '../Select'
-import MeetingSettings from './MeetingSettings'
-
-import {StartActivityModalQuery} from 'parabol-client/__generated__/StartActivityModalQuery.graphql'
 import styled from 'styled-components'
 import {useConfig} from '../../hooks/useConfig'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
+import useStartMeeting from '../../hooks/useStartMeeting'
+import {closeStartActivityModal} from '../../reducers'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
+import Select from '../Select'
+import MeetingSettings from './MeetingSettings'
 
 const SettingsArea = styled.div!`
   min-height: 80px;

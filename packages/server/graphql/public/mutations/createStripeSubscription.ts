@@ -1,9 +1,9 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const createStripeSubscription: MutationResolvers['createStripeSubscription'] = async (
   _source,

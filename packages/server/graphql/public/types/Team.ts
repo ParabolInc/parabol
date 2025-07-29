@@ -7,7 +7,7 @@ import generateRandomString from '../../../generateRandomString'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
-import {TeamResolvers} from '../resolverTypes'
+import type {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
   viewerTeamMember: async ({id: teamId}, _args, {authToken, dataLoader}) => {

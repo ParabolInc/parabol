@@ -1,4 +1,4 @@
-import FileStoreManager from './FileStoreManager'
+import type FileStoreManager from './FileStoreManager'
 import GCSManager from './GCSManager'
 import LocalFileStoreManager from './LocalFileStoreManager'
 import S3Manager from './S3FileStoreManager'

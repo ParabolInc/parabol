@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
-import {OrgActivityRow, QueryResolvers} from '../resolverTypes'
+import type {OrgActivityRow, QueryResolvers} from '../resolverTypes'
 
 const orgActivities: QueryResolvers['orgActivities'] = async (_source, {startDate, endDate}) => {
   const pg = getKysely()

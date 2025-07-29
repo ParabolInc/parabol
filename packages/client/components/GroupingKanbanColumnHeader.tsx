@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Add, UnfoldLess, UnfoldMore} from '@mui/icons-material'
-import {MouseEvent} from 'react'
+import type {MouseEvent} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'

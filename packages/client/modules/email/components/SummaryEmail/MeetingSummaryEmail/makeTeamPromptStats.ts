@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {makeTeamPromptStats_meeting$key} from 'parabol-client/__generated__/makeTeamPromptStats_meeting.graphql'
+import type {makeTeamPromptStats_meeting$key} from 'parabol-client/__generated__/makeTeamPromptStats_meeting.graphql'
 import plural from 'parabol-client/utils/plural'
 import {readInlineData} from 'react-relay'
 

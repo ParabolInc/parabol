@@ -1,4 +1,4 @@
-import {generateText, JSONContent} from '@tiptap/core'
+import {generateText, type JSONContent} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import crypto from 'crypto'
 import OAuth from 'oauth-1.0a'
@@ -8,9 +8,9 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
 import composeJQL from '~/utils/composeJQL'
-import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
-import {TeamMemberIntegrationAuth} from '../../postgres/types'
-import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 const MAX_PAGINATION_RESULTS = 5000
 const MAX_RESULTS_PER_PAGE = 50

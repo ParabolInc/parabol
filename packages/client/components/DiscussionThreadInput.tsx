@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
-import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
+import type {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import type {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
@@ -19,10 +19,10 @@ import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import {createLocalPoll} from './Poll/local/newPoll'
-import SendCommentButton from './SendCommentButton'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
+import SendCommentButton from './SendCommentButton'
 
 const makeReplyTo = ({id, preferredName}: {id: string; preferredName: string}) => ({
   type: 'doc',
@@ -199,7 +199,10 @@ const DiscussionThreadInput = (props: Props) => {
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   const inputBottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    containerRef.current?.scrollIntoView({behavior: 'smooth', block: 'center'})
+    containerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    })
     editor?.commands.focus('end')
   }, [discussionId])
   const containerRef = useRef<HTMLDivElement>(null)

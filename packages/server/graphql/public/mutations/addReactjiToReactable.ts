@@ -2,16 +2,16 @@ import {sql} from 'kysely'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import {ValueOf} from '../../../../client/types/generics'
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {ValueOf} from '../../../../client/types/generics'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import emojiIds from '../../../utils/emojiIds'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import publish from '../../../utils/publish'
-import {GQLContext} from '../../graphql'
-import {MutationResolvers, ReactableEnum} from '../resolverTypes'
+import type {GQLContext} from '../../graphql'
+import type {MutationResolvers, ReactableEnum} from '../resolverTypes'
 import {getReactableType} from '../types/Reactable'
 
 export const getReactable = (
@@ -90,7 +90,9 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
     if (isRemove) {
       await pg
         .updateTable(pg.dynamic.table(pgTable).as('t'))
-        .set({reactjis: sql`array_remove("reactjis", (${reactji},${viewerId})::"Reactji")`})
+        .set({
+          reactjis: sql`array_remove("reactjis", (${reactji},${viewerId})::"Reactji")`
+        })
         .where('id', '=', dbId)
         .execute()
     } else {

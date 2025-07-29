@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {PromptToJoinOrgNotification_notification$key} from '~/__generated__/PromptToJoinOrgNotification_notification.graphql'
+import type {PromptToJoinOrgNotification_notification$key} from '~/__generated__/PromptToJoinOrgNotification_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import RequestToJoinDomainMutation from '../mutations/RequestToJoinDomainMutation'
 import SendClientSideEvent from '../utils/SendClientSideEvent'

@@ -1,4 +1,6 @@
 """
 Return object for PokerAnnounceDeckHoverPayload
 """
-union PokerAnnounceDeckHoverPayload = ErrorPayload | PokerAnnounceDeckHoverSuccess
+union PokerAnnounceDeckHoverPayload =
+	| ErrorPayload
+	| PokerAnnounceDeckHoverSuccess

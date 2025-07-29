@@ -1,4 +1,4 @@
-import GenericMeetingPhase from '~/../server/database/types/GenericMeetingPhase'
+import type GenericMeetingPhase from '~/../server/database/types/GenericMeetingPhase'
 import {DISCUSS, GROUP} from './constants'
 import findStageAfterId from './meetings/findStageAfterId'
 import findStageById from './meetings/findStageById'

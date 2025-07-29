@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
-import {AddTeamMutation_notification$data} from '../__generated__/AddTeamMutation_notification.graphql'
-import {AddTeamMutation_team$data} from '../__generated__/AddTeamMutation_team.graphql'
-import {
+import type {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
+import type {AddTeamMutation_notification$data} from '../__generated__/AddTeamMutation_notification.graphql'
+import type {AddTeamMutation_team$data} from '../__generated__/AddTeamMutation_team.graphql'
+import type {
   HistoryLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,

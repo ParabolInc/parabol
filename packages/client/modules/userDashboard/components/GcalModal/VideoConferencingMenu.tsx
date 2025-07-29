@@ -1,9 +1,9 @@
-import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import Menu from '../../../../components/Menu'
 import MenuItem from '../../../../components/MenuItem'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
-import {MenuProps} from '../../../../hooks/useMenu'
+import type {MenuProps} from '../../../../hooks/useMenu'
 
 type Props = {
   menuProps: MenuProps

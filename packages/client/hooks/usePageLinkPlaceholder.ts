@@ -1,5 +1,5 @@
 import type {Editor, EditorEvents} from '@tiptap/core'
-import {useEffect, type MutableRefObject} from 'react'
+import {type MutableRefObject, useEffect} from 'react'
 
 export const usePageLinkPlaceholder = (
   editor: Editor,

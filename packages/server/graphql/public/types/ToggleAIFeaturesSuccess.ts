@@ -1,4 +1,4 @@
-import {ToggleAiFeaturesSuccessResolvers} from '../resolverTypes'
+import type {ToggleAiFeaturesSuccessResolvers} from '../resolverTypes'
 
 export type ToggleAIFeaturesSuccessSource = {
   orgId: string

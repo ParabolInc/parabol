@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   UserTasksHeader_viewer$data,
   UserTasksHeader_viewer$key
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
@@ -15,9 +15,9 @@ import {Breakpoint, FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
+import DashFilterToggle from '../../../../components/DashFilterToggle/DashFilterToggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
@@ -138,8 +138,8 @@ const UserTasksHeader = (props: Props) => {
   const teamFilterName = (teamFilter && teamFilter.name) || FilterLabels.ALL_TEAMS
 
   const teamMemberFilterName = useMemo(() => {
-    const teamMembers = teams.map(({teamMembers}) => teamMembers).flat()
-    const users = teamMembers.map(({user}) => user).flat()
+    const teamMembers = teams.flatMap(({teamMembers}) => teamMembers)
+    const users = teamMembers.flatMap(({user}) => user)
     const keySet = new Set()
     const dedupedUsers = [] as {
       id: string

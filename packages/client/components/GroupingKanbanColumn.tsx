@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {RefObject, useMemo, useRef} from 'react'
+import {type RefObject, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {GroupingKanbanColumn_meeting$key} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
-import {GroupingKanbanColumn_prompt$key} from '~/__generated__/GroupingKanbanColumn_prompt.graphql'
-import {GroupingKanbanColumn_reflectionGroups$key} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
+import type {GroupingKanbanColumn_meeting$key} from '~/__generated__/GroupingKanbanColumn_meeting.graphql'
+import type {GroupingKanbanColumn_prompt$key} from '~/__generated__/GroupingKanbanColumn_prompt.graphql'
+import type {GroupingKanbanColumn_reflectionGroups$key} from '~/__generated__/GroupingKanbanColumn_reflectionGroups.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import useDeepEqual from '~/hooks/useDeepEqual'
 import useSubColumns from '~/hooks/useSubColumns'
@@ -13,7 +13,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
 import {BezierCurve, DragAttribute, ElementWidth, MeetingControlBarEnum} from '../types/constEnums'
 import getNextSortOrder from '../utils/getNextSortOrder'
-import {SwipeColumn} from './GroupingKanban'
+import type {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 
@@ -25,21 +25,22 @@ const ColumnScrollContainer = styled('div')({
   height: '100%'
 })
 
-const ColumnBody = styled('div')<{isDesktop: boolean; isWidthExpanded: boolean}>(
-  ({isDesktop, isWidthExpanded}) => ({
-    alignContent: 'flex-start',
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    maxHeight: 'fit-content',
-    minHeight: 200,
-    padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
-    transition: `all 100ms ${BezierCurve.DECELERATE}`,
-    minWidth: ElementWidth.REFLECTION_COLUMN
-  })
-)
+const ColumnBody = styled('div')<{
+  isDesktop: boolean
+  isWidthExpanded: boolean
+}>(({isDesktop, isWidthExpanded}) => ({
+  alignContent: 'flex-start',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-around',
+  maxHeight: 'fit-content',
+  minHeight: 200,
+  padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
+  transition: `all 100ms ${BezierCurve.DECELERATE}`,
+  minWidth: ElementWidth.REFLECTION_COLUMN
+}))
 
 export type OpenSpotlight = (
   reflectionGroupId: string,

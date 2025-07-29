@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {fetchQuery} from 'relay-runtime'
-import {getDemoTitlesQuery} from '~/__generated__/getDemoTitlesQuery.graphql'
+import type {getDemoTitlesQuery} from '~/__generated__/getDemoTitlesQuery.graphql'
 import Atmosphere from '../../Atmosphere'
 
 const query = graphql`

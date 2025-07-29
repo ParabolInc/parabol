@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_prompt.graphql'
-import {PalettePicker_prompts$key} from '~/__generated__/PalettePicker_prompts.graphql'
+import type {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_prompt.graphql'
+import type {PalettePicker_prompts$key} from '~/__generated__/PalettePicker_prompts.graphql'
 import ReflectTemplatePromptUpdateGroupColorMutation from '~/mutations/ReflectTemplatePromptUpdateGroupColorMutation'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {MenuProps} from '../../hooks/useMenu'
+import type {MenuProps} from '../../hooks/useMenu'
 import palettePickerOptions from '../../styles/palettePickerOptions'
 import Menu from '../Menu'
 import PaletteColor from '../PaletteColor/PaletteColor'
@@ -56,7 +56,10 @@ const PalettePicker = (props: Props) => {
   const atmosphere = useAtmosphere()
   const allTakenColors = prompts.map((prompt) => prompt.groupColor)
   const handleClick = (color: string) => {
-    ReflectTemplatePromptUpdateGroupColorMutation(atmosphere, {promptId, groupColor: color})
+    ReflectTemplatePromptUpdateGroupColorMutation(atmosphere, {
+      promptId,
+      groupColor: color
+    })
     closePortal()
   }
 

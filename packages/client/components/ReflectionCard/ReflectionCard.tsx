@@ -1,15 +1,15 @@
 import {isNodeEmpty} from '@tiptap/core'
 import {Node as ProseMirrorNode} from '@tiptap/pm/model'
 import graphql from 'babel-plugin-relay/macro'
-import {MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {type MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {
+import type {
   NewMeetingPhaseTypeEnum,
   ReflectionCard_meeting$key
 } from '~/__generated__/ReflectionCard_meeting.graphql'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import isDemoRoute from '~/utils/isDemoRoute'
-import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
+import type {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -23,7 +23,7 @@ import {Breakpoint} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
-import {OpenSpotlight} from '../GroupingKanbanColumn'
+import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
@@ -167,7 +167,11 @@ const ReflectionCard = (props: Props) => {
   const handleModEnter = useEventCallback(() => {
     handleContentUpdate()
     updateIsEditing(false)
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+    EditReflectionMutation(atmosphere, {
+      isEditing: false,
+      meetingId,
+      promptId
+    })
   })
 
   const {editor} = useTipTapReflectionEditor(content, {
@@ -184,7 +188,11 @@ const ReflectionCard = (props: Props) => {
       return
     }
     updateIsEditing(true)
-    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
+    EditReflectionMutation(atmosphere, {
+      isEditing: true,
+      meetingId,
+      promptId
+    })
   }
 
   const updateIsEditing = (isEditing: boolean) => {
@@ -256,7 +264,11 @@ const ReflectionCard = (props: Props) => {
 
     handleContentUpdate()
     updateIsEditing(false)
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+    EditReflectionMutation(atmosphere, {
+      isEditing: false,
+      meetingId,
+      promptId
+    })
   }
 
   const onToggleReactji = (emojiId: string) => {

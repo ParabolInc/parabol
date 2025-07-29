@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordSourceProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordSourceProxy} from 'relay-runtime'
 
 const getDiscussionThreadConn = (
   store: RecordSourceProxy,

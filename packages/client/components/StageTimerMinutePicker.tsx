@@ -1,4 +1,4 @@
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import plural from '../utils/plural'
 import Menu from './Menu'
 import MenuItem from './MenuItem'

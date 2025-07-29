@@ -4,8 +4,8 @@ import {Checkbox} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
-import {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
+import type {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
+import type {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -14,12 +14,12 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import DowngradeToStarterMutation from '../../../../mutations/DowngradeToStarterMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import {
-  TeamBenefits,
   readableReasonsToDowngrade,
-  reasonsToDowngradeLookup
+  reasonsToDowngradeLookup,
+  TeamBenefits
 } from '../../../../utils/constants'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 const StyledDialogContainer = styled(DialogContainer)({
   padding: 8

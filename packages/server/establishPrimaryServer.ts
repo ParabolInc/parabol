@@ -1,6 +1,6 @@
 import {Redlock} from '@sesamecare-oss/redlock'
 import ms from 'ms'
-import RedisInstance from './utils/RedisInstance'
+import type RedisInstance from './utils/RedisInstance'
 
 export const establishPrimaryServer = async (redis: RedisInstance, prefix: string) => {
   const redlock = new Redlock([redis], {retryCount: 0})

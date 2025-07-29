@@ -2,117 +2,117 @@
 A member of a team
 """
 type TeamMember {
-  """
-  An ID for the teamMember. userId::teamId
-  """
-  id: ID!
+	"""
+	An ID for the teamMember. userId::teamId
+	"""
+	id: ID!
 
-  """
-  The datetime the team member was created
-  """
-  createdAt: DateTime!
+	"""
+	The datetime the team member was created
+	"""
+	createdAt: DateTime!
 
-  """
-  true if the user is a part of the team, false if they no longer are
-  """
-  isNotRemoved: Boolean
+	"""
+	true if the user is a part of the team, false if they no longer are
+	"""
+	isNotRemoved: Boolean
 
-  """
-  Is user a team lead?
-  """
-  isLead: Boolean!
+	"""
+	Is user a team lead?
+	"""
+	isLead: Boolean!
 
-  """
-  true if the user prefers to not vote during a poker meeting
-  """
-  isSpectatingPoker: Boolean!
+	"""
+	true if the user prefers to not vote during a poker meeting
+	"""
+	isSpectatingPoker: Boolean!
 
-  """
-  the type of drawer that is open in the team dash. Null if the drawer is closed
-  """
-  openDrawer: TeamDrawer
+	"""
+	the type of drawer that is open in the team dash. Null if the drawer is closed
+	"""
+	openDrawer: TeamDrawer
 
-  """
-  true if this team member belongs to the user that queried it
-  """
-  isSelf: Boolean!
+	"""
+	true if this team member belongs to the user that queried it
+	"""
+	isSelf: Boolean!
 
-  """
-  The integrations that the team member has authorized. accessible by all
-  """
-  integrations: TeamMemberIntegrations!
+	"""
+	The integrations that the team member has authorized. accessible by all
+	"""
+	integrations: TeamMemberIntegrations!
 
-  """
-  The meeting specifics for the meeting the team member is currently in
-  """
-  meetingMember(meetingId: ID!): MeetingMember
+	"""
+	The meeting specifics for the meeting the team member is currently in
+	"""
+	meetingMember(meetingId: ID!): MeetingMember
 
-  """
-  The integrations that the team has previously used
-  """
-  prevUsedRepoIntegrations(
-    """
-    the number of repo integrations to return
-    """
-    first: Int!
-    after: DateTime
-  ): RepoIntegrationQueryPayload!
+	"""
+	The integrations that the team has previously used
+	"""
+	prevUsedRepoIntegrations(
+		"""
+		the number of repo integrations to return
+		"""
+		first: Int!
+		after: DateTime
+	): RepoIntegrationQueryPayload!
 
-  """
-  The integrations that the user would probably like to use
-  """
-  repoIntegrations(
-    """
-    the number of repo integrations to return
-    """
-    first: Int!
-    after: DateTime
+	"""
+	The integrations that the user would probably like to use
+	"""
+	repoIntegrations(
+		"""
+		the number of repo integrations to return
+		"""
+		first: Int!
+		after: DateTime
 
-    """
-    true if we should fetch from the network, false if we should use the cache
-    """
-    networkOnly: Boolean!
-  ): RepoIntegrationQueryPayload!
+		"""
+		true if we should fetch from the network, false if we should use the cache
+		"""
+		networkOnly: Boolean!
+	): RepoIntegrationQueryPayload!
 
-  """
-  Tasks owned by the team member
-  """
-  tasks(
-    first: Int
+	"""
+	Tasks owned by the team member
+	"""
+	tasks(
+		first: Int
 
-    """
-    the datetime cursor
-    """
-    after: DateTime
-  ): TaskConnection
+		"""
+		the datetime cursor
+		"""
+		after: DateTime
+	): TaskConnection
 
-  """
-  The team this team member belongs to
-  """
-  team: Team
+	"""
+	The team this team member belongs to
+	"""
+	team: Team
 
-  """
-  foreign key to Team table
-  """
-  teamId: ID!
+	"""
+	foreign key to Team table
+	"""
+	teamId: ID!
 
-  """
-  The user for the team member
-  """
-  user: User!
+	"""
+	The user for the team member
+	"""
+	user: User!
 
-  """
-  foreign key to User table
-  """
-  userId: ID!
+	"""
+	foreign key to User table
+	"""
+	userId: ID!
 
-  """
-  All the integrations that the user could possibly use
-  """
-  allAvailableRepoIntegrations: [RepoIntegration!]!
+	"""
+	All the integrations that the user could possibly use
+	"""
+	allAvailableRepoIntegrations: [RepoIntegration!]!
 
-  """
-  Is user an admin of the team's org?
-  """
-  isOrgAdmin: Boolean!
+	"""
+	Is user an admin of the team's org?
+	"""
+	isOrgAdmin: Boolean!
 }

@@ -6,10 +6,10 @@ import {
   useElements,
   useStripe
 } from '@stripe/react-stripe-js'
-import {StripeElementChangeEvent} from '@stripe/stripe-js'
-import * as React from 'react'
+import type {StripeElementChangeEvent} from '@stripe/stripe-js'
+import type * as React from 'react'
 import {useState} from 'react'
-import {UpdateCreditCardMutation$data} from '../../../../__generated__/UpdateCreditCardMutation.graphql'
+import type {UpdateCreditCardMutation$data} from '../../../../__generated__/UpdateCreditCardMutation.graphql'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import StyledError from '../../../../components/StyledError'

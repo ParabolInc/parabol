@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {NewMeetingAvatar_user$key} from '../../../../__generated__/NewMeetingAvatar_user.graphql'
+import type {NewMeetingAvatar_user$key} from '../../../../__generated__/NewMeetingAvatar_user.graphql'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
