@@ -75,7 +75,6 @@
     "@tiptap/html": "^2.11.7",
     "@tiptap/pm": "^2.11.7",
     "adaptivecards": "2.10.0",
-    "api": "^5.0.7",
     "axios": "^1.8.4",
     "bcryptjs": "^2.4.3",
     "cheerio": "1.0.0",
