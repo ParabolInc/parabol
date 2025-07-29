@@ -23,6 +23,7 @@ const Input = styled('input')({
 interface Props {
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  placeholder: string
 }
 
 const MenuSearch = (props: Props) => {

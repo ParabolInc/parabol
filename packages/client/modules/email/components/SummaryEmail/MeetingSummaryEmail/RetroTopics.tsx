@@ -115,7 +115,7 @@ const RetroTopics = (props: Props) => {
           })
         : reflectionGroups.map((reflectionGroup) => {
             const {reflections, title} = reflectionGroup
-            // eslint-disable-next-line react-hooks/rules-of-hooks
+            // biome-ignore lint/correctness/useHookAtTopLevel: legacy
             const grid = useEmailItemGrid(reflections, 3)
             return (
               <Fragment key={reflectionGroup.id}>

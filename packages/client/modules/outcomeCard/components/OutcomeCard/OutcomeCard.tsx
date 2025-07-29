@@ -192,6 +192,7 @@ const OutcomeCard = memo((props: Props) => {
             <TipTapEditor
               className='px-4'
               editor={editor}
+              // biome-ignore lint/correctness/useHookAtTopLevel: legacy
               useLinkEditor={() => useTaskChild('editor-link-changer')}
               onBlur={onFocusChange(false)}
               onFocus={onFocusChange(true)}

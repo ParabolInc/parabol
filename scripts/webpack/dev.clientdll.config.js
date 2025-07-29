@@ -62,7 +62,7 @@ module.exports = {
     new webpack.DllPlugin({
       name: '[name]',
       path: path.join(DLL_ROOT, '[name].json')
-    }) // eslint-disable-line no-new
+    })
   ],
   module: {
     rules: [

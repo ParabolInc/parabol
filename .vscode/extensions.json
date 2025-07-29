@@ -3,11 +3,11 @@
     "bierner.markdown-mermaid",
     "bradlc.vscode-tailwindcss",
     "eamodio.gitlens",
-    "esbenp.prettier-vscode",
     "github.vscode-github-actions",
     "meta.relay",
     "yzhang.markdown-all-in-one",
     "GraphQL.vscode-graphql",
-    "GraphQL.vscode-graphql-syntax"
+    "GraphQL.vscode-graphql-syntax",
+    "biomejs.biome"
   ]
 }

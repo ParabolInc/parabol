@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import MockDB from '../../../../__tests__/setup/MockDB'
 import mockAuthToken from '../../../../__tests__/setup/mockAuthToken'
 import {__anHourAgo, __now, __overADayAgo} from '../../../../__tests__/setup/mockTimes'

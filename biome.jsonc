@@ -37,6 +37,15 @@
     "enabled": true,
     "rules": {
       "recommended": false,
+      "nursery": {
+        "useSortedClasses": {
+          "level": "off",
+          "options": {
+            "attributes": ["classList"],
+            "functions": ["cn", "clsx", "cva", "tw", "tw.*"]
+          }
+        }
+      },
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
         "noExtraBooleanCast": "error",
@@ -45,6 +54,7 @@
         "noUselessTypeConstraint": "error"
       },
       "correctness": {
+        "useExhaustiveDependencies": "off",
         "noConstAssign": "error",
         "noConstantCondition": "error",
         "noEmptyCharacterClassInRegex": "error",
@@ -80,7 +90,9 @@
           "options": {
             "ignoreRestSiblings": true
           }
-        }
+        },
+        // typescript checks this more accurate, e.g. spread objects with a key prop in it
+        "useJsxKeyInIterable": "off"
       },
       "style": {
         "noCommonJs": "error",
@@ -151,6 +163,14 @@
   "html": {"formatter": {"selfCloseVoidElements": "always"}},
   "overrides": [
     {
+      "includes": ["packages/client/**"],
+      "linter": {
+        "domains": {
+          "react": "recommended"
+        }
+      }
+    },
+    {
       "includes": ["**/packages/server/postgres/migrations/**"],
       "linter": {
         "rules": {
@@ -172,19 +192,13 @@
     },
     {
       "includes": ["**/__tests__/**"],
+      "linter": {
+        "domains": {
+          "test": "all"
+        }
+      },
       "javascript": {
-        "globals": [
-          "describe",
-          "it",
-          "test",
-          "beforeAll",
-          "beforeEach",
-          "afterAll",
-          "afterEach",
-          "expect",
-          "vi",
-          "jest"
-        ]
+        "globals": ["jest"]
       }
     }
   ],

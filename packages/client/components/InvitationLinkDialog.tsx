@@ -47,8 +47,9 @@ const InvitationLinkDialog = (props: Props) => {
   const metaCopy = teamName
     ? `Join ${teamName} on Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
     : `Join Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
-  /* eslint-disable react-hooks/rules-of-hooks */
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useDocumentTitle(pageTitle, pageName)
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useMetaTagContent(metaCopy)
 
   switch (errorType) {

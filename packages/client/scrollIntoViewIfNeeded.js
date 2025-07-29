@@ -2,7 +2,6 @@
  * Not supported natively outside of webkit: https://caniuse.com/#feat=scrollintoviewifneeded
  */
 
-/* eslint-disable */
 if (!Element.prototype.scrollIntoViewIfNeeded) {
   Element.prototype.scrollIntoViewIfNeeded = function (centerIfNeeded) {
     centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded

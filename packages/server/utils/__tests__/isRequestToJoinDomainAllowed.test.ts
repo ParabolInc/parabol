@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import type {Insertable} from 'kysely'
 import {createPGTables, truncatePGTables} from '../../__tests__/common'
 import RootDataLoader from '../../dataloader/RootDataLoader'

@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import sleep from 'parabol-client/utils/sleep'
 import getRedis from '../getRedis'
 import RedisLockQueue from '../RedisLockQueue'

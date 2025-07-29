@@ -47,7 +47,8 @@ const useMeeting = (meetingRef: useMeeting_meeting$key) => {
   useGotoNextHotkey(handleGotoNext.gotoNext)
   useGotoPrevHotkey(meeting, gotoStageId)
   // save a few cycles
-  const demoPortal = isDemoRoute() ? useDemoMeeting() : () => null // eslint-disable-line
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
+  const demoPortal = isDemoRoute() ? useDemoMeeting() : () => null
   useDocumentTitle(`${meetingName} | ${teamName}`, meetingName)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleSidebar = useToggleSidebar(meetingId)

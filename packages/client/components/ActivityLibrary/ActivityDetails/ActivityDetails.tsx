@@ -70,7 +70,7 @@ const ActivityDetails = (props: Props) => {
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-  /* eslint-disable react-hooks/rules-of-hooks */
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Viewed Template', {
       meetingType: activity.type,

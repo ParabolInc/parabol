@@ -72,7 +72,7 @@ const JiraFieldMenu = (props: Props) => {
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
-  /* eslint-disable react-hooks/rules-of-hooks */
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   const defaultActiveidx = useMemo(() => {
     if (possibleEstimationFields.length === 0) return undefined
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)

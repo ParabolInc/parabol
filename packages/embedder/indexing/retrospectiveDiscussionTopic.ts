@@ -1,5 +1,4 @@
 import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
-import prettier from 'prettier'
 import type {Comment} from '../../server/postgres/types'
 import {inferLanguage} from '../inferLanguage'
 import type {ISO6391} from '../iso6393To1'
@@ -164,12 +163,13 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     }
   }
 
-  const body = await prettier.format(markdown, {
-    parser: 'markdown',
-    proseWrap: 'always',
-    printWidth: 72
-  })
+  // getting rid of prettier, I think it's also safe to remove this one instance of using it at runtime
+  // const body = await prettier.format(markdown, {
+  //   parser: 'markdown',
+  //   proseWrap: 'always',
+  //   printWidth: 72
+  // })
 
   language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
-  return {body, language}
+  return {body: markdown, language}
 }

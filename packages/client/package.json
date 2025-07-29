@@ -13,14 +13,10 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "format": "pnpm typecheck && pnpm lint && pnpm prettier",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-sFtorybook",
-    "lint": "pnpm lint:check --fix .",
-    "lint:check": "eslint .",
+    "biome": "pnpm exec biome check",
     "precommit": "lint-staged",
-    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --write \"**/*.{ts,tsx,graphql}\"",
-    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose",
     "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
   },
