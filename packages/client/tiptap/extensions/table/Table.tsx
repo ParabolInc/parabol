@@ -89,12 +89,7 @@ function Component(props: NodeViewProps) {
 
   return (
     <NodeViewWrapper className='relative' data-highlight={highlight}>
-      <NodeViewContent
-        as={
-          'table' as 'div' /* FIXME: see if the typing is wrong or if this is a breaking change */
-        }
-        {...props.HTMLAttributes}
-      />
+      <NodeViewContent as={'table' as 'div'} {...props.HTMLAttributes} />
       <DropdownMenu.Root onOpenChange={onOpenChange}>
         <DropdownMenu.Trigger asChild>
           <PlainButton

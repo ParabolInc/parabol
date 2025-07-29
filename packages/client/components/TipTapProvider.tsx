@@ -1,5 +1,5 @@
 // TipTapRenderContext.ts
-import type {Extensions, generateHTML, generateJSON, JSONContent} from '@tipTap/core'
+import type {Extensions, generateHTML, generateJSON, JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import {createContext, useContext, type ReactNode} from 'react'
 

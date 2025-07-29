@@ -2,7 +2,7 @@ import {TaskTag} from '../types'
 
 export const plaintextToTipTap = (str: string, options: {taskTags?: TaskTag[]} = {}) => {
   const textNode = {type: 'text', text: str}
-  const content: any[] = [textNode]
+  const content: any[] = str ? [textNode] : []
   const taskTags = options.taskTags ?? []
   taskTags.forEach((taskTag) => {
     content.push({
