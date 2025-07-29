@@ -783,12 +783,9 @@ importers:
         specifier: ^5.0.0
         version: 5.52.0
       franc-min:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^6.2.0
+        version: 6.2.0
     devDependencies:
-      '@types/franc':
-        specifier: ^5.0.3
-        version: 5.0.3
       '@types/node':
         specifier: ^22.14.0
         version: 22.15.19
@@ -5910,9 +5907,6 @@ packages:
   '@types/fbjs@3.0.11':
     resolution: {integrity: sha512-KHKG39soend2RZRVAeb+L6+G++zUYecNvYBTpQcoIIACrozwYJqckaRVSenlXyzdhRZLxc885mxdNs88koqNdA==}
 
-  '@types/franc@5.0.3':
-    resolution: {integrity: sha512-YX6o2vVkeiUvOF12bUmnSGf8sezOoBnCWjHHZGeh2lt3tqAutbJ9OL3cDRiZoiAYaZR638nuOc0Ji9bzdad2XA==}
-
   '@types/glob@7.2.0':
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
 
@@ -7091,8 +7085,8 @@ packages:
   codemirror@5.65.19:
     resolution: {integrity: sha512-+aFkvqhaAVr1gferNMuN8vkTSrWIFvzlMV9I2KBLCWS2WpZ2+UAkZjlMZmEuT+gcXTi6RrGQCkWq1/bDtGqhIA==}
 
-  collapse-white-space@1.0.6:
-    resolution: {integrity: sha512-jEovNnrhMuqyCcjfEJA56v0Xq8SkIoPKDyaHahwo3POf4qcSXqMYuwNcOTzp74vTsR9Tn08z4MxWqAhcekogkQ==}
+  collapse-white-space@2.1.0:
+    resolution: {integrity: sha512-loKTxY1zCOuG4j9f6EPnuyyYkf58RnhhWTvRoZEokgB+WbdXehfjFviyOVYkqzEWz1Q5kRiZdBYS5SwxbQYwzw==}
 
   collect-v8-coverage@1.0.2:
     resolution: {integrity: sha512-lHl4d5/ONEbLlJvaJNtsF/Lz+WvB07u2ycqTYbdrq7UypDXailES4valYb2eWiJFxZlVmpGekfqoxQhzyFdT4Q==}
@@ -8278,8 +8272,8 @@ packages:
   framesync@6.0.1:
     resolution: {integrity: sha512-fUY88kXvGiIItgNC7wcTOl0SNRCVXMKSWW2Yzfmn7EKNc+MpCzcz9DhdHcdjbrtN3c6R4H5dTY2jiCpPdysEjA==}
 
-  franc-min@5.0.0:
-    resolution: {integrity: sha512-xy7Iq7uNflbvNU+bkyYWtP+BOHWZle7kT9GM84gEV14b7/7sgq7M7Flf6v1XRflHAuHoshBMveWA6Q+kEXYeHQ==}
+  franc-min@6.2.0:
+    resolution: {integrity: sha512-1uDIEUSlUZgvJa2AKYR/dmJC66v/PvGQ9mWfI9nOr/kPpMFyvswK0gPXOwpYJYiYD008PpHLkGfG58SPjQJFxw==}
 
   fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
@@ -10209,8 +10203,8 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
-  n-gram@1.1.2:
-    resolution: {integrity: sha512-mBTpWKp0NHdujHmxrskPg2jc108mjyMmVxHN1rZGK/ogTLi9O0debDIXlQPqotNELdNmVGtL4jr7SCig+4OWvQ==}
+  n-gram@2.0.2:
+    resolution: {integrity: sha512-S24aGsn+HLBxUGVAUFOwGpKs7LBcG4RudKU//eWzt/mQ97/NMKQxDWHyHx63UNWk/OOdihgmzoETn1tf5nQDzQ==}
 
   nan@2.22.2:
     resolution: {integrity: sha512-DANghxFkS1plDdRsX0X9pm0Z6SJNN6gBdtXfanwoZ8hooC5gosGFSBGRYHUVPz1asKA/kMRqDRdHrluZ61SpBQ==}
@@ -12560,12 +12554,8 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
 
-  trigram-utils@1.0.3:
-    resolution: {integrity: sha512-UAhS1Ll21FtClVIzIN0I/SmGnJ+D08BOxX7Dl1penV8raC0ksf2dJkhNI6kU1Mj3uT86Bul12iMvxXquXSYSng==}
-
-  trim@0.0.1:
-    resolution: {integrity: sha512-YzQV+TZg4AxpKxaTHK3c3D+kRDCGVEE7LemdlQZoQXn0iennk10RsIoY6ikzAqJTc9Xjl9C1/waHom/J86ziAQ==}
-    deprecated: Use String.prototype.trim() instead
+  trigram-utils@2.0.1:
+    resolution: {integrity: sha512-nfWIXHEaB+HdyslAfMxSqWKDdmqY9I32jS7GnqpdWQnLH89r6A5sdk3fDVYqGAZ0CrT8ovAFSAo6HRiWcWNIGQ==}
 
   ts-api-utils@2.1.0:
     resolution: {integrity: sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==}
@@ -19711,8 +19701,6 @@ snapshots:
     dependencies:
       '@types/jsdom': 21.1.7
 
-  '@types/franc@5.0.3': {}
-
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
@@ -21085,7 +21073,7 @@ snapshots:
 
   codemirror@5.65.19: {}
 
-  collapse-white-space@1.0.6: {}
+  collapse-white-space@2.1.0: {}
 
   collect-v8-coverage@1.0.2: {}
 
@@ -22435,9 +22423,9 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  franc-min@5.0.0:
+  franc-min@6.2.0:
     dependencies:
-      trigram-utils: 1.0.3
+      trigram-utils: 2.0.1
 
   fresh@0.5.2: {}
 
@@ -24863,7 +24851,7 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  n-gram@1.1.2: {}
+  n-gram@2.0.2: {}
 
   nan@2.22.2:
     optional: true
@@ -27566,13 +27554,10 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  trigram-utils@1.0.3:
+  trigram-utils@2.0.1:
     dependencies:
-      collapse-white-space: 1.0.6
-      n-gram: 1.1.2
-      trim: 0.0.1
-
-  trim@0.0.1: {}
+      collapse-white-space: 2.1.0
+      n-gram: 2.0.2
 
   ts-api-utils@2.1.0(typescript@5.8.3):
     dependencies:
