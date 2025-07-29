@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.14.3](https://github.com/ParabolInc/parabol/compare/v10.14.2...v10.14.3) (2025-07-29)
+
+
+### Changed
+
+* Add userId to Datadog traces ([#11594](https://github.com/ParabolInc/parabol/issues/11594)) ([ac29065](https://github.com/ParabolInc/parabol/commit/ac29065df8fbfc570c117afcb816b9e0888047ee))
+
 ## [10.14.2](https://github.com/ParabolInc/parabol/compare/v10.14.1...v10.14.2) (2025-07-29)
 
 
