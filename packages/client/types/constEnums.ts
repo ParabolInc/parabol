@@ -429,7 +429,8 @@ export const enum ThresholdTest {
   STICKY_TEAM_LAST_MEETING_TIMEFRAME = 2592000
 }
 
-export const enum Times { // ms
+export const enum Times {
+  // ms
   HUMAN_ADDICTION_THRESH = 300,
   MAX_WAIT_TIME = 5000,
   MEETING_CONFIRM_TOOLTIP_DELAY = 0,

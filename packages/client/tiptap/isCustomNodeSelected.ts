@@ -4,11 +4,14 @@ import {ImageUpload} from './extensions/imageUpload/ImageUpload'
 import {PageLinkBlock} from './extensions/pageLinkBlock/PageLinkBlock'
 
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
+import {TaskBlock} from './extensions/insightsBlock/TaskBlock'
+
 const customNodes = [
   TiptapLinkExtension.name,
   PageLinkBlock.name,
   ImageUpload.name,
-  ImageBlock.name
+  ImageBlock.name,
+  TaskBlock.name
 ]
 
 export const isTableGripSelected = (editor: Editor) => {

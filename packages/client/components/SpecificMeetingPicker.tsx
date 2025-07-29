@@ -93,7 +93,7 @@ export const SpecificMeetingPicker = (props: Props) => {
         <table className='size-full w-full border-collapse'>
           <thead className='sticky top-0 z-10 bg-slate-200'>
             <tr className='border-b-[1px] border-slate-400'>
-              <th className='w-5 border-b-[1px] border-b-transparent pt-1 pr-1'>
+              <th className='w-8 border-b-[1px] border-b-transparent pt-1 pr-1'>
                 <Checkbox
                   onClick={() => {
                     const nextMeetingIds = allChecked ? [] : edges.map(({node}) => node.id)

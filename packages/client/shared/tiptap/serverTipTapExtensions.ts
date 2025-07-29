@@ -11,6 +11,8 @@ import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
+import {TaskBlockBase} from './extensions/TaskBlockBase'
+import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
@@ -56,5 +58,7 @@ export const serverTipTapExtensions: Extensions = [
   Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
   InsightsBlockBase,
   UniqueID,
-  PageLinkBlockBase
+  PageLinkBlockBase,
+  TaskBlockBase,
+  ThinkingBlockBase
 ]
