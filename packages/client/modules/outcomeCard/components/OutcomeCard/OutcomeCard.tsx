@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import {memo} from 'react'
+import {memo, useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
@@ -149,6 +149,15 @@ const OutcomeCard = memo((props: Props) => {
       store.get(discussionId)?.setValue(isFocus ? taskId : null, 'editingTaskId')
     })
   }
+
+  useEffect(() => {
+    if (!!isDraggingOver) {
+      if (!editor.isEmpty) {
+        handleCardUpdate()
+      }
+    }
+  }, [!!isDraggingOver, editor, handleCardUpdate])
+
   return (
     <RootCard
       isTaskHovered={isTaskHovered}
