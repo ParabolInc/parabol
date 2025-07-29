@@ -1,4 +1,4 @@
-import toArray from 'lodash.toarray'
+const segmenter = new Intl.Segmenter('en', {granularity: 'grapheme'})
 class Legitity {
   value: any
   error: undefined | string
@@ -38,9 +38,8 @@ class Legitity {
 
   max(len: number, msg?: string) {
     if (this.value !== undefined) {
-      // https://stackoverflow.com/a/46085147
-      const value = toArray(this.value)
-      if (!this.error && value.length > len) {
+      const valueLength = [...segmenter.segment(this.value)].length
+      if (!this.error && valueLength > len) {
         this.error = msg || 'max'
       }
     }
@@ -49,9 +48,8 @@ class Legitity {
 
   min(len: number, msg?: string) {
     if (this.value !== undefined) {
-      // https://stackoverflow.com/a/46085147
-      const value = toArray(this.value)
-      if (!this.error && value.length < len) {
+      const valueLength = [...segmenter.segment(this.value)].length
+      if (!this.error && valueLength < len) {
         this.error = msg || 'min'
       }
     }

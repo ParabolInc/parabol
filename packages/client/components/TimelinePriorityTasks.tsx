@@ -5,7 +5,6 @@ import {useMemo} from 'react'
 import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {TimelinePriorityTasks_viewer$key} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
-import DraggableTask from '../containers/TaskCard/DraggableTask'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
@@ -13,6 +12,7 @@ import {PALETTE} from '../styles/paletteV3'
 import {DroppableType} from '../types/constEnums'
 import {ACTIVE, ACTIVE_TASK, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
+import NullableTask from './NullableTask/NullableTask'
 import TimelineNoTasks from './TimelineNoTasks'
 
 interface Props {
@@ -62,7 +62,7 @@ const TimelinePriorityTasks = (props: Props) => {
               team {
                 id
               }
-              ...DraggableTask_task
+              ...NullableTask_task
             }
           }
         }
@@ -115,7 +115,13 @@ const TimelinePriorityTasks = (props: Props) => {
             </PriorityTasksHeader>
             <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
               {activeTasks.map((task, idx) => (
-                <DraggableTask key={task.id} area='userDash' task={task} idx={idx} />
+                <NullableTask
+                  key={task.id}
+                  area='userDash'
+                  task={task}
+                  isDraggable
+                  draggableIndex={idx}
+                />
               ))}
               {dropProvided.placeholder}
             </PriorityTaskBody>

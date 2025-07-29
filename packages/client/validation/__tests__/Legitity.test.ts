@@ -10,6 +10,11 @@ test('Legitity.max fails with message when too long', async () => {
   expect(legitity.error).toBe('too long')
 })
 
+test('Legitity.max passes with grapheme', async () => {
+  const legitity = new Legitity('👨‍').max(1, 'too long')
+  expect(legitity.error).toBe(undefined)
+})
+
 test('Legitity.max passes with max length', async () => {
   const legitity = new Legitity('123').max(3, 'too long')
   expect(legitity.error).toBe(undefined)
