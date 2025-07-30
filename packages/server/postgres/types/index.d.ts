@@ -1,11 +1,14 @@
-import {SelectQueryBuilder, Selectable} from 'kysely'
+import {Selectable, SelectQueryBuilder} from 'kysely'
 import {
   selectAgendaItems,
   selectComments,
+  type selectDiscussion,
+  type selectMassInvitations,
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
+  type selectPages,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
@@ -16,16 +19,12 @@ import {
   selectTeamMemberIntegrationAuth,
   selectTeamPromptResponses,
   selectTeams,
+  type selectTemplateDimension,
   selectTemplateScale,
-  selectTemplateScaleRef,
-  type selectDiscussion,
-  type selectMassInvitations,
-  type selectPages,
-  type selectTemplateDimension
+  selectTemplateScaleRef
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
-  Discussion as DiscussionPG,
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
@@ -36,6 +35,7 @@ import {
   TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
+
 export type {TaskTag} from 'parabol-client/shared/types'
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
