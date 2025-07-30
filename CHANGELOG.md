@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.16.0](https://github.com/ParabolInc/parabol/compare/v10.15.0...v10.16.0) (2025-07-30)
+
+
+### Added
+
+* Retro Meeting Summary on a Page ([#11575](https://github.com/ParabolInc/parabol/issues/11575)) ([aae78d8](https://github.com/ParabolInc/parabol/commit/aae78d82f3dd141ed8ddaf98d644fa6e8b214faa))
+
+
+### Fixed
+
+* approve oxide for tailwindcss builds ([#11600](https://github.com/ParabolInc/parabol/issues/11600)) ([4997d9c](https://github.com/ParabolInc/parabol/commit/4997d9c34d941a4dbed246da6965b9425311e6c8))
+* don't send EditReflectionMutation when it's read only ([#11598](https://github.com/ParabolInc/parabol/issues/11598)) ([52cdeb6](https://github.com/ParabolInc/parabol/commit/52cdeb6a129bc401c3d7a75552ca3bfb366e6ee3))
+
 ## [10.15.0](https://github.com/ParabolInc/parabol/compare/v10.14.3...v10.15.0) (2025-07-29)
 
 
