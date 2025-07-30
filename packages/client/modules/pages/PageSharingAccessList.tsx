@@ -81,7 +81,7 @@ export const PageSharingAccessList = (props: Props) => {
   return (
     <div className='overflow-y-auto pt-3 pb-4'>
       {!isParentLinked && parentPageId && (
-        <div className='mb-2 rounded-md border border-slate-700 p-2 text-sm text-slate-800'>
+        <div className='mb-2 rounded-md border border-slate-700 p-2 text-slate-800 text-sm'>
           {'Share settings on this page differ from its '}
           <Link
             to={`/pages/${parentPageId.split(':')[1]}`}
@@ -106,7 +106,7 @@ export const PageSharingAccessList = (props: Props) => {
               <div className='flex items-center gap-3 pr-2'>
                 <TeamAvatar className='mr-0 h-8 w-8' teamId={email} teamName={email} />
                 <div className='flex flex-col'>
-                  <div className='text-sm font-medium text-slate-700'>{email}</div>
+                  <div className='font-medium text-slate-700 text-sm'>{email}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -126,8 +126,8 @@ export const PageSharingAccessList = (props: Props) => {
               <div className='flex items-center gap-3 pr-2'>
                 <Avatar className='h-8 w-8' picture={picture} />
                 <div className='flex flex-col'>
-                  <div className='text-sm font-medium text-slate-700'>{name}</div>
-                  <div className='text-xs text-slate-800'>{email}</div>
+                  <div className='font-medium text-slate-700 text-sm'>{name}</div>
+                  <div className='text-slate-800 text-xs'>{email}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -146,7 +146,7 @@ export const PageSharingAccessList = (props: Props) => {
               <div className='flex items-center gap-3 pr-2'>
                 <TeamAvatar className='mr-0 h-8 w-8' teamId={teamId} teamName={teamName} />
                 <div className='flex flex-col'>
-                  <div className='text-sm font-medium text-slate-700'>{teamName}</div>
+                  <div className='font-medium text-slate-700 text-sm'>{teamName}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -169,7 +169,7 @@ export const PageSharingAccessList = (props: Props) => {
                   <TeamAvatar className='h-8 w-8' teamId={orgId} teamName={orgName} />
                 )}
                 <div className='flex flex-col'>
-                  <div className='text-sm font-medium text-slate-700'>{orgName}</div>
+                  <div className='font-medium text-slate-700 text-sm'>{orgName}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -186,7 +186,7 @@ export const PageSharingAccessList = (props: Props) => {
             <div className='flex items-center gap-3 pr-2'>
               <PublicIcon className='h-8 w-8' />
               <div className='flex flex-col'>
-                <div className='text-sm font-medium text-slate-700'>{'Shared Publicly'}</div>
+                <div className='font-medium text-slate-700 text-sm'>{'Shared Publicly'}</div>
               </div>
             </div>
             <PageAccessCombobox

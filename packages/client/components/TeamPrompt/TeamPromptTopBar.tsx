@@ -3,7 +3,7 @@ import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
-import {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
+import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
@@ -174,7 +174,7 @@ const TeamPromptTopBar = (props: Props) => {
   const buttons = (
     <ButtonContainer>
       <button
-        className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 text-sm font-semibold text-sky-500 hover:text-sky-600'
+        className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-sky-500 text-sm hover:text-sky-600'
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />
@@ -247,7 +247,7 @@ const TeamPromptTopBar = (props: Props) => {
           />
         )}
       </MeetingTopBarStyles>
-      <div className='block flex justify-between border-y border-solid border-slate-300 px-4 py-2 md:hidden'>
+      <div className='block flex justify-between border-slate-300 border-y border-solid px-4 py-2 md:hidden'>
         <div className='my-1'>
           <TeamPromptMeetingStatus meetingRef={meeting} />
         </div>

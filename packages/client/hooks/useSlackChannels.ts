@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
+import type {SlackChannelDropdownChannels} from '../components/SlackChannelDropdown'
 import SlackClientManager from '../utils/SlackClientManager'
 
 interface MinimalChannel {

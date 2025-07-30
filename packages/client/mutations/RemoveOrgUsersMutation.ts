@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
 import {ConnectionHandler} from 'relay-runtime'
-import {RemoveOrgUsersMutation as TRemoveOrgUsersMutation} from '~/__generated__/RemoveOrgUsersMutation.graphql'
-import {RemoveOrgUsersMutation_organization$data} from '~/__generated__/RemoveOrgUsersMutation_organization.graphql'
-import {RemoveOrgUsersMutation_notification$data} from '../__generated__/RemoveOrgUsersMutation_notification.graphql'
-import {RemoveOrgUsersMutation_task$data} from '../__generated__/RemoveOrgUsersMutation_task.graphql'
-import {RemoveOrgUsersMutation_team$data} from '../__generated__/RemoveOrgUsersMutation_team.graphql'
-import {
+import type {RemoveOrgUsersMutation as TRemoveOrgUsersMutation} from '~/__generated__/RemoveOrgUsersMutation.graphql'
+import type {RemoveOrgUsersMutation_organization$data} from '~/__generated__/RemoveOrgUsersMutation_organization.graphql'
+import type {RemoveOrgUsersMutation_notification$data} from '../__generated__/RemoveOrgUsersMutation_notification.graphql'
+import type {RemoveOrgUsersMutation_task$data} from '../__generated__/RemoveOrgUsersMutation_task.graphql'
+import type {RemoveOrgUsersMutation_team$data} from '../__generated__/RemoveOrgUsersMutation_team.graphql'
+import type {
   HistoryLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
@@ -106,7 +106,9 @@ export const removeOrgUsersOrganizationUpdater: SharedUpdater<
     handleRemoveOrganization(affectedOrganizationId, store)
   } else {
     const viewer = store.getRoot().getLinkedRecord('viewer')
-    const organization = viewer?.getLinkedRecord('organization', {orgId: affectedOrganizationId})
+    const organization = viewer?.getLinkedRecord('organization', {
+      orgId: affectedOrganizationId
+    })
     const orgMembersConn =
       organization &&
       ConnectionHandler.getConnection(organization, 'OrgMembers_organizationUsers', {

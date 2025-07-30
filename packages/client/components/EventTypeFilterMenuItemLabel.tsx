@@ -1,4 +1,4 @@
-import {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
+import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import {FilterLabels} from '../types/constEnums'
 import {
   CUSTOMIZED_SVG,

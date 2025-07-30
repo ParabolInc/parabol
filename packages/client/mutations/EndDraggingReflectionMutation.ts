@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, commitMutation} from 'react-relay'
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
-import {EndDraggingReflectionMutation_meeting$data} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
-import {OnNextHandler, SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {EndDraggingReflectionMutation as TEndDraggingReflectionMutation} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import type {EndDraggingReflectionMutation_meeting$data} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
+import type {OnNextHandler, SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import dndNoise from '../utils/dndNoise'
 import addNodeToArray from '../utils/relay/addNodeToArray'
 import clientTempId from '../utils/relay/clientTempId'
@@ -183,7 +183,10 @@ const EndDraggingReflectionMutation: SimpleMutation<TEndDraggingReflectionMutati
           updatedAt: nowISO
         }
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
-        updateProxyRecord(reflection, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
+        updateProxyRecord(reflection, {
+          sortOrder: 0,
+          reflectionGroupId: newReflectionGroupId
+        })
       } else {
         reflectionGroupProxy = store.get(reflectionGroupId)!
         const reflections = reflectionGroupProxy.getLinkedRecords('reflections')!

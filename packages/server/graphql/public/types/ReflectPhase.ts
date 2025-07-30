@@ -1,4 +1,4 @@
-import {ReflectPhaseResolvers} from '../resolverTypes'
+import type {ReflectPhaseResolvers} from '../resolverTypes'
 
 const ReflectPhase: ReflectPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'reflect',

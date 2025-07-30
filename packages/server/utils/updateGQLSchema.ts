@@ -4,9 +4,9 @@
   To reduce watched file callback, we only want to write the file if there's a change
 */
 
+import {readFile, writeFile} from 'node:fs/promises'
 import {mergeSchemas} from '@graphql-tools/schema'
 import {printSchema} from 'graphql'
-import {readFile, writeFile} from 'node:fs/promises'
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import {typeDefs as privateTypeDefs} from '../graphql/private/importedTypeDefs'
@@ -36,7 +36,10 @@ const updateGQLSchema = async () => {
   })
 
   const publicSchema = nestLinear(nestGitLab(nestGitHub(publicTypeDefs).schema).schema).schema
-  const privateSchema = mergeSchemas({schemas: [publicSchema], typeDefs: [privateTypeDefs]})
+  const privateSchema = mergeSchemas({
+    schemas: [publicSchema],
+    typeDefs: [privateTypeDefs]
+  })
 
   await Promise.all([
     writeIfChanged(publicSchemaPath, printSchema(publicSchema)),

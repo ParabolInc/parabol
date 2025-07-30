@@ -1,1 +1,3 @@
-union AddApprovedOrganizationDomainsPayload = ErrorPayload | AddApprovedOrganizationDomainsSuccess
+union AddApprovedOrganizationDomainsPayload =
+	| ErrorPayload
+	| AddApprovedOrganizationDomainsSuccess

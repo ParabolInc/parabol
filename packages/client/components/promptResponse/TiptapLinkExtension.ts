@@ -1,6 +1,6 @@
-import {getMarkRange, getMarkType, type Editor, type RawCommands} from '@tiptap/core'
+import {type Editor, getMarkRange, getMarkType, type RawCommands} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
-import {EditorState, Plugin} from '@tiptap/pm/state'
+import {type EditorState, Plugin} from '@tiptap/pm/state'
 
 export type LinkMenuState = 'preview' | 'edit' | null
 
@@ -32,7 +32,10 @@ export const TiptapLinkExtension = BaseLink.extend({
   addKeyboardShortcuts(this) {
     return {
       'Mod-k': () => {
-        this.editor.emit('linkStateChange', {editor: this.editor, linkState: 'edit'})
+        this.editor.emit('linkStateChange', {
+          editor: this.editor,
+          linkState: 'edit'
+        })
         return true
       }
     }
@@ -95,7 +98,11 @@ export const TiptapLinkExtension = BaseLink.extend({
     }
   },
   parseHTML() {
-    return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+    return [
+      {
+        tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'
+      }
+    ]
   },
 
   onSelectionUpdate() {

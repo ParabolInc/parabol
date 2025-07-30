@@ -1,4 +1,4 @@
-import {DataLoaderInstance} from '../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import {analytics} from './analytics/analytics'
 
 /*

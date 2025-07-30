@@ -4,19 +4,19 @@ import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
-import {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
-import {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
+import type {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import getJiraDimensionFieldMap, {
-  GetJiraDimensionFieldMapParams,
-  JiraDimensionFieldMap
+  type GetJiraDimensionFieldMapParams,
+  type JiraDimensionFieldMap
 } from '../postgres/queries/getJiraDimensionFieldMap'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import AtlassianServerManager, {
-  JiraGQLFields,
-  JiraGetIssueRes,
-  JiraProject
+  type JiraGetIssueRes,
+  type JiraGQLFields,
+  type JiraProject
 } from '../utils/AtlassianServerManager'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
@@ -290,7 +290,10 @@ export const jiraIssue = (
             ['names', 'schema']
           )
           if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
-            logError(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
+            logError(issueRes, {
+              userId,
+              tags: {cloudId, issueKey, teamId}
+            })
             return null
           }
           const res = await cacheImagesUpdateEstimates(issueRes)

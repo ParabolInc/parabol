@@ -1,6 +1,6 @@
 import {makeCheckinGreeting, makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import {plaintextToTipTap} from '../../../client/shared/tiptap/plaintextToTipTap'
-import CheckInStage from './CheckInStage'
+import type CheckInStage from './CheckInStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 interface Input {

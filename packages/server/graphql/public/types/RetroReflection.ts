@@ -1,6 +1,6 @@
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import getGroupedReactjis from '../../../utils/getGroupedReactjis'
-import {RetroReflectionResolvers} from '../resolverTypes'
+import type {RetroReflectionResolvers} from '../resolverTypes'
 
 const RetroReflection: RetroReflectionResolvers = {
   creatorId: async ({creatorId, meetingId}, _args, {authToken, dataLoader}) => {

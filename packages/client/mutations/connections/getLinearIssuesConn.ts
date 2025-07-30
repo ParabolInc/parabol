@@ -1,5 +1,5 @@
-import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
-import {_xLinearIssueFilter} from '../../__generated__/LinearScopingSearchResultsQuery.graphql'
+import {ConnectionHandler, type ReadOnlyRecordProxy} from 'relay-runtime'
+import type {_xLinearIssueFilter} from '../../__generated__/LinearScopingSearchResultsQuery.graphql'
 
 const getLinearProjectsIssuesConn = (
   queryRecord: ReadOnlyRecordProxy | null | undefined,

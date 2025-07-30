@@ -1,12 +1,12 @@
-import * as React from 'react'
-import {ReactNode, createContext, useCallback, useContext, useEffect, useRef} from 'react'
+import type * as React from 'react'
+import {createContext, type ReactNode, useCallback, useContext, useEffect, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import useEventCallback from './useEventCallback'
 import useRefState from './useRefState'
 
-export const enum PortalStatus {
+export enum PortalStatus {
   Mounted, // node appended to DOM
   Entering, // 2 animation frames after appended to DOM
   Entered, // animation complete
@@ -89,7 +89,7 @@ const usePortal = (options: UsePortalOptions = {}) => {
     setPortalStatus(PortalStatus.Exited)
     try {
       getParent(parentId).removeChild(portalRef.current)
-    } catch (e) {
+    } catch {
       /* portal already removed (possible when parent is not document.body) */
     }
     portalRef.current = undefined

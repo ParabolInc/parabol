@@ -8,7 +8,7 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import AddPokerTemplateScalePayload from '../types/AddPokerTemplateScalePayload'
 
 const addPokerTemplateScale = {
@@ -53,7 +53,9 @@ const addPokerTemplateScale = {
     if (parentScaleId) {
       const parentScale = await dataLoader.get('templateScales').load(parentScaleId)
       if (!parentScale) {
-        return standardError(new Error('Parent scale not found'), {userId: viewerId})
+        return standardError(new Error('Parent scale not found'), {
+          userId: viewerId
+        })
       }
       if (!parentScale.isStarter && parentScale.teamId !== teamId) {
         return standardError(new Error('Cannot copy from a scale not owned by the team'), {

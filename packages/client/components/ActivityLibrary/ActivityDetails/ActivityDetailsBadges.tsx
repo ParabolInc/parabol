@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ActivityDetailsBadges_template$key} from '~/__generated__/ActivityDetailsBadges_template.graphql'
+import type {ActivityDetailsBadges_template$key} from '~/__generated__/ActivityDetailsBadges_template.graphql'
 import ActivityDetailsBadge from './ActivityDetailsBadge'
 import ActivityDetailsCategoryBadge from './ActivityDetailsCategoryBadge'
 
@@ -29,12 +29,12 @@ const ActivityDetailsBadges = (props: Props) => {
     <div className='mb-4 flex gap-2'>
       <ActivityDetailsCategoryBadge isEditing={isEditing} templateRef={template} />
       {isPremium && (
-        <ActivityDetailsBadge className='bg-gold-300 text-grape-700 select-none'>
+        <ActivityDetailsBadge className='select-none bg-gold-300 text-grape-700'>
           Premium
         </ActivityDetailsBadge>
       )}
       {isCustom && (
-        <ActivityDetailsBadge className='bg-grape-700 text-white select-none'>
+        <ActivityDetailsBadge className='select-none bg-grape-700 text-white'>
           Custom
         </ActivityDetailsBadge>
       )}

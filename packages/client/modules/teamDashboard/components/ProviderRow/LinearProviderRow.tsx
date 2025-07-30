@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {LinearProviderRow_viewer$key} from '../../../../__generated__/LinearProviderRow_viewer.graphql'
+import type {LinearProviderRow_viewer$key} from '../../../../__generated__/LinearProviderRow_viewer.graphql'
 import LinearProviderLogo from '../../../../components/LinearProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import LinearClientManager from '../../../../utils/LinearClientManager'
 import LinearConfigMenu from './LinearConfigMenu'
@@ -53,7 +53,12 @@ const LinearProviderRow = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const mutationProps = {
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {linear} = integrations

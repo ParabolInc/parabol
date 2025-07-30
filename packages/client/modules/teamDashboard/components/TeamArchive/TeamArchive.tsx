@@ -1,28 +1,34 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {
+  type PreloadedQuery,
+  useFragment,
+  usePaginationFragment,
+  usePreloadedQuery
+} from 'react-relay'
 import {
   AutoSizer,
   CellMeasurer,
   CellMeasurerCache,
   Grid,
   InfiniteLoader,
-  InfiniteLoaderProps
+  type InfiniteLoaderProps
 } from 'react-virtualized'
-import {GridCellRenderer, GridCoreProps} from 'react-virtualized/dist/es/Grid'
-import {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
+import type {GridCellRenderer, GridCoreProps} from 'react-virtualized/dist/es/Grid'
+import type {TeamArchive_team$key} from '~/__generated__/TeamArchive_team.graphql'
 import getSafeRegex from '~/utils/getSafeRegex'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
-import {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
-import {TeamArchiveQuery} from '../../../../__generated__/TeamArchiveQuery.graphql'
-import {TeamArchive_query$key} from '../../../../__generated__/TeamArchive_query.graphql'
+import type {TeamArchive_query$key} from '../../../../__generated__/TeamArchive_query.graphql'
+import type {TeamArchiveArchivedTasksQuery} from '../../../../__generated__/TeamArchiveArchivedTasksQuery.graphql'
+import type {TeamArchiveQuery} from '../../../../__generated__/TeamArchiveQuery.graphql'
 import NullableTask from '../../../../components/NullableTask/NullableTask'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Card, Layout, MathEnum} from '../../../../types/constEnums'
 import UserTasksHeader from '../../../userDashboard/components/UserTasksHeader/UserTasksHeader'
 import getRallyLink from '../../../userDashboard/helpers/getRallyLink'
 import TeamArchiveHeader from '../TeamArchiveHeader/TeamArchiveHeader'
+
 const CARD_WIDTH = 256 + 32 // account for box model and horizontal padding
 const GRID_PADDING = 16
 
@@ -211,7 +217,9 @@ const TeamArchive = (props: Props) => {
   const maybeLoadMore = () => {
     if (!hasNext || isLoadingNext) return Promise.resolve()
     return new Promise<void>((resolve, reject) => {
-      loadNext(columnCount * 10, {onComplete: (err) => (err ? reject(err) : resolve())})
+      loadNext(columnCount * 10, {
+        onComplete: (err) => (err ? reject(err) : resolve())
+      })
     })
   }
   const [cellCache] = useState(

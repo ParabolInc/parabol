@@ -4,7 +4,7 @@ const buildIssueKeyJQL = (queryString: string | null, filteredProjectKeys: strin
   if (maybeIssueKeys.length === 0) return ''
 
   const validIssueKeys = maybeIssueKeys
-    .map((rawIssueKey) => {
+    .flatMap((rawIssueKey) => {
       const maybeIssueKey = rawIssueKey.toUpperCase()
       const match = maybeIssueKey.match(
         /(?<projectKey>[A-Za-z][A-Za-z_0-9]+)*-*(?<issueNumber>\d+)/
@@ -32,7 +32,6 @@ const buildIssueKeyJQL = (queryString: string | null, filteredProjectKeys: strin
         return ''
       }
     })
-    .flat()
     .filter(String)
     .map((issueKey) => `\"${issueKey}\"`)
   return validIssueKeys.length > 0 ? ` OR issueKey in (${validIssueKeys.join(', ')})` : ''

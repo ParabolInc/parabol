@@ -1,4 +1,4 @@
-import DataLoader from 'dataloader'
+import type DataLoader from 'dataloader'
 import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 
 /**

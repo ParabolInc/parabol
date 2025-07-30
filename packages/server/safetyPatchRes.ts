@@ -1,4 +1,4 @@
-import {HttpResponse, RecognizedString} from 'uWebSockets.js'
+import type {HttpResponse, RecognizedString} from 'uWebSockets.js'
 import {Logger} from './utils/Logger'
 
 type Header = [key: RecognizedString, value: RecognizedString]
@@ -89,7 +89,6 @@ const safetyPatchRes = (res: HttpResponse) => {
   res._writeStatus = res.writeStatus
   res.writeStatus = (status: RecognizedString) => {
     if (res.done) {
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       Logger.error(`uWS: Called writeStatus after done ${status}`)
     }
     res.status = status

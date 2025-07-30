@@ -1,11 +1,11 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import TeamHealthVote from '../../../database/types/TeamHealthVote'
+import type TeamHealthVote from '../../../database/types/TeamHealthVote'
 import getKysely from '../../../postgres/getKysely'
-import {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase.d'
+import type {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase.d'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const upsertVote = async (meetingId: string, newVote: TeamHealthVote) => {
   const pg = getKysely()

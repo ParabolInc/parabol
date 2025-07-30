@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import getNextFacilitatorStageAfterStageRemoved from './getNextFacilitatorStageAfterStageRemoved'
 
 /*
@@ -47,7 +47,10 @@ const removeStagesFromMeetings = async (
       })
       await pg
         .updateTable('NewMeeting')
-        .set({facilitatorStageId: meeting.facilitatorStageId, phases: JSON.stringify(phases)})
+        .set({
+          facilitatorStageId: meeting.facilitatorStageId,
+          phases: JSON.stringify(phases)
+        })
         .where('id', '=', meetingId)
         .execute()
     })

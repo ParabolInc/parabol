@@ -1,19 +1,24 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {
+  type PreloadedQuery,
+  useFragment,
+  usePaginationFragment,
+  usePreloadedQuery
+} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import {GitHubScopingSearchResultsPaginationQuery} from '../__generated__/GitHubScopingSearchResultsPaginationQuery.graphql'
-import {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopingSearchResultsQuery.graphql'
-import {GitHubScopingSearchResults_meeting$key} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
-import {GitHubScopingSearchResults_query$key} from '../__generated__/GitHubScopingSearchResults_query.graphql'
+import type {GitHubScopingSearchResults_meeting$key} from '../__generated__/GitHubScopingSearchResults_meeting.graphql'
+import type {GitHubScopingSearchResults_query$key} from '../__generated__/GitHubScopingSearchResults_query.graphql'
+import type {GitHubScopingSearchResultsPaginationQuery} from '../__generated__/GitHubScopingSearchResultsPaginationQuery.graphql'
+import type {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopingSearchResultsQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
-import {GQLType} from '../types/generics'
+import type {GQLType} from '../types/generics'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import {gitHubQueryValidation} from '../validation/gitHubQueryValidation'
 import Ellipsis from './Ellipsis/Ellipsis'

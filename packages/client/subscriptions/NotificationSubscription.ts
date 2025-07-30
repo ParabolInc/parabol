@@ -1,17 +1,17 @@
 import graphql from 'babel-plugin-relay/macro'
-import {RouterProps} from 'react-router'
+import type {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
-import {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
-import {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
-import {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
+import type {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
+import type {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
+import type {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
-import Atmosphere from '../Atmosphere'
-import {
-  NotificationSubscription as TNotificationSubscription,
-  type NotificationSubscription$data
+import type {
+  NotificationSubscription$data,
+  NotificationSubscription as TNotificationSubscription
 } from '../__generated__/NotificationSubscription.graphql'
+import type Atmosphere from '../Atmosphere'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
@@ -19,6 +19,7 @@ import {
   createTaskNotificationOnNext,
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
+import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
@@ -27,13 +28,12 @@ import {
   removeOrgUsersNotificationOnNext,
   removeOrgUsersNotificationUpdater
 } from '../mutations/RemoveOrgUsersMutation'
-import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
 import {popNotificationToastOnNext} from '../mutations/toasts/popNotificationToast'
 import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificationToast'
 import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
-import {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
+import type {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -289,7 +289,10 @@ const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {
 const archivePageNotificationUpdater: SharedUpdater<any> = (payload, context) => {
   const archivedPageId = payload.getValue('pageId')
   const archivedPage = payload.getLinkedRecord('page')
-  handleArchivePage(archivedPageId, {...context, isHardDelete: !archivedPage})
+  handleArchivePage(archivedPageId, {
+    ...context,
+    isHardDelete: !archivedPage
+  })
 }
 
 const createPageNotificationUpdater: SharedUpdater<any> = (payload, context) => {

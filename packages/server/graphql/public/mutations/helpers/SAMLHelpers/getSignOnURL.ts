@@ -13,7 +13,7 @@ const getSignOnURL = (metadata: string, slugName: string) => {
   const inputURL = singleSignOnService[postKey] || singleSignOnService[fallbackKey]
   try {
     new URL(inputURL)
-  } catch (e) {
+  } catch {
     return new Error(`Invalid Sign on URL: ${inputURL}`)
   }
   return getURLWithSAMLRequestParam(inputURL, slugName)

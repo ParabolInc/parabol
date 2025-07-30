@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RetroReflectionGroup from './RetroReflectionGroup'
 
 const ReflectPhaseCompletePayload = new GraphQLObjectType<any, GQLContext>({

@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import getIsMassInviteToken from './getIsMassInviteToken'
 import handleMassInviteToken from './handleMassInviteToken'
 import handleTeamInviteToken from './handleTeamInviteToken'

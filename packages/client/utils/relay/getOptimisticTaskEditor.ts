@@ -1,4 +1,4 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from './createProxyRecord'
 
 const getOptimisticTaskEditor = (

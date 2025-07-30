@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
+import type {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {Threshold} from '~/types/constEnums'
@@ -35,7 +35,10 @@ const ReactjiSection = (props: Props) => {
     `,
     reactjisRef
   )
-  const animatedReactjis = reactjis.map((reactji) => ({...reactji, key: reactji.id}))
+  const animatedReactjis = reactjis.map((reactji) => ({
+    ...reactji,
+    key: reactji.id
+  }))
   const tranChildren = useTransition(animatedReactjis)
   const isInit = useInitialRender()
   return (

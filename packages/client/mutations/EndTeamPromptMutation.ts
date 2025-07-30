@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {EndTeamPromptMutation_team$data} from '~/__generated__/EndTeamPromptMutation_team.graphql'
+import type {RecordProxy} from 'relay-runtime'
+import type {EndTeamPromptMutation_team$data} from '~/__generated__/EndTeamPromptMutation_team.graphql'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndTeamPromptMutation as TEndTeamPromptMutation} from '../__generated__/EndTeamPromptMutation.graphql'
-import {
+import type {EndTeamPromptMutation as TEndTeamPromptMutation} from '../__generated__/EndTeamPromptMutation.graphql'
+import type {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
@@ -98,7 +98,10 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, HistoryMay
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endTeamPromptTeamOnNext(res.endTeamPrompt as any, {atmosphere, history})
+      endTeamPromptTeamOnNext(res.endTeamPrompt as any, {
+        atmosphere,
+        history
+      })
     },
     onError
   })

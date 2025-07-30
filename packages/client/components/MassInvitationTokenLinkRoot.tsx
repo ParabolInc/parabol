@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import massInvitationTokenLinkQuery, {
-  MassInvitationTokenLinkQuery
+  type MassInvitationTokenLinkQuery
 } from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MassInvitationTokenLink from './MassInvitationTokenLink'

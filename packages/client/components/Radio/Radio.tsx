@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import {Component} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import ui from '../../styles/ui'

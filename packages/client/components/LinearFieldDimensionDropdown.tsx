@@ -1,7 +1,7 @@
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {LinearFieldDimensionDropdown_stage$key} from '../__generated__/LinearFieldDimensionDropdown_stage.graphql'
+import type {LinearFieldDimensionDropdown_stage$key} from '../__generated__/LinearFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
@@ -60,7 +60,7 @@ const LinearFieldDimensionDropdown = (props: Props) => {
   return (
     <>
       <PlainButton
-        className={`flex text-slate-700 select-none ${isFacilitator ? 'hover:opacity-50 focus:opacity-50 active:opacity-50' : 'cursor-default'} ${!isFacilitator ? 'pr-2' : ''}`}
+        className={`flex select-none text-slate-700 ${isFacilitator ? 'hover:opacity-50 focus:opacity-50 active:opacity-50' : 'cursor-default'} ${!isFacilitator ? 'pr-2' : ''}`}
         onClick={onClick}
         ref={originRef}
       >

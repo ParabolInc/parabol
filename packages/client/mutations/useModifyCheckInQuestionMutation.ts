@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMutation, UseMutationConfig} from 'react-relay'
-import {useModifyCheckInQuestionMutation as TModifyCheckInQuestionMutation} from '../__generated__/useModifyCheckInQuestionMutation.graphql'
+import {type UseMutationConfig, useMutation} from 'react-relay'
+import type {useModifyCheckInQuestionMutation as TModifyCheckInQuestionMutation} from '../__generated__/useModifyCheckInQuestionMutation.graphql'
 
 graphql`
   fragment useModifyCheckInQuestionMutation_success on ModifyCheckInQuestionSuccess {

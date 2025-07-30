@@ -1,4 +1,4 @@
-import {Editor, useEditorState} from '@tiptap/react'
+import {type Editor, useEditorState} from '@tiptap/react'
 import isTextSelected from '../components/promptResponse/isTextSelected'
 import {isCustomNodeSelected} from '../tiptap/isCustomNodeSelected'
 

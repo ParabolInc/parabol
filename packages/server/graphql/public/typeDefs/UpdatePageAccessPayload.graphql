@@ -1,3 +1,3 @@
 type UpdatePageAccessPayload {
-  page: Page!
+	page: Page!
 }

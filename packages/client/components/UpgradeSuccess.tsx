@@ -7,6 +7,7 @@ import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import SecondaryButton from './SecondaryButton'
+
 const Illustration = styled('img')({
   display: 'block ',
   maxWidth: 256

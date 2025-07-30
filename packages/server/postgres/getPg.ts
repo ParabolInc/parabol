@@ -1,6 +1,7 @@
 import type {Pool as PGPool} from 'pg'
 import sleep from '../../client/utils/sleep'
 import getPgConfig from './getPgConfig'
+
 /*
 Force a native `require` so dd-trace-js can monkeypatch the require statement.
 In development, the require statement requires `./pg.ts` since require resolves packages by first looking in the same dir
@@ -25,7 +26,7 @@ const graceFullyReconnect = async () => {
       pool = nextPool
       oldPool?.emit('changePool')
       return
-    } catch (e) {
+    } catch {
       await sleep(1000)
     }
   }

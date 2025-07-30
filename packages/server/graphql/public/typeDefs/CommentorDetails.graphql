@@ -2,13 +2,13 @@
 The user that is commenting
 """
 type CommentorDetails {
-  """
-  The userId of the person commenting
-  """
-  id: ID!
+	"""
+	The userId of the person commenting
+	"""
+	id: ID!
 
-  """
-  The preferred name of the user commenting
-  """
-  preferredName: String!
+	"""
+	The preferred name of the user commenting
+	"""
+	preferredName: String!
 }

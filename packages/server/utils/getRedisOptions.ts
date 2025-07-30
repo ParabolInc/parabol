@@ -1,5 +1,5 @@
-import {readFileSync} from 'fs'
 import path from 'node:path'
+import {readFileSync} from 'fs'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
 import {Logger} from './Logger'
 

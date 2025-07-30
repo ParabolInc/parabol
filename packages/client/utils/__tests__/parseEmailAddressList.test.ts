@@ -1,4 +1,3 @@
-/* eslint-env jest */
 import parseEmailAddressList from '../parseEmailAddressList'
 
 type Res = {

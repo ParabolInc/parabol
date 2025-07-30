@@ -6,7 +6,7 @@ import {DECELERATE} from '../styles/animation'
 import {snackbarShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius, ZIndex} from '../types/constEnums'
-import {SnackAction} from './Snackbar'
+import type {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
 
 interface Props {

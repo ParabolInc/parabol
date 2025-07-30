@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {LeaveTeamModal_teamMember$key} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
+import type {LeaveTeamModal_teamMember$key} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'

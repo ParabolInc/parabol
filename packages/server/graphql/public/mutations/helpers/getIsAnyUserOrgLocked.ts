@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../../../graphql'
+import type {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
 
 export const getIsAnyUserOrgLocked = async (userId: string, dataLoader: DataLoaderWorker) => {

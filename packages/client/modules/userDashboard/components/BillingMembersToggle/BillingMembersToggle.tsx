@@ -1,5 +1,5 @@
 import {matchPath} from 'react-router-dom'
-import ToggleNav, {Item} from '../../../../components/ToggleNav/ToggleNav'
+import ToggleNav, {type Item} from '../../../../components/ToggleNav/ToggleNav'
 import useRouter from '../../../../hooks/useRouter'
 import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 
@@ -13,7 +13,9 @@ const BillingMembersToggle = (props: Props) => {
     match
   } = useRouter()
   const {orgId} = props
-  const areaMatch = matchPath<{area: string}>(pathname, {path: `${match.url}/:area?`})
+  const areaMatch = matchPath<{area: string}>(pathname, {
+    path: `${match.url}/:area?`
+  })
   const activeOrgDetail = areaMatch?.params.area ?? BILLING_PAGE
 
   const items: Item[] = [

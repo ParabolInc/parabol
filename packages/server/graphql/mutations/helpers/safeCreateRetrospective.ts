@@ -1,9 +1,9 @@
 import MeetingRetrospective from '../../../database/types/MeetingRetrospective'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {MeetingTypeEnum, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
-import {RetroMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
-import {DataLoaderWorker} from '../../graphql'
+import type {MeetingTypeEnum, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
+import type {RetroMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
+import type {DataLoaderWorker} from '../../graphql'
 import createNewMeetingPhases from './createNewMeetingPhases'
 
 const safeCreateRetrospective = async (
@@ -51,7 +51,7 @@ const safeCreateRetrospective = async (
         .execute()
       await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
     })
-  } catch (e) {
+  } catch {
     // meeting already started
     return null
   }

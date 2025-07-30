@@ -1,7 +1,7 @@
-import {Selectable} from 'kysely'
-import {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/types/pg'
+import type {Selectable} from 'kysely'
+import type {RetroReflectionGroup as TRetroReflectionGroup} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
-import {RetroReflectionGroupResolvers} from '../resolverTypes'
+import type {RetroReflectionGroupResolvers} from '../resolverTypes'
 
 export interface RetroReflectionGroupSource extends Selectable<TRetroReflectionGroup> {}
 

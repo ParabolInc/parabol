@@ -1,4 +1,4 @@
-import MeetingTemplate, {SharingScopeEnum} from './MeetingTemplate'
+import MeetingTemplate, {type SharingScopeEnum} from './MeetingTemplate'
 
 interface Input {
   name: string

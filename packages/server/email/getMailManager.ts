@@ -1,5 +1,5 @@
 import typedLookup from '../../client/types/typedLookup'
-import MailManager from './MailManager'
+import type MailManager from './MailManager'
 import MailManagerDebug from './MailManagerDebug'
 import MailManagerGoogle from './MailManagerGoogle'
 import MailManagerMailgun from './MailManagerMailgun'

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ArchiveOrganizationMutation as TArchiveOrganizationMutation} from '../__generated__/ArchiveOrganizationMutation.graphql'
-import {ArchiveOrganizationMutation_organization$data} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
-import {
+import type {ArchiveOrganizationMutation as TArchiveOrganizationMutation} from '../__generated__/ArchiveOrganizationMutation.graphql'
+import type {ArchiveOrganizationMutation_organization$data} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
+import type {
   HistoryLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,

@@ -1,4 +1,4 @@
-import {TaskServiceEnum} from '../../__generated__/CreateTaskMutation.graphql'
+import type {TaskServiceEnum} from '../../__generated__/CreateTaskMutation.graphql'
 
 const SearchQueryId = {
   join: (service: TaskServiceEnum, meetingId: string) => `searchQuery:${service}:${meetingId}`,

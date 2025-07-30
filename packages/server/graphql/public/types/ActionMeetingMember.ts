@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {selectTasks} from '../../../postgres/select'
-import {ActionMeetingMemberResolvers} from '../resolverTypes'
+import type {ActionMeetingMemberResolvers} from '../resolverTypes'
 
 const ActionMeetingMember: ActionMeetingMemberResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'action',

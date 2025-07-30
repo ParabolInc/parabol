@@ -1,6 +1,6 @@
 import {Cancel} from '@mui/icons-material'
 import {cn} from '../../ui/cn'
-import PlainButton, {PlainButtonProps} from '../PlainButton/PlainButton'
+import PlainButton, {type PlainButtonProps} from '../PlainButton/PlainButton'
 
 const DeleteReflectionButton = (props: PlainButtonProps) => {
   const {className, ...rest} = props

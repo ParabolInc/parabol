@@ -24,7 +24,7 @@ export const TipTapLinkPreview = (props: Props) => {
         href={url}
         target='_blank'
         rel='noopener noreferrer'
-        className='text-md max-w-64 truncate break-all underline'
+        className='max-w-64 truncate break-all text-md underline'
       >
         {url}
       </a>

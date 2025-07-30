@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {EditableTemplateScaleName_scales$key} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
+import type {EditableTemplateScaleName_scales$key} from '../../../__generated__/EditableTemplateScaleName_scales.graphql'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'

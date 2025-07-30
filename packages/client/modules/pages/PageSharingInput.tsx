@@ -1,6 +1,6 @@
 import SendIcon from '@mui/icons-material/Send'
 import {useState} from 'react'
-import {PageRoleEnum} from '../../../server/graphql/private/resolverTypes'
+import type {PageRoleEnum} from '../../../server/graphql/private/resolverTypes'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUpdatePageAccessMutation} from '../../mutations/useUpdatePageAccessMutation'
@@ -73,7 +73,7 @@ export const PageSharingInput = (props: Props) => {
     <div {...getRootProps()} className='flex grow space-x-2'>
       <div
         ref={setAnchorEl}
-        className='align-center flex min-h-[44px] w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 text-sm'
+        className='flex min-h-[44px] w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 align-center text-sm'
       >
         {value.map((option, index: number) => (
           <Chip

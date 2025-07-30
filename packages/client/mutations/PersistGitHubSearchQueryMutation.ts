@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {PersistGitHubSearchQueryMutation as TPersistGitHubSearchQueryMutation} from '../__generated__/PersistGitHubSearchQueryMutation.graphql'
-import {SimpleMutation} from '../types/relayMutations'
+import type {PersistGitHubSearchQueryMutation as TPersistGitHubSearchQueryMutation} from '../__generated__/PersistGitHubSearchQueryMutation.graphql'
+import type {SimpleMutation} from '../types/relayMutations'
 
 graphql`
   fragment PersistGitHubSearchQueryMutation_notification on PersistGitHubSearchQuerySuccess {

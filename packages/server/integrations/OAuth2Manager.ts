@@ -40,6 +40,11 @@ export default abstract class OAuth2Manager {
   protected abstract fetchToken(
     partialAuthParams: OAuth2RefreshAuthorizationParams | OAuth2AuthorizationParams
   ): Promise<
-    {accessToken: string; refreshToken: string | undefined; scopes: string | undefined} | Error
+    | {
+        accessToken: string
+        refreshToken: string | undefined
+        scopes: string | undefined
+      }
+    | Error
   >
 }

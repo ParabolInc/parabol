@@ -7,7 +7,7 @@ import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuHeader from './HelpMenuHeader'
 import HelpMenuLink from './HelpMenuLink'
 
-interface Props {}
+type Props = {}
 
 const EstimateHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref

@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const suOrgCount: QueryResolvers['suOrgCount'] = async (_source, {minOrgSize, tier}) => {
   const pg = getKysely()

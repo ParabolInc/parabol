@@ -7,7 +7,6 @@ code --list-extensions | xargs -L 1 code-insiders --install-extension
 # Good extensions
 
 - [GraphQL](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) for IntelliSense and syntax highlighting.
-- dbaeumer.vscode-eslint: ESLint
 - eamodio.gitlens: good git history everywhere
 - Equinusocio.vsc-material-theme: pretty
 - geddski.macros: for executing 2 events for 1 keystroke. Useful for toggling line comment & moving down a line

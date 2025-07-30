@@ -1,5 +1,5 @@
 import {Link} from '@mui/icons-material'
-import {Editor} from '@tiptap/react'
+import type {Editor} from '@tiptap/react'
 import {BubbleMenu} from '@tiptap/react/menus'
 import {getShouldShow, useBubbleMenuStates} from '../../hooks/useBubbleMenuStates'
 import {cn} from '../../ui/cn'
@@ -29,7 +29,7 @@ export const StandardBubbleMenu = (props: Props) => {
     >
       <div
         className={cn(
-          'flex items-center rounded-sm border-[1px] border-solid border-slate-600 bg-white p-[3px]'
+          'flex items-center rounded-sm border-[1px] border-slate-600 border-solid bg-white p-[3px]'
         )}
       >
         <BubbleMenuButton

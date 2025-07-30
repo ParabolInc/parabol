@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import Ellipsis from '../Ellipsis/Ellipsis'
 import HelpMenuCopy from './HelpMenuCopy'
 
-const StyledHelpMenuCopy = styled(HelpMenuCopy)<{margin: string | undefined | number}>(
-  ({margin}) => ({margin})
-)
+const StyledHelpMenuCopy = styled(HelpMenuCopy)<{
+  margin: string | undefined | number
+}>(({margin}) => ({margin}))
 
 const DelayedCopyInner = styled('span')<{show: number; thresh: number}>(({show, thresh}) => ({
   opacity: show >= thresh ? 1 : 0,

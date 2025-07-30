@@ -5,7 +5,7 @@ import HelpMenuContent from './HelpMenuContent'
 import HelpMenuCopy from './HelpMenuCopy'
 import HelpMenuLink from './HelpMenuLink'
 
-interface Props {}
+type Props = {}
 
 const ActionMeetingLastCallHelpMenu = forwardRef((_props: Props, ref: any) => {
   const {closePortal} = ref

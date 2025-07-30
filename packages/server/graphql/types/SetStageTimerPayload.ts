@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import NewMeetingStage from './NewMeetingStage'
 import StandardMutationError from './StandardMutationError'
 

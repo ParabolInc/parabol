@@ -1,4 +1,4 @@
-import {RemovePokerTemplatePayloadResolvers} from '../resolverTypes'
+import type {RemovePokerTemplatePayloadResolvers} from '../resolverTypes'
 
 export type RemovePokerTemplatePayloadSource =
   | {

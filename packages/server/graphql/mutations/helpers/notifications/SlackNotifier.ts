@@ -4,26 +4,26 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import TeamPromptResponseId from '../../../../../client/shared/gqlIds/TeamPromptResponseId'
-import {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
+import type {ErrorResponse, PostMessageResponse} from '../../../../../client/utils/SlackManager'
 import appOrigin from '../../../../appOrigin'
-import SlackAuth from '../../../../database/types/SlackAuth'
-import {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
+import type SlackAuth from '../../../../database/types/SlackAuth'
+import type {SlackNotificationAuth} from '../../../../dataloader/integrationAuthLoaders'
 import getKysely from '../../../../postgres/getKysely'
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {SlackNotification, Team, TeamPromptResponse} from '../../../../postgres/types'
-import User from '../../../../postgres/types/IUser'
-import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import {AnyNotification} from '../../../../postgres/types/Notification'
-import SlackServerManager from '../../../../utils/SlackServerManager'
+import type {SlackNotification, Team, TeamPromptResponse} from '../../../../postgres/types'
+import type User from '../../../../postgres/types/IUser'
+import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
+import type {AnyNotification} from '../../../../postgres/types/Notification'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import logError from '../../../../utils/logError'
+import SlackServerManager from '../../../../utils/SlackServerManager'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
-import {DataLoaderWorker} from '../../../graphql'
-import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
-import {createNotifier} from './Notifier'
+import type {DataLoaderWorker} from '../../../graphql'
 import getSummaryText from './getSummaryText'
 import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
+import type {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
+import {createNotifier} from './Notifier'
 
 type SlackNotificationMessage = {
   title: string
@@ -106,26 +106,30 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
     url: summaryUrl
   } as const
   switch (meeting.meetingType) {
-    case 'retrospective':
+    case 'retrospective': {
       const retroUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/1`)
       return makeButtons([makeDiscussionButton(retroUrl), summaryButton])
-    case 'action':
+    }
+    case 'action': {
       const checkInUrl = makeAppURL(appOrigin, `meet/${meetingId}/checkin/1`)
       return makeButtons([makeDiscussionButton(checkInUrl), summaryButton])
-    case 'poker':
+    }
+    case 'poker': {
       const pokerUrl = makeAppURL(appOrigin, `meet/${meetingId}/estimate/1`)
       const estimateButton = {
         text: 'See estimates',
         url: pokerUrl
       }
       return makeButtons([estimateButton, summaryButton])
-    case 'teamPrompt':
+    }
+    case 'teamPrompt': {
       const teamPromptUrl = makeAppURL(appOrigin, `meet/${meetingId}/responses`)
       const responsesButton = {
         text: 'See responses',
         url: teamPromptUrl
       }
       return makeButtons([responsesButton, summaryButton])
+    }
     default:
       throw new Error('Invalid meeting type')
   }
@@ -455,7 +459,11 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
     const constraint = `You have until *<!date^${toEpochSeconds(
       scheduledEndTime
     )}^{date_short_pretty} at {time}|${fallback}>* to complete it.`
-    const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
+    const button = {
+      text: 'Open meeting',
+      url: meetingUrl,
+      type: 'primary'
+    } as const
     const title = `The *${phaseLabel} Phase* has begun :hourglass_flowing_sand:`
     const blocks = [
       makeSection(title),
@@ -480,7 +488,11 @@ export const SlackSingleChannelNotifier: NotificationIntegrationHelper<SlackNoti
   async endTimeLimit(meeting, team, user) {
     const meetingUrl = makeAppURL(appOrigin, `meet/${meeting.id}`)
     const title = `Time’s up! Advance your meeting to the next phase :alarm_clock:`
-    const button = {text: 'Open meeting', url: meetingUrl, type: 'primary'} as const
+    const button = {
+      text: 'Open meeting',
+      url: meetingUrl,
+      type: 'primary'
+    } as const
     const blocks = [
       makeSection(title),
       makeSections([createTeamSectionContent(team), createMeetingSectionContent(meeting)]),

@@ -1,11 +1,11 @@
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
-import AtlassianServerManager, {JiraProject} from '../../../utils/AtlassianServerManager'
+import AtlassianServerManager, {type JiraProject} from '../../../utils/AtlassianServerManager'
 import {
   createImageUrlHash,
   createParabolImageUrl,
   downloadAndCacheImage
 } from '../../../utils/atlassian/jiraImages'
-import {JiraRemoteProjectResolvers} from '../resolverTypes'
+import type {JiraRemoteProjectResolvers} from '../resolverTypes'
 
 export type JiraRemoteProjectSource = JiraProject & {
   service: 'jira'

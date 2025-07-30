@@ -1,4 +1,4 @@
-import {TeamPromptResponsesPhaseResolvers} from '../resolverTypes'
+import type {TeamPromptResponsesPhaseResolvers} from '../resolverTypes'
 
 const TeamPromptResponsesPhase: TeamPromptResponsesPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'RESPONSES'

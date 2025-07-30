@@ -1,4 +1,4 @@
-import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
+import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useEffect} from 'react'
 export const ThinkingBlockView = (props: NodeViewProps) => {
   const {editor} = props

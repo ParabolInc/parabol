@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 
 export const removeMentionKeepText = (
   node: JSONContent,

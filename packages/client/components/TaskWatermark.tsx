@@ -1,9 +1,9 @@
-import React from 'react'
+import type React from 'react'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
-import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import JiraSVG from './JiraSVG'
 import LinearSVG from './LinearSVG'
 
 // We need to update the SVG components to accept size props or create wrapper components

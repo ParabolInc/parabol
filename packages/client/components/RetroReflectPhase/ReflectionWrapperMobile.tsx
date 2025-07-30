@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Children, ReactNode} from 'react'
+import {Children, type ReactNode} from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import {PALETTE} from '../../styles/paletteV3'
 

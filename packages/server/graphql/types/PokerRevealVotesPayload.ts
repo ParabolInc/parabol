@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
 import makeMutationPayload from './makeMutationPayload'

@@ -4,7 +4,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
-import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
+import GenericAuthentication, {type AuthPageSlug, type GotoAuthPage} from './GenericAuthentication'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 const CopyBlock = styled('div')({

@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {SprintPokerDefaults} from '~/types/constEnums'
-import {AddPokerTemplateDimensionMutation as TAddPokerTemplateDimensionMutation} from '../__generated__/AddPokerTemplateDimensionMutation.graphql'
-import {AddPokerTemplateDimensionMutation_dimension$data} from '../__generated__/AddPokerTemplateDimensionMutation_dimension.graphql'
-import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {AddPokerTemplateDimensionMutation as TAddPokerTemplateDimensionMutation} from '../__generated__/AddPokerTemplateDimensionMutation.graphql'
+import type {AddPokerTemplateDimensionMutation_dimension$data} from '../__generated__/AddPokerTemplateDimensionMutation_dimension.graphql'
+import type {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 import handleAddPokerTemplateDimension from './handlers/handleAddPokerTemplateDimension'
 

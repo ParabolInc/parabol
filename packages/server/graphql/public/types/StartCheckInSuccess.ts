@@ -1,4 +1,4 @@
-import {StartCheckInSuccessResolvers} from '../resolverTypes'
+import type {StartCheckInSuccessResolvers} from '../resolverTypes'
 
 export type StartCheckInSuccessSource = {
   meetingId: string

@@ -1,9 +1,9 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const createStripeSubscription: MutationResolvers['createStripeSubscription'] = async (
   _source,
@@ -49,7 +49,7 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent
-  const clientSecret = paymentIntent.client_secret
+  const clientSecret = paymentIntent.client_secret!
 
   analytics.organizationUpgradeAttempted(viewer, orgId)
   const data = {stripeSubscriptionClientSecret: clientSecret}

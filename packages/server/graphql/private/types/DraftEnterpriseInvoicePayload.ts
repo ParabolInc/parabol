@@ -1,4 +1,4 @@
-import {DraftEnterpriseInvoicePayloadResolvers} from '../resolverTypes'
+import type {DraftEnterpriseInvoicePayloadResolvers} from '../resolverTypes'
 
 export type DraftEnterpriseInvoicePayloadSource =
   | {

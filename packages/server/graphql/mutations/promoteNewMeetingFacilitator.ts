@@ -4,7 +4,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import PromoteNewMeetingFacilitatorPayload from '../types/PromoteNewMeetingFacilitatorPayload'
 
 export default {
@@ -30,7 +30,10 @@ export default {
 
     // AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {facilitatorUserId: oldFacilitatorUserId, teamId, endedAt} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -39,7 +42,9 @@ export default {
     // VALIDATION
     const newFacilitator = await dataLoader.get('users').load(facilitatorUserId)
     if (!newFacilitator) {
-      return standardError(new Error('New facilitator does not exist'), {userId: viewerId})
+      return standardError(new Error('New facilitator does not exist'), {
+        userId: viewerId
+      })
     }
     if (!newFacilitator.tms.includes(teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

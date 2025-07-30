@@ -5,7 +5,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addNotifications = async (orgId: string, userId: string) => {
   const pg = getKysely()
@@ -33,7 +33,9 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
 
   const viewerId = getUserId(authToken)
   if (
-    !(await isUserBillingLeader(viewerId, orgId, dataLoader, {clearCache: true})) &&
+    !(await isUserBillingLeader(viewerId, orgId, dataLoader, {
+      clearCache: true
+    })) &&
     !isSuperUser(authToken)
   ) {
     return standardError(new Error('Must be the organization leader or admin'), {
@@ -42,7 +44,9 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   }
 
   if (roleToSet && roleToSet !== 'BILLING_LEADER' && roleToSet !== 'ORG_ADMIN') {
-    return standardError(new Error('Invalid role to set'), {userId: viewerId})
+    return standardError(new Error('Invalid role to set'), {
+      userId: viewerId
+    })
   }
 
   const [orgUsers, viewer] = await Promise.all([

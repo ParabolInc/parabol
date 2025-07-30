@@ -5,7 +5,7 @@ export const InsightsBlockNoData = (props: NodeViewProps) => {
   return (
     <div
       contentEditable={false}
-      className='flex items-center justify-center gap-4 rounded-lg p-4 text-sm text-slate-800 select-none'
+      className='flex select-none items-center justify-center gap-4 rounded-lg p-4 text-slate-800 text-sm'
     >
       <div className='flex items-center justify-center rounded-full p-2'>
         {/* Replace with your actual icon if needed */}

@@ -1,4 +1,4 @@
-import {_XGitHubIssueResolvers} from '../resolverTypes'
+import type {_XGitHubIssueResolvers} from '../resolverTypes'
 import resolveToFieldNameOrAlias from '../resolveToFieldNameOrAlias'
 
 const _xGitHubIssue: _XGitHubIssueResolvers = {

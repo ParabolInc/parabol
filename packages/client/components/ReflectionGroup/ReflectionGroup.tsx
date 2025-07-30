@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {ReflectionGroup_meeting$key} from '../../__generated__/ReflectionGroup_meeting.graphql'
-import {ReflectionGroup_reflectionGroup$key} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
+import type {ReflectionGroup_meeting$key} from '../../__generated__/ReflectionGroup_meeting.graphql'
+import type {ReflectionGroup_reflectionGroup$key} from '../../__generated__/ReflectionGroup_reflectionGroup.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
@@ -14,8 +14,8 @@ import {
   Times
 } from '../../types/constEnums'
 import {GROUP} from '../../utils/constants'
-import {SwipeColumn} from '../GroupingKanban'
-import {OpenSpotlight} from '../GroupingKanbanColumn'
+import type {SwipeColumn} from '../GroupingKanban'
+import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
@@ -29,17 +29,18 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{staticReflectionCount: number; isSpotlightSource: boolean}>(
-  ({staticReflectionCount, isSpotlightSource}) => ({
-    height: 'max-content',
-    position: 'relative',
-    paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-    paddingBottom: isSpotlightSource
-      ? ElementWidth.REFLECTION_CARD_PADDING
-      : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-    transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
-  })
-)
+const Group = styled('div')<{
+  staticReflectionCount: number
+  isSpotlightSource: boolean
+}>(({staticReflectionCount, isSpotlightSource}) => ({
+  height: 'max-content',
+  position: 'relative',
+  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
+  paddingBottom: isSpotlightSource
+    ? ElementWidth.REFLECTION_CARD_PADDING
+    : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
+  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+}))
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number

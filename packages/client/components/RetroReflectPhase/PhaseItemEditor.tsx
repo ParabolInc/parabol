@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {MutableRefObject, RefObject, useEffect, useMemo, useState} from 'react'
+import type * as React from 'react'
+import {type MutableRefObject, type RefObject, useEffect, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
+import type {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useIsEditing from '../../hooks/useIsEditing'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -16,29 +16,30 @@ import {Elevation} from '../../styles/elevation'
 import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
+import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
 import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import SubmitReflectionButton from '../ReflectionCard/SubmitReflectionButton'
-import {TipTapEditor} from '../promptResponse/TipTapEditor'
-import HTMLReflection from './HTMLReflection'
-import {ReflectColumnCardInFlight} from './PhaseItemColumn'
 import getBBox from './getBBox'
+import HTMLReflection from './HTMLReflection'
+import type {ReflectColumnCardInFlight} from './PhaseItemColumn'
 
 const FLIGHT_TIME = 500
 
 const PLACEHOLDERS = ['Share your thoughts', 'Hit / for commands', `Press ${modEnter} to submit`]
 let initialPlaceHolderIndex = 0
 
-const CardInFlightStyles = styled(ReflectionCardRoot)<{transform: string; isStart: boolean}>(
-  ({isStart, transform}) => ({
-    boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
-    position: 'absolute',
-    top: 0,
-    transform,
-    transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-    zIndex: ZIndex.REFLECTION_IN_FLIGHT
-  })
-)
+const CardInFlightStyles = styled(ReflectionCardRoot)<{
+  transform: string
+  isStart: boolean
+}>(({isStart, transform}) => ({
+  boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
+  position: 'absolute',
+  top: 0,
+  transform,
+  transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
+  zIndex: ZIndex.REFLECTION_IN_FLIGHT
+}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -182,10 +183,18 @@ const PhaseItemEditor = (props: Props) => {
   const isEditing = useIsEditing({
     editor,
     onStartEditing: () => {
-      EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
+      EditReflectionMutation(atmosphere, {
+        isEditing: true,
+        meetingId,
+        promptId
+      })
     },
     onStopEditing: () => {
-      EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+      EditReflectionMutation(atmosphere, {
+        isEditing: false,
+        meetingId,
+        promptId
+      })
     }
   })
   const isFocused = editor?.isFocused
@@ -214,7 +223,10 @@ const PhaseItemEditor = (props: Props) => {
     }
   }, [editor])
 
-  const {terminatePortal, openPortal, portal} = usePortal({noClose: true, id: 'phaseItemEditor'})
+  const {terminatePortal, openPortal, portal} = usePortal({
+    noClose: true,
+    id: 'phaseItemEditor'
+  })
   const showButtons = isFocused || isEditing || (editor && !editor?.isEmpty)
   const showFooter = showButtons || disableAnonymity
 
@@ -246,7 +258,9 @@ const PhaseItemEditor = (props: Props) => {
           })}
         >
           <SubmitReflectionButton
-            className={cn('opacity-100 transition-all', {'opacity-0': !showButtons})}
+            className={cn('opacity-100 transition-all', {
+              'opacity-0': !showButtons
+            })}
             onClick={handleSubmit}
             disabled={readOnly || editor.isEmpty}
           />

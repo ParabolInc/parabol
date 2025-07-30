@@ -2,14 +2,14 @@
 An authentication strategy using Microsoft
 """
 type AuthIdentityMicrosoft implements AuthIdentity {
-  """
-  true if the email address using this strategy is verified, else false
-  """
-  isEmailVerified: Boolean!
-  type: AuthIdentityTypeEnum!
+	"""
+	true if the email address using this strategy is verified, else false
+	"""
+	isEmailVerified: Boolean!
+	type: AuthIdentityTypeEnum!
 
-  """
-  The Microsoft ID for this strategy
-  """
-  id: ID!
+	"""
+	The Microsoft ID for this strategy
+	"""
+	id: ID!
 }

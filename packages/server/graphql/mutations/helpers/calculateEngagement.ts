@@ -1,9 +1,9 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import EstimatePhase from '../../../database/types/EstimatePhase'
-import {AnyMeeting} from '../../../postgres/types/Meeting'
-import {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
+import type EstimatePhase from '../../../database/types/EstimatePhase'
+import type {AnyMeeting} from '../../../postgres/types/Meeting'
+import type {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
 import getPhase from '../../../utils/getPhase'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 
 /**

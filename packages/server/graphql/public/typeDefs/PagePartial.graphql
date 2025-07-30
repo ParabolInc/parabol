@@ -1,4 +1,4 @@
 interface PagePartial {
-  id: ID!
-  title: String
+	id: ID!
+	title: String
 }

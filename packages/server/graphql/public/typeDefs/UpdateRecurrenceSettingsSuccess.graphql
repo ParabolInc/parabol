@@ -1,6 +1,6 @@
 type UpdateRecurrenceSettingsSuccess {
-  """
-  The updated meeting
-  """
-  meeting: NewMeeting!
+	"""
+	The updated meeting
+	"""
+	meeting: NewMeeting!
 }

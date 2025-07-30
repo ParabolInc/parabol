@@ -1,7 +1,7 @@
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {ExternalLinks} from '../../../../../types/constEnums'
-import {CorsOptions} from '../../../../../types/cors'
+import type {CorsOptions} from '../../../../../types/cors'
 import makeAppURL from '../../../../../utils/makeAppURL'
 
 const logoStyle = {

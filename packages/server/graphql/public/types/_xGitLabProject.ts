@@ -1,4 +1,4 @@
-import {_XGitLabProjectResolvers} from '../resolverTypes'
+import type {_XGitLabProjectResolvers} from '../resolverTypes'
 
 // There's a bug in GraphQL Codegen that allow mappers to start with `_`
 // So, we overwrite the GitLab native object with this type, too

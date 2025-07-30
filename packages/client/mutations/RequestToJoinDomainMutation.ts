@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RequestToJoinDomainMutation as TRequestToJoinDomainMutation} from '../__generated__/RequestToJoinDomainMutation.graphql'
-import {SimpleMutation} from '../types/relayMutations'
+import type {RequestToJoinDomainMutation as TRequestToJoinDomainMutation} from '../__generated__/RequestToJoinDomainMutation.graphql'
+import type {SimpleMutation} from '../types/relayMutations'
 import promptToJoinOrgSuccessToast from './toasts/promptToJoinOrgSuccessToast'
 
 const mutation = graphql`

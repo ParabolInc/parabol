@@ -1,4 +1,4 @@
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const logins: QueryResolvers['logins'] = async (_source, args) => args
 

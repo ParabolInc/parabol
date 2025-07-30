@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {mapTeamsLimitReminderToToast_notification$data} from '../../__generated__/mapTeamsLimitReminderToToast_notification.graphql'
-import {Snack} from '../../components/Snackbar'
+import type {mapTeamsLimitReminderToToast_notification$data} from '../../__generated__/mapTeamsLimitReminderToToast_notification.graphql'
+import type {Snack} from '../../components/Snackbar'
 import {Threshold} from '../../types/constEnums'
-import {OnNextHistoryContext} from '../../types/relayMutations'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import type {OnNextHistoryContext} from '../../types/relayMutations'
 import makeDateString from '../../utils/makeDateString'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`

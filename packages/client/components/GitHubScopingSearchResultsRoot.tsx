@@ -3,11 +3,12 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import githubScopingSearchResultsQuery, {
-  GitHubScopingSearchResultsQuery
+  type GitHubScopingSearchResultsQuery
 } from '../__generated__/GitHubScopingSearchResultsQuery.graphql'
-import {GitHubScopingSearchResultsRoot_meeting$key} from '../__generated__/GitHubScopingSearchResultsRoot_meeting.graphql'
+import type {GitHubScopingSearchResultsRoot_meeting$key} from '../__generated__/GitHubScopingSearchResultsRoot_meeting.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import GitHubScopingSearchResults from './GitHubScopingSearchResults'
+
 interface Props {
   meetingRef: GitHubScopingSearchResultsRoot_meeting$key
 }

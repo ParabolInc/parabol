@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {LinearIntegrationPanel_meeting$key} from '../../../__generated__/LinearIntegrationPanel_meeting.graphql'
+import type {LinearIntegrationPanel_meeting$key} from '../../../__generated__/LinearIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import linearSVG from '../../../styles/theme/images/graphics/linear.svg'

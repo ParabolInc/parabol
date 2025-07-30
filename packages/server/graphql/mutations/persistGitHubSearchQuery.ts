@@ -4,7 +4,7 @@ import generateUID from '../../generateUID'
 import updateGitHubSearchQueries from '../../postgres/queries/updateGitHubSearchQueries'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import PersistGitHubSearchQueryPayload from '../types/PersistGitHubSearchQueryPayload'
 
 const persistGitHubSearchQuery = {
@@ -83,7 +83,11 @@ const persistGitHubSearchQuery = {
     }
     const data = {teamId, userId: viewerId}
     if (isChange) {
-      await updateGitHubSearchQueries({githubSearchQueries, teamId, userId: viewerId})
+      await updateGitHubSearchQueries({
+        githubSearchQueries,
+        teamId,
+        userId: viewerId
+      })
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,

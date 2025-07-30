@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {TeamInsightsQuery} from '../../../../__generated__/TeamInsightsQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {TeamInsightsQuery} from '../../../../__generated__/TeamInsightsQuery.graphql'
 import {useDialogState} from '../../../../ui/Dialog/useDialogState'
 import InsightsFeedbackModal from './FeedbackModal'
 import TeamInsightContent from './TeamInsightContent'
@@ -43,7 +43,7 @@ const TeamInsights = (props: Props) => {
 
   return (
     <div className='mb-8 space-y-6'>
-      <p className='mt-[20px] mb-6 text-sm text-slate-900'>
+      <p className='mt-[20px] mb-6 text-slate-900 text-sm'>
         Only you (as <span className='font-bold'>Team Lead</span>) can see Team Insights. Insights
         are auto-generated.{' '}
         <a

@@ -4,19 +4,19 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getTagsFromTipTapTask} from '../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../postgres/getKysely'
-import {Task} from '../../postgres/types/index'
+import type {Task} from '../../postgres/types/index'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import AreaEnum from '../types/AreaEnum'
 import UpdateTaskInput from '../types/UpdateTaskInput'
 import {validateTaskUserIsTeamMember} from './createTask'
 import getUsersToIgnore from './helpers/getUsersToIgnore'
 import publishChangeNotifications from './helpers/publishChangeNotifications'
 
-type UpdateTaskInput = {
+type TUpdateTaskInput = {
   id: string
   content?: string | null
   sortOrder?: number | null
@@ -24,7 +24,7 @@ type UpdateTaskInput = {
   userId?: string | null
 }
 type UpdateTaskMutationVariables = {
-  updatedTask: UpdateTaskInput
+  updatedTask: TUpdateTaskInput
   area?: 'meeting' | 'teamDash' | 'userDash' | null
 }
 export default {
@@ -76,7 +76,9 @@ export default {
     if (teamId || inputUserId) {
       const error = await validateTaskUserIsTeamMember(nextUserId, teamId, dataLoader)
       if (error) {
-        return standardError(new Error('Invalid user ID'), {userId: viewerId})
+        return standardError(new Error('Invalid user ID'), {
+          userId: viewerId
+        })
       }
     }
     // RESOLUTION
@@ -94,7 +96,9 @@ export default {
       .where('id', '=', taskId)
       .executeTakeFirst()
     if (Number(updateRes.numChangedRows) === 0) {
-      return standardError(new Error('Already updated task'), {userId: viewerId})
+      return standardError(new Error('Already updated task'), {
+        userId: viewerId
+      })
     }
     dataLoader.clearAll('tasks')
     const newTask = await dataLoader.get('tasks').loadNonNull(taskId)

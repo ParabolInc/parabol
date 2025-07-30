@@ -2,19 +2,19 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {DashNavListTeams_organization$key} from '../../__generated__/DashNavListTeams_organization.graphql'
+import type {DashNavListTeams_organization$key} from '../../__generated__/DashNavListTeams_organization.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import plural from '../../utils/plural'
 import LeftDashNavItem from '../Dashboard/LeftDashNavItem'
 import PublicTeamsModal from './PublicTeamsModal'
 
-const StyledLeftDashNavItem = styled(LeftDashNavItem)<{isPublicTeams?: boolean}>(
-  ({isPublicTeams}) => ({
-    color: isPublicTeams ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
-    borderRadius: 44,
-    paddingLeft: 16
-  })
-)
+const StyledLeftDashNavItem = styled(LeftDashNavItem)<{
+  isPublicTeams?: boolean
+}>(({isPublicTeams}) => ({
+  color: isPublicTeams ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
+  borderRadius: 44,
+  paddingLeft: 16
+}))
 
 type Props = {
   organizationRef: DashNavListTeams_organization$key

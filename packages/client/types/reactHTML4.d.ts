@@ -1,11 +1,11 @@
 import 'react'
 declare module 'react' {
-  interface TdHTMLAttributes<T> {
+  interface TdHTMLAttributes<_T> {
     height?: string | number
     width?: string | number
     bgcolor?: string
   }
-  interface TableHTMLAttributes<T> {
+  interface TableHTMLAttributes<_T> {
     align?: 'center' | 'left' | 'right'
     bgcolor?: string
     height?: string | number

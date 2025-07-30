@@ -1,6 +1,6 @@
 import updateMeetingTemplateFreeStatusById from '../../../postgres/queries/updateMeetingTemplateFreeStatusById'
 import updateMeetingTemplateFreeStatusByName from '../../../postgres/queries/updateMeetingTemplateFreeStatusByName'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = async (
   _source,
@@ -11,7 +11,9 @@ const setIsFreeMeetingTemplate: MutationResolvers['setIsFreeMeetingTemplate'] = 
     return {error: {message: 'Must provide template ids or names'}}
   }
   if (templateIds?.length && templateNames?.length) {
-    return {error: {message: 'Please provide template ids or names, not both'}}
+    return {
+      error: {message: 'Please provide template ids or names, not both'}
+    }
   }
 
   // RESOLUTION

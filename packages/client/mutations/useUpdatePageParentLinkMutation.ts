@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMutation, UseMutationConfig} from 'react-relay'
-import {useUpdatePageParentLinkMutation as TuseUpdatePageParentLinkMutation} from '../__generated__/useUpdatePageParentLinkMutation.graphql'
+import {type UseMutationConfig, useMutation} from 'react-relay'
+import type {useUpdatePageParentLinkMutation as TuseUpdatePageParentLinkMutation} from '../__generated__/useUpdatePageParentLinkMutation.graphql'
 
 graphql`
   fragment useUpdatePageParentLinkMutation_payload on UpdatePagePayload {

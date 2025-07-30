@@ -1,8 +1,7 @@
-import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
-import prettier from 'prettier'
-import {Comment} from '../../server/postgres/types'
+import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import type {Comment} from '../../server/postgres/types'
 import {inferLanguage} from '../inferLanguage'
-import {ISO6391} from '../iso6393To1'
+import type {ISO6391} from '../iso6393To1'
 
 // Here's a generic reprentation of the text generated here:
 
@@ -127,7 +126,7 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
    * objectType: 'retrospectiveDiscussionNoSummary' or something and do a bit of testing.
    */
 
-  let language: ISO6391 | undefined = undefined
+  let language: ISO6391 | undefined
   if (discussionSummary) {
     markdown += `Further discussion was made. ` + ` ${discussionSummary}`
   } else {
@@ -164,12 +163,13 @@ export const createTextFromRetrospectiveDiscussionTopic = async (
     }
   }
 
-  const body = await prettier.format(markdown, {
-    parser: 'markdown',
-    proseWrap: 'always',
-    printWidth: 72
-  })
+  // getting rid of prettier, I think it's also safe to remove this one instance of using it at runtime
+  // const body = await prettier.format(markdown, {
+  //   parser: 'markdown',
+  //   proseWrap: 'always',
+  //   printWidth: 72
+  // })
 
   language = language || inferLanguage(reflections.map((r) => r.plaintextContent).join(' '))
-  return {body, language}
+  return {body: markdown, language}
 }

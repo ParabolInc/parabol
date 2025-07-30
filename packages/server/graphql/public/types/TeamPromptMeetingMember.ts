@@ -1,4 +1,4 @@
-import {TeamPromptMeetingMemberResolvers} from '../resolverTypes'
+import type {TeamPromptMeetingMemberResolvers} from '../resolverTypes'
 
 const TeamPromptMeetingMember: TeamPromptMeetingMemberResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'teamPrompt'

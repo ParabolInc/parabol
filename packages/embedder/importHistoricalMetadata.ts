@@ -1,4 +1,4 @@
-import {EmbeddingObjectType} from './custom'
+import type {EmbeddingObjectType} from './custom'
 import {importHistoricalMeetingTemplates} from './importHistoricalMeetingTemplates'
 import {importHistoricalRetrospectiveDiscussionTopic} from './importHistoricalRetrospectiveDiscussionTopic'
 

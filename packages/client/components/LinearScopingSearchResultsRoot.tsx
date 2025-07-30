@@ -3,12 +3,13 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import linearScopingSearchResultsQuery, {
-  LinearScopingSearchResultsQuery
+  type LinearScopingSearchResultsQuery
 } from '../__generated__/LinearScopingSearchResultsQuery.graphql'
-import {LinearScopingSearchResultsRoot_meeting$key} from '../__generated__/LinearScopingSearchResultsRoot_meeting.graphql'
+import type {LinearScopingSearchResultsRoot_meeting$key} from '../__generated__/LinearScopingSearchResultsRoot_meeting.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {makeLinearIssueFilter} from '../utils/makeLinearIssueFilter'
 import LinearScopingSearchResults from './LinearScopingSearchResults'
+
 interface Props {
   meetingRef: LinearScopingSearchResultsRoot_meeting$key
 }

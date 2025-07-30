@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {ReactjiResolvers} from '../resolverTypes'
+import type {ReactjiResolvers} from '../resolverTypes'
 
 export type ReactjiSource = {
   id: string

@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import providerListQuery, {
-  ProviderListQuery
+  type ProviderListQuery
 } from '../../../../__generated__/ProviderListQuery.graphql'
 import {useQueryLoaderNowWithRetry} from '../../../../hooks/useQueryLoaderNow'
 import ProviderList from '../../components/ProviderList/ProviderList'

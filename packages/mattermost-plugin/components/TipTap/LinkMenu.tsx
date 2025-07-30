@@ -1,8 +1,8 @@
 import type {EditorEvents} from '@tiptap/core'
-import {Editor, getTextBetween, useEditorState} from '@tiptap/react'
+import {type Editor, getTextBetween, useEditorState} from '@tiptap/react'
 import {
   getRangeForType,
-  LinkMenuState
+  type LinkMenuState
 } from 'parabol-client/components/promptResponse/TiptapLinkExtension'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {Popover} from 'react-bootstrap'

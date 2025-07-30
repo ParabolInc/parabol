@@ -1,7 +1,7 @@
-import createClient, {ClientMethod} from 'openapi-fetch'
+import createClient, {type ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import type {paths} from '../textEmbeddingsnterface'
-import {AbstractEmbeddingsModel, EmbeddingModelParams} from './AbstractEmbeddingsModel'
+import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
 export type ModelId = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
 
 const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
@@ -51,7 +51,9 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
   constructor(modelId: string, url: string) {
     super(modelId, url)
     const client = createClient<paths>({baseUrl: this.url})
-    const toError = (e: unknown) => ({error: e instanceof Error ? e.message : e})
+    const toError = (e: unknown) => ({
+      error: e instanceof Error ? e.message : e
+    })
     client.GET = openAPIWithTimeout(client.GET, toError, 10000)
     client.POST = openAPIWithTimeout(client.POST, toError, 10000)
     this.client = client

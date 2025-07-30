@@ -92,7 +92,10 @@ const makeRetroMeetingInsightInput = async (
       return res
     })
   )
-  return {meetingType, topics: topics.sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))}
+  return {
+    meetingType,
+    topics: topics.sort((a, b) => (a.voteCount > b.voteCount ? -1 : 1))
+  }
 }
 
 const makeTeamPromptMeetingInsightInput = async (

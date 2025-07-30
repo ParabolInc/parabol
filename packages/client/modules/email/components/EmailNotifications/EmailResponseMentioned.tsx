@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailResponseMentioned_notification$key} from 'parabol-client/__generated__/EmailResponseMentioned_notification.graphql'
+import type {EmailResponseMentioned_notification$key} from 'parabol-client/__generated__/EmailResponseMentioned_notification.graphql'
 import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'

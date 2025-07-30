@@ -1,7 +1,7 @@
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import fs from 'fs'
 import mime from 'mime-types'
 import path from 'path'
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import pipeStreamOverResponse from './pipeStreamOverResponse'
 
 const getProjectRoot = () => {
@@ -20,7 +20,7 @@ const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
   let stats: fs.Stats
   try {
     stats = fs.statSync(url)
-  } catch (e) {
+  } catch {
     res.cork(() => res.writeStatus('404').end())
     return
   }

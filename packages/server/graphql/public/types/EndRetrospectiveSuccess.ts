@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {EndRetrospectiveSuccessResolvers} from '../resolverTypes'
+import type {EndRetrospectiveSuccessResolvers} from '../resolverTypes'
 
 export type EndRetrospectiveSuccessSource = {
   gotoPageSummary: boolean

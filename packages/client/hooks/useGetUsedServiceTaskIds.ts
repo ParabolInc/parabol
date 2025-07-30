@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
-import {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
+import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
 
 const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) => {
   return useMemo(() => {

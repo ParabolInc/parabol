@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {ReactNode, useState} from 'react'
+import type * as React from 'react'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
+import type {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {UseTaskChild} from '../../hooks/useTaskChildFocus'
+import type {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {PALETTE} from '../../styles/paletteV3'
 import {Card} from '../../types/constEnums'
 import DueDateToggle from '../DueDateToggle'
@@ -76,7 +76,9 @@ const EditingStatus = (props: Props) => {
     openTooltip,
     closeTooltip,
     originRef: tipRef
-  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {disabled: isEditing})
+  } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {
+    disabled: isEditing
+  })
   const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
   return (
     <StatusHeader>

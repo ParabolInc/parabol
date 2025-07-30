@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 
 const isEmailVerificationRequired = async (email: string, dataLoader: DataLoaderWorker) => {
   const exactDomain = email.split('@')[1]!

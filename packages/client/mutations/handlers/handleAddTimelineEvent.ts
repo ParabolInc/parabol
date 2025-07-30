@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import {parseQueryParams} from '../../utils/useQueryParameterParser'
 import getUserTimelineEventsConn from '../connections/getUserTimelineEventsConn'
 

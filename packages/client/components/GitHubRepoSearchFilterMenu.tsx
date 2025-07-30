@@ -2,9 +2,9 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {GitHubRepoSearchFilterMenu_teamMember$key} from '../__generated__/GitHubRepoSearchFilterMenu_teamMember.graphql'
+import type {GitHubRepoSearchFilterMenu_teamMember$key} from '../__generated__/GitHubRepoSearchFilterMenu_teamMember.graphql'
 import useGetRepoContributions from '../hooks/useGetRepoContributions'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import useSearchFilter from '../hooks/useSearchFilter'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -77,7 +77,7 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
       isDropdown={isDropdown}
     >
       {menuLabel && (
-        <div className='mx-2 mb-2 text-sm font-semibold text-slate-600'>{menuLabel}</div>
+        <div className='mx-2 mb-2 font-semibold text-slate-600 text-sm'>{menuLabel}</div>
       )}
       <SearchMenuItem
         placeholder='Search your GitHub repos'

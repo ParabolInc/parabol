@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {JiraServerProviderRow_viewer$key} from '~/__generated__/JiraServerProviderRow_viewer.graphql'
+import type {JiraServerProviderRow_viewer$key} from '~/__generated__/JiraServerProviderRow_viewer.graphql'
 import JiraServerConfigMenu from '../../../../components/JiraServerConfigMenu'
 import JiraServerProviderLogo from '../../../../components/JiraServerProviderLogo'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import JiraServerClientManager from '../../../../utils/JiraServerClientManager'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
@@ -48,7 +48,12 @@ const JiraServerProviderRow = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const mutationProps = {
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {jiraServer} = integrations

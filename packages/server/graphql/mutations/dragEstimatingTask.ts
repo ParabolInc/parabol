@@ -6,7 +6,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import DragEstimatingTaskPayload from '../types/DragEstimatingTaskPayload'
 
 export default {
@@ -41,25 +41,37 @@ export default {
 
     // AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
     const estimatePhase = getPhase(phases, 'ESTIMATE')
     if (!estimatePhase) {
-      return standardError(new Error('Meeting phase not found'), {userId: viewerId})
+      return standardError(new Error('Meeting phase not found'), {
+        userId: viewerId
+      })
     }
     const {stages} = estimatePhase
     const taskIds = stages.map(({taskId}) => taskId)
     const numberOfTasks = new Set(taskIds).size
     if (newPositionIndex < 0 || newPositionIndex >= numberOfTasks) {
-      return standardError(new Error('Invalid position index'), {userId: viewerId})
+      return standardError(new Error('Invalid position index'), {
+        userId: viewerId
+      })
     }
     const draggedStages = stages.filter((stage) => stage.taskId === taskId)
     if (!draggedStages.length) {
-      return standardError(new Error('No meeting stages were found'), {userId: viewerId})
+      return standardError(new Error('No meeting stages were found'), {
+        userId: viewerId
+      })
     }
     const stageIds = draggedStages.map((stage) => stage.id)
 

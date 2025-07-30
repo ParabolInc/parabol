@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {getRequest} from 'relay-runtime'
-import Atmosphere, {noopSink} from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
+import {noopSink} from '../Atmosphere'
 
 graphql`
   fragment SetAppLocationMutation_team on SetAppLocationSuccess {

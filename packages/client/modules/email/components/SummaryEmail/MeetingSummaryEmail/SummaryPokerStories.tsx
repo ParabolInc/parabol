@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {SummaryPokerStories_meeting$key} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
+import type {SummaryPokerStories_meeting$key} from 'parabol-client/__generated__/SummaryPokerStories_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {useFragment} from 'react-relay'

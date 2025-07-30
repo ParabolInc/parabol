@@ -1,11 +1,16 @@
-import {StripeCardNumberElement} from '@stripe/stripe-js'
+import type {StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useEffect, useRef, useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery, useRefetchableFragment} from 'react-relay'
-import {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
-import {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
-import {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
-import {OrgPlansAndBilling_query$key} from '../../../../__generated__/OrgPlansAndBilling_query.graphql'
+import {
+  type PreloadedQuery,
+  useFragment,
+  usePreloadedQuery,
+  useRefetchableFragment
+} from 'react-relay'
+import type {OrgPlansAndBilling_organization$key} from '../../../../__generated__/OrgPlansAndBilling_organization.graphql'
+import type {OrgPlansAndBilling_query$key} from '../../../../__generated__/OrgPlansAndBilling_query.graphql'
+import type {OrgPlansAndBillingQuery} from '../../../../__generated__/OrgPlansAndBillingQuery.graphql'
+import type {OrgPlansAndBillingRefetchQuery} from '../../../../__generated__/OrgPlansAndBillingRefetchQuery.graphql'
 import BillingLeaders from './BillingLeaders'
 import OrgBillingCreditCardInfo from './OrgBillingCreditCardInfo'
 import OrgBillingInvoices from './OrgBillingInvoices'

@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IUpdateJiraSearchQueriesQueryParams,
+  type IUpdateJiraSearchQueriesQueryParams,
   updateJiraSearchQueriesQuery
 } from './generated/updateJiraSearchQueriesQuery'
 

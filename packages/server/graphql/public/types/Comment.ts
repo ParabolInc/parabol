@@ -1,7 +1,7 @@
 import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import {getUserId} from '../../../utils/authorization'
 import resolveReactjis from '../../resolvers/resolveReactjis'
-import {CommentResolvers} from '../resolverTypes'
+import type {CommentResolvers} from '../resolverTypes'
 
 const TOMBSTONE = JSON.stringify(plaintextToTipTap('[deleted]'))
 

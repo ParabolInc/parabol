@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TeamPromptRepliesAvatarList_edges$key} from '~/__generated__/TeamPromptRepliesAvatarList_edges.graphql'
+import type {TeamPromptRepliesAvatarList_edges$key} from '~/__generated__/TeamPromptRepliesAvatarList_edges.graphql'
 import useOverflowAvatars from '~/hooks/useOverflowAvatars'
 import {TransitionStatus} from '~/hooks/useTransition'
 import AvatarListUser from '../AvatarListUser'

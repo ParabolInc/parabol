@@ -1,18 +1,18 @@
 input AddCommentInput {
-  """
-  A stringified TipTap JSONContent  document containing thoughts
-  """
-  content: String!
+	"""
+	A stringified TipTap JSONContent  document containing thoughts
+	"""
+	content: String!
 
-  """
-  true if the comment should be anonymous
-  """
-  isAnonymous: Boolean
+	"""
+	true if the comment should be anonymous
+	"""
+	isAnonymous: Boolean
 
-  """
-  foreign key for the discussion this was created in
-  """
-  discussionId: ID!
-  threadSortOrder: Int!
-  threadParentId: ID
+	"""
+	foreign key for the discussion this was created in
+	"""
+	discussionId: ID!
+	threadSortOrder: Int!
+	threadParentId: ID
 }

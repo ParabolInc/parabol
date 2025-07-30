@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
+import type {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
 
@@ -61,6 +61,7 @@ const OrgIntegrations = (props: Props) => {
                 href='https://www.parabol.co/support/roles-on-parabol'
                 className='font-bold text-sky-500 hover:text-sky-600'
                 target='_blank'
+                rel='noopener'
               >
                 Org Admins
               </a>

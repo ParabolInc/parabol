@@ -1,5 +1,5 @@
-import {TeamInvitationNotification} from '../../../postgres/types/Notification'
-import {InviteToTeamPayloadResolvers} from '../resolverTypes'
+import type {TeamInvitationNotification} from '../../../postgres/types/Notification'
+import type {InviteToTeamPayloadResolvers} from '../resolverTypes'
 
 export type InviteToTeamPayloadSource = {
   removedSuggestedActionId: string | undefined

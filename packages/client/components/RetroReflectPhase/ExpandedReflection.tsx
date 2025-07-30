@@ -3,8 +3,8 @@ import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {ElementWidth} from '../../types/constEnums'
-import {RefCallbackInstance} from '../../types/generics'
-import {OpenSpotlight} from '../GroupingKanbanColumn'
+import type {RefCallbackInstance} from '../../types/generics'
+import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
 
 const ModalReflectionWrapper = styled('div')({

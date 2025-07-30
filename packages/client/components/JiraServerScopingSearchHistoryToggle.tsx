@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {JiraServerScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraServerScopingSearchHistoryToggle_meeting.graphql'
+import type {JiraServerScopingSearchHistoryToggle_meeting$key} from '../__generated__/JiraServerScopingSearchHistoryToggle_meeting.graphql'
 import JiraUniversalScopingSearchHistoryToggle from './JiraUniversalScopingSearchHistoryToggle'
 
 interface Props {

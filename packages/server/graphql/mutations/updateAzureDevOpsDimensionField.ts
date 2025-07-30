@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertAzureDevOpsDimensionFieldMap, {
-  AzureDevOpsFieldMapProps
+  type AzureDevOpsFieldMapProps
 } from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
-import {Logger} from '../../utils/Logger'
 import {isTeamMember} from '../../utils/authorization'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import UpdateAzureDevOpsDimensionFieldPayload from '../types/UpdateAzureDevOpsDimensionFieldPayload'
 
 const updateAzureDevOpsDimensionField = {

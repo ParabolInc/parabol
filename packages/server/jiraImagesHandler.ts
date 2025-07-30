@@ -1,9 +1,9 @@
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {fetch} from '@whatwg-node/fetch'
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import jiraPlaceholder from '../../static/images/illustrations/imageNotFound.png'
 import sleep from '../client/utils/sleep'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
-import getRedis, {RedisPipelineResponse} from './utils/getRedis'
+import getRedis, {type RedisPipelineResponse} from './utils/getRedis'
 import {Logger} from './utils/Logger'
 
 const getImageFromCache = async (

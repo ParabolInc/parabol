@@ -1,4 +1,6 @@
 """
 Return object for PersistGitHubSearchQueryPayload
 """
-union PersistGitHubSearchQueryPayload = ErrorPayload | PersistGitHubSearchQuerySuccess
+union PersistGitHubSearchQueryPayload =
+	| ErrorPayload
+	| PersistGitHubSearchQuerySuccess

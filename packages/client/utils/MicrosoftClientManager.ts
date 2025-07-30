@@ -1,12 +1,12 @@
-import {RouterProps} from 'react-router'
-import Atmosphere from '../Atmosphere'
+import type {RouterProps} from 'react-router'
+import type Atmosphere from '../Atmosphere'
 import {AUTH_DIALOG_WIDTH} from '../components/AuthenticationDialog'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import LoginWithMicrosoftMutation from '../mutations/LoginWithMicrosoftMutation'
 import {LocalStorageKey} from '../types/constEnums'
-import MicrosoftManager from './MicrosoftManager'
 import getAnonymousId from './getAnonymousId'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
+import MicrosoftManager from './MicrosoftManager'
 import makeHref from './makeHref'
 
 class MicrosoftClientManager extends MicrosoftManager {

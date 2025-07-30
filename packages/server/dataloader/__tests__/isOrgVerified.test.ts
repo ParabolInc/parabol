@@ -1,10 +1,9 @@
-/* eslint-env jest */
-import {Insertable} from 'kysely'
+import type {Insertable} from 'kysely'
 import {createPGTables, truncatePGTables} from '../../__tests__/common'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
-import {OrganizationUser} from '../../postgres/types'
-import {User} from '../../postgres/types/pg'
+import type {OrganizationUser} from '../../postgres/types'
+import type {User} from '../../postgres/types/pg'
 import RootDataLoader from '../RootDataLoader'
 
 const TEST_DB = 'getVerifiedOrgIdsTest'

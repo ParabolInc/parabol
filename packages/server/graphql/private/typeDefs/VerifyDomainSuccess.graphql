@@ -1,6 +1,6 @@
 type VerifyDomainSuccess {
-  """
-  Updated SAML record
-  """
-  saml: SAML!
+	"""
+	Updated SAML record
+	"""
+	saml: SAML!
 }

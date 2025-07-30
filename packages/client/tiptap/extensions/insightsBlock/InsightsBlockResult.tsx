@@ -28,7 +28,9 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
                 const markdownText = editor.storage.markdown.serializer.serialize(nodePos.node)
                 await navigator.clipboard.write([
                   new ClipboardItem({
-                    'text/plain': new Blob([markdownText], {type: 'text/plain'}),
+                    'text/plain': new Blob([markdownText], {
+                      type: 'text/plain'
+                    }),
                     'text/html': new Blob([htmlText], {type: 'text/html'})
                   })
                 ])

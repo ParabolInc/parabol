@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
-import Legitity from '../validation/Legitity'
+import type Legitity from '../validation/Legitity'
 
 const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) => ({
   alignItems: 'center',

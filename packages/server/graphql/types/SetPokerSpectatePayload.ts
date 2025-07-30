@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import EstimateStageDB from '../../database/types/EstimateStage'
-import {GQLContext} from '../graphql'
+import type EstimateStageDB from '../../database/types/EstimateStage'
+import type {GQLContext} from '../graphql'
 import {augmentDBStage} from '../resolvers'
 import EstimateStage from './EstimateStage'
-import PokerMeetingMember from './PokerMeetingMember'
 import makeMutationPayload from './makeMutationPayload'
+import PokerMeetingMember from './PokerMeetingMember'
 
 export const SetPokerSpectateSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'SetPokerSpectateSuccess',

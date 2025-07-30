@@ -1,6 +1,5 @@
-import {sql, type Kysely} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 
-// biome-ignore lint/suspicious/noExplicitAny: `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable('TeamMember')
@@ -10,7 +9,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function down(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable('TeamMember')

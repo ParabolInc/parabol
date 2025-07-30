@@ -1,6 +1,6 @@
 import {Kysely, PostgresDialect} from 'kysely'
 import getPg from './getPg'
-import {DB} from './types/pg'
+import type {DB} from './types/pg'
 
 let kysely: Kysely<DB> | undefined
 

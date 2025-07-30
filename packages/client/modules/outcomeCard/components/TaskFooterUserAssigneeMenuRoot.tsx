@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import taskFooterUserAssigneeMenuQuery, {
-  TaskFooterUserAssigneeMenuQuery
+  type TaskFooterUserAssigneeMenuQuery
 } from '../../../__generated__/TaskFooterUserAssigneeMenuQuery.graphql'
-import {TaskFooterUserAssigneeMenuRoot_task$key} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
-import {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
-import {MenuProps} from '../../../hooks/useMenu'
+import type {TaskFooterUserAssigneeMenuRoot_task$key} from '../../../__generated__/TaskFooterUserAssigneeMenuRoot_task.graphql'
+import type {AreaEnum} from '../../../__generated__/UpdateTaskMutation.graphql'
+import type {MenuProps} from '../../../hooks/useMenu'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import {UseTaskChild} from '../../../hooks/useTaskChildFocus'
+import type {UseTaskChild} from '../../../hooks/useTaskChildFocus'
 import {Loader} from '../../../utils/relay/renderLoader'
 import TaskFooterUserAssigneeMenu from './OutcomeCardAssignMenu/TaskFooterUserAssigneeMenu'
 

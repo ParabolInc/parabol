@@ -1,4 +1,4 @@
-import {ToggleTeamPrivacySuccessResolvers} from '../resolverTypes'
+import type {ToggleTeamPrivacySuccessResolvers} from '../resolverTypes'
 
 export type ToggleTeamPrivacySuccessSource = {
   teamId: string

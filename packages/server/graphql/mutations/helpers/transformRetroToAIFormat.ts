@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import getPhase from '../../../utils/getPhase'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWorker) => {
   const IGNORE_COMMENT_USER_IDS = ['parabolAIUser']
@@ -33,7 +33,11 @@ const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderWork
             return {text: plaintextContent, author: replyAuthor}
           })
       )
-      return {text: plaintextContent, author: commentAuthor, replies: commentReplies}
+      return {
+        text: plaintextContent,
+        author: commentAuthor,
+        replies: commentReplies
+      }
     })
   )
   return comments

@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateOrg: MutationResolvers['updateOrg'] = async (
   _source,
@@ -17,7 +17,9 @@ const updateOrg: MutationResolvers['updateOrg'] = async (
   const viewerId = getUserId(authToken)
   const {id: orgId, name} = updatedOrg
   if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Not organization lead'), {userId: viewerId})
+    return standardError(new Error('Not organization lead'), {
+      userId: viewerId
+    })
   }
 
   // VALIDATION
@@ -30,7 +32,9 @@ const updateOrg: MutationResolvers['updateOrg'] = async (
     return {error: {message: 'The “A Team” had a longer name than that'}}
   }
   if (normalizedName.length > 50) {
-    return {error: {message: 'That isn’t very memorable. Maybe shorten it up?'}}
+    return {
+      error: {message: 'That isn’t very memorable. Maybe shorten it up?'}
+    }
   }
 
   // RESOLUTION

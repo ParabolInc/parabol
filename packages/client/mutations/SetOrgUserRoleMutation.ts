@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetOrgUserRoleMutation as TSetOrgUserRoleMutation} from '../__generated__/SetOrgUserRoleMutation.graphql'
-import {SetOrgUserRoleMutation_organization$data} from '../__generated__/SetOrgUserRoleMutation_organization.graphql'
-import {
+import type {SetOrgUserRoleMutation as TSetOrgUserRoleMutation} from '../__generated__/SetOrgUserRoleMutation.graphql'
+import type {SetOrgUserRoleMutation_organization$data} from '../__generated__/SetOrgUserRoleMutation_organization.graphql'
+import type {
   OnNextHandler,
   OnNextHistoryContext,
   SharedUpdater,

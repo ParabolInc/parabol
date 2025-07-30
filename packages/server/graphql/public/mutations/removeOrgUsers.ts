@@ -9,7 +9,8 @@ import {
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import removeFromOrg from '../../mutations/helpers/removeFromOrg'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
+
 const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
   _source,
   {userIds, orgId},
@@ -47,7 +48,9 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
 
   const organization = await dataLoader.get('organizations').load(orgId)
   if (!organization) {
-    return standardError(new Error('Organization not found'), {userId: viewerId})
+    return standardError(new Error('Organization not found'), {
+      userId: viewerId
+    })
   }
 
   const orgUsers = await dataLoader

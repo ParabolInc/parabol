@@ -3,15 +3,15 @@ import {ArrowForward, CheckCircle, CheckCircleOutline} from '@mui/icons-material
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {BottomControlBarReady_meeting$key} from '~/__generated__/BottomControlBarReady_meeting.graphql'
+import type {BottomControlBarReady_meeting$key} from '~/__generated__/BottomControlBarReady_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useGotoNext from '~/hooks/useGotoNext'
-import {TransitionStatus} from '~/hooks/useTransition'
+import type useGotoNext from '~/hooks/useGotoNext'
+import type {TransitionStatus} from '~/hooks/useTransition'
 import FlagReadyToAdvanceMutation from '~/mutations/FlagReadyToAdvanceMutation'
 import {PALETTE} from '~/styles/paletteV3'
 import {BezierCurve, Times} from '~/types/constEnums'
 import handleRightArrow from '~/utils/handleRightArrow'
-import {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
+import type {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarReady_meeting.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import BottomControlBarProgress from './BottomControlBarProgress'
@@ -32,22 +32,24 @@ interface Props {
   handleGotoNext: ReturnType<typeof useGotoNext>
 }
 
-const StyledIcon = styled('div')<{progress: number; isNext: boolean; isViewerReady: boolean}>(
-  ({isViewerReady, progress, isNext}) => ({
-    height: 24,
-    width: 24,
-    transformOrigin: '0 0',
-    // 20px to 16 = 0.75
-    transform: isNext ? (progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined) : 'none',
-    transition: `transform 100ms ${BezierCurve.DECELERATE}`,
-    svg: {
-      // without fill property the stroke property will be ignored
-      fill: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
-      stroke: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
-      strokeWidth: isNext ? 1 : 0
-    }
-  })
-)
+const StyledIcon = styled('div')<{
+  progress: number
+  isNext: boolean
+  isViewerReady: boolean
+}>(({isViewerReady, progress, isNext}) => ({
+  height: 24,
+  width: 24,
+  transformOrigin: '0 0',
+  // 20px to 16 = 0.75
+  transform: isNext ? (progress > 0 ? `scale(0.75)translate(4px, 4px)` : undefined) : 'none',
+  transition: `transform 100ms ${BezierCurve.DECELERATE}`,
+  svg: {
+    // without fill property the stroke property will be ignored
+    fill: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+    stroke: isNext ? PALETTE.ROSE_500 : isViewerReady ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+    strokeWidth: isNext ? 1 : 0
+  }
+}))
 
 const PHASE_REQUIRES_CONFIRM = new Set<NewMeetingPhaseTypeEnum>(['reflect', 'group', 'vote'])
 
@@ -140,7 +142,11 @@ const BottomControlBarReady = (props: Props) => {
 
   const onClick = () => {
     if (!isNext) {
-      FlagReadyToAdvanceMutation(atmosphere, {isReady: !isViewerReady, meetingId, stageId})
+      FlagReadyToAdvanceMutation(atmosphere, {
+        isReady: !isViewerReady,
+        meetingId,
+        stageId
+      })
     } else if (isComplete || !isConfirmRequired || isConfirming) {
       setConfirmingButton('')
       gotoNext()

@@ -1,4 +1,4 @@
-import {ParseInt} from '../client/types/generics'
+import type {ParseInt} from '../client/types/generics'
 
 // can remove PromiseCapability after TS v5.4.2
 type PromiseCapability<T> = {

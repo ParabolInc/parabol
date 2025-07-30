@@ -4,9 +4,9 @@ import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import DragReflectionDropTargetTypeEnum, {
-  DragReflectionDropTargetTypeEnumType
+  type DragReflectionDropTargetTypeEnumType
 } from '../types/DragReflectionDropTargetTypeEnum'
 import EndDraggingReflectionPayload from '../types/EndDraggingReflectionPayload'
 import addReflectionToGroup from './helpers/updateReflectionLocation/addReflectionToGroup'
@@ -57,18 +57,28 @@ export default {
     const viewerId = getUserId(authToken)
     const reflection = await dataLoader.get('retroReflections').load(reflectionId)
     if (!reflection) {
-      return standardError(new Error('Reflection not found'), {userId: viewerId})
+      return standardError(new Error('Reflection not found'), {
+        userId: viewerId
+      })
     }
     const {meetingId, reflectionGroupId: oldReflectionGroupId} = reflection
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
     if (isPhaseComplete('group', phases)) {
-      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+      return standardError(new Error('Meeting phase already completed'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

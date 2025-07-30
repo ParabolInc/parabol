@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
-import {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'
+import type {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import ActivityCardFavorite from './ActivityCardFavorite'
-import {Template} from './ActivityLibrary'
+import type {Template} from './ActivityLibrary'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
-import {CATEGORY_THEMES, CategoryID} from './Categories'
+import {CATEGORY_THEMES, type CategoryID} from './Categories'
 
 interface ActivityGridProps {
   templates: Template[]

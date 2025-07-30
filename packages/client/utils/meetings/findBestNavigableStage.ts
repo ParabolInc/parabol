@@ -22,7 +22,7 @@ const findBestNavigableStage = <U extends FindStageByIdStage, T extends FindStag
         stage: T['stages'][0]
         stageIdx: number
       }
-    | undefined = undefined
+    | undefined
 
   for (let i = 0; i < phases.length; ++i) {
     const phase = phases[i]!

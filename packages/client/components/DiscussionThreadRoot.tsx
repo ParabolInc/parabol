@@ -1,11 +1,11 @@
-import {ReactNode, RefObject, Suspense} from 'react'
+import {type ReactNode, type RefObject, Suspense} from 'react'
 import discussionThreadQuery, {
-  DiscussionThreadQuery
+  type DiscussionThreadQuery
 } from '../__generated__/DiscussionThreadQuery.graphql'
-import {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
+import type {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import DiscussionThread from './DiscussionThread'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 
 interface Props {
   meetingContentRef?: RefObject<HTMLDivElement>

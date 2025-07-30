@@ -1,4 +1,4 @@
-import Redis from 'ioredis'
+import type Redis from 'ioredis'
 import RedisInstance from './RedisInstance'
 
 let redis: Redis

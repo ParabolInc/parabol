@@ -1,6 +1,6 @@
-import * as React from 'react'
+import type * as React from 'react'
 import ConnectButton from './ConnectButton'
-import ProviderRowBase, {ProviderRowBaseProps} from './ProviderRowBase'
+import ProviderRowBase, {type ProviderRowBaseProps} from './ProviderRowBase'
 
 interface Props extends Omit<ProviderRowBaseProps, 'connectButton'> {
   onConnectClick: () => void

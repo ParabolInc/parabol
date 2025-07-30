@@ -5,7 +5,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const joinTeam: MutationResolvers['joinTeam'] = async (
   _source,
@@ -54,7 +54,9 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
   }
 
   // Send the new team member a welcome & a new token
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
+    tms
+  })
 
   // Tell the rest of the team about the new team member
   publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)

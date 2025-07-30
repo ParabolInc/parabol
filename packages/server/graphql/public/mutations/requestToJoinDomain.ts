@@ -6,7 +6,7 @@ import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import {getEligibleOrgIdsByDomain} from '../../../utils/isRequestToJoinDomainAllowed'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 
 const REQUEST_EXPIRATION_DAYS = 30

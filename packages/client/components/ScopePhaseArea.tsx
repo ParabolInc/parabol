@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import SwipeableViews from 'react-swipeable-views'
-import {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
+import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
@@ -10,8 +10,8 @@ import GitHubClientManager from '../utils/GitHubClientManager'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import GitHubSVG from './GitHubSVG'
 import GitLabSVG from './GitLabSVG'
-import JiraSVG from './JiraSVG'
 import JiraServerSVG from './JiraServerSVG'
+import JiraSVG from './JiraSVG'
 import LinearSVG from './LinearSVG'
 import ParabolLogoSVG from './ParabolLogoSVG'
 import ScopePhaseAreaAzureDevOps from './ScopePhaseAreaAzureDevOps'
@@ -184,7 +184,7 @@ const ScopePhaseArea = (props: Props) => {
       className={`flex flex-col rounded-lg bg-white ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-md`}
     >
       <div className='max-w-full'>
-        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-b border-solid border-slate-300'>
+        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-slate-300 border-b border-solid'>
           <Tabs activeIdx={activeIdx} className='max-w-sm'>
             {tabs.map((tab, idx) => (
               <Tab

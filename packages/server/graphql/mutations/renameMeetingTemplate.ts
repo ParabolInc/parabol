@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
+import type MeetingTemplate from '../../database/types/MeetingTemplate'
 import updateMeetingTemplateName from '../../postgres/queries/updateMeetingTemplateName'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RenameMeetingTemplatePayload from '../types/RenameMeetingTemplatePayload'
 
 const renameMeetingTemplate = {
@@ -27,7 +27,9 @@ const renameMeetingTemplate = {
 
     // AUTH
     if (!template || !template.isActive) {
-      return standardError(new Error('Template not found'), {userId: viewerId})
+      return standardError(new Error('Template not found'), {
+        userId: viewerId
+      })
     }
     if (
       !isTeamMember(authToken, template.teamId) &&
@@ -47,7 +49,9 @@ const renameMeetingTemplate = {
       .load({meetingType: template.type, teamId})
     dataLoader.get('meetingTemplatesByType').clearAll()
     if (allTemplates.find((template) => template.name === normalizedName)) {
-      return standardError(new Error('Duplicate template name'), {userId: viewerId})
+      return standardError(new Error('Duplicate template name'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

@@ -1,19 +1,19 @@
 type AddAtlassianAuthPayload {
-  error: StandardMutationError
+	error: StandardMutationError
 
-  """
-  The newly created auth
-  """
-  atlassianIntegration: AtlassianIntegration
-  teamId: ID
+	"""
+	The newly created auth
+	"""
+	atlassianIntegration: AtlassianIntegration
+	teamId: ID
 
-  """
-  The team member with the updated atlassianAuth
-  """
-  teamMember: TeamMember
+	"""
+	The team member with the updated atlassianAuth
+	"""
+	teamMember: TeamMember
 
-  """
-  The user with updated atlassianAuth
-  """
-  user: User
+	"""
+	The user with updated atlassianAuth
+	"""
+	user: User
 }

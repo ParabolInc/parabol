@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {DECELERATE} from '../styles/animation'
 import {desktopSidebarShadow, Elevation} from '../styles/elevation'

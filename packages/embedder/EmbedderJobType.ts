@@ -1,4 +1,4 @@
-import {JobType} from './custom'
+import type {JobType} from './custom'
 
 type SplitJobType<T extends string> = T extends `${infer W}:${infer S}` ? [W, S] : never
 export const EmbedderJobType = {

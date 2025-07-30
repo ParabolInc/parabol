@@ -1,1 +1,3 @@
-union ToggleFavoriteTemplatePayload = ErrorPayload | ToggleFavoriteTemplateSuccess
+union ToggleFavoriteTemplatePayload =
+	| ErrorPayload
+	| ToggleFavoriteTemplateSuccess

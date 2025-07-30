@@ -1,6 +1,6 @@
-import {AzureAccountProject, AzureProject} from '../../../dataloader/azureDevOpsLoaders'
+import type {AzureAccountProject, AzureProject} from '../../../dataloader/azureDevOpsLoaders'
 import {getInstanceId} from '../../../utils/azureDevOps/azureDevOpsFieldTypeToId'
-import {AzureDevOpsRemoteProjectResolvers} from '../resolverTypes'
+import type {AzureDevOpsRemoteProjectResolvers} from '../resolverTypes'
 
 // This type is almost certainly wrong, but during the refactor to SDL I didn't want to mess with runtime logic
 export type AzureDevOpsRemoteProjectSource = AzureProject | AzureAccountProject

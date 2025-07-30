@@ -1,6 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import TemplateDimensionRefId from '../../../client/shared/gqlIds/TemplateDimensionRefId'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import TemplateScaleRef from './TemplateScaleRef'
 
 export interface TemplateDimensionRefSource {

@@ -1,5 +1,5 @@
-import {identify, Identify, init, track} from '@amplitude/analytics-node'
-import {AnalyticsEvent, IdentifyOptions} from '../analytics'
+import {Identify, identify, init, track} from '@amplitude/analytics-node'
+import type {AnalyticsEvent, IdentifyOptions} from '../analytics'
 
 const {AMPLITUDE_WRITE_KEY} = process.env
 

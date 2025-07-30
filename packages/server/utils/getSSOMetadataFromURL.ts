@@ -12,7 +12,7 @@ export const getSSOMetadataFromURL = async (metadataURL: string) => {
     // we do not check for that here since it's not deterministic
     const metadata = await metadataRes.text()
     return metadata
-  } catch (e) {
+  } catch {
     return new Error('Metadata URL could not be fetched')
   }
 }

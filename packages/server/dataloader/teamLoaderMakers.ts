@@ -1,12 +1,13 @@
 import DataLoader from 'dataloader'
-import {Selectable} from 'kysely'
+import type {Selectable} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {selectTeams} from '../postgres/select'
 import type {Team} from '../postgres/types'
-import {TeamMeetingTemplate} from '../postgres/types/pg'
-import normalizeArrayResults from './normalizeArrayResults'
+import type {TeamMeetingTemplate} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
-import RootDataLoader, {RegisterDependsOn} from './RootDataLoader'
+import normalizeArrayResults from './normalizeArrayResults'
+import type RootDataLoader from './RootDataLoader'
+import type {RegisterDependsOn} from './RootDataLoader'
 
 export const teamsWithUserSort = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('teams')

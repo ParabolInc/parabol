@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useEffect, useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
+import type {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition from '~/hooks/useTransition'
@@ -49,11 +49,11 @@ interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
 
-const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
-  ({isOpen}) => ({
-    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
-  })
-)
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{
+  isOpen: boolean
+}>(({isOpen}) => ({
+  width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
+}))
 
 const TeamPromptMeeting = (props: Props) => {
   const {meeting: meetingRef} = props

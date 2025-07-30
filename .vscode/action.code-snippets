@@ -18,6 +18,6 @@
 			"",
 			"export default $2"
 		],
-		"description": "A react functional component",
+		"description": "A react functional component"
 	}
 }

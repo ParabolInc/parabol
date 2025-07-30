@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {LinearIntegrationResultsPaginationQuery} from '../../../__generated__/LinearIntegrationResultsPaginationQuery.graphql'
-import {LinearIntegrationResultsQuery} from '../../../__generated__/LinearIntegrationResultsQuery.graphql'
-import {LinearIntegrationResults_query$key} from '../../../__generated__/LinearIntegrationResults_query.graphql'
+import type {LinearIntegrationResults_query$key} from '../../../__generated__/LinearIntegrationResults_query.graphql'
+import type {LinearIntegrationResultsPaginationQuery} from '../../../__generated__/LinearIntegrationResultsPaginationQuery.graphql'
+import type {LinearIntegrationResultsQuery} from '../../../__generated__/LinearIntegrationResultsQuery.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import LinearObjectCard from './LinearObjectCard'
@@ -112,7 +112,7 @@ const LinearIntegrationResults = (props: Props) => {
               src={halloweenRetrospectiveTemplate}
               alt='No results illustration'
             />
-            <div className='text-gray-600 dark:text-gray-400 mt-7 w-2/3 text-sm'>
+            <div className='mt-7 w-2/3 text-gray-600 text-sm dark:text-gray-400'>
               {errors?.[0]?.message
                 ? `Error fetching Linear issues: ${errors[0].message}`
                 : `Looks like no Linear issues match your filter.`}
@@ -129,7 +129,7 @@ const LinearIntegrationResults = (props: Props) => {
         {lastItem}
 
         {hasNext && (
-          <div className='mx-auto -mt-4 mb-4 h-8 text-2xl' key={'loadingNext'}>
+          <div className='-mt-4 mx-auto mb-4 h-8 text-2xl' key={'loadingNext'}>
             <Ellipsis />
           </div>
         )}

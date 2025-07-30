@@ -1,4 +1,4 @@
-import {JiraSearchQueryResolvers} from '../resolverTypes'
+import type {JiraSearchQueryResolvers} from '../resolverTypes'
 
 const JiraSearchQuery: JiraSearchQueryResolvers = {
   id: ({id}) => `JiraSearchQuery:${id}`,

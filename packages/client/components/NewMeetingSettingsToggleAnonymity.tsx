@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {NewMeetingSettingsToggleAnonymity_settings$key} from '~/__generated__/NewMeetingSettingsToggleAnonymity_settings.graphql'
+import type {NewMeetingSettingsToggleAnonymity_settings$key} from '~/__generated__/NewMeetingSettingsToggleAnonymity_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'

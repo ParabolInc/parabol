@@ -1,7 +1,7 @@
 import makeAppURL from '../../../../../client/utils/makeAppURL'
 import plural from '../../../../../client/utils/plural'
 import appOrigin from '../../../../appOrigin'
-import {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
+import type {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
 
 export const getTopicBlocks = (
   meetingId: string,
@@ -18,7 +18,12 @@ export const getTopicBlocks = (
     {
       type: 'heading',
       attrs: {level: 2},
-      content: [{type: 'text', text: `${topics.length} ${plural(topics.length, 'Voted Topic')}`}]
+      content: [
+        {
+          type: 'text',
+          text: `${topics.length} ${plural(topics.length, 'Voted Topic')}`
+        }
+      ]
     },
     {
       type: 'bulletList',

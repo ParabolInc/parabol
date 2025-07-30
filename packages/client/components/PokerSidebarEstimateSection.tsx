@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {PokerSidebarEstimateSection_meeting$key} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
-import useGotoStageId from '~/hooks/useGotoStageId'
+import type {PokerSidebarEstimateSection_meeting$key} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
+import type useGotoStageId from '~/hooks/useGotoStageId'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
@@ -105,7 +105,11 @@ const PokerSidebarEstimateSection = (props: Props) => {
     }
 
     const {taskId} = sourceTopic
-    const variables = {meetingId, taskId, newPositionIndex: destination.index}
+    const variables = {
+      meetingId,
+      taskId,
+      newPositionIndex: destination.index
+    }
     DragEstimatingTaskMutation(atmosphere, variables)
   }
 

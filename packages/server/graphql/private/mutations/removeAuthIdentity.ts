@@ -4,7 +4,7 @@ import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import generateRandomString from '../../../generateRandomString'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
-import {MutationResolvers} from '../../private/resolverTypes'
+import type {MutationResolvers} from '../../private/resolverTypes'
 
 const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   _source,

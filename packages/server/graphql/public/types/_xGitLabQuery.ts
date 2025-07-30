@@ -1,5 +1,5 @@
-import {GraphQLResolveInfo} from 'graphql'
-import {_XGitLabQueryResolvers} from '../resolverTypes'
+import type {GraphQLResolveInfo} from 'graphql'
+import type {_XGitLabQueryResolvers} from '../resolverTypes'
 
 const resolveToFieldNameOrAlias = (
   source: any,

@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {SetSlackNotificationPayloadResolvers} from '../resolverTypes'
+import type {SetSlackNotificationPayloadResolvers} from '../resolverTypes'
 
 export type SetSlackNotificationPayloadSource =
   | {

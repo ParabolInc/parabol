@@ -1,4 +1,4 @@
-import {GQLType, MaybeReadonly} from '../types/generics'
+import type {GQLType, MaybeReadonly} from '../types/generics'
 
 const getPhaseByTypename = <TPhase extends {__typename: string}, T extends string>(
   phases: MaybeReadonly<TPhase[]>,

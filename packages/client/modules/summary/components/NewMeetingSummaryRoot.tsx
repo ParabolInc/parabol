@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import newMeetingSummaryQuery, {
-  NewMeetingSummaryQuery
+  type NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../hooks/useRouter'

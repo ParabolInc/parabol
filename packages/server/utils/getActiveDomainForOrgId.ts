@@ -1,5 +1,6 @@
-import {DataLoaderInstance} from '../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import getKysely from '../postgres/getKysely'
+
 /**
  * Most used company domain for a given orgId
  */

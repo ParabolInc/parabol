@@ -2,7 +2,7 @@
 
 // if a file uses a graphql tagged template literal, this makes sure that it has an import
 
-import {Transform} from 'jscodeshift/src/core'
+import type {Transform} from 'jscodeshift/src/core'
 import path from 'path'
 
 const transform: Transform = (fileInfo, api, options) => {

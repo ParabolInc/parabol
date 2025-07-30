@@ -1,10 +1,10 @@
 import sendTeamsLimitEmail from '../../billing/helpers/sendTeamsLimitEmail'
 import generateUID from '../../generateUID'
-import {DataLoaderWorker} from '../../graphql/graphql'
+import type {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import publishNotification from '../../graphql/public/mutations/helpers/publishNotification'
 import getKysely from '../../postgres/getKysely'
-import ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
+import type ScheduledTeamLimitsJob from './ScheduledTeamLimitsJob'
 
 const processTeamsLimitsJob = async (job: ScheduledTeamLimitsJob, dataLoader: DataLoaderWorker) => {
   const operationId = dataLoader.share()

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {VoteForReflectionGroupMutation as TVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
-import {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
+import type {VoteForReflectionGroupMutation as TVoteForReflectionGroupMutation} from '../__generated__/VoteForReflectionGroupMutation.graphql'
+import type {BaseLocalHandlers, StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`

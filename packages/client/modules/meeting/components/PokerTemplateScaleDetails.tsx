@@ -3,15 +3,15 @@ import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
+import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import FlatButton from '../../../components/FlatButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
 import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
-import TemplateScaleValueList from './TemplateScaleValueList'
 import scaleValueString from './scaleValueString'
+import TemplateScaleValueList from './TemplateScaleValueList'
 
 const ScaleHeader = styled('div')({
   display: 'flex',

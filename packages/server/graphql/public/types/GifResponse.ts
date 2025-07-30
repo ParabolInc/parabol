@@ -1,4 +1,4 @@
-import {GifResponseResolvers} from '../resolverTypes'
+import type {GifResponseResolvers} from '../resolverTypes'
 
 export type GifResponseSource = {
   id: string

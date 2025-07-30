@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TeamPromptResponseEmojis_response$key} from '~/__generated__/TeamPromptResponseEmojis_response.graphql'
+import type {TeamPromptResponseEmojis_response$key} from '~/__generated__/TeamPromptResponseEmojis_response.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import AddReactjiToReactableMutation from '../../mutations/AddReactjiToReactableMutation'

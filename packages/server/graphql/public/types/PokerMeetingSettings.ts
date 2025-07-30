@@ -1,6 +1,6 @@
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import resolveSelectedTemplate from '../../queries/helpers/resolveSelectedTemplate'
-import {PokerMeetingSettingsResolvers} from '../resolverTypes'
+import type {PokerMeetingSettingsResolvers} from '../resolverTypes'
 
 const PokerMeetingSettings: PokerMeetingSettingsResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'poker',

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Facilitator_meeting$key} from '~/__generated__/Facilitator_meeting.graphql'
+import type {Facilitator_meeting$key} from '~/__generated__/Facilitator_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -18,27 +18,28 @@ const FacilitatorBlock = styled('div')({
   padding: '0 8px 8px'
 })
 
-const FacilitatorToggle = styled('div')<{isActive: boolean; isReadOnly: boolean}>(
-  ({isActive, isReadOnly}) => ({
-    alignItems: 'center',
-    cursor: isReadOnly ? undefined : 'pointer',
-    display: 'flex',
-    // padding compensates for 8px grid, hanging elements
-    // icons and other decorators can be on a 4px grid, anyway, per MD spec
-    // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
-    padding: '2px 4px',
-    // StyledIcon when toggle isActive or not
-    span: {
-      backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
-      color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600
-    },
-    // StyledIcon when toggle hovered
-    '&:hover > span': {
-      backgroundColor: PALETTE.SLATE_200,
-      color: PALETTE.SLATE_700
-    }
-  })
-)
+const FacilitatorToggle = styled('div')<{
+  isActive: boolean
+  isReadOnly: boolean
+}>(({isActive, isReadOnly}) => ({
+  alignItems: 'center',
+  cursor: isReadOnly ? undefined : 'pointer',
+  display: 'flex',
+  // padding compensates for 8px grid, hanging elements
+  // icons and other decorators can be on a 4px grid, anyway, per MD spec
+  // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
+  padding: '2px 4px',
+  // StyledIcon when toggle isActive or not
+  span: {
+    backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
+    color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600
+  },
+  // StyledIcon when toggle hovered
+  '&:hover > span': {
+    backgroundColor: PALETTE.SLATE_200,
+    color: PALETTE.SLATE_700
+  }
+}))
 
 const Label = styled('div')({
   color: PALETTE.SLATE_700,

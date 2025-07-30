@@ -2,13 +2,13 @@
 A connection of Pages
 """
 type PageConnection {
-  """
-  Page info with cursors as strings
-  """
-  pageInfo: PageInfo!
+	"""
+	Page info with cursors as strings
+	"""
+	pageInfo: PageInfo!
 
-  """
-  A list of edges.
-  """
-  edges: [PageEdge!]!
+	"""
+	A list of edges.
+	"""
+	edges: [PageEdge!]!
 }

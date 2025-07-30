@@ -4,11 +4,11 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import startStage_ from 'parabol-client/utils/startStage_'
 import unlockNextStages from 'parabol-client/utils/unlockNextStages'
 import getKysely from '../../postgres/getKysely'
-import {Logger} from '../../utils/Logger'
 import {getUserId} from '../../utils/authorization'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import NavigateMeetingPayload from '../types/NavigateMeetingPayload'
 import handleCompletedStage from './helpers/handleCompletedStage'
 import removeScheduledJobs from './helpers/removeScheduledJobs'
@@ -36,7 +36,11 @@ export default {
       completedStageId,
       facilitatorStageId,
       meetingId
-    }: {completedStageId: string | null; facilitatorStageId: string | null; meetingId: string},
+    }: {
+      completedStageId: string | null
+      facilitatorStageId: string | null
+      meetingId: string
+    },
     {authToken, socketId: mutatorId, dataLoader}: GQLContext
   ) {
     const now = new Date()
@@ -46,16 +50,23 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {createdBy, endedAt, facilitatorUserId, phases, teamId, meetingType} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== createdBy) {
-        return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
+        return standardError(new Error('Not meeting facilitator'), {
+          userId: viewerId
+        })
       }
-      return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
+      return standardError(new Error('Not meeting facilitator anymore'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
@@ -64,11 +75,15 @@ export default {
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId)
       if (!completedStageRes) {
-        return standardError(new Error('Meeting stage not found'), {userId: viewerId})
+        return standardError(new Error('Meeting stage not found'), {
+          userId: viewerId
+        })
       }
       const {stage} = completedStageRes
       if (!stage.isNavigableByFacilitator) {
-        return standardError(new Error('Stage has not started'), {userId: viewerId})
+        return standardError(new Error('Stage has not started'), {
+          userId: viewerId
+        })
       }
       if (!stage.isComplete) {
         // MUTATIVE
@@ -92,14 +107,20 @@ export default {
     if (facilitatorStageId) {
       const facilitatorStageRes = findStageById(phases, facilitatorStageId)
       if (!facilitatorStageRes) {
-        return standardError(new Error('Stage not found'), {userId: viewerId})
+        return standardError(new Error('Stage not found'), {
+          userId: viewerId
+        })
       }
       const {stage: facilitatorStage} = facilitatorStageRes
       if (!facilitatorStage.isNavigableByFacilitator) {
-        return standardError(new Error('Stage has not started'), {userId: viewerId})
+        return standardError(new Error('Stage has not started'), {
+          userId: viewerId
+        })
       }
       if (meeting.facilitatorStageId === facilitatorStageId) {
-        return standardError(new Error('Already at this stage'), {userId: viewerId})
+        return standardError(new Error('Already at this stage'), {
+          userId: viewerId
+        })
       }
       // mutative
       // NOTE: it is possible to start a stage then move backwards & complete another phase, which would make it seem like this phase took a long time

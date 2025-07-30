@@ -1,7 +1,7 @@
 import {Lock, MailOutline} from '@mui/icons-material'
 import {useState} from 'react'
 import {useRouteMatch} from 'react-router'
-import {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
+import type {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
@@ -17,7 +17,9 @@ const RequestToJoinComponent = () => {
 
   const handleRequestJoin = () => {
     if (!teamId) return
-    SendClientSideEvent(atmosphere, 'Sent request to join from public teams', {teamId})
+    SendClientSideEvent(atmosphere, 'Sent request to join from public teams', {
+      teamId
+    })
     PushInvitationMutation(
       atmosphere,
       {teamId},
@@ -38,13 +40,13 @@ const RequestToJoinComponent = () => {
 
   return (
     <div className='relative z-10 flex h-full w-full flex-col items-center justify-center overflow-y-auto'>
-      <div className='mb-20 flex max-h-[90vh] w-[50%] max-w-[calc(100vw-48px)] min-w-[280px] flex-col items-center rounded-sm bg-white p-8 shadow-2xl'>
+      <div className='mb-20 flex max-h-[90vh] w-[50%] min-w-[280px] max-w-[calc(100vw-48px)] flex-col items-center rounded-sm bg-white p-8 shadow-2xl'>
         {isRequestSent ? (
-          <MailOutline className='text-purple-500 h-10 w-10 rounded-full' />
+          <MailOutline className='h-10 w-10 rounded-full text-purple-500' />
         ) : (
-          <Lock className='text-purple-500 h-10 w-10 rounded-full' />
+          <Lock className='h-10 w-10 rounded-full text-purple-500' />
         )}
-        <div className='text-gray-700 my-4 flex flex-col items-center justify-between text-sm leading-5 font-semibold'>
+        <div className='my-4 flex flex-col items-center justify-between font-semibold text-gray-700 text-sm leading-5'>
           {isRequestSent ? 'Request Sent' : 'Request to Join'}
         </div>
         <div className='my-2 mb-7 px-16 text-center text-sm leading-5'>

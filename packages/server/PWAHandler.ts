@@ -1,4 +1,4 @@
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import acceptsBrotli from './acceptsBrotli'
 import serveStatic from './utils/serveStatic'
 

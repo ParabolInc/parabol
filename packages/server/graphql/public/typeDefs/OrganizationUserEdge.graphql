@@ -2,13 +2,13 @@
 An edge in a connection.
 """
 type OrganizationUserEdge {
-  """
-  The item at the end of the edge
-  """
-  node: OrganizationUser!
+	"""
+	The item at the end of the edge
+	"""
+	node: OrganizationUser!
 
-  """
-  A cursor for use in pagination
-  """
-  cursor: String!
+	"""
+	A cursor for use in pagination
+	"""
+	cursor: String!
 }

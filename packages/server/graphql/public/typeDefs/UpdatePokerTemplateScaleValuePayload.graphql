@@ -1,4 +1,4 @@
 type UpdatePokerTemplateScaleValuePayload {
-  error: StandardMutationError
-  scale: TemplateScale
+	error: StandardMutationError
+	scale: TemplateScale
 }

@@ -2,11 +2,11 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import getKysely from '../../postgres/getKysely'
-import {NewMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type {NewMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import VoteForPokerStoryPayload from '../types/VoteForPokerStoryPayload'
 
 export const removeVoteForUserId = async (userId: string, stageId: string, meetingId: string) => {
@@ -128,7 +128,10 @@ const voteForPokerStory = {
       if (!scoreValue) {
         return {error: {value: 'Score does not exists in scale'}}
       }
-      const userScore = new EstimateUserScore({userId: viewerId, label: scoreValue.label})
+      const userScore = new EstimateUserScore({
+        userId: viewerId,
+        label: scoreValue.label
+      })
       await upsertVote(userScore, stageId, meetingId)
     } else {
       // undo the vote, remove from array

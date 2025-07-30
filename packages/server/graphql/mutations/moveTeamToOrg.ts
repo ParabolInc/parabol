@@ -3,10 +3,10 @@ import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../billing/helpers/adjustUserCount'
 import getKysely from '../../postgres/getKysely'
 import safeArchiveEmptyStarterOrganization from '../../safeMutations/safeArchiveEmptyStarterOrganization'
-import {Logger} from '../../utils/Logger'
 import {getUserId, isSuperUser} from '../../utils/authorization'
+import {Logger} from '../../utils/Logger'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../graphql'
+import type {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
 
 const MAX_NUM_TEAMS = 40
@@ -59,7 +59,9 @@ const moveToOrg = async (
     }
 
     if (orgId === currentOrgId) {
-      return standardError(new Error('Team already on organization'), {userId})
+      return standardError(new Error('Team already on organization'), {
+        userId
+      })
     }
   }
 

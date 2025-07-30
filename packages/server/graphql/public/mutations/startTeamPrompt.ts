@@ -1,15 +1,15 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import RedisLockQueue from '../../../utils/RedisLockQueue'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
+import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const MEETING_START_DELAY_MS = 3000
@@ -36,7 +36,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const redisLock = new RedisLockQueue(`newTeamPromptMeeting:${teamId}`, MEETING_START_DELAY_MS)
   try {
     await redisLock.lock(0)
-  } catch (e) {
+  } catch {
     return standardError(new Error('Meeting already started'), {
       userId: viewerId
     })

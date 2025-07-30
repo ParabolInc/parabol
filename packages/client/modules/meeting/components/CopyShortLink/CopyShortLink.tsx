@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import CopyLink from '../../../../components/CopyLink'
 import {PALETTE} from '../../../../styles/paletteV3'
 

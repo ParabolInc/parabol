@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UpdateUserProfileMutation as TUpdateUserProfileMutation} from '../__generated__/UpdateUserProfileMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {UpdateUserProfileMutation as TUpdateUserProfileMutation} from '../__generated__/UpdateUserProfileMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateUserProfileMutation_team on UpdateUserProfilePayload {

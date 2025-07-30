@@ -1,7 +1,10 @@
 import {CipherId} from '../../../utils/CipherId'
-import {ArchivePagePayloadResolvers, type ArchivePageActionEnum} from '../resolverTypes'
+import type {ArchivePageActionEnum, ArchivePagePayloadResolvers} from '../resolverTypes'
 
-export type ArchivePagePayloadSource = {pageId: number; action: ArchivePageActionEnum}
+export type ArchivePagePayloadSource = {
+  pageId: number
+  action: ArchivePageActionEnum
+}
 
 const ArchivePagePayload: ArchivePagePayloadResolvers = {
   pageId: ({pageId}) => CipherId.toClient(pageId, 'page'),

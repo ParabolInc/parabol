@@ -11,10 +11,6 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "lint": "pnpm lint:check --fix .",
-    "lint:check": "eslint .",
-    "prettier": "prettier --config ../../.prettierrc --write \"**/*.{ts,tsx}\"",
-    "prettier:check": "prettier --config ../../.prettierrc --check \"**/*.{ts,tsx}\"",
     "test": "jest --verbose",
     "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
   },

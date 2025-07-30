@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const setTeamNotificationSetting: MutationResolvers['setTeamNotificationSetting'] = async (
   _source,
@@ -20,11 +20,15 @@ const setTeamNotificationSetting: MutationResolvers['setTeamNotificationSetting'
   // AUTH
   const setting = await dataLoader.get('teamNotificationSettings').load(id)
   if (!setting) {
-    return standardError(new Error('TeamNotificationSetting not found'), {userId: viewerId})
+    return standardError(new Error('TeamNotificationSetting not found'), {
+      userId: viewerId
+    })
   }
   const {teamId} = setting
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
+    return standardError(new Error('Attempted teamId spoof'), {
+      userId: viewerId
+    })
   }
 
   // RESOLUTION

@@ -4,9 +4,9 @@ import {useLazyLoadQuery} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
-import {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
-import {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
-import {MenuProps} from '../hooks/useMenu'
+import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
+import type {TaskFooterIntegrateMenuListLocalQuery} from '../__generated__/TaskFooterIntegrateMenuListLocalQuery.graphql'
+import type {MenuProps} from '../hooks/useMenu'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -140,7 +140,7 @@ const TaskFooterIntegrateMenuList = (props: Props) => {
     >
       {label && (
         <>
-          <div className='p-2 pt-2 pb-0 text-sm text-slate-600'>{label}</div>
+          <div className='p-2 pt-2 pb-0 text-slate-600 text-sm'>{label}</div>
           <MenuItemHR />
         </>
       )}

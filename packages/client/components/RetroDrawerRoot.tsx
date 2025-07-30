@@ -1,5 +1,5 @@
 import {Suspense, useState} from 'react'
-import retroDrawerQuery, {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
+import retroDrawerQuery, {type RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MeetingOptions from './MeetingOptions'
 import RetroDrawer from './RetroDrawer'

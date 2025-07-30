@@ -5,7 +5,7 @@ import TeamMemberId from '../../../client/shared/gqlIds/TeamMemberId'
 import {getUserId, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import removeTeamMember from './helpers/removeTeamMember'
 
 export default {
@@ -40,7 +40,9 @@ export default {
     const isSelf = viewerId === userId
     if (!isSelf) {
       if (!isOrgAdmin && !isViewerTeamLead) {
-        return standardError(new Error('Not team lead or org admin'), {userId: viewerId})
+        return standardError(new Error('Not team lead or org admin'), {
+          userId: viewerId
+        })
       }
     }
 
@@ -49,11 +51,15 @@ export default {
     const res = await removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     const {user, notificationId, archivedTaskIds, reassignedTaskIds} = res
     if (!user) {
-      return standardError(new Error('Could not remove given team member'), {userId})
+      return standardError(new Error('Could not remove given team member'), {
+        userId
+      })
     }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const {tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {
+      tms
+    })
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
     const data = {
       teamId,

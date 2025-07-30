@@ -56,7 +56,10 @@ const Snackbar = memo(() => {
   const activeSnacksRef = useRef<Snack[]>([])
   const forceUpdate = useForceUpdate()
   const atmosphere = useAtmosphere()
-  const {openPortal, terminatePortal, portal} = usePortal({id: 'snackbar', noClose: true})
+  const {openPortal, terminatePortal, portal} = usePortal({
+    id: 'snackbar',
+    noClose: true
+  })
   const {location} = useRouter()
   const hasSidebar =
     location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)

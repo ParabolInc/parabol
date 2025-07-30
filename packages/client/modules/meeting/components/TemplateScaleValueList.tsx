@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {DragDropContext, Draggable, Droppable, DropResult} from 'react-beautiful-dnd'
+import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {TemplateScaleValueList_scale$key} from '~/__generated__/TemplateScaleValueList_scale.graphql'
+import type {TemplateScaleValueList_scale$key} from '~/__generated__/TemplateScaleValueList_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import MovePokerTemplateScaleValueMutation from '../../../mutations/MovePokerTemplateScaleValueMutation'
@@ -59,8 +59,15 @@ const TemplateScaleValueList = (props: Props) => {
     }
     submitMutation()
 
-    const variables = {scaleId: scale.id, label: sourceScaleValue.label, index: destination.index}
-    MovePokerTemplateScaleValueMutation(atmosphere, variables, {onError, onCompleted})
+    const variables = {
+      scaleId: scale.id,
+      label: sourceScaleValue.label,
+      index: destination.index
+    }
+    MovePokerTemplateScaleValueMutation(atmosphere, variables, {
+      onError,
+      onCompleted
+    })
   }
 
   return (

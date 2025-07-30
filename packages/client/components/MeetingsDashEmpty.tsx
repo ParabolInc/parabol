@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import {commitLocalUpdate} from 'relay-runtime'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 const maybeTabletPlusMediaQuery = makeMinWidthMediaQuery(Breakpoint.FUZZY_TABLET)

@@ -1,4 +1,4 @@
-import {createContext, ReactNode, useRef} from 'react'
+import {createContext, type ReactNode, useRef} from 'react'
 import {createPortal} from 'react-dom'
 import useForceUpdate from '../../hooks/useForceUpdate'
 

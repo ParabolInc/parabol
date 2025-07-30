@@ -1,7 +1,7 @@
 import generateUID from '../../generateUID'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
-import {NewMeetingPhase} from '../../postgres/types/NewMeetingPhase'
-import GenericMeetingPhase from './GenericMeetingPhase'
+import type {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import type {NewMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type GenericMeetingPhase from './GenericMeetingPhase'
 
 interface Input {
   id?: string | null

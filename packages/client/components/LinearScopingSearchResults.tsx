@@ -1,16 +1,21 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {
+  type PreloadedQuery,
+  useFragment,
+  usePaginationFragment,
+  usePreloadedQuery
+} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import {LinearScopingSearchResultsPaginationQuery} from '../__generated__/LinearScopingSearchResultsPaginationQuery.graphql'
-import {LinearScopingSearchResultsQuery} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
-import {LinearScopingSearchResults_meeting$key} from '../__generated__/LinearScopingSearchResults_meeting.graphql'
-import {LinearScopingSearchResults_query$key} from '../__generated__/LinearScopingSearchResults_query.graphql'
+import type {LinearScopingSearchResults_meeting$key} from '../__generated__/LinearScopingSearchResults_meeting.graphql'
+import type {LinearScopingSearchResults_query$key} from '../__generated__/LinearScopingSearchResults_query.graphql'
+import type {LinearScopingSearchResultsPaginationQuery} from '../__generated__/LinearScopingSearchResultsPaginationQuery.graphql'
+import type {LinearScopingSearchResultsQuery} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import LinearIssueId from '../shared/gqlIds/LinearIssueId'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
-import {GQLType} from '../types/generics'
+import type {GQLType} from '../types/generics'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import getNonNullEdges from '../utils/getNonNullEdges'
 import Ellipsis from './Ellipsis/Ellipsis'

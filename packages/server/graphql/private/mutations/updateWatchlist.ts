@@ -1,7 +1,7 @@
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   _source,
@@ -19,7 +19,9 @@ const updateWatchlist: MutationResolvers['updateWatchlist'] = async (
   }
   const userIds = users.map(({id}) => id).filter((id): id is string => !!id)
   if (users.length === 0) {
-    return {error: {message: 'No users found matching the email or domain'}}
+    return {
+      error: {message: 'No users found matching the email or domain'}
+    }
   }
   await updateUser({isWatched: includeInWatchlist}, userIds)
 

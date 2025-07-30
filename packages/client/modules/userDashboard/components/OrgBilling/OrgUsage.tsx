@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
+import type {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import useRouter from '../../../../hooks/useRouter'
 
@@ -30,7 +30,7 @@ const OrgUsage = (props: Props) => {
 
   return (
     <Panel className='mb-4 max-w-[976px]' label='Usage'>
-      <div className='flex items-center justify-around border-t border-solid border-slate-300 p-4'>
+      <div className='flex items-center justify-around border-slate-300 border-t border-solid p-4'>
         <a
           onClick={(e) => {
             e.preventDefault()
@@ -38,7 +38,7 @@ const OrgUsage = (props: Props) => {
           }}
           className='cursor-pointer text-center text-sky-500 hover:text-sky-600'
         >
-          <div className='mb-1 text-3xl font-bold'>{allTeamsCount}</div>
+          <div className='mb-1 font-bold text-3xl'>{allTeamsCount}</div>
           <div className='flex items-center justify-center text-base text-slate-600'>
             Total teams
           </div>
@@ -50,7 +50,7 @@ const OrgUsage = (props: Props) => {
           }}
           className='cursor-pointer text-center text-sky-500 hover:text-sky-600'
         >
-          <div className='mb-1 text-3xl font-bold'>{totalUserCount}</div>
+          <div className='mb-1 font-bold text-3xl'>{totalUserCount}</div>
           <div className='flex items-center justify-center text-base text-slate-600'>
             Total members
           </div>

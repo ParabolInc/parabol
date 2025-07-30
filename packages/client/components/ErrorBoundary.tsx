@@ -1,6 +1,6 @@
 import {datadogRum} from '@datadog/browser-rum'
-import {Component, ErrorInfo, ReactNode} from 'react'
-import Atmosphere from '~/Atmosphere'
+import {Component, type ErrorInfo, type ReactNode} from 'react'
+import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {isOldBrowserError} from '../utils/isOldBrowserError'

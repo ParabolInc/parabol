@@ -1,5 +1,11 @@
-import {createElement, ElementType, FunctionComponent, HTMLAttributes, ReactHTML} from 'react'
-import {ClassValue, cn} from './cn'
+import {
+  createElement,
+  type ElementType,
+  type FunctionComponent,
+  type HTMLAttributes,
+  type ReactHTML
+} from 'react'
+import {type ClassValue, cn} from './cn'
 
 type PropsType<E> = E extends keyof ReactHTML
   ? HTMLAttributes<ElementType<E>>

@@ -1,4 +1,4 @@
-import Atmosphere from '../../Atmosphere'
+import type Atmosphere from '../../Atmosphere'
 
 const popEndMeetingToast = (atmosphere: Atmosphere, meetingId: string) => {
   atmosphere.eventEmitter.emit('addSnackbar', {

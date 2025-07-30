@@ -11,8 +11,8 @@ import {
   SIGNIN_LABEL,
   SIGNIN_SLUG
 } from '../utils/constants'
-import AuthPrivacyFooter from './AuthPrivacyFooter'
 import AuthenticationDialog from './AuthenticationDialog'
+import AuthPrivacyFooter from './AuthPrivacyFooter'
 import DialogTitle from './DialogTitle'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordPage from './ForgotPasswordPage'

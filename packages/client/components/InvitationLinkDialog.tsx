@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router'
-import {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
+import {type RouteComponentProps, withRouter} from 'react-router'
+import type {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
@@ -47,8 +47,9 @@ const InvitationLinkDialog = (props: Props) => {
   const metaCopy = teamName
     ? `Join ${teamName} on Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
     : `Join Parabol, the essential tool for making meetings efficient or replacing them with structured, asynchronous collaboration.`
-  /* eslint-disable react-hooks/rules-of-hooks */
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useDocumentTitle(pageTitle, pageName)
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useMetaTagContent(metaCopy)
 
   switch (errorType) {

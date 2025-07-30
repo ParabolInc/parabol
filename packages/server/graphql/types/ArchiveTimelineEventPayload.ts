@@ -1,7 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
-import TimelineEvent from './TimelineEvent'
+import type {GQLContext} from '../graphql'
 import makeMutationPayload from './makeMutationPayload'
+import TimelineEvent from './TimelineEvent'
 
 export const ArchiveTimelineEventSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'ArchiveTimelineEventSuccess',

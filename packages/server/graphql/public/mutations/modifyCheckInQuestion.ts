@@ -1,12 +1,11 @@
+import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import publish from '../../../utils/publish'
-
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {analytics} from '../../../utils/analytics/analytics'
+import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async (
   _source,
@@ -22,7 +21,10 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
     dataLoader.get('newMeetings').load(meetingId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-  if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+  if (!meeting)
+    return standardError(new Error('Meeting not found'), {
+      userId: viewerId
+    })
   const {endedAt, teamId} = meeting
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
@@ -33,7 +35,9 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
   }
 
   if (endedAt) {
-    return standardError(new Error('Meeting has already ended'), {userId: viewerId})
+    return standardError(new Error('Meeting has already ended'), {
+      userId: viewerId
+    })
   }
 
   const openai = new OpenAIServerManager()

@@ -1,7 +1,7 @@
 import dndNoise from 'parabol-client/utils/dndNoise'
 import getKysely from '../../../../postgres/getKysely'
+import type {GQLContext} from './../../../graphql'
 import updateGroupTitle from '../updateGroupTitle'
-import {GQLContext} from './../../../graphql'
 import updateSmartGroupTitle from './updateSmartGroupTitle'
 
 const addReflectionToGroup = async (

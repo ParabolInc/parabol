@@ -1,6 +1,6 @@
 import IntegrationProviderId from '../../../../client/shared/gqlIds/IntegrationProviderId'
 import TeamMemberIntegrationAuthId from '../../../../client/shared/gqlIds/TeamMemberIntegrationAuthId'
-import {TeamMemberIntegrationAuthWebhookResolvers} from '../resolverTypes'
+import type {TeamMemberIntegrationAuthWebhookResolvers} from '../resolverTypes'
 
 const TeamMemberIntegrationAuthWebhook: TeamMemberIntegrationAuthWebhookResolvers = {
   __isTypeOf: ({accessToken, refreshToken, scopes}) => !accessToken || !refreshToken || !scopes,

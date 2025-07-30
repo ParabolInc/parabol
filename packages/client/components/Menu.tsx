@@ -1,19 +1,18 @@
+import type * as React from 'react'
 import {
   Children,
   cloneElement,
   forwardRef,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
   useState
 } from 'react'
-
-import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
-import {PortalStatus} from '../hooks/usePortal'
+import type {PortalStatus} from '../hooks/usePortal'
 import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick
@@ -169,7 +168,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     <div
       role='menu'
       aria-label={ariaLabel}
-      className={twMerge('max-h-56 max-w-md outline-none select-none', className)}
+      className={twMerge('max-h-56 max-w-md select-none outline-none', className)}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}

@@ -1,11 +1,11 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {RetroMeetingMember} from '../../../postgres/types/Meeting'
+import type {RetroMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
 import getPhase from '../../../utils/getPhase'
 import {resolveForSU} from '../../resolvers'
-import {RetrospectiveMeetingResolvers} from '../resolverTypes'
+import type {RetrospectiveMeetingResolvers} from '../resolverTypes'
 
 const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   autoGroupThreshold: resolveForSU('autoGroupThreshold'),

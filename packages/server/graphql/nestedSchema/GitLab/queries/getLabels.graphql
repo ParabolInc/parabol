@@ -1,17 +1,23 @@
 query getLabels(
-  $fullPath: ID!
-  $first: Int!
-  $after: String
-  $title: String
-  $titleSearch: String
+	$fullPath: ID!
+	$first: Int!
+	$after: String
+	$title: String
+	$titleSearch: String
 ) {
-  project(fullPath: $fullPath) {
-    id
-    labels(first: $first, after: $after, title: $title, searchIn: TITLE, searchTerm: $titleSearch) {
-      nodes {
-        id
-        title
-      }
-    }
-  }
+	project(fullPath: $fullPath) {
+		id
+		labels(
+			first: $first
+			after: $after
+			title: $title
+			searchIn: TITLE
+			searchTerm: $titleSearch
+		) {
+			nodes {
+				id
+				title
+			}
+		}
+	}
 }

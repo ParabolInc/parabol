@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
 import {PALETTE} from '../../../../styles/paletteV3'
 

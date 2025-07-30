@@ -1,5 +1,5 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import TeamMember from './TeamMember'
 
 const AgendaItem = new GraphQLObjectType<any, GQLContext>({

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
 import {PALETTE} from '../styles/paletteV3'
-import FlatButton, {FlatButtonProps} from './FlatButton'
+import FlatButton, {type FlatButtonProps} from './FlatButton'
 
 interface Props extends FlatButtonProps {
   confirming?: boolean

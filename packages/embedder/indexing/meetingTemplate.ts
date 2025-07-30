@@ -1,7 +1,7 @@
-import {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
-import MeetingTemplate from '../../server/database/types/MeetingTemplate'
-import PokerTemplate from '../../server/database/types/PokerTemplate'
-import ReflectTemplate from '../../server/database/types/ReflectTemplate'
+import type {DataLoaderInstance} from 'parabol-server/dataloader/RootDataLoader'
+import type MeetingTemplate from '../../server/database/types/MeetingTemplate'
+import type PokerTemplate from '../../server/database/types/PokerTemplate'
+import type ReflectTemplate from '../../server/database/types/ReflectTemplate'
 import {inferLanguage} from '../inferLanguage'
 
 const MIN_TEXT_LENGTH = 10

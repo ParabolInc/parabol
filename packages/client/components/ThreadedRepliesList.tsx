@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ThreadedRepliesList_discussion$key} from '~/__generated__/ThreadedRepliesList_discussion.graphql'
-import {ThreadedRepliesList_replies$key} from '~/__generated__/ThreadedRepliesList_replies.graphql'
-import {ThreadedRepliesList_viewer$key} from '~/__generated__/ThreadedRepliesList_viewer.graphql'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import type {ThreadedRepliesList_discussion$key} from '~/__generated__/ThreadedRepliesList_discussion.graphql'
+import type {ThreadedRepliesList_replies$key} from '~/__generated__/ThreadedRepliesList_replies.graphql'
+import type {ThreadedRepliesList_viewer$key} from '~/__generated__/ThreadedRepliesList_viewer.graphql'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import ThreadedCommentBase from './ThreadedCommentBase'
 import ThreadedTaskBase from './ThreadedTaskBase'
 

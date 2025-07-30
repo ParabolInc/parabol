@@ -1,4 +1,4 @@
-import {NotifyPaymentRejectedResolvers} from '../resolverTypes'
+import type {NotifyPaymentRejectedResolvers} from '../resolverTypes'
 
 const NotifyPaymentRejected: NotifyPaymentRejectedResolvers = {
   __isTypeOf: ({type}) => type === 'PAYMENT_REJECTED',

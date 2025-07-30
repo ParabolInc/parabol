@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {mapResponseRepliedToToast_notification$data} from '../../__generated__/mapResponseRepliedToToast_notification.graphql'
-import {Snack} from '../../components/Snackbar'
-import {OnNextHistoryContext} from '../../types/relayMutations'
+import type {mapResponseRepliedToToast_notification$data} from '../../__generated__/mapResponseRepliedToToast_notification.graphql'
+import type {Snack} from '../../components/Snackbar'
+import type {OnNextHistoryContext} from '../../types/relayMutations'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`

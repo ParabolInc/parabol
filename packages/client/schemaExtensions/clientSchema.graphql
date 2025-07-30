@@ -1,180 +1,180 @@
 interface MusicSettings {
-  trackSrc: String
-  isPlaying: Boolean
-  timestamp: Float
+	trackSrc: String
+	isPlaying: Boolean
+	timestamp: Float
 }
 
 extend interface NewMeeting {
-  localPhase: NewMeetingPhase!
-  localStage: NewMeetingStage!
-  showSidebar: Boolean!
-  musicSettings: MusicSettings
+	localPhase: NewMeetingPhase!
+	localStage: NewMeetingStage!
+	showSidebar: Boolean!
+	musicSettings: MusicSettings
 }
 
 extend type ActionMeeting {
-  localPhase: NewMeetingPhase!
-  localStage: NewMeetingStage!
-  showSidebar: Boolean!
-  musicSettings: MusicSettings
+	localPhase: NewMeetingPhase!
+	localStage: NewMeetingStage!
+	showSidebar: Boolean!
+	musicSettings: MusicSettings
 }
 
 type ParabolSearchQuery {
-  id: String!
-  queryString: String
-  statusFilters: [TaskStatusEnum!]
+	id: String!
+	queryString: String
+	statusFilters: [TaskStatusEnum!]
 }
 
 extend type PokerMeeting {
-  isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
-  localPhase: NewMeetingPhase!
-  localStage: NewMeetingStage!
-  showSidebar: Boolean!
-  githubSearchQuery: GitHubSearchQuery!
-  gitlabSearchQuery: GitLabSearchQuery!
-  jiraSearchQuery: JiraSearchQuery!
-  jiraServerSearchQuery: JiraSearchQuery!
-  parabolSearchQuery: ParabolSearchQuery!
-  azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
-  linearSearchQuery: LinearSearchQuery!
-  musicSettings: MusicSettings
+	isCommentUnread: Boolean!
+	isRightDrawerOpen: Boolean!
+	localPhase: NewMeetingPhase!
+	localStage: NewMeetingStage!
+	showSidebar: Boolean!
+	githubSearchQuery: GitHubSearchQuery!
+	gitlabSearchQuery: GitLabSearchQuery!
+	jiraSearchQuery: JiraSearchQuery!
+	jiraServerSearchQuery: JiraSearchQuery!
+	parabolSearchQuery: ParabolSearchQuery!
+	azureDevOpsSearchQuery: AzureDevOpsSearchQuery!
+	linearSearchQuery: LinearSearchQuery!
+	musicSettings: MusicSettings
 }
 
 extend type RetrospectiveMeeting {
-  isViewerDragInProgress: Boolean
-  localPhase: NewMeetingPhase!
-  localStage: NewMeetingStage!
-  showSidebar: Boolean!
-  spotlightGroup: RetroReflectionGroup
-  spotlightReflectionId: String
-  spotlightSearchQuery: String
-  showTranscription: Boolean!
-  musicSettings: MusicSettings
+	isViewerDragInProgress: Boolean
+	localPhase: NewMeetingPhase!
+	localStage: NewMeetingStage!
+	showSidebar: Boolean!
+	spotlightGroup: RetroReflectionGroup
+	spotlightReflectionId: String
+	spotlightSearchQuery: String
+	showTranscription: Boolean!
+	musicSettings: MusicSettings
 }
 
 extend type TeamPromptMeeting {
-  localPhase: NewMeetingPhase!
-  localStage: NewMeetingStage!
-  localStageId: String
-  isRightDrawerOpen: Boolean!
-  showWorkSidebar: Boolean!
-  showSidebar: Boolean!
-  musicSettings: MusicSettings
+	localPhase: NewMeetingPhase!
+	localStage: NewMeetingStage!
+	localStageId: String
+	isRightDrawerOpen: Boolean!
+	showWorkSidebar: Boolean!
+	showSidebar: Boolean!
+	musicSettings: MusicSettings
 }
 
 extend type Team {
-  teamMemberFilter: TeamMember
-  editingScaleId: ID
-  # Used for Page DnD dropping on a team
-  isDraggingFirstChild: Boolean
-  isDraggingLastChild: Boolean
+	teamMemberFilter: TeamMember
+	editingScaleId: ID
+	# Used for Page DnD dropping on a team
+	isDraggingFirstChild: Boolean
+	isDraggingLastChild: Boolean
 }
 
 extend type TeamMember {
-  manageTeamMemberId: ID
+	manageTeamMemberId: ID
 }
 
 extend type PokerMeetingSettings {
-  activeTemplate: PokerTemplate!
+	activeTemplate: PokerTemplate!
 }
 
 extend type RetrospectiveMeetingSettings {
-  activeTemplate: ReflectTemplate!
-  templateSearchQuery: String
+	activeTemplate: ReflectTemplate!
+	templateSearchQuery: String
 }
 
 extend type User {
-  # If positive, client clock is ahead of server clock by this many ms
-  clientClockOffset: Int
-  dashSearch: String
-  activityLibrarySearch: String
-  pageName: String
-  # The team we should default to in team pickers, etc.
-  preferredTeamId: ID
-  # The ID of the Page that is currently being dragged
-  draggingPageId: ID
-  # True if the page being dragged is private (private pages cannot be dragged to top-level shared)
-  draggingPageIsPrivate: Boolean
+	# If positive, client clock is ahead of server clock by this many ms
+	clientClockOffset: Int
+	dashSearch: String
+	activityLibrarySearch: String
+	pageName: String
+	# The team we should default to in team pickers, etc.
+	preferredTeamId: ID
+	# The ID of the Page that is currently being dragged
+	draggingPageId: ID
+	# True if the page being dragged is private (private pages cannot be dragged to top-level shared)
+	draggingPageIsPrivate: Boolean
 }
 
 extend type Page {
-  isDraggingFirstChild: Boolean
-  isDraggingLastChild: Boolean
-  # If on a /page route, all ancestor pages will receive a depth
-  # This is for the left nav to determine if the item should be highlighted
-  currentPageAncestorDepth: Int
+	isDraggingFirstChild: Boolean
+	isDraggingLastChild: Boolean
+	# If on a /page route, all ancestor pages will receive a depth
+	# This is for the left nav to determine if the item should be highlighted
+	currentPageAncestorDepth: Int
 }
 
 extend type Task {
-  error: String
+	error: String
 }
 
 extend type RetroReflectionGroup {
-  isExpanded: Boolean
-  subColumnIdx: Int
+	isExpanded: Boolean
+	subColumnIdx: Int
 }
 
 extend type RetroReflection {
-  isViewerDragging: Boolean
-  isDropping: Boolean
-  remoteDrag: RemoteReflectionDrag
-  ignoreDragStarts: [ID!]
-  isEditing: Boolean
+	isViewerDragging: Boolean
+	isDropping: Boolean
+	remoteDrag: RemoteReflectionDrag
+	ignoreDragStarts: [ID!]
+	isEditing: Boolean
 }
 
 extend type ReflectPrompt {
-  editorIds: [ID!]
+	editorIds: [ID!]
 }
 
 extend interface NewMeetingStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type CheckInStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type GenericMeetingStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type RetroDiscussStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type UpdatesStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type AgendaItemsStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type EstimateStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type TeamHealthStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type TeamPromptResponseStage {
-  localScheduledEndTime: String
+	localScheduledEndTime: String
 }
 
 extend type Discussion {
-  isAnonymousComment: Boolean!
-  replyingTo: Threadable
-  # the taskId if the Viewer is ecurrently editing one in the context of a discussion
-  editingTaskId: ID
+	isAnonymousComment: Boolean!
+	replyingTo: Threadable
+	# the taskId if the Viewer is ecurrently editing one in the context of a discussion
+	editingTaskId: ID
 }
 
 extend type Organization {
-  showDrawer: Boolean!
-  showConfetti: Boolean!
+	showDrawer: Boolean!
+	showConfetti: Boolean!
 }
 
 extend type Query {
-  # True iff it's the first time the viewer has logged in.
-  isNewUser: Boolean
+	# True iff it's the first time the viewer has logged in.
+	isNewUser: Boolean
 }

@@ -1,15 +1,15 @@
 import AuthToken from '../../../database/types/AuthToken'
 import TimelineEventJoinedParabol from '../../../database/types/TimelineEventJoinedParabol'
-import User from '../../../database/types/User'
+import type User from '../../../database/types/User'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import IUser from '../../../postgres/types/IUser'
+import type IUser from '../../../postgres/types/IUser'
 import acceptTeamInvitation from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import sendPromptToJoinOrg from '../../../utils/sendPromptToJoinOrg'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import addSeedTasks from './addSeedTasks'
 import createNewOrg from './createNewOrg'
@@ -42,11 +42,13 @@ const bootstrapNewUser = async (
     pg
       .with('User', (qc) =>
         // PageExternalAccess is moved to PageUserAccess via PG trigger
-        qc.insertInto('User').values({
-          ...newUser,
-          isPatient0,
-          identities: newUser.identities.map((identity) => JSON.stringify(identity))
-        })
+        qc
+          .insertInto('User')
+          .values({
+            ...newUser,
+            isPatient0,
+            identities: newUser.identities.map((identity) => JSON.stringify(identity))
+          })
       )
       .insertInto('TimelineEvent')
       .values(joinEvent)

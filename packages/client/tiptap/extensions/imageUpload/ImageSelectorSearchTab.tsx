@@ -1,7 +1,7 @@
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
-import {usePaginationFragment, usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import type {ImageSelectorSearchTabPaginationQuery} from '../../../__generated__/ImageSelectorSearchTabPaginationQuery.graphql'
 import type {ImageSelectorSearchTabQuery} from '../../../__generated__/ImageSelectorSearchTabQuery.graphql'
 import type {ImageSelectorSearchTabQuery_query$key} from '../../../__generated__/ImageSelectorSearchTabQuery_query.graphql'

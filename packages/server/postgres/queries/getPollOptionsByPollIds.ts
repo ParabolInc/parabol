@@ -1,7 +1,7 @@
 import getPg from '../getPg'
 import {
   getPollOptionsByPollIdsQuery,
-  IGetPollOptionsByPollIdsQueryResult
+  type IGetPollOptionsByPollIdsQueryResult
 } from './generated/getPollOptionsByPollIdsQuery'
 
 export interface PollOption extends IGetPollOptionsByPollIdsQueryResult {}

@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RemoveTeamMemberMutation as TRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
-import {RemoveTeamMemberMutation_task$data} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
-import {RemoveTeamMemberMutation_team$data} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
-import {
+import type {RemoveTeamMemberMutation as TRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
+import type {RemoveTeamMemberMutation_task$data} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
+import type {RemoveTeamMemberMutation_team$data} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
+import type {
   OnNextHandler,
   OnNextHistoryContext,
   SharedUpdater,
@@ -11,12 +11,12 @@ import {
 } from '../types/relayMutations'
 import onMeetingRoute from '../utils/onMeetingRoute'
 import onTeamRoute from '../utils/onTeamRoute'
-import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 import handleAddNotifications from './handlers/handleAddNotifications'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from './handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from './handlers/handleRemoveTeams'
 import handleUpsertTasks from './handlers/handleUpsertTasks'
+import SetNotificationStatusMutation from './SetNotificationStatusMutation'
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {

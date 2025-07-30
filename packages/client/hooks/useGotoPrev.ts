@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useCallback} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useGotoPrev_meeting$key} from '~/__generated__/useGotoPrev_meeting.graphql'
+import type {useGotoPrev_meeting$key} from '~/__generated__/useGotoPrev_meeting.graphql'
 import findStageBeforeId from '../utils/meetings/findStageBeforeId'
-import useGotoStageId from './useGotoStageId'
+import type useGotoStageId from './useGotoStageId'
 
 export const useGotoPrev = (
   meetingRef: useGotoPrev_meeting$key,

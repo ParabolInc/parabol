@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import {withRouter} from 'react-router-dom'
-import dashboardQuery, {DashboardQuery} from '../__generated__/DashboardQuery.graphql'
+import dashboardQuery, {type DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'

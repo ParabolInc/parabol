@@ -1,4 +1,4 @@
-import {UpdatesStageResolvers} from '../resolverTypes'
+import type {UpdatesStageResolvers} from '../resolverTypes'
 
 const UpdatesStage: UpdatesStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'updates'

@@ -8,7 +8,7 @@ import encodeAuthToken from '../../../utils/encodeAuthToken'
 import isEmailVerificationRequired from '../../../utils/isEmailVerificationRequired'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
@@ -57,7 +57,13 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
       return {error: {message: 'Verification email already sent'}}
     }
     const redirectTo = new URLSearchParams(params).get('redirectTo')
-    return createEmailVerification({invitationToken, password, pseudoId, email, redirectTo})
+    return createEmailVerification({
+      invitationToken,
+      password,
+      pseudoId,
+      email,
+      redirectTo
+    })
   }
   const hashedPassword = await bcrypt.hash(password, Security.SALT_ROUNDS)
   const newUser = await createNewLocalUser({

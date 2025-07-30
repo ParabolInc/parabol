@@ -1,7 +1,7 @@
-import {Insertable} from 'kysely'
+import type {Insertable} from 'kysely'
 import generateUID from '../../generateUID'
-import {MeetingTypeEnum} from '../../postgres/types/Meeting'
-import {MeetingTemplate as MeetingTemplateDB} from '../../postgres/types/pg'
+import type {MeetingTypeEnum} from '../../postgres/types/Meeting'
+import type {MeetingTemplate as MeetingTemplateDB} from '../../postgres/types/pg'
 
 export type SharingScopeEnum = 'ORGANIZATION' | 'PUBLIC' | 'TEAM' | 'USER'
 

@@ -1,5 +1,5 @@
-import TeamHealthPhaseDB from '../../../database/types/TeamHealthPhase'
-import {TeamHealthPhaseResolvers} from '../resolverTypes'
+import type TeamHealthPhaseDB from '../../../database/types/TeamHealthPhase'
+import type {TeamHealthPhaseResolvers} from '../resolverTypes'
 
 export type TeamHealthPhaseSource = TeamHealthPhaseDB & {
   meetingId: string

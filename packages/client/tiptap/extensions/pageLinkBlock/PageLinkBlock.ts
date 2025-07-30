@@ -1,9 +1,8 @@
 import {GapCursor} from '@tiptap/pm/gapcursor'
-import {Plugin, TextSelection} from '@tiptap/pm/state'
-import {isNodeSelection, ReactNodeViewRenderer, type JSONContent} from '@tiptap/react'
-
 import {Slice} from '@tiptap/pm/model'
-import * as Y from 'yjs'
+import {Plugin, TextSelection} from '@tiptap/pm/state'
+import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
+import type * as Y from 'yjs'
 import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {PageLinkBlockView} from './PageLinkBlockView'
 

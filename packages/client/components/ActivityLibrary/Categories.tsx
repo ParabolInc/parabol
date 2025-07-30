@@ -1,6 +1,6 @@
 import FavoriteIcon from '@mui/icons-material/Favorite'
-import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
-import {CardTheme} from './ActivityCard'
+import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
+import type {CardTheme} from './ActivityCard'
 
 export const MAIN_CATEGORIES = [
   'retrospective',
@@ -38,13 +38,41 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     secondary: 'bg-slate-200',
     text: 'text-slate-500'
   },
-  standup: {primary: 'bg-aqua-400', secondary: 'bg-aqua-100', text: 'text-aqua-400'},
-  estimation: {primary: 'bg-tomato-500', secondary: 'bg-tomato-100', text: 'text-tomato-500'},
-  retrospective: {primary: 'bg-grape-500', secondary: 'bg-[#F2E1F7]', text: 'text-grape-500'},
-  feedback: {primary: 'bg-jade-400', secondary: 'bg-jade-100', text: 'text-jade-400'},
-  strategy: {primary: 'bg-rose-500', secondary: 'bg-rose-100', text: 'text-rose-500'},
-  premortem: {primary: 'bg-gold-500', secondary: 'bg-gold-100', text: 'text-gold-500'},
-  postmortem: {primary: 'bg-grass-500', secondary: 'bg-grass-100', text: 'text-grass-500'},
+  standup: {
+    primary: 'bg-aqua-400',
+    secondary: 'bg-aqua-100',
+    text: 'text-aqua-400'
+  },
+  estimation: {
+    primary: 'bg-tomato-500',
+    secondary: 'bg-tomato-100',
+    text: 'text-tomato-500'
+  },
+  retrospective: {
+    primary: 'bg-grape-500',
+    secondary: 'bg-[#F2E1F7]',
+    text: 'text-grape-500'
+  },
+  feedback: {
+    primary: 'bg-jade-400',
+    secondary: 'bg-jade-100',
+    text: 'text-jade-400'
+  },
+  strategy: {
+    primary: 'bg-rose-500',
+    secondary: 'bg-rose-100',
+    text: 'text-rose-500'
+  },
+  premortem: {
+    primary: 'bg-gold-500',
+    secondary: 'bg-gold-100',
+    text: 'text-gold-500'
+  },
+  postmortem: {
+    primary: 'bg-grass-500',
+    secondary: 'bg-grass-100',
+    text: 'text-grass-500'
+  },
   [CUSTOM_CATEGORY_ID]: {
     primary: 'bg-fuscia-400',
     secondary: 'bg-slate-200',

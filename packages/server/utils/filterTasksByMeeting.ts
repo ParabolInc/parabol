@@ -1,5 +1,5 @@
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import {Task} from '../postgres/types'
+import type {Task} from '../postgres/types'
 
 const filterTasksByMeeting = (tasks: Task[], meetingId: string, viewerId: string) => {
   return tasks.filter((task) => {

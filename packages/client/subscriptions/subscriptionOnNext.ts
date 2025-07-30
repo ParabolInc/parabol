@@ -1,6 +1,6 @@
-import {RouterProps} from 'react-router'
-import Atmosphere from '../Atmosphere'
-import {OnNextHandler} from '../types/relayMutations'
+import type {RouterProps} from 'react-router'
+import type Atmosphere from '../Atmosphere'
+import type {OnNextHandler} from '../types/relayMutations'
 
 const subscriptionOnNext =
   (

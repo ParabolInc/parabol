@@ -3,9 +3,9 @@ import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
+import type {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
@@ -72,7 +72,7 @@ const JiraFieldMenu = (props: Props) => {
 
   const {name: dimensionName} = dimensionRef
   const {name: serviceFieldName} = serviceField
-  /* eslint-disable react-hooks/rules-of-hooks */
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   const defaultActiveidx = useMemo(() => {
     if (possibleEstimationFields.length === 0) return undefined
     if (serviceFieldName === SprintPokerDefaults.SERVICE_FIELD_COMMENT)

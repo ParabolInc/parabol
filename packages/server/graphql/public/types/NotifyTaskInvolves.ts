@@ -1,6 +1,6 @@
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import {NotifyTaskInvolvesResolvers} from '../resolverTypes'
+import type {NotifyTaskInvolvesResolvers} from '../resolverTypes'
 
 const NotifyTaskInvolves: NotifyTaskInvolvesResolvers = {
   __isTypeOf: ({type}) => type === 'TASK_INVOLVES',

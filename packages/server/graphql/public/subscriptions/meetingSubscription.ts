@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import getPubSub from '../../../utils/getPubSub'
 import {broadcastSubscription} from '../broadcastSubscription'
-import {SubscriptionResolvers} from '../resolverTypes'
+import type {SubscriptionResolvers} from '../resolverTypes'
 
 const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
   subscribe: async (_source, {meetingId}, context) => {

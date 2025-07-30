@@ -1,4 +1,4 @@
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import {callGQL} from '../utils/callGQL'
@@ -56,7 +56,9 @@ const eventLookup = {
   customer: {
     source: {
       updated: {
-        getVars: ({customer: customerId}: {customer: string}) => ({customerId}),
+        getVars: ({customer: customerId}: {customer: string}) => ({
+          customerId
+        }),
         query: `
         mutation StripeUpdateCreditCard($customerId: ID!) {
           stripeUpdateCreditCard(customerId: $customerId)

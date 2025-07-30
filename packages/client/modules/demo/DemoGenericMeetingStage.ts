@@ -1,4 +1,4 @@
-import {NewMeetingPhaseTypeEnum} from '../../__generated__/MeetingControlBar_meeting.graphql'
+import type {NewMeetingPhaseTypeEnum} from '../../__generated__/MeetingControlBar_meeting.graphql'
 import {RetroDemo} from '../../types/constEnums'
 
 export default class DemoGenericMeetingStage {

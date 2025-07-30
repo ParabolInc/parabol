@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {LinearScopingSearchBar_meeting$key} from '../__generated__/LinearScopingSearchBar_meeting.graphql'
+import type {LinearScopingSearchBar_meeting$key} from '../__generated__/LinearScopingSearchBar_meeting.graphql'
 import {SprintPokerDefaults} from '../types/constEnums'
 import LinearScopingSearchFilterToggle from './LinearScopingSearchFilterToggle'
 import ScopingSearchBar from './ScopingSearchBar'

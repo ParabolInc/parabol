@@ -1,4 +1,4 @@
-import {GenerateInsightSuccessResolvers} from '../resolverTypes'
+import type {GenerateInsightSuccessResolvers} from '../resolverTypes'
 
 export type GenerateInsightSuccessSource = {
   teamId: string

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {MeetingMemberTaskSummaryList_meetingMember$key} from 'parabol-client/__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
+import type {MeetingMemberTaskSummaryList_meetingMember$key} from 'parabol-client/__generated__/MeetingMemberTaskSummaryList_meetingMember.graphql'
 import plural from 'parabol-client/utils/plural'
 import {useFragment} from 'react-relay'
 import SummaryAvatarHeader from './SummaryAvatarHeader'

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {RouterProps} from 'react-router'
+import type {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
-import {
+import type {
   OrganizationSubscription$variables,
   OrganizationSubscription as TOrganizationSubscription
 } from '~/__generated__/OrganizationSubscription.graphql'
@@ -9,7 +9,7 @@ import {
   archiveOrganizationOrganizationOnNext,
   archiveOrganizationOrganizationUpdater
 } from '~/mutations/ArchiveOrganizationMutation'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
   removeOrgUsersOrganizationOnNext,

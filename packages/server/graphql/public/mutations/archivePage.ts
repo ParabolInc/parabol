@@ -8,7 +8,7 @@ import publish from '../../../utils/publish'
 import {addCanonicalPageLink} from '../../../utils/tiptap/addCanonicalPageLink'
 import {removeBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
 const archivePage: MutationResolvers['archivePage'] = async (
@@ -42,8 +42,8 @@ const archivePage: MutationResolvers['archivePage'] = async (
     removeBacklinkedPageLinkBlocks({pageId: dbPageId})
   } else {
     // When restoring, if the parent no longer exists, promote the orphan to the same level as its greatest ancestor
-    let parentPageId: null | undefined = undefined
-    let teamId: string | undefined = undefined
+    let parentPageId: null | undefined
+    let teamId: string | undefined
     if (page.parentPageId) {
       const parentPage = await dataLoader.get('pages').load(page.parentPageId)
       if (!parentPage || parentPage.deletedAt) {
@@ -66,7 +66,13 @@ const archivePage: MutationResolvers['archivePage'] = async (
     )
     await pg
       .updateTable('Page')
-      .set({deletedAt: null, deletedBy: null, parentPageId, teamId, sortOrder})
+      .set({
+        deletedAt: null,
+        deletedBy: null,
+        parentPageId,
+        teamId,
+        sortOrder
+      })
       .where('id', '=', dbPageId)
       .execute()
     if (parentPageId !== undefined || teamId !== undefined) {

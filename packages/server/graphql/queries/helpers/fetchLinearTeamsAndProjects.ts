@@ -1,8 +1,8 @@
-import {GraphQLResolveInfo} from 'graphql'
+import type {GraphQLResolveInfo} from 'graphql'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
 import {Logger} from '../../../utils/Logger'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 export const fetchLinearProjects = async (
   teamId: string,

@@ -3,7 +3,7 @@ import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
+import type {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import useModal from '../hooks/useModal'
 import AddTeamMemberModal from './AddTeamMemberModal'
 

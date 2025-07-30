@@ -1,6 +1,6 @@
 type RemoveAuthIdentitySuccess {
-  """
-  The users who had their auth identity removed
-  """
-  users: [User!]!
+	"""
+	The users who had their auth identity removed
+	"""
+	users: [User!]!
 }

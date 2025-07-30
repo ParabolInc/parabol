@@ -3,8 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {PokerDiscussVoting_meeting$key} from '../__generated__/PokerDiscussVoting_meeting.graphql'
-import {
+import type {PokerDiscussVoting_meeting$key} from '../__generated__/PokerDiscussVoting_meeting.graphql'
+import type {
   PokerDiscussVoting_stage$data,
   PokerDiscussVoting_stage$key
 } from '../__generated__/PokerDiscussVoting_stage.graphql'
@@ -87,7 +87,9 @@ const PokerDiscussVoting = (props: Props) => {
   }
 
   const {rows, topLabel} = useMemo(() => {
-    const scoreObj = {} as {[label: string]: PokerDiscussVoting_stage$data['scores'][0][]}
+    const scoreObj = {} as {
+      [label: string]: PokerDiscussVoting_stage$data['scores'][0][]
+    }
     let highScore = 0
     let topLabel = ''
     scores.forEach((score) => {

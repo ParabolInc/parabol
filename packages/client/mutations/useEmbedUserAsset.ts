@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMutation, type UseMutationConfig} from 'react-relay'
-import {useEmbedUserAssetMutation as TuseEmbedUserAssetMutation} from '../__generated__/useEmbedUserAssetMutation.graphql'
+import {type UseMutationConfig, useMutation} from 'react-relay'
+import type {useEmbedUserAssetMutation as TuseEmbedUserAssetMutation} from '../__generated__/useEmbedUserAssetMutation.graphql'
 
 const mutation = graphql`
   mutation useEmbedUserAssetMutation($url: String!) {

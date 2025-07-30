@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import GenericAuthentication, {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
+import GenericAuthentication, {type AuthPageSlug, type GotoAuthPage} from './GenericAuthentication'
 
 interface Props {
   teamName: string

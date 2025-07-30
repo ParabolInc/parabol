@@ -1,18 +1,18 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
-import {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
-import {
+import type {RemoteReflection_meeting$key} from '../../__generated__/RemoteReflection_meeting.graphql'
+import type {
   RemoteReflection_reflection$data,
   RemoteReflection_reflection$key
 } from '../../__generated__/RemoteReflection_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
-import {DeepNonNullable} from '../../types/generics'
+import type {DeepNonNullable} from '../../types/generics'
 import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
@@ -20,7 +20,7 @@ import ReflectionCardRoot from '../ReflectionCard/ReflectionCardRoot'
 import getBBox from '../RetroReflectPhase/getBBox'
 import HTMLReflection from '../RetroReflectPhase/HTMLReflection'
 import {useTipTapContext} from '../TipTapProvider'
-import UserDraggingHeader, {RemoteReflectionArrow} from '../UserDraggingHeader'
+import UserDraggingHeader, {type RemoteReflectionArrow} from '../UserDraggingHeader'
 
 const circleAnimation = (transform?: string) => keyframes`
   0%{

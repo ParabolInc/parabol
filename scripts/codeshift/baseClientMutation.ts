@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StandardMutation} from '../types/relayMutations'
-import {PASCAL_MUTATIONMutation as TPASCAL_MUTATIONMutation} from '../__generated__/PASCAL_MUTATIONMutation.graphql'
+import type {PASCAL_MUTATIONMutation as TPASCAL_MUTATIONMutation} from '../__generated__/PASCAL_MUTATIONMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment PASCAL_MUTATIONMutation_LCASE_SUB on PASCAL_MUTATIONSuccess {

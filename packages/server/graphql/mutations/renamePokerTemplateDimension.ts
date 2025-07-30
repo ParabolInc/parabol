@@ -4,7 +4,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RenamePokerTemplateDimensionPayload from '../types/RenamePokerTemplateDimensionPayload'
 
 const renamePokerTemplateDimension = {
@@ -31,7 +31,9 @@ const renamePokerTemplateDimension = {
 
     // AUTH
     if (!dimension || dimension.removedAt) {
-      return standardError(new Error('Dimension not found'), {userId: viewerId})
+      return standardError(new Error('Dimension not found'), {
+        userId: viewerId
+      })
     }
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

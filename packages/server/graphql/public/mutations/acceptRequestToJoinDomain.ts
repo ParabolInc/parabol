@@ -5,14 +5,14 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import {Logger} from '../../../utils/Logger'
-import RedisLock from '../../../utils/RedisLock'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
+import RedisLock from '../../../utils/RedisLock'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 // TODO (EXPERIMENT: prompt-to-join-org): some parts are borrowed from acceptTeamInvitation, create generic functions
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
@@ -122,7 +122,9 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   if (!updatedUser) {
     return standardError(new Error('User not found'))
   }
-  publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms: updatedUser.tms})
+  publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {
+    tms: updatedUser.tms
+  })
 
   validTeams.forEach((team) => {
     const {id: teamId} = team

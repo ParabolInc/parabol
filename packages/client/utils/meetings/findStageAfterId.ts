@@ -1,4 +1,4 @@
-import {FindStageByIdPhase} from './findStageById'
+import type {FindStageByIdPhase} from './findStageById'
 
 const findStageAfterId = <T extends FindStageByIdPhase>(
   phases: readonly T[] | null | undefined,

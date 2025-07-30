@@ -1,4 +1,4 @@
 type TeamStat {
-  id: ID!
-  createdAt: DateTime!
+	id: ID!
+	createdAt: DateTime!
 }

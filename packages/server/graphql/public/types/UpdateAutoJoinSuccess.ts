@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {UpdateAutoJoinSuccessResolvers} from '../resolverTypes'
+import type {UpdateAutoJoinSuccessResolvers} from '../resolverTypes'
 
 export type UpdateAutoJoinSuccessSource = {
   updatedTeamIds: string[]

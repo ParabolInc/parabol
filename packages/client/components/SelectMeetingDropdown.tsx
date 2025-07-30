@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {SelectMeetingDropdown_meetings$key} from '~/__generated__/SelectMeetingDropdown_meetings.graphql'
+import type {SelectMeetingDropdown_meetings$key} from '~/__generated__/SelectMeetingDropdown_meetings.graphql'
 import plural from '~/utils/plural'
 import SelectMeetingDropdownItem from './SelectMeetingDropdownItem'
 
@@ -24,7 +24,7 @@ const SelectMeetingDropdown = (props: Props) => {
   const label = `${meetingCount} Active ${plural(meetingCount, 'Meeting')}`
   return (
     <div className='w-[var(--radix-dropdown-menu-trigger-width)]'>
-      <DropdownMenu.Label className='px-4 py-2 text-xs font-semibold text-slate-600 select-none'>
+      <DropdownMenu.Label className='select-none px-4 py-2 font-semibold text-slate-600 text-xs'>
         {label}
       </DropdownMenu.Label>
       {meetings.map((meeting) => (

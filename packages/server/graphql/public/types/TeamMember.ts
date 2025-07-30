@@ -10,7 +10,7 @@ import fetchAllRepoIntegrations from '../../queries/helpers/fetchAllRepoIntegrat
 import getAllCachedRepoIntegrations from '../../queries/helpers/getAllCachedRepoIntegrations'
 import getPrevUsedRepoIntegrations from '../../queries/helpers/getPrevUsedRepoIntegrations'
 import {default as sortRepoIntegrations} from '../../queries/helpers/sortRepoIntegrations'
-import {TeamMemberResolvers} from '../resolverTypes'
+import type {TeamMemberResolvers} from '../resolverTypes'
 
 const TeamMember: TeamMemberResolvers = {
   isOrgAdmin: async ({teamId, userId}, _args, {dataLoader}) => {
@@ -43,7 +43,9 @@ const TeamMember: TeamMemberResolvers = {
       const {tms} = user
       const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
-        return standardError(new Error('Not on same team as user'), {userId: viewerId})
+        return standardError(new Error('Not on same team as user'), {
+          userId: viewerId
+        })
       }
     }
     const prevUsedRepoIntegrations = await getPrevUsedRepoIntegrations(teamId)
@@ -63,7 +65,9 @@ const TeamMember: TeamMemberResolvers = {
       const {tms} = user
       const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
-        return standardError(new Error('Not on same team as user'), {userId: viewerId})
+        return standardError(new Error('Not on same team as user'), {
+          userId: viewerId
+        })
       }
     }
     const [allCachedRepoIntegrations, prevUsedRepoIntegrations] = await Promise.all([

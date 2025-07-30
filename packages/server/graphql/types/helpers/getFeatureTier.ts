@@ -1,4 +1,4 @@
-import {TierEnum} from '../../public/resolverTypes'
+import type {TierEnum} from '../../public/resolverTypes'
 
 export const getFeatureTier = ({
   tier,

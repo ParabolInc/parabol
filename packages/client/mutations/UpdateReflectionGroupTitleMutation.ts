@@ -4,8 +4,8 @@
  */
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UpdateReflectionGroupTitleMutation as TUpdateReflectionGroupTitleMutation} from '../__generated__/UpdateReflectionGroupTitleMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {UpdateReflectionGroupTitleMutation as TUpdateReflectionGroupTitleMutation} from '../__generated__/UpdateReflectionGroupTitleMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 import updateProxyRecord from '../utils/relay/updateProxyRecord'
 
 graphql`

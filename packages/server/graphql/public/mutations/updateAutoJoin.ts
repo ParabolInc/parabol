@@ -2,7 +2,7 @@ import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateAutoJoin: MutationResolvers['updateAutoJoin'] = async (
   _source,
@@ -16,7 +16,9 @@ const updateAutoJoin: MutationResolvers['updateAutoJoin'] = async (
       viewerTeams.map(({orgId}) => isUserBillingLeader(viewerId, orgId, dataLoader))
     )
     if (!billingLeaders.every(Boolean)) {
-      return standardError(new Error('Viewer is not billing leader'), {userId: viewerId})
+      return standardError(new Error('Viewer is not billing leader'), {
+        userId: viewerId
+      })
     }
   }
 

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
+import type {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
 import renderMarkdown from '../utils/renderMarkdown'
 
 interface Props {

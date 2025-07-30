@@ -7,7 +7,7 @@ import getKysely from '../../../postgres/getKysely'
 import getPg from '../../../postgres/getPg'
 import getPgConfig from '../../../postgres/getPgConfig'
 import {Logger} from '../../../utils/Logger'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const exec = util.promisify(childProcess.exec)
 

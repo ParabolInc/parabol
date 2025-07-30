@@ -1,4 +1,4 @@
-import {UpdateAgendaItemPayloadResolvers} from '../resolverTypes'
+import type {UpdateAgendaItemPayloadResolvers} from '../resolverTypes'
 
 export type UpdateAgendaItemPayloadSource =
   | {

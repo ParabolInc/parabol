@@ -1,6 +1,6 @@
-import {TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import canAccessAI from './canAccessAI'
 

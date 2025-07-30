@@ -2,7 +2,7 @@ import base64url from 'base64url'
 import crypto from 'crypto'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import util from 'util'
-import AuthIdentity from '../../../database/types/AuthIdentity'
+import type AuthIdentity from '../../../database/types/AuthIdentity'
 import getMailManager from '../../../email/getMailManager'
 import resetPasswordEmailCreator from '../../../email/resetPasswordEmailCreator'
 import getKysely from '../../../postgres/getKysely'
@@ -41,7 +41,9 @@ const processEmailPasswordReset = async (
 
   if (sendEmail === false) return {success: true}
 
-  const {subject, body, html} = resetPasswordEmailCreator({resetPasswordToken})
+  const {subject, body, html} = resetPasswordEmailCreator({
+    resetPasswordToken
+  })
   const success = await getMailManager().sendEmail({
     to: email,
     subject,

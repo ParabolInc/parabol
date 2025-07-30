@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 
 const generateWholeMeetingSentimentScore = async (

@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import orgAuthenticationQuery, {
-  OrgAuthenticationQuery
+  type OrgAuthenticationQuery
 } from '../../../../__generated__/OrgAuthenticationQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import OrgAuthentication from '../../components/OrgAuthentication/OrgAuthentication'

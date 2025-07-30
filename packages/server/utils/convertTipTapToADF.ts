@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import fnTranslate from 'md-to-adf'
 import {convertTipTapToMarkdown} from './convertTipTapToMarkdown'
 export const convertTipTapToADF = (content: JSONContent) => {

@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy, type RecordSourceProxy} from 'relay-runtime'
 import getNodeById from '../../utils/relay/getNodeById'
 import {insertEdgeAfter} from '../../utils/relay/insertEdge'
 

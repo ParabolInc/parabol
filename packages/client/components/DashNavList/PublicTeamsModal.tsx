@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Fragment, ReactNode} from 'react'
+import {Fragment, type ReactNode} from 'react'
 import {useFragment} from 'react-relay'
-import {PublicTeamsModal_team$key} from '../../__generated__/PublicTeamsModal_team.graphql'
+import type {PublicTeamsModal_team$key} from '../../__generated__/PublicTeamsModal_team.graphql'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
@@ -49,7 +49,7 @@ const PublicTeamsModal = (props: Props) => {
         <div className='overflow-auto pr-6'>
           {sortedTeams.map((team) => (
             <Fragment key={team.id}>
-              <hr className='my-2 border-t border-slate-300' />
+              <hr className='my-2 border-slate-300 border-t' />
               <PublicTeamItem teamRef={team} />
             </Fragment>
           ))}

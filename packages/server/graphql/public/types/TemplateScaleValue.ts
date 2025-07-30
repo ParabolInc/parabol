@@ -1,4 +1,4 @@
-import {TemplateScaleValueResolvers} from '../resolverTypes'
+import type {TemplateScaleValueResolvers} from '../resolverTypes'
 
 export type TemplateScaleValueSource = {
   color: string

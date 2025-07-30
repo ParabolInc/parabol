@@ -2,86 +2,86 @@
 A reflection group created during the group phase of a retrospective
 """
 type RetroReflectionGroup {
-  """
-  shortid
-  """
-  id: ID!
+	"""
+	shortid
+	"""
+	id: ID!
 
-  """
-  A list of users currently commenting
-  """
-  commentors: [CommentorDetails!]
-    @deprecated(reason: "Moved to ThreadConnection. Can remove Jun-01-2021")
+	"""
+	A list of users currently commenting
+	"""
+	commentors: [CommentorDetails!]
+		@deprecated(reason: "Moved to ThreadConnection. Can remove Jun-01-2021")
 
-  """
-  The timestamp the meeting was created
-  """
-  createdAt: DateTime!
+	"""
+	The timestamp the meeting was created
+	"""
+	createdAt: DateTime!
 
-  """
-  True if the group has not been removed, else false
-  """
-  isActive: Boolean!
+	"""
+	True if the group has not been removed, else false
+	"""
+	isActive: Boolean!
 
-  """
-  The foreign key to link a reflection group to its meeting
-  """
-  meetingId: ID!
+	"""
+	The foreign key to link a reflection group to its meeting
+	"""
+	meetingId: ID!
 
-  """
-  The retrospective meeting this reflection was created in
-  """
-  meeting: RetrospectiveMeeting!
-  prompt: ReflectPrompt!
+	"""
+	The retrospective meeting this reflection was created in
+	"""
+	meeting: RetrospectiveMeeting!
+	prompt: ReflectPrompt!
 
-  """
-  The foreign key to link a reflection group to its prompt. Immutable.
-  """
-  promptId: ID!
-  reflections: [RetroReflection!]!
+	"""
+	The foreign key to link a reflection group to its prompt. Immutable.
+	"""
+	promptId: ID!
+	reflections: [RetroReflection!]!
 
-  """
-  Our auto-suggested title, to be compared to the actual title for analytics
-  """
-  smartTitle: String
+	"""
+	Our auto-suggested title, to be compared to the actual title for analytics
+	"""
+	smartTitle: String
 
-  """
-  The sort order of the reflection group
-  """
-  sortOrder: Float!
+	"""
+	The sort order of the reflection group
+	"""
+	sortOrder: Float!
 
-  """
-  The team that is running the retro
-  """
-  team: Team
+	"""
+	The team that is running the retro
+	"""
+	team: Team
 
-  """
-  The title of the grouping of the retrospective reflections
-  """
-  title: String
+	"""
+	The title of the grouping of the retrospective reflections
+	"""
+	title: String
 
-  """
-  true if a user wrote the title, else false
-  """
-  titleIsUserDefined: Boolean!
+	"""
+	true if a user wrote the title, else false
+	"""
+	titleIsUserDefined: Boolean!
 
-  """
-  The timestamp the meeting was updated at
-  """
-  updatedAt: DateTime
+	"""
+	The timestamp the meeting was updated at
+	"""
+	updatedAt: DateTime
 
-  """
-  A list of voterIds (userIds). Not available to team to preserve anonymity
-  """
-  voterIds: [ID!]!
+	"""
+	A list of voterIds (userIds). Not available to team to preserve anonymity
+	"""
+	voterIds: [ID!]!
 
-  """
-  The number of votes this group has received
-  """
-  voteCount: Int!
+	"""
+	The number of votes this group has received
+	"""
+	voteCount: Int!
 
-  """
-  The number of votes the viewer has given this group
-  """
-  viewerVoteCount: Int
+	"""
+	The number of votes the viewer has given this group
+	"""
+	viewerVoteCount: Int
 }

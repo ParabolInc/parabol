@@ -3,7 +3,7 @@ import {isNotNull} from 'parabol-client/utils/predicates'
 import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = async (
   _source,
@@ -21,19 +21,33 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
     return {error: {message: 'Service is not supported'}}
   }
   if (scope === 'global' && (teamId || orgId)) {
-    return {error: {message: 'Global providers must not have an `orgId` nor `teamId`'}}
+    return {
+      error: {
+        message: 'Global providers must not have an `orgId` nor `teamId`'
+      }
+    }
   }
   if (scope === 'org' && (!orgId || teamId)) {
-    return {error: {message: 'Org providers must have an `orgId` and no `teamId`'}}
+    return {
+      error: {
+        message: 'Org providers must have an `orgId` and no `teamId`'
+      }
+    }
   }
   if (scope === 'team' && (!teamId || orgId)) {
-    return {error: {message: 'Team providers must have a `teamId` and no `orgId`'}}
+    return {
+      error: {
+        message: 'Team providers must have a `teamId` and no `orgId`'
+      }
+    }
   }
 
   // AUTH
   if (!isSuperUser(authToken)) {
     if (scope === 'global') {
-      return {error: {message: 'Must be a super user to add a global provider'}}
+      return {
+        error: {message: 'Must be a super user to add a global provider'}
+      }
     }
     if (scope === 'org' && !(await isUserOrgAdmin(viewerId, orgId!, dataLoader))) {
       return {
@@ -44,7 +58,11 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
       }
     }
     if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
-      return {error: {message: 'Must be on the team for the integration provider'}}
+      return {
+        error: {
+          message: 'Must be on the team for the integration provider'
+        }
+      }
     }
   }
 
@@ -59,13 +77,25 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
   } = input
 
   if (authStrategy === 'oauth1' && !oAuth1ProviderMetadataInput) {
-    return {error: {message: 'Auth strategy oauth1 requires oAuth1ProviderMetadataInput'}}
+    return {
+      error: {
+        message: 'Auth strategy oauth1 requires oAuth1ProviderMetadataInput'
+      }
+    }
   }
   if (authStrategy === 'oauth2' && !oAuth2ProviderMetadataInput) {
-    return {error: {message: 'Auth strategy oauth2 requires oAuth2ProviderMetadataInput'}}
+    return {
+      error: {
+        message: 'Auth strategy oauth2 requires oAuth2ProviderMetadataInput'
+      }
+    }
   }
   if (authStrategy === 'webhook' && !webhookProviderMetadataInput) {
-    return {error: {message: 'Auth strategy webhook requires webhookProviderMetadataInput'}}
+    return {
+      error: {
+        message: 'Auth strategy webhook requires webhookProviderMetadataInput'
+      }
+    }
   }
   if (
     [

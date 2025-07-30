@@ -1,4 +1,4 @@
-import {JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import tracer from 'dd-trace'
 import AzureDevOpsIssueId from 'parabol-client/shared/gqlIds/AzureDevOpsIssueId'
@@ -8,18 +8,18 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {ExternalLinks} from '~/types/constEnums'
 import AzureDevOpsProjectId from '../../client/shared/gqlIds/AzureDevOpsProjectId'
 import appOrigin from '../appOrigin'
-import {
+import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
+import type {
   OAuth2AuthorizeResponse,
   OAuth2PkceAuthorizationParams,
   OAuth2PkceRefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
-import {
+import type {
   CreateTaskResponse,
   TaskIntegrationManager
 } from '../integrations/TaskIntegrationManagerFactory'
-import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import {TeamMemberIntegrationAuth} from '../postgres/types'
+import type {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from './logError'
 import makeCreateAzureTaskComment from './makeCreateAzureTaskComment'
 
@@ -282,7 +282,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
     if (!!auth && !!auth.accessToken) {
       this.setToken(auth.accessToken)
     }
-    if (!!provider) {
+    if (provider) {
       this.provider = provider
     }
     this.auth = auth
@@ -437,7 +437,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
       // we can fetch at most 200 items at once VS403474
       for (let i = 0; i < workItemIds.length; i += 200) {
         const ids = workItemIds.slice(i, i + 200)
-        const payload = !!fields ? {ids, fields: fields} : {ids, $expand: 'Links'}
+        const payload = fields ? {ids, fields: fields} : {ids, $expand: 'Links'}
         const res = await this.post<WorkItemBatchResponse>(uri, payload)
         if (res instanceof Error) {
           if (!firstError) {
@@ -527,7 +527,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
       const {id} = azureDevOpsUser
       const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-      if (!!accessibleError) return {error: accessibleError, projects: null}
+      if (accessibleError) return {error: accessibleError, projects: null}
 
       await Promise.allSettled(
         accessibleOrgs.map(async (resource) => {
@@ -540,17 +540,17 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
             isWIQL,
             limit
           )
-          if (!!workItemsError) {
+          if (workItemsError) {
             if (!firstError) {
               firstError = workItemsError
             }
           }
-          if (!!workItems) {
+          if (workItems) {
             const resturnedIds = workItems.map((workItem) => workItem.id)
             if (resturnedIds.length > 0) {
               const {error: fullWorkItemsError, workItems: fullWorkItems} =
                 await this.getWorkItemData(instanceId, resturnedIds)
-              if (!!fullWorkItemsError) {
+              if (fullWorkItemsError) {
                 if (!firstError) {
                   firstError = fullWorkItemsError
                 }
@@ -591,7 +591,7 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
 
       const {id} = azureDevOpsUser
       const {error: accessibleError, accessibleOrgs} = await this.getAccessibleOrgs(id)
-      if (!!accessibleError) return {error: accessibleError, projects: null}
+      if (accessibleError) return {error: accessibleError, projects: null}
 
       const teamProjectReferences = [] as TeamProjectReference[]
       for (const resource of accessibleOrgs) {
@@ -640,7 +640,10 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
           firstError = processTemplateDetailsResult.error
         }
       }
-      return {error: firstError, projectTemplate: processTemplateDetailsResult.process}
+      return {
+        error: firstError,
+        projectTemplate: processTemplateDetailsResult.process
+      }
     })
   }
 

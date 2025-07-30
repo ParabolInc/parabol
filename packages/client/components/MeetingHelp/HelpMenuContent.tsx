@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 
 const Content = styled('div')({

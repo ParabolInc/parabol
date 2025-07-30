@@ -1,5 +1,5 @@
 import isValid from '../../../graphql/isValid'
-import {RemoveAuthIdentitySuccessResolvers} from '../../private/resolverTypes'
+import type {RemoveAuthIdentitySuccessResolvers} from '../../private/resolverTypes'
 
 export type RemoveAuthIdentitySuccessSource = {
   userIds: string[]

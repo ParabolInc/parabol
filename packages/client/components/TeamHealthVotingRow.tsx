@@ -1,7 +1,7 @@
 import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TeamHealthVotingRow_stage$key} from '../__generated__/TeamHealthVotingRow_stage.graphql'
+import type {TeamHealthVotingRow_stage$key} from '../__generated__/TeamHealthVotingRow_stage.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {PokerCards} from '../types/constEnums'
 import AvatarList from './AvatarList'
@@ -30,8 +30,8 @@ const TeamHealthVotingRow = (props: Props) => {
   return (
     <div className='flex h-14 w-80 shrink-0 items-center rounded-sm bg-slate-300 pl-2'>
       <div className='mr-4'>
-        <MiniPokerCard color={!!viewerVote ? PALETTE.JADE_400 : undefined}>
-          <CheckIcon className={!!viewerVote ? 'text-white' : 'text-jade-400'} />
+        <MiniPokerCard color={viewerVote ? PALETTE.JADE_400 : undefined}>
+          <CheckIcon className={viewerVote ? 'text-white' : 'text-jade-400'} />
         </MiniPokerCard>
       </div>
       <AvatarList

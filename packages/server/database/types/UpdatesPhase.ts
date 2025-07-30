@@ -1,5 +1,5 @@
 import GenericMeetingPhase from './GenericMeetingPhase'
-import UpdatesStage from './UpdatesStage'
+import type UpdatesStage from './UpdatesStage'
 
 interface Input {
   durations: number[] | undefined

@@ -1,7 +1,7 @@
 import {Suspense} from 'react'
 import ShareTopicModal from '~/components/ShareTopicModal'
 import shareTopicModalQuery, {
-  ShareTopicModalQuery
+  type ShareTopicModalQuery
 } from '../__generated__/ShareTopicModalQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {Loader} from '../utils/relay/renderLoader'

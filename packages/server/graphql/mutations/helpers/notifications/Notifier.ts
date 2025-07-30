@@ -1,8 +1,8 @@
 import {getTeamPromptResponsesByMeetingId} from '../../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {SlackNotification} from '../../../../postgres/types'
+import type {SlackNotification} from '../../../../postgres/types'
 import logError from '../../../../utils/logError'
-import {DataLoaderWorker} from '../../../graphql'
-import {NotificationIntegration, NotifyResponse} from './NotificationIntegrationHelper'
+import type {DataLoaderWorker} from '../../../graphql'
+import type {NotificationIntegration, NotifyResponse} from './NotificationIntegrationHelper'
 
 export type Notifier = {
   startMeeting(dataLoader: DataLoaderWorker, meetingId: string, teamId: string): Promise<void>

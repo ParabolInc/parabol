@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {MyDashboardTasksAndHeaderQuery} from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {MyDashboardTasksAndHeaderQuery} from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
 import UserTasksHeader from '../modules/userDashboard/components/UserTasksHeader/UserTasksHeader'
 import UserColumnsContainer from '../modules/userDashboard/containers/UserColumns/UserColumnsContainer'
 

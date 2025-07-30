@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AddTranscriptionBotMutation as TAddTranscriptionBotMutation} from '../__generated__/AddTranscriptionBotMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {AddTranscriptionBotMutation as TAddTranscriptionBotMutation} from '../__generated__/AddTranscriptionBotMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment AddTranscriptionBotMutation_meeting on AddTranscriptionBotSuccess {

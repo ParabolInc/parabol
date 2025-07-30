@@ -1,7 +1,7 @@
 import {Suspense} from 'react'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import myDashboardTasksAndHeaderQuery, {
-  MyDashboardTasksAndHeaderQuery
+  type MyDashboardTasksAndHeaderQuery
 } from '../__generated__/MyDashboardTasksAndHeaderQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'

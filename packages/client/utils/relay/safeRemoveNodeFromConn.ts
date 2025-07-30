@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy} from 'relay-runtime'
 
 const safeRemoveNodeFromConn = (nodeId: string, conn: RecordProxy | null | undefined) => {
   if (conn) {

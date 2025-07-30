@@ -7,9 +7,7 @@ const MAX_SYNC_STAGE_DURATION = ms('1h')
 const filterOutliers = (someArray: number[]) => {
   const values = someArray.concat()
   if (values.length === 0) return []
-  values.sort(function (a, b) {
-    return a - b
-  })
+  values.sort((a, b) => a - b)
   const q1 = values[Math.floor(values.length / 4)]!
   const q3 = values[Math.ceil(values.length * (3 / 4))]!
   const iqr = q3 - q1

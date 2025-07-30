@@ -1,6 +1,6 @@
 input UpdateUserProfileInput {
-  """
-  The name, as confirmed by the user
-  """
-  preferredName: String
+	"""
+	The name, as confirmed by the user
+	"""
+	preferredName: String
 }

@@ -1,4 +1,4 @@
-import {RefObject, useLayoutEffect, useState} from 'react'
+import {type RefObject, useLayoutEffect, useState} from 'react'
 import {ElementWidth} from '../types/constEnums'
 import useResizeObserver from './useResizeObserver'
 

@@ -1,6 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import {createTopLevelPage} from '../../../utils/tiptap/createTopLevelPage'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const createPage: MutationResolvers['createPage'] = async (
   _source,
@@ -8,7 +8,10 @@ const createPage: MutationResolvers['createPage'] = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
-  const page = await createTopLevelPage(viewerId, dataLoader, {teamId, mutatorId})
+  const page = await createTopLevelPage(viewerId, dataLoader, {
+    teamId,
+    mutatorId
+  })
   return {page}
 }
 

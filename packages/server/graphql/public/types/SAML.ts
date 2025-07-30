@@ -1,6 +1,6 @@
-import {Selectable} from 'kysely'
-import {SAML as TSAML} from '../../../postgres/types/pg'
-import {SamlResolvers} from '../resolverTypes'
+import type {Selectable} from 'kysely'
+import type {SAML as TSAML} from '../../../postgres/types/pg'
+import type {SamlResolvers} from '../resolverTypes'
 
 export interface SAMLSource extends Selectable<TSAML> {
   domains: string[]

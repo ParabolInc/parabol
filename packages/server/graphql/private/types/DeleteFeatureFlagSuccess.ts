@@ -1,4 +1,4 @@
-import {DeleteFeatureFlagSuccessResolvers} from '../resolverTypes'
+import type {DeleteFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type DeleteFeatureFlagSuccessSource = {
   featureFlagId: string

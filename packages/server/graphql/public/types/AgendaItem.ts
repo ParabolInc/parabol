@@ -1,4 +1,4 @@
-import {AgendaItemResolvers} from '../resolverTypes'
+import type {AgendaItemResolvers} from '../resolverTypes'
 
 const AgendaItem: AgendaItemResolvers = {
   isActive: ({isActive}) => !!isActive,

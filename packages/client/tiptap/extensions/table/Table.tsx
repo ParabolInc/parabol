@@ -1,10 +1,10 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
+import {type TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
 import {
   NodeViewContent,
+  type NodeViewProps,
   NodeViewWrapper,
-  ReactNodeViewRenderer,
-  type NodeViewProps
+  ReactNodeViewRenderer
 } from '@tiptap/react'
 import {useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'
@@ -94,7 +94,7 @@ function Component(props: NodeViewProps) {
         <DropdownMenu.Trigger asChild>
           <PlainButton
             className={cn(
-              'absolute -top-8 right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
+              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
               {hidden: !selected}
             )}
           >

@@ -1,5 +1,5 @@
 import {commitLocalUpdate} from 'relay-runtime'
-import Atmosphere from '../../Atmosphere'
+import type Atmosphere from '../../Atmosphere'
 
 const setPreferredTeamId = (atmosphere: Atmosphere, teamId: string) => {
   return commitLocalUpdate(atmosphere, (store) => {

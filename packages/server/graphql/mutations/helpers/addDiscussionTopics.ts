@@ -1,9 +1,9 @@
 import mapGroupsToStages from 'parabol-client/utils/makeGroupsToStages'
 import DiscussStage from '../../../database/types/DiscussStage'
 import generateUID from '../../../generateUID'
-import {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
+import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import getPhase from '../../../utils/getPhase'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 const addDiscussionTopics = async (meeting: RetrospectiveMeeting, dataLoader: DataLoaderWorker) => {
   const {id: meetingId, phases} = meeting

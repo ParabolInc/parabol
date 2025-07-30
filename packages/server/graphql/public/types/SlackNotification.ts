@@ -1,4 +1,4 @@
-import {SlackNotificationResolvers} from '../resolverTypes'
+import type {SlackNotificationResolvers} from '../resolverTypes'
 
 export const slackNotificationEventTypeLookup = {
   meetingStart: 'team',

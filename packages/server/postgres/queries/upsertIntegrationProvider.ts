@@ -1,8 +1,8 @@
 import getPg from '../getPg'
 import {
-  IntegrationProviderAuthStrategyEnum,
-  IntegrationProviderScopeEnum,
-  IntegrationProviderServiceEnum,
+  type IntegrationProviderAuthStrategyEnum,
+  type IntegrationProviderScopeEnum,
+  type IntegrationProviderServiceEnum,
   upsertIntegrationProviderQuery
 } from './generated/upsertIntegrationProviderQuery'
 

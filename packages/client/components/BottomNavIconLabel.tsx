@@ -6,7 +6,7 @@ import {
   PersonPinCircleOutlined,
   TimerOutlined
 } from '@mui/icons-material'
-import {ReactNode, Ref, forwardRef} from 'react'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 
 const paletteColors = {

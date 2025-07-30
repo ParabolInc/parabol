@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense, useEffect} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import ErrorBoundary from '~/components/ErrorBoundary'
-import {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
+import type {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
 import useRouter from '../../../../hooks/useRouter'
 import Team from '../../components/Team/Team'
 

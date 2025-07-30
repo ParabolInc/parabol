@@ -1,5 +1,5 @@
 import getPg from '../getPg'
-import IUser from '../types/IUser'
+import type IUser from '../types/IUser'
 import {getUsersByEmailsQuery} from './generated/getUsersByEmailsQuery'
 
 export const getUsersByEmails = async (emails: string[]): Promise<IUser[]> => {

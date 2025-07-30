@@ -1,4 +1,4 @@
-import {TeamPromptPhase} from '../../postgres/types/NewMeetingPhase'
+import type {TeamPromptPhase} from '../../postgres/types/NewMeetingPhase'
 import Meeting from './Meeting'
 
 interface Input {

@@ -3,10 +3,9 @@ const {_builtinLibs} = require('repl') // List of Node.js built in modules.
 const path = require('path')
 
 const makeIsDependency = (packageDir) => {
-  const {dependencies, devDependencies, peerDependencies} = require(path.resolve(
-    packageDir,
-    'package.json'
-  ))
+  const {dependencies, devDependencies, peerDependencies} = require(
+    path.resolve(packageDir, 'package.json')
+  )
   const allDependencies = [
     ..._builtinLibs,
     ...Object.keys(dependencies),

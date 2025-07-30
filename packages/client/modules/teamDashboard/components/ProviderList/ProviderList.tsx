@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
@@ -9,8 +9,8 @@ import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
 import JiraServerProviderRow from '../ProviderRow/JiraServerProviderRow'
 import LinearProviderRow from '../ProviderRow/LinearProviderRow'
-import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import MattermostProviderRow from '../ProviderRow/MattermostProviderRow'
+import MSTeamsProviderRow from '../ProviderRow/MSTeamsProviderRow'
 import SlackProviderRow from '../ProviderRow/SlackProviderRow'
 
 interface Props {
@@ -175,13 +175,13 @@ const ProviderList = (props: Props) => {
         </div>
 
         {connectedIntegrations.length > 0 && (
-          <div className='text-base font-semibold text-slate-700'>Connected</div>
+          <div className='font-semibold text-base text-slate-700'>Connected</div>
         )}
 
         {connectedIntegrations}
 
         {availableIntegrations.length > 0 && (
-          <div className='pt-4 text-base font-semibold text-slate-700'>Available</div>
+          <div className='pt-4 font-semibold text-base text-slate-700'>Available</div>
         )}
 
         {availableIntegrations}

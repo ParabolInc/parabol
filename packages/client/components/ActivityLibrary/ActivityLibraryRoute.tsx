@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import activityLibraryQuery, {
-  ActivityLibraryQuery
+  type ActivityLibraryQuery
 } from '~/__generated__/ActivityLibraryQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {Loader} from '../../utils/relay/renderLoader'

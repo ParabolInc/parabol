@@ -4,7 +4,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
-import ScopingSearchHistoryMenu, {SearchQueries} from './ScopingSearchHistoryMenu'
+import ScopingSearchHistoryMenu, {type SearchQueries} from './ScopingSearchHistoryMenu'
 
 const StyledIcon = styled(Search)({
   color: PALETTE.SLATE_600,

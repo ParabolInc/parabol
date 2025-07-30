@@ -1,4 +1,4 @@
-import {RecordProxy} from 'relay-runtime'
+import type {RecordProxy} from 'relay-runtime'
 import filterNodesInConn from './filterNodesInConn'
 
 const getNodeById = (nodeId: string, conn: RecordProxy) =>

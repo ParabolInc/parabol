@@ -1,4 +1,4 @@
-import {PageAccessUserResolvers} from '../resolverTypes'
+import type {PageAccessUserResolvers} from '../resolverTypes'
 
 const PageAccessUser: PageAccessUserResolvers = {
   user: async ({userId}, _args, {dataLoader}) => {

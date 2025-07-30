@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {cn} from '../ui/cn'

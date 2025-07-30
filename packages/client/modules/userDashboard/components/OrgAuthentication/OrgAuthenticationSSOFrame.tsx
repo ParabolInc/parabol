@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Add, Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
+import type {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks} from '../../../../types/constEnums'
@@ -97,7 +97,7 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
                 <div
                   key={domain}
                   className={
-                    'bg w-max rounded-full bg-slate-200 px-3 py-1 text-xs font-semibold text-slate-800 select-none'
+                    'bg w-max select-none rounded-full bg-slate-200 px-3 py-1 font-semibold text-slate-800 text-xs'
                   }
                 >
                   {domain}

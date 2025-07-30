@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {
+import type {
   ThreadedCommentHeader_comment$data,
   ThreadedCommentHeader_comment$key
 } from '~/__generated__/ThreadedCommentHeader_comment.graphql'

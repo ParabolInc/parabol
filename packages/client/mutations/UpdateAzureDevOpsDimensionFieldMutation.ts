@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AzureDevOpsFieldMenu_stage$data} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
-import {PokerMeeting_meeting$data} from '../__generated__/PokerMeeting_meeting.graphql'
-import {UpdateAzureDevOpsDimensionFieldMutation as TUpdateAzureDevOpsDimensionFieldMutation} from '../__generated__/UpdateAzureDevOpsDimensionFieldMutation.graphql'
-import {DiscriminateProxy} from '../types/generics'
-import {StandardMutation} from '../types/relayMutations'
+import type {AzureDevOpsFieldMenu_stage$data} from '../__generated__/AzureDevOpsFieldMenu_stage.graphql'
+import type {PokerMeeting_meeting$data} from '../__generated__/PokerMeeting_meeting.graphql'
+import type {UpdateAzureDevOpsDimensionFieldMutation as TUpdateAzureDevOpsDimensionFieldMutation} from '../__generated__/UpdateAzureDevOpsDimensionFieldMutation.graphql'
+import type {DiscriminateProxy} from '../types/generics'
+import type {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`

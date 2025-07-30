@@ -1,7 +1,7 @@
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (_source, {meetingId}, context) => {
   const {authToken, dataLoader, socketId: mutatorId} = context

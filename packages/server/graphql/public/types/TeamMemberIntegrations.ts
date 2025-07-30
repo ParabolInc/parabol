@@ -1,6 +1,6 @@
 import TeamMemberIntegrationsId from '../../../../client/shared/gqlIds/TeamMemberIntegrationsId'
 import {isTeamMember} from '../../../utils/authorization'
-import {TeamMemberIntegrationsResolvers} from '../resolverTypes'
+import type {TeamMemberIntegrationsResolvers} from '../resolverTypes'
 
 export type TeamMemberIntegrationsSource = {
   teamId: string

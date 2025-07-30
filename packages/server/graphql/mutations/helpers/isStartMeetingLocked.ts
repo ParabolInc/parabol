@@ -1,5 +1,5 @@
 import {Threshold} from '~/types/constEnums'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 const isStartMeetingLocked = async (teamId: string, dataLoader: DataLoaderWorker) => {
   const team = await dataLoader.get('teams').loadNonNull(teamId)

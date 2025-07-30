@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {SlackIntegrationResolvers} from '../resolverTypes'
+import type {SlackIntegrationResolvers} from '../resolverTypes'
 
 const SlackIntegration: SlackIntegrationResolvers = {
   isActive: ({isActive, botAccessToken}) => !!(isActive && botAccessToken),

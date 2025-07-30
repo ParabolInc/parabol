@@ -4,7 +4,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
-import {PokerEstimateHeaderCardParabol_task$key} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
+import type {PokerEstimateHeaderCardParabol_task$key} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTaskChildFocus from '../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
@@ -73,7 +73,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
       >
         <div className='flex-1 pr-1'>
           <div
-            className={`m-0 text-sm leading-5 font-normal text-slate-700 transition-all duration-300 ${
+            className={`m-0 font-normal text-slate-700 text-sm leading-5 transition-all duration-300 ${
               isExpanded ? 'overflow-y-auto' : 'overflow-y-hidden'
             }`}
             style={{maxHeight: editorMaxHeight}}

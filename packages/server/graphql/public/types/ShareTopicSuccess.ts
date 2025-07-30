@@ -1,4 +1,4 @@
-import {ShareTopicSuccessResolvers} from '../resolverTypes'
+import type {ShareTopicSuccessResolvers} from '../resolverTypes'
 
 export type ShareTopicSuccessSource = {
   meetingId: string

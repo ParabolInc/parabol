@@ -5,7 +5,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   _source,

@@ -1,12 +1,12 @@
 import DataLoader from 'dataloader'
 import JiraServerRestManager, {
-  JiraServerFieldType,
-  JiraServerRestProject
+  type JiraServerFieldType,
+  type JiraServerRestProject
 } from '../integrations/jiraServer/JiraServerRestManager'
-import {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import getJiraServerDimensionFieldMap, {
-  GetJiraServerDimensionFieldMapParams,
-  JiraServerDimensionFieldMap
+  type GetJiraServerDimensionFieldMapParams,
+  type JiraServerDimensionFieldMap
 } from '../postgres/queries/getJiraServerDimensionFieldMap'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'

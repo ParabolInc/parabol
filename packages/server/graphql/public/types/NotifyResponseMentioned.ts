@@ -1,4 +1,4 @@
-import {NotifyResponseMentionedResolvers} from '../resolverTypes'
+import type {NotifyResponseMentionedResolvers} from '../resolverTypes'
 
 const NotifyResponseMentioned: NotifyResponseMentionedResolvers = {
   __isTypeOf: ({type}) => type === 'RESPONSE_MENTIONED',

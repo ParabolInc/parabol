@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation} from 'react-relay'
-import {useUploadIdPMetadataMutation as TuseUploadIdPMetadataMutation} from '../__generated__/useUploadIdPMetadataMutation.graphql'
+import type {useUploadIdPMetadataMutation as TuseUploadIdPMetadataMutation} from '../__generated__/useUploadIdPMetadataMutation.graphql'
 
 const mutation = graphql`
   mutation useUploadIdPMetadataMutation($file: File!, $orgId: ID!) {

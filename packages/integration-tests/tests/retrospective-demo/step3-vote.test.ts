@@ -1,9 +1,9 @@
-import {test, expect} from '@playwright/test'
+import {expect, test} from '@playwright/test'
 import config from '../config'
 import {goToNextPhase, skipToVotePhase} from './retrospective-demo-helpers'
 
 test.describe('retrospective-demo / vote page', () => {
-  test('it allows voting up a group', async ({page, isMobile}) => {
+  test('it allows voting up a group', async ({page}) => {
     await skipToVotePhase(page)
     const voteCount = page.locator(`[data-cy="Start-group-0"] [data-cy="completed-vote-count"]`)
     await expect(voteCount).toHaveText('0')

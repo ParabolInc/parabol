@@ -8,7 +8,7 @@ import ccMastercard from '../../../static/images/creditCards/cc-mastercard-brand
 import ccVisa from '../../../static/images/creditCards/cc-visa-brands.svg'
 import useSVG from '../hooks/useSVG'
 import {BezierCurve} from '../types/constEnums'
-import {CardTypeIcon} from '../utils/StripeClientManager'
+import type {CardTypeIcon} from '../utils/StripeClientManager'
 
 const cardTypeIconToFilename = {
   'cc-amex-brands': ccAmex,

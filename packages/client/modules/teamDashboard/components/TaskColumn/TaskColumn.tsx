@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {Droppable, DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd'
+import {Droppable, type DroppableProvided, type DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
+import type {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
+import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import type {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
 import useModal from '../../../../hooks/useModal'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
@@ -123,7 +123,7 @@ const TaskColumn = (props: Props) => {
               <StatusLabel>{label}</StatusLabel>
               {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
               {status === DONE && (
-                <a onClick={togglePortal} className='ml-auto cursor-pointer text-sm text-slate-600'>
+                <a onClick={togglePortal} className='ml-auto cursor-pointer text-slate-600 text-sm'>
                   Archive all
                 </a>
               )}

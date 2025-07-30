@@ -4,7 +4,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import {getSummaries} from './helpers/getSummaries'
 import {getTopics} from './helpers/getTopics'
 
@@ -21,7 +21,9 @@ const generateInsight: MutationResolvers['generateInsight'] = async (
     .get('featureFlagByOwnerId')
     .load({ownerId: teamId, featureName: 'insights'})
   if (!hasInsightsFlag) {
-    return standardError(new Error('Insights are not enabled for this team'), {userId: viewerId})
+    return standardError(new Error('Insights are not enabled for this team'), {
+      userId: viewerId
+    })
   }
 
   const operationId = dataLoader.share()

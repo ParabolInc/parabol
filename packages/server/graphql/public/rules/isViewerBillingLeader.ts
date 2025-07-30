@@ -1,7 +1,7 @@
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
-import {ResolverDotPath, getResolverDotPath} from './getResolverDotPath'
+import type {GQLContext} from '../../graphql'
+import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerBillingLeader = <T>(orgIdDotPath: ResolverDotPath<T>) =>
   rule(`isViewerBillingLeader-${orgIdDotPath}`, {cache: 'strict'})(

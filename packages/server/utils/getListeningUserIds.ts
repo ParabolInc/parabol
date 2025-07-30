@@ -1,6 +1,6 @@
 import getRedis from './getRedis'
 
-export const enum RedisCommand {
+export enum RedisCommand {
   ADD = 'sadd',
   REMOVE = 'srem'
 }

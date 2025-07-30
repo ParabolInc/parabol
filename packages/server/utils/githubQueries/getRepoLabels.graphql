@@ -1,22 +1,27 @@
-query getRepoLabels($name: String!, $owner: String!, $issueNumber: Int!, $first: Int!) {
-  repository(name: $name, owner: $owner) {
-    id
-    issue(number: $issueNumber) {
-      id
-      labels(first: $first) {
-        nodes {
-          id
-          name
-        }
-      }
-    }
-    labels(first: $first) {
-      nodes {
-        id
-        color
-        description
-        name
-      }
-    }
-  }
+query getRepoLabels(
+	$name: String!
+	$owner: String!
+	$issueNumber: Int!
+	$first: Int!
+) {
+	repository(name: $name, owner: $owner) {
+		id
+		issue(number: $issueNumber) {
+			id
+			labels(first: $first) {
+				nodes {
+					id
+					name
+				}
+			}
+		}
+		labels(first: $first) {
+			nodes {
+				id
+				color
+				description
+				name
+			}
+		}
+	}
 }

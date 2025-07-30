@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
-import {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
+import type {AzureDevOpsScopingSelectAllIssues_workItems$key} from '../__generated__/AzureDevOpsScopingSelectAllIssues_workItems.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -98,7 +98,11 @@ const AzureDevOpsScopingSelectAllIssues = (props: Props) => {
       )
       return workItem?.node.title ?? 'Unknown Work Item'
     })
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents
+    })
   }
   if (workItems.length < 2) return null
   const title = getSelectAllTitle(workItems.length, usedServiceTaskIds.size, 'workItem')

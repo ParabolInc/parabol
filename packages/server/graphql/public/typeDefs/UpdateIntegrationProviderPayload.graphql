@@ -1,4 +1,6 @@
 """
 Return object for UpdateIntegrationProviderPayload
 """
-union UpdateIntegrationProviderPayload = ErrorPayload | UpdateIntegrationProviderSuccess
+union UpdateIntegrationProviderPayload =
+	| ErrorPayload
+	| UpdateIntegrationProviderSuccess

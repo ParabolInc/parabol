@@ -1,4 +1,6 @@
 """
 Return object for UpdateAzureDevOpsDimensionFieldPayload
 """
-union UpdateAzureDevOpsDimensionFieldPayload = ErrorPayload | UpdateAzureDevOpsDimensionFieldSuccess
+union UpdateAzureDevOpsDimensionFieldPayload =
+	| ErrorPayload
+	| UpdateAzureDevOpsDimensionFieldSuccess

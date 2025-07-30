@@ -3,7 +3,7 @@ import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const unlinkMattermostChannel: MutationResolvers['unlinkMattermostChannel'] = async (
   _source,
@@ -16,7 +16,9 @@ const unlinkMattermostChannel: MutationResolvers['unlinkMattermostChannel'] = as
 
   //AUTH
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
+    return standardError(new Error('Attempted teamId spoof'), {
+      userId: viewerId
+    })
   }
 
   // VALIDATION

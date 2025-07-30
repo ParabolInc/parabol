@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import {isEstimateStage} from '../../meetingTypePredicates'
 
 /*

@@ -1,6 +1,6 @@
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import {JiraIssueResolvers} from '../resolverTypes'
+import type {JiraIssueResolvers} from '../resolverTypes'
 
 export type JiraIssueSource = {
   cloudId: string

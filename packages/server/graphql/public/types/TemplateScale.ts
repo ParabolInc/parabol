@@ -1,4 +1,4 @@
-import {TemplateScaleResolvers} from '../resolverTypes'
+import type {TemplateScaleResolvers} from '../resolverTypes'
 
 const TemplateScale: TemplateScaleResolvers = {
   isActive: ({removedAt}) => !removedAt,

@@ -3,19 +3,19 @@ import {sql} from 'kysely'
 import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
+import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import type {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 export const startNewMeetingSeries = async (
   meeting: {
@@ -53,7 +53,10 @@ export const startNewMeetingSeries = async (
 
   await pg
     .updateTable('NewMeeting')
-    .set({meetingSeriesId: newMeetingSeriesId, scheduledEndTime: nextMeetingStartDate})
+    .set({
+      meetingSeriesId: newMeetingSeriesId,
+      scheduledEndTime: nextMeetingStartDate
+    })
     .where('id', '=', meetingId)
     .execute()
   return {
@@ -70,7 +73,9 @@ const updateMeetingSeries = async (
   const pg = getKysely()
   const {id: meetingSeriesId} = meetingSeries
 
-  await restartMeetingSeries(meetingSeriesId, {recurrenceRule: newRecurrenceRule.toString()})
+  await restartMeetingSeries(meetingSeriesId, {
+    recurrenceRule: newRecurrenceRule.toString()
+  })
 
   // lets close all active meetings at the time when
   // a new meeting will be created (tomorrow at 9 AM, same as date start of new recurrence rule)
@@ -129,7 +134,9 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     dataLoader.get('users').loadNonNull(viewerId)
   ])
   if (!meeting) {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    return standardError(new Error('Meeting not found'), {
+      userId: viewerId
+    })
   }
   const {teamId, meetingType, meetingSeriesId} = meeting
   if (!isTeamMember(authToken, teamId)) {

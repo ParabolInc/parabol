@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 
 const ReflectTemplate = new GraphQLObjectType<any, GQLContext>({
   name: 'ReflectTemplate',

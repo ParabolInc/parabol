@@ -1,4 +1,4 @@
-import {sql, type Kysely} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 
 const START_CHAR_CODE = 32
 const END_CHAR_CODE = 126

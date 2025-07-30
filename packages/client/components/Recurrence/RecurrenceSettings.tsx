@@ -1,14 +1,14 @@
-import dayjs, {Dayjs} from 'dayjs'
+import dayjs, {type Dayjs} from 'dayjs'
 import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
 import * as React from 'react'
-import {PropsWithChildren, useEffect} from 'react'
+import {type PropsWithChildren, useEffect} from 'react'
 import {Frequency, RRule} from 'rrule'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMenu from '../../hooks/useMenu'
 import {fromRRuleDateTime, toRRuleDateTime} from '../../shared/rruleUtil'
 import {cn} from '../../ui/cn'
-import {ALL_DAYS, Day, toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
+import {ALL_DAYS, type Day, toHumanReadable} from '../../utils/humanReadableRecurrenceRule'
 import plural from '../../utils/plural'
 import DropdownMenuToggle from '../DropdownMenuToggle'
 import {RecurrenceDayCheckbox} from './RecurrenceDayCheckbox'
@@ -23,7 +23,7 @@ const Label = ({
   ...rest
 }: PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) => {
   return (
-    <label className={cn('text-sm font-semibold text-slate-800', className)} {...rest}>
+    <label className={cn('font-semibold text-slate-800 text-sm', className)} {...rest}>
       {children}
     </label>
   )
@@ -36,7 +36,10 @@ const Input = ({
   hasError,
   ...rest
 }: PropsWithChildren<
-  {label?: React.ReactNode; hasError: boolean} & React.InputHTMLAttributes<HTMLInputElement>
+  {
+    label?: React.ReactNode
+    hasError: boolean
+  } & React.InputHTMLAttributes<HTMLInputElement>
 >) => {
   const focusStyles =
     'focus:outline-hidden focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
@@ -77,7 +80,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={cn('text-sm break-words text-slate-600 italic', className)} {...rest}>
+    <div className={cn('break-words text-slate-600 text-sm italic', className)} {...rest}>
       {children}
     </div>
   )
@@ -141,7 +144,7 @@ export const RecurrenceSettings = (props: Props) => {
 
       setRecurrenceInterval(interval)
       setIntervalError(error)
-    } catch (error) {
+    } catch {
       setIntervalError('Interval must be number')
     }
   }
@@ -173,7 +176,7 @@ export const RecurrenceSettings = (props: Props) => {
     <div className='space-y-4 p-4'>
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          <label className='block text-sm text-slate-800' htmlFor='series-interval'>
+          <label className='block text-slate-800 text-sm' htmlFor='series-interval'>
             Restarts every
           </label>
           <Input

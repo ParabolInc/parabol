@@ -6,7 +6,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
   _,
@@ -19,7 +19,9 @@ const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Must be the organization leader'), {userId: viewerId})
+    return standardError(new Error('Must be the organization leader'), {
+      userId: viewerId
+    })
   }
 
   // VALIDATION

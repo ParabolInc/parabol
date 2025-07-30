@@ -1,4 +1,4 @@
-import {RefObject, useLayoutEffect, useState} from 'react'
+import {type RefObject, useLayoutEffect, useState} from 'react'
 import useResizeObserver from './useResizeObserver'
 
 // if results are remotely ungrouped, SpotlightResults increases in height.

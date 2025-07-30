@@ -9,9 +9,9 @@ const useBreakpoint = (breakpoint: number) => {
     const updateMatch = () => setMatch(mql.matches)
     if (!mql.addEventListener) {
       // fallback for safari https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList#Browser_compatibility
-      mql.addListener(updateMatch) // tslint:disable-line
+      mql.addListener(updateMatch)
       return () => {
-        mql.removeListener(updateMatch) // tslint:disable-line
+        mql.removeListener(updateMatch)
       }
     } else {
       mql.addEventListener('change', updateMatch)

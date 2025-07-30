@@ -2,11 +2,11 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
+import type {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
 import useTemplateCategoryMutation from '../../../mutations/UpdateTemplateCategoryMutation'
 import {cn} from '../../../ui/cn'
 import PlainButton from '../../PlainButton/PlainButton'
-import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, CategoryID, MAIN_CATEGORIES} from '../Categories'
+import {CATEGORY_ID_TO_NAME, CATEGORY_THEMES, type CategoryID, MAIN_CATEGORIES} from '../Categories'
 import ActivityDetailsBadge from './ActivityDetailsBadge'
 
 interface Props {
@@ -38,7 +38,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       <DropdownMenu.Trigger asChild disabled={!isEditing}>
         <PlainButton className={cn(!isEditing && 'cursor-default', 'flex')} disabled={false}>
           <ActivityDetailsBadge
-            className={cn(`${CATEGORY_THEMES[category].primary}`, 'text-white select-none')}
+            className={cn(`${CATEGORY_THEMES[category].primary}`, 'select-none text-white')}
           >
             {CATEGORY_ID_TO_NAME[category]}
           </ActivityDetailsBadge>
@@ -47,7 +47,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className='border-rad rounded-sm bg-white shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
+          className='rounded-sm border-rad bg-white shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
           sideOffset={5}
         >
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
@@ -56,13 +56,13 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
               return (
                 <DropdownMenu.RadioItem
                   key={categoryId}
-                  className='flex cursor-pointer px-4 py-3 outline-hidden select-none data-highlighted:bg-slate-100 data-[state=checked]:bg-slate-200'
+                  className='flex cursor-pointer select-none px-4 py-3 outline-hidden data-[state=checked]:bg-slate-200 data-highlighted:bg-slate-100'
                   value={categoryId}
                 >
                   <span
                     className={cn(`${CATEGORY_THEMES[categoryId].primary}`, 'h-5 w-5 rounded-full')}
                   ></span>
-                  <span className='pr-10 pl-5 text-xs font-semibold'>
+                  <span className='pr-10 pl-5 font-semibold text-xs'>
                     {CATEGORY_ID_TO_NAME[categoryId]}
                   </span>
                 </DropdownMenu.RadioItem>

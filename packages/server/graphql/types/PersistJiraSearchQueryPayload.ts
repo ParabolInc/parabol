@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import AtlassianIntegration from './AtlassianIntegration'
 import makeMutationPayload from './makeMutationPayload'
 

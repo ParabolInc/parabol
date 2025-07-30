@@ -111,7 +111,7 @@ export interface TeamsLimitReminderNotification extends BaseNotification {
   scheduledLockAt: Date
 }
 
-type AnyNotification =
+export type AnyNotification =
   | DiscussionMentionedNotification
   | KickedOutNotification
   | MeetingStageTimeLimitEndNotification

@@ -1,13 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailNotificationTemplate_notification$key} from 'parabol-client/__generated__/EmailNotificationTemplate_notification.graphql'
-import * as React from 'react'
-import {ReactNode} from 'react'
+import type {EmailNotificationTemplate_notification$key} from 'parabol-client/__generated__/EmailNotificationTemplate_notification.graphql'
+import type * as React from 'react'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '../../../../styles/paletteV3'
 import relativeDate from '../../../../utils/date/relativeDate'
 import {linkStyle} from '../NotificationSummaryEmail'
 
-const notificationBodyStyle = {paddingTop: 8, paddingBottom: 8} as React.CSSProperties
+const notificationBodyStyle = {
+  paddingTop: 8,
+  paddingBottom: 8
+} as React.CSSProperties
 
 const rowStyle: React.CSSProperties = {
   background: '#fff',
@@ -64,7 +67,15 @@ const EmailNotificationTemplate = (props: Props) => {
         <div style={{display: 'flex', fontSize: 14, lineHeight: '20px'}}>
           <div style={{color: PALETTE.SLATE_600}}>{relativeDate(createdAt)}</div>
           {linkLabel && linkUrl && (
-            <a style={{...linkStyle, paddingLeft: 8, fontSize: 14, margin: '0px'}} href={linkUrl}>
+            <a
+              style={{
+                ...linkStyle,
+                paddingLeft: 8,
+                fontSize: 14,
+                margin: '0px'
+              }}
+              href={linkUrl}
+            >
               {linkLabel}
             </a>
           )}

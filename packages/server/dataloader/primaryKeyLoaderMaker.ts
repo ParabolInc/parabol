@@ -1,5 +1,5 @@
-import normalizeResults from './normalizeResults'
 import NullableDataLoader from './NullableDataLoader'
+import normalizeResults from './normalizeResults'
 import type RootDataLoader from './RootDataLoader'
 
 /**

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import {ICON_SIZE} from '../styles/typographyV2'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import GitHubSVG from './GitHubSVG'

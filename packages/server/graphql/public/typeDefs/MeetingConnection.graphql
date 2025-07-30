@@ -2,13 +2,13 @@
 A connection to list of meetings
 """
 type MeetingConnection {
-  """
-  Page info with cursors as strings
-  """
-  pageInfo: PageInfoDateCursor!
+	"""
+	Page info with cursors as strings
+	"""
+	pageInfo: PageInfoDateCursor!
 
-  """
-  A list of edges.
-  """
-  edges: [MeetingEdge!]!
+	"""
+	A list of edges.
+	"""
+	edges: [MeetingEdge!]!
 }

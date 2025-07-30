@@ -4,7 +4,7 @@ export const InsightsBlockDisabled = () => {
   return (
     <div
       contentEditable={false}
-      className='flex items-center justify-center gap-4 rounded-lg p-4 text-sm text-slate-800'
+      className='flex items-center justify-center gap-4 rounded-lg p-4 text-slate-800 text-sm'
     >
       <div className='flex items-center justify-center rounded-full p-2'>
         {/* Replace with your actual icon if needed */}
@@ -17,7 +17,7 @@ export const InsightsBlockDisabled = () => {
         <div className=''>
           <a
             href={`mailto:${ContactInfo.EMAIL_LOVE}`}
-            className='font-semibold! text-sky-500! no-underline!'
+            className='no-underline! font-semibold! text-sky-500!'
           >
             Contact us
           </a>{' '}

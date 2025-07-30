@@ -1,4 +1,4 @@
-import {InMemoryRateLimiter, RateLimiter, StubRateLimiter} from '../utils/rateLimiters'
+import {InMemoryRateLimiter, type RateLimiter, StubRateLimiter} from '../utils/rateLimiters'
 
 let rateLimiter: RateLimiter
 const getRateLimiter = () => {

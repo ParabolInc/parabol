@@ -6,7 +6,7 @@ import dndNoise from '../../../../client/utils/dndNoise'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
-import {TUpdatePokerScopeItemInput} from '../updatePokerScope'
+import type {TUpdatePokerScopeItemInput} from '../updatePokerScope'
 
 const importTasksForPoker = async (
   additiveUpdates: TUpdatePokerScopeItemInput[],

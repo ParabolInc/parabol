@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import addNodeToArray from '../../utils/relay/addNodeToArray'
 import {putTemplateInConnection} from '../UpdatePokerTemplateScopeMutation'
 

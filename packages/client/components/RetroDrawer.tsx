@@ -1,7 +1,7 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
@@ -74,7 +74,7 @@ const RetroDrawer = (props: Props) => {
         >
           <div className='py-4'>
             <div className='flex justify-between px-4'>
-              <div className='pb-4 text-base font-semibold'>Templates</div>
+              <div className='pb-4 font-semibold text-base'>Templates</div>
               <div
                 className='cursor-pointer text-slate-600 hover:opacity-50'
                 onClick={toggleDrawer}

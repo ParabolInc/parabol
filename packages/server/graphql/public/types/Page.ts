@@ -34,7 +34,10 @@ const Page: ReqResolvers<'Page'> = {
   },
   ancestorIds: ({ancestorIds}) => ancestorIds.map((id) => CipherId.toClient(id, 'page')),
   ancestors: async ({ancestorIds}, _args, {authToken, dataLoader}) => {
-    const accessKeys = ancestorIds.map((pageId) => ({pageId, userId: authToken.sub}))
+    const accessKeys = ancestorIds.map((pageId) => ({
+      pageId,
+      userId: authToken.sub
+    }))
     const [pages, accesses] = await Promise.all([
       dataLoader.get('pages').loadMany(ancestorIds),
       dataLoader.get('pageAccessByUserId').loadMany(accessKeys)

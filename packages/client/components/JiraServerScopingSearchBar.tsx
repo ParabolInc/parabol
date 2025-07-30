@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {JiraServerScopingSearchBar_meeting$key} from '../__generated__/JiraServerScopingSearchBar_meeting.graphql'
+import type {JiraServerScopingSearchBar_meeting$key} from '../__generated__/JiraServerScopingSearchBar_meeting.graphql'
 import JiraServerScopingSearchFilterToggle from './JiraServerScopingSearchFilterToggle'
 import JiraServerScopingSearchHistoryToggle from './JiraServerScopingSearchHistoryToggle'
 import ScopingSearchBar from './ScopingSearchBar'

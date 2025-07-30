@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 import {transformRetroToAIFormat} from './transformRetroToAIFormat'
 

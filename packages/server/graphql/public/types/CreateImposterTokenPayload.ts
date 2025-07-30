@@ -1,6 +1,6 @@
 import AuthToken from '../../../database/types/AuthToken'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
-import {CreateImposterTokenPayloadResolvers} from '../resolverTypes'
+import type {CreateImposterTokenPayloadResolvers} from '../resolverTypes'
 
 export type CreateImposterTokenPayloadSource =
   | {

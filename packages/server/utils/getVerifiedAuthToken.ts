@@ -1,5 +1,5 @@
 import {verify} from 'jsonwebtoken'
-import AuthToken from '../database/types/AuthToken'
+import type AuthToken from '../database/types/AuthToken'
 import logError from './logError'
 
 const SERVER_SECRET_BUFFER = Buffer.from(process.env.SERVER_SECRET!, 'base64')

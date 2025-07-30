@@ -1,4 +1,4 @@
-import {AddApprovedOrganizationDomainsSuccessResolvers} from '../resolverTypes'
+import type {AddApprovedOrganizationDomainsSuccessResolvers} from '../resolverTypes'
 
 export type AddApprovedOrganizationDomainsSuccessSource = {
   orgId: string

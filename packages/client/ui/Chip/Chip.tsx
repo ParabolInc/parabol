@@ -1,5 +1,5 @@
 import {Close} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import {cn} from '../cn'
 
 interface Props {
@@ -24,15 +24,15 @@ export const Chip = (props: Props) => {
       {picture && (
         <div className='relative h-6 w-6 rounded-sm border border-slate-100'>
           <div
-            className='h-6 w-6 rounded-full bg-cover bg-center bg-no-repeat'
+            className='h-6 w-6 rounded-full bg-center bg-cover bg-no-repeat'
             style={{backgroundImage: `url('${picture}')`}}
           />
         </div>
       )}
-      <div className='text-gray-700 text-sm leading-normal font-semibold'>{label}</div>
+      <div className='font-semibold text-gray-700 text-sm leading-normal'>{label}</div>
       {onDelete && (
         <Close
-          className='text-gray-700 cursor-pointer text-sm hover:opacity-50'
+          className='cursor-pointer text-gray-700 text-sm hover:opacity-50'
           onClick={onDelete}
         />
       )}

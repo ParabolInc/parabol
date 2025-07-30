@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {LimitExceededWarning_organization$key} from '../__generated__/LimitExceededWarning_organization.graphql'
+import type {LimitExceededWarning_organization$key} from '../__generated__/LimitExceededWarning_organization.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'

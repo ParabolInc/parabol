@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   useLinearProjectsAndTeams_teamMember$data,
   useLinearProjectsAndTeams_teamMember$key
 } from '../__generated__/useLinearProjectsAndTeams_teamMember.graphql'
@@ -14,7 +14,9 @@ type ArrayElement<ArrayType extends readonly unknown[] | null | undefined> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never
 
 type LinearQuery = useLinearProjectsAndTeams_teamMember$data extends {
-  integrations?: {linear?: {api?: {query?: infer Q | null} | null} | null} | null
+  integrations?: {
+    linear?: {api?: {query?: infer Q | null} | null} | null
+  } | null
 }
   ? Q
   : never

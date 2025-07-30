@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {DiscussionMeta} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
+import type {DiscussionMeta} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
 import getModelManager from './ai_models/ModelManager'
 import {getEmbedderPriority} from './getEmbedderPriority'
 

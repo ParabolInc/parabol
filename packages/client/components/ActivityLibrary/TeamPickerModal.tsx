@@ -3,10 +3,10 @@ import {useEffect, useState} from 'react'
 
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
-import {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
-import {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
-import {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
+import type {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
+import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
+import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
+import type {AddPokerTemplateMutation$data} from '../../__generated__/AddPokerTemplateMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import AddPokerTemplateMutation from '../../mutations/AddPokerTemplateMutation'
@@ -145,7 +145,7 @@ const TeamPickerModal = (props: Props) => {
             <button
               className={cn(
                 ACTION_BUTTON_CLASSES,
-                'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-200'
+                'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-200'
               )}
               onClick={closeModal}
             >

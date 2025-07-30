@@ -1,4 +1,4 @@
-import {AuthIdentityGoogleResolvers} from '../resolverTypes'
+import type {AuthIdentityGoogleResolvers} from '../resolverTypes'
 
 const AuthIdentityGoogle: AuthIdentityGoogleResolvers = {
   __isTypeOf: ({type}) => type === 'GOOGLE'

@@ -34,7 +34,11 @@ export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: 
  * A cache of dataloaders, see {@link getDataLoader} for usage
  */
 export default class DataLoaderCache<
-  T extends new (...args: any) => any = new (...args: any) => any
+  T extends new (
+    ...args: any
+  ) => any = new (
+    ...args: any
+  ) => any
 > {
   workers: {[did: string]: CacheWorker<InstanceType<T>>} = {}
   nextId = 0

@@ -24,7 +24,7 @@
  *
  */
 
-import {Range} from '../../types/generics'
+import type {Range} from '../../types/generics'
 import Bug from './Bug'
 import flySprite from './fly-sprite.png'
 import spiderSprite from './spider-sprite.png'

@@ -1,4 +1,4 @@
-import {type JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import getKysely from '../../postgres/getKysely'
 import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 

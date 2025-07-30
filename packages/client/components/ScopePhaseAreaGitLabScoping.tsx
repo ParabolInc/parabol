@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ScopePhaseAreaGitLabScoping_meeting$key} from '../__generated__/ScopePhaseAreaGitLabScoping_meeting.graphql'
+import type {ScopePhaseAreaGitLabScoping_meeting$key} from '../__generated__/ScopePhaseAreaGitLabScoping_meeting.graphql'
 import GitLabScopingSearchBar from './GitLabScopingSearchBar'
 import GitLabScopingSearchResultsRoot from './GitLabScopingSearchResultsRoot'
 

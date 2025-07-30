@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {DragDiscussionTopicMutation_meeting$data} from '~/__generated__/DragDiscussionTopicMutation_meeting.graphql'
-import {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {DragDiscussionTopicMutation_meeting$data} from '~/__generated__/DragDiscussionTopicMutation_meeting.graphql'
+import type {DragDiscussionTopicMutation as IDragDiscussionTopicMutation} from '../__generated__/DragDiscussionTopicMutation.graphql'
+import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {DISCUSS} from '../utils/constants'
 import handleUpdateStageSort from './handlers/handleUpdateStageSort'
 

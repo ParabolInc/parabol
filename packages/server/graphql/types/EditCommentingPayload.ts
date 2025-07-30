@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import Discussion from './Discussion'
 import makeMutationPayload from './makeMutationPayload'
 

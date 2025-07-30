@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
-import * as React from 'react'
+import type * as React from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   OrgMemberRow_organization$data,
   OrgMemberRow_organization$key
 } from '../../../../__generated__/OrgMemberRow_organization.graphql'
-import {
+import type {
   OrgMemberRow_organizationUser$data,
   OrgMemberRow_organizationUser$key
 } from '../../../../__generated__/OrgMemberRow_organizationUser.graphql'
@@ -190,7 +190,7 @@ const OrgMemberRow = (props: Props) => {
   }
 
   return (
-    <tr className='border-b border-slate-300 last:border-b-0'>
+    <tr className='border-slate-300 border-b last:border-b-0'>
       <td className='px-2 py-3 align-middle'>
         <div className='flex items-center justify-center'>
           {isViewerOrgAdmin && (

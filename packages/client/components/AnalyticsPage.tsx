@@ -3,7 +3,7 @@ import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import ReactGA from 'react-ga4'
-import {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
+import type {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
@@ -151,7 +151,10 @@ const AnalyticsPage = () => {
   }, [])
 
   useEffect(() => {
-    ReactGA.send({hitType: 'pageview', content_group: getContentGroup(pathname)})
+    ReactGA.send({
+      hitType: 'pageview',
+      content_group: getContentGroup(pathname)
+    })
   }, [pathname])
 
   // page titles are changed in child components via useDocumentTitle, which fires after this
@@ -166,7 +169,7 @@ const AnalyticsPage = () => {
         'html.translated-ltr, html.translated-rtl, ya-tr-span, *[_msttexthash], *[x-bergamot-translated]'
       )
       const userId = atmosphere.viewerId
-      if (!!userId) {
+      if (userId) {
         amplitude.track(
           'Loaded a Page',
           {

@@ -1,5 +1,5 @@
-import {ExecutionResult, GraphQLError} from 'graphql'
-import {FormattedExecutionResult} from 'graphql/execution/execute'
+import type {ExecutionResult, GraphQLError} from 'graphql'
+import type {FormattedExecutionResult} from 'graphql/execution/execute'
 
 const sanitizeGraphQLErrors = <T = FormattedExecutionResult>(res: ExecutionResult<T>) => {
   if (!Array.isArray(res.errors)) return res

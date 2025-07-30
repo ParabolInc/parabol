@@ -1,5 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import {type JSONContent} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/core'
 import {sql} from 'kysely'
 import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
@@ -16,7 +16,11 @@ import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 export const createTopLevelPage = async (
   viewerId: string,
   dataLoader: DataLoaderWorker,
-  options: {content?: JSONContent | null; teamId?: string | null; mutatorId?: string | null} = {}
+  options: {
+    content?: JSONContent | null
+    teamId?: string | null
+    mutatorId?: string | null
+  } = {}
 ) => {
   const {teamId, content, mutatorId} = options
   const operationId = dataLoader.share()

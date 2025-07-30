@@ -1,7 +1,7 @@
-import {JSONContent} from '@tiptap/core'
-import {DataLoaderWorker} from '../../../graphql/graphql'
-import {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import {TeamMemberIntegrationAuth} from '../../../postgres/types'
+import type {JSONContent} from '@tiptap/core'
+import type {DataLoaderWorker} from '../../../graphql/graphql'
+import type {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {TeamMemberIntegrationAuth} from '../../../postgres/types'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 
 const createAzureTask = async (
@@ -16,7 +16,10 @@ const createAzureTask = async (
     provider as IntegrationProviderAzureDevOps
   )
 
-  return manager.createTask({rawContentJSON, integrationRepoId: serviceProjectHash})
+  return manager.createTask({
+    rawContentJSON,
+    integrationRepoId: serviceProjectHash
+  })
 }
 
 export default createAzureTask

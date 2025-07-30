@@ -6,7 +6,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint tests",
     "test": "playwright test"
   },
   "devDependencies": {

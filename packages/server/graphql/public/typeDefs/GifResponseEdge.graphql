@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type GifResponseEdge {
-  """
-  The item at the end of the edge
-  """
-  node: GifResponse!
-  cursor: String
+	"""
+	The item at the end of the edge
+	"""
+	node: GifResponse!
+	cursor: String
 }

@@ -12,7 +12,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     <RadixSelect.Item
       ref={ref}
       className={twMerge(
-        'flex h-10 w-full cursor-pointer items-center justify-between rounded-sm text-sm outline-hidden select-none hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50',
+        'flex h-10 w-full cursor-pointer select-none items-center justify-between rounded-sm text-sm outline-hidden hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50',
         className
       )}
       {...props}

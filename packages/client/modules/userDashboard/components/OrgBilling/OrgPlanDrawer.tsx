@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanDrawer_organization.graphql'
+import type {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanDrawer_organization.graphql'
 import Confetti from '../../../../components/Confetti'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
@@ -124,7 +124,7 @@ const OrgPlanDrawer = (props: Props) => {
           <OrgPlanDrawerContent tier={billingTier} />
         </Drawer>
       </ResponsiveDashSidebar>
-      <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
+      <div className='-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 transform'>
         <Confetti active={showConfetti} />
       </div>
     </>

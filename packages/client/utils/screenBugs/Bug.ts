@@ -1,4 +1,4 @@
-import {BugControllerOptions} from './BugController'
+import type {BugControllerOptions} from './BugController'
 
 type Pos = {left: number; top: number}
 

@@ -1,8 +1,8 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {ActionMeetingMember} from '../../../postgres/types/Meeting'
+import type {ActionMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
-import {ActionMeetingResolvers} from '../resolverTypes'
+import type {ActionMeetingResolvers} from '../resolverTypes'
 
 const ActionMeeting: ActionMeetingResolvers = {
   agendaItem: async ({id: meetingId}, {agendaItemId}, {dataLoader}) => {

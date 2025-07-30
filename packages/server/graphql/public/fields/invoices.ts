@@ -3,7 +3,7 @@ import appOrigin from '../../../appOrigin'
 import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import {getStripeManager} from '../../../utils/stripe'
-import {Invoice, InvoiceStatusEnum, UserResolvers} from '../resolverTypes'
+import type {Invoice, InvoiceStatusEnum, UserResolvers} from '../resolverTypes'
 
 export const invoices: NonNullable<UserResolvers['invoices']> = async (
   _source,
@@ -27,7 +27,10 @@ export const invoices: NonNullable<UserResolvers['invoices']> = async (
   const {stripeId, stripeSubscriptionId} = org
   if (!stripeId || !stripeSubscriptionId)
     // the subscription is necessary because if they downgraded we don't want to fetch invoices
-    return {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
+    return {
+      edges: [],
+      pageInfo: {hasNextPage: false, hasPreviousPage: false}
+    }
   const manager = getStripeManager()
 
   const [sessionRes, upcomingInvoiceRes, invoicesRes] = await Promise.allSettled([

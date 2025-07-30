@@ -1,10 +1,10 @@
 import isValid from 'parabol-server/graphql/isValid'
 import getKysely from 'parabol-server/postgres/getKysely'
 import getPhase from 'parabol-server/utils/getPhase'
-import {MessageToEmbedderRelatedDiscussions} from '../../server/graphql/mutations/helpers/publishToEmbedder'
+import type {MessageToEmbedderRelatedDiscussions} from '../../server/graphql/mutations/helpers/publishToEmbedder'
 import getModelManager from '../ai_models/ModelManager'
-import {JobQueueStepRun, ParentJob} from '../custom'
-import {embedMetadata} from './embedMetadata'
+import type {JobQueueStepRun, ParentJob} from '../custom'
+import type {embedMetadata} from './embedMetadata'
 
 export const relatedDiscussionsStart: JobQueueStepRun<
   MessageToEmbedderRelatedDiscussions['data'],
@@ -37,9 +37,11 @@ export const relatedDiscussionsStart: JobQueueStepRun<
     .values(metadataRows)
     .onConflict((oc) =>
       // trigger an update in order to return the ID of the existing row
-      oc.columns(['refId', 'objectType']).doUpdateSet((eb) => ({
-        objectType: eb.ref('excluded.objectType')
-      }))
+      oc
+        .columns(['refId', 'objectType'])
+        .doUpdateSet((eb) => ({
+          objectType: eb.ref('excluded.objectType')
+        }))
     )
     .returning('id')
     .execute()

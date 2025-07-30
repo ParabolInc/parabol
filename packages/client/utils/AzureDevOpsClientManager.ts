@@ -1,5 +1,5 @@
-import Atmosphere from '../Atmosphere'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type Atmosphere from '../Atmosphere'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
@@ -32,7 +32,11 @@ class AzureDevOpsClientManager {
   static async openOAuth(
     atmosphere: Atmosphere,
     teamId: string,
-    provider: {id: string; tenantId: string | null | undefined; clientId: string},
+    provider: {
+      id: string
+      tenantId: string | null | undefined
+      clientId: string
+    },
     mutationProps: MenuMutationProps
   ) {
     const {id: providerId, tenantId, clientId} = provider

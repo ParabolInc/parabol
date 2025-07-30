@@ -7,11 +7,11 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import {
+import type {
   UserDashTeamMemberMenu_viewer$data,
   UserDashTeamMemberMenu_viewer$key
 } from '../__generated__/UserDashTeamMemberMenu_viewer.graphql'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'
@@ -64,7 +64,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
       userId: string
       preferredName: string
     }[]
-    const teamMembers = filteredTeams.map(({teamMembers}) => teamMembers.flat()).flat()
+    const teamMembers = filteredTeams.flatMap(({teamMembers}) => teamMembers.flat())
     teamMembers.forEach(({user}) => {
       const userKey = user.userId
       if (!keySet.has(userKey)) {

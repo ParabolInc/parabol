@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RemoveIntegrationProviderMutation as TRemoveIntegrationProviderMutation} from '../__generated__/RemoveIntegrationProviderMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {RemoveIntegrationProviderMutation as TRemoveIntegrationProviderMutation} from '../__generated__/RemoveIntegrationProviderMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment RemoveIntegrationProviderMutation_organization on RemoveIntegrationProviderSuccess {

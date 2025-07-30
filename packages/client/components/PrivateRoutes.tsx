@@ -1,4 +1,4 @@
-import {Location} from 'history'
+import type {Location} from 'history'
 import {lazy} from 'react'
 import {Redirect, Route, Switch, useLocation} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'

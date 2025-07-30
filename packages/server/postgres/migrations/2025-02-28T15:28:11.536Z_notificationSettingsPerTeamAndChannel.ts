@@ -1,4 +1,4 @@
-import {sql, type Kysely} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
   // Schema changes significantly, easier to create a new table

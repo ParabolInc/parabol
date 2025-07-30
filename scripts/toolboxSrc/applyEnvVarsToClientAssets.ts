@@ -105,9 +105,9 @@ const rewriteIndexHTML = () => {
 
 const rewriteMattermostEnv = () => {
   const config = {
-      '__PROTO__': JSON.stringify(process.env.PROTO),
-      '__HOST__': JSON.stringify(process.env.HOST),
-      '__PORT__': JSON.stringify(process.env.PORT),
+    __PROTO__: JSON.stringify(process.env.PROTO),
+    __HOST__: JSON.stringify(process.env.HOST),
+    __PORT__: JSON.stringify(process.env.PORT)
   }
 
   const skeleton = fs.readFileSync(path.join(clientDir, 'mattermost-plugin_envSkeleton.js'), 'utf8')

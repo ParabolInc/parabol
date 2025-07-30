@@ -1,4 +1,4 @@
-import {UpsertTeamPromptResponseSuccessResolvers} from '../resolverTypes'
+import type {UpsertTeamPromptResponseSuccessResolvers} from '../resolverTypes'
 
 export type UpsertTeamPromptResponseSuccessSource = {
   teamPromptResponseId: number

@@ -1,5 +1,5 @@
-import {DataLoaderWorker} from '../../graphql'
-import {MsTeamsIntegrationResolvers} from '../resolverTypes'
+import type {DataLoaderWorker} from '../../graphql'
+import type {MsTeamsIntegrationResolvers} from '../resolverTypes'
 
 export type MSTeamsIntegrationSource = {
   teamId: string

@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
@@ -9,7 +9,7 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {getStripeManager} from '../../../utils/stripe'
 import {stripeCardToDBCard} from '../../mutations/helpers/stripeCardToDBCard'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   _source,
@@ -22,7 +22,9 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Must be the organization leader'), {userId: viewerId})
+    return standardError(new Error('Must be the organization leader'), {
+      userId: viewerId
+    })
   }
 
   // RESOLUTION
@@ -43,7 +45,9 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
   }
   const customer = await manager.retrieveCustomer(stripeId)
   if (customer.deleted) {
-    return standardError(new Error('Stripe customer has been deleted'), {userId: viewerId})
+    return standardError(new Error('Stripe customer has been deleted'), {
+      userId: viewerId
+    })
   }
   const {id: customerId} = customer
   const res = await manager.attachPaymentToCustomer(customerId, paymentMethodId)
@@ -83,7 +87,9 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
     }
   }
   if (unpaidInvoice) {
-    return standardError(new Error('Could not pay failed invoices'), {userId: viewerId})
+    return standardError(new Error('Could not pay failed invoices'), {
+      userId: viewerId
+    })
   }
   await Promise.all([
     removeTeamsLimitObjects(orgId, dataLoader),

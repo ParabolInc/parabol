@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {RefObject} from 'react'
+import type {RefObject} from 'react'
 import {useFragment} from 'react-relay'
-import {SpotlightSourceGroup_meeting$key} from '../__generated__/SpotlightSourceGroup_meeting.graphql'
+import type {SpotlightSourceGroup_meeting$key} from '../__generated__/SpotlightSourceGroup_meeting.graphql'
 import {ElementHeight} from '../types/constEnums'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 

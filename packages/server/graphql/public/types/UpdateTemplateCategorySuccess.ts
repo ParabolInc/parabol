@@ -1,4 +1,4 @@
-import {UpdateTemplateCategorySuccessResolvers} from '../resolverTypes'
+import type {UpdateTemplateCategorySuccessResolvers} from '../resolverTypes'
 
 export type UpdateTemplateCategorySuccessSource = {
   templateId: string

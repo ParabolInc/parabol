@@ -1,5 +1,5 @@
-import {JSONContent} from '@tiptap/core'
-import {Attrs} from '@tiptap/pm/model'
+import type {JSONContent} from '@tiptap/core'
+import type {Attrs} from '@tiptap/pm/model'
 
 export const getAllNodesAttributesByType = <T extends Attrs>(
   doc: JSONContent,

@@ -1,8 +1,8 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import defaultJiraProjectAvatar from '../../../utils/defaultJiraProjectAvatar'
-import {JiraServerRemoteProjectResolvers} from '../resolverTypes'
+import type {JiraServerRemoteProjectResolvers} from '../resolverTypes'
 
 const JiraServerRemoteProject: JiraServerRemoteProjectResolvers = {
   __isTypeOf: ({service}) => service === 'jiraServer',

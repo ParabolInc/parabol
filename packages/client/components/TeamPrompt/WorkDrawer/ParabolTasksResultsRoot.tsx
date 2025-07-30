@@ -1,8 +1,8 @@
 import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
 import parabolTasksResultsQuery, {
-  ParabolTasksResultsQuery,
-  TaskStatusEnum
+  type ParabolTasksResultsQuery,
+  type TaskStatusEnum
 } from '../../../__generated__/ParabolTasksResultsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'

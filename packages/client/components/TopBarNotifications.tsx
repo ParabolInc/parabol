@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
+import type {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
@@ -47,7 +47,10 @@ const TopBarNotifications = ({queryRef}: Props) => {
   const menuContentRef = useRef<HTMLDivElement>(null)
   const {togglePortal, openPortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
-    {menuContentRef, id: 'topBarNotificationsMenu'}
+    {
+      menuContentRef,
+      id: 'topBarNotificationsMenu'
+    }
   )
   const {location} = useRouter()
   useEffect(() => {

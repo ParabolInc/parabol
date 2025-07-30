@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const removeAllSlackAuths: MutationResolvers['removeAllSlackAuths'] = async () => {
   const pg = getKysely()

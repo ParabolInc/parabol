@@ -1,4 +1,4 @@
-import {JiraRemoteAvatarUrlsResolvers} from '../resolverTypes'
+import type {JiraRemoteAvatarUrlsResolvers} from '../resolverTypes'
 
 export type JiraRemoteAvatarUrlsSource = {
   '48x48': string

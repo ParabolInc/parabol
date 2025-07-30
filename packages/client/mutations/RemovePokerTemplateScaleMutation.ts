@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
-import {RemovePokerTemplateScaleMutation_scale$data} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {RemovePokerTemplateScaleMutation as IRemovePokerTemplateScaleMutation} from '../__generated__/RemovePokerTemplateScaleMutation.graphql'
+import type {RemovePokerTemplateScaleMutation_scale$data} from '../__generated__/RemovePokerTemplateScaleMutation_scale.graphql'
+import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemovePokerTemplateScale from './handlers/handleRemovePokerTemplateScale'
 
 graphql`

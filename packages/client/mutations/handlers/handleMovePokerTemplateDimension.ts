@@ -1,5 +1,5 @@
-import {RecordSourceProxy} from 'relay-runtime'
-import {TemplateDetails_activity$data} from '~/__generated__/TemplateDetails_activity.graphql'
+import type {RecordSourceProxy} from 'relay-runtime'
+import type {TemplateDetails_activity$data} from '~/__generated__/TemplateDetails_activity.graphql'
 
 const handleMovePokerTemplateDimension = (store: RecordSourceProxy, templateId: string) => {
   const template = store.get<TemplateDetails_activity$data>(templateId)

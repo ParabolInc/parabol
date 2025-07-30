@@ -2,210 +2,210 @@
 An organization
 """
 type Organization {
-  """
-  The unique organization ID
-  """
-  id: ID!
+	"""
+	The unique organization ID
+	"""
+	id: ID!
 
-  """
-  The top level domain this organization is linked to, null if only generic emails used
-  """
-  activeDomain: String
+	"""
+	The top level domain this organization is linked to, null if only generic emails used
+	"""
+	activeDomain: String
 
-  """
-  false if the activeDomain is null or was set automatically via a heuristic, true if set manually
-  """
-  isActiveDomainTouched: Boolean!
+	"""
+	false if the activeDomain is null or was set automatically via a heuristic, true if set manually
+	"""
+	isActiveDomainTouched: Boolean!
 
-  """
-  The datetime the organization was created
-  """
-  createdAt: DateTime!
+	"""
+	The datetime the organization was created
+	"""
+	createdAt: DateTime!
 
-  """
-  The safe credit card details
-  """
-  creditCard: CreditCard
+	"""
+	The safe credit card details
+	"""
+	creditCard: CreditCard
 
-  """
-  true if the viewer is the billing leader for the org
-  """
-  isBillingLeader: Boolean!
+	"""
+	true if the viewer is the billing leader for the org
+	"""
+	isBillingLeader: Boolean!
 
-  """
-  true if the viewer holds the the org admin role on the org
-  """
-  isOrgAdmin: Boolean!
+	"""
+	true if the viewer holds the the org admin role on the org
+	"""
+	isOrgAdmin: Boolean!
 
-  """
-  The name of the organization
-  """
-  name: String!
+	"""
+	The name of the organization
+	"""
+	name: String!
 
-  """
-  Number of teams with 3+ meetings (>1 attendee) that met within last 30 days
-  """
-  activeTeamCount: Int!
+	"""
+	Number of teams with 3+ meetings (>1 attendee) that met within last 30 days
+	"""
+	activeTeamCount: Int!
 
-  """
-  Teams in the organization that the viewer has access to.
-  For org admins/super users: all teams in the org (viewer's teams first).
-  For regular users: teams the viewer is on plus public teams.
-  """
-  teams: [Team!]!
+	"""
+	Teams in the organization that the viewer has access to.
+	For org admins/super users: all teams in the org (viewer's teams first).
+	For regular users: teams the viewer is on plus public teams.
+	"""
+	teams: [Team!]!
 
-  """
-  The count of all teams in the organization
-  """
-  allTeamsCount: Int!
+	"""
+	The count of all teams in the organization
+	"""
+	allTeamsCount: Int!
 
-  """
-  THe datetime the current billing cycle ends
-  """
-  periodEnd: DateTime
+	"""
+	THe datetime the current billing cycle ends
+	"""
+	periodEnd: DateTime
 
-  """
-  The datetime the current billing cycle starts
-  """
-  periodStart: DateTime
+	"""
+	The datetime the current billing cycle starts
+	"""
+	periodStart: DateTime
 
-  """
-  Flag the organization as exceeding the tariff limits by setting a datetime
-  """
-  tierLimitExceededAt: DateTime
+	"""
+	Flag the organization as exceeding the tariff limits by setting a datetime
+	"""
+	tierLimitExceededAt: DateTime
 
-  """
-  Schedule the organization to be locked at
-  """
-  scheduledLockAt: DateTime
+	"""
+	Schedule the organization to be locked at
+	"""
+	scheduledLockAt: DateTime
 
-  """
-  Organization locked at
-  """
-  lockedAt: DateTime
+	"""
+	Organization locked at
+	"""
+	lockedAt: DateTime
 
-  """
-  The total number of retroMeetings given to the team
-  """
-  retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
+	"""
+	The total number of retroMeetings given to the team
+	"""
+	retroMeetingsOffered: Int! @deprecated(reason: "Unlimited retros for all!")
 
-  """
-  Number of retro meetings that can be run (if not pro)
-  """
-  retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
+	"""
+	Number of retro meetings that can be run (if not pro)
+	"""
+	retroMeetingsRemaining: Int! @deprecated(reason: "Unlimited retros for all!")
 
-  """
-  The customerId from stripe
-  """
-  stripeId: ID
+	"""
+	The customerId from stripe
+	"""
+	stripeId: ID
 
-  """
-  The subscriptionId from stripe
-  """
-  stripeSubscriptionId: ID
+	"""
+	The subscriptionId from stripe
+	"""
+	stripeSubscriptionId: ID
 
-  """
-  The last upcoming invoice email that was sent, null if never sent
-  """
-  upcomingInvoiceEmailSentAt: DateTime
+	"""
+	The last upcoming invoice email that was sent, null if never sent
+	"""
+	upcomingInvoiceEmailSentAt: DateTime
 
-  """
-  The datetime the organization was last updated
-  """
-  updatedAt: DateTime
+	"""
+	The datetime the organization was last updated
+	"""
+	updatedAt: DateTime
 
-  """
-  The OrganizationUser of the viewer
-  """
-  viewerOrganizationUser: OrganizationUser
+	"""
+	The OrganizationUser of the viewer
+	"""
+	viewerOrganizationUser: OrganizationUser
 
-  """
-  The users that are apart of the organization
-  """
-  organizationUsers(after: String, first: Int): OrganizationUserConnection!
+	"""
+	The users that are apart of the organization
+	"""
+	organizationUsers(after: String, first: Int): OrganizationUserConnection!
 
-  """
-  The count of active & inactive users
-  """
-  orgUserCount: OrgUserCount!
+	"""
+	The count of active & inactive users
+	"""
+	orgUserCount: OrgUserCount!
 
-  """
-  The leaders of the org
-  """
-  billingLeaders: [OrganizationUser!]!
+	"""
+	The leaders of the org
+	"""
+	billingLeaders: [OrganizationUser!]!
 
-  """
-  The assumed company this organizaiton belongs to
-  """
-  company: Company
+	"""
+	The assumed company this organizaiton belongs to
+	"""
+	company: Company
 
-  """
-  Basic meeting metadata for aggregated stats across the entire organization.
-  Includes metadata on teams the viewer is not apart of
-  """
-  meetingStats: [MeetingStat!]!
+	"""
+	Basic meeting metadata for aggregated stats across the entire organization.
+	Includes metadata on teams the viewer is not apart of
+	"""
+	meetingStats: [MeetingStat!]!
 
-  """
-  The org avatar
-  """
-  picture: URL
-  tier: TierEnum!
+	"""
+	The org avatar
+	"""
+	picture: URL
+	tier: TierEnum!
 
-  """
-  Whether the org has access to AI features
-  """
-  useAI: Boolean!
+	"""
+	Whether the org has access to AI features
+	"""
+	useAI: Boolean!
 
-  billingTier: TierEnum!
+	billingTier: TierEnum!
 
-  """
-  false if the Organization was explicitly marked as not paid manually or by stripe
-  """
-  isPaid: Boolean!
+	"""
+	false if the Organization was explicitly marked as not paid manually or by stripe
+	"""
+	isPaid: Boolean!
 
-  """
-  Message to show if the organization is unpaid
-  """
-  unpaidMessageHTML: String
+	"""
+	Message to show if the organization is unpaid
+	"""
+	unpaidMessageHTML: String
 
-  """
-  When the trial started, iff there is a trial active
-  """
-  trialStartDate: DateTime
+	"""
+	When the trial started, iff there is a trial active
+	"""
+	trialStartDate: DateTime
 
-  """
-  Minimal details about all teams in the organization
-  """
-  teamStats: [TeamStat!]!
+	"""
+	Minimal details about all teams in the organization
+	"""
+	teamStats: [TeamStat!]!
 
-  """
-  Whether the org has a feature flag enabled or not
-  """
-  featureFlag(featureName: String!): Boolean!
+	"""
+	Whether the org has a feature flag enabled or not
+	"""
+	featureFlag(featureName: String!): Boolean!
 
-  """
-  The SAML record attached to the Organization, if any
-  """
-  saml: SAML
+	"""
+	The SAML record attached to the Organization, if any
+	"""
+	saml: SAML
 
-  """
-  The SAML id for the organization if it is provisioned via SAML attribute
-  """
-  samlId: ID
+	"""
+	The SAML id for the organization if it is provisioned via SAML attribute
+	"""
+	samlId: ID
 
-  """
-  A list of domains approved by the organization to join.
-  Empty if all domains are allowed
-  """
-  approvedDomains: [String!]!
+	"""
+	A list of domains approved by the organization to join.
+	Empty if all domains are allowed
+	"""
+	approvedDomains: [String!]!
 
-  """
-  Custom integration providers with organization scope
-  """
-  integrationProviders: OrgIntegrationProviders!
+	"""
+	Custom integration providers with organization scope
+	"""
+	integrationProviders: OrgIntegrationProviders!
 
-  """
-  The feature flags the org has enabled
-  """
-  orgFeatureFlags: [OwnedFeatureFlag!]!
+	"""
+	The feature flags the org has enabled
+	"""
+	orgFeatureFlags: [OwnedFeatureFlag!]!
 }

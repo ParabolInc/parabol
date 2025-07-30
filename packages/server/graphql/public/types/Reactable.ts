@@ -1,5 +1,5 @@
 import resolveReactjis from '../../resolvers/resolveReactjis'
-import {ReactableEnum, ReactableResolvers} from '../resolverTypes'
+import type {ReactableEnum, ReactableResolvers} from '../resolverTypes'
 
 export const getReactableType = (reactable: any): ReactableEnum => {
   if (reactable.reflectionGroupId) {
@@ -21,7 +21,7 @@ const Reactable: ReactableResolvers = {
     } as const
     return lookup[reactableType]
   },
-  reactjis: resolveReactjis
+  reactjis: resolveReactjis as any
 }
 
 export default Reactable

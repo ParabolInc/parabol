@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type AzureDevOpsWorkItemEdge {
-  """
-  The item at the end of the edge
-  """
-  node: AzureDevOpsWorkItem!
-  cursor: DateTime
+	"""
+	The item at the end of the edge
+	"""
+	node: AzureDevOpsWorkItem!
+	cursor: DateTime
 }

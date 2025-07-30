@@ -1,5 +1,5 @@
 import {generateJSON} from '@tiptap/core'
-import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import type {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {RetroDemo} from '~/types/constEnums'
 import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {demoTeamId} from './initDB'

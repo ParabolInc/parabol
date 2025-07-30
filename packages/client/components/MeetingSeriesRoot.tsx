@@ -1,7 +1,7 @@
 import {Suspense} from 'react'
 import {Redirect} from 'react-router'
 import meetingSeriesRedirectorQuery, {
-  MeetingSeriesRedirectorQuery
+  type MeetingSeriesRedirectorQuery
 } from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useRouter from '../hooks/useRouter'

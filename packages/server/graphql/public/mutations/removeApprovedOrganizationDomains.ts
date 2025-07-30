@@ -1,6 +1,6 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const removeApprovedOrganizationDomains: MutationResolvers['removeApprovedOrganizationDomains'] =
   async (_source, {emailDomains, orgId}) => {

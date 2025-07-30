@@ -1,5 +1,5 @@
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
-import {GA4SignUpEventEmissionRequiredArgs} from './handleSuccessfulLogin'
+import type {GA4SignUpEventEmissionRequiredArgs} from './handleSuccessfulLogin'
 
 type SucessReturnType = {
   token: string

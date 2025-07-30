@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   TeamFilterMenu_viewer$data,
   TeamFilterMenu_viewer$key
 } from '~/__generated__/TeamFilterMenu_viewer.graphql'
@@ -11,7 +11,7 @@ import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import Menu from './Menu'

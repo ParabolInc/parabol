@@ -2,8 +2,8 @@ import OpenAI from 'openai'
 import {Logger} from '../../server/utils/Logger'
 import {
   AbstractGenerationModel,
-  GenerationModelParams,
-  GenerationOptions
+  type GenerationModelParams,
+  type GenerationOptions
 } from './AbstractGenerationModel'
 
 export type ModelId = 'gpt-3.5-turbo-0125' | 'gpt-4-turbo-preview'

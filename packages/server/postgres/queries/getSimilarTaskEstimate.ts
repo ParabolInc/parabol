@@ -1,8 +1,8 @@
-import {MaybeReadonly} from 'parabol-client/types/generics'
+import type {MaybeReadonly} from 'parabol-client/types/generics'
 import getPg from '../getPg'
 import {
   getSimilarTaskEstimateQuery,
-  IGetSimilarTaskEstimateQueryResult
+  type IGetSimilarTaskEstimateQueryResult
 } from './generated/getSimilarTaskEstimateQuery'
 
 export interface SimilarTaskEstimateResult extends IGetSimilarTaskEstimateQueryResult {}

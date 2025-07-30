@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {SummaryHeader_meeting$key} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
+import type {SummaryHeader_meeting$key} from 'parabol-client/__generated__/SummaryHeader_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import makeDateString from 'parabol-client/utils/makeDateString'
-import * as React from 'react'
+import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import {ExternalLinks} from '../../../../../types/constEnums'
-import {CorsOptions} from '../../../../../types/cors'
+import type {CorsOptions} from '../../../../../types/cors'
 
 const meetingSummaryLabel: React.CSSProperties = {
   color: PALETTE.SLATE_600,

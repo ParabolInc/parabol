@@ -1,5 +1,5 @@
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const uploadIdPMetadata: MutationResolvers['uploadIdPMetadata'] = async (_, {file, orgId}) => {
   // VALIDATION

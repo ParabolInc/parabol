@@ -22,7 +22,7 @@ export const SubPagesRoot = (props: Props) => {
   })
   // If it's not a top-level page, fetch the yjs document in addition to the GQL metadata
   // Since the parentPageId will not change within the render tree, this hook is not called conditionally
-  // eslint-disable-next-line
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   const pageLinks = parentPageId ? usePageChildren(parentPageId) : undefined
   return (
     <Suspense fallback={<Loader />}>

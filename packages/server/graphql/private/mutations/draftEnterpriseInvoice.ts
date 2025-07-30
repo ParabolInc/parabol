@@ -1,14 +1,14 @@
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import IUser from '../../../postgres/types/IUser'
+import type IUser from '../../../postgres/types/IUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import {getStripeManager} from '../../../utils/stripe'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const getBillingLeaderUser = async (
   email: string | null | undefined,
@@ -76,10 +76,16 @@ const draftEnterpriseInvoice: MutationResolvers['draftEnterpriseInvoice'] = asyn
   }
   // TODO handle upgrade from PRO to ENTERPRISE
   if (tier !== 'starter') {
-    return {error: {message: 'Upgrading from Team not supported. requires PR'}}
+    return {
+      error: {message: 'Upgrading from Team not supported. requires PR'}
+    }
   }
   if (stripeSubscriptionId) {
-    return {error: {message: 'Tier not Team but subscription ID found. Big Error.'}}
+    return {
+      error: {
+        message: 'Tier not Team but subscription ID found. Big Error.'
+      }
+    }
   }
 
   // RESOLUTION

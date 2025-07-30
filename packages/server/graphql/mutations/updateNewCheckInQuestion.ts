@@ -7,8 +7,8 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import type {GQLContext} from './../graphql'
 import UpdateNewCheckInQuestionPayload from '../types/UpdateNewCheckInQuestionPayload'
-import {GQLContext} from './../graphql'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
@@ -35,7 +35,10 @@ export default {
 
     // AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

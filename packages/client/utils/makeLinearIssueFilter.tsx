@@ -1,4 +1,4 @@
-import {_xLinearIssueFilter} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
+import type {_xLinearIssueFilter} from '../__generated__/LinearScopingSearchResultsQuery.graphql'
 
 export const makeLinearIssueFilter = (
   queryString: string,

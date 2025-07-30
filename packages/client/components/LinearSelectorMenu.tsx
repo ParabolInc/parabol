@@ -1,6 +1,6 @@
 import {CircularProgress} from '@mui/material'
-import {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
-import {MenuProps} from '../hooks/useMenu'
+import type {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
+import type {MenuProps} from '../hooks/useMenu'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -85,7 +85,7 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
             key={itemId}
             label={
               <MenuItemLabel className=''>
-                <Checkbox className='mr-2 -ml-2' active={isSelected} />
+                <Checkbox className='-ml-2 mr-2' active={isSelected} />
                 <TypeAheadLabel query={searchQuery} label={itemLabel} />
               </MenuItemLabel>
             }

@@ -1,4 +1,4 @@
-import {AgendaItemsStageResolvers} from '../resolverTypes'
+import type {AgendaItemsStageResolvers} from '../resolverTypes'
 
 const AgendaItemsStage: AgendaItemsStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'agendaitems',

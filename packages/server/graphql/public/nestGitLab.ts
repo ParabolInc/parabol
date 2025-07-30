@@ -1,6 +1,6 @@
-import {GraphQLSchema} from 'graphql'
-import {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
-import {GQLContext} from '../graphql'
+import type {GraphQLSchema} from 'graphql'
+import type {IntegrationProviderGitLabOAuth2} from '../../postgres/queries/getIntegrationProvidersByIds'
+import type {GQLContext} from '../graphql'
 import gitlabSchema from '../nestedSchema/GitLab/gitlabSchema.graphql'
 import nestGitLabEndpoint from '../nestedSchema/nestGitLabEndpoint'
 

@@ -1,11 +1,11 @@
 import {getConfig} from 'mattermost-redux/selectors/entities/general'
 import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams'
 
-import {GlobalState} from 'mattermost-redux/types/store'
+import type {GlobalState} from 'mattermost-redux/types/store'
 
 import manifest from './manifest'
 
-import {PluginState} from './reducers'
+import type {PluginState} from './reducers'
 
 const {id} = manifest
 

@@ -5,7 +5,11 @@ const AzureDevOpsDimensionFieldId = {
   split: (id: string) => {
     const [instanceId, dimensionName, fieldId] = id.split(':') as [string, string, string]
     // replaces '¶' characters with whitespace
-    return {instanceId, dimensionName: dimensionName.replace(/¶/g, ' '), fieldId}
+    return {
+      instanceId,
+      dimensionName: dimensionName.replace(/¶/g, ' '),
+      fieldId
+    }
   }
 }
 

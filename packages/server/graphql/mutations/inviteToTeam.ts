@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import GraphQLEmailType from '../types/GraphQLEmailType'
 import inviteToTeamHelper from './helpers/inviteToTeamHelper'

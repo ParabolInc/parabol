@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {ParabolScopingSearchFilterToggle_meeting$key} from '../__generated__/ParabolScopingSearchFilterToggle_meeting.graphql'
+import type {ParabolScopingSearchFilterToggle_meeting$key} from '../__generated__/ParabolScopingSearchFilterToggle_meeting.graphql'
 import FilterButton from './FilterButton'
 import ParabolScopingSearchFilterMenu from './ParabolScopingSearchFilterMenu'
 

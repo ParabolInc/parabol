@@ -1,9 +1,9 @@
-import {RefObject, useMemo} from 'react'
-import getBBox, {RectElement} from '../components/RetroReflectPhase/getBBox'
-import useCoords, {MenuPosition, UseCoordsOptions} from './useCoords'
+import {type RefObject, useMemo} from 'react'
+import getBBox, {type RectElement} from '../components/RetroReflectPhase/getBBox'
+import useCoords, {type MenuPosition, type UseCoordsOptions} from './useCoords'
 import useLoadingDelay from './useLoadingDelay'
 import useMenuPortal from './useMenuPortal'
-import usePortal, {PortalStatus, UsePortalOptions} from './usePortal'
+import usePortal, {type PortalStatus, type UsePortalOptions} from './usePortal'
 
 interface Options extends UsePortalOptions, UseCoordsOptions {
   loadingWidth?: number
@@ -31,7 +31,9 @@ const useMenu = <T extends HTMLElement = HTMLButtonElement>(
     originCoords
   })
   if (originCoords) {
-    ;(originRef as any).current = {getBoundingClientRect: () => originCoords} as RectElement
+    ;(originRef as any).current = {
+      getBoundingClientRect: () => originCoords
+    } as RectElement
   }
   const {
     portal,

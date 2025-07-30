@@ -23,7 +23,7 @@ export const CopyServiceProviderURL = (props: Props) => {
 
   return (
     <>
-      <div className='leading-7 font-bold'>{label}</div>
+      <div className='font-bold leading-7'>{label}</div>
       <CopyToClipboard text={url} title={title} tooltip={tooltip} onCopy={onCopy}>
         <div className='contents cursor-pointer'>
           <div className='break-all'>{url}</div>

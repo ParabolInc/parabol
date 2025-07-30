@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {ToggleSummaryEmailSuccessResolvers} from '../resolverTypes'
+import type {ToggleSummaryEmailSuccessResolvers} from '../resolverTypes'
 
 export type ToggleSummaryEmailSuccessSource = Record<string, any>
 

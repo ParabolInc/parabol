@@ -1,4 +1,4 @@
-import {useRef, type RefObject} from 'react'
+import {type RefObject, useRef} from 'react'
 import getIsDrag from '../utils/retroGroup/getIsDrag'
 import useEventCallback from './useEventCallback'
 
@@ -42,7 +42,10 @@ export const useBlockResizer = (
     const delta = (drag.lastX - clientX) * sideCoefficient
     drag.lastX = clientX
     const nextWidth = Math.min(maxWidth, Math.max(48, width + delta))
-    updateAttributes({width: nextWidth, height: Math.round(nextWidth / aspectRatioRef.current!)})
+    updateAttributes({
+      width: nextWidth,
+      height: Math.round(nextWidth / aspectRatioRef.current!)
+    })
   })
 
   const onMouseDown = useEventCallback(

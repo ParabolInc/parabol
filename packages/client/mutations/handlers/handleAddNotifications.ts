@@ -1,4 +1,4 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import filterNodesInConn from '../../utils/relay/filterNodesInConn'
 import getNotificationsConn from '../connections/getNotificationsConn'
 import pluralizeHandler from './pluralizeHandler'

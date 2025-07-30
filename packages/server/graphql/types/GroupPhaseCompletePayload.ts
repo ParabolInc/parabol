@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveNewMeeting} from '../resolvers'
 import RetroReflectionGroup from './RetroReflectionGroup'
 import RetrospectiveMeeting from './RetrospectiveMeeting'

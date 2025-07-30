@@ -1,6 +1,5 @@
 import stringify from 'fast-json-stable-stringify'
 import j from 'jscodeshift/src/core'
-import prettier from 'prettier'
 
 const parseArgs = require('minimist')
 const fs = require('fs')
@@ -132,9 +131,7 @@ const addSuccessSourceToCodegen = async (camelMutationName: string) => {
   mappers[successName] = `./types/${successName}#${successName}Source`
   // stable stringify first to sort
   const stableString = stringify(codegenJSON)
-  const options = await prettier.resolveConfig(codegenPath)
-  const prettyStableString = await prettier.format(stableString, {...options, parser: 'json'})
-  fs.writeFileSync(codegenPath, prettyStableString)
+  fs.writeFileSync(codegenPath, stableString)
 }
 
 const createClientMutation = (camelMutationName: string, subscription?: Lowercase<string>) => {
@@ -191,7 +188,9 @@ const addDummyPermission = (camelMutationName: string) => {
     docWithBadSpacing.slice(0, start) +
     // recast prints extra lines that prettier won't fix
     // https://github.com/benjamn/recast/issues/242
-    docWithBadSpacing.slice(start, end).replace(/\n\n/g, '\n') +
+    docWithBadSpacing
+      .slice(start, end)
+      .replace(/\n\n/g, '\n') +
     docWithBadSpacing.slice(end)
   fs.writeFileSync(permissionPath, docWithGoodSpacing)
 }

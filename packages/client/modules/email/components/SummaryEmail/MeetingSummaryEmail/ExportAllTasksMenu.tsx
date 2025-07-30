@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
-import {ExportAllTasksMenuQuery} from '../../../../../__generated__/ExportAllTasksMenuQuery.graphql'
-import {ExportAllTasksMenu_meeting$key} from '../../../../../__generated__/ExportAllTasksMenu_meeting.graphql'
+import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import type {TaskServiceEnum} from '../../../../../__generated__/CreateTaskMutation.graphql'
+import type {ExportAllTasksMenu_meeting$key} from '../../../../../__generated__/ExportAllTasksMenu_meeting.graphql'
+import type {ExportAllTasksMenuQuery} from '../../../../../__generated__/ExportAllTasksMenuQuery.graphql'
 import TaskFooterIntegrateMenuList from '../../../../../components/TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from '../../../../../components/TaskFooterIntegrateMenuSignup'
 import {makePlaceholder, useIsIntegrated} from '../../../../../hooks/useIsIntegrated'
-import {MenuProps} from '../../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../../hooks/useMutationProps'
+import type {MenuProps} from '../../../../../hooks/useMenu'
+import type {MenuMutationProps} from '../../../../../hooks/useMutationProps'
 
 interface Props {
   menuProps: MenuProps

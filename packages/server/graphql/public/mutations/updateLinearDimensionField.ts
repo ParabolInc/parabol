@@ -1,9 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {Logger} from '../../../utils/Logger'
 import {isTeamMember} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateLinearDimensionField: MutationResolvers['updateLinearDimensionField'] = async (
   _source,

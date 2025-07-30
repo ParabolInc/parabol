@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 
 export const stripeCardToDBCard = (card: Stripe.PaymentMethod.Card) => {
   const {brand, exp_month, exp_year, last4} = card

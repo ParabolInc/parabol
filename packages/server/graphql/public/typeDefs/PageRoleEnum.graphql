@@ -1,6 +1,6 @@
 enum PageRoleEnum {
-  owner
-  editor
-  commenter
-  viewer
+	owner
+	editor
+	commenter
+	viewer
 }

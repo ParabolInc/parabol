@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 import logError from '../utils/logError'
-import MailManager, {MailManagerOptions} from './MailManager'
+import MailManager, {type MailManagerOptions} from './MailManager'
 
 export default class MailManagerSMTP extends MailManager {
   transport = nodemailer.createTransport({

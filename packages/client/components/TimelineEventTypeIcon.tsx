@@ -23,7 +23,7 @@ const TimelineEventTypeIcon = (props: Props) => {
   const {iconName} = props
   if (!iconName) return null
   return (
-    <div className='block h-6 w-6 self-start rounded-sm text-slate-600 select-none'>
+    <div className='block h-6 w-6 select-none self-start rounded-sm text-slate-600'>
       {
         {
           change_history: <ChangeHistory />,

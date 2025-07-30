@@ -1,5 +1,5 @@
-import {FormattedExecutionResult} from 'graphql'
-import {Environment, FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
+import type {FormattedExecutionResult} from 'graphql'
+import {Environment, type FetchFunction, Network, RecordSource, Store} from 'relay-runtime'
 import type {InternalContext} from '../graphql/graphql'
 import {requestFromYoga} from './requestFromYoga'
 

@@ -1,7 +1,7 @@
 import getPg from '../getPg'
 import {
   getAzureDevOpsDimensionFieldMapsQuery,
-  IGetAzureDevOpsDimensionFieldMapsQueryResult
+  type IGetAzureDevOpsDimensionFieldMapsQueryResult
 } from './generated/getAzureDevOpsDimensionFieldMapsQuery'
 
 export interface AzureDevOpsDimensionFieldMap

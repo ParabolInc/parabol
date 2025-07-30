@@ -1,4 +1,4 @@
-import {UpdatePagePayloadResolvers} from '../resolverTypes'
+import type {UpdatePagePayloadResolvers} from '../resolverTypes'
 
 export type UpdatePagePayloadSource = {pageId: number}
 

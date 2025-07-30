@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {
+import type {
   ParabolTasksResultsQuery,
   TaskStatusEnum
 } from '../../../__generated__/ParabolTasksResultsQuery.graphql'
@@ -53,7 +53,7 @@ const ParabolTasksResults = (props: Props) => {
       {selectedTasks.length > 0 ? (
         selectedTasks.map((task) => (
           <NullableTask
-            className='w-full rounded-sm border border-solid border-slate-100'
+            className='w-full rounded-sm border border-slate-100 border-solid'
             key={task.id}
             area={'userDash'}
             task={task}

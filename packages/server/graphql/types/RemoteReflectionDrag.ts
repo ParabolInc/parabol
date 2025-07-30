@@ -6,7 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 
 const RemoteReflectionDrag = new GraphQLObjectType<any, GQLContext>({
   name: 'RemoteReflectionDrag',

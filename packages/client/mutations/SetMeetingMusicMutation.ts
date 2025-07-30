@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetMeetingMusicMutation as TSetMeetingMusicMutation} from '../__generated__/SetMeetingMusicMutation.graphql'
-import {SetMeetingMusicMutation_meeting$data} from '../__generated__/SetMeetingMusicMutation_meeting.graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {SetMeetingMusicMutation as TSetMeetingMusicMutation} from '../__generated__/SetMeetingMusicMutation.graphql'
+import type {SetMeetingMusicMutation_meeting$data} from '../__generated__/SetMeetingMusicMutation_meeting.graphql'
+import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 const mutation = graphql`

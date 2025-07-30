@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import MassInvitationPayload from '../types/MassInvitationPayload'
 

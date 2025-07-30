@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {ManageAccounts} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
+import type {DashNavList_organization$key} from '../../__generated__/DashNavList_organization.graphql'
 import type {DashNavList_viewer$key} from '../../__generated__/DashNavList_viewer.graphql'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
@@ -77,7 +77,7 @@ const DashNavList = (props: Props) => {
         sortedOrgs.map((org) => (
           <div key={org.id} className='w-full pb-4'>
             <div className='mb-1 flex min-w-0 flex-1 flex-wrap items-center justify-between'>
-              <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
+              <span className='flex-1 pl-3 font-semibold text-base text-slate-700 leading-6'>
                 {org.name}
               </span>
               <Tooltip>

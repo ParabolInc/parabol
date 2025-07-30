@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveOrganization} from '../resolvers'
 import {addTeamFields} from './AddTeamPayload'
 import Organization from './Organization'

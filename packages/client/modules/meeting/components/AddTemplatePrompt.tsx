@@ -4,11 +4,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {Threshold} from '~/types/constEnums'
-import {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
+import type {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
 import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import {positionAfter} from '../../../shared/sortOrder'
-import withMutationProps, {WithMutationProps} from '../../../utils/relay/withMutationProps'
+import withMutationProps, {type WithMutationProps} from '../../../utils/relay/withMutationProps'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',

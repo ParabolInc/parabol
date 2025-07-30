@@ -7,7 +7,7 @@ import type {DB} from '../../../postgres/types/pg'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import {MutationResolvers, type PageRoleEnum, type PageSubjectEnum} from '../resolverTypes'
+import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
 
 const getNextIsPrivate = async (
@@ -157,7 +157,10 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   if (willBePrivate !== undefined || unlinkFromParent) {
     await trx
       .updateTable('Page')
-      .set({isParentLinked: unlinkFromParent ? false : undefined, isPrivate: willBePrivate})
+      .set({
+        isParentLinked: unlinkFromParent ? false : undefined,
+        isPrivate: willBePrivate
+      })
       .where('id', '=', dbPageId)
       .execute()
   }

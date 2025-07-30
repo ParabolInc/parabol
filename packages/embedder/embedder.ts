@@ -2,15 +2,15 @@ import tracer from 'dd-trace'
 import 'parabol-server/initLogging'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
-import {Tuple} from '../client/types/generics'
+import type {Tuple} from '../client/types/generics'
 import {establishPrimaryServer} from '../server/establishPrimaryServer'
-import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
-import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 import getModelManager from './ai_models/ModelManager'
+import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {logPerformance} from './logPerformance'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
 import {resetStalledJobs} from './resetStalledJobs'
+import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
 tracer.init({
   service: `embedder`,

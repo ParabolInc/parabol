@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
 import {PALETTE} from '../styles/paletteV3'
-import SendClientSideEvent from '../utils/SendClientSideEvent'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 const StyledCopyShortLink = styled(CopyShortLink)({
   borderRadius: 4,

@@ -2,7 +2,8 @@ import stringify from 'fast-json-stable-stringify'
 import ms from 'ms'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import sleep from 'parabol-client/utils/sleep'
-import AtlassianServerManager, {JiraGetIssueRes} from '../AtlassianServerManager'
+import type AtlassianServerManager from '../AtlassianServerManager'
+import type {JiraGetIssueRes} from '../AtlassianServerManager'
 import getRedis from '../getRedis'
 
 const ISSUE_TTL_MS = ms('1d')

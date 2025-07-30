@@ -1,8 +1,8 @@
 type DraftEnterpriseInvoicePayload {
-  error: StandardMutationError
+	error: StandardMutationError
 
-  """
-  The updated organization
-  """
-  organization: Organization
+	"""
+	The updated organization
+	"""
+	organization: Organization
 }

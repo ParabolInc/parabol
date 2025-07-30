@@ -2,13 +2,13 @@ import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
-import {DataLoaderInstance} from '../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import generateUID from '../generateUID'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
-import {Team} from '../postgres/types'
-import {Logger} from '../utils/Logger'
+import type {Team} from '../postgres/types'
 import {analytics} from '../utils/analytics/analytics'
+import {Logger} from '../utils/Logger'
 
 const handleFirstAcceptedInvitation = async (
   team: Team,

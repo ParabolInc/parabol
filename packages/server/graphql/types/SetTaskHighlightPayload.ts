@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveTask} from '../resolvers'
-import Task from './Task'
 import makeMutationPayload from './makeMutationPayload'
+import Task from './Task'
 
 export const SetTaskHighlightSuccess = new GraphQLObjectType<
   {taskId: string; meetingId: string},

@@ -1,8 +1,8 @@
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
-import {AcceptTeamInvitationPayloadResolvers} from '../resolverTypes'
+import type {AcceptTeamInvitationPayloadResolvers} from '../resolverTypes'
 
 export type AcceptTeamInvitationPayloadSource = {
   meetingId?: string | null
@@ -29,12 +29,18 @@ const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
-      standardError(new Error('Meeting not found'), {userId: viewerId, tags: {meetingId}})
+      standardError(new Error('Meeting not found'), {
+        userId: viewerId,
+        tags: {meetingId}
+      })
       return null
     }
     const {teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      standardError(new Error('Viewer not on team'), {userId: viewerId, tags: {teamId}})
+      standardError(new Error('Viewer not on team'), {
+        userId: viewerId,
+        tags: {teamId}
+      })
       return null
     }
     return meeting

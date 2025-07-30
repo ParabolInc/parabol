@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {TeamPrivacyToggle_team$key} from '../../../../__generated__/TeamPrivacyToggle_team.graphql'
+import type {TeamPrivacyToggle_team$key} from '../../../../__generated__/TeamPrivacyToggle_team.graphql'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
@@ -75,8 +75,8 @@ const TeamPrivacyToggle = (props: Props) => {
   return (
     <>
       <div className='flex w-full items-start justify-between'>
-        <div className='text-sm text-slate-700'>
-          <div className='text-sm text-slate-700'>
+        <div className='text-slate-700 text-sm'>
+          <div className='text-slate-700 text-sm'>
             {isPublic ? (
               <>
                 <div>
@@ -84,7 +84,7 @@ const TeamPrivacyToggle = (props: Props) => {
                   team.
                 </div>
                 {isStarterTier && (
-                  <div className='mt-1 text-xs font-medium text-slate-600'>
+                  <div className='mt-1 font-medium text-slate-600 text-xs'>
                     <a className='cursor-pointer text-sky-500' onClick={handleUpgradeClick}>
                       Upgrade
                     </a>{' '}

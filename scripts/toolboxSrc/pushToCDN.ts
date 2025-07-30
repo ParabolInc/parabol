@@ -17,7 +17,9 @@ const pushClientAssetsToCDN = async () => {
     return
   }
 
-  const dirEnts = await fs.promises.readdir(localClientAssetsDir, {withFileTypes: true})
+  const dirEnts = await fs.promises.readdir(localClientAssetsDir, {
+    withFileTypes: true
+  })
   const chunks = chunk(dirEnts, 50)
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i]!
@@ -74,7 +76,9 @@ const pushServerAssetsToCDN = async () => {
     return true
   }
 
-  const dirEnts = await fs.promises.readdir(localServerAssetsDir, {withFileTypes: true})
+  const dirEnts = await fs.promises.readdir(localServerAssetsDir, {
+    withFileTypes: true
+  })
 
   // @smithy/node-http-handler has a default value of 50 maxSockets
   // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html

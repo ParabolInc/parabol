@@ -1,11 +1,11 @@
-import {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import useTooltip from '~/hooks/useTooltip'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import {MenuMutationProps} from '../../../../hooks/useMutationProps'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import lazyPreload from '../../../../utils/lazyPreload'
 
 interface Props {

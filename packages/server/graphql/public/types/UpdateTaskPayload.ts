@@ -1,6 +1,6 @@
-import {TaskInvolvesNotification} from '../../../postgres/types/Notification'
+import type {TaskInvolvesNotification} from '../../../postgres/types/Notification'
 import {getUserId} from '../../../utils/authorization'
-import {UpdateTaskPayloadResolvers} from '../resolverTypes'
+import type {UpdateTaskPayloadResolvers} from '../resolverTypes'
 
 export type UpdateTaskPayloadSource = {
   taskId: string

@@ -1,6 +1,6 @@
-import * as React from 'react'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeetingSidebar_meeting.graphql'
-import {MeetingTypeEnum} from '../../__generated__/SummarySheet_meeting.graphql'
+import type * as React from 'react'
+import type {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeetingSidebar_meeting.graphql'
+import type {MeetingTypeEnum} from '../../__generated__/SummarySheet_meeting.graphql'
 import CardsSVG from '../../components/CardsSVG'
 import {ACTION, POKER, RETROSPECTIVE, TEAM_PROMPT} from '../constants'
 

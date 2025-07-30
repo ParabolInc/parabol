@@ -1,7 +1,7 @@
 import getKysely from '../../../postgres/getKysely'
 import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const endTrial: MutationResolvers['endTrial'] = async (_source, {orgId}, {dataLoader}) => {
   const pg = getKysely()

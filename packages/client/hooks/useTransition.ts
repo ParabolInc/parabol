@@ -56,7 +56,10 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
         const nextChildren = previousTransitionChildrenRef.current
         const tChildIdx = nextChildren.findIndex(({child}) => child.key === key)
         if (tChildIdx !== -1) {
-          const tChild = {...nextChildren[tChildIdx]!, status: TransitionStatus.ENTERING}
+          const tChild = {
+            ...nextChildren[tChildIdx]!,
+            status: TransitionStatus.ENTERING
+          }
           previousTransitionChildrenRef.current = [
             ...nextChildren.slice(0, tChildIdx),
             tChild,
@@ -106,7 +109,10 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       const idxInNext = children.findIndex((child) => child.key === key)
       if (idxInNext === -1) {
         touched = true
-        const exitingTChild = {...prevTChild, status: TransitionStatus.EXITING}
+        const exitingTChild = {
+          ...prevTChild,
+          status: TransitionStatus.EXITING
+        }
         currentTChildren.splice(i, 0, exitingTChild)
       }
     })

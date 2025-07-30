@@ -1,5 +1,5 @@
 import {addEmbeddingsMetadataForRetrospectiveDiscussionTopic} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
-import {EmbeddingObjectType} from './custom'
+import type {EmbeddingObjectType} from './custom'
 
 export type AddEmbeddingsMetadataParams = {
   startAt?: Date

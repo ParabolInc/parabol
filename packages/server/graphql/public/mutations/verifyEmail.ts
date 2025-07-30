@@ -1,5 +1,5 @@
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
-import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
+import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -7,7 +7,7 @@ import updateUser from '../../../postgres/queries/updateUser'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const verifyEmail: MutationResolvers['verifyEmail'] = async (
   _source,
@@ -58,7 +58,12 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     return {error: {message: 'Invalid hash for email. Please reverify'}}
   }
   // user does not exist, create them bootstrap
-  const newUser = await createNewLocalUser({email, hashedPassword, isEmailVerified: true, pseudoId})
+  const newUser = await createNewLocalUser({
+    email,
+    hashedPassword,
+    isEmailVerified: true,
+    pseudoId
+  })
   // it's possible that the invitationToken is no good.
   // if that happens, then they'll get into the app & won't be on any team
   // edge case because that requires the invitation token to have expired

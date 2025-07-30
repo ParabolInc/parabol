@@ -1,4 +1,4 @@
-import {_XLinearProjectResolvers} from '../resolverTypes'
+import type {_XLinearProjectResolvers} from '../resolverTypes'
 
 const _xLinearProject: _XLinearProjectResolvers = {
   service: () => 'linear'

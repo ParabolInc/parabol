@@ -1,4 +1,4 @@
 type PageAccessGuest {
-  email: Email!
-  role: PageRoleEnum!
+	email: Email!
+	role: PageRoleEnum!
 }

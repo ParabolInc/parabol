@@ -2,15 +2,6 @@ import React from 'react'
 
 export type ContextArgs = {channel_id: string}
 
-type FormatTextOptions = {
-  atMentions?: boolean
-  markdown?: boolean
-}
-
-type MessageHtmlToComponentOptions = {
-  mentionHighlight: boolean
-}
-
 export interface PluginRegistry {
   registerReducer(reducer)
   registerChannelHeaderButtonAction(icon: Reast.ReactNode, action: () => void, tooltipText: string)

@@ -30,7 +30,7 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
     <div className='flex h-auto w-auto flex-col items-center rounded-lg bg-white'>
       <div className='title-wrapper flex w-full items-center justify-between pr-6'>
         <DialogTitle className='px-6 pt-6 pb-4 text-slate-700'>{'Archive all'}</DialogTitle>
-        <Close onClick={handleClose} className='text-xl text-slate-600 hover:cursor-pointer' />
+        <Close onClick={handleClose} className='text-slate-600 text-xl hover:cursor-pointer' />
       </div>
       <div className='px-6 pb-8 text-base text-slate-700'>
         This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?

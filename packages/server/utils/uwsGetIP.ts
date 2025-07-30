@@ -1,4 +1,4 @@
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 
 const TRUSTED_PROXY_COUNT = Number(process.env.TRUSTED_PROXY_COUNT)
 // if TRUSTED_PROXY_COUNT is not configured correctly we fall back to reading the first IP to avoid rate limiting our proxy
