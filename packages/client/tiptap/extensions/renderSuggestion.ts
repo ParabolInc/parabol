@@ -42,7 +42,7 @@ const renderSuggestion =
         component = new ReactRenderer(Component, {
           props,
           editor: props.editor,
-          className: 'z-10',
+          className: 'z-10'
         }) as typeof component
         component.element.style.position = 'absolute'
         document.body.appendChild(component.element)

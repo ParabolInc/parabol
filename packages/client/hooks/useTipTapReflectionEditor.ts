@@ -50,9 +50,9 @@ export const useTipTapReflectionEditor = (
           'Heading 2': false,
           'To-do list': false,
           Insights: false,
-          'Table': false,
-          'Details': false,
-          'Create page': false,
+          Table: false,
+          Details: false,
+          'Create page': false
         }),
         ClearOnSubmit,
         Focus,
