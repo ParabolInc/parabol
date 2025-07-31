@@ -79,9 +79,7 @@ export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({
             }))
             .filter((group) => group.commands.length > 0)
         },
-        render: renderSuggestion(SlashCommandMenu),
-        decorationTag: 'span',
-        decorationClass: 'slash-command-decoration',
+        render: renderSuggestion(SlashCommandMenu)
       })
     ]
   }
