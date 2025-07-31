@@ -53,7 +53,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
   const {data} = paginationRes
   const {searchGifs} = data
   const {edges} = searchGifs!
-  const service = window.__ACTION__.GIF_PROVIDER
+  const service = window.__ACTION__?.GIF_PROVIDER
   // Per attribution spec, the exact wording is required
   // https://developers.google.com/tenor/guides/attribution
   const placeholder = service === 'tenor' ? 'Search Tenor' : 'Search Gifs'

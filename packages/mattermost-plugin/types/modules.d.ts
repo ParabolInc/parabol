@@ -7,7 +7,8 @@ declare const __APP_VERSION__: string
 declare const __SOCKET_PORT__: string
 declare const __HOCUS_POCUS_PORT__: string
 interface Window {
-  __ACTION__: {
+  // the mattermost plugin does not have window.__ACTION__ set, so let's make this optional to enforce proper checks in all included client code
+  __ACTION__?: {
     atlassian: string
     datadogClientToken: string | undefined
     datadogApplicationId: string | undefined
