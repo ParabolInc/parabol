@@ -13,7 +13,10 @@ export const BubbleMenuButton = (props: Props) => {
     <Button
       variant='flat'
       data-highlighted={isActive ? '' : undefined}
-      className={cn('h-7 w-7 rounded-xs hover:bg-slate-300 data-highlighted:bg-slate-300', className)}
+      className={cn(
+        'h-7 w-7 rounded-xs hover:bg-slate-300 data-highlighted:bg-slate-300',
+        className
+      )}
       {...rest}
     >
       {children}
