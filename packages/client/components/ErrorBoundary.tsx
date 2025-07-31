@@ -47,11 +47,8 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
       isOldBrowserErr
     })
 
-    const renderingError = new Error(error.message)
-    renderingError.name = 'ReactRenderingError'
-    renderingError.stack = errorInfo.componentStack
-    renderingError.cause = error
-    datadogRum.addError(renderingError, {viewerId, email})
+    const {componentStack} = errorInfo
+    datadogRum.addError(error, {viewerId, email, componentStack})
   }
 
   render() {
