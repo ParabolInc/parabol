@@ -1,4 +1,3 @@
-import {writeFileSync} from 'node:fs'
 import {sql} from 'kysely'
 import ReactDOMServer from 'react-dom/server'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
@@ -33,7 +32,6 @@ export const sendSummaryEmailV2 = async (
       .where('id', '=', meetingId)
       .execute()
   ])
-  writeFileSync('./email.html', html)
   const {orgId, name: teamName} = team
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, name: orgName} = organization

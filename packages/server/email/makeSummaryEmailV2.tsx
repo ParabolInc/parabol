@@ -53,7 +53,7 @@ const makeFallbackInsights = async (meetingId: string, dataLoader: DataLoaderIns
           const commentLabel = `${commentCount} ${plural(commentCount || 0, 'comments')}`
           const str = `${title} (${voteLabel}, ${taskLabel}, ${commentLabel})`
           return (
-            <Text style={paragraph}>
+            <Text style={paragraph} key={idx}>
               {idx + 1}. {str}
             </Text>
           )
@@ -135,7 +135,7 @@ export const makeSummaryEmailV2 = async (
     textDecoration: 'underline'
   }
   const pageCode = CipherId.encrypt(pageId)
-  const CTAURL = makeAppURL(appOrigin, `/page/${pageCode}`)
+  const CTAURL = makeAppURL(appOrigin, `/pages/${pageCode}`)
   const unsubscribeURL = makeAppURL(appOrigin, '/me/profile')
   if (meetingType === 'retrospective') {
     const endLabel = endTime.format('MMM D, YYYY')

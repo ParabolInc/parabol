@@ -17,15 +17,18 @@ export const getInsightsBlocks = async (meetingId: string, dataLoader: DataLoade
   const startTime = dayjs(createdAt)
   const endTime = dayjs(endedAt)
   const {content, error} = await dataLoader.get('meetingInsightsContent').load(meetingId)
-  const useAI = error === 'disabled'
-  const notEnoughData = error === 'nodata'
   const startTimeRange = startTime.subtract(1, 'hour').toISOString()
   const endTimeRange = endTime.add(1, 'hour').toISOString()
-  const blockContent = useAI
-    ? notEnoughData
-      ? NOT_ENOUGH_DATA_BLOCK
-      : markdownToTipTap(content!)
-    : []
+  const getBlockContent = (
+    content: string | undefined,
+    error?: 'nodata' | 'disabled' | 'modelFail'
+  ) => {
+    if (content) return markdownToTipTap(content)
+    if (error === 'disabled') return []
+    if (error === 'nodata') return NOT_ENOUGH_DATA_BLOCK
+    return {type: 'paragraph', content: [{type: 'text', text: 'Could not reach AI Server'}]}
+  }
+  const blockContent = getBlockContent(content, error)
   return [
     {type: 'paragraph'},
     {

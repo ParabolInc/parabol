@@ -43,11 +43,6 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
     async (meetingIds) => {
       const contents = await Promise.all(
         meetingIds.map(async (meetingId) => {
-//           return {content: `- 🥇 **Improve Meat Cooking Quality:** The team repeatedly highlighted issues with meat not reaching proper temperatures, resulting in inconsistent cooking. Senior management should allocate resources to review current cooking processes and equipment calibration to ensure reliable temperature control.
-
-          // - 🥈 **Evaluate Equipment and Calibration Processes:** Concerns about unreliable cooking temperatures suggest potential calibration or equipment issues. A targeted review and adjustment of measurement tools and procedures can help prevent quality issues and maintain customer satisfaction.
-
-          // - 🥉 **Enhance Standard Operating Procedures (SOPs) and Training:** The recurring reflections indicate a need for clearer guidelines and training on meat cooking best practices. Consider developing refined SOPs and additional training initiatives to ensure consistent application of techniques across shifts.`}
           const input = await parent.get('meetingInsightsInput').load(meetingId)
           if (!input) return {error: 'nodata' as const}
           const meeting = await parent.get('newMeetings').loadNonNull(meetingId)
