@@ -1,4 +1,5 @@
 import type DataLoader from 'dataloader'
+import * as aiLoaderMakers from './aiLoaderMakers'
 import * as atlassianLoaders from './atlassianLoaders'
 import * as azureDevOpsLoaders from './azureDevOpsLoaders'
 import * as customLoaderMakers from './customLoaderMakers'
@@ -21,6 +22,7 @@ interface LoaderDict {
 
 // Register all loaders
 const loaderMakers = {
+  ...aiLoaderMakers,
   ...pageLoaderMakers,
   ...teamLoaderMakers,
   ...primaryKeyLoaderMakers,

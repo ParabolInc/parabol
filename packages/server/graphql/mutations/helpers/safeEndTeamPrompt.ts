@@ -26,7 +26,7 @@ const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: Internal
 
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
-  sendNewMeetingSummary(meeting, context).catch(Logger.log)
+  sendNewMeetingSummary(meeting, false, context).catch(Logger.log)
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)

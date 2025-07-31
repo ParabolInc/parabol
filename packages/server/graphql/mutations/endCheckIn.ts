@@ -216,7 +216,7 @@ export default {
     const updatedTaskIds = (result && result.updatedTaskIds) || []
 
     analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader)
-    sendNewMeetingSummary(completedCheckIn, context).catch(Logger.log)
+    sendNewMeetingSummary(completedCheckIn, false, context).catch(Logger.log)
 
     const events = teamMembers.map(
       (teamMember) =>

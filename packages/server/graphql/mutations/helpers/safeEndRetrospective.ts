@@ -4,6 +4,7 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
+import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
 import getKysely from '../../../postgres/getKysely'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
@@ -24,7 +25,11 @@ import removeEmptyTasks from './removeEmptyTasks'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
-const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
+const summarizeRetroMeeting = async (
+  meeting: RetrospectiveMeeting,
+  makePagesSummary: boolean,
+  context: InternalContext
+) => {
   const {dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId}
@@ -47,7 +52,7 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     .execute()
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
-  sendNewMeetingSummary(meeting, context).catch(Logger.log)
+  sendNewMeetingSummary(meeting, makePagesSummary, context).catch(Logger.log)
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
@@ -109,16 +114,18 @@ const safeEndRetrospective = async ({
   }
   // remove any empty tasks
   const {templateId} = completedRetrospective
-  const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
-    dataLoader.get('meetingTemplates').loadNonNull(templateId)
-  ])
+  const [makePagesSummary, meetingMembers, team, teamMembers, removedTaskIds, template] =
+    await Promise.all([
+      dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
+      removeEmptyTasks(meetingId),
+      dataLoader.get('meetingTemplates').loadNonNull(templateId)
+    ])
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
-  summarizeRetroMeeting(completedRetrospective, context)
+  summarizeRetroMeeting(completedRetrospective, makePagesSummary, context)
   analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
   const events = teamMembers.map(
     (teamMember) =>
@@ -148,13 +155,14 @@ const safeEndRetrospective = async ({
       )
     }
   }
-  const [gotoPageSummary] = await Promise.all([
-    dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
-    // the promise only creates the initial page, the page blocks are generated and sent after resolving
-    publishSummaryPage(viewerId, meetingId, dataLoader, mutatorId)
-  ])
+  // the promise only creates the initial page, the page blocks are generated and sent after resolving
+  const page = await publishSummaryPage(viewerId, meetingId, dataLoader, mutatorId)
+  if (makePagesSummary) {
+    // do not await sending the email
+    sendSummaryEmailV2(meetingId, page.id, dataLoader)
+  }
   const data = {
-    gotoPageSummary,
+    gotoPageSummary: makePagesSummary,
     meetingId,
     teamId,
     isKill: !!(phase && phase.phaseType !== DISCUSS),
