@@ -17,15 +17,14 @@
       "!**/packages/client/styles/theme/global.css",
       "!**/packages/server/types/**",
       "!**/packages/server/graphql/**/resolverTypes.ts",
-      "!**/packages/server/graphql/**/resolverTypes.ts"
+      "!**/packages/server/graphql/**/resolverTypes.ts",
+      "!**/packages/server/postgres/queries/generated/**",
+      "!**/queryMap.json"
     ]
   },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
     "lineWidth": 100,
     "attributePosition": "auto",
     "bracketSameLine": false,
