@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TaskColumnAddTask_teams$key} from '~/__generated__/TaskColumnAddTask_teams.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import {TaskColumnAddTask_tasks$key} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
+import type {TaskColumnAddTask_teams$key} from '~/__generated__/TaskColumnAddTask_teams.graphql'
+import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import type {TaskColumnAddTask_tasks$key} from '../../../../__generated__/TaskColumnAddTask_tasks.graphql'
 import AddTaskButton from '../../../../components/AddTaskButton/AddTaskButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import CreateTaskMutation from '../../../../mutations/CreateTaskMutation'
@@ -63,7 +63,13 @@ const TaskColumnAddTask = (props: Props) => {
         CreateTaskMutation(
           atmosphere,
           {
-            newTask: {status, teamId, userId: userId || viewerId, sortOrder, meetingId}
+            newTask: {
+              status,
+              teamId,
+              userId: userId || viewerId,
+              sortOrder,
+              meetingId
+            }
           },
           {}
         )

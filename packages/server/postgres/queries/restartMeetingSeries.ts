@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IRestartMeetingSeriesByIdQueryParams,
+  type IRestartMeetingSeriesByIdQueryParams,
   restartMeetingSeriesByIdQuery
 } from './generated/restartMeetingSeriesByIdQuery'
 

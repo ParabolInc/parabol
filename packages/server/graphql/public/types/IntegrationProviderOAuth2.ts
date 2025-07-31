@@ -1,5 +1,5 @@
-import {TIntegrationProvider} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import {IntegrationProviderOAuth2Resolvers} from '../resolverTypes'
+import type {TIntegrationProvider} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderOAuth2Resolvers} from '../resolverTypes'
 import IntegrationProvider from './IntegrationProvider'
 
 export type IntegrationProviderOAuth2Source = TIntegrationProvider

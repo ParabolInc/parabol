@@ -1,4 +1,4 @@
-import {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
+import type {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import {PluginKey} from '@tiptap/pm/state'
 import {TaskTagDropdown} from '../components/TaskTagDropdown'
 import renderSuggestion from '../tiptap/extensions/renderSuggestion'

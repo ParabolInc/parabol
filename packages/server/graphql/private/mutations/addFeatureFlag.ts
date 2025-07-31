@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const addFeatureFlag: MutationResolvers['addFeatureFlag'] = async (
   _source,

@@ -2,9 +2,14 @@ import styled from '@emotion/styled'
 import {Whatshot} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
-import {DragDropContext, Droppable, DroppableProvided, DropResult} from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Droppable,
+  type DroppableProvided,
+  type DropResult
+} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
-import {TimelinePriorityTasks_viewer$key} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
+import type {TimelinePriorityTasks_viewer$key} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'

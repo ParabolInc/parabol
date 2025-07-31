@@ -1,16 +1,16 @@
 type RemoveIntegrationProviderSuccess {
-  """
-  The ID of the integration provider that was removed
-  """
-  providerId: ID!
+	"""
+	The ID of the integration provider that was removed
+	"""
+	providerId: ID!
 
-  """
-  The updated set of organization integration providers if there were changes
-  """
-  orgIntegrationProviders: OrgIntegrationProviders
+	"""
+	The updated set of organization integration providers if there were changes
+	"""
+	orgIntegrationProviders: OrgIntegrationProviders
 
-  """
-  Updated team member integrations if there were changes
-  """
-  teamMemberIntegrations: TeamMemberIntegrations
+	"""
+	Updated team member integrations if there were changes
+	"""
+	teamMemberIntegrations: TeamMemberIntegrations
 }

@@ -1,5 +1,5 @@
 import IntegrationRepoId from 'parabol-client/shared/gqlIds/IntegrationRepoId'
-import {RemoteRepoIntegration} from './fetchAllRepoIntegrations'
+import type {RemoteRepoIntegration} from './fetchAllRepoIntegrations'
 
 const sortRepoIntegrations = async (
   allRepoIntegrations: RemoteRepoIntegration[] | null,

@@ -1,6 +1,6 @@
 import IntegrationProviderId from '../../../../client/shared/gqlIds/IntegrationProviderId'
 import TeamMemberIntegrationAuthId from '../../../../client/shared/gqlIds/TeamMemberIntegrationAuthId'
-import {TeamMemberIntegrationAuthOAuth2Resolvers} from '../resolverTypes'
+import type {TeamMemberIntegrationAuthOAuth2Resolvers} from '../resolverTypes'
 
 const TeamMemberIntegrationAuthOAuth2: TeamMemberIntegrationAuthOAuth2Resolvers = {
   __isTypeOf: ({accessToken, scopes}) => !!(accessToken && scopes),

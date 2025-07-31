@@ -1,5 +1,5 @@
 import generateUID from '../../generateUID'
-import JiraSearchQuery from './JiraSearchQuery'
+import type JiraSearchQuery from './JiraSearchQuery'
 
 export interface AtlassianAuthInput {
   id?: string

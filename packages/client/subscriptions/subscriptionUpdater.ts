@@ -1,6 +1,6 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {SharedUpdater} from '../types/relayMutations'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
+import type Atmosphere from '../Atmosphere'
+import type {SharedUpdater} from '../types/relayMutations'
 
 const subscriptionUpdater =
   (

@@ -1,4 +1,4 @@
-import {EndTrialSuccessResolvers} from '../resolverTypes'
+import type {EndTrialSuccessResolvers} from '../resolverTypes'
 
 export type EndTrialSuccessSource = {
   orgId: string

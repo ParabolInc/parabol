@@ -1,5 +1,5 @@
 type DragDiscussionTopicPayload {
-  error: StandardMutationError
-  meeting: NewMeeting
-  stage: RetroDiscussStage
+	error: StandardMutationError
+	meeting: NewMeeting
+	stage: RetroDiscussStage
 }

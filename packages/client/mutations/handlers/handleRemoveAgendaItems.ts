@@ -1,6 +1,6 @@
-import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {ActionMeeting_meeting$data} from '~/__generated__/ActionMeeting_meeting.graphql'
-import {AgendaItem_agendaItem$data} from '~/__generated__/AgendaItem_agendaItem.graphql'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {ActionMeeting_meeting$data} from '~/__generated__/ActionMeeting_meeting.graphql'
+import type {AgendaItem_agendaItem$data} from '~/__generated__/AgendaItem_agendaItem.graphql'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import pluralizeHandler from './pluralizeHandler'
 

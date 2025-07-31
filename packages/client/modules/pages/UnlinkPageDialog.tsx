@@ -15,7 +15,7 @@ export const UnlinkPageDialog = (props: Props) => {
     <Dialog isOpen={true}>
       <DialogContent className='z-10 md:max-w-80'>
         <DialogTitle className='mb-4'>Unlink Share Settings from Parent Page?</DialogTitle>
-        <div className='flex flex-col space-y-1 text-sm leading-4 text-slate-700'>
+        <div className='flex flex-col space-y-1 text-slate-700 text-sm leading-4'>
           <div>Making a page more restrictive than its parent will cause it to unlink.</div>
           <div>It will no longer inherit share settings.</div>
           <div>You can undo this at any time.</div>

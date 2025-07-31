@@ -3,8 +3,8 @@ import {commitMutation} from 'react-relay'
 import addNodeToArray from '~/utils/relay/addNodeToArray'
 import createProxyRecord from '~/utils/relay/createProxyRecord'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
-import {UpdatePokerTemplateScaleValueMutation as TUpdatePokerTemplateScaleValueMutation} from '../__generated__/UpdatePokerTemplateScaleValueMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {UpdatePokerTemplateScaleValueMutation as TUpdatePokerTemplateScaleValueMutation} from '../__generated__/UpdatePokerTemplateScaleValueMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdatePokerTemplateScaleValueMutation_scale on UpdatePokerTemplateScaleValuePayload {

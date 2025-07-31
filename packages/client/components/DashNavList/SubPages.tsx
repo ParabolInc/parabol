@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
 import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {LeftNavPageLink} from './LeftNavPageLink'
@@ -55,7 +55,7 @@ export const SubPages = (props: Props) => {
   if (!children || children.length === 0) {
     const noLinksMessage = !children ? 'Loading' : 'No pages inside'
     return (
-      <div style={{paddingLeft: depth * 8 + 8}} className='text-sm font-medium text-slate-500'>
+      <div style={{paddingLeft: depth * 8 + 8}} className='font-medium text-slate-500 text-sm'>
         {noLinksMessage}
       </div>
     )

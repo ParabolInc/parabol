@@ -1,16 +1,16 @@
 import {sql} from 'kysely'
 import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
-import {DataLoaderWorker} from '../../graphql/graphql'
+import type {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
-import IUser from '../../postgres/types/IUser'
-import {OrganizationUserAudit} from '../../postgres/types/pg'
-import {Logger} from '../../utils/Logger'
+import type IUser from '../../postgres/types/IUser'
+import type {OrganizationUserAudit} from '../../postgres/types/pg'
 import {analytics} from '../../utils/analytics/analytics'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
 import getDomainFromEmail from '../../utils/getDomainFromEmail'
+import {Logger} from '../../utils/Logger'
 import handleEnterpriseOrgQuantityChanges from './handleEnterpriseOrgQuantityChanges'
 import handleTeamOrgQuantityChanges from './handleTeamOrgQuantityChanges'
 
@@ -128,7 +128,12 @@ export default async function adjustUserCount(
     orgIds.map((orgId) => {
       return pg
         .insertInto('OrganizationUserAudit')
-        .values({orgId, userId, eventDate: new Date(), eventType: auditEventType})
+        .values({
+          orgId,
+          userId,
+          eventDate: new Date(),
+          eventType: auditEventType
+        })
         .execute()
     })
   )

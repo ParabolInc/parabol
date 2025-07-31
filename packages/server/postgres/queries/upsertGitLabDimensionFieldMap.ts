@@ -9,7 +9,9 @@ const upsertGitLabDimensionFieldMap = async (
   labelTemplate: string
 ) => {
   return upsertGitLabDimensionFieldMapQuery.run(
-    {fieldMap: {teamId, dimensionName, projectId, providerId, labelTemplate}},
+    {
+      fieldMap: {teamId, dimensionName, projectId, providerId, labelTemplate}
+    },
     getPg()
   )
 }

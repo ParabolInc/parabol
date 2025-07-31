@@ -4,10 +4,10 @@
  */
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordSourceSelectorProxy} from 'relay-runtime'
-import {RemoveReflectionMutation_meeting$data} from '~/__generated__/RemoveReflectionMutation_meeting.graphql'
-import {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
-import {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RemoveReflectionMutation_meeting$data} from '~/__generated__/RemoveReflectionMutation_meeting.graphql'
+import type {RemoveReflectionMutation as TRemoveReflectionMutation} from '../__generated__/RemoveReflectionMutation.graphql'
+import type {BaseLocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import safeRemoveNodeFromArray from '../utils/relay/safeRemoveNodeFromArray'
 import handleRemoveReflectionGroups from './handlers/handleRemoveReflectionGroups'
 

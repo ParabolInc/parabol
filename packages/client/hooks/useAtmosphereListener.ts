@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {AtmosphereEvents} from '../Atmosphere'
+import type {AtmosphereEvents} from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 

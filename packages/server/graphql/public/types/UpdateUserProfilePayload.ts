@@ -1,4 +1,4 @@
-import {UpdateUserProfilePayloadResolvers} from '../resolverTypes'
+import type {UpdateUserProfilePayloadResolvers} from '../resolverTypes'
 
 export type UpdateUserProfilePayloadSource =
   | {

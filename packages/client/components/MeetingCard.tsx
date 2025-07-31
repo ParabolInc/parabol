@@ -8,7 +8,7 @@ import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
-import {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
+import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
 import useAnimatedCard from '../hooks/useAnimatedCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
@@ -119,17 +119,17 @@ const RECURRING_LABEL_COLORS = {
   poker: 'text-tomato-600',
   teamPrompt: 'text-jade-600'
 }
-const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
-  ({meetingType}) => ({
-    background: BACKGROUND_COLORS[meetingType],
-    borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-    display: 'block',
-    position: 'absolute',
-    top: 0,
-    bottom: '6px',
-    width: '100%'
-  })
-)
+const MeetingImgBackground = styled.div<{
+  meetingType: keyof typeof BACKGROUND_COLORS
+}>(({meetingType}) => ({
+  background: BACKGROUND_COLORS[meetingType],
+  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+  display: 'block',
+  position: 'absolute',
+  top: 0,
+  bottom: '6px',
+  width: '100%'
+}))
 
 const MeetingImgWrapper = styled('div')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
@@ -314,7 +314,7 @@ const MeetingCard = (props: Props) => {
             {isRecurring && (
               <span
                 className={cn(
-                  'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 text-[11px] leading-3 font-medium',
+                  'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
                   RECURRING_LABEL_COLORS[meetingType]
                 )}
               >
@@ -349,7 +349,7 @@ const MeetingCard = (props: Props) => {
               </Options>
             </div>
             <Link to={meetingLink}>
-              <span className='block pt-1 pb-2 text-sm wrap-break-word text-slate-600'>
+              <span className='wrap-break-word block pt-1 pb-2 text-slate-600 text-sm'>
                 {teamName} • {meetingPhaseLabel}
               </span>
             </Link>

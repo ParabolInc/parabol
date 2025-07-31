@@ -1,21 +1,21 @@
-import {ReasonToDowngradeEnum} from 'parabol-client/__generated__/DowngradeToStarterMutation.graphql'
-import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
+import type {ReasonToDowngradeEnum} from 'parabol-client/__generated__/DowngradeToStarterMutation.graphql'
 import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
+import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
-import {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {DataLoaderWorker} from '../../graphql/graphql'
-import {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
-import {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import {SlackNotification, TeamPromptResponse, TemplateScale} from '../../postgres/types'
-import {
+import type {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
+import type MeetingTemplate from '../../database/types/MeetingTemplate'
+import type {DataLoaderWorker} from '../../graphql/graphql'
+import type {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
+import type {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
+import type {SlackNotification, TeamPromptResponse, TemplateScale} from '../../postgres/types'
+import type {
   AnyMeeting,
   AnyMeetingMember,
   MeetingTypeEnum,
   RetrospectiveMeeting
 } from '../../postgres/types/Meeting'
-import {MeetingSeries} from '../../postgres/types/MeetingSeries'
-import {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
+import type {MeetingSeries} from '../../postgres/types/MeetingSeries'
+import type {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 
@@ -220,7 +220,10 @@ class Analytics {
     dataLoader: DataLoaderWorker
   ) => {
     const userIdsResponses: Record<string, string> = responses.reduce(
-      (previous, response) => ({...previous, [response.userId]: response.plaintextContent}),
+      (previous, response) => ({
+        ...previous,
+        [response.userId]: response.plaintextContent
+      }),
       {}
     )
     await Promise.all(
@@ -638,7 +641,9 @@ class Analytics {
   }
 
   toggleSubToSummaryEmail = (user: AnalyticsUser, subscribeToSummaryEmail: boolean) => {
-    this.track(user, 'Summary Email Setting Changed', {subscribeToSummaryEmail})
+    this.track(user, 'Summary Email Setting Changed', {
+      subscribeToSummaryEmail
+    })
   }
 
   notificationEmailSent = (user: AnalyticsUser, orgId: string, type: TeamLimitsEmailType) => {
@@ -686,7 +691,10 @@ class Analytics {
     teamId: string,
     notificationEvent: SlackNotification['event']
   ) => {
-    this.track(user, 'Mattermost notification sent', {teamId, notificationEvent})
+    this.track(user, 'Mattermost notification sent', {
+      teamId,
+      notificationEvent
+    })
   }
 
   mentionedOnTask = (user: AnalyticsUser, mentionedUserId: string, teamId: string) => {
@@ -698,7 +706,10 @@ class Analytics {
     teamId: string,
     notificationEvent: SlackNotification['event']
   ) => {
-    this.track(user, 'MSTeams notification sent', {teamId, notificationEvent})
+    this.track(user, 'MSTeams notification sent', {
+      teamId,
+      notificationEvent
+    })
   }
 
   newOrg = (user: AnalyticsUser, orgId: string, teamId: string, fromSignup: boolean) => {
@@ -719,7 +730,11 @@ class Analytics {
     notificationEvent: SlackNotification['event'],
     reflectionGroupId?: string
   ) => {
-    this.track(user, 'Slack notification sent', {teamId, notificationEvent, reflectionGroupId})
+    this.track(user, 'Slack notification sent', {
+      teamId,
+      notificationEvent,
+      reflectionGroupId
+    })
   }
 
   smartGroupTitleChanged = (

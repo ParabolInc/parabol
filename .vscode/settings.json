@@ -4,12 +4,10 @@
   "editor.tabSize": 2,
   "npm.packageManager": "pnpm",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  "editor.defaultFormatter": "biomejs.biome",
   "javascript.format.semicolons": "remove",
   "javascript.preferences.quoteStyle": "single",
   "javascript.preferences.useAliasesForRenames": false,

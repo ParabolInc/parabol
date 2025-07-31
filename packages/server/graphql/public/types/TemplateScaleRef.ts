@@ -1,4 +1,4 @@
-import {TemplateScaleRefResolvers} from '../resolverTypes'
+import type {TemplateScaleRefResolvers} from '../resolverTypes'
 
 const TemplateScaleRef: TemplateScaleRefResolvers = {
   values: ({id, values}) => {

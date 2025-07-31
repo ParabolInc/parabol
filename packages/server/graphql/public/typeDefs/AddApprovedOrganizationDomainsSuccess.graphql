@@ -1,8 +1,8 @@
 type AddApprovedOrganizationDomainsSuccess {
-  orgId: ID!
+	orgId: ID!
 
-  """
-  Organization with the updated approvals
-  """
-  organization: Organization!
+	"""
+	Organization with the updated approvals
+	"""
+	organization: Organization!
 }

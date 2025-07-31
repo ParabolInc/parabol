@@ -1,25 +1,26 @@
 import EventEmitter from 'eventemitter3'
 import {stringify} from 'flatted'
 import {
-  ConcreteRequest,
+  type ConcreteRequest,
   Environment,
-  FetchFunction,
+  type FetchFunction,
   fetchQuery,
-  GraphQLTaggedNode,
+  type GraphQLTaggedNode,
   Network,
-  NormalizationLinkedField,
+  type NormalizationLinkedField,
   Observable,
-  OperationType,
+  type OperationType,
   RecordSource,
-  RequestParameters,
+  type RequestParameters,
   Store,
-  SubscribeFunction,
-  Variables
+  type SubscribeFunction,
+  type Variables
 } from 'relay-runtime'
-import Atmosphere from '../../Atmosphere'
+import type Atmosphere from '../../Atmosphere'
 import {SubscriptionChannel} from '../../types/constEnums'
 import handlerProvider from '../../utils/relay/handlerProvider'
 import ClientGraphQLServer from './ClientGraphQLServer'
+
 // import sleep from 'universal/utils/sleep'
 
 const noop = (): any => {
@@ -87,7 +88,7 @@ export default class LocalAtmosphere extends Environment {
       res = await fetchQuery<T>(this, taggedNode, variables, {
         fetchPolicy: 'store-or-network'
       }).toPromise()
-    } catch (e) {
+    } catch {
       return null
     }
     return res
@@ -112,7 +113,7 @@ export default class LocalAtmosphere extends Environment {
         }
       } as const
       const fields = channelLookup[operation.name as keyof typeof channelLookup]
-      if (!!fields) {
+      if (fields) {
         this.clientGraphQLServer.on(fields.channel, (data) => {
           if (this.clientGraphQLServer.db._updatedAt < new Date(Date.now() - 1000)) {
             this.clientGraphQLServer.db._updatedAt = new Date()

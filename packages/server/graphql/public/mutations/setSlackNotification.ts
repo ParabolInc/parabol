@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   _source,
@@ -18,7 +18,9 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
 
   // AUTH
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
+    return standardError(new Error('Attempted teamId spoof'), {
+      userId: viewerId
+    })
   }
 
   // VALIDATION
@@ -26,7 +28,9 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   const slackAuth = slackAuths.find((auth) => auth.teamId === teamId)
 
   if (!slackAuth) {
-    return standardError(new Error('Slack authentication not found'), {userId: viewerId})
+    return standardError(new Error('Slack authentication not found'), {
+      userId: viewerId
+    })
   }
 
   // RESOLUTION

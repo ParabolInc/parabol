@@ -6,17 +6,17 @@
  */
 import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
 import {GraphQLObjectType, GraphQLSchema} from 'graphql'
+// Resolvers from SDL first definitions
+import {nestGitHub} from '../../utils/nestGitHub'
 import composeResolvers from '../composeResolvers'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
 import mutation from '../rootMutation'
 import query from '../rootQuery'
 import rootTypes from '../rootTypes'
 import {typeDefs} from './importedTypeDefs'
-import permissions from './permissions'
-// Resolvers from SDL first definitions
-import {nestGitHub} from '../../utils/nestGitHub'
 import {nestGitLab} from './nestGitLab'
 import {nestLinear} from './nestLinear'
+import permissions from './permissions'
 import resolvers from './resolvers'
 
 // Schema from legacy TypeScript first definitions instead of SDL pattern

@@ -4,7 +4,7 @@ import {getUserId} from '../../utils/authorization'
 import blacklistJWT from '../../utils/blacklistJWT'
 import encodeAuthToken from '../../utils/encodeAuthToken'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import InvalidateSessionsPayload from '../types/InvalidateSessionsPayload'
 
 const invalidateSessions = {

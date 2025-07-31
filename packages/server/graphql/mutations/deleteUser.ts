@@ -5,7 +5,7 @@ import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser} from '../../utils/authorization'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import softDeleteUser from './helpers/softDeleteUser'
 

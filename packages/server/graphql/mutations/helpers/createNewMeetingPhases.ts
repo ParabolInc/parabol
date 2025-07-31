@@ -1,4 +1,4 @@
-import {InsertQueryBuilder} from 'kysely'
+import type {InsertQueryBuilder} from 'kysely'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -22,13 +22,13 @@ import TeamHealthPhase from '../../../database/types/TeamHealthPhase'
 import TeamHealthStage from '../../../database/types/TeamHealthStage'
 import UpdatesPhase from '../../../database/types/UpdatesPhase'
 import UpdatesStage from '../../../database/types/UpdatesStage'
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {NewMeetingPhase, NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
-import {DB} from '../../../postgres/types/pg'
+import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import type {NewMeetingPhase, NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
+import type {DB} from '../../../postgres/types/pg'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 
 export const primePhases = (phases: GenericMeetingPhase[], startIndex = 0) => {
@@ -108,7 +108,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
           })
         case REFLECT:
           return new ReflectPhase(teamId, durations)
-        case DISCUSS:
+        case DISCUSS: {
           const discussPhase = new DiscussPhase(durations)
           const discussStages = discussPhase.stages.filter((stage) => stage.reflectionGroupId)
           if (discussStages.length > 0) {
@@ -125,9 +125,13 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
             )
           }
           return discussPhase
+        }
         case UPDATES:
-          return new UpdatesPhase({durations, stages: [new UpdatesStage(facilitatorTeamMemberId)]})
-        case AGENDA_ITEMS:
+          return new UpdatesPhase({
+            durations,
+            stages: [new UpdatesStage(facilitatorTeamMemberId)]
+          })
+        case AGENDA_ITEMS: {
           const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
           const agendaItemIds = agendaItems.map(({id}) => id)
           const agendaItemPhase = new AgendaItemsPhase(agendaItemIds, durations)
@@ -146,6 +150,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
             )
           }
           return agendaItemPhase
+        }
         case 'ESTIMATE':
           return new EstimatePhase()
         case GROUP:

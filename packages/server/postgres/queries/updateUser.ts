@@ -1,6 +1,6 @@
-import AuthIdentity from '../../database/types/AuthIdentity'
+import type AuthIdentity from '../../database/types/AuthIdentity'
 import getPg from '../getPg'
-import {IUpdateUserQueryParams, updateUserQuery} from './generated/updateUserQuery'
+import {type IUpdateUserQueryParams, updateUserQuery} from './generated/updateUserQuery'
 
 interface UpdateUserQueryParams extends Omit<IUpdateUserQueryParams, 'identities'> {
   identities: AuthIdentity[]

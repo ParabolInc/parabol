@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import {useEffect, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {LocalStorageKey} from '../types/constEnums'

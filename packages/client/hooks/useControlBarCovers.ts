@@ -1,4 +1,4 @@
-import {RefObject, useEffect} from 'react'
+import {type RefObject, useEffect} from 'react'
 import {BezierCurve, Breakpoint, DiscussionThreadEnum, NavSidebar} from '~/types/constEnums'
 import useResizeObserver from './useResizeObserver'
 

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {DeleteTaskMutation as TDeleteTaskMutation} from '../__generated__/DeleteTaskMutation.graphql'
-import {DeleteTaskMutation_task$data} from '../__generated__/DeleteTaskMutation_task.graphql'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {DeleteTaskMutation as TDeleteTaskMutation} from '../__generated__/DeleteTaskMutation.graphql'
+import type {DeleteTaskMutation_task$data} from '../__generated__/DeleteTaskMutation_task.graphql'
+import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import isTempId from '../utils/relay/isTempId'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
 

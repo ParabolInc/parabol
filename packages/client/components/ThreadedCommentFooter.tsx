@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ThreadedCommentFooter_reactjis$key} from '~/__generated__/ThreadedCommentFooter_reactjis.graphql'
+import type {ThreadedCommentFooter_reactjis$key} from '~/__generated__/ThreadedCommentFooter_reactjis.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import ReactjiSection from './ReflectionCard/ReactjiSection'
 import ThreadedReplyButton from './ThreadedReplyButton'

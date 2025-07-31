@@ -1,5 +1,5 @@
-import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
-import {TimelineEventEnum} from '../../__generated__/TimelineFeedListPaginationQuery.graphql'
+import {ConnectionHandler, type ReadOnlyRecordProxy} from 'relay-runtime'
+import type {TimelineEventEnum} from '../../__generated__/TimelineFeedListPaginationQuery.graphql'
 
 const getUserTimelineEventsConn = (
   viewer: ReadOnlyRecordProxy,

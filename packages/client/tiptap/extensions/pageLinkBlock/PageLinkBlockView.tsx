@@ -3,7 +3,7 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {NodeSelection} from '@tiptap/pm/state'
-import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
+import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
@@ -54,7 +54,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
       <Link
         draggable={false}
         to={`/pages/${pageSlug}`}
-        className='flex w-full items-center rounded-sm p-1 no-underline! transition-colors hover:bg-slate-200'
+        className='no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200'
       >
         <Icon />
         <div className='flex-1 pl-1'>{title}</div>

@@ -1,7 +1,7 @@
 import getPg from '../getPg'
 import {
   getAtlassianAuthByUserIdTeamIdQuery,
-  IGetAtlassianAuthByUserIdTeamIdQueryResult
+  type IGetAtlassianAuthByUserIdTeamIdQueryResult
 } from './generated/getAtlassianAuthByUserIdTeamIdQuery'
 
 export interface AtlassianAuth

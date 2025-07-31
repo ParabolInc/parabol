@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {Polls, PollsAriaLabels} from '~/types/constEnums'
-import {EditablePollTitle_poll$key} from '../../__generated__/EditablePollTitle_poll.graphql'
+import type {EditablePollTitle_poll$key} from '../../__generated__/EditablePollTitle_poll.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {updateLocalPoll} from './local/newPoll'
 

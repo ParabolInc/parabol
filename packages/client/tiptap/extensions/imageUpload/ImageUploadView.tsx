@@ -1,6 +1,6 @@
 import ImageIcon from '@mui/icons-material/Image'
 import * as Popover from '@radix-ui/react-popover'
-import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
+import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useEffect, useRef, useState} from 'react'
 import useEventCallback from '../../../hooks/useEventCallback'
 import {ImageSelector} from './ImageSelector'

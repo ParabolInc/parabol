@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import {ReactElement, ReactNode, ReactPortal, RefObject, useEffect} from 'react'
+import {type ReactElement, type ReactNode, type ReactPortal, type RefObject, useEffect} from 'react'
 import {ZIndex} from '../types/constEnums'
 import TooltipBackground from './TooltipBackground'
-import {UseCoordsValue} from './useCoords'
+import type {UseCoordsValue} from './useCoords'
 import {PortalStatus} from './usePortal'
 
 const TooltipBlock = styled('div')({

@@ -1,4 +1,4 @@
-import {TransitionStatus} from '~/hooks/useTransition'
+import type {TransitionStatus} from '~/hooks/useTransition'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 

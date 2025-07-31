@@ -1,9 +1,9 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {getNewDataLoader} from '../server/dataloader/getNewDataLoader'
+import type {DBJob, JobType, Workflow} from './custom'
 import {EmbedderJobType} from './EmbedderJobType'
 import {JobQueueError} from './JobQueueError'
-import {DBJob, JobType, Workflow} from './custom'
 import {embedMetadata} from './workflows/embedMetadata'
 import {getSimilarRetroTopics} from './workflows/getSimilarRetroTopics'
 import {relatedDiscussionsStart} from './workflows/relatedDiscussionsStart'
@@ -108,7 +108,10 @@ export class WorkflowOrchestrator {
     if (result instanceof JobQueueError) return this.failJob(jobId, retryCount, result)
     await this.finishJob(jobId)
     if (result === false) return
-    const nextStepName = await getNextStep?.({dataLoader, data: {...data, ...result}})
+    const nextStepName = await getNextStep?.({
+      dataLoader,
+      data: {...data, ...result}
+    })
     if (!nextStepName) return
     const nextJobType = EmbedderJobType.join(workflowName, nextStepName)
     await this.addNextJob(nextJobType, priority, result)

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useEffect, useState} from 'react'
 import {readInlineData} from 'relay-runtime'
-import {useSnacksForNewMeetings_meetings$key} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
+import type {useSnacksForNewMeetings_meetings$key} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 

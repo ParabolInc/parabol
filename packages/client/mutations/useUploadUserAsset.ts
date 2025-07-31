@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMutation} from 'react-relay'
-import {useUploadUserAssetMutation as TuseUploadUserAssetMutation} from '../__generated__/useUploadUserAssetMutation.graphql'
+import type {useUploadUserAssetMutation as TuseUploadUserAssetMutation} from '../__generated__/useUploadUserAssetMutation.graphql'
 
 const mutation = graphql`
   mutation useUploadUserAssetMutation($file: File!) {

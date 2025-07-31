@@ -8,7 +8,7 @@
   adds that `resolveType` if one is not already defined
 */
 
-import {GraphQLSchema} from 'graphql'
+import type {GraphQLSchema} from 'graphql'
 import {isUnionType} from 'graphql/type'
 
 const resolveTypesForMutationPayloads = (schema: GraphQLSchema) => {

@@ -1,9 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailPromoteToBillingLeader_notification$key} from 'parabol-client/__generated__/EmailPromoteToBillingLeader_notification.graphql'
+import type {EmailPromoteToBillingLeader_notification$key} from 'parabol-client/__generated__/EmailPromoteToBillingLeader_notification.graphql'
 import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
+
 interface Props {
   notificationRef: EmailPromoteToBillingLeader_notification$key
   appOrigin: string

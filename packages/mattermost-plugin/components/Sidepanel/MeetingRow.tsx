@@ -1,12 +1,11 @@
 import {ChangeHistory, GroupWork, History} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import CardsSVG from 'parabol-client/components/CardsSVG'
-import {ReactNode, useState} from 'react'
-
-import {
+import type {
   MeetingRow_meeting$key,
   MeetingTypeEnum
 } from 'parabol-client/__generated__/MeetingRow_meeting.graphql'
+import CardsSVG from 'parabol-client/components/CardsSVG'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useConfig} from '../../hooks/useConfig'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
@@ -53,7 +52,7 @@ const MeetingRow = ({meetingRef}: Props) => {
       <div className='pt-4 pl-2 text-2xl text-slate-400'>{meetingTypeToIcon[meetingType]}</div>
       <div className='flex flex-col items-start p-2'>
         <div className='flex flex-col'>
-          <a href={`${parabolUrl}/meet/${id}`} target='_blank' className='text-2xl font-bold'>
+          <a href={`${parabolUrl}/meet/${id}`} target='_blank' className='font-bold text-2xl'>
             {name}
           </a>
           <div className='font-semibold text-slate-400'>{team?.name}</div>

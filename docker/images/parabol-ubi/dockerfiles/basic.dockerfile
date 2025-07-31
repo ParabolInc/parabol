@@ -1,6 +1,9 @@
 ARG _NODE_VERSION=${_NODE_VERSION}
 FROM node:${_NODE_VERSION}-bookworm-slim as base
 
+ARG DD_GIT_REPOSITORY_URL
+ARG DD_GIT_COMMIT_SHA
+
 # Install Fontconfig for SVG rendering
 RUN apt-get update && apt-get install -y fontconfig
 
@@ -32,5 +35,8 @@ WORKDIR ${HOME}/parabol/
 
 USER node
 EXPOSE ${PORT}
+
+ENV DD_GIT_REPOSITORY_URL=${DD_GIT_REPOSITORY_URL} \
+    DD_GIT_COMMIT_SHA=${DD_GIT_COMMIT_SHA}
 
 ENTRYPOINT ["docker-entrypoint.sh"]

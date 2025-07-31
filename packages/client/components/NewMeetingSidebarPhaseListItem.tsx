@@ -11,7 +11,7 @@ import {
   Update
 } from '@mui/icons-material'
 import {useEffect} from 'react'
-import {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import type {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {PALETTE} from '../styles/paletteV3'

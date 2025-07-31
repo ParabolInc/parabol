@@ -1,7 +1,7 @@
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
-import {execute, GraphQLError, subscribe} from 'graphql'
+import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
-import {makeBehavior, UpgradeData} from 'graphql-ws/use/uWebSockets'
+import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
 import {isEqualWhenSerialized} from '../client/shared/isEqualWhenSerialized'
@@ -19,7 +19,7 @@ import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {INSTANCE_ID} from './utils/instanceId'
-import {extractPersistedOperationId, getPersistedOperation, yoga, type ServerContext} from './yoga'
+import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
@@ -113,7 +113,12 @@ export const wsHandler = makeBehavior<{token?: string}>({
       document: parse(connectQuery),
       variableValues: {socketInstanceId: INSTANCE_ID},
       schema: privateSchema,
-      contextValue: {dataLoader, ip: extra.ip, authToken, socketId: extra.socketId}
+      contextValue: {
+        dataLoader,
+        ip: extra.ip,
+        authToken,
+        socketId: extra.socketId
+      }
     })
     dataLoader.dispose()
     const tms = data?.connectSocket?.tms

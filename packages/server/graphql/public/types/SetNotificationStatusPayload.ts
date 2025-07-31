@@ -1,4 +1,4 @@
-import {SetNotificationStatusPayloadResolvers} from '../resolverTypes'
+import type {SetNotificationStatusPayloadResolvers} from '../resolverTypes'
 
 export type SetNotificationStatusPayloadSource = {
   notificationId: string

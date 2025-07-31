@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {AddSlackAuthMutation as TAddSlackAuthMutation} from '../__generated__/AddSlackAuthMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {AddSlackAuthMutation as TAddSlackAuthMutation} from '../__generated__/AddSlackAuthMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment AddSlackAuthMutation_team on AddSlackAuthPayload {

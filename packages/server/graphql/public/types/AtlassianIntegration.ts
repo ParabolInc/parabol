@@ -5,7 +5,7 @@ import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {AtlassianIntegrationResolvers} from '../resolverTypes'
+import type {AtlassianIntegrationResolvers} from '../resolverTypes'
 
 const AtlassianIntegration: AtlassianIntegrationResolvers = {
   issues: async ({teamId, userId, accessToken, cloudIds}, args, {authToken}) => {

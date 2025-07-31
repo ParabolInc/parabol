@@ -1,4 +1,4 @@
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const pingActionTick: QueryResolvers['pingActionTick'] = async () => {
   return 'pong!'

@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
   _source,
@@ -21,7 +21,9 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
     return standardError(new Error('Meeting not found'), {userId: viewerId})
   }
   if (meeting.meetingType !== 'teamPrompt') {
-    return standardError(new Error('Meeting is not a team prompt meeting'), {userId: viewerId})
+    return standardError(new Error('Meeting is not a team prompt meeting'), {
+      userId: viewerId
+    })
   }
   const {facilitatorUserId} = meeting
   if (viewerId !== facilitatorUserId) {
@@ -32,7 +34,9 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
 
   // VALIDATION
   if (newPrompt.length < 2 || newPrompt.length > 500) {
-    return standardError(new Error('Invalid meeting prompt'), {userId: viewerId})
+    return standardError(new Error('Invalid meeting prompt'), {
+      userId: viewerId
+    })
   }
 
   // RESOLUTION

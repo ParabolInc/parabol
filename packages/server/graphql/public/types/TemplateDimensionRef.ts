@@ -1,5 +1,11 @@
 import TemplateDimensionRefId from '../../../../client/shared/gqlIds/TemplateDimensionRefId'
-import {TemplateDimensionRefResolvers} from '../resolverTypes'
+import type {TemplateDimensionRefResolvers} from '../resolverTypes'
+
+export interface TemplateDimensionRefSource {
+  meetingId: string
+  dimensionRefIdx: number
+  scaleRefId: string
+}
 
 const TemplateDimensionRef: TemplateDimensionRefResolvers = {
   id: ({meetingId, dimensionRefIdx}) => TemplateDimensionRefId.join(meetingId, dimensionRefIdx),

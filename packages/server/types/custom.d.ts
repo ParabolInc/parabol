@@ -2,12 +2,12 @@ import 'react'
 import type ScheduledJobMeetingStageTimeLimit from '../database/types/ScheduledJobMetingStageTimeLimit'
 import type ScheduledTeamLimitsJob from '../database/types/ScheduledTeamLimitsJob'
 declare module 'react' {
-  interface TdHTMLAttributes<T> {
+  interface TdHTMLAttributes<_T> {
     height?: string | number
     width?: string | number
     bgcolor?: string
   }
-  interface TableHTMLAttributes<T> {
+  interface TableHTMLAttributes<_T> {
     align?: 'center' | 'left' | 'right'
     bgcolor?: string
     height?: string | number

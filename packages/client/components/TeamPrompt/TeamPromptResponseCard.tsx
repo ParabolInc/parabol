@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
-import {Editor} from '@tiptap/core'
-import {JSONContent} from '@tiptap/react'
+import type {Editor} from '@tiptap/core'
+import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
+import type {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
@@ -19,9 +19,9 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import useTooltip from '../../hooks/useTooltip'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeAppURL from '../../utils/makeAppURL'
 import {mergeRefs} from '../../utils/react/mergeRefs'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import Avatar from '../Avatar/Avatar'
 import PlainButton from '../PlainButton/PlainButton'
 import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
@@ -50,21 +50,22 @@ const ResponseHeader = styled('div')({
   marginBottom: 12
 })
 
-const ResponseCard = styled('div')<{isEmpty: boolean; isHighlighted?: boolean}>(
-  ({isEmpty = false, isHighlighted = false}) => ({
-    background: isEmpty ? PALETTE.SLATE_300 : Card.BACKGROUND_COLOR,
-    borderRadius: Card.BORDER_RADIUS,
-    boxShadow: isEmpty ? undefined : Elevation.CARD_SHADOW,
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    color: isEmpty ? PALETTE.SLATE_600 : undefined,
-    padding: Card.PADDING,
-    minHeight: ResponseCardDimensions.MIN_CARD_HEIGHT,
-    outline: isHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none'
-  })
-)
+const ResponseCard = styled('div')<{
+  isEmpty: boolean
+  isHighlighted?: boolean
+}>(({isEmpty = false, isHighlighted = false}) => ({
+  background: isEmpty ? PALETTE.SLATE_300 : Card.BACKGROUND_COLOR,
+  borderRadius: Card.BORDER_RADIUS,
+  boxShadow: isEmpty ? undefined : Elevation.CARD_SHADOW,
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  color: isEmpty ? PALETTE.SLATE_600 : undefined,
+  padding: Card.PADDING,
+  minHeight: ResponseCardDimensions.MIN_CARD_HEIGHT,
+  outline: isHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none'
+}))
 
 const ResponseCardFooter = styled('div')({
   display: 'flex',

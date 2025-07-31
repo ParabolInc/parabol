@@ -4,7 +4,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import DeleteTaskPayload from '../types/DeleteTaskPayload'
 
 export default {

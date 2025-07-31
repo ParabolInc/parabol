@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
 import type {Parser as JSON2CSVParser} from 'json2csv'
 import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
-import * as React from 'react'
+import type * as React from 'react'
 import {useCallback, useMemo, useState} from 'react'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
-import {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
-import {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
-import User from '../../../../../server/database/types/User'
+import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import type {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
+import type {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
+import type {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
+import type User from '../../../../../server/database/types/User'
 import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../../server/postgres/constants'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import useModal from '../../../../hooks/useModal'
@@ -187,7 +187,10 @@ const OrgMembers = (props: Props) => {
         'Last Seen At': formattedLastSeenAt
       }
     })
-    const parser = new Parser({withBOM: true, eol: '\n'}) as JSON2CSVParser<any>
+    const parser = new Parser({
+      withBOM: true,
+      eol: '\n'
+    }) as JSON2CSVParser<any>
     const csv = parser.parse(rows)
     const date = new Date()
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
@@ -207,7 +210,7 @@ const OrgMembers = (props: Props) => {
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-start py-1'>
         <div>
-          <h1 className='text-2xl leading-7 font-semibold'>Members</h1>
+          <h1 className='font-semibold text-2xl leading-7'>Members</h1>
         </div>
         <div className='ml-auto'>
           {isBillingLeader && (
@@ -222,7 +225,7 @@ const OrgMembers = (props: Props) => {
           placeholder='Search by name or email'
           value={searchInput}
           onChange={handleSearchChange}
-          className='focus:border-blue-500 focus:ring-blue-500 w-full rounded-md border border-slate-300 px-3 py-2 focus:ring-1 focus:outline-hidden'
+          className='w-full rounded-md border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500'
         />
       </div>
 
@@ -240,7 +243,7 @@ const OrgMembers = (props: Props) => {
             <div className='flex space-x-2'>
               {selectedUserIds.length > 0 &&
                 selectedUserIds.length > BATCH_ORG_USER_REMOVAL_LIMIT && (
-                  <span className='text-xs font-bold text-tomato-600'>
+                  <span className='font-bold text-tomato-600 text-xs'>
                     Oops! You can select up to {BATCH_ORG_USER_REMOVAL_LIMIT} users at a time.
                   </span>
                 )}
@@ -250,13 +253,13 @@ const OrgMembers = (props: Props) => {
                   <>
                     <button
                       onClick={exportToCSV}
-                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 font-medium text-slate-700 text-xs hover:bg-slate-200'
                     >
                       Export Selected to CSV
                     </button>
                     <button
                       onClick={toggleBulkRemove}
-                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 text-xs font-medium text-slate-700 hover:bg-slate-200'
+                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 font-medium text-slate-700 text-xs hover:bg-slate-200'
                     >
                       Remove Selected
                     </button>
@@ -268,7 +271,7 @@ const OrgMembers = (props: Props) => {
         <div className='w-full overflow-x-auto px-4'>
           <table className='w-full table-fixed border-collapse md:table-auto'>
             <thead>
-              <tr className='border-b border-slate-300'>
+              <tr className='border-slate-300 border-b'>
                 <th className='w-[5%] p-3 text-left'>
                   <div className='flex items-center justify-center'>
                     {isOrgAdmin && filteredOrgUsers.length > 0 && (

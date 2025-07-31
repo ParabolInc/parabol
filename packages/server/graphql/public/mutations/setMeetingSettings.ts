@@ -1,12 +1,12 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
-import {MeetingSettings} from '../../../postgres/types'
+import type {MeetingSettings} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
+import type {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
 
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,

@@ -1,5 +1,7 @@
 import {Suspense} from 'react'
-import orgTeamMembersQuery, {OrgTeamMembersQuery} from '~/__generated__/OrgTeamMembersQuery.graphql'
+import orgTeamMembersQuery, {
+  type OrgTeamMembersQuery
+} from '~/__generated__/OrgTeamMembersQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../../hooks/useRouter'
 import {LoaderSize} from '../../../../types/constEnums'

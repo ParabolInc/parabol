@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import dayjs, {Dayjs} from 'dayjs'
-import * as React from 'react'
+import dayjs, {type Dayjs} from 'dayjs'
+import type * as React from 'react'
 import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
-import {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
-import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+import type {GcalModal_team$key} from '../../../../__generated__/GcalModal_team.graphql'
+import type {CreateGcalEventInput} from '../../../../__generated__/StartRetrospectiveMutation.graphql'
+import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import Checkbox from '../../../../components/Checkbox'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -233,7 +233,7 @@ const GcalModal = (props: Props) => {
       <DialogTitle>
         <div className='flex flex-col'>
           <div className='text-lg'>{'Schedule Your Meeting'}</div>
-          <div className='text-gray-500 mt-1 text-sm font-normal'>
+          <div className='mt-1 font-normal text-gray-500 text-sm'>
             Create a Google Calendar event with a link to the Parabol meeting in the description
           </div>
         </div>
@@ -273,7 +273,7 @@ const GcalModal = (props: Props) => {
           {hasTeamMemberEmails && (
             <div className='flex cursor-pointer items-center pt-1' onClick={handleToggleInviteAll}>
               <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
                 {`Invite team members from ${teamName}`}
               </label>
             </div>

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   NotificationEnum,
   NotificationPicker_notification$key
 } from '~/__generated__/NotificationPicker_notification.graphql'
-import lazyPreload, {LazyExoticPreload} from '~/utils/lazyPreload'
+import lazyPreload, {type LazyExoticPreload} from '~/utils/lazyPreload'
 
 const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
   DISCUSSION_MENTIONED: lazyPreload(

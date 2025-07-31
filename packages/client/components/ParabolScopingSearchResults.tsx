@@ -1,14 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {
+  type PreloadedQuery,
+  useFragment,
+  usePaginationFragment,
+  usePreloadedQuery
+} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import dndNoise from '~/utils/dndNoise'
-import {ParabolScopingSearchResultsPaginationQuery} from '../__generated__/ParabolScopingSearchResultsPaginationQuery.graphql'
-import {ParabolScopingSearchResultsQuery} from '../__generated__/ParabolScopingSearchResultsQuery.graphql'
-import {ParabolScopingSearchResults_meeting$key} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
-import {ParabolScopingSearchResults_query$key} from '../__generated__/ParabolScopingSearchResults_query.graphql'
+import type {ParabolScopingSearchResults_meeting$key} from '../__generated__/ParabolScopingSearchResults_meeting.graphql'
+import type {ParabolScopingSearchResults_query$key} from '../__generated__/ParabolScopingSearchResults_query.graphql'
+import type {ParabolScopingSearchResultsPaginationQuery} from '../__generated__/ParabolScopingSearchResultsPaginationQuery.graphql'
+import type {ParabolScopingSearchResultsQuery} from '../__generated__/ParabolScopingSearchResultsQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'

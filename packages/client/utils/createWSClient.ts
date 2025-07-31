@@ -1,7 +1,7 @@
-import {createClient, type Client} from 'graphql-ws'
+import {type Client, createClient} from 'graphql-ws'
 import ms from 'ms'
 import {commitLocalUpdate} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import createProxyRecord from './relay/createProxyRecord'
 
 const setConnectedStatus = (atmosphere: Atmosphere, isConnected: boolean) => {
@@ -84,7 +84,10 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
         },
         connected: async (_socket, payload, _wasRetry) => {
-          const {version, authToken} = payload as {version: string; authToken?: string | null}
+          const {version, authToken} = payload as {
+            version: string
+            authToken?: string | null
+          }
           if (authToken) {
             atmosphere.setAuthToken(authToken)
           }

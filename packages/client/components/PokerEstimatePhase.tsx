@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import useGotoStageId from '~/hooks/useGotoStageId'
+import type useGotoStageId from '~/hooks/useGotoStageId'
 import useRightDrawer from '~/hooks/useRightDrawer'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
-import {PokerEstimatePhase_meeting$key} from '../__generated__/PokerEstimatePhase_meeting.graphql'
+import type {PokerEstimatePhase_meeting$key} from '../__generated__/PokerEstimatePhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import ErrorBoundary from './ErrorBoundary'
 import EstimatePhaseArea from './EstimatePhaseArea'
@@ -16,18 +16,18 @@ import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
-import {PokerMeetingPhaseProps} from './PokerMeeting'
+import type {PokerMeetingPhaseProps} from './PokerMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import StageTimerDisplay from './StageTimerDisplay'
 
-const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{isOpen: boolean}>(
-  ({isOpen}) => ({
-    width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
-    [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
-      width: '100%'
-    }
-  })
-)
+const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{
+  isOpen: boolean
+}>(({isOpen}) => ({
+  width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
+  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
+    width: '100%'
+  }
+}))
 
 const StoryAndEstimateWrapper = styled('div')({
   display: 'flex',

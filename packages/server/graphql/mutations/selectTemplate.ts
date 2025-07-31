@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
+import type MeetingTemplate from '../../database/types/MeetingTemplate'
 import getKysely from '../../postgres/getKysely'
-import {Logger} from '../../utils/Logger'
 import {getUserId, isTeamMember} from '../../utils/authorization'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import SelectTemplatePayload from '../types/SelectTemplatePayload'
 
 const selectTemplate = {
@@ -36,18 +36,24 @@ const selectTemplate = {
 
     if (!template || !template.isActive) {
       Logger.log('no template', selectedTemplateId, template)
-      return standardError(new Error('Template not found'), {userId: viewerId})
+      return standardError(new Error('Template not found'), {
+        userId: viewerId
+      })
     }
 
     const {scope} = template
     const viewerTeam = await dataLoader.get('teams').loadNonNull(teamId)
     if (scope === 'TEAM') {
       if (!isTeamMember(authToken, template.teamId))
-        return standardError(new Error('Template is scoped to team'), {userId: viewerId})
+        return standardError(new Error('Template is scoped to team'), {
+          userId: viewerId
+        })
     } else if (scope === 'ORGANIZATION') {
       const templateTeam = await dataLoader.get('teams').loadNonNull(template.teamId)
       if (viewerTeam.orgId !== templateTeam.orgId) {
-        return standardError(new Error('Template is scoped to organization'), {userId: viewerId})
+        return standardError(new Error('Template is scoped to organization'), {
+          userId: viewerId
+        })
       }
     }
 

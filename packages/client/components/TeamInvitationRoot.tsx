@@ -1,6 +1,8 @@
 import {Suspense} from 'react'
-import {RouteComponentProps} from 'react-router'
-import teamInvitationQuery, {TeamInvitationQuery} from '~/__generated__/TeamInvitationQuery.graphql'
+import type {RouteComponentProps} from 'react-router'
+import teamInvitationQuery, {
+  type TeamInvitationQuery
+} from '~/__generated__/TeamInvitationQuery.graphql'
 import useNoIndex from '~/hooks/useNoIndex'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import TeamInvitation from './TeamInvitation'
@@ -12,7 +14,9 @@ const TeamInvitationRoot = (props: Props) => {
   const {match} = props
   const {params} = match
   const {token} = params
-  const queryRef = useQueryLoaderNow<TeamInvitationQuery>(teamInvitationQuery, {token})
+  const queryRef = useQueryLoaderNow<TeamInvitationQuery>(teamInvitationQuery, {
+    token
+  })
   return <Suspense fallback={''}>{queryRef && <TeamInvitation queryRef={queryRef} />}</Suspense>
 }
 

@@ -1,4 +1,4 @@
-import EstimateStage from './EstimateStage'
+import type EstimateStage from './EstimateStage'
 import GenericMeetingPhase from './GenericMeetingPhase'
 
 export default class EstimatePhase extends GenericMeetingPhase {

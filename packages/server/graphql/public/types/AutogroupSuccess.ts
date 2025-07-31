@@ -1,4 +1,4 @@
-import {AutogroupSuccessResolvers} from '../resolverTypes'
+import type {AutogroupSuccessResolvers} from '../resolverTypes'
 
 export type AutogroupSuccessSource = {
   meetingId: string

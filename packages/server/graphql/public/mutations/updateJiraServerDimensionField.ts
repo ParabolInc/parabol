@@ -1,10 +1,10 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import upsertJiraServerDimensionFieldMap from '../../../postgres/queries/upsertJiraServerDimensionFieldMap'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensionField'] = async (
   _source,
@@ -44,9 +44,13 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     return {error: {message: 'Not authenticated with JiraServer'}}
   }
 
-  const existingDimensionField = await dataLoader
-    .get('jiraServerDimensionFieldMap')
-    .load({providerId: auth.providerId, projectId, issueType: issueType, teamId, dimensionName})
+  const existingDimensionField = await dataLoader.get('jiraServerDimensionFieldMap').load({
+    providerId: auth.providerId,
+    projectId,
+    issueType: issueType,
+    teamId,
+    dimensionName
+  })
   if (existingDimensionField?.fieldName === fieldName) return data
 
   let fieldId: string

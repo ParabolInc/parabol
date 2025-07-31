@@ -3,7 +3,7 @@ import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {FileAssetDir} from './FileStoreManager'
+import FileStoreManager, {type FileAssetDir} from './FileStoreManager'
 
 interface CloudKey {
   clientEmail: string
@@ -102,7 +102,7 @@ export default class GCSManager extends FileStoreManager {
       })
       const accessTokenJson = await accessTokenRes.json()
       return accessTokenJson.access_token
-    } catch (e) {
+    } catch {
       return undefined
     }
   }

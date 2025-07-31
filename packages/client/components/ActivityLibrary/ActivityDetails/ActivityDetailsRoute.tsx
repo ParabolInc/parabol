@@ -1,7 +1,7 @@
 import {Suspense} from 'react'
 import {Redirect} from 'react-router'
 import activityDetailsQuery, {
-  ActivityDetailsQuery
+  type ActivityDetailsQuery
 } from '~/__generated__/ActivityDetailsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import useRouter from '../../../hooks/useRouter'

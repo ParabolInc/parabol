@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const MUTATION_NAME: MutationResolvers['MUTATION_NAME'] = async (
   _source,

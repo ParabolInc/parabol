@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailKickedOut_notification$key} from 'parabol-client/__generated__/EmailKickedOut_notification.graphql'
+import type {EmailKickedOut_notification$key} from 'parabol-client/__generated__/EmailKickedOut_notification.graphql'
 import {useFragment} from 'react-relay'
 import EmailNotificationTemplate from './EmailNotificationTemplate'
 

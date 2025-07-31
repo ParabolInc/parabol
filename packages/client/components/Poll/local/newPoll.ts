@@ -1,5 +1,5 @@
-import {commitLocalUpdate, RecordSourceProxy} from 'relay-runtime'
-import Atmosphere from '../../../Atmosphere'
+import {commitLocalUpdate, type RecordSourceProxy} from 'relay-runtime'
+import type Atmosphere from '../../../Atmosphere'
 import getDiscussionThreadConn from '../../../mutations/connections/getDiscussionThreadConn'
 import safePutNodeInConn from '../../../mutations/handlers/safePutNodeInConn'
 import clientTempId from '../../../utils/relay/clientTempId'

@@ -1,4 +1,4 @@
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
@@ -6,7 +6,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import blacklistJWT from '../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../utils/epochTime'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const setFacilitatedUserIdOrDelete = async (
   userIdToDelete: string,

@@ -1,4 +1,4 @@
-import {_XGitHubRepositoryResolvers} from '../resolverTypes'
+import type {_XGitHubRepositoryResolvers} from '../resolverTypes'
 
 const _xGitHubRepository: _XGitHubRepositoryResolvers = {
   __isTypeOf: ({nameWithOwner}) => !!nameWithOwner,

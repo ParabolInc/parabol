@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
-import {forwardRef, Ref} from 'react'
+import {forwardRef, type Ref} from 'react'
 import useModal from '~/hooks/useModal'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
-import MenuContents, {MenuContentsProps} from './MenuContents'
+import MenuContents, {type MenuContentsProps} from './MenuContents'
 import PrimaryButton from './PrimaryButton'
 import ReportErrorFeedback from './ReportErrorFeedback'
 

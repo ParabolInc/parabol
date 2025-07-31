@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
-import {ReflectHelpMenu_settings$key} from '~/__generated__/ReflectHelpMenu_settings.graphql'
+import type {ReflectHelpMenu_settings$key} from '~/__generated__/ReflectHelpMenu_settings.graphql'
 import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'

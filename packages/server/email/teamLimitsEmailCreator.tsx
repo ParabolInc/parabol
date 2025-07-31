@@ -6,7 +6,7 @@ import ReactDOMServer from 'react-dom/server'
 import {Threshold} from '../../client/types/constEnums'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
-import {TeamLimitsEmailType} from '../billing/helpers/sendTeamsLimitEmail'
+import type {TeamLimitsEmailType} from '../billing/helpers/sendTeamsLimitEmail'
 import {analytics} from '../utils/analytics/analytics'
 import emailTemplate from './emailTemplate'
 

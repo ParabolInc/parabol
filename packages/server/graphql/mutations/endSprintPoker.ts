@@ -5,14 +5,14 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
 import getKysely from '../../postgres/getKysely'
-import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
@@ -38,9 +38,14 @@ export default {
 
     // AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     if (meeting.meetingType !== 'poker') {
-      return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
+      return standardError(new Error('Meeting is not a poker meeting'), {
+        userId: viewerId
+      })
     }
     const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
@@ -48,7 +53,10 @@ export default {
     if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       return standardError(new Error('Not on team'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
 
     // RESOLUTION
     // remove hovering data from redis
@@ -91,7 +99,9 @@ export default {
     dataLoader.clearAll('newMeetings')
     const completedMeeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     if (completedMeeting.meetingType !== 'poker') {
-      return standardError(new Error('Meeting is not a poker meeting'), {userId: viewerId})
+      return standardError(new Error('Meeting is not a poker meeting'), {
+        userId: viewerId
+      })
     }
     const {templateId} = completedMeeting
     const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
@@ -100,7 +110,9 @@ export default {
       dataLoader.get('teamMembersByTeamId').load(teamId),
       removeEmptyTasks(meetingId),
       // technically, this template could have mutated while the meeting was going on. but in practice, probably not
-      dataLoader.get('meetingTemplates').loadNonNull(templateId)
+      dataLoader
+        .get('meetingTemplates')
+        .loadNonNull(templateId)
     ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)

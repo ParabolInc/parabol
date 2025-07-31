@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
+import type {FacilitatorMenu_meeting$key} from '../__generated__/FacilitatorMenu_meeting.graphql'
 import Menu from '../components/Menu'
 import MenuItem from '../components/MenuItem'
 import MenuItemLabel from '../components/MenuItemLabel'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import PromoteNewMeetingFacilitatorMutation from '../mutations/PromoteNewMeetingFacilitatorMutation'
 
 interface Props {
@@ -37,7 +37,10 @@ const FacilitatorMenu = (props: Props) => {
     .filter(({user}) => user.isConnected)
     .map(({user}) => user.id)
   const promoteViewerToFacilitator = () => {
-    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: viewerId, meetingId})
+    PromoteNewMeetingFacilitatorMutation(atmosphere, {
+      facilitatorUserId: viewerId,
+      meetingId
+    })
   }
   const promoteRandomPersonToFacilitator = () => {
     // ! here because we know that facilitatorCandidateIds.length >= 1 so newFacilitatorUserId is always defined

@@ -1,6 +1,6 @@
 import ms from 'ms'
 import {useEffect} from 'react'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'
 
 const NAG_EVERY = ms('3m')

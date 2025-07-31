@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
-import {useMakeStageSummaries_phase$key} from '../__generated__/useMakeStageSummaries_phase.graphql'
+import type {useMakeStageSummaries_phase$key} from '../__generated__/useMakeStageSummaries_phase.graphql'
 
 interface StageSummary {
   title: string

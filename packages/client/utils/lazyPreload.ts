@@ -1,5 +1,5 @@
 /* Puts a preload method on every lazy component */
-import {ComponentType, lazy, LazyExoticComponent} from 'react'
+import {type ComponentType, type LazyExoticComponent, lazy} from 'react'
 
 type ImportThunk<T> = () => Promise<{default: T}>
 

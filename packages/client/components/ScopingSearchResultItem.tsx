@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
-import {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import type * as React from 'react'
+import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -80,7 +80,11 @@ const ScopingSearchResultItem = (props: Props) => {
         }
       ]
     } as TUpdatePokerScopeMutation['variables']
-    UpdatePokerScopeMutation(atmosphere, variables, {onError, onCompleted, contents: [summary]})
+    UpdatePokerScopeMutation(atmosphere, variables, {
+      onError,
+      onCompleted,
+      contents: [summary]
+    })
     if (!isSelected) {
       // if they are adding an item, then their search criteria must be good, so persist it
       persistQuery?.()

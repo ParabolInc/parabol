@@ -1,5 +1,5 @@
 import {getUserId} from '../../../utils/authorization'
-import {AddPokerTemplateSuccessResolvers} from '../resolverTypes'
+import type {AddPokerTemplateSuccessResolvers} from '../resolverTypes'
 
 export type AddPokerTemplateSuccessSource = {
   templateId: string

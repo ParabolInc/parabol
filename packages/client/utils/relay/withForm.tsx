@@ -1,7 +1,7 @@
 import * as React from 'react'
-import {Component, Ref} from 'react'
-import {Subtract} from '../../types/generics'
-import Legitity from '../../validation/Legitity'
+import {Component, type Ref} from 'react'
+import type {Subtract} from '../../types/generics'
+import type Legitity from '../../validation/Legitity'
 import getDisplayName from '../getDisplayName'
 
 export interface WithFormProps<K extends string | number | symbol> {
@@ -39,14 +39,17 @@ const withForm =
       _mounted = false
 
       state = {
-        fields: Object.keys(fields).reduce((obj, name) => {
-          obj[name as K] = {
-            value: fields[name as K].getDefault(this.props),
-            error: undefined,
-            dirty: false
-          }
-          return obj
-        }, {} as FieldState<K>)
+        fields: Object.keys(fields).reduce(
+          (obj, name) => {
+            obj[name as K] = {
+              value: fields[name as K].getDefault(this.props),
+              error: undefined,
+              dirty: false
+            }
+            return obj
+          },
+          {} as FieldState<K>
+        )
       }
 
       onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,10 +75,13 @@ const withForm =
 
       validate = (name?: K) => {
         if (!name) {
-          return Object.keys(this.state.fields).reduce((obj, name) => {
-            obj[name as K] = this.validate(name as K) as any
-            return obj
-          }, {} as FieldState<K>)
+          return Object.keys(this.state.fields).reduce(
+            (obj, name) => {
+              obj[name as K] = this.validate(name as K) as any
+              return obj
+            },
+            {} as FieldState<K>
+          )
         }
         const field = this.state.fields[name]
         const {value, error} = field

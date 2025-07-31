@@ -1,54 +1,54 @@
 type Query {
-  viewer: User!
-  massInvitation(
-    """
-    The mass invitation token
-    """
-    token: ID!
-  ): MassInvitationPayload!
-  searchGifs(
-    """
-    The search query to send to the service
-    """
-    query: String!
-    """
-    The ISO 3166-1 country of the user, default is US
-    """
-    country: String
-    """
-    The ISO 639-1 locale of the user, default is en_US
-    """
-    locale: String
-    """
-    The first n records to return
-    """
-    first: Int!
-    """
-    The pagination cursor, if any
-    """
-    after: String
-  ): GifResponseConnection!
-  verifiedInvitation(
-    """
-    The invitation token
-    """
-    token: ID!
-  ): VerifiedInvitationPayload!
-  getDemoGroupTitle(
-    """
-    Get a reflection group title for the demo using AI
-    """
-    reflectionsContent: [String!]!
-  ): GetDemoGroupTitlePayload!
-  SAMLIdP(
-    """
-    the email associated with a SAML login. null if instance is SSO-only
-    """
-    email: ID
+	viewer: User!
+	massInvitation(
+		"""
+		The mass invitation token
+		"""
+		token: ID!
+	): MassInvitationPayload!
+	searchGifs(
+		"""
+		The search query to send to the service
+		"""
+		query: String!
+		"""
+		The ISO 3166-1 country of the user, default is US
+		"""
+		country: String
+		"""
+		The ISO 639-1 locale of the user, default is en_US
+		"""
+		locale: String
+		"""
+		The first n records to return
+		"""
+		first: Int!
+		"""
+		The pagination cursor, if any
+		"""
+		after: String
+	): GifResponseConnection!
+	verifiedInvitation(
+		"""
+		The invitation token
+		"""
+		token: ID!
+	): VerifiedInvitationPayload!
+	getDemoGroupTitle(
+		"""
+		Get a reflection group title for the demo using AI
+		"""
+		reflectionsContent: [String!]!
+	): GetDemoGroupTitlePayload!
+	SAMLIdP(
+		"""
+		the email associated with a SAML login. null if instance is SSO-only
+		"""
+		email: ID
 
-    """
-    true if the user was invited, else false
-    """
-    isInvited: Boolean
-  ): String
+		"""
+		true if the user was invited, else false
+		"""
+		isInvited: Boolean
+	): String
 }

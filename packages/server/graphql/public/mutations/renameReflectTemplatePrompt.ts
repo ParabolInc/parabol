@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const renameReflectTemplatePrompt: MutationResolvers['renameReflectTemplatePrompt'] = async (
   _source,
@@ -32,7 +32,9 @@ const renameReflectTemplatePrompt: MutationResolvers['renameReflectTemplatePromp
   const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
   const allPrompts = prompts.filter(({removedAt}) => !removedAt)
   if (allPrompts.find((prompt) => prompt.question === normalizedQuestion)) {
-    return standardError(new Error('Duplicate question template'), {userId: viewerId})
+    return standardError(new Error('Duplicate question template'), {
+      userId: viewerId
+    })
   }
 
   // RESOLUTION

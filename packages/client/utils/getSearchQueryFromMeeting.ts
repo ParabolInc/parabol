@@ -1,33 +1,37 @@
-import {PokerScopeMeeting} from '~/mutations/UpdatePokerScopeMutation'
-import {TaskServiceEnum} from '../__generated__/UpdatePokerScopeMutation.graphql'
+import type {PokerScopeMeeting} from '~/mutations/UpdatePokerScopeMutation'
+import type {TaskServiceEnum} from '../__generated__/UpdatePokerScopeMutation.graphql'
 
 const getSearchQueryFromMeeting = (meeting: PokerScopeMeeting, service: TaskServiceEnum) => {
   switch (service) {
-    case 'PARABOL':
+    case 'PARABOL': {
       const {parabolSearchQuery} = meeting
       return {
         searchQueryString: parabolSearchQuery.queryString ?? undefined
       }
-    case 'github':
+    }
+    case 'github': {
       const {githubSearchQuery} = meeting
       return {
         searchQueryString: githubSearchQuery.queryString ?? undefined
       }
-    case 'gitlab':
+    }
+    case 'gitlab': {
       const {gitlabSearchQuery} = meeting
       const {queryString, selectedProjectsIds} = gitlabSearchQuery
       return {
         searchQueryString: queryString,
         searchQueryFilters: selectedProjectsIds?.concat()
       }
-    case 'jira':
+    }
+    case 'jira': {
       const {jiraSearchQuery} = meeting
       const {queryString: jiraQueryString, projectKeyFilters} = jiraSearchQuery
       return {
         searchQueryString: jiraQueryString,
         searchQueryFilters: projectKeyFilters.concat()
       }
-    case 'linear':
+    }
+    case 'linear': {
       const {linearSearchQuery} = meeting
       const {queryString: linearQueryString, selectedProjectsIds: linearSelectedProjectIds} =
         linearSearchQuery
@@ -35,6 +39,7 @@ const getSearchQueryFromMeeting = (meeting: PokerScopeMeeting, service: TaskServ
         searchQueryString: linearQueryString,
         searchQueryFilters: linearSelectedProjectIds?.concat()
       }
+    }
   }
   return undefined
 }

@@ -1,7 +1,7 @@
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
-import {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
+import type {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
 
 export type AzureDevOpsIntegrationSource = {
   teamId: string
@@ -45,7 +45,7 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
             return {
               ...userWorkItem,
               updatedAt: new Date()
-            }
+            } as any
           })
         )
         return connectionFromTasks(workItems, first, undefined)

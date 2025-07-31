@@ -1,7 +1,7 @@
 import {useRef} from 'react'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {BezierCurve, ElementWidth, ReflectionStackPerspective, Times} from '../types/constEnums'
-import {RefCallbackInstance} from '../types/generics'
+import type {RefCallbackInstance} from '../types/generics'
 
 const getScaleX = (i: number) => {
   if (i === 0) return 1

@@ -1,5 +1,5 @@
-import TimelineEventTeamPromptCompleteModel from '../../../database/types/TimelineEventTeamPromptComplete'
-import {TimelineEventTeamPromptCompleteResolvers} from '../resolverTypes'
+import type TimelineEventTeamPromptCompleteModel from '../../../database/types/TimelineEventTeamPromptComplete'
+import type {TimelineEventTeamPromptCompleteResolvers} from '../resolverTypes'
 import {timelineEventInterfaceResolvers} from './TimelineEvent'
 
 export type TimelineEventTeamPromptCompleteSource = Pick<

@@ -20,7 +20,9 @@ const relayWatch = async () => {
   if (!schemaExists) await schemaUpdater
   const _persistServer = new RelayPersistServer()
   const compiler = cp
-    .spawn(relayCompilerPath, ['--watch'], {stdio: ['inherit', 'pipe', 'inherit']})
+    .spawn(relayCompilerPath, ['--watch'], {
+      stdio: ['inherit', 'pipe', 'inherit']
+    })
     // if relay compiler gets killed, kill this process
     .on('exit', process.exit)
   // when this process gets killed, kill relay compiler, too

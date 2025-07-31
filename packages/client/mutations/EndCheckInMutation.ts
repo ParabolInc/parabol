@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {EndCheckInMutation_notification$data} from '~/__generated__/EndCheckInMutation_notification.graphql'
-import {EndCheckInMutation_team$data} from '~/__generated__/EndCheckInMutation_team.graphql'
+import type {RecordProxy} from 'relay-runtime'
+import type {EndCheckInMutation_notification$data} from '~/__generated__/EndCheckInMutation_notification.graphql'
+import type {EndCheckInMutation_team$data} from '~/__generated__/EndCheckInMutation_team.graphql'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndCheckInMutation as TEndCheckInMutation} from '../__generated__/EndCheckInMutation.graphql'
-import {
+import type {EndCheckInMutation as TEndCheckInMutation} from '../__generated__/EndCheckInMutation.graphql'
+import type {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,

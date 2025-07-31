@@ -1,5 +1,5 @@
-import {JSONContent} from '@tiptap/core'
-import {TaskTag} from '../types'
+import type {JSONContent} from '@tiptap/core'
+import type {TaskTag} from '../types'
 
 const addTagToTask = (content: JSONContent, tag: TaskTag) => {
   content.content!.push({

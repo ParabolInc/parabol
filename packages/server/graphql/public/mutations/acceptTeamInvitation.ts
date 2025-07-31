@@ -6,14 +6,14 @@ import {
 } from '../../../../client/types/constEnums'
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
-import RedisLock from '../../../utils/RedisLock'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
+import RedisLock from '../../../utils/RedisLock'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
 import handleInvitationToken from '../../mutations/helpers/handleInvitationToken'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import {getIsAnyUserOrgLocked} from './helpers/getIsAnyUserOrgLocked'
 import {getIsUserIdApprovedByOrg} from './helpers/getIsUserIdApprovedByOrg'
 
@@ -48,7 +48,12 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
       teamId &&
       isTeamMember(authToken, teamId)
     ) {
-      return {error: {message}, teamId, meetingId, teamMemberId: toTeamMemberId(teamId!, viewerId)}
+      return {
+        error: {message},
+        teamId,
+        meetingId,
+        teamMemberId: toTeamMemberId(teamId!, viewerId)
+      }
     }
     return {error: {message}}
   }
@@ -109,12 +114,18 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     invitationNotificationIds
   }
 
-  const nextAuthToken = new AuthToken({tms, sub: viewerId, rol: authToken.rol})
+  const nextAuthToken = new AuthToken({
+    tms,
+    sub: viewerId,
+    rol: authToken.rol
+  })
   // This is to triage https://github.com/ParabolInc/parabol/issues/11167. We know it worked if we don't see it again
   context.authToken = nextAuthToken
 
   // Send the new team member a welcome & a new token
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {tms})
+  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
+    tms
+  })
   // https://github.com/ParabolInc/parabol/issues/11167 We need to sleep a bit to let the new authToken propagate
   // To all of the viewer's subscribers (they may have 2 tabs open)
 

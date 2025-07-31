@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
-import {Post} from 'mattermost-redux/types/posts'
-import {
+import type {Post} from 'mattermost-redux/types/posts'
+import type {
   MeetingTypeEnum,
   useInviteToMeeting_meeting$key
 } from 'parabol-client/__generated__/useInviteToMeeting_meeting.graphql'

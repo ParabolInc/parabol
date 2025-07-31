@@ -1,4 +1,4 @@
-import {CheckInPhaseResolvers} from '../resolverTypes'
+import type {CheckInPhaseResolvers} from '../resolverTypes'
 
 const CheckInPhase: CheckInPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'checkin'

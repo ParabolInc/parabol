@@ -1,4 +1,4 @@
-import {StartTeamPromptSuccessResolvers} from '../resolverTypes'
+import type {StartTeamPromptSuccessResolvers} from '../resolverTypes'
 
 export type StartTeamPromptSuccessSource = {
   meetingId: string

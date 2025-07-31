@@ -1,5 +1,5 @@
 import {DragAttribute} from '~/types/constEnums'
-import {DropZoneBBox, TargetBBox} from '../components/ReflectionGroup/DraggableReflectionCard'
+import type {DropZoneBBox, TargetBBox} from '../components/ReflectionGroup/DraggableReflectionCard'
 
 const measureDroppableReflections = (
   dropZoneEl: HTMLDivElement | null,

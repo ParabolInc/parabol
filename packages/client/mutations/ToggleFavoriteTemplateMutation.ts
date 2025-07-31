@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ToggleFavoriteTemplateMutation as TToggleFavoriteTemplateMutation} from '../__generated__/ToggleFavoriteTemplateMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {ToggleFavoriteTemplateMutation as TToggleFavoriteTemplateMutation} from '../__generated__/ToggleFavoriteTemplateMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment ToggleFavoriteTemplateMutation_viewer on ToggleFavoriteTemplateSuccess {

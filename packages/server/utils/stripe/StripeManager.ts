@@ -1,4 +1,4 @@
-import {InvoiceItemType} from 'parabol-client/types/constEnums'
+import type {InvoiceItemType} from 'parabol-client/types/constEnums'
 import Stripe from 'stripe'
 import {Logger} from '../Logger'
 import logError from '../logError'
@@ -26,7 +26,9 @@ export default class StripeManager {
     paymentMethodId: string
   ): Promise<Stripe.Response<Stripe.PaymentMethod> | Error> {
     try {
-      return await this.stripe.paymentMethods.attach(paymentMethodId, {customer: customerId})
+      return await this.stripe.paymentMethods.attach(paymentMethodId, {
+        customer: customerId
+      })
     } catch (e) {
       const error = e as Error
       return error
@@ -195,7 +197,10 @@ export default class StripeManager {
   }
 
   async listInvoices(stripeId: string, startingAfter?: string) {
-    return this.stripe.invoices.list({customer: stripeId, starting_after: startingAfter})
+    return this.stripe.invoices.list({
+      customer: stripeId,
+      starting_after: startingAfter
+    })
   }
   async getSubscriptionItem(subscriptionId: string) {
     const allSubscriptionItems = await this.stripe.subscriptionItems.list({
@@ -225,7 +230,10 @@ export default class StripeManager {
   }
 
   async listSources(customerId: string) {
-    return this.stripe.customers.listSources(customerId, {object: 'card', limit: 3})
+    return this.stripe.customers.listSources(customerId, {
+      object: 'card',
+      limit: 3
+    })
   }
 
   async listActiveSubscriptions(customerId: string) {
@@ -283,7 +291,9 @@ export default class StripeManager {
     userId: string,
     hookId: string
   ) {
-    return this.stripe.invoiceItems.update(invoiceItemId, {metadata: {type, userId, hookId}})
+    return this.stripe.invoiceItems.update(invoiceItemId, {
+      metadata: {type, userId, hookId}
+    })
   }
 
   async updatePayment(customerId: string, source: string) {

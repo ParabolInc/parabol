@@ -1,7 +1,7 @@
 import {rule} from 'graphql-shield'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 type GetTeamId = (source: any, args: any, context: GQLContext) => Promise<string | Error>
 

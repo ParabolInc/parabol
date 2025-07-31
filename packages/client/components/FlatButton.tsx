@@ -1,10 +1,10 @@
 // DEPRECATED use packages/client/ui/Button/Button.tsx with variant='flat'
 import styled from '@emotion/styled'
-import * as React from 'react'
-import {ReactNode} from 'react'
+import type * as React from 'react'
+import type {ReactNode} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'
-import BaseButton, {BaseButtonProps} from './BaseButton'
+import BaseButton, {type BaseButtonProps} from './BaseButton'
 
 const paletteColors = {
   warm: PALETTE.GOLD_500,

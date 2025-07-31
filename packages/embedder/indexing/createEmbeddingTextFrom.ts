@@ -1,7 +1,7 @@
-import {Selectable} from 'kysely'
-import {DB} from 'parabol-server/postgres/types/pg'
+import type {Selectable} from 'kysely'
+import type {DB} from 'parabol-server/postgres/types/pg'
 
-import {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import {createTextFromMeetingTemplate} from './meetingTemplate'
 import {createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'
 
@@ -27,12 +27,14 @@ export const isEmbeddingOutdated = async (
 ) => {
   const {refId, refUpdatedAt} = embeddingsMetadata
   switch (embeddingsMetadata.objectType) {
-    case 'retrospectiveDiscussionTopic':
+    case 'retrospectiveDiscussionTopic': {
       const discussion = await dataLoader.get('discussions').load(refId)
       return !discussion || discussion?.createdAt > refUpdatedAt
-    case 'meetingTemplate':
+    }
+    case 'meetingTemplate': {
       const template = await dataLoader.get('meetingTemplates').load(refId)
       return !template || template?.updatedAt > refUpdatedAt
+    }
     default:
       throw new Error(`Unexcepted objectType: ${embeddingsMetadata.objectType}`)
   }

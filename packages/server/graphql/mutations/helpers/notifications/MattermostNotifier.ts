@@ -4,26 +4,26 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {phaseLabelLookup} from 'parabol-client/utils/meetings/lookups'
 import appOrigin from '../../../../appOrigin'
-import {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
-import {SlackNotification, Team} from '../../../../postgres/types'
-import IUser from '../../../../postgres/types/IUser'
-import {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
-import MattermostServerManager from '../../../../utils/MattermostServerManager'
+import type {IntegrationProviderMattermost} from '../../../../postgres/queries/getIntegrationProvidersByIds'
+import type {SlackNotification, Team} from '../../../../postgres/types'
+import type IUser from '../../../../postgres/types/IUser'
+import type {AnyMeeting, MeetingTypeEnum} from '../../../../postgres/types/Meeting'
 import {analytics} from '../../../../utils/analytics/analytics'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import logError from '../../../../utils/logError'
-import {DataLoaderWorker} from '../../../graphql'
+import MattermostServerManager from '../../../../utils/MattermostServerManager'
+import type {DataLoaderWorker} from '../../../graphql'
 import isValid from '../../../isValid'
-import {SlackNotificationEventEnum} from '../../../public/resolverTypes'
-import {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
-import {createNotifier} from './Notifier'
+import type {SlackNotificationEventEnum} from '../../../public/resolverTypes'
 import getSummaryText from './getSummaryText'
 import {
-  Field,
+  type Field,
   makeFieldsAttachment,
   makeHackedButtonPairFields,
   makeHackedFieldButtonValue
 } from './makeMattermostAttachments'
+import type {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
+import {createNotifier} from './Notifier'
 
 const notifyMattermost = async (
   event: SlackNotification['event'],
@@ -76,26 +76,30 @@ const makeEndMeetingButtons = (meeting: AnyMeeting) => {
     link: summaryUrl
   }
   switch (meeting.meetingType) {
-    case 'retrospective':
+    case 'retrospective': {
       const retroUrl = makeAppURL(appOrigin, `meet/${meetingId}/discuss/1`)
       return makeHackedButtonPairFields(makeDiscussionButton(retroUrl), summaryButton)
-    case 'action':
+    }
+    case 'action': {
       const checkInUrl = makeAppURL(appOrigin, `meet/${meetingId}/checkin/1`)
       return makeHackedButtonPairFields(makeDiscussionButton(checkInUrl), summaryButton)
-    case 'poker':
+    }
+    case 'poker': {
       const pokerUrl = makeAppURL(appOrigin, `meet/${meetingId}/estimate/1`)
       const estimateButton = {
         label: 'See estimates',
         link: pokerUrl
       }
       return makeHackedButtonPairFields(estimateButton, summaryButton)
-    case 'teamPrompt':
+    }
+    case 'teamPrompt': {
       const teamPromptUrl = makeAppURL(appOrigin, `meet/${meetingId}/responses`)
       const responseButton = {
         label: 'See responses',
         link: teamPromptUrl
       }
       return makeHackedButtonPairFields(responseButton, summaryButton)
+    }
     default:
       throw new Error('Invalid meeting type')
   }
@@ -125,7 +129,10 @@ const makeTeamPromptStartMeetingNotification = (
         },
         {
           short: false,
-          value: makeHackedFieldButtonValue({label: 'Submit Response', link: meetingUrl})
+          value: makeHackedFieldButtonValue({
+            label: 'Submit Response',
+            link: meetingUrl
+          })
         }
       ],
       {
@@ -157,7 +164,10 @@ const makeGenericStartMeetingNotification = (
         },
         {
           short: false,
-          value: makeHackedFieldButtonValue({label: 'Join meeting', link: meetingUrl})
+          value: makeHackedFieldButtonValue({
+            label: 'Join meeting',
+            link: meetingUrl
+          })
         }
       ],
       {
@@ -276,7 +286,10 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
           },
           {
             short: false,
-            value: makeHackedFieldButtonValue({label: 'Open meeting', link: meetingUrl})
+            value: makeHackedFieldButtonValue({
+              label: 'Open meeting',
+              link: meetingUrl
+            })
           }
         ],
         {
@@ -315,7 +328,10 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
           },
           {
             short: false,
-            value: makeHackedFieldButtonValue({label: 'Open meeting', link: meetingUrl})
+            value: makeHackedFieldButtonValue({
+              label: 'Open meeting',
+              link: meetingUrl
+            })
           }
         ],
         {
@@ -411,7 +427,12 @@ async function getMattermost(
   ).filter(isValid)
 
   return providers.map((provider) =>
-    MattermostNotificationHelper({...provider, teamId, userId, channelId: null})
+    MattermostNotificationHelper({
+      ...provider,
+      teamId,
+      userId,
+      channelId: null
+    })
   )
 }
 

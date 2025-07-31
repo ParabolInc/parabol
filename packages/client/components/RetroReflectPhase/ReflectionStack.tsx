@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
-import {RefObject, useRef} from 'react'
+import {type RefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {ReflectionStack_meeting$key} from '~/__generated__/ReflectionStack_meeting.graphql'
-import {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
+import type {ReflectionStack_meeting$key} from '~/__generated__/ReflectionStack_meeting.graphql'
+import type {PhaseItemColumn_meeting$data} from '../../__generated__/PhaseItemColumn_meeting.graphql'
 import useExpandedReflections from '../../hooks/useExpandedReflections'
 import {ElementWidth, ReflectionStackPerspective} from '../../types/constEnums'
 import ReflectionCard from '../ReflectionCard/ReflectionCard'
@@ -61,7 +61,7 @@ const ReflectionStack = (props: Props) => {
           data-cy={dataCy}
           onClick={expand}
           ref={stackRef}
-          className='relative mb-6 flex flex-1 items-start justify-start select-none single-reflection-column:min-h-[104px]'
+          className='relative mb-6 flex single-reflection-column:min-h-[104px] flex-1 select-none items-start justify-start'
         >
           <div className='relative'>
             {reflectionStack.map((reflection, idx) => {

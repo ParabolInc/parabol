@@ -1,6 +1,6 @@
 import {MattermostNotifier} from './MattermostNotifier'
 import {MSTeamsNotifier} from './MSTeamsNotifier'
-import {Notifier} from './Notifier'
+import type {Notifier} from './Notifier'
 import {SlackNotifier} from './SlackNotifier'
 
 const notifiers = [MattermostNotifier, SlackNotifier, MSTeamsNotifier]

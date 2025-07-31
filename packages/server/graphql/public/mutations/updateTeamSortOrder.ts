@@ -1,6 +1,6 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateTeamSortOrder: MutationResolvers['updateTeamSortOrder'] = async (
   _source,

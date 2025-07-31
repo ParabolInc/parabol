@@ -1,4 +1,4 @@
-import {AzureDevOpsSearchQueryResolvers} from '../resolverTypes'
+import type {AzureDevOpsSearchQueryResolvers} from '../resolverTypes'
 
 const AzureDevOpsSearchQuery: AzureDevOpsSearchQueryResolvers = {
   isWIQL: ({isWIQL}) => !!isWIQL

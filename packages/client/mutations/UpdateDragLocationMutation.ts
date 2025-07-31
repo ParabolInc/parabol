@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {getRequest} from 'relay-runtime'
-import Atmosphere, {noopSink} from '../Atmosphere'
-import {UpdateDragLocationMutation as TUpdateDragLocationMutation} from '../__generated__/UpdateDragLocationMutation.graphql'
+import type {UpdateDragLocationMutation as TUpdateDragLocationMutation} from '../__generated__/UpdateDragLocationMutation.graphql'
+import type Atmosphere from '../Atmosphere'
+import {noopSink} from '../Atmosphere'
 
 graphql`
   fragment UpdateDragLocationMutation_meeting on UpdateDragLocationPayload {

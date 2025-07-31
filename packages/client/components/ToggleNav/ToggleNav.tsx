@@ -22,34 +22,36 @@ const Nav = styled('div')({
   width: '100%'
 })
 
-const Item = styled('div')<{isActive: boolean; isFirst: boolean; isLast: boolean}>(
-  ({isActive, isFirst, isLast}) => ({
-    alignItems: 'center',
-    backgroundColor: isActive ? PALETTE.GRAPE_700 : 'transparent',
-    border: `1px solid ${PALETTE.GRAPE_700}`,
-    borderBottomLeftRadius: isFirst ? 2 : undefined,
-    borderTopLeftRadius: isFirst ? 2 : undefined,
-    borderBottomRightRadius: isLast ? 2 : undefined,
-    borderTopRightRadius: isLast ? 2 : undefined,
-    borderLeftWidth: isFirst ? 1 : 0,
-    color: isActive ? '#FFFFFF' : PALETTE.GRAPE_700,
-    cursor: isActive ? 'default' : 'pointer',
-    display: 'flex',
-    flex: 1,
-    fontSize: 14,
-    fontWeight: 600,
-    justifyContent: 'center',
-    lineHeight: '26px',
-    textAlign: 'center',
-    textDecoration: 'none',
-    padding: '0px 8px',
-    ':hover,:focus': {
-      backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_300,
-      color: isActive ? '#FFFFFF' : PALETTE.GRAPE_800,
-      textDecoration: 'none'
-    }
-  })
-)
+const Item = styled('div')<{
+  isActive: boolean
+  isFirst: boolean
+  isLast: boolean
+}>(({isActive, isFirst, isLast}) => ({
+  alignItems: 'center',
+  backgroundColor: isActive ? PALETTE.GRAPE_700 : 'transparent',
+  border: `1px solid ${PALETTE.GRAPE_700}`,
+  borderBottomLeftRadius: isFirst ? 2 : undefined,
+  borderTopLeftRadius: isFirst ? 2 : undefined,
+  borderBottomRightRadius: isLast ? 2 : undefined,
+  borderTopRightRadius: isLast ? 2 : undefined,
+  borderLeftWidth: isFirst ? 1 : 0,
+  color: isActive ? '#FFFFFF' : PALETTE.GRAPE_700,
+  cursor: isActive ? 'default' : 'pointer',
+  display: 'flex',
+  flex: 1,
+  fontSize: 14,
+  fontWeight: 600,
+  justifyContent: 'center',
+  lineHeight: '26px',
+  textAlign: 'center',
+  textDecoration: 'none',
+  padding: '0px 8px',
+  ':hover,:focus': {
+    backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_300,
+    color: isActive ? '#FFFFFF' : PALETTE.GRAPE_800,
+    textDecoration: 'none'
+  }
+}))
 
 const Icons = {
   group: <Group />,

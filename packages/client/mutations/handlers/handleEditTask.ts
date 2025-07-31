@@ -1,4 +1,4 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import createProxyRecord from '../../utils/relay/createProxyRecord'
 
 const handleEditTask = (payload: RecordProxy, store: RecordSourceSelectorProxy) => {

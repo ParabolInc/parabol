@@ -4,16 +4,7 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "precommit",
-          "format",
-          "typecheck",
-          "lint",
-          "lint:check",
-          "prettier",
-          "prettier:check",
-          "test"
-        ]
+        "cacheableOperations": ["precommit", "test"]
       }
     }
   },

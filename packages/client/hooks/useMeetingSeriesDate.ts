@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
-import {useMeetingSeriesDate_meeting$key} from '../__generated__/useMeetingSeriesDate_meeting.graphql'
+import type {useMeetingSeriesDate_meeting$key} from '../__generated__/useMeetingSeriesDate_meeting.graphql'
 
 const timeFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',

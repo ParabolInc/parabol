@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PublicTeamItem_team$key} from '../../__generated__/PublicTeamItem_team.graphql'
+import type {PublicTeamItem_team$key} from '../../__generated__/PublicTeamItem_team.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import JoinTeamMutation from '../../mutations/JoinTeamMutation'
@@ -51,7 +51,7 @@ const PublicTeamItem = (props: Props) => {
 
   return (
     <div className='flex items-center justify-between py-2'>
-      <span className='text-lg font-semibold'>{team.name}</span>
+      <span className='font-semibold text-lg'>{team.name}</span>
       <div className='flex items-center'>
         {isJoined ? (
           <span className='px-6 py-2.5 text-center font-semibold text-grape-500'>Joined!</span>

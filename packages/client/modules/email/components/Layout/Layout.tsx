@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {emailBackgroundColor, emailMaxWidth, emailTableBase} from '../../styles'
 
 const containerStyle = {

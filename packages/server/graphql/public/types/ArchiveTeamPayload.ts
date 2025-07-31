@@ -1,6 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
-import {ArchiveTeamPayloadResolvers} from '../resolverTypes'
+import type {ArchiveTeamPayloadResolvers} from '../resolverTypes'
 
 export type ArchiveTeamPayloadSource = {
   teamId: string

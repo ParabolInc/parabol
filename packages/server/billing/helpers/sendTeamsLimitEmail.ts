@@ -1,6 +1,6 @@
 import getMailManager from '../../email/getMailManager'
 import teamLimitsEmailCreator from '../../email/teamLimitsEmailCreator'
-import IUser from '../../postgres/types/IUser'
+import type IUser from '../../postgres/types/IUser'
 
 export type TeamLimitsEmailType = 'locked' | 'sevenDayWarning' | 'thirtyDayWarning'
 

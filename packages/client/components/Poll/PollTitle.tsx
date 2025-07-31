@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PollTitle_poll$key} from '../../__generated__/PollTitle_poll.graphql'
+import type {PollTitle_poll$key} from '../../__generated__/PollTitle_poll.graphql'
 
 const PollTitleHeader = styled('div')({
   padding: `10px 12px 0px 12px`,

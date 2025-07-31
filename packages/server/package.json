@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.15.0",
+  "version": "10.16.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,20 +13,14 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "scripts": {
-    "format": "pnpm typecheck && pnpm lint && pnpm prettier",
     "debug:stripe": "node billing/debug.babel.js",
     "precommit": "lint-staged",
-    "lint": "pnpm lint:check --fix .",
-    "lint:check": "eslint .",
-    "prettier": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --write \"**/*.{ts,tsx,graphql}\"",
-    "prettier:check": "prettier --config ../../.prettierrc --ignore-path ./.prettierignore --check \"**/*.{ts,tsx,graphql}\"",
     "test": "jest --verbose --runInBand",
     "postversion": "git push --follow-tags",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@amplitude/analytics-types": "^1.3.2",
-    "@eslint/eslintrc": "^3.3.1",
     "@types/analytics-node": "^3.1.3",
     "@types/bcryptjs": "^2.4.2",
     "@types/cheerio": "^0.22.30",
@@ -106,9 +100,6 @@
     "oy-vey": "^0.12.1",
     "parabol-client": "workspace:*",
     "pg": "^8.5.1",
-    "prosemirror-model": "^1.25.1",
-    "prosemirror-state": "^1.4.3",
-    "prosemirror-view": "^1.39.2",
     "react-dom": "^17.0.2",
     "react-relay": "^18.2.0",
     "relay-runtime": "^14.1.0",

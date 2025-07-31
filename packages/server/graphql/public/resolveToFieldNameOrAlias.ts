@@ -1,4 +1,4 @@
-import {GraphQLResolveInfo} from 'graphql'
+import type {GraphQLResolveInfo} from 'graphql'
 
 const resolveToFieldNameOrAlias = (
   source: any,

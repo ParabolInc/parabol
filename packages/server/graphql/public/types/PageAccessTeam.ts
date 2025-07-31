@@ -1,4 +1,4 @@
-import {PageAccessTeamResolvers} from '../resolverTypes'
+import type {PageAccessTeamResolvers} from '../resolverTypes'
 
 const PageAccessTeam: PageAccessTeamResolvers = {
   team: async ({teamId}, _args, {dataLoader}) => {

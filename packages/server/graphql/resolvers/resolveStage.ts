@@ -1,8 +1,7 @@
-import GenericMeetingPhase, {
-  NewMeetingPhaseTypeEnum
-} from '../../database/types/GenericMeetingPhase'
+import type GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
+import type {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import type {GQLContext} from './../graphql'
 import {augmentDBStage} from '../resolvers'
-import {GQLContext} from './../graphql'
 
 const resolveStage =
   (phaseType: NewMeetingPhaseTypeEnum) =>

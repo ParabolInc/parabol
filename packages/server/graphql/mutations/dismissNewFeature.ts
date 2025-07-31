@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import getPg from '../../postgres/getPg'
 import {dismissNewFeatureQuery} from '../../postgres/queries/generated/dismissNewFeatureQuery'
 import {getUserId} from '../../utils/authorization'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import DismissNewFeaturePayload from '../types/DismissNewFeaturePayload'
 
 export default {

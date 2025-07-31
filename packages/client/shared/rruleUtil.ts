@@ -1,8 +1,8 @@
-import dayjs, {Dayjs} from 'dayjs'
+import dayjs, {type Dayjs} from 'dayjs'
 import customParsePlugin from 'dayjs/plugin/customParseFormat'
 import timezonePlugin from 'dayjs/plugin/timezone'
 import utcPlugin from 'dayjs/plugin/utc'
-import {RRule} from 'rrule'
+import type {RRule} from 'rrule'
 
 dayjs.extend(customParsePlugin)
 dayjs.extend(utcPlugin)

@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IUpdateJiraDimensionFieldMapQueryParams,
+  type IUpdateJiraDimensionFieldMapQueryParams,
   updateJiraDimensionFieldMapQuery
 } from './generated/updateJiraDimensionFieldMapQuery'
 

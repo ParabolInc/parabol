@@ -1,4 +1,4 @@
-import {GraphQLResolveInfo} from 'graphql'
+import type {GraphQLResolveInfo} from 'graphql'
 import GitHubRepoId from 'parabol-client/shared/gqlIds/GitHubRepoId'
 import interpolateVotingLabelTemplate from 'parabol-client/shared/interpolateVotingLabelTemplate'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
@@ -6,7 +6,7 @@ import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import appOrigin from '../../../appOrigin'
-import {
+import type {
   AddCommentMutation,
   AddCommentMutationVariables,
   AddLabelMutation,
@@ -29,8 +29,8 @@ import getIssueId from '../../../utils/githubQueries/getIssueId.graphql'
 import getRepoLabels from '../../../utils/githubQueries/getRepoLabels.graphql'
 import removeLabels from '../../../utils/githubQueries/removeLabels.graphql'
 import makeScoreGitHubComment from '../../../utils/makeScoreGitHubComment'
-import {GQLContext} from '../../graphql'
-import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import type {GQLContext} from '../../graphql'
+import type {ITaskEstimateInput} from '../../types/TaskEstimateInput'
 
 const pushEstimateToGitHub = async (
   taskEstimate: ITaskEstimateInput,

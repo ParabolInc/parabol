@@ -59,17 +59,17 @@ const BACKGROUND_COLORS = {
   poker: PALETTE.TOMATO_400,
   teamPrompt: PALETTE.JADE_400
 }
-const MeetingImgBackground = styled.div<{meetingType: keyof typeof BACKGROUND_COLORS}>(
-  ({meetingType}) => ({
-    background: BACKGROUND_COLORS[meetingType],
-    borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-    display: 'block',
-    position: 'absolute',
-    top: 0,
-    bottom: '6px',
-    width: '100%'
-  })
-)
+const MeetingImgBackground = styled.div<{
+  meetingType: keyof typeof BACKGROUND_COLORS
+}>(({meetingType}) => ({
+  background: BACKGROUND_COLORS[meetingType],
+  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
+  display: 'block',
+  position: 'absolute',
+  top: 0,
+  bottom: '6px',
+  width: '100%'
+}))
 
 const MeetingImgWrapper = styled('div')({
   borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,

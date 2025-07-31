@@ -1,11 +1,10 @@
-import ReactGA from 'react-ga4'
-import {LocalStorageKey} from '~/types/constEnums'
-import {handleSuccessfulLogin_UserLogInPayload$data} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
-import safeIdentify from './safeIdentify'
-
 import graphql from 'babel-plugin-relay/macro'
+import ReactGA from 'react-ga4'
 import {commitLocalUpdate} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
+import {LocalStorageKey} from '~/types/constEnums'
+import type {handleSuccessfulLogin_UserLogInPayload$data} from '../__generated__/handleSuccessfulLogin_UserLogInPayload.graphql'
+import type Atmosphere from '../Atmosphere'
+import safeIdentify from './safeIdentify'
 
 graphql`
   fragment handleSuccessfulLogin_UserLogInPayload on UserLogInPayload {
@@ -52,5 +51,9 @@ export const handleSuccessfulLogin = (atmosphere: Atmosphere, payload: Payload) 
     const root = store.getRoot()
     root.setValue(isNewUser, 'isNewUser')
   })
-  emitGA4SignUpEvent({isNewUser, userId, isPatient0: payload.user.isPatient0})
+  emitGA4SignUpEvent({
+    isNewUser,
+    userId,
+    isPatient0: payload.user.isPatient0
+  })
 }

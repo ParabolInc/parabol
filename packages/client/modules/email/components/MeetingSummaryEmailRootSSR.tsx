@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
+import type {MeetingSummaryEmailRootSSRQuery} from 'parabol-client/__generated__/MeetingSummaryEmailRootSSRQuery.graphql'
 import {useLazyLoadQuery} from 'react-relay'
 import {EMAIL_CORS_OPTIONS} from '../../../types/cors'
 import makeAppURL from '../../../utils/makeAppURL'

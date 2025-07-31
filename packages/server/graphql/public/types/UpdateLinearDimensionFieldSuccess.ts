@@ -1,4 +1,4 @@
-import {UpdateLinearDimensionFieldSuccessResolvers} from '../resolverTypes'
+import type {UpdateLinearDimensionFieldSuccessResolvers} from '../resolverTypes'
 
 export type UpdateLinearDimensionFieldSuccessSource = {
   teamId: string

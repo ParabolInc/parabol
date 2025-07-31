@@ -1,4 +1,4 @@
-import {FileScalarConfig} from '../resolverTypes'
+import type {FileScalarConfig} from '../resolverTypes'
 
 const File: FileScalarConfig = {
   name: 'File',

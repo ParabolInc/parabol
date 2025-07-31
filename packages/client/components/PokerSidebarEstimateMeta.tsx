@@ -37,7 +37,9 @@ const PokerSidebarEstimateMeta = (props: Props) => {
   const completedScoreCount = finalScores.filter(Boolean).length
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER,
-    {disabled: completedScoreCount === 0}
+    {
+      disabled: completedScoreCount === 0
+    }
   )
   if (finalScores.length === 1) {
     const [firstScore] = finalScores

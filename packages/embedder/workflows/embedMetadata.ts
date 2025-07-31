@@ -1,12 +1,12 @@
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
-import {JobQueueError} from '../JobQueueError'
-import {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
+import type {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
-import {JobQueueStepRun, ParentJob} from '../custom'
+import type {JobQueueStepRun, ParentJob} from '../custom'
 import {createEmbeddingTextFrom, isEmbeddingOutdated} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
-import {getSimilarRetroTopics} from './getSimilarRetroTopics'
+import {JobQueueError} from '../JobQueueError'
+import type {getSimilarRetroTopics} from './getSimilarRetroTopics'
 
 export const embedMetadata: JobQueueStepRun<
   {

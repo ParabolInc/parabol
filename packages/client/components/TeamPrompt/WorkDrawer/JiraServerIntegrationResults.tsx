@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {JiraServerIntegrationResultsQuery} from '../../../__generated__/JiraServerIntegrationResultsQuery.graphql'
-import {JiraServerIntegrationResultsSearchPaginationQuery} from '../../../__generated__/JiraServerIntegrationResultsSearchPaginationQuery.graphql'
-import {JiraServerIntegrationResults_search$key} from '../../../__generated__/JiraServerIntegrationResults_search.graphql'
+import type {JiraServerIntegrationResults_search$key} from '../../../__generated__/JiraServerIntegrationResults_search.graphql'
+import type {JiraServerIntegrationResultsQuery} from '../../../__generated__/JiraServerIntegrationResultsQuery.graphql'
+import type {JiraServerIntegrationResultsSearchPaginationQuery} from '../../../__generated__/JiraServerIntegrationResultsSearchPaginationQuery.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import JiraServerObjectCard from './JiraServerObjectCard'
@@ -102,7 +102,7 @@ const JiraServerIntegrationResults = (props: Props) => {
         )}
         {lastItem}
         {hasNext && (
-          <div className='mx-auto -mt-4 mb-4 h-8 text-2xl' key={'loadingNext'}>
+          <div className='-mt-4 mx-auto mb-4 h-8 text-2xl' key={'loadingNext'}>
             <Ellipsis />
           </div>
         )}

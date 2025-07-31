@@ -2,7 +2,7 @@ import ms from 'ms'
 import GitHubIntegrationId from '../../../../client/shared/gqlIds/GitHubIntegrationId'
 import updateGitHubSearchQueries from '../../../postgres/queries/updateGitHubSearchQueries'
 import {getUserId} from '../../../utils/authorization'
-import {GitHubIntegrationResolvers} from '../resolverTypes'
+import type {GitHubIntegrationResolvers} from '../resolverTypes'
 
 const GitHubIntegration: GitHubIntegrationResolvers = {
   id: ({teamId, userId}) => GitHubIntegrationId.join(teamId, userId),
@@ -21,7 +21,11 @@ const GitHubIntegration: GitHubIntegrationResolvers = {
       (query) => new Date(query.lastUsedAt) > thresh
     )
     if (unexpiredQueries.length < githubSearchQueries.length) {
-      await updateGitHubSearchQueries({teamId, userId, githubSearchQueries: unexpiredQueries})
+      await updateGitHubSearchQueries({
+        teamId,
+        userId,
+        githubSearchQueries: unexpiredQueries
+      })
     }
     return unexpiredQueries
   }

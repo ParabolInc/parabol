@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
-import {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
+import type {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
@@ -11,8 +11,8 @@ import {
   ORG_SETTINGS_PAGE,
   TEAMS_PAGE
 } from '../../../../utils/constants'
-import OrgTeams from '../OrgTeams/OrgTeams'
 import OrgNav from '../Organization/OrgNav'
+import OrgTeams from '../OrgTeams/OrgTeams'
 
 const OrgPlansAndBillingRoot = lazy(
   () => import(/* webpackChunkName: 'OrgPlansAndBillingRoot' */ './OrgPlansAndBillingRoot')

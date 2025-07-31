@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {AzureDevOpsProviderRow_viewer$key} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
+import type {AzureDevOpsProviderRow_viewer$key} from '../../../../__generated__/AzureDevOpsProviderRow_viewer.graphql'
 import AzureDevOpsConfigMenu from '../../../../components/AzureDevOpsConfigMenu'
 import AzureDevOpsProviderLogo from '../../../../components/AzureDevOpsProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import AzureDevOpsClientManager from '../../../../utils/AzureDevOpsClientManager'
 import ProviderRow from './ProviderRow'
@@ -53,7 +53,12 @@ const AzureDevOpsProviderRow = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const mutationProps = {
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {azureDevOps} = integrations

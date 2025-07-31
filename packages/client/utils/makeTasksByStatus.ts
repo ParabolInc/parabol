@@ -1,4 +1,4 @@
-import {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import type {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {columnArray} from './constants'
 
 // sorts post-split to be a little more efficient

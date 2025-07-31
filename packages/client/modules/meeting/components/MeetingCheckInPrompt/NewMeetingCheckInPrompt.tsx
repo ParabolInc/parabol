@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {NewMeetingCheckInPrompt_meeting$key} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
-import {NewMeetingCheckInPrompt_user$key} from '../../../../__generated__/NewMeetingCheckInPrompt_user.graphql'
+import type {NewMeetingCheckInPrompt_meeting$key} from '~/__generated__/NewMeetingCheckInPrompt_meeting.graphql'
+import type {NewMeetingCheckInPrompt_user$key} from '../../../../__generated__/NewMeetingCheckInPrompt_user.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import NewMeetingCheckInGreeting from '../NewMeetingCheckInGreeting'
 import NewCheckInQuestion from './NewCheckInQuestion'
@@ -75,7 +75,7 @@ const NewMeetingCheckinPrompt = (props: Props) => {
   return (
     <PromptBlock>
       <AvatarBlock>
-        <Avatar picture={picture} className={`h-32 w-32 sidebar-left:h-40 sidebar-left:w-40`} />
+        <Avatar picture={picture} className={`h-32 sidebar-left:h-40 sidebar-left:w-40 w-32`} />
       </AvatarBlock>
       <CheckInBlock>
         <NewMeetingCheckInGreeting checkInGreetingRef={checkInGreeting!} userRef={user} />

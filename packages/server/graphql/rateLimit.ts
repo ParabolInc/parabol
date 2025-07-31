@@ -1,4 +1,4 @@
-import {
+import type {
   GraphQLFieldResolver,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -7,7 +7,7 @@ import {
 } from 'graphql'
 import {getUserId} from '../utils/authorization'
 import standardError from '../utils/standardError'
-import {GQLContext} from './graphql'
+import type {GQLContext} from './graphql'
 
 interface Options {
   perMinute: number

@@ -1,4 +1,4 @@
-import {NotifyTeamArchivedResolvers} from '../resolverTypes'
+import type {NotifyTeamArchivedResolvers} from '../resolverTypes'
 
 const NotifyTeamArchived: NotifyTeamArchivedResolvers = {
   __isTypeOf: ({type}) => type === 'TEAM_ARCHIVED',

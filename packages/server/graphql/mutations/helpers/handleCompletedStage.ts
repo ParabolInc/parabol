@@ -1,10 +1,10 @@
 import {AUTO_GROUPING_THRESHOLD, GROUP, REFLECT, VOTE} from 'parabol-client/utils/constants'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import GenericMeetingStage from '../../../database/types/GenericMeetingStage'
+import type GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import getKysely from '../../../postgres/getKysely'
-import {AnyMeeting, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
-import {DataLoaderWorker} from '../../graphql'
+import type {AnyMeeting, RetrospectiveMeeting} from '../../../postgres/types/Meeting'
+import type {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
 import addRecallBot from './addRecallBot'
@@ -90,7 +90,11 @@ const handleCompletedRetrospectiveStage = async (
     }
     await Promise.all([
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
-      publishToEmbedder({jobType: 'relatedDiscussions:start', data: {meetingId}, priority: 0})
+      publishToEmbedder({
+        jobType: 'relatedDiscussions:start',
+        data: {meetingId},
+        priority: 0
+      })
     ])
     if (videoMeetingURL) {
       addRecallBot(meetingId, videoMeetingURL)

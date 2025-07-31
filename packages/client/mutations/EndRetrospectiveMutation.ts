@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {EndRetrospectiveMutation_notification$data} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
-import {EndRetrospectiveMutation_team$data} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
+import type {RecordProxy} from 'relay-runtime'
+import type {EndRetrospectiveMutation_notification$data} from '~/__generated__/EndRetrospectiveMutation_notification.graphql'
+import type {EndRetrospectiveMutation_team$data} from '~/__generated__/EndRetrospectiveMutation_team.graphql'
 import onMeetingRoute from '~/utils/onMeetingRoute'
-import {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__generated__/EndRetrospectiveMutation.graphql'
+import type {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__generated__/EndRetrospectiveMutation.graphql'
 import {RetroDemo} from '../types/constEnums'
-import {
+import type {
   HistoryMaybeLocalHandler,
   OnNextHandler,
   OnNextHistoryContext,
@@ -20,6 +20,7 @@ import popEndMeetingToast from './toasts/popEndMeetingToast'
 graphql`
   fragment EndRetrospectiveMutation_team on EndRetrospectiveSuccess {
     isKill
+    gotoPageSummary
     meeting {
       id
       endedAt
@@ -43,6 +44,7 @@ graphql`
       phases {
         phaseType
       }
+      summaryPageId
     }
     team {
       ...TeamInsights_team
@@ -91,10 +93,10 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
   EndRetrospectiveMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
-  const {isKill, meeting} = payload
+  const {isKill, meeting, gotoPageSummary} = payload
   const {atmosphere, history} = context
   if (!meeting) return
-  const {id: meetingId, teamId, reflectionGroups, phases, organization} = meeting
+  const {id: meetingId, teamId, reflectionGroups, phases, organization, summaryPageId} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
@@ -106,6 +108,9 @@ export const endRetrospectiveTeamOnNext: OnNextHandler<
     if (isKill) {
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
+    } else if (gotoPageSummary && summaryPageId) {
+      const pageCode = Number(summaryPageId.split('page:')[1])
+      history.push(`/pages/${pageCode}`)
     } else {
       const reflections = reflectionGroups.flatMap((group) => group.reflections) // reflectionCount hasn't been calculated yet so check reflections length
       const hasMoreThanOneReflection = reflections.length > 1
@@ -162,7 +167,10 @@ const EndRetrospectiveMutation: StandardMutation<
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endRetrospectiveTeamOnNext(res.endRetrospective as any, {atmosphere, history})
+      endRetrospectiveTeamOnNext(res.endRetrospective as any, {
+        atmosphere,
+        history
+      })
     },
     onError
   })

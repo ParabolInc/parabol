@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../utils/authorization'
-import {GQLContext} from './graphql'
+import type {GQLContext} from './graphql'
 import massInvitation from './queries/massInvitation'
 import verifiedInvitation from './queries/verifiedInvitation'
 import User from './types/User'

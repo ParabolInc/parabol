@@ -2,28 +2,28 @@
 Integration Auth and shared providers available to the team member
 """
 type MSTeamsIntegration {
-  """
-  The OAuth2 Authorization for this team member
-  """
-  auth: TeamMemberIntegrationAuthWebhook
+	"""
+	The OAuth2 Authorization for this team member
+	"""
+	auth: TeamMemberIntegrationAuthWebhook
 
-  """
-  The non-global providers shared with the team or organization
-  """
-  sharedProviders: [IntegrationProviderWebhook!]!
+	"""
+	The non-global providers shared with the team or organization
+	"""
+	sharedProviders: [IntegrationProviderWebhook!]!
 
-  """
-  An active team member has integrated with a provider for this integration
-  """
-  isActive: Boolean!
+	"""
+	An active team member has integrated with a provider for this integration
+	"""
+	isActive: Boolean!
 
-  """
-  If any team member integrated with mattermost, this will be the active provider for this team
-  """
-  activeProvider: IntegrationProviderWebhook
+	"""
+	If any team member integrated with mattermost, this will be the active provider for this team
+	"""
+	activeProvider: IntegrationProviderWebhook
 
-  """
-  Team notification settings for this provider.
-  """
-  teamNotificationSettings(channel: ID): TeamNotificationSettings
+	"""
+	Team notification settings for this provider.
+	"""
+	teamNotificationSettings(channel: ID): TeamNotificationSettings
 }

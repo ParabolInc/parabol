@@ -65,7 +65,7 @@ export const LeftNavTeamLink = (props: Props) => {
         data-highlighted={isActive ? '' : undefined}
         data-drop-in={canDropIn ? teamId : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-sm leading-8 text-slate-700 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
             'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
@@ -74,7 +74,7 @@ export const LeftNavTeamLink = (props: Props) => {
       >
         <div
           className={cn(
-            'absolute -bottom-0.5 left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow && 'cursor-pointer'
           )}
           data-drop-below={canDropBelow ? teamId || '' : undefined}

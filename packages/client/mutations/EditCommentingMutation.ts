@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
-import {StandardMutation, type OptionalHandlers} from '../types/relayMutations'
+import type {EditCommentingMutation as TEditCommentingMutation} from '../__generated__/EditCommentingMutation.graphql'
+import type {OptionalHandlers, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment EditCommentingMutation_meeting on EditCommentingSuccess {

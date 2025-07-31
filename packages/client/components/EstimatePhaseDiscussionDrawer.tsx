@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {EstimatePhaseDiscussionDrawer_meeting$key} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
+import type {EstimatePhaseDiscussionDrawer_meeting$key} from '~/__generated__/EstimatePhaseDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {
@@ -12,7 +12,7 @@ import {
   GlobalBanner,
   ZIndex
 } from '../types/constEnums'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import LabelHeading from './LabelHeading/LabelHeading'

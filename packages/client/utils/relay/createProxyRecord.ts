@@ -1,5 +1,5 @@
-import {RecordProxy, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {Primitive} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {RecordProxy, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {Primitive} from 'relay-runtime/lib/store/RelayStoreTypes'
 import clientTempId from './clientTempId'
 
 const createProxyRecord = <

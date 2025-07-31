@@ -1,4 +1,4 @@
 interface TeamNotification {
-  id: ID
-  type: NotificationEnum
+	id: ID
+	type: NotificationEnum
 }

@@ -1,4 +1,4 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import isTaskPrivate from '~/utils/isTaskPrivate'
 import {parseQueryParams} from '~/utils/useQueryParameterParser'

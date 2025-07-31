@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type * as React from 'react'
 import {cn} from '../../../../ui/cn'
 
 interface DetailsBadgeProps {
@@ -9,7 +9,7 @@ interface DetailsBadgeProps {
 export const DetailsBadge = (props: DetailsBadgeProps) => {
   const {className, children} = props
   return (
-    <div className={cn('w-min rounded-full px-3 py-1 text-xs font-semibold', className)}>
+    <div className={cn('w-min rounded-full px-3 py-1 font-semibold text-xs', className)}>
       {children}
     </div>
   )

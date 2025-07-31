@@ -1,11 +1,11 @@
-import {Extension, type Editor} from '@tiptap/core'
+import {type Editor, Extension} from '@tiptap/core'
 import {PluginKey} from '@tiptap/pm/state'
 import Suggestion from '@tiptap/suggestion'
 import graphql from 'babel-plugin-relay/macro'
 import stringScore from 'string-score'
 import {
-  default as pageLinkPickerQuery,
-  type PageLinkPickerQuery
+  type PageLinkPickerQuery,
+  default as pageLinkPickerQuery
 } from '../../../__generated__/PageLinkPickerQuery.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import renderSuggestion from '../renderSuggestion'
@@ -42,7 +42,7 @@ export const PageLinkPicker = Extension.create<{atmosphere: Atmosphere}, {open: 
     }
   },
   addProseMirrorPlugins() {
-    let firstFrom: number | undefined = undefined
+    let firstFrom: number | undefined
     return [
       Suggestion({
         editor: this.editor,
@@ -77,7 +77,10 @@ export const PageLinkPicker = Extension.create<{atmosphere: Atmosphere}, {open: 
           editor.emit('pageLinkPicker', {willOpen: false})
           const command = editor.chain().focus()
           if (nodeBefore) {
-            command.deleteRange({from: $from.pos - nodeBefore.nodeSize, to: $from.pos})
+            command.deleteRange({
+              from: $from.pos - nodeBefore.nodeSize,
+              to: $from.pos
+            })
           }
           command.setPageLinkBlock({pageCode, title}).run()
         },

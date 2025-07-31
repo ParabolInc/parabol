@@ -1,6 +1,6 @@
 /// <reference types="stripe-v2" />
 
-import {ValueOf} from '../types/generics'
+import type {ValueOf} from '../types/generics'
 import Legitity from '../validation/Legitity'
 
 export const cardTypeLookup = {

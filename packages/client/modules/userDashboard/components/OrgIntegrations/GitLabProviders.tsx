@@ -1,7 +1,7 @@
 import {Add as AddIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {GitLabProviders_organization$key} from '../../../../__generated__/GitLabProviders_organization.graphql'
+import type {GitLabProviders_organization$key} from '../../../../__generated__/GitLabProviders_organization.graphql'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
@@ -53,7 +53,7 @@ const GitLabProviders = (props: Props) => {
   return (
     <>
       <div className='my-4 flex flex-col rounded-sm bg-white shadow-card'>
-        <div className='flex-center flex items-center p-4'>
+        <div className='flex flex-center items-center p-4'>
           <GitLabProviderLogo />
           <div className='flex flex-col px-4'>
             <div className='font-semibold text-slate-700'>GitLab</div>

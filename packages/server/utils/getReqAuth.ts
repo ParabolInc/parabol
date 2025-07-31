@@ -1,4 +1,4 @@
-import {HttpRequest} from 'uWebSockets.js'
+import type {HttpRequest} from 'uWebSockets.js'
 import getVerifiedAuthToken from './getVerifiedAuthToken'
 
 const getReqAuth = (req: HttpRequest) => {

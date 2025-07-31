@@ -1,6 +1,6 @@
 import {Suspense, useEffect} from 'react'
 import meetingSelectorQuery, {
-  MeetingSelectorQuery
+  type MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useRouter from '../hooks/useRouter'

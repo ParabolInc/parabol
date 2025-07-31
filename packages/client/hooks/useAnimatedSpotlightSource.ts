@@ -1,13 +1,13 @@
 import {Times} from 'parabol-client/types/constEnums'
-import {MutableRefObject, useLayoutEffect, useRef} from 'react'
+import {type MutableRefObject, useLayoutEffect, useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {PortalStatus} from '~/hooks/usePortal'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import {Elevation} from '~/styles/elevation'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import clientTempId from '~/utils/relay/clientTempId'
 import cloneReflection from '~/utils/retroGroup/cloneReflection'
+import SendClientSideEvent from '~/utils/SendClientSideEvent'
 
 const useAnimatedSpotlightSource = (
   portalStatus: PortalStatus,

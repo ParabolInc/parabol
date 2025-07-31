@@ -1,5 +1,5 @@
 import * as clusterfck from 'tayden-clusterfck'
-import {GroupingOptions} from './groupReflections'
+import type {GroupingOptions} from './groupReflections'
 
 /*
  * Use hierarchical agglomerative clustering to group the reflections by theme

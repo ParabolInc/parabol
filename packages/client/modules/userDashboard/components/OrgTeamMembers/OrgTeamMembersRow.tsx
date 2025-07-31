@@ -1,7 +1,7 @@
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
+import type {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -68,10 +68,10 @@ export const OrgTeamMembersRow = (props: Props) => {
         <Avatar className='h-8 w-8' picture={picture} alt={preferredName} />
       </div>
       <div className='flex w-full flex-col gap-y-1 py-1'>
-        <div className='text-gray-700 inline-flex items-center gap-x-2 text-lg font-bold'>
+        <div className='inline-flex items-center gap-x-2 font-bold text-gray-700 text-lg'>
           {preferredName}{' '}
           {teamMember.isLead ? (
-            <span className='rounded-full bg-primary px-2 py-0.5 text-xs text-white'>
+            <span className='rounded-full bg-primary px-2 py-0.5 text-white text-xs'>
               Team Lead
             </span>
           ) : null}

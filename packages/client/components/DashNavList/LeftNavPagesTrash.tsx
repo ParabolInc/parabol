@@ -6,7 +6,7 @@ import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {LeftNavHeader} from './LeftNavHeader'
 
-interface Props {}
+type Props = {}
 export const LeftNavPagesTrash = (_props: Props) => {
   return (
     <Tooltip>
@@ -15,7 +15,7 @@ export const LeftNavPagesTrash = (_props: Props) => {
           <Popover.Root>
             <Popover.Trigger asChild>
               <div>
-                <div className='group flex flex-1 cursor-pointer rounded-md text-xs leading-5 font-semibold hover:bg-slate-300'>
+                <div className='group flex flex-1 cursor-pointer rounded-md font-semibold text-xs leading-5 hover:bg-slate-300'>
                   <LeftNavHeader>
                     <DeleteIcon className='text-slate-600' />
                     <span className='pl-1'>{'Trash'}</span>

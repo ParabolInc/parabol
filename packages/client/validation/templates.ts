@@ -1,6 +1,6 @@
 import {TASK_MAX_CHARS} from '../utils/constants'
 import linkify from '../utils/linkify'
-import Legitity from './Legitity'
+import type Legitity from './Legitity'
 import {compositeIdRegex, emailRegex, idRegex} from './regex'
 
 export const avatar = {
@@ -89,7 +89,7 @@ export const optionalUrl = (value: Legitity) =>
       if (value) {
         try {
           new URL(value)
-        } catch (e) {
+        } catch {
           return 'that url doesn’t look quite right'
         }
       }

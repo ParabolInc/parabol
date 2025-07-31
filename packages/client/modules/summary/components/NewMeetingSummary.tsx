@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import useRouter from '../../../hooks/useRouter'
@@ -57,17 +57,18 @@ const NewMeetingSummary = (props: Props) => {
   if (!newMeeting) {
     return null
   }
-  /* eslint-disable react-hooks/rules-of-hooks */
+
   const {id: meetingId, name: meetingName, team} = newMeeting
   const {id: teamId, name: teamName} = team
   const title = `${meetingName} ${MEETING_SUMMARY_LABEL} | ${teamName}`
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useDocumentTitle(title, 'Summary')
   const meetingUrl = makeHref(`/meet/${meetingId}`)
   const teamDashUrl = `/team/${teamId}/tasks`
   const emailCSVUrl = isDemoRoute()
     ? `/retrospective-demo-summary/csv`
     : `/new-summary/${meetingId}/csv`
-
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useSnacksForNewMeetings(activeMeetings as any)
   return (
     <div className='flex h-full flex-1 overflow-auto bg-slate-200'>

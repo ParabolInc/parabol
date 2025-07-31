@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RemoveReflectTemplatePromptMutation as TRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
-import {RemoveReflectTemplatePromptMutation_team$data} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
-import {SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {RemoveReflectTemplatePromptMutation as TRemoveReflectTemplatePromptMutation} from '../__generated__/RemoveReflectTemplatePromptMutation.graphql'
+import type {RemoveReflectTemplatePromptMutation_team$data} from '../__generated__/RemoveReflectTemplatePromptMutation_team.graphql'
+import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
 
 graphql`
@@ -41,7 +41,10 @@ const RemoveReflectTemplatePromptMutation: StandardMutation<
     updater: (store) => {
       const payload = store.getRootField('removeReflectTemplatePrompt')
       if (!payload) return
-      removeReflectTemplatePromptTeamUpdater(payload as any, {atmosphere, store})
+      removeReflectTemplatePromptTeamUpdater(payload as any, {
+        atmosphere,
+        store
+      })
     },
     optimisticUpdater: (store) => {
       const {promptId} = variables

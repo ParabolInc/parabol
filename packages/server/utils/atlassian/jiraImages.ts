@@ -2,7 +2,7 @@ import base64url from 'base64url'
 import * as cheerio from 'cheerio'
 import crypto from 'crypto'
 import ms from 'ms'
-import AtlassianServerManager from '../AtlassianServerManager'
+import type AtlassianServerManager from '../AtlassianServerManager'
 import getRedis from '../getRedis'
 
 export const NO_IMAGE_BUFFER = Buffer.from('X')

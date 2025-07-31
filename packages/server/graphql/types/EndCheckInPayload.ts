@@ -1,14 +1,14 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {getUserId} from '../../utils/authorization'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import {resolveNewMeeting} from '../resolvers'
 import ActionMeeting from './ActionMeeting'
+import makeMutationPayload from './makeMutationPayload'
 import Task from './Task'
 import Team from './Team'
 import TimelineEvent from './TimelineEvent'
-import makeMutationPayload from './makeMutationPayload'
 
 export const EndCheckInSuccess = new GraphQLObjectType<any, GQLContext>({
   name: 'EndCheckInSuccess',

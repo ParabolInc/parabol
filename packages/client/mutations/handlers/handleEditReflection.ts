@@ -1,4 +1,4 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 const handleEditReflection = (payload: RecordProxy<any>, store: RecordSourceSelectorProxy<any>) => {
   const promptId = payload.getValue('promptId')

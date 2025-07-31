@@ -1,13 +1,13 @@
-import * as React from 'react'
+import type * as React from 'react'
 import {useContext, useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
-import {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
-import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
+import type {DraggableReflectionCard_meeting$data} from '~/__generated__/DraggableReflectionCard_meeting.graphql'
+import type {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation_meeting.graphql'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
-import {DraggableReflectionCard_reflection$data} from '../__generated__/DraggableReflectionCard_reflection.graphql'
-import {PortalContext, SetPortal} from '../components/AtmosphereProvider/PortalProvider'
-import {SwipeColumn} from '../components/GroupingKanban'
-import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
+import type {DraggableReflectionCard_reflection$data} from '../__generated__/DraggableReflectionCard_reflection.graphql'
+import {PortalContext, type SetPortal} from '../components/AtmosphereProvider/PortalProvider'
+import type {SwipeColumn} from '../components/GroupingKanban'
+import type {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import RemoteReflection from '../components/ReflectionGroup/RemoteReflection'
 import StartDraggingReflectionMutation from '../mutations/StartDraggingReflectionMutation'
 import UpdateDragLocationMutation from '../mutations/UpdateDragLocationMutation'
@@ -186,7 +186,7 @@ const removeClone = (reflectionId: string, setPortal: SetPortal) => {
   if (el) {
     try {
       el.parentElement!.removeChild(el)
-    } catch (e) {
+    } catch {
       // already removed
     }
   }
@@ -337,7 +337,10 @@ const useDragAndDrop = (
       const dragRef = drag.ref
       // clone must come first because once isViewerDragging gets set then the tiptap element disappears if dragging from an expanded stack ???
       drag.clone = cloneReflection(dragRef, reflectionId)
-      StartDraggingReflectionMutation(atmosphere, {reflectionId, dragId: drag.id})
+      StartDraggingReflectionMutation(atmosphere, {
+        reflectionId,
+        dragId: drag.id
+      })
     }
     if (!drag.clone) return
     drag.clientY = clientY

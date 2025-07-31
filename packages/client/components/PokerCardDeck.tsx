@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {KeyboardEvent, RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import type * as React from 'react'
+import {type KeyboardEvent, type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import usePokerDeckLeftEdge from '~/hooks/usePokerDeckLeftEdge'
-import {PokerCardDeck_meeting$key} from '../__generated__/PokerCardDeck_meeting.graphql'
+import type {PokerCardDeck_meeting$key} from '../__generated__/PokerCardDeck_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import useHotkey from '../hooks/useHotkey'
@@ -109,7 +109,11 @@ const PokerCardDeck = (props: Props) => {
   const onMouseEnter = (cardId: string) => () => {
     if (isCollapsed) return
     if (!hoveringCardIdRef.current) {
-      PokerAnnounceDeckHoverMutation(atmosphere, {isHover: true, meetingId, stageId})
+      PokerAnnounceDeckHoverMutation(atmosphere, {
+        isHover: true,
+        meetingId,
+        stageId
+      })
     }
     hoveringCardIdRef.current = cardId
   }
@@ -120,7 +124,11 @@ const PokerCardDeck = (props: Props) => {
     setTimeout(() => {
       if (hoveringCardIdRef.current === cardId) {
         hoveringCardIdRef.current = ''
-        PokerAnnounceDeckHoverMutation(atmosphere, {isHover: false, meetingId, stageId})
+        PokerAnnounceDeckHoverMutation(atmosphere, {
+          isHover: false,
+          meetingId,
+          stageId
+        })
       }
     })
   }

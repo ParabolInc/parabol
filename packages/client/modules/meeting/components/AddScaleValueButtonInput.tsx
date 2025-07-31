@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {AddScaleValueButtonInput_scale$key} from '~/__generated__/AddScaleValueButtonInput_scale.graphql'
+import type {AddScaleValueButtonInput_scale$key} from '~/__generated__/AddScaleValueButtonInput_scale.graphql'
 import {Threshold} from '../../../types/constEnums'
 import AddPokerTemplateScaleValue from './AddPokerTemplateScaleValue'
 import NewTemplateScaleValueLabelInput from './NewTemplateScaleValueLabelInput'

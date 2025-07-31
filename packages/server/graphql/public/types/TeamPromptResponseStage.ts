@@ -1,6 +1,6 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTeamPromptResponsesByMeetingIds'
-import {TeamPromptResponseStageResolvers} from '../resolverTypes'
+import type {TeamPromptResponseStageResolvers} from '../resolverTypes'
 
 const TeamPromptResponseStage: TeamPromptResponseStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'RESPONSES',

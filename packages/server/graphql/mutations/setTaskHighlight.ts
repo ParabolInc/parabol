@@ -4,7 +4,7 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import getRedis from '../../utils/getRedis'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import SetTaskHighlightPayload from '../types/SetTaskHighlightPayload'
 
 const HIGHLIGHT_TIMEOUT_SECONDS = 300
@@ -44,7 +44,9 @@ export default {
       return standardError(new Error('Not your turn'), {userId: viewerId})
     }
     if (!meeting) {
-      return standardError(new Error('Meeting not found'), {userId: viewerId})
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     }
     const {teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {

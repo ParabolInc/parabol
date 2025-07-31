@@ -1,4 +1,4 @@
-import {UpdateFeatureFlagSuccessResolvers} from '../resolverTypes'
+import type {UpdateFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type UpdateFeatureFlagSuccessSource = {
   featureFlagId: string

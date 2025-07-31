@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import {ZIndex} from '~/types/constEnums'
 import FloatingActionButton from './FloatingActionButton'
 

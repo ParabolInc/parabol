@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
+import type {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import useRouter from '~/hooks/useRouter'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
@@ -75,8 +75,8 @@ const SelectMeetingDropdownItem = (props: Props) => {
         </div>
       )}
       <div className='flex flex-col px-2'>
-        <div className='text-base font-semibold text-slate-700'>{name}</div>
-        <div className='text-xs text-slate-600'>
+        <div className='font-semibold text-base text-slate-700'>{name}</div>
+        <div className='text-slate-600 text-xs'>
           {teamName} • {meetingPhaseLabel}
         </div>
       </div>

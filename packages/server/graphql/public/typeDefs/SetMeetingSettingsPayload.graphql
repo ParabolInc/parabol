@@ -1,4 +1,4 @@
 type SetMeetingSettingsPayload {
-  error: StandardMutationError
-  settings: TeamMeetingSettings
+	error: StandardMutationError
+	settings: TeamMeetingSettings
 }

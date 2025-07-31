@@ -1,5 +1,5 @@
 import getPg from '../getPg'
-import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
+import type {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
 import {getLatestIntegrationSearchQueriesQuery} from './generated/getLatestIntegrationSearchQueriesQuery'
 import {getLatestIntegrationSearchQueriesWithProviderIdQuery} from './generated/getLatestIntegrationSearchQueriesWithProviderIdQuery'
 

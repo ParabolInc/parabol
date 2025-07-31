@@ -1,5 +1,5 @@
 import type {Document} from '@hocuspocus/server'
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import {CipherId} from '../CipherId'
 import {withDoc} from './withDoc'

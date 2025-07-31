@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
-import {MeetingSeriesRedirectorQuery} from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
+import type {MeetingSeriesRedirectorQuery} from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
+
 interface Props {
   meetingId: string
   queryRef: PreloadedQuery<MeetingSeriesRedirectorQuery>

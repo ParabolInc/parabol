@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ToggleAIFeaturesMutation as TToggleAIFeaturesMutation} from '../__generated__/ToggleAIFeaturesMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {ToggleAIFeaturesMutation as TToggleAIFeaturesMutation} from '../__generated__/ToggleAIFeaturesMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment ToggleAIFeaturesMutation_organization on ToggleAIFeaturesSuccess {

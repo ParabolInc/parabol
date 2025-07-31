@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {PokerAnnounceDeckHoverMutation as TPokerAnnounceDeckHoverMutation} from '../__generated__/PokerAnnounceDeckHoverMutation.graphql'
-import {PokerAnnounceDeckHoverMutation_meeting$data} from '../__generated__/PokerAnnounceDeckHoverMutation_meeting.graphql'
-import {PokerMeeting_meeting$data} from '../__generated__/PokerMeeting_meeting.graphql'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {RecordProxy} from 'relay-runtime'
+import type {PokerAnnounceDeckHoverMutation as TPokerAnnounceDeckHoverMutation} from '../__generated__/PokerAnnounceDeckHoverMutation.graphql'
+import type {PokerAnnounceDeckHoverMutation_meeting$data} from '../__generated__/PokerAnnounceDeckHoverMutation_meeting.graphql'
+import type {PokerMeeting_meeting$data} from '../__generated__/PokerMeeting_meeting.graphql'
+import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 // asking for the correct hoveringUsers array would be fine, except we know a user can existing in exactly 1 hoveringUsers array at a time
@@ -103,7 +103,10 @@ const PokerAnnounceDeckHoverMutation: SimpleMutation<TPokerAnnounceDeckHoverMuta
         isHover
       })
       payload.setLinkedRecord(store.getRoot().getLinkedRecord('viewer'), 'user')
-      pokerAnnounceDeckHoverMeetingUpdater(payload as any, {atmosphere, store})
+      pokerAnnounceDeckHoverMeetingUpdater(payload as any, {
+        atmosphere,
+        store
+      })
     }
   })
 }

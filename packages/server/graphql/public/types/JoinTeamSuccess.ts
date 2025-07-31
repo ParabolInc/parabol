@@ -1,4 +1,4 @@
-import {JoinTeamSuccessResolvers} from '../resolverTypes'
+import type {JoinTeamSuccessResolvers} from '../resolverTypes'
 
 export type JoinTeamSuccessSource = {
   teamId: string

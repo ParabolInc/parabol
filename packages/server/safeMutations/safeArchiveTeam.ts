@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
 
 const safeArchiveTeam = async (teamId: string, dataLoader: DataLoaderWorker) => {

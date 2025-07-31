@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
-import {VoteHelpMenu_meeting$key} from '~/__generated__/VoteHelpMenu_meeting.graphql'
+import type {VoteHelpMenu_meeting$key} from '~/__generated__/VoteHelpMenu_meeting.graphql'
 import useClientSideTrack from '../../hooks/useClientSideTrack'
 import {ExternalLinks} from '../../types/constEnums'
 import {VOTE} from '../../utils/constants'
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const VoteHelpMenu = forwardRef((_props: Props, ref: any) => {
-  const {meetingRef: meetingRef} = _props
+  const {meetingRef} = _props
   const {closePortal} = ref
   useClientSideTrack('Help Menu Open', {phase: 'vote'})
   const votes = useFragment(

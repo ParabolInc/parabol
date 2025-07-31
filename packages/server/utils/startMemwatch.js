@@ -1,6 +1,7 @@
 const memwatch = require('memwatch-next')
 const fs = require('fs')
 const path = require('path')
+
 import {Logger} from './Logger'
 
 const startMemwatch = () => {

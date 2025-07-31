@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {TimelineEvent_timelineEvent$key} from '../__generated__/TimelineEvent_timelineEvent.graphql'
-import {ValueOf} from '../types/generics'
+import type {TimelineEvent_timelineEvent$key} from '../__generated__/TimelineEvent_timelineEvent.graphql'
+import type {ValueOf} from '../types/generics'
 import DelayUnmount from './DelayUnmount'
 import TimelineEventMock from './TimelineEventMock'
 

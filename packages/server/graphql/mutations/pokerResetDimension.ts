@@ -7,7 +7,7 @@ import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTask
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import PokerResetDimensionPayload from '../types/PokerResetDimensionPayload'
 import sendPokerMeetingRevoteEvent from './helpers/sendPokerMeetingRevoteEvent'
 

@@ -1,5 +1,5 @@
 import {commitLocalUpdate} from 'react-relay'
-import Atmosphere from '../../Atmosphere'
+import type Atmosphere from '../../Atmosphere'
 
 const filterTeamMember = (atmosphere: Atmosphere, teamId: string, teamMemberId: string | null) => {
   commitLocalUpdate(atmosphere, (store) => {

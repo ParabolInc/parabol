@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
-import {ModifyType} from '../graphql/public/resolverTypes'
-import {RetroReflection} from '../postgres/types'
+import type {ModifyType} from '../graphql/public/resolverTypes'
+import type {RetroReflection} from '../postgres/types'
 import {Logger} from './Logger'
 import logError from './logError'
 

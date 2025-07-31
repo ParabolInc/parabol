@@ -1,4 +1,4 @@
-import {Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
+import {type Editor, EditorContent, type EditorContentProps} from '@tiptap/react'
 import {cn} from '../../ui/cn'
 import {StandardBubbleMenu} from './StandardBubbleMenu'
 import TipTapLinkMenu from './TipTapLinkMenu'

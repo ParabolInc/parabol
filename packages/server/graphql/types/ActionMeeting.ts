@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import NewMeeting from './NewMeeting'
 
 // Placeholder so legacy types can still reference it until all types using this are migrated to codegen

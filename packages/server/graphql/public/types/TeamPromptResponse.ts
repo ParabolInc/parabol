@@ -1,5 +1,5 @@
 import TeamPromptResponseId from '../../../../client/shared/gqlIds/TeamPromptResponseId'
-import {TeamPromptResponseResolvers} from '../resolverTypes'
+import type {TeamPromptResponseResolvers} from '../resolverTypes'
 
 const TeamPromptResponse: TeamPromptResponseResolvers = {
   id: ({id}) => {

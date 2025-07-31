@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {type RouteComponentProps, withRouter} from 'react-router-dom'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import GiftSVG from './GiftSVG'

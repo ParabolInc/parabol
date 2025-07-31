@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import toTeamMemberId from '~/utils/relay/toTeamMemberId'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import {UserColumnsContainer_viewer$key} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
+import type {UserColumnsContainer_viewer$key} from '../../../../__generated__/UserColumnsContainer_viewer.graphql'
 import TaskColumns from '../../../../components/TaskColumns/TaskColumns'
 import getSafeRegex from '../../../../utils/getSafeRegex'
 

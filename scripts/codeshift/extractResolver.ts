@@ -11,7 +11,8 @@
 */
 
 import fs from 'fs'
-import core, {Collection, Transform} from 'jscodeshift/src/core'
+import type core from 'jscodeshift/src/core'
+import type {Collection, Transform} from 'jscodeshift/src/core'
 import path from 'path'
 
 const createArrowFunctionExpression = (j, fn) => {
@@ -149,7 +150,9 @@ ${exportLine}`
       return createArrowProperty(j, method.node)
     })
 
-    const resolveProp = root.find(j.ObjectProperty, {key: {name: 'resolve'}})
+    const resolveProp = root.find(j.ObjectProperty, {
+      key: {name: 'resolve'}
+    })
     const value = resolveProp.get().value.value
     removeTypeAnnotations(value, 'resolve', typeName)
     const dir = IS_QUERY ? 'queries' : 'mutations'

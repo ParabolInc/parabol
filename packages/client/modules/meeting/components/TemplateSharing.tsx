@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
+import type {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import {PALETTE} from '../../../styles/paletteV3'
@@ -78,7 +78,7 @@ const TemplateSharing = (props: Props) => {
   return (
     <>
       <HR />
-      <div className='pr-auto ly-2 ml-4 py-2 pl-0'>
+      <div className='ly-2 ml-4 py-2 pr-auto pl-0'>
         <UnstyledTemplateSharing {...props} />
       </div>
     </>

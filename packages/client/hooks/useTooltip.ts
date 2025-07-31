@@ -4,7 +4,7 @@
 
 import {useEffect, useRef} from 'react'
 import {Duration} from '../types/constEnums'
-import useCoords, {MenuPosition} from './useCoords'
+import useCoords, {type MenuPosition} from './useCoords'
 import useEventCallback from './useEventCallback'
 import usePortal from './usePortal'
 import useTooltipPortal from './useTooltipPortal'
@@ -29,7 +29,9 @@ const useTooltip = <T extends HTMLElement = HTMLElement>(
   }, [isDisabled])
 
   const {portal, openPortal, closePortal, portalStatus, setPortalStatus} = usePortal()
-  const {targetRef, originRef, coords} = useCoords<T>(preferredMenuPosition, {portalStatus})
+  const {targetRef, originRef, coords} = useCoords<T>(preferredMenuPosition, {
+    portalStatus
+  })
 
   const tooltipPortal = useTooltipPortal(portal, targetRef, coords, portalStatus, setPortalStatus)
   const openDelayRef = useRef<number>()

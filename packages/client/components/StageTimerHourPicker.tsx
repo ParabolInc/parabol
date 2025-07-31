@@ -1,5 +1,5 @@
 import ms from 'ms'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import formatTime from '../utils/date/formatTime'
 import Menu from './Menu'
 import MenuItem from './MenuItem'

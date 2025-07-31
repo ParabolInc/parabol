@@ -31,7 +31,7 @@ import {
   selectTemplateScaleRef,
   selectTimelineEvent
 } from '../postgres/select'
-import {TeamNotificationSettings} from '../postgres/types/pg'
+import type {TeamNotificationSettings} from '../postgres/types/pg'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
 
 export const users = primaryKeyLoaderMaker(getUsersByIds)

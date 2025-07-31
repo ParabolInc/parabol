@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
-import {LinearObjectCard_issue$key} from '../../../__generated__/LinearObjectCard_issue.graphql'
+import type {LinearObjectCard_issue$key} from '../../../__generated__/LinearObjectCard_issue.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
@@ -90,8 +90,8 @@ const LinearObjectCard = memo((props: Props) => {
   const repoUrl = project?.url
 
   return (
-    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
-      <div className='flex items-center gap-2 text-xs text-slate-600'>
+    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
+      <div className='flex items-center gap-2 text-slate-600 text-xs'>
         <span className='font-medium'>{identifier}</span>
         <span>•</span>
         <span>{state.name}</span>
@@ -116,14 +116,14 @@ const LinearObjectCard = memo((props: Props) => {
             <a
               href={repoUrl}
               target='_blank'
-              className='flex items-center text-xs text-slate-600 hover:underline'
+              className='flex items-center text-slate-600 text-xs hover:underline'
               rel='noreferrer'
               onClick={trackLinkClick}
             >
               <span className='leading-none'>{repoStr}</span>
             </a>
           ) : (
-            <span className='flex items-center text-xs leading-none text-slate-600'>{repoStr}</span>
+            <span className='flex items-center text-slate-600 text-xs leading-none'>{repoStr}</span>
           )}
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>

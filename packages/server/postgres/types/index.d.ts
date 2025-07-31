@@ -1,11 +1,14 @@
-import {SelectQueryBuilder, Selectable} from 'kysely'
+import {Selectable, SelectQueryBuilder} from 'kysely'
 import {
   selectAgendaItems,
   selectComments,
+  type selectDiscussion,
+  type selectMassInvitations,
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
+  type selectPages,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
@@ -16,15 +19,12 @@ import {
   selectTeamMemberIntegrationAuth,
   selectTeamPromptResponses,
   selectTeams,
+  type selectTemplateDimension,
   selectTemplateScale,
-  selectTemplateScaleRef,
-  type selectDiscussion,
-  type selectMassInvitations,
-  type selectPages
+  selectTemplateScaleRef
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
-  Discussion as DiscussionPG,
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
@@ -35,12 +35,12 @@ import {
   TaskEstimate as TaskEstimatePG,
   TeamMember as TeamMemberPG
 } from './pg'
+
 export type {TaskTag} from 'parabol-client/shared/types'
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never
 
-export type Discussion = Selectable<DiscussionPG>
 export type ReactjiDB = {id: string; userId: string}
 
 export type JiraDimensionField = {
@@ -87,12 +87,15 @@ export type TemplateScaleRef = ExtractTypeFromQueryBuilderSelect<typeof selectTe
 
 export type MeetingSettings = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSettings>
 export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
-export type RetrospectiveMeetingSettings = MeetingSettings & {meetingType: 'retrospective'}
+export type RetrospectiveMeetingSettings = MeetingSettings & {
+  meetingType: 'retrospective'
+}
 export type FeatureFlag = Selectable<FeatureFlagPG>
 
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
 
 export type SlackAuth = ExtractTypeFromQueryBuilderSelect<typeof selectSlackAuths>
+export type TemplateDimension = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateDimension>
 
 export type SlackNotification = ExtractTypeFromQueryBuilderSelect<typeof selectSlackNotifications>
 
@@ -108,7 +111,9 @@ export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
 export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages>
-export type PagePartial = Pick<Page, 'id' | 'title'> & {__typename: 'PagePartial'}
+export type PagePartial = Pick<Page, 'id' | 'title'> & {
+  __typename: 'PagePartial'
+}
 export type MassInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectMassInvitations>
 export type PageExternalAccess = Selectable<PageExternalAccessPG>
 export type PageAccessUser = Omit<Selectable<PageUserAccessPG>, 'pageId'>

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
-import {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
+import type {DiscussionThreadInput_discussion$key} from '~/__generated__/DiscussionThreadInput_discussion.graphql'
+import type {DiscussionThreadInput_viewer$key} from '~/__generated__/DiscussionThreadInput_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import AddCommentMutation from '~/mutations/AddCommentMutation'
@@ -19,10 +19,10 @@ import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import AddPollButton from './AddPollButton'
 import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
-import {DiscussionThreadables} from './DiscussionThreadList'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import {createLocalPoll} from './Poll/local/newPoll'
-import SendCommentButton from './SendCommentButton'
 import {TipTapEditor} from './promptResponse/TipTapEditor'
+import SendCommentButton from './SendCommentButton'
 
 const makeReplyTo = ({id, preferredName}: {id: string; preferredName: string}) => ({
   type: 'doc',
@@ -199,7 +199,10 @@ const DiscussionThreadInput = (props: Props) => {
   const avatar = isAnonymousComment ? anonymousAvatar : picture
   const inputBottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    containerRef.current?.scrollIntoView({behavior: 'smooth', block: 'center'})
+    containerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    })
     editor?.commands.focus('end')
   }, [discussionId])
   const containerRef = useRef<HTMLDivElement>(null)
@@ -207,7 +210,7 @@ const DiscussionThreadInput = (props: Props) => {
   if (!editor) return null
   return (
     <div
-      className='z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-disabled:opacity-50 data-[reply=true]:mt-2 data-[reply=true]:-ml-3 data-[reply=true]:rounded-t data-[reply=true]:shadow-discussion-thread'
+      className='data-[reply=true]:-ml-3 z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-[reply=true]:mt-2 data-[reply=true]:rounded-t data-disabled:opacity-50 data-[reply=true]:shadow-discussion-thread'
       data-disabled={isDisabled ? '' : undefined}
       data-reply={isReply}
       ref={containerRef}
@@ -218,7 +221,7 @@ const DiscussionThreadInput = (props: Props) => {
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
       {isActionsContainerVisible && (
-        <div className='flex items-center justify-center border-t-[1px] border-solid border-t-slate-200 py-1'>
+        <div className='flex items-center justify-center border-t-[1px] border-t-slate-200 border-solid py-1'>
           {allowTasks && <AddTaskButton onClick={addTask} disabled={isActionsContainerDisabled} />}
           {allowPolls && <AddPollButton onClick={addPoll} disabled={isActionsContainerDisabled} />}
         </div>

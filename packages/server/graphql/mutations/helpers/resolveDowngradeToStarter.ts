@@ -1,10 +1,10 @@
-import {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import {Logger} from '../../../utils/Logger'
 import {getStripeManager} from '../../../utils/stripe'
-import {ReasonToDowngradeEnum} from '../../public/resolverTypes'
+import type {ReasonToDowngradeEnum} from '../../public/resolverTypes'
 
 const resolveDowngradeToStarter = async (
   orgId: string,

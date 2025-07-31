@@ -1,12 +1,12 @@
 import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
-import {DataLoaderWorker} from '../../graphql'
-import {RetroReflection} from '../../public/resolverTypes'
+import type {RetroReflection} from '../../../postgres/types'
+import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 import generateAIGroupTitle from './generateAIGroupTitle'
 import updateSmartGroupTitle from './updateReflectionLocation/updateSmartGroupTitle'
 
 type Input = {
-  reflections: RetroReflection[]
+  reflections: Pick<RetroReflection, 'plaintextContent'>[]
   reflectionGroupId: string
   meetingId: string
   teamId: string

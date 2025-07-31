@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {CipherId} from '../../../utils/CipherId'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updatePageParentLink: MutationResolvers['updatePageParentLink'] = async (
   _source,

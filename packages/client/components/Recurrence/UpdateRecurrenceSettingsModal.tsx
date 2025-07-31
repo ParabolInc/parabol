@@ -1,17 +1,17 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {ChangeEvent, useMemo, useState} from 'react'
+import {type ChangeEvent, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
-import {UpdateRecurrenceSettingsModal_meeting$key} from '~/__generated__/UpdateRecurrenceSettingsModal_meeting.graphql'
+import type {UpdateRecurrenceSettingsModal_meeting$key} from '~/__generated__/UpdateRecurrenceSettingsModal_meeting.graphql'
 import UpdateRecurrenceSettingsMutation from '~/mutations/UpdateRecurrenceSettingsMutation'
-import {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutation} from '../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
+import type {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutation} from '../../__generated__/UpdateRecurrenceSettingsMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
 import useMutationProps, {getOnCompletedError} from '../../hooks/useMutationProps'
 import {PALETTE} from '../../styles/paletteV3'
-import {CompletedHandler} from '../../types/relayMutations'
+import type {CompletedHandler} from '../../types/relayMutations'
 import Legitity from '../../validation/Legitity'
 import DialogContainer from '../DialogContainer'
 import PlainButton from '../PlainButton/PlainButton'
@@ -217,7 +217,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   return (
     <UpdateRecurrenceSettingsModalRoot>
       <input
-        className='form-input border-none p-4 font-sans text-base outline-hidden focus:ring-1 focus:ring-slate-600 focus:outline-hidden'
+        className='form-input border-none p-4 font-sans text-base outline-hidden focus:outline-hidden focus:ring-1 focus:ring-slate-600'
         type='text'
         name='title'
         placeholder={placeholder}

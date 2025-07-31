@@ -8,13 +8,13 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../../../client/shared/rruleUtil'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {selectNewMeetings} from '../../../postgres/select'
-import {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
-import {MeetingSeries} from '../../../postgres/types/MeetingSeries'
+import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import type {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
-import publish, {SubOptions} from '../../../utils/publish'
+import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
@@ -22,7 +22,7 @@ import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safe
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {stopMeetingSeries} from '../../public/mutations/updateRecurrenceSettings'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 import {checkSequential} from './helpers/checkSequential'
 
 const startRecurringMeeting = async (
@@ -57,7 +57,11 @@ const startRecurringMeeting = async (
         meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
       })
       if (!meeting) {
-        return {error: {message: 'Unable to create meeting. Perhaps one was just created?'}}
+        return {
+          error: {
+            message: 'Unable to create meeting. Perhaps one was just created?'
+          }
+        }
       }
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
@@ -84,14 +88,21 @@ const startRecurringMeeting = async (
         dataLoader
       )
       if (!meeting) {
-        return {error: {message: 'Unable to create meeting. Perhaps one was just created?'}}
+        return {
+          error: {
+            message: 'Unable to create meeting. Perhaps one was just created?'
+          }
+        }
       }
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
       return meeting
     }
     return standardError(new Error('Unhandled recurring meeting type'), {
-      tags: {meetingSeriesId: meetingSeries.id, meetingType: meetingSeries.meetingType}
+      tags: {
+        meetingSeriesId: meetingSeries.id,
+        meetingType: meetingSeries.meetingType
+      }
     })
   })()
 
@@ -127,7 +138,10 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             return safeEndRetrospective({meeting, now, context})
           } else {
             return standardError(new Error('Unhandled recurring meeting type'), {
-              tags: {meetingId: meeting.id, meetingType: meeting.meetingType}
+              tags: {
+                meetingId: meeting.id,
+                meetingType: meeting.meetingType
+              }
             })
           }
         })

@@ -3,9 +3,9 @@ import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingMemberId from '../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId} from '../../utils/authorization'
-import getRedis, {RedisPipelineResponse} from '../../utils/getRedis'
+import getRedis, {type RedisPipelineResponse} from '../../utils/getRedis'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import EditCommentingPayload from '../types/EditCommentingPayload'
 
 export default {

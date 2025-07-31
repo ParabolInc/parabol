@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {commitLocalUpdate} from 'relay-runtime'
-import {RetroDiscussionThreadHeader_organization$key} from '~/__generated__/RetroDiscussionThreadHeader_organization.graphql'
+import type {RetroDiscussionThreadHeader_organization$key} from '~/__generated__/RetroDiscussionThreadHeader_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import {Header} from './DiscussionThreadList'
@@ -13,29 +13,30 @@ const HeaderWrapper = styled('div')({
   width: '100%'
 })
 
-const ButtonHeader = styled(FlatButton)<{isActive?: boolean; hasZoomFlag: boolean}>(
-  ({isActive, hasZoomFlag}) => ({
-    borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-    margin: '0 0 8px',
-    padding: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignContent: 'center',
-    textTransform: 'none',
-    color: PALETTE.SLATE_600,
-    fontSize: 12,
-    fontWeight: isActive ? 600 : 400,
-    lineHeight: '18px',
-    userSelect: 'none',
-    width: hasZoomFlag ? '50%' : '100%',
-    textDecoration: isActive ? 'underline' : 'none',
-    borderRadius: 0,
-    ':first-child': {
-      borderRight: `1px solid ${PALETTE.SLATE_300}`
-    }
-  })
-)
+const ButtonHeader = styled(FlatButton)<{
+  isActive?: boolean
+  hasZoomFlag: boolean
+}>(({isActive, hasZoomFlag}) => ({
+  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
+  margin: '0 0 8px',
+  padding: '12px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  alignContent: 'center',
+  textTransform: 'none',
+  color: PALETTE.SLATE_600,
+  fontSize: 12,
+  fontWeight: isActive ? 600 : 400,
+  lineHeight: '18px',
+  userSelect: 'none',
+  width: hasZoomFlag ? '50%' : '100%',
+  textDecoration: isActive ? 'underline' : 'none',
+  borderRadius: 0,
+  ':first-child': {
+    borderRight: `1px solid ${PALETTE.SLATE_300}`
+  }
+}))
 
 type Props = {
   showTranscription: boolean

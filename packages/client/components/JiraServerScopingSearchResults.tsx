@@ -1,13 +1,18 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {PreloadedQuery, useFragment, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {
+  type PreloadedQuery,
+  useFragment,
+  usePaginationFragment,
+  usePreloadedQuery
+} from 'react-relay'
 import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
-import {JiraServerScopingSearchResultsPaginationQuery} from '../__generated__/JiraServerScopingSearchResultsPaginationQuery.graphql'
-import {JiraServerScopingSearchResultsQuery} from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
-import {JiraServerScopingSearchResults_meeting$key} from '../__generated__/JiraServerScopingSearchResults_meeting.graphql'
-import {JiraServerScopingSearchResults_query$key} from '../__generated__/JiraServerScopingSearchResults_query.graphql'
+import type {JiraServerScopingSearchResults_meeting$key} from '../__generated__/JiraServerScopingSearchResults_meeting.graphql'
+import type {JiraServerScopingSearchResults_query$key} from '../__generated__/JiraServerScopingSearchResults_query.graphql'
+import type {JiraServerScopingSearchResultsPaginationQuery} from '../__generated__/JiraServerScopingSearchResultsPaginationQuery.graphql'
+import type {JiraServerScopingSearchResultsQuery} from '../__generated__/JiraServerScopingSearchResultsQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
 import PersistJiraServerSearchQueryMutation from '../mutations/PersistJiraServerSearchQueryMutation'

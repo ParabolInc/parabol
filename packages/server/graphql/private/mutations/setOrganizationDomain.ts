@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const setOrganizationDomain: MutationResolvers['setOrganizationDomain'] = async (
   _source,

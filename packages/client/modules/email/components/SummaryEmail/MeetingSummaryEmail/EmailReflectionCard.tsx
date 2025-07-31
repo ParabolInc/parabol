@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
+import type {EmailReflectionCard_reflection$key} from 'parabol-client/__generated__/EmailReflectionCard_reflection.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
-import * as React from 'react'
+import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import {useTipTapContext} from '../../../../../components/TipTapProvider'
 

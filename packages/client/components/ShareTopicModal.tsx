@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {ShareTopicModalQuery} from '../__generated__/ShareTopicModalQuery.graphql'
-import {ShareTopicModal_viewer$key} from '../__generated__/ShareTopicModal_viewer.graphql'
+import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import type {ShareTopicModal_viewer$key} from '../__generated__/ShareTopicModal_viewer.graphql'
+import type {ShareTopicModalQuery} from '../__generated__/ShareTopicModalQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useSlackChannels from '../hooks/useSlackChannels'
@@ -18,8 +18,8 @@ import {SelectGroup} from '../ui/Select/SelectGroup'
 import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {SelectValue} from '../ui/Select/SelectValue'
-import SlackClientManager from '../utils/SlackClientManager'
 import findStageById from '../utils/meetings/findStageById'
+import SlackClientManager from '../utils/SlackClientManager'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
 
@@ -165,13 +165,13 @@ const ShareTopicModal = (props: Props) => {
 
   const comingSoonBadge = (
     <div className='flex items-center justify-center rounded-full bg-slate-300 px-3 py-1'>
-      <div className='text-center text-xs font-semibold text-slate-600'>coming soon</div>
+      <div className='text-center font-semibold text-slate-600 text-xs'>coming soon</div>
     </div>
   )
 
   const connectButton = (
     <div className='flex cursor-pointer items-center justify-center rounded-full border bg-white px-3 py-1'>
-      <div className='text-center text-xs font-semibold text-slate-700'>connect</div>
+      <div className='text-center font-semibold text-slate-700 text-xs'>connect</div>
     </div>
   )
 

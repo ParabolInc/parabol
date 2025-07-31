@@ -1,4 +1,4 @@
-import {MaybeReadonly} from '../../../client/types/generics'
+import type {MaybeReadonly} from '../../../client/types/generics'
 import getPg from '../getPg'
 import {getLatestTaskEstimatesQuery} from './generated/getLatestTaskEstimatesQuery'
 

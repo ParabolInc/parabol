@@ -1,6 +1,6 @@
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
-import {JiraServerIssue as JiraServerRestIssue} from '../../../dataloader/jiraServerLoaders'
-import {JiraServerIssueResolvers} from '../resolverTypes'
+import type {JiraServerIssue as JiraServerRestIssue} from '../../../dataloader/jiraServerLoaders'
+import type {JiraServerIssueResolvers} from '../resolverTypes'
 
 export type JiraServerIssueSource = JiraServerRestIssue & {
   userId: string

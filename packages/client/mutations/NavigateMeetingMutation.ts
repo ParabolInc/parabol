@@ -1,13 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {
+import type {
   NavigateMeetingMutation_meeting$data,
   NewMeetingPhaseTypeEnum
 } from '~/__generated__/NavigateMeetingMutation_meeting.graphql'
-import {NavigateMeetingMutation_team$data} from '~/__generated__/NavigateMeetingMutation_team.graphql'
-import {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
-import {NavigateMeetingMutation as TNavigateMeetingMutation} from '../__generated__/NavigateMeetingMutation.graphql'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {NavigateMeetingMutation_team$data} from '~/__generated__/NavigateMeetingMutation_team.graphql'
+import type {ReflectionGroup_reflectionGroup$data} from '~/__generated__/ReflectionGroup_reflectionGroup.graphql'
+import type {NavigateMeetingMutation as TNavigateMeetingMutation} from '../__generated__/NavigateMeetingMutation.graphql'
+import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {REFLECT, VOTE} from '../utils/constants'
 import isInterruptingChickenPhase from '../utils/isInterruptingChickenPhase'
 import getBaseRecord from '../utils/relay/getBaseRecord'

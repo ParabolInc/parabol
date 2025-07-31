@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {
+import type {
   SlackNotificationEventEnum,
   SetTeamNotificationSettingMutation as TSetTeamNotificationSettingMutation
 } from '../__generated__/SetTeamNotificationSettingMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment SetTeamNotificationSettingMutation_settings on SetTeamNotificationSettingSuccess {

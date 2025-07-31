@@ -7,12 +7,12 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
-import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import GoogleServerManager from '../../../utils/GoogleServerManager'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import standardError from '../../../utils/standardError'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import {generateIdenticon} from '../../private/mutations/helpers/generateIdenticon'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   _source,
@@ -59,7 +59,9 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
       // if it's not, they need to reset the password
       if (!isEmailVerified) {
         if (type === AuthIdentityTypeEnum.LOCAL) {
-          return {error: {message: 'Try logging in with email and password'}}
+          return {
+            error: {message: 'Try logging in with email and password'}
+          }
         }
         throw new Error(`Unknown identity type: ${type}`)
       }
@@ -74,7 +76,11 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
       await updateUser({identities}, viewerId)
     }
     // MUTATIVE
-    context.authToken = new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
+    context.authToken = new AuthToken({
+      sub: viewerId,
+      rol,
+      tms: existingUser.tms
+    })
     return {
       userId: viewerId,
       // create a brand new auth token using the tms in our DB

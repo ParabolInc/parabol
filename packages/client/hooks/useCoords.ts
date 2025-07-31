@@ -1,6 +1,13 @@
-import {Dispatch, MutableRefObject, SetStateAction, useEffect, useLayoutEffect, useRef} from 'react'
-import {BBox} from '../types/animations'
-import {PortalStatus} from './usePortal'
+import {
+  type Dispatch,
+  type MutableRefObject,
+  type SetStateAction,
+  useEffect,
+  useLayoutEffect,
+  useRef
+} from 'react'
+import type {BBox} from '../types/animations'
+import type {PortalStatus} from './usePortal'
 import useRefState from './useRefState'
 import useResizeObserver from './useResizeObserver'
 

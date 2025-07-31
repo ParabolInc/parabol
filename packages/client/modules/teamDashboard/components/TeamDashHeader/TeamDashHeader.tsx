@@ -15,7 +15,7 @@ import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/Agenda
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
-import {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
+import type {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
 
 const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
@@ -196,7 +196,7 @@ const TeamDashHeader = (props: Props) => {
       </TeamHeaderAndAvatars>
       <Tabs
         activeIdx={activeIdx}
-        className='full-w max-w-none border-b border-solid border-slate-300'
+        className='full-w max-w-none border-slate-300 border-b border-solid'
       >
         {tabs.map((tab) => (
           <Tab key={tab.path} label={tab.label} onClick={() => handleTabClick(tab.path)} />

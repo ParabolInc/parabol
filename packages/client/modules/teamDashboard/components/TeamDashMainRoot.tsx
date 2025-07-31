@@ -1,7 +1,7 @@
 import {Suspense, useEffect} from 'react'
 import setPreferredTeamId from '~/utils/relay/setPreferredTeamId'
 import teamDashMainQuery, {
-  TeamDashMainQuery
+  type TeamDashMainQuery
 } from '../../../__generated__/TeamDashMainQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
@@ -18,7 +18,9 @@ const TeamDashMainRoot = () => {
     setPreferredTeamId(atmosphere, teamId)
   }, [atmosphere, teamId])
 
-  const queryRef = useQueryLoaderNow<TeamDashMainQuery>(teamDashMainQuery, {teamId})
+  const queryRef = useQueryLoaderNow<TeamDashMainQuery>(teamDashMainQuery, {
+    teamId
+  })
   return <Suspense fallback={''}>{queryRef && <TeamDashMain queryRef={queryRef} />}</Suspense>
 }
 

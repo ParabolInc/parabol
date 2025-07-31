@@ -1,11 +1,11 @@
-import {NotificationSummaryProps} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
+import type {NotificationSummaryProps} from 'parabol-client/modules/email/components/NotificationSummaryEmail'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {ContactInfo, ExternalLinks} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import plural from 'parabol-client/utils/plural'
-import ServerEnvironment from './ServerEnvironment'
 import emailTemplate from './emailTemplate'
 import renderSSRElement from './renderSSRElement'
+import type ServerEnvironment from './ServerEnvironment'
 
 type TextSummaryProps = Omit<NotificationSummaryProps, 'notificationRefs'>
 const textOnlySummary = (props: TextSummaryProps) => {

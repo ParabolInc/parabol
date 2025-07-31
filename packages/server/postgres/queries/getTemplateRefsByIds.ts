@@ -1,8 +1,8 @@
-import {MaybeReadonly} from 'parabol-client/types/generics'
+import type {MaybeReadonly} from 'parabol-client/types/generics'
 import getPg from '../getPg'
 import {
   getTemplateRefsByIdsQuery,
-  IGetTemplateRefsByIdsQueryResult
+  type IGetTemplateRefsByIdsQueryResult
 } from './generated/getTemplateRefsByIdsQuery'
 
 interface TemplateRefDimension {

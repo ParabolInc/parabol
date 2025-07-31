@@ -1,5 +1,5 @@
 import sleep from '../../client/utils/sleep'
-import {UserPresence} from '../graphql/private/mutations/connectSocket'
+import type {UserPresence} from '../graphql/private/mutations/connectSocket'
 import {disconnectQuery} from '../wsHandler'
 import {callGQL} from './callGQL'
 import {Logger} from './Logger'
@@ -51,7 +51,9 @@ class ServerHealthChecker {
     const socketServers = await this.getLivingServers()
 
     // find all connected users and prune the dead servers from their list of connections
-    const userPresenceStream = this.publisher.scanStream({match: 'presence:*'})
+    const userPresenceStream = this.publisher.scanStream({
+      match: 'presence:*'
+    })
     userPresenceStream.on('data', async (keys) => {
       if (!keys?.length) return
       const reads = keys.map((key: string) => {

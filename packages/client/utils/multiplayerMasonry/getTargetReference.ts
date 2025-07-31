@@ -1,4 +1,4 @@
-import {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCard'
+import type {TargetBBox} from '../../components/ReflectionGroup/DraggableReflectionCard'
 import {ElementWidth} from '../../types/constEnums'
 
 // The following improves accuracy by predicting where the cursor is headed, not where it is

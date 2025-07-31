@@ -1,6 +1,6 @@
 import {Close} from '@mui/icons-material'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
+import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import RaisedButton from '../../../../components/RaisedButton'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
@@ -23,13 +23,13 @@ const VideoConferencing = (props: Props) => {
   return (
     <div>
       {videoType ? (
-        <div className='bg-gray-100 flex items-center rounded-sm px-2 py-3'>
+        <div className='flex items-center rounded-sm bg-gray-100 px-2 py-3'>
           {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
-          <span className='text-gray-500 h-[38px] py-2 pl-2 text-base font-normal'>
+          <span className='h-[38px] py-2 pl-2 font-normal text-base text-gray-500'>
             {selectedOptionLabel}
           </span>
           <Close
-            className='text-gray-500 ml-auto cursor-pointer hover:opacity-50'
+            className='ml-auto cursor-pointer text-gray-500 hover:opacity-50'
             onClick={() => handleChangeVideoType(null)}
           />
         </div>

@@ -1,13 +1,21 @@
 import styled from '@emotion/styled'
-import {ReactElement, ReactNode, ReactPortal, Ref, Suspense, useEffect} from 'react'
+import {
+  type ReactElement,
+  type ReactNode,
+  type ReactPortal,
+  type Ref,
+  Suspense,
+  useEffect
+} from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import ModalError from '../components/ModalError'
 import {DECELERATE} from '../styles/animation'
 import {PALETTE} from '../styles/paletteV3'
 import {Duration, ZIndex} from '../types/constEnums'
-import {LoadingDelayRef} from './useLoadingDelay'
-import usePortal, {PortalStatus} from './usePortal'
+import type {LoadingDelayRef} from './useLoadingDelay'
+import type usePortal from './usePortal'
+import {PortalStatus} from './usePortal'
 
 const ModalBlock = styled('div')({
   alignItems: 'center',

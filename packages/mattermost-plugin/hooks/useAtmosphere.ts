@@ -1,5 +1,5 @@
 import {useRelayEnvironment} from 'react-relay'
-import {Atmosphere} from '../Atmosphere'
+import type {Atmosphere} from '../Atmosphere'
 
 const useAtmosphere = () => {
   return useRelayEnvironment() as Atmosphere

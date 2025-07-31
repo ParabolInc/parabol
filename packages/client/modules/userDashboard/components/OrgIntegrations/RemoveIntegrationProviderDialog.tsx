@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {RemoveIntegrationProviderDialog_integrationProvider$key} from '../../../../__generated__/RemoveIntegrationProviderDialog_integrationProvider.graphql'
+import type {RemoveIntegrationProviderDialog_integrationProvider$key} from '../../../../__generated__/RemoveIntegrationProviderDialog_integrationProvider.graphql'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveIntegrationProviderMutation from '../../../../mutations/RemoveIntegrationProviderMutation'

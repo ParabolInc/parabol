@@ -1,6 +1,6 @@
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuProps} from '../hooks/useMenu'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type {MenuProps} from '../hooks/useMenu'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import Menu from './Menu'

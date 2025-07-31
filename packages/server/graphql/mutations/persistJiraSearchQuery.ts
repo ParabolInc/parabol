@@ -4,8 +4,8 @@ import JiraSearchQuery from '../../database/types/JiraSearchQuery'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
-import JiraSearchQueryInput, {JiraSearchQueryType} from '../types/JiraSearchQueryInput'
+import type {GQLContext} from '../graphql'
+import JiraSearchQueryInput, {type JiraSearchQueryType} from '../types/JiraSearchQueryInput'
 import PersistJiraSearchQueryPayload from '../types/PersistJiraSearchQueryPayload'
 
 const persistJiraSearchQuery = {
@@ -79,7 +79,11 @@ const persistJiraSearchQuery = {
     }
     const data = {teamId, userId: viewerId}
     if (isChange) {
-      await updateJiraSearchQueries({jiraSearchQueries, teamId, userId: viewerId})
+      await updateJiraSearchQueries({
+        jiraSearchQueries,
+        teamId,
+        userId: viewerId
+      })
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,

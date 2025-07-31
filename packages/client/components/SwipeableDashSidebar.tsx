@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
-import {ReactNode, useCallback, useEffect, useState} from 'react'
+import type * as React from 'react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import useEventCallback from '~/hooks/useEventCallback'
 import usePortal from '../hooks/usePortal'
 import {DECELERATE} from '../styles/animation'
@@ -12,14 +12,15 @@ import PlainButton from './PlainButton/PlainButton'
 
 const PEEK_WIDTH = 20
 
-const SidebarAndScrim = styled('div')<{isRightDrawer: boolean; SIDEBAR_WIDTH: number}>(
-  ({isRightDrawer, SIDEBAR_WIDTH}) => ({
-    position: 'absolute',
-    left: isRightDrawer ? undefined : -SIDEBAR_WIDTH,
-    right: isRightDrawer ? PEEK_WIDTH : undefined,
-    top: 0
-  })
-)
+const SidebarAndScrim = styled('div')<{
+  isRightDrawer: boolean
+  SIDEBAR_WIDTH: number
+}>(({isRightDrawer, SIDEBAR_WIDTH}) => ({
+  position: 'absolute',
+  left: isRightDrawer ? undefined : -SIDEBAR_WIDTH,
+  right: isRightDrawer ? PEEK_WIDTH : undefined,
+  top: 0
+}))
 const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WIDTH}) => ({
   background: PALETTE.SLATE_900_32,
   height: '100%',

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
-import {Day} from '../../utils/humanReadableRecurrenceRule'
+import type {Day} from '../../utils/humanReadableRecurrenceRule'
 
 export const CheckboxRoot = styled('div')({
   position: 'relative',

@@ -1,7 +1,7 @@
 import getKysely from '../../postgres/getKysely'
 import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
-import RedisLockQueue from '../../utils/RedisLockQueue'
 import logError from '../../utils/logError'
+import RedisLockQueue from '../../utils/RedisLockQueue'
 import {getStripeManager} from '../../utils/stripe'
 
 /**

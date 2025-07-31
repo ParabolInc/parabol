@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import teamInsightsQuery, {
-  TeamInsightsQuery
+  type TeamInsightsQuery
 } from '../../../../__generated__/TeamInsightsQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import TeamInsights from './TeamInsights'

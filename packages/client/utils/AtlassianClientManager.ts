@@ -1,7 +1,7 @@
-import Atmosphere from '../Atmosphere'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type Atmosphere from '../Atmosphere'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
-import AtlassianManager, {JiraPermissionScope} from './AtlassianManager'
+import AtlassianManager, {type JiraPermissionScope} from './AtlassianManager'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 export const ERROR_POPUP_CLOSED = 'Popup closed before authorization was complete'
@@ -19,7 +19,11 @@ class AtlassianClientManager extends AtlassianManager {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)
     const providerState = btoa(
-      JSON.stringify({hash, origin: window.location.origin, service: 'atlassian'})
+      JSON.stringify({
+        hash,
+        origin: window.location.origin,
+        service: 'atlassian'
+      })
     )
     const redirect = window.__ACTION__.oauth2Redirect
     const uri = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${

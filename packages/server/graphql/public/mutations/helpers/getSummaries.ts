@@ -1,8 +1,8 @@
 import yaml from 'js-yaml'
 import {sql} from 'kysely'
-import {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getKysely from '../../../../postgres/getKysely'
-import {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
+import type {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
 import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import standardError from '../../../../utils/standardError'
 

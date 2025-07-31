@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {FlagOverLimitPayloadResolvers} from '../resolverTypes'
+import type {FlagOverLimitPayloadResolvers} from '../resolverTypes'
 
 export type FlagOverLimitPayloadSource =
   | {

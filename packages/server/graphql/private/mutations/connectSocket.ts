@@ -1,14 +1,14 @@
 import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import updateUser from '../../../postgres/queries/updateUser'
-import {Logger} from '../../../utils/Logger'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
-import {DataLoaderWorker} from '../../graphql'
-import {MutationResolvers} from '../resolverTypes'
+import type {DataLoaderWorker} from '../../graphql'
+import type {MutationResolvers} from '../resolverTypes'
 
 export interface UserPresence {
   lastSeenAtURL: string | null
@@ -63,7 +63,11 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   }
   const socketCount = await redis.rpush(
     `presence:${userId}`,
-    JSON.stringify({lastSeenAtURL: null, socketInstanceId, socketId} as UserPresence)
+    JSON.stringify({
+      lastSeenAtURL: null,
+      socketInstanceId,
+      socketId
+    } as UserPresence)
   )
 
   // If this is the first socket, tell everyone they're online

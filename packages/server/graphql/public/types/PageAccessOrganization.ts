@@ -1,4 +1,4 @@
-import {PageAccessOrganizationResolvers} from '../resolverTypes'
+import type {PageAccessOrganizationResolvers} from '../resolverTypes'
 
 const PageAccessOrganization: PageAccessOrganizationResolvers = {
   organization: async ({orgId}, _args, {dataLoader}) => {

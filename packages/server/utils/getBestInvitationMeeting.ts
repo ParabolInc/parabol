@@ -1,4 +1,4 @@
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 
 const getBestInvitationMeeting = async (
   teamId: string,

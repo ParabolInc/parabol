@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {CreateStripeSubscriptionMutation as TCreateStripeSubscriptionMutation} from '../__generated__/CreateStripeSubscriptionMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {CreateStripeSubscriptionMutation as TCreateStripeSubscriptionMutation} from '../__generated__/CreateStripeSubscriptionMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment CreateStripeSubscriptionMutation_organization on CreateStripeSubscriptionSuccess {

@@ -1,6 +1,6 @@
 import {datadogRum} from '@datadog/browser-rum'
-import {Component, ErrorInfo, ReactNode} from 'react'
-import Atmosphere from '~/Atmosphere'
+import {Component, type ErrorInfo, type ReactNode} from 'react'
+import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import {isOldBrowserError} from '../utils/isOldBrowserError'
@@ -47,11 +47,8 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
       isOldBrowserErr
     })
 
-    const renderingError = new Error(error.message)
-    renderingError.name = 'ReactRenderingError'
-    renderingError.stack = errorInfo.componentStack
-    renderingError.cause = error
-    datadogRum.addError(renderingError, {viewerId, email})
+    const {componentStack} = errorInfo
+    datadogRum.addError(error, {viewerId, email, componentStack})
   }
 
   render() {

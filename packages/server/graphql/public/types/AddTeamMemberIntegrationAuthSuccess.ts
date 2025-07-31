@@ -1,8 +1,9 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {AddTeamMemberIntegrationAuthSuccessResolvers} from '../resolverTypes'
+import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
+import type {AddTeamMemberIntegrationAuthSuccessResolvers} from '../resolverTypes'
 
 export type AddTeamMemberIntegrationAuthSuccessSource = {
-  service: string
+  service: Integrationproviderserviceenum
   teamId: string
   userId: string
 }

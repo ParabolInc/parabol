@@ -1,5 +1,5 @@
 import {Add as AddIcon} from '@mui/icons-material'
-import * as React from 'react'
+import type * as React from 'react'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'

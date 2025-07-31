@@ -6,21 +6,21 @@ import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {positionAfter} from '../../../client/shared/sortOrder'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
-import {DataLoaderInstance} from '../../dataloader/RootDataLoader'
+import type {DataLoaderInstance} from '../../dataloader/RootDataLoader'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {selectTasks} from '../../postgres/select'
-import {AgendaItem, Task} from '../../postgres/types'
-import {CheckInMeeting} from '../../postgres/types/Meeting'
+import type {AgendaItem, Task} from '../../postgres/types'
+import type {CheckInMeeting} from '../../postgres/types/Meeting'
 import archiveTasksForDB from '../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
-import {Logger} from '../../utils/Logger'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {DataLoaderWorker, GQLContext} from '../graphql'
+import type {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
 import EndCheckInPayload from '../types/EndCheckInPayload'
 import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
@@ -156,9 +156,14 @@ export default {
 
     // AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     if (meeting.meetingType !== 'action') {
-      return standardError(new Error('Not a check-in meeting'), {userId: viewerId})
+      return standardError(new Error('Not a check-in meeting'), {
+        userId: viewerId
+      })
     }
     const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
@@ -166,7 +171,10 @@ export default {
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
 
     // RESOLUTION
     const currentStageRes = findStageById(phases, facilitatorStageId)

@@ -1,4 +1,4 @@
 type PageAccessUser {
-  user: User!
-  role: PageRoleEnum!
+	user: User!
+	role: PageRoleEnum!
 }

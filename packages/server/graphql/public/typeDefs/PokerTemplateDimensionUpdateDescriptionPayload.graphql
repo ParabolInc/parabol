@@ -1,4 +1,4 @@
 type PokerTemplateDimensionUpdateDescriptionPayload {
-  error: StandardMutationError
-  dimension: TemplateDimension
+	error: StandardMutationError
+	dimension: TemplateDimension
 }

@@ -1,12 +1,12 @@
 import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
-import {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
-import {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
-import {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
+import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
+import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
+import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useModal from '../../../hooks/useModal'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -210,14 +210,14 @@ export const TemplateDetails = (props: Props) => {
       <div className='max-w-[480px]'>
         <div className='mb-6'>
           {__typename === 'FixedActivity' && (
-            <div className='text-base font-semibold text-slate-600'>Created by Parabol</div>
+            <div className='font-semibold text-base text-slate-600'>Created by Parabol</div>
           )}
           {isOwner && (
             <div className='flex items-center justify-between'>
               <div
                 className={cn(
                   'w-max',
-                  isEditing && 'rounded-full border border-solid border-slate-400 pl-3'
+                  isEditing && 'rounded-full border border-slate-400 border-solid pl-3'
                 )}
               >
                 <UnstyledTemplateSharing
@@ -228,7 +228,7 @@ export const TemplateDetails = (props: Props) => {
               </div>
               <div className='flex gap-2'>
                 {isEditing ? (
-                  <div className='rounded-full border border-solid border-slate-400'>
+                  <div className='rounded-full border border-slate-400 border-solid'>
                     <DetailAction
                       icon={'delete'}
                       tooltip={'Delete template'}
@@ -237,14 +237,14 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div className='rounded-full border border-solid border-slate-400'>
+                    <div className='rounded-full border border-slate-400 border-solid'>
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
                         onClick={() => setIsEditing(true)}
                       />
                     </div>
-                    <div className='rounded-full border border-solid border-slate-400'>
+                    <div className='rounded-full border border-slate-400 border-solid'>
                       <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
                     </div>
                   </>
@@ -254,14 +254,14 @@ export const TemplateDetails = (props: Props) => {
           )}
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
-              <div className='py-2 text-sm font-semibold text-slate-600'>{description}</div>
+              <div className='py-2 font-semibold text-slate-600 text-sm'>{description}</div>
               <div className='flex items-center gap-2'>
                 <ActivityCardFavorite
                   templateId={activityId}
                   viewerRef={viewer}
-                  className='rounded-full border border-solid border-slate-400 hover:bg-slate-200'
+                  className='rounded-full border border-slate-400 border-solid hover:bg-slate-200'
                 />
-                <div className='rounded-full border border-solid border-slate-400'>
+                <div className='rounded-full border border-slate-400 border-solid'>
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}
                     className='flex cursor-pointer gap-1 px-12'
@@ -279,7 +279,7 @@ export const TemplateDetails = (props: Props) => {
       </div>
       <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
 
-      <div className='pt-4 sm:-ml-14'>
+      <div className='sm:-ml-14 pt-4'>
         {prompts && (
           <>
             <TemplatePromptList
@@ -311,7 +311,7 @@ export const TemplateDetails = (props: Props) => {
         <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-slate-200'>
           <button
             onClick={() => setIsEditing(false)}
-            className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans text-lg font-semibold text-white hover:bg-sky-600'
+            className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans font-semibold text-lg text-white hover:bg-sky-600'
           >
             Done Editing
           </button>

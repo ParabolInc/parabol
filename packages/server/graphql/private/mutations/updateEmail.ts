@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
-import {JsonObject} from '../../../postgres/types/pg'
-import {MutationResolvers} from '../resolverTypes'
+import type {JsonObject} from '../../../postgres/types/pg'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateEmail: MutationResolvers['updateEmail'] = async (_source, {oldEmail, newEmail}) => {
   const pg = getKysely()

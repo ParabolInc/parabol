@@ -1,6 +1,6 @@
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteCommentMutation from '~/mutations/DeleteCommentMutation'
-import {MenuProps} from '../hooks/useMenu'
+import type {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemWithIcon from './MenuItemWithIcon'

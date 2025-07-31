@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {StartRetrospectiveMutation as TStartRetrospectiveMutation} from '../__generated__/StartRetrospectiveMutation.graphql'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {StartRetrospectiveMutation as TStartRetrospectiveMutation} from '../__generated__/StartRetrospectiveMutation.graphql'
+import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartRetrospectiveMutation_team on StartRetrospectiveSuccess {

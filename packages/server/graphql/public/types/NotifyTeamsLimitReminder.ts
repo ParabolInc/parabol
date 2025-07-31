@@ -1,4 +1,4 @@
-import {NotifyTeamsLimitReminderResolvers} from '../resolverTypes'
+import type {NotifyTeamsLimitReminderResolvers} from '../resolverTypes'
 
 const NotifyTeamsLimitReminder: NotifyTeamsLimitReminderResolvers = {
   __isTypeOf: ({type}) => type === 'TEAMS_LIMIT_REMINDER',

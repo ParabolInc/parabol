@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ConnectionHandler, useMutation, UseMutationConfig} from 'react-relay'
-import {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__generated__/useUpdatePageAccessMutation.graphql'
+import {ConnectionHandler, type UseMutationConfig, useMutation} from 'react-relay'
+import type {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__generated__/useUpdatePageAccessMutation.graphql'
 import findNodeInConn from '../utils/relay/findNodeInConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 

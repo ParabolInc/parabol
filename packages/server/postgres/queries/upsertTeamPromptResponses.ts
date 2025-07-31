@@ -1,7 +1,7 @@
-import {DeepNonNullable} from '../../../client/types/generics'
+import type {DeepNonNullable} from '../../../client/types/generics'
 import getPg from '../getPg'
 import {
-  IUpsertTeamPromptResponsesQueryParams,
+  type IUpsertTeamPromptResponsesQueryParams,
   upsertTeamPromptResponsesQuery
 } from './generated/upsertTeamPromptResponsesQuery'
 

@@ -8,7 +8,7 @@ import EmailFooter from '../EmailFooter/EmailFooter'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import Header from '../Header/Header'
 import Layout from '../Layout/Layout'
-import {LimitsEmailProps} from './LockedEmail'
+import type {LimitsEmailProps} from './LockedEmail'
 
 const innerMaxWidth = 480
 

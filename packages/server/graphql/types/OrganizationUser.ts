@@ -1,10 +1,10 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import connectionDefinitions from '../connectionDefinitions'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveOrganization} from '../resolvers'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
-import OrgUserRole from './OrgUserRole'
 import Organization from './Organization'
+import OrgUserRole from './OrgUserRole'
 import User from './User'
 
 const OrganizationUser = new GraphQLObjectType<any, GQLContext>({

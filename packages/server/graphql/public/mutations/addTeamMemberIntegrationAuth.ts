@@ -1,20 +1,20 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
-import {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import JiraServerOAuth1Manager, {
-  OAuth1Auth
+  type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import LinearManager from '../../../integrations/linear/LinearManager'
+import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
-import {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 interface OAuth2Auth {
   accessToken: string
@@ -48,7 +48,9 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   //AUTH
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
+    return standardError(new Error('Attempted teamId spoof'), {
+      userId: viewerId
+    })
   }
 
   const providerDbId = IntegrationProviderId.split(providerId)
@@ -78,14 +80,16 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     }
   }
 
-  let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined = undefined
+  let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined
   if (authStrategy === 'oauth2') {
     if (!oauthCodeOrPat || !redirectUri)
       return {error: {message: 'Missing OAuth2 code or redirect URI'}}
     if (service === 'azureDevOps') {
       if (!oauthVerifier) {
         return {
-          error: {message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'}
+          error: {
+            message: 'Missing OAuth2 Verifier required for Azure DevOps authentication'
+          }
         }
       }
       const manager = new AzureDevOpsServerManager(

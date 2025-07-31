@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
-import {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
+import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
 import {cn} from '../../../ui/cn'
@@ -11,7 +11,7 @@ import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
-import {CATEGORY_THEMES, CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
+import {CATEGORY_THEMES, type CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
 
 graphql`
@@ -70,7 +70,7 @@ const ActivityDetails = (props: Props) => {
   if (!activity) {
     return <Redirect to='/activity-library' />
   }
-  /* eslint-disable react-hooks/rules-of-hooks */
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Viewed Template', {
       meetingType: activity.type,
@@ -98,7 +98,7 @@ const ActivityDetails = (props: Props) => {
                 <IconLabel icon={'arrow_back'} iconLarge />
               </Link>
             </div>
-            <div className='w-max text-xl font-semibold'>Start Activity</div>
+            <div className='w-max font-semibold text-xl'>Start Activity</div>
           </div>
           <div className='mx-auto'>
             <div className='flex flex-col justify-start pr-4 pl-4 md:pr-14 xl:flex-row xl:justify-center xl:pl-14'>

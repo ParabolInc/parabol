@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '../__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {ReflectTemplatePromptUpdateDescriptionMutation as TReflectTemplatePromptUpdateDescriptionMutation} from '../__generated__/ReflectTemplatePromptUpdateDescriptionMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment ReflectTemplatePromptUpdateDescriptionMutation_team on ReflectTemplatePromptUpdateDescriptionPayload {

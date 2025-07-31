@@ -1,4 +1,4 @@
-import {type NodeViewProps} from '@tiptap/react'
+import type {NodeViewProps} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import type {GraphQLError} from 'graphql'
 import {marked} from 'marked'
@@ -10,8 +10,8 @@ import {SpecificMeetingPickerRoot} from '../../../components/SpecificMeetingPick
 import {TeamPickerComboboxRoot} from '../../../components/TeamPickerComboboxRoot'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import {quickHash} from '../../../shared/utils/quickHash'
 import {Button} from '../../../ui/Button/Button'
-import {quickHash} from '../../../utils/quickHash'
 import type {InsightsBlockAttrs} from './InsightsBlock'
 import {InsightsBlockPromptRoot} from './InsightsBlockPromptRoot'
 
@@ -90,7 +90,9 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
             }
             return
           }
-          const freshInsightsNode = editor.$node('insightsBlock', {id: blockId})
+          const freshInsightsNode = editor.$node('insightsBlock', {
+            id: blockId
+          })
           if (!freshInsightsNode) return
           if (first) {
             first = false
@@ -127,7 +129,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   return (
     <div contentEditable={false}>
       <input
-        className='bg-inherit p-4 text-lg ring-0 outline-0'
+        className='bg-inherit p-4 text-lg outline-0 ring-0'
         onChange={(e) => {
           updateAttributes({title: e.target.value})
         }}
@@ -148,7 +150,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         <SpecificMeetingPickerRoot updateAttributes={updateAttributes} attrs={attrs} />
       )}
       <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
-      <div className='flex justify-end p-4 select-none'>
+      <div className='flex select-none justify-end p-4'>
         <Button
           variant='secondary'
           shape='pill'

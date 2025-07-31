@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveUser} from '../resolvers'
 import StandardMutationError from './StandardMutationError'
 import User from './User'

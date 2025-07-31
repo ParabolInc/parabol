@@ -1,6 +1,6 @@
-import * as React from 'react'
-import {Reducer, useCallback, useMemo, useReducer} from 'react'
-import Legitity from '../validation/Legitity'
+import type * as React from 'react'
+import {type Reducer, useCallback, useMemo, useReducer} from 'react'
+import type Legitity from '../validation/Legitity'
 import useEventCallback from './useEventCallback'
 
 interface FieldInputDict {
@@ -81,20 +81,23 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
     reducer,
     useMemo(
       () =>
-        Object.keys(fieldInputDict).reduce((obj, name: FieldStateKey<T>) => {
-          obj[name] = {
-            value: fieldInputDict[name]!.getDefault(),
-            error: undefined,
-            dirty: false,
-            resetValue: (value = '') => {
-              dispatch({type: 'setValue', name, value})
-            },
-            setError: (error: string) => {
-              dispatch({type: 'setError', name, error})
+        Object.keys(fieldInputDict).reduce(
+          (obj, name: FieldStateKey<T>) => {
+            obj[name] = {
+              value: fieldInputDict[name]!.getDefault(),
+              error: undefined,
+              dirty: false,
+              resetValue: (value = '') => {
+                dispatch({type: 'setValue', name, value})
+              },
+              setError: (error: string) => {
+                dispatch({type: 'setError', name, error})
+              }
             }
-          }
-          return obj
-        }, {} as FieldState<T>),
+            return obj
+          },
+          {} as FieldState<T>
+        ),
       []
     )
   )
@@ -149,7 +152,13 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
     validate(name, normalizedValue)
   })
 
-  return {setDirtyField: setDirty, setValue, onChange, validateField, fields: state}
+  return {
+    setDirtyField: setDirty,
+    setValue,
+    onChange,
+    validateField,
+    fields: state
+  }
 }
 
 export default useForm

@@ -1,4 +1,4 @@
-import {RateLimiter, RateLimitStats} from './RateLimiter'
+import type {RateLimiter, RateLimitStats} from './RateLimiter'
 
 type StubRateLimiterMode = 'always-allow'
 

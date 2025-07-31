@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
-import {ChangeEvent, FormEvent, useState} from 'react'
+import type * as React from 'react'
+import {type ChangeEvent, type FormEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
+import type {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import Checkbox from '../../../../components/Checkbox'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
@@ -24,9 +24,9 @@ import {Threshold} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import linkify from '../../../../utils/linkify'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
+import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import Legitity from '../../../../validation/Legitity'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
@@ -337,9 +337,9 @@ const NewTeamForm = (props: Props) => {
             <div className='flex flex-1 items-start'>
               <div>
                 <div className='flex items-center'>
-                  <div className='text-sm font-medium text-slate-700'>Team Privacy</div>
+                  <div className='font-medium text-slate-700 text-sm'>Team Privacy</div>
                 </div>
-                <div className='mt-1 w-full text-xs text-slate-600'>
+                <div className='mt-1 w-full text-slate-600 text-xs'>
                   {isPublic ? (
                     <>
                       <div>
@@ -399,7 +399,7 @@ const NewTeamForm = (props: Props) => {
           {showInviteAll && (
             <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
               <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='text-gray-700 ml-2 cursor-pointer'>
+              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
                 {`Invite team members from ${selectedOrg.name}`}
               </label>
             </div>

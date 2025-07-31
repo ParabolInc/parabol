@@ -2,7 +2,7 @@ import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitOb
 import getKysely from '../../../postgres/getKysely'
 import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {dataLoader}) => {
   const pg = getKysely()
@@ -25,7 +25,12 @@ const startTrial: MutationResolvers['startTrial'] = async (_source, {orgId}, {da
   await Promise.all([
     pg
       .updateTable('Organization')
-      .set({trialStartDate: now, tierLimitExceededAt: null, scheduledLockAt: null, lockedAt: null})
+      .set({
+        trialStartDate: now,
+        tierLimitExceededAt: null,
+        scheduledLockAt: null,
+        lockedAt: null
+      })
       .where('id', '=', orgId)
       .execute(),
     removeTeamsLimitObjects(orgId, dataLoader)

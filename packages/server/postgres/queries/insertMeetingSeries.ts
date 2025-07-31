@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IInsertMeetingSeriesQueryParams,
+  type IInsertMeetingSeriesQueryParams,
   insertMeetingSeriesQuery
 } from './generated/insertMeetingSeriesQuery'
 

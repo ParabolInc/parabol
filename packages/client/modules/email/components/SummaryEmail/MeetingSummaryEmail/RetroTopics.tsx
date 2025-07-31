@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {RetroTopics_meeting$key} from 'parabol-client/__generated__/RetroTopics_meeting.graphql'
+import type {RetroTopics_meeting$key} from 'parabol-client/__generated__/RetroTopics_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {RETRO_TOPIC_LABEL} from 'parabol-client/utils/constants'
@@ -115,7 +115,7 @@ const RetroTopics = (props: Props) => {
           })
         : reflectionGroups.map((reflectionGroup) => {
             const {reflections, title} = reflectionGroup
-            // eslint-disable-next-line react-hooks/rules-of-hooks
+            // biome-ignore lint/correctness/useHookAtTopLevel: legacy
             const grid = useEmailItemGrid(reflections, 3)
             return (
               <Fragment key={reflectionGroup.id}>

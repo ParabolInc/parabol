@@ -2,7 +2,7 @@ import {InvoiceItemType, Threshold} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import getKysely from '../../../postgres/getKysely'
 import {Logger} from '../../../utils/Logger'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
   _source,
@@ -37,7 +37,7 @@ const autopauseUsers: MutationResolvers['autopauseUsers'] = async (
       results.map(async ({userId, orgIds}) => {
         try {
           return await adjustUserCount(userId, orgIds, InvoiceItemType.AUTO_PAUSE_USER, dataLoader)
-        } catch (e) {
+        } catch {
           Logger.warn(`Error adjusting user count`)
         }
         return undefined

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UpdatePokerTemplateDimensionScaleMutation as TUpdatePokerTemplateDimensionScaleMutation} from '../__generated__/UpdatePokerTemplateDimensionScaleMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {UpdatePokerTemplateDimensionScaleMutation as TUpdatePokerTemplateDimensionScaleMutation} from '../__generated__/UpdatePokerTemplateDimensionScaleMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdatePokerTemplateDimensionScaleMutation_dimension on UpdatePokerTemplateDimensionScalePayload {

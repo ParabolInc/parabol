@@ -4,8 +4,8 @@ import {
   findChildrenInRange,
   getChangedRanges
 } from '@tiptap/core'
-import {Fragment, Node, Slice} from '@tiptap/pm/model'
-import {Plugin, PluginKey, Transaction} from '@tiptap/pm/state'
+import {Fragment, type Node, Slice} from '@tiptap/pm/model'
+import {Plugin, PluginKey, type Transaction} from '@tiptap/pm/state'
 
 function getUniqueItems<T>(items: T[], serialize: (item: T) => string = JSON.stringify): T[] {
   const seen: Record<string, boolean> = {}
@@ -44,7 +44,9 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
               element.getAttribute(`data-${this.options.attributeName}`),
             renderHTML: (attributes: Record<string, any>) =>
               attributes[this.options.attributeName]
-                ? {[`data-${this.options.attributeName}`]: attributes[this.options.attributeName]}
+                ? {
+                    [`data-${this.options.attributeName}`]: attributes[this.options.attributeName]
+                  }
                 : {}
           }
         }
@@ -83,7 +85,10 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
             nodes.forEach(({node, pos}, index) => {
               const existingID = tr.doc.nodeAt(pos)?.attrs[attributeName]
               if (existingID === null) {
-                tr.setNodeMarkup(pos, undefined, {...node.attrs, [attributeName]: generateID()})
+                tr.setNodeMarkup(pos, undefined, {
+                  ...node.attrs,
+                  [attributeName]: generateID()
+                })
               }
 
               const nextNode = nodes[index + 1]
@@ -95,7 +100,10 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
                 existingIDs[index + 1] = existingID
                 if (!nextNode.node.attrs[attributeName]) {
                   const newID = generateID()
-                  tr.setNodeMarkup(pos, undefined, {...node.attrs, [attributeName]: newID})
+                  tr.setNodeMarkup(pos, undefined, {
+                    ...node.attrs,
+                    [attributeName]: newID
+                  })
                   existingIDs[index] = newID
                 }
               }
@@ -103,7 +111,10 @@ export const UniqueID = Extension.create<UniqueIDOptions>({
               const uniqueIDs = getUniqueItems(existingIDs)
               const {deleted} = mapping.invert().mapResult(pos)
               if (deleted && uniqueIDs.includes(existingID)) {
-                tr.setNodeMarkup(pos, undefined, {...node.attrs, [attributeName]: generateID()})
+                tr.setNodeMarkup(pos, undefined, {
+                  ...node.attrs,
+                  [attributeName]: generateID()
+                })
               }
             })
           })

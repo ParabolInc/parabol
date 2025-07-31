@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLID, GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import makeAppURL from '~/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
@@ -9,10 +9,10 @@ import {getUserId, isTeamMember} from '../../utils/authorization'
 import logError from '../../utils/logError'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import CreateTaskIntegrationPayload from '../types/CreateTaskIntegrationPayload'
 import IntegrationProviderServiceEnum, {
-  IntegrationProviderServiceEnumType
+  type IntegrationProviderServiceEnumType
 } from '../types/IntegrationProviderServiceEnum'
 
 type CreateTaskIntegrationMutationVariables = {
@@ -102,7 +102,9 @@ export default {
     const teamMember = teamMembers.find(({userId}) => userId === viewerId)
 
     if (!taskIntegrationManager) {
-      return standardError(new Error('No auth exists for a given task!'), {userId: viewerId})
+      return standardError(new Error('No auth exists for a given task!'), {
+        userId: viewerId
+      })
     }
 
     if (!accessUserId) {

@@ -4,7 +4,7 @@ import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {StageTimerModalTimeLimit_stage$key} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
+import type {StageTimerModalTimeLimit_stage$key} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -90,7 +90,11 @@ const StageTimerModalTimeLimit = (props: Props) => {
     submitMutation()
     SetStageTimerMutation(
       atmosphere,
-      {meetingId, timeRemaining, scheduledEndTime: new Date(Date.now() + timeRemaining)},
+      {
+        meetingId,
+        timeRemaining,
+        scheduledEndTime: new Date(Date.now() + timeRemaining)
+      },
       {onError, onCompleted}
     )
     closePortal()

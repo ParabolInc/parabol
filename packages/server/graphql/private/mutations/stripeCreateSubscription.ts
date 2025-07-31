@@ -1,8 +1,8 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const stripeCreateSubscription: MutationResolvers['stripeCreateSubscription'] = async (
   _source,

@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const getAllFeatureFlags: QueryResolvers['getAllFeatureFlags'] = async () => {
   const pg = getKysely()

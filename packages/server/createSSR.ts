@@ -1,6 +1,6 @@
+import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import fs from 'fs'
 import path from 'path'
-import {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {brotliCompressSync} from 'zlib'
 import acceptsBrotli from './acceptsBrotli'
 

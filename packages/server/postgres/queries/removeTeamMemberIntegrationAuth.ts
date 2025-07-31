@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IntegrationProviderServiceEnum,
+  type IntegrationProviderServiceEnum,
   removeTeamMemberIntegrationAuthQuery
 } from './generated/removeTeamMemberIntegrationAuthQuery'
 

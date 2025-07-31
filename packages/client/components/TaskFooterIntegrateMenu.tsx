@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
-import {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
-import {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
+import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import type {IntegrationProviderServiceEnum} from '../__generated__/CreateTaskIntegrationMutation.graphql'
+import type {TaskFooterIntegrateMenu_task$key} from '../__generated__/TaskFooterIntegrateMenu_task.graphql'
+import type {TaskFooterIntegrateMenuQuery} from '../__generated__/TaskFooterIntegrateMenuQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {makePlaceholder, useIsIntegrated} from '../hooks/useIsIntegrated'
-import {MenuProps} from '../hooks/useMenu'
-import {MenuMutationProps} from '../hooks/useMutationProps'
+import type {MenuProps} from '../hooks/useMenu'
+import type {MenuMutationProps} from '../hooks/useMutationProps'
 import CreateTaskIntegrationMutation from '../mutations/CreateTaskIntegrationMutation'
 import TaskFooterIntegrateMenuList from './TaskFooterIntegrateMenuList'
 import TaskFooterIntegrateMenuSignup from './TaskFooterIntegrateMenuSignup'
@@ -86,7 +86,10 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       integrationProviderService: integrationProviderService
     }
     submitMutation()
-    CreateTaskIntegrationMutation(atmosphere, variables, {onError, onCompleted})
+    CreateTaskIntegrationMutation(atmosphere, variables, {
+      onError,
+      onCompleted
+    })
   }
 
   if (isViewerIntegrated) {

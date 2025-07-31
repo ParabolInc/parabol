@@ -1,5 +1,5 @@
 import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 
 const updateQualAIMeetingsCount = async (
   meetingId: string,

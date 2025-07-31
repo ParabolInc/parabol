@@ -1,5 +1,5 @@
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
-import {OrganizationUserResolvers} from '../resolverTypes'
+import type {OrganizationUserResolvers} from '../resolverTypes'
 
 const OrganizationUser: OrganizationUserResolvers = {
   tier: async ({orgId}, _args, {dataLoader}) => {

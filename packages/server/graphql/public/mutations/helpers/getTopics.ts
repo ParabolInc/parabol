@@ -2,11 +2,11 @@ import yaml from 'js-yaml'
 import {sql} from 'kysely'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getKysely from '../../../../postgres/getKysely'
-import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import logError from '../../../../utils/logError'
+import OpenAIServerManager from '../../../../utils/OpenAIServerManager'
 import standardError from '../../../../utils/standardError'
-import {DataLoaderWorker} from '../../../graphql'
-import {RetrospectiveMeeting} from '../../resolverTypes'
+import type {DataLoaderWorker} from '../../../graphql'
+import type {RetrospectiveMeeting} from '../../resolverTypes'
 
 export const getComments = async (reflectionGroupId: string, dataLoader: DataLoaderInstance) => {
   const pg = getKysely()
@@ -17,7 +17,7 @@ export const getComments = async (reflectionGroupId: string, dataLoader: DataLoa
     .where('discussionTopicId', '=', reflectionGroupId)
     .limit(1)
     .executeTakeFirst()
-  if (!discussion) return null
+  if (!discussion) return []
   const {id: discussionId} = discussion
   const rawComments = await dataLoader.get('commentsByDiscussionId').load(discussionId)
   const humanComments = rawComments.filter((c) => !IGNORE_COMMENT_USER_IDS.includes(c.createdBy!))

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
 
 graphql`

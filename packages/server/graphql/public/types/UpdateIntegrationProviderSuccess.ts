@@ -1,4 +1,4 @@
-import {UpdateIntegrationProviderSuccessResolvers} from '../resolverTypes'
+import type {UpdateIntegrationProviderSuccessResolvers} from '../resolverTypes'
 
 export type UpdateIntegrationProviderSuccessSource = {
   providerId: number

@@ -1,11 +1,11 @@
-import AuthToken from '../../../database/types/AuthToken'
+import type AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
-import {TeamMember} from '../../../postgres/types'
+import type {TeamMember} from '../../../postgres/types'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import errorFilter from '../../errorFilter'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import {CompanyResolvers} from '../resolverTypes'
+import type {CompanyResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
 
 export type CompanySource = {id: string}

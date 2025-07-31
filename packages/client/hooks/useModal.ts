@@ -1,7 +1,7 @@
 import {useRef} from 'react'
 import useLoadingDelay from './useLoadingDelay'
 import useModalPortal from './useModalPortal'
-import usePortal, {UsePortalOptions} from './usePortal'
+import usePortal, {type UsePortalOptions} from './usePortal'
 
 interface Options extends UsePortalOptions {
   background?: string
@@ -32,7 +32,14 @@ const useModal = (options: Options = {}) => {
     noClose ? undefined : closePortal,
     background
   )
-  return {togglePortal, modalPortal, closePortal, loadingDelay, openPortal, portalStatus}
+  return {
+    togglePortal,
+    modalPortal,
+    closePortal,
+    loadingDelay,
+    openPortal,
+    portalStatus
+  }
 }
 
 export default useModal

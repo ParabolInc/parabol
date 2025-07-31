@@ -7,7 +7,7 @@ import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import SetPhaseFocusPayload from '../types/SetPhaseFocusPayload'
 
 const setPhaseFocus = {
@@ -33,18 +33,30 @@ const setPhaseFocus = {
     // AUTH
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {endedAt, facilitatorUserId, phases} = meeting
-    if (endedAt) return standardError(new Error('Meeting already completed'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already completed'), {
+        userId: viewerId
+      })
     if (isPhaseComplete(GROUP, phases)) {
-      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+      return standardError(new Error('Meeting phase already completed'), {
+        userId: viewerId
+      })
     }
     if (facilitatorUserId !== viewerId) {
-      return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
+      return standardError(new Error('Not meeting facilitator'), {
+        userId: viewerId
+      })
     }
     const reflectPhase = getPhase(meeting.phases, 'reflect')
     if (!reflectPhase) {
-      return standardError(new Error('Meeting not found'), {userId: viewerId})
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

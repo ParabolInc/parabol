@@ -1,5 +1,5 @@
-import fs from 'fs'
-import {HttpResponse} from 'uWebSockets.js'
+import type {HttpResponse} from 'uWebSockets.js'
+import type fs from 'fs'
 
 const pipeStreamOverResponse = (
   res: HttpResponse,

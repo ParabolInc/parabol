@@ -1,11 +1,11 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
+import type {AutogroupReflectionGroupType, RetroReflection} from '../../../postgres/types'
+import {analytics} from '../../../utils/analytics/analytics'
 import {Logger} from '../../../utils/Logger'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import {analytics} from '../../../utils/analytics/analytics'
 import publish from '../../../utils/publish'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 
 const generateGroups = async (
@@ -54,7 +54,9 @@ const generateGroups = async (
 
   await getKysely()
     .updateTable('NewMeeting')
-    .set({autogroupReflectionGroups: JSON.stringify(autogroupReflectionGroups)})
+    .set({
+      autogroupReflectionGroups: JSON.stringify(autogroupReflectionGroups)
+    })
     .where('id', '=', meetingId)
     .execute()
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)

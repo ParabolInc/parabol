@@ -1,5 +1,5 @@
 import standardError from '../../../utils/standardError'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const getSAMLForDomain: QueryResolvers['getSAMLForDomain'] = async (
   _parent,

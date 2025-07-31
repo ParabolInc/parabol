@@ -1,4 +1,4 @@
-import {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
+import type {ReflectionDragState} from '../components/ReflectionGroup/DraggableReflectionCard'
 import measureDroppableReflections from './measureDroppableReflections'
 
 const SCROLL_MULTIPLIER = 25

@@ -5,7 +5,7 @@ import mime from 'mime-types'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const fetchImage = async (url: string) => {
   try {
@@ -40,7 +40,9 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (_, {url}, {au
   const {contentType, buffer} = asset
   const ext = mime.extension(contentType)
   if (!ext) {
-    return {error: {message: `Unable to determine extension for ${contentType}`}}
+    return {
+      error: {message: `Unable to determine extension for ${contentType}`}
+    }
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(buffer).digest('base64'))
   const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)

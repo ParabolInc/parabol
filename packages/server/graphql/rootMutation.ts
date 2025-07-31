@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from './graphql'
+import type {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addOrg from './mutations/addOrg'
@@ -30,7 +30,6 @@ import editTask from './mutations/editTask'
 import emailPasswordReset from './mutations/emailPasswordReset'
 import endCheckIn from './mutations/endCheckIn'
 import endDraggingReflection from './mutations/endDraggingReflection'
-import endRetrospective from './mutations/endRetrospective'
 import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import invalidateSessions from './mutations/invalidateSessions'
@@ -55,8 +54,8 @@ import removeIntegrationProvider from './mutations/removeIntegrationProvider'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
-import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeReflection from './mutations/removeReflection'
+import removeReflectTemplate from './mutations/removeReflectTemplate'
 import removeSlackAuth from './mutations/removeSlackAuth'
 import removeTeamMember from './mutations/removeTeamMember'
 import renameMeeting from './mutations/renameMeeting'
@@ -128,7 +127,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       editTask,
       endCheckIn,
       endDraggingReflection,
-      endRetrospective,
       flagReadyToAdvance,
       invalidateSessions,
       inviteToTeam,

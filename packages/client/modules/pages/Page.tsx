@@ -1,6 +1,6 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {PageQuery} from '../../__generated__/PageQuery.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
@@ -43,7 +43,7 @@ export const Page = (props: Props) => {
         <div className='px-2'>
           <Popover.Root>
             <Popover.Trigger asChild>
-              <button className='text-md cursor-pointer bg-white pt-1 font-semibold'>Share</button>
+              <button className='cursor-pointer bg-white pt-1 font-semibold text-md'>Share</button>
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>

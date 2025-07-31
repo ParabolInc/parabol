@@ -1,7 +1,7 @@
-import {KickedOutNotification} from '../../../postgres/types/Notification'
+import type {KickedOutNotification} from '../../../postgres/types/Notification'
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
-import {RemoveOrgUsersSuccessResolvers} from '../resolverTypes'
+import type {RemoveOrgUsersSuccessResolvers} from '../resolverTypes'
 
 export type RemoveOrgUsersSuccessSource = {
   removedUserIds: string[]

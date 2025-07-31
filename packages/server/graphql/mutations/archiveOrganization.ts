@@ -2,16 +2,16 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../billing/helpers/removeTeamsLimitObjects'
-import Team from '../../database/types/Team'
-import User from '../../database/types/User'
+import type Team from '../../database/types/Team'
+import type User from '../../database/types/User'
 import getKysely from '../../postgres/getKysely'
-import IUser from '../../postgres/types/IUser'
+import type IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import ArchiveOrganizationPayload from '../types/ArchiveOrganizationPayload'
 
@@ -35,7 +35,9 @@ export default {
     const viewerId = getUserId(authToken)
     if (!isSuperUser(authToken)) {
       if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-        return standardError(new Error('Not organization leader'), {userId: viewerId})
+        return standardError(new Error('Not organization leader'), {
+          userId: viewerId
+        })
       }
     }
 
@@ -99,7 +101,9 @@ export default {
     users.filter(isValid).forEach((user?: IUser) => {
       if (!user) return
       const {id, tms} = user
-      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {tms})
+      publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
+        tms
+      })
     })
 
     return data

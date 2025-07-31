@@ -1,4 +1,4 @@
-import {UpdateMeetingTemplateSuccessResolvers} from '../resolverTypes'
+import type {UpdateMeetingTemplateSuccessResolvers} from '../resolverTypes'
 
 export type UpdateMeetingTemplateSuccessSource = {
   meetingId: string

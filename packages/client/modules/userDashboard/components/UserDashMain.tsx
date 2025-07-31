@@ -1,5 +1,5 @@
 import {lazy, Suspense} from 'react'
-import {Route, RouteComponentProps, Switch} from 'react-router'
+import {Route, type RouteComponentProps, Switch} from 'react-router'
 import DashContent from '~/components/Dashboard/DashContent'
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent'
 import StartMeetingFAB from '~/components/StartMeetingFAB'

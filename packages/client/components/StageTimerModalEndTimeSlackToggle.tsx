@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
-import {
+import type {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
+import type {
   SlackNotificationEventEnum,
   StageTimerModalEndTimeSlackToggle_facilitator$key
 } from '../__generated__/StageTimerModalEndTimeSlackToggle_facilitator.graphql'
@@ -132,7 +132,10 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
         slackNotificationEvents: ['MEETING_STAGE_TIME_LIMIT_START'],
         teamId
       } as TSetSlackNotificationMutation['variables']
-      SetSlackNotificationMutation(atmosphere, variables, {onError, onCompleted})
+      SetSlackNotificationMutation(atmosphere, variables, {
+        onError,
+        onCompleted
+      })
     } else {
       SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
     }

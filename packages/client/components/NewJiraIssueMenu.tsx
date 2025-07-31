@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {MenuProps} from '~/hooks/useMenu'
+import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {
+import type {
   NewJiraIssueMenu_JiraRemoteProjects$data,
   NewJiraIssueMenu_JiraRemoteProjects$key
 } from '../__generated__/NewJiraIssueMenu_JiraRemoteProjects.graphql'

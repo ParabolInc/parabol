@@ -1,13 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type {MeetingSummaryEmail_meeting$key} from 'parabol-client/__generated__/MeetingSummaryEmail_meeting.graphql'
+import type * as React from 'react'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {CorsOptions} from '../../../../../types/cors'
+import type {CorsOptions} from '../../../../../types/cors'
 // import './reactEmailDeclarations'
 import SummarySheet from './SummarySheet'
 import ViewInBrowserHeader from './ViewInBrowserHeader'
-
-import {MeetingSummaryEmail_meeting$key} from 'parabol-client/__generated__/MeetingSummaryEmail_meeting.graphql'
 
 const parentStyles = {
   WebkitTextSizeAdjust: '100%',

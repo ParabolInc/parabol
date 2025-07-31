@@ -1,4 +1,4 @@
-import {mergeAttributes, Range, type NodeConfig} from '@tiptap/core'
+import {mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
 
 declare module '@tiptap/core' {

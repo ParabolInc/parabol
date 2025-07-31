@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import viewerNotOnTeamQuery, {
-  ViewerNotOnTeamQuery
+  type ViewerNotOnTeamQuery
 } from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useSubscription from '../hooks/useSubscription'

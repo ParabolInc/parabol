@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {GenerateInsightMutation as TGenerateInsightMutation} from '../__generated__/GenerateInsightMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {GenerateInsightMutation as TGenerateInsightMutation} from '../__generated__/GenerateInsightMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment GenerateInsightMutation_team on GenerateInsightSuccess {

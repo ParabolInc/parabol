@@ -5,7 +5,7 @@ import insertPollWithOptions from '../../postgres/queries/insertPollWithOptions'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import CreatePollInput from '../types/CreatePollInput'
 import CreatePollPayload from '../types/CreatePollPayload'
 

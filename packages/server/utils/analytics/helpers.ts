@@ -1,6 +1,6 @@
 import {CHECKIN} from '../../../client/utils/constants'
-import MeetingTemplate from '../../database/types/MeetingTemplate'
-import {AnyMeeting, AnyMeetingMember} from '../../postgres/types/Meeting'
+import type MeetingTemplate from '../../database/types/MeetingTemplate'
+import type {AnyMeeting, AnyMeetingMember} from '../../postgres/types/Meeting'
 
 export const createMeetingProperties = (
   meeting: AnyMeeting,

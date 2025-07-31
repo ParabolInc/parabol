@@ -1,18 +1,18 @@
-import {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
+import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import {Task as ITask} from '../../../server/postgres/types/index.d'
-import {RetrospectiveMeeting} from '../../../server/postgres/types/Meeting'
+import type {Task as ITask} from '../../../server/postgres/types/index.d'
+import type {RetrospectiveMeeting} from '../../../server/postgres/types/Meeting'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
 import {DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from '../../utils/constants'
 import getDemoAvatar from '../../utils/getDemoAvatar'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
-import {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
+import type {DemoReflection, DemoReflectionGroup, DemoTask} from './ClientGraphQLServer'
 import DemoDiscussStage from './DemoDiscussStage'
 import DemoGenericMeetingStage from './DemoGenericMeetingStage'
 import DemoUser from './DemoUser'
-import initBotScript from './initBotScript'
+import type initBotScript from './initBotScript'
 
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
@@ -213,8 +213,16 @@ const initDemoTeamMember = (
     preferredName,
     integrations: {
       id: 'demoTeamIntegrations',
-      atlassian: {id: 'demoTeamAtlassianIntegration', isActive: true, accessToken: '123'},
-      github: {id: 'demoTeamGitHubIntegration', isActive: true, accessToken: '123'},
+      atlassian: {
+        id: 'demoTeamAtlassianIntegration',
+        isActive: true,
+        accessToken: '123'
+      },
+      github: {
+        id: 'demoTeamGitHubIntegration',
+        isActive: true,
+        accessToken: '123'
+      },
       gitlab: {
         id: 'demoTeamGitLabIntegration',
         auth: {

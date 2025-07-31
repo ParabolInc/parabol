@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useLazyLoadQuery} from 'react-relay'
 import MeetingSubscription from '~/subscriptions/MeetingSubscription'
-import {DemoMeetingRootQuery} from '../__generated__/DemoMeetingRootQuery.graphql'
+import type {DemoMeetingRootQuery} from '../__generated__/DemoMeetingRootQuery.graphql'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
@@ -25,7 +25,9 @@ const DemoMeetingRoot = () => {
   useSubscription('DemoMeetingRoot', OrganizationSubscription)
   useSubscription('DemoMeetingRoot', TaskSubscription)
   useSubscription('DemoMeetingRoot', TeamSubscription)
-  useSubscription('DemoMeetingRoot', MeetingSubscription, {meetingId: RetroDemo.MEETING_ID})
+  useSubscription('DemoMeetingRoot', MeetingSubscription, {
+    meetingId: RetroDemo.MEETING_ID
+  })
   const data = useLazyLoadQuery<DemoMeetingRootQuery>(query, {
     meetingId: RetroDemo.MEETING_ID
   })

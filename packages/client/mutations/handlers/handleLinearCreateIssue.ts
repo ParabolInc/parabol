@@ -1,7 +1,7 @@
-import {ConnectionHandler, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordProxy, type RecordSourceSelectorProxy} from 'relay-runtime'
 import SearchQueryId from '~/shared/gqlIds/SearchQueryId'
 import {makeLinearIssueFilter} from '~/utils/makeLinearIssueFilter'
-import {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
+import type {CreateTaskMutation} from '../../__generated__/CreateTaskMutation.graphql'
 import toTeamMemberId from '../../utils/relay/toTeamMemberId'
 import getLinearIssuesConn from '../connections/getLinearIssuesConn'
 

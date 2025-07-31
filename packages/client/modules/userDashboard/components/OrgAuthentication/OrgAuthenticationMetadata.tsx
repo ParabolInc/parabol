@@ -1,12 +1,12 @@
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import orgAuthenticationMetadataQuery, {
-  OrgAuthenticationMetadataQuery
+  type OrgAuthenticationMetadataQuery
 } from '../../../../__generated__/OrgAuthenticationMetadataQuery.graphql'
-import {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -137,8 +137,8 @@ const OrgAuthenticationMetadata = (props: Props) => {
   return (
     <>
       <div className='px-6 pb-3'>
-        <div className='flex text-base leading-6 font-semibold text-slate-700'>Metadata URL</div>
-        <div className={'flex items-center text-sm text-slate-700'}>
+        <div className='flex font-semibold text-base text-slate-700 leading-6'>Metadata URL</div>
+        <div className={'flex items-center text-slate-700 text-sm'}>
           Paste the metadata URL from your identity provider
         </div>
       </div>

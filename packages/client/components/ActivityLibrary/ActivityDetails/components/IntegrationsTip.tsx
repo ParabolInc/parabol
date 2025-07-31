@@ -1,10 +1,10 @@
-import * as React from 'react'
+import type * as React from 'react'
 import {cn} from '../../../../ui/cn'
 import AzureDevOpsSVG from '../../../AzureDevOpsSVG'
 import GitHubSVG from '../../../GitHubSVG'
 import GitLabSVG from '../../../GitLabSVG'
-import JiraSVG from '../../../JiraSVG'
 import JiraServerSVG from '../../../JiraServerSVG'
+import JiraSVG from '../../../JiraSVG'
 
 interface Props {
   className?: string

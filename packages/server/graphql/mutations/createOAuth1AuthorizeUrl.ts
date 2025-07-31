@@ -3,7 +3,7 @@ import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProvi
 import JiraServerOAuth1Manager from '../../integrations/jiraServer/JiraServerOAuth1Manager'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import CreateOAuth1AuthorizationURLPayload from '../types/CreateOAuth1AuthorizationURLPayload'
 
 export default {
@@ -27,7 +27,10 @@ export default {
   ) {
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
+      return standardError(new Error('Team not found'), {
+        userId: viewerId,
+        tags: {teamId}
+      })
     }
 
     const provider = await dataLoader

@@ -1,5 +1,5 @@
 import isValid from '../../isValid'
-import {RemoveFeatureFlagOwnerSuccessResolvers} from '../resolverTypes'
+import type {RemoveFeatureFlagOwnerSuccessResolvers} from '../resolverTypes'
 
 export type RemoveFeatureFlagOwnerSuccessSource = {
   featureFlagId: string

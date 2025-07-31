@@ -1,7 +1,7 @@
 import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
 import jiraIntegrationResultsQuery, {
-  JiraIntegrationResultsQuery
+  type JiraIntegrationResultsQuery
 } from '../../../__generated__/JiraIntegrationResultsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import ErrorBoundary from '../../ErrorBoundary'

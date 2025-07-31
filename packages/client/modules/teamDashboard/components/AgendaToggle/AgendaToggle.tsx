@@ -3,8 +3,8 @@ import {Chat} from '@mui/icons-material'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
-import withMutationProps, {WithMutationProps} from '../../../../utils/relay/withMutationProps'
+import type {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
+import withMutationProps, {type WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
 const Label = styled('div')({
   fontSize: 12,

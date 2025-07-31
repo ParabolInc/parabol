@@ -1,5 +1,5 @@
-const webpack = require("webpack");
-const { ModuleFederationPlugin } = webpack.container;
+const webpack = require('webpack')
+const {ModuleFederationPlugin} = webpack.container
 const path = require('path')
 const getProjectRoot = require('../../scripts/webpack/utils/getProjectRoot')
 
@@ -27,7 +27,7 @@ const clientTransformRules = () => {
                     artifactDirectory: path.join(CLIENT_ROOT, '__generated__')
                   }
                 }
-              ],
+              ]
               //'react-refresh/babel'
             ]
           }
@@ -44,21 +44,21 @@ const clientTransformRules = () => {
   ]
 }
 module.exports = {
-  entry: "./index",
-  mode: "development",
-  devtool: "source-map",
+  entry: './index',
+  mode: 'development',
+  devtool: 'source-map',
   devServer: {
-    allowedHosts: "all",
+    allowedHosts: 'all',
     //contentBase: path.join(__dirname, "dist"),
-    port: 3002,
+    port: 3002
   },
   watchOptions: {
     ignored: /node_modules/
   },
   output: {
-    publicPath: "auto",
+    publicPath: 'auto',
     filename: '[name].js',
-    chunkFilename: '[name].chunk.js',
+    chunkFilename: '[name].chunk.js'
   },
   resolve: {
     alias: {
@@ -66,18 +66,18 @@ module.exports = {
       // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
       'react/jsx-runtime': require.resolve('react/jsx-runtime')
     },
-    extensions: [".ts", ".tsx", ".js"],
+    extensions: ['.ts', '.tsx', '.js']
   },
   module: {
     rules: [
       ...clientTransformRules(),
       {
         test: /\.tsx?$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules/,
         options: {
-          presets: ["@babel/preset-react", "@babel/preset-typescript"],
-        },
+          presets: ['@babel/preset-react', '@babel/preset-typescript']
+        }
       },
       {
         test: /\.css$/,
@@ -89,23 +89,23 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              importLoaders: 1,
+              importLoaders: 1
             }
           },
           {
-            loader: 'postcss-loader',
-         }
+            loader: 'postcss-loader'
+          }
         ]
       }
-    ],
+    ]
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: "parabol",
-      filename: "mattermost-plugin-entry.js",
+      name: 'parabol',
+      filename: 'mattermost-plugin-entry.js',
       exposes: {
-        "./plugin": "./index",
-      },
+        './plugin': './index'
+      }
       /*
       shared: {
         react: {
@@ -118,10 +118,10 @@ module.exports = {
       */
     }),
     new webpack.DefinePlugin({
-      '__PROTO__': JSON.stringify(process.env.PROTO),
-      '__HOST__': JSON.stringify(process.env.HOST),
-      '__PORT__': JSON.stringify(process.env.PORT),
-    }),
+      __PROTO__: JSON.stringify(process.env.PROTO),
+      __HOST__: JSON.stringify(process.env.HOST),
+      __PORT__: JSON.stringify(process.env.PORT)
+    })
   ],
   externals: {
     react: 'React',
@@ -130,6 +130,6 @@ module.exports = {
     'react-redux': 'ReactRedux',
     'prop-types': 'PropTypes',
     'react-bootstrap': 'ReactBootstrap',
-    'react-router-dom': 'ReactRouterDom',
-  },
-};
+    'react-router-dom': 'ReactRouterDom'
+  }
+}

@@ -1,7 +1,7 @@
-import {mergeAttributes, type Extensions} from '@tiptap/core'
+import {type Extensions, mergeAttributes} from '@tiptap/core'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
-import Mention, {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
+import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
@@ -11,6 +11,8 @@ import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
+import {TaskBlockBase} from './extensions/TaskBlockBase'
+import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
 
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
@@ -24,7 +26,11 @@ export const serverTipTapExtensions: Extensions = [
   StarterKit.extend({
     link: {
       parseHTML() {
-        return [{tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'}]
+        return [
+          {
+            tag: 'a[href]:not([data-type="button"]):not([href *= "javascript:" i])'
+          }
+        ]
       },
 
       renderHTML({HTMLAttributes}: {HTMLAttributes: Record<string, any>}) {
@@ -56,5 +62,7 @@ export const serverTipTapExtensions: Extensions = [
   Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
   InsightsBlockBase,
   UniqueID,
-  PageLinkBlockBase
+  PageLinkBlockBase,
+  TaskBlockBase,
+  ThinkingBlockBase
 ]

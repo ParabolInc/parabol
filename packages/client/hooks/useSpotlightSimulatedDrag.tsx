@@ -1,6 +1,6 @@
-import {MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {GroupingKanban_meeting$data} from '~/__generated__/GroupingKanban_meeting.graphql'
+import type {GroupingKanban_meeting$data} from '~/__generated__/GroupingKanban_meeting.graphql'
 import {Times} from '~/types/constEnums'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'

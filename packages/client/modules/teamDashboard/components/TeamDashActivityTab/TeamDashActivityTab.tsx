@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {TeamDashActivityTab_team$key} from '~/__generated__/TeamDashActivityTab_team.graphql'
+import type {TeamDashActivityTab_team$key} from '~/__generated__/TeamDashActivityTab_team.graphql'
 import DemoMeetingCard from '../../../../components/DemoMeetingCard'
 import MeetingCard from '../../../../components/MeetingCard'
 import TutorialMeetingCard from '../../../../components/TutorialMeetingCard'
@@ -60,7 +60,7 @@ const TeamDashActivityTab = (props: Props) => {
   return (
     <div className='flex h-full w-full flex-1 flex-col overflow-auto pl-4'>
       <div className='flex flex-col pl-2'>
-        <h3 className='mb-0 text-base font-semibold'>Open Meetings</h3>
+        <h3 className='mb-0 font-semibold text-base'>Open Meetings</h3>
         {transitioningMeetings.length === 0 && (
           <p className='my-2'>No meetings yet? You've come to the right place!</p>
         )}

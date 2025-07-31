@@ -34,21 +34,21 @@ export const TipTapLinkEditor = (props: props) => {
   return (
     <div className={'flex items-center rounded-md bg-white p-2 shadow-lg'}>
       <form onSubmit={handleSubmit} className='flex flex-col items-center'>
-        <label className='bg-neutral-100 dark:bg-neutral-900 flex cursor-text items-center gap-2 rounded-lg p-2'>
+        <label className='flex cursor-text items-center gap-2 rounded-lg bg-neutral-100 p-2 dark:bg-neutral-900'>
           <Link className='flex-none text-slate-700' />
           <input
             autoFocus
             type='url'
-            className='min-w-52 flex-1 bg-transparent text-sm text-slate-700 outline-hidden'
+            className='min-w-52 flex-1 bg-transparent text-slate-700 text-sm outline-hidden'
             placeholder='Enter URL'
             value={url}
             onChange={onChangeURL}
           />
         </label>
-        <label className='bg-neutral-100 dark:bg-neutral-900 flex cursor-text items-center gap-2 rounded-lg p-2'>
+        <label className='flex cursor-text items-center gap-2 rounded-lg bg-neutral-100 p-2 dark:bg-neutral-900'>
           <Title className='flex-none text-slate-700' />
           <input
-            className='min-w-52 flex-1 bg-transparent text-sm text-slate-700 outline-hidden'
+            className='min-w-52 flex-1 bg-transparent text-slate-700 text-sm outline-hidden'
             placeholder='Link Title'
             value={text}
             onChange={onChangeText}

@@ -4,8 +4,10 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import NotificationStatusEnum, {NotificationStatusEnumType} from '../types/NotificationStatusEnum'
+import type {GQLContext} from '../graphql'
+import NotificationStatusEnum, {
+  type NotificationStatusEnumType
+} from '../types/NotificationStatusEnum'
 
 export default {
   type: new GraphQLObjectType({
@@ -36,7 +38,9 @@ export default {
     const notification = await dataLoader.get('notifications').load(notificationId)
 
     if (!notification || notification.userId !== viewerId) {
-      return standardError(new Error('Notification not found'), {userId: viewerId})
+      return standardError(new Error('Notification not found'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

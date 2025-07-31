@@ -1,6 +1,6 @@
 import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
-import {SetOrgUserRoleSuccessResolvers} from '../resolverTypes'
+import type {SetOrgUserRoleSuccessResolvers} from '../resolverTypes'
 
 export type SetOrgUserRoleSuccessSource = {
   orgId: string

@@ -1,4 +1,4 @@
 type ReflectTemplatePromptUpdateGroupColorPayload {
-  error: StandardMutationError
-  prompt: ReflectPrompt
+	error: StandardMutationError
+	prompt: ReflectPrompt
 }

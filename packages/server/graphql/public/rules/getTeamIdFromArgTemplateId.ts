@@ -1,4 +1,4 @@
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 const getTeamIdFromArgTemplateId = async (
   _source: any,

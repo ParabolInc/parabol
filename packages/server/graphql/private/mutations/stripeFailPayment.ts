@@ -1,12 +1,12 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import terminateSubscription from '../../../billing/helpers/terminateSubscription'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {getStripeManager} from '../../../utils/stripe'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 export type StripeFailPaymentPayloadSource =
   | {
@@ -40,7 +40,9 @@ const stripeFailPayment: MutationResolvers['stripeFailPayment'] = async (
     }
   }
   if (!maybeOrgId) {
-    return {error: {message: `Could not find orgId on invoice ${invoiceId}`}}
+    return {
+      error: {message: `Could not find orgId on invoice ${invoiceId}`}
+    }
   }
   if (customer.deleted === true) {
     return {error: {message: 'Customer has been deleted'}}

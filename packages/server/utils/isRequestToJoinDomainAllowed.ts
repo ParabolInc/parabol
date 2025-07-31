@@ -1,6 +1,6 @@
-import User from '../database/types/User'
-import {DataLoaderInstance} from '../dataloader/RootDataLoader'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type User from '../database/types/User'
+import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import isUserVerified from './isUserVerified'
 
 export const getEligibleOrgIdsByDomain = async (

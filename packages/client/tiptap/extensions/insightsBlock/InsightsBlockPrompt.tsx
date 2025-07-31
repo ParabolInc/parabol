@@ -3,7 +3,7 @@ import type {NodeViewProps} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import {useEffect, useRef} from 'react'
-import {usePreloadedQuery, type PreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Menu} from '~/ui/Menu/Menu'
 import {MenuContent} from '~/ui/Menu/MenuContent'
 import {MenuItem} from '~/ui/Menu/MenuItem'
@@ -76,7 +76,7 @@ export const InsightsBlockPrompt = (props: Props) => {
                       <div className='w-72 overflow-hidden text-ellipsis whitespace-nowrap'>
                         {title}
                       </div>
-                      <div className='text-xs font-bold text-slate-600'>{subtitle}</div>
+                      <div className='font-bold text-slate-600 text-xs'>{subtitle}</div>
                       {}
                     </MenuItem>
                   )

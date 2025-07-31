@@ -1,13 +1,13 @@
 import {generateText, type JSONContent} from '@tiptap/core'
 import {generateJSON} from '@tiptap/html/server'
-import {Insertable} from 'kysely'
+import type {Insertable} from 'kysely'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
-import DiscussStage from '../../../database/types/DiscussStage'
+import type DiscussStage from '../../../database/types/DiscussStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {Comment} from '../../../postgres/types/pg'
-import {DataLoaderWorker} from '../../graphql'
+import type {Comment} from '../../../postgres/types/pg'
+import type {DataLoaderWorker} from '../../graphql'
 
 export const buildCommentContentBlock = (
   title: string,

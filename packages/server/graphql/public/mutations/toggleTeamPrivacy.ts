@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   _source,

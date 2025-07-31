@@ -1,7 +1,7 @@
-import {Component, ReactNode} from 'react'
+import {Component, type ReactNode} from 'react'
 import {RelayEnvironmentProvider} from 'react-relay'
 import Atmosphere from '../../Atmosphere'
-import TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'
+import type TLocalAtmosphere from '../../modules/demo/LocalAtmosphere'
 
 interface Props {
   children: ReactNode

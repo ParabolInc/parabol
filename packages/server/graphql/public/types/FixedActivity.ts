@@ -1,4 +1,4 @@
-import {FixedActivityResolvers} from '../resolverTypes'
+import type {FixedActivityResolvers} from '../resolverTypes'
 
 const FixedActivity: FixedActivityResolvers = {
   __isTypeOf: ({type}) => type === 'teamPrompt' || type === 'action',

@@ -1,6 +1,6 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import {resolveNewMeeting, resolveUnlockedStages} from '../resolvers'
 import NewMeeting from './NewMeeting'
 import NewMeetingStage from './NewMeetingStage'

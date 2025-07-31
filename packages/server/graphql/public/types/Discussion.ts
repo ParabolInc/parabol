@@ -9,7 +9,7 @@ import {
 } from '../../meetingTypePredicates'
 import {augmentDBStage} from '../../resolvers'
 import resolveThreadableConnection from '../../resolvers/resolveThreadableConnection'
-import {DiscussionResolvers} from '../resolverTypes'
+import type {DiscussionResolvers} from '../resolverTypes'
 
 const Discussion: DiscussionResolvers = {
   team: ({teamId}, _args, {dataLoader}) => {

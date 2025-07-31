@@ -1,10 +1,10 @@
-import {GraphQLResolveInfo} from 'graphql'
-import {LinearRepoIntegration} from '../../../../client/shared/gqlIds/IntegrationRepoId'
+import type {GraphQLResolveInfo} from 'graphql'
+import type {LinearRepoIntegration} from '../../../../client/shared/gqlIds/IntegrationRepoId'
 import {isNotNull} from '../../../../client/utils/predicates'
-import {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
-import {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
-import {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
-import {GQLContext} from '../../graphql'
+import type {JiraGQLProject} from '../../../dataloader/atlassianLoaders'
+import type {AzureAccountProject} from '../../../dataloader/azureDevOpsLoaders'
+import type {JiraServerProject} from '../../../dataloader/jiraServerLoaders'
+import type {GQLContext} from '../../graphql'
 import fetchGitHubRepos from './fetchGitHubRepos'
 import fetchGitLabProjects from './fetchGitLabProjects'
 import {fetchLinearProjects, fetchLinearTeams} from './fetchLinearTeamsAndProjects'
@@ -76,8 +76,7 @@ const fetchAllRepoIntegrations = async (
   const maxRepos = Math.max(...repos.map((repo) => repo.length))
   return new Array(maxRepos)
     .fill(0)
-    .map((_, idx) => repos.map((repoArr) => repoArr[idx]).filter(isNotNull))
-    .flat()
+    .flatMap((_, idx) => repos.map((repoArr) => repoArr[idx]).filter(isNotNull))
 }
 
 export default fetchAllRepoIntegrations

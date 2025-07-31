@@ -1,6 +1,7 @@
-import {MentionNodeAttrs} from '@tiptap/extension-mention'
-import {SuggestionProps} from '@tiptap/suggestion'
-import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
+import type {MentionNodeAttrs} from '@tiptap/extension-mention'
+import type {SuggestionProps} from '@tiptap/suggestion'
+import type React from 'react'
+import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react'
 import TypeAheadLabel from './TypeAheadLabel'
 
 export const TaskTagDropdown = forwardRef(
@@ -49,7 +50,7 @@ export const TaskTagDropdown = forwardRef(
     }))
     if (items.length === 0) return null
     return (
-      <div className='border-rad z-10 max-h-56 overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up'>
+      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border-rad bg-white py-1 shadow-lg outline-hidden'>
         {items.map((item, idx) => {
           const isActive = idx === selectedIndex
           return (
@@ -57,7 +58,7 @@ export const TaskTagDropdown = forwardRef(
               ref={isActive ? activeRef : undefined}
               data-highlighted={isActive ? '' : undefined}
               className={
-                'flex w-full shrink-0 cursor-pointer items-center rounded-md px-2 py-1 text-sm leading-8 text-slate-700 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+                'flex w-full shrink-0 cursor-pointer items-center rounded-md px-2 py-1 text-slate-700 text-sm leading-8 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
               }
               key={item.id}
               onClick={() => selectItem(idx)}

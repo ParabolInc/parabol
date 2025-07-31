@@ -1,4 +1,4 @@
-import {ReflectTemplatePromptUpdateGroupColorPayloadResolvers} from '../resolverTypes'
+import type {ReflectTemplatePromptUpdateGroupColorPayloadResolvers} from '../resolverTypes'
 
 export type ReflectTemplatePromptUpdateGroupColorPayloadSource =
   | {

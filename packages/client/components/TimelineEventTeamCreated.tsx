@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TimelineEventTeamCreated_timelineEvent$key} from '../__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
+import type {TimelineEventTeamCreated_timelineEvent$key} from '../__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
 import StyledLink from './StyledLink'
 import TimelineEventTitle from './TImelineEventTitle'
 import TimelineEventBody from './TimelineEventBody'

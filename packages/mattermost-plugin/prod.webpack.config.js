@@ -98,6 +98,10 @@ module.exports = (config) => {
           }
         },
         {
+          test: /\.(png|jpg|jpeg|gif|svg)$/,
+          type: 'asset/resource'
+        },
+        {
           test: /\.css$/,
           exclude: /node_modules/,
           use: [

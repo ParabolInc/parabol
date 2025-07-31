@@ -1,4 +1,4 @@
-import {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
+import type {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '~/mutations/EndSprintPokerMutation'

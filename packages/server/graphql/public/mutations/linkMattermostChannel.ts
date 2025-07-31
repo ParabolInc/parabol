@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async (
   _source,
@@ -17,7 +17,9 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
 
   //AUTH
   if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {userId: viewerId})
+    return standardError(new Error('Attempted teamId spoof'), {
+      userId: viewerId
+    })
   }
 
   // VALIDATION
@@ -50,7 +52,9 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
     .executeTakeFirst()
 
   if (!teamNotificationSettings) {
-    logError(new Error('Linking Mattermost Channel failed'), {tags: {teamId, channelId}})
+    logError(new Error('Linking Mattermost Channel failed'), {
+      tags: {teamId, channelId}
+    })
     return {error: {message: 'Linking failed'}}
   }
 

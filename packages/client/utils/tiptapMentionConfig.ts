@@ -1,8 +1,8 @@
-import {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
+import type {MentionNodeAttrs, MentionOptions} from '@tiptap/extension-mention'
 import graphql from 'babel-plugin-relay/macro'
 import stringScore from 'string-score'
-import {tiptapMentionConfigQuery} from '../__generated__/tiptapMentionConfigQuery.graphql'
-import Atmosphere from '../Atmosphere'
+import type {tiptapMentionConfigQuery} from '../__generated__/tiptapMentionConfigQuery.graphql'
+import type Atmosphere from '../Atmosphere'
 import MentionDropdown from '../components/MentionDropdown'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import renderSuggestion from '../tiptap/extensions/renderSuggestion'
@@ -55,7 +55,11 @@ export const tiptapMentionConfig = (
           .slice(0, 6)
           // If you type "Foo" and the options are "Foo" and "Giraffe", remove "Giraffe"
           .filter((obj, _idx, arr) => obj.score > 0 && arr[0]!.score - obj.score < 0.3)
-          .map((s) => ({userId: s.id, picture: s.picture, preferredName: s.preferredName}))
+          .map((s) => ({
+            userId: s.id,
+            picture: s.picture,
+            preferredName: s.preferredName
+          }))
       )
     },
 

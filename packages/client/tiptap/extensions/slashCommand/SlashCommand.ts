@@ -1,9 +1,9 @@
-import {Extension, type Editor} from '@tiptap/core'
+import {type Editor, Extension} from '@tiptap/core'
 import {PluginKey} from '@tiptap/pm/state'
 import Suggestion from '@tiptap/suggestion'
 import renderSuggestion from '../renderSuggestion'
 import {SlashCommandMenu} from './SlashCommandMenu'
-import {slashCommands, type CommandTitle, type SlashCommandGroup} from './slashCommands'
+import {type CommandTitle, type SlashCommandGroup, slashCommands} from './slashCommands'
 
 const extensionName = 'slashCommand'
 export const SlashCommand = Extension.create<Record<CommandTitle, boolean>>({

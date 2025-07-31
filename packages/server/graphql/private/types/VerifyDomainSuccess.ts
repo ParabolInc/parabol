@@ -1,4 +1,4 @@
-import {VerifyDomainSuccessResolvers} from '../resolverTypes'
+import type {VerifyDomainSuccessResolvers} from '../resolverTypes'
 
 export type VerifyDomainSuccessSource = {
   samlId: string

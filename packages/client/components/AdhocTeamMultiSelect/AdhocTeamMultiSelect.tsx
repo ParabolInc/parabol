@@ -1,11 +1,10 @@
 import {useAutocomplete} from '@mui/base/useAutocomplete'
+import {Send as SendIcon} from '@mui/icons-material'
 import CheckIcon from '@mui/icons-material/Check'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-
-import {Send as SendIcon} from '@mui/icons-material'
-import {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
+import type {AdhocTeamMultiSelect_viewer$key} from '../../__generated__/AdhocTeamMultiSelect_viewer.graphql'
 import {Chip} from '../../ui/Chip/Chip'
 import {emailRegex} from '../../validation/regex'
 
@@ -164,7 +163,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       <div {...getRootProps()}>
         <div
           ref={setAnchorEl}
-          className='align-center flex min-h-[44px] w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 text-sm'
+          className='flex min-h-[44px] w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 align-center text-sm'
         >
           {value.map((option, index: number) => (
             <Chip
@@ -182,7 +181,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
             className='m-0 box-border min-h-[36px] w-0 min-w-[30px] grow border-0 bg-white pl-1 text-black outline-hidden'
           />
         </div>
-        {error && <div className='mt-2 text-sm font-semibold text-tomato-500'>{error}</div>}
+        {error && <div className='mt-2 font-semibold text-sm text-tomato-500'>{error}</div>}
       </div>
       {groupedOptions.length > 0 ? (
         <ul
@@ -198,13 +197,13 @@ export const AdhocTeamMultiSelect = (props: Props) => {
                 key={option.id ?? option.email}
                 className={`[&.Mui-focused]:bg-slate-100 ${
                   isSelected ? 'bg-slate-100' : ''
-                } flex h-10 w-full cursor-pointer items-center justify-between rounded px-3 text-sm outline-hidden select-none hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50`}
+                } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-hidden hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
                 {option.id && (
                   <div className='relative mr-2 h-6 w-6 rounded-sm border border-slate-100'>
                     <div
-                      className='h-6 w-6 rounded-full bg-cover bg-center bg-no-repeat'
+                      className='h-6 w-6 rounded-full bg-center bg-cover bg-no-repeat'
                       style={{backgroundImage: `url('${option.picture}')`}}
                     />
                   </div>

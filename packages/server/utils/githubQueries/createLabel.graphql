@@ -1,9 +1,9 @@
 mutation createLabel($input: CreateLabelInput!) {
-  createLabel(input: $input) {
-    label {
-      id
-      name
-      color
-    }
-  }
+	createLabel(input: $input) {
+		label {
+			id
+			name
+			color
+		}
+	}
 }

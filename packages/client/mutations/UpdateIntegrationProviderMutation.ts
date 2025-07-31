@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UpdateIntegrationProviderMutation as TUpdateIntegrationProviderMutation} from '../__generated__/UpdateIntegrationProviderMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {UpdateIntegrationProviderMutation as TUpdateIntegrationProviderMutation} from '../__generated__/UpdateIntegrationProviderMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment UpdateIntegrationProviderMutation_organization on UpdateIntegrationProviderSuccess {

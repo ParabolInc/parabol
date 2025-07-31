@@ -1,4 +1,4 @@
-import {RecordProxy} from 'relay-runtime'
+import type {RecordProxy} from 'relay-runtime'
 
 const filterNodesInConn = (connection: RecordProxy, findFn: (node: RecordProxy) => boolean) => {
   const filteredNodes = [] as RecordProxy[]

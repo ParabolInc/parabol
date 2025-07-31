@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ReactElement, Suspense} from 'react'
+import {type ReactElement, Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {
+import type {
   NewMeetingPhaseTypeEnum,
   RetroMeeting_meeting$key
 } from '~/__generated__/RetroMeeting_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMeeting from '../hooks/useMeeting'
-import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
-import lazyPreload, {LazyExoticPreload} from '../utils/lazyPreload'
+import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'

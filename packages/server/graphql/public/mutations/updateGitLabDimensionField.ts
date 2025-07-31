@@ -1,10 +1,10 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import upsertGitLabDimensionFieldMap from '../../../postgres/queries/upsertGitLabDimensionFieldMap'
-import {Logger} from '../../../utils/Logger'
-import {isTeamMember} from '../../../utils/authorization'
-import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
 import {getUserId} from './../../../utils/authorization'
+import {isTeamMember} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
+import publish from '../../../utils/publish'
+import type {MutationResolvers} from '../resolverTypes'
 
 const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'] = async (
   _source,

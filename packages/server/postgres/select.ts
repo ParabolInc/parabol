@@ -1,21 +1,20 @@
 import type {JSONContent} from '@tiptap/core'
 import type {ControlledTransaction, Kysely} from 'kysely'
-import {NotNull, sql, type SelectQueryBuilder} from 'kysely'
-import {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
+import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
+import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import {JiraDimensionField, ReactjiDB, TaskTag} from './types'
-import {AnyMeeting, AnyMeetingMember} from './types/Meeting'
-import {AnyNotification} from './types/Notification'
+import type {JiraDimensionField, ReactjiDB, TaskTag} from './types'
+import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
+import type {AnyNotification} from './types/Notification'
 import type {DB} from './types/pg'
-import {AnyTaskIntegration} from './types/TaskIntegration'
+import type {AnyTaskIntegration} from './types/TaskIntegration'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
 // since string[] && {id: string}[] do not intersect, we can't do this natively within kysely with $assertType
-type AssertedQuery<Q, K> =
-  Q extends SelectQueryBuilder<infer T1, infer T2, infer X>
-    ? SelectQueryBuilder<T1, T2, Omit<X, keyof K> & K>
-    : never
+type AssertedQuery<Q, K> = Q extends SelectQueryBuilder<infer T1, infer T2, infer X>
+  ? SelectQueryBuilder<T1, T2, Omit<X, keyof K> & K>
+  : never
 
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
@@ -260,6 +259,7 @@ export const selectNewMeetings = () =>
       'videoMeetingURL',
       'templateRefId',
       'meetingPrompt',
+      'summaryPageId',
       fn('to_json', ['phases']).as('phases'),
       fn('to_json', ['usedReactjis']).as('usedReactjis'),
       fn('to_json', ['transcription']).as('transcription'),

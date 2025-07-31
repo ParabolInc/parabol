@@ -1,4 +1,4 @@
-import {ValueOf} from '../client/types/generics'
+import type {ValueOf} from '../client/types/generics'
 
 /**
  * Map of ISO 639-3 codes to ISO 639-1 codes.

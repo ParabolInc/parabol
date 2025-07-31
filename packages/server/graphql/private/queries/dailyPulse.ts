@@ -1,11 +1,11 @@
 import getPg from '../../../postgres/getPg'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import SlackServerManager from '../../../utils/SlackServerManager'
 import {toEpochSeconds} from '../../../utils/epochTime'
-import {DataLoaderWorker} from '../../graphql'
+import SlackServerManager from '../../../utils/SlackServerManager'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {makeSection} from '../../mutations/helpers/notifications/makeSlackBlocks'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 import authCountByDomain from './helpers/authCountByDomain'
 
 interface TypeField {

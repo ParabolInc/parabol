@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {PALETTE} from '../styles/paletteV3'
-import BaseButton, {BaseButtonProps} from './BaseButton'
+import BaseButton, {type BaseButtonProps} from './BaseButton'
 
 const paletteColors = {
   blue: PALETTE.SKY_500,

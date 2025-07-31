@@ -3,7 +3,7 @@ import {getSimpleGroupTitle} from '../../../../client/utils/getSimpleGroupTitle'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import updateSmartGroupTitle from './updateReflectionLocation/updateSmartGroupTitle'
 
 interface Reflection {

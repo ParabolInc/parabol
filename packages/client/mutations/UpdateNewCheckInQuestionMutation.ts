@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
-import {UpdateNewCheckInQuestionMutation as TUpdateNewCheckInQuestionMutation} from '../__generated__/UpdateNewCheckInQuestionMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {RecordProxy} from 'relay-runtime'
+import type {UpdateNewCheckInQuestionMutation as TUpdateNewCheckInQuestionMutation} from '../__generated__/UpdateNewCheckInQuestionMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
+
 graphql`
   fragment UpdateNewCheckInQuestionMutation_meeting on UpdateNewCheckInQuestionPayload {
     meeting {

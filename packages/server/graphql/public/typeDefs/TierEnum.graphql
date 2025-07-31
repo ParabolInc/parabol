@@ -2,7 +2,7 @@
 The pay tier of the team
 """
 enum TierEnum {
-  starter
-  team
-  enterprise
+	starter
+	team
+	enterprise
 }

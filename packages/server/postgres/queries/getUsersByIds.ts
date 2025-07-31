@@ -1,6 +1,6 @@
-import {MaybeReadonly} from '../../../client/types/generics'
+import type {MaybeReadonly} from '../../../client/types/generics'
 import getPg from '../getPg'
-import IUser from '../types/IUser'
+import type IUser from '../types/IUser'
 import {getUsersByIdsQuery} from './generated/getUsersByIdsQuery'
 
 export const getUsersByIds = async (userIds: MaybeReadonly<string[]>): Promise<IUser[]> => {

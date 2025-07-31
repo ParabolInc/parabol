@@ -1,8 +1,8 @@
 type PageAccess {
-  viewer: PageRoleEnum
-  public: PageRoleEnum
-  guests: [PageAccessGuest!]!
-  users: [PageAccessUser!]!
-  teams: [PageAccessTeam!]!
-  organizations: [PageAccessOrganization!]!
+	viewer: PageRoleEnum
+	public: PageRoleEnum
+	guests: [PageAccessGuest!]!
+	users: [PageAccessUser!]!
+	teams: [PageAccessTeam!]!
+	organizations: [PageAccessOrganization!]!
 }

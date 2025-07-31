@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
 import GitLabOAuth2Manager from '../integrations/gitlab/GitLabOAuth2Manager'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import {TeamMemberIntegrationAuth} from '../postgres/types'
+import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 

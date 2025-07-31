@@ -48,7 +48,7 @@ const ShareTopic = (props: Props) => {
     )
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   const {isOpen, open, close} = useDialogState()
 
   const onClick = () => {

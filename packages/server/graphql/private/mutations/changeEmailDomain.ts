@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
-import {MutationResolvers} from '../../private/resolverTypes'
+import type {MutationResolvers} from '../../private/resolverTypes'
 
 const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   _source,
@@ -15,7 +15,9 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   }
 
   if (normalizedOldDomain.includes('@') || normalizedNewDomain.includes('@')) {
-    return {error: {message: 'Domains should include everything after the @'}}
+    return {
+      error: {message: 'Domains should include everything after the @'}
+    }
   }
 
   const [oldDomainUsers, newDomainUsers] = await Promise.all([
@@ -24,7 +26,9 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   ])
 
   if (!oldDomainUsers.length) {
-    return {error: {message: `No users found with oldDomain: ${oldDomain}`}}
+    return {
+      error: {message: `No users found with oldDomain: ${oldDomain}`}
+    }
   }
 
   const newDomainUserEmails = newDomainUsers.map(({email}) => email)

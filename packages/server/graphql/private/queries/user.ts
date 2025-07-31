@@ -1,5 +1,5 @@
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 const user: QueryResolvers['user'] = async (_source, {email, userId}, {dataLoader}) => {
   if (email) {

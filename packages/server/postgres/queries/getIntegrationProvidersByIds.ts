@@ -1,8 +1,8 @@
 import getPg from '../getPg'
 import {
   getIntegrationProvidersByIdsQuery,
-  IGetIntegrationProvidersByIdsQueryResult,
-  IntegrationProviderScopeEnum
+  type IGetIntegrationProvidersByIdsQueryResult,
+  type IntegrationProviderScopeEnum
 } from './generated/getIntegrationProvidersByIdsQuery'
 
 interface IntegrationProviderActive extends IGetIntegrationProvidersByIdsQueryResult {

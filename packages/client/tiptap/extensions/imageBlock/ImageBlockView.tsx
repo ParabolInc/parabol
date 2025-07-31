@@ -1,4 +1,4 @@
-import {NodeViewWrapper, type NodeViewProps} from '@tiptap/react'
+import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useCallback, useRef, useState} from 'react'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {cn} from '../../../ui/cn'

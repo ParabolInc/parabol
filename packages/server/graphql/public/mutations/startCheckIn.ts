@@ -2,8 +2,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
+import type {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import type {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -13,7 +13,7 @@ import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhas
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import {createMeetingMember} from '../../mutations/joinMeeting'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
   _source,
@@ -66,7 +66,7 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
         .execute()
       await Promise.all(inserts.map((insert) => pg.executeQuery(insert)))
     })
-  } catch (e) {
+  } catch {
     return {error: {message: 'Meeting already started'}}
   }
   dataLoader.clearAll('newMeetings')

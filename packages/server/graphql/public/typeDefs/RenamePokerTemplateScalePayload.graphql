@@ -1,4 +1,4 @@
 type RenamePokerTemplateScalePayload {
-  error: StandardMutationError
-  scale: TemplateScale
+	error: StandardMutationError
+	scale: TemplateScale
 }

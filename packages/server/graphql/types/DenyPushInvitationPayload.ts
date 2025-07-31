@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import StandardMutationError from './StandardMutationError'
 
 const DenyPushInvitationPayload = new GraphQLObjectType<any, GQLContext>({

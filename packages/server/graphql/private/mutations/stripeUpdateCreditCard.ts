@@ -3,7 +3,7 @@ import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
 import getCCFromCustomer from '../../mutations/helpers/getCCFromCustomer'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const stripeUpdateCreditCard: MutationResolvers['stripeUpdateCreditCard'] = async (
   _source,

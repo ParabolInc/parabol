@@ -2,11 +2,11 @@ import {Add as AddIcon, Close as CloseIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
+import type {MattermostProviderRow_viewer$key} from '~/__generated__/MattermostProviderRow_viewer.graphql'
 import MattermostProviderLogo from '../../../../components/MattermostProviderLogo'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useMutationProps, {MenuMutationProps} from '../../../../hooks/useMutationProps'
+import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import MattermostConfigMenu from './MattermostConfigMenu'
 import MattermostPanel from './MattermostPanel'
@@ -49,7 +49,12 @@ const MattermostProviderRow = (props: Props) => {
   const [isConnectClicked, setConnectClicked] = useState(false)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const {submitting, submitMutation, error, onError, onCompleted} = useMutationProps()
-  const mutationProps = {submitting, submitMutation, onError, onCompleted} as MenuMutationProps
+  const mutationProps = {
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } as MenuMutationProps
   const {teamMember} = viewer
   const {integrations} = teamMember!
   const {mattermost} = integrations

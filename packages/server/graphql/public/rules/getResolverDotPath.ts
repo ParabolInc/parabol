@@ -1,5 +1,5 @@
-import {FirstParam} from '../../../../client/types/generics'
-import {Resolvers} from '../resolverTypes'
+import type {FirstParam} from '../../../../client/types/generics'
+import type {Resolvers} from '../resolverTypes'
 
 export const getResolverDotPath = (
   dotPath: `${'source' | 'args'}.${string}`,
@@ -19,21 +19,18 @@ type ExtractTypeof<T extends keyof Resolvers> = '__isTypeOf' extends keyof NonNu
   : never
 type ExtractParent<T extends keyof Resolvers> = FirstParam<NonNullable<ExtractTypeof<T>>>
 
-type Source<T> =
-  ParseParent<T> extends keyof Resolvers
-    ? ExtractParent<ParseParent<T>> extends never
-      ? never
-      : keyof ExtractParent<ParseParent<T>> & string
-    : never
+type Source<T> = ParseParent<T> extends keyof Resolvers
+  ? ExtractParent<ParseParent<T>> extends never
+    ? never
+    : keyof ExtractParent<ParseParent<T>> & string
+  : never
 
 type ExtractChild<TOp, TChild extends string> = TChild extends keyof TOp
   ? NonNullable<TOp[TChild]>
   : never
 
-type Arg<T> =
-  ParseParent<T> extends keyof Resolvers
-    ? keyof SecondParam<ExtractChild<NonNullable<Resolvers[ParseParent<T>]>, ParseChild<T>>> &
-        string
-    : never
+type Arg<T> = ParseParent<T> extends keyof Resolvers
+  ? keyof SecondParam<ExtractChild<NonNullable<Resolvers[ParseParent<T>]>, ParseChild<T>>> & string
+  : never
 
 export type ResolverDotPath<T> = `source.${Source<T>}` | `args.${Arg<T>}`

@@ -1,14 +1,14 @@
 type PromoteNewMeetingFacilitatorPayload {
-  error: StandardMutationError
+	error: StandardMutationError
 
-  """
-  The meeting in progress
-  """
-  meeting: NewMeeting
-  facilitatorStage: NewMeetingStage
+	"""
+	The meeting in progress
+	"""
+	meeting: NewMeeting
+	facilitatorStage: NewMeetingStage
 
-  """
-  The old meeting facilitator
-  """
-  oldFacilitator: User
+	"""
+	The old meeting facilitator
+	"""
+	oldFacilitator: User
 }

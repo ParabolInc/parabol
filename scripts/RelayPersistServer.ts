@@ -1,7 +1,7 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
 import fs from 'fs'
-import http, {RequestListener, Server} from 'http'
+import http, {type RequestListener, type Server} from 'http'
 import path from 'path'
 import clientConfig from '../relay.config'
 

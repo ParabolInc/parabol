@@ -1,4 +1,4 @@
-import {GraphQLSchema} from 'graphql'
+import type {GraphQLSchema} from 'graphql'
 import nestGitHubEndpoint from 'nest-graphql-endpoint/lib/nestGitHubEndpoint'
 import githubSchema from './githubSchema.graphql'
 // Resolvers from SDL first definitions

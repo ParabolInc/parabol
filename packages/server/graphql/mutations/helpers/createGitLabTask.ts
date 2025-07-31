@@ -1,10 +1,10 @@
-import {JSONContent} from '@tiptap/core'
-import {GraphQLResolveInfo} from 'graphql'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import {splitTipTapContent} from '../../../../client/shared/tiptap/splitTipTapContent'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
-import {TeamMemberIntegrationAuth} from '../../../postgres/types'
+import type {TeamMemberIntegrationAuth} from '../../../postgres/types'
 import {convertTipTapToMarkdown} from '../../../utils/convertTipTapToMarkdown'
-import {DataLoaderWorker, GQLContext} from '../../graphql'
+import type {DataLoaderWorker, GQLContext} from '../../graphql'
 
 const createGitLabTask = async (
   rawContent: JSONContent,

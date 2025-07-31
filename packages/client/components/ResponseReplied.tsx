@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import NotificationAction from '~/components/NotificationAction'
-import {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
+import type {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
 import useRouter from '../hooks/useRouter'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'

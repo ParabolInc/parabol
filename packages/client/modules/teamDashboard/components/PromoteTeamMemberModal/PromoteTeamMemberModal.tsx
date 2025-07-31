@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {PromoteTeamMemberModal_teamMember$key} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
+import type {PromoteTeamMemberModal_teamMember$key} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'

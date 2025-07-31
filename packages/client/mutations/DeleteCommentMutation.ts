@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
-import {DeleteCommentMutation_meeting$data} from '~/__generated__/DeleteCommentMutation_meeting.graphql'
+import type {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import type {DeleteCommentMutation_meeting$data} from '~/__generated__/DeleteCommentMutation_meeting.graphql'
 import safeRemoveNodeFromArray from '~/utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
-import {DeleteCommentMutation as TDeleteCommentMutation} from '../__generated__/DeleteCommentMutation.graphql'
+import type {DeleteCommentMutation as TDeleteCommentMutation} from '../__generated__/DeleteCommentMutation.graphql'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 
 graphql`

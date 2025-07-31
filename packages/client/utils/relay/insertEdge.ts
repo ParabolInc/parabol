@@ -1,4 +1,4 @@
-import {RecordProxy} from 'relay-runtime'
+import type {RecordProxy} from 'relay-runtime'
 import {getAscendingIdx, getDescendingIdx} from './addNodeToArray'
 
 export const insertEdgeBefore = (

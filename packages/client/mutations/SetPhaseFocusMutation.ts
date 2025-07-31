@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {SetPhaseFocusMutation as TSetPhaseFocusMutation} from '../__generated__/SetPhaseFocusMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {SetPhaseFocusMutation as TSetPhaseFocusMutation} from '../__generated__/SetPhaseFocusMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment SetPhaseFocusMutation_meeting on SetPhaseFocusPayload {

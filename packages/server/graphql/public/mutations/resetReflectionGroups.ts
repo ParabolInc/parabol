@@ -4,10 +4,10 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from '../../mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 type ResetGroupsMapper = {
   [newReflectionGroupId: string]: {
@@ -32,7 +32,9 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   ])
 
   if (!meeting) {
-    return standardError(new Error('Meeting not found'), {userId: viewerId})
+    return standardError(new Error('Meeting not found'), {
+      userId: viewerId
+    })
   }
 
   if (!isTeamMember(authToken, meeting.teamId)) {
@@ -40,12 +42,16 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   }
 
   if (meeting.meetingType !== 'retrospective') {
-    return standardError(new Error('Incorrect meeting type'), {userId: viewerId})
+    return standardError(new Error('Incorrect meeting type'), {
+      userId: viewerId
+    })
   }
 
   const {resetReflectionGroups, teamId} = meeting
   if (!resetReflectionGroups) {
-    return standardError(new Error('No reset reflection groups found'), {userId: viewerId})
+    return standardError(new Error('No reset reflection groups found'), {
+      userId: viewerId
+    })
   }
 
   const resetGroupsMapper: ResetGroupsMapper = {}
@@ -61,13 +67,13 @@ const resetReflectionGroups: MutationResolvers['resetReflectionGroups'] = async 
   }
 
   await Promise.all(
-    Object.entries(resetGroupsMapper)
-      .map(([newReflectionGroupId, {reflectionIds, groupTitle}]) => {
+    Object.entries(resetGroupsMapper).flatMap(
+      ([newReflectionGroupId, {reflectionIds, groupTitle}]) => {
         return reflectionIds.map((reflectionId) => {
           return addReflectionToGroup(reflectionId, newReflectionGroupId, context, groupTitle)
         })
-      })
-      .flat()
+      }
+    )
   )
 
   await pg

@@ -2,7 +2,7 @@
 The status of the notification interaction
 """
 enum NotificationStatusEnum {
-  UNREAD
-  READ
-  CLICKED
+	UNREAD
+	READ
+	CLICKED
 }

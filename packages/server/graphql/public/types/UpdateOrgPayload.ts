@@ -1,4 +1,4 @@
-import {UpdateOrgPayloadResolvers} from '../resolverTypes'
+import type {UpdateOrgPayloadResolvers} from '../resolverTypes'
 
 export type UpdateOrgPayloadSource =
   | {

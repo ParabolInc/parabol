@@ -1,7 +1,7 @@
-import {MeetingTypeEnum} from '../../../postgres/types/Meeting'
+import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import resolveSelectedTemplate from '../../queries/helpers/resolveSelectedTemplate'
-import {RetrospectiveMeetingSettingsResolvers} from '../resolverTypes'
+import type {RetrospectiveMeetingSettingsResolvers} from '../resolverTypes'
 
 const RetrospectiveMeetingSettings: RetrospectiveMeetingSettingsResolvers = {
   __isTypeOf: ({meetingType}) => meetingType === 'retrospective',

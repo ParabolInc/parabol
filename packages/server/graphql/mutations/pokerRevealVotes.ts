@@ -3,11 +3,11 @@ import {sql} from 'kysely'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import EstimateUserScore from '../../database/types/EstimateUserScore'
 import getKysely from '../../postgres/getKysely'
-import {PokerMeetingMember} from '../../postgres/types/Meeting'
+import type {PokerMeetingMember} from '../../postgres/types/Meeting'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import PokerRevealVotesPayload from '../types/PokerRevealVotesPayload'
 
 const pokerRevealVotes = {
@@ -84,7 +84,10 @@ const pokerRevealVotes = {
       if (isSpectating) return
       const userScore = scores.find((score) => score.userId === userId)
       if (!userScore) {
-        const passScore = new EstimateUserScore({userId, label: PokerCards.PASS_CARD as string})
+        const passScore = new EstimateUserScore({
+          userId,
+          label: PokerCards.PASS_CARD as string
+        })
         scores.push(passScore)
       }
     })

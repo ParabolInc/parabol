@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import TeamInvitation from './TeamInvitation'
 
 const TeamInvitationPayload = new GraphQLObjectType<any, GQLContext>({

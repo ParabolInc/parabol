@@ -1,7 +1,6 @@
-import {generateText, type JSONContent} from '@tiptap/core'
-import {getTitleFromPageText} from '../../../client/shared/tiptap/getTitleFromPageText'
-import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
+import type {JSONContent} from '@tiptap/core'
 import getKysely from '../../postgres/getKysely'
+import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 
 export const updatePageContent = async (
   pageId: number,
@@ -9,9 +8,7 @@ export const updatePageContent = async (
   state: Buffer<ArrayBufferLike>
 ) => {
   const pg = getKysely()
-  const docText = generateText(content, serverTipTapExtensions)
-  const {title, contentStartsAt} = getTitleFromPageText(docText)
-  const plaintextContent = docText.slice(contentStartsAt)
+  const {title, plaintextContent} = getPlaintextFromTipTap(content)
   const {titleChanged} = await pg
     .updateTable('Page')
     .set({yDoc: state, title, plaintextContent})

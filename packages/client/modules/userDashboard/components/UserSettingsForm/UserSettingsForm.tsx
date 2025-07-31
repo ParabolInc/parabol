@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
+import type * as React from 'react'
 import {lazy} from 'react'
-import {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.graphql'
+import type {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.graphql'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -13,7 +13,7 @@ import UpdateUserProfileMutation from '../../../../mutations/UpdateUserProfileMu
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint, Layout} from '../../../../types/constEnums'
-import withForm, {WithFormProps} from '../../../../utils/relay/withForm'
+import withForm, {type WithFormProps} from '../../../../utils/relay/withForm'
 import Legitity from '../../../../validation/Legitity'
 import NotificationErrorMessage from '../../../notifications/components/NotificationErrorMessage'
 

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
-import {VerifyEmailMutation as TSignUpWithPasswordMutation} from '../__generated__/VerifyEmailMutation.graphql'
-import {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {VerifyEmailMutation as TSignUpWithPasswordMutation} from '../__generated__/VerifyEmailMutation.graphql'
+import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
 const mutation = graphql`
@@ -40,7 +40,11 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, History
         atmosphere.setAuthToken(authToken)
         const redirectPath = '/meetings'
 
-        handleAuthenticationRedirect(acceptTeamInvitation, {atmosphere, history, redirectPath})
+        handleAuthenticationRedirect(acceptTeamInvitation, {
+          atmosphere,
+          history,
+          redirectPath
+        })
       }
     }
   })

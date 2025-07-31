@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
-import {LinearScopingSelectAllIssues_issues$key} from '../__generated__/LinearScopingSelectAllIssues_issues.graphql'
+import type {LinearScopingSelectAllIssues_issues$key} from '../__generated__/LinearScopingSelectAllIssues_issues.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'

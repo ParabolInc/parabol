@@ -4,12 +4,12 @@ import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from '../../../client/utils/cons
 import DiscussPhase from '../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
 import getKysely from '../../postgres/getKysely'
-import {RetroMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type {RetroMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import ResetRetroMeetingToGroupStagePayload from '../types/ResetRetroMeetingToGroupStagePayload'
 import {primePhases} from './helpers/createNewMeetingPhases'
 
@@ -33,28 +33,49 @@ const resetRetroMeetingToGroupStage = {
     // AUTH
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {createdBy, facilitatorUserId, phases, meetingType} = meeting
     if (meetingType !== 'retrospective') {
-      return standardError(new Error('Meeting type is not retrospective'), {userId: viewerId})
+      return standardError(new Error('Meeting type is not retrospective'), {
+        userId: viewerId
+      })
     }
     if (viewerId !== facilitatorUserId) {
       if (viewerId !== createdBy)
-        return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
-      return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
+        return standardError(new Error('Not meeting facilitator'), {
+          userId: viewerId
+        })
+      return standardError(new Error('Not meeting facilitator anymore'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
     const groupPhase = phases.find((phase) => phase.phaseType === GROUP)
-    if (!groupPhase) return standardError(new Error('Group phase not found'), {userId: viewerId})
+    if (!groupPhase)
+      return standardError(new Error('Group phase not found'), {
+        userId: viewerId
+      })
     const resetToStage = groupPhase.stages.find((stage) => stage.phaseType === GROUP)
-    if (!resetToStage) return standardError(new Error('Group stage not found'), {userId: viewerId})
+    if (!resetToStage)
+      return standardError(new Error('Group stage not found'), {
+        userId: viewerId
+      })
     if (!resetToStage.isNavigableByFacilitator)
-      return standardError(new Error('Group stage has not started'), {userId: viewerId})
+      return standardError(new Error('Group stage has not started'), {
+        userId: viewerId
+      })
     if (!resetToStage.isComplete)
-      return standardError(new Error('Group stage has not finished'), {userId: viewerId})
+      return standardError(new Error('Group stage has not finished'), {
+        userId: viewerId
+      })
     if (meeting.endedAt)
-      return standardError(new Error('The meeting has already ended'), {userId: viewerId})
+      return standardError(new Error('The meeting has already ended'), {
+        userId: viewerId
+      })
 
     // RESOLUTION
     const discussionPhase = getPhase(phases, DISCUSS)

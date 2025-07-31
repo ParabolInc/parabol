@@ -1,4 +1,4 @@
-import {UpdateGitLabDimensionFieldSuccessResolvers} from '../resolverTypes'
+import type {UpdateGitLabDimensionFieldSuccessResolvers} from '../resolverTypes'
 
 export type UpdateGitLabDimensionFieldSuccessSource = {
   teamId: string

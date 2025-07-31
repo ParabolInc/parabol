@@ -1,11 +1,11 @@
 import {AGENDA_ITEMS, DISCUSS} from '../../client/utils/constants'
-import AgendaItemsPhase from '../database/types/AgendaItemsPhase'
-import DiscussPhase from '../database/types/DiscussPhase'
-import EstimatePhase from '../database/types/EstimatePhase'
-import EstimateStage from '../database/types/EstimateStage'
-import GenericMeetingPhase from '../database/types/GenericMeetingPhase'
-import GenericMeetingStage from '../database/types/GenericMeetingStage'
-import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
+import type AgendaItemsPhase from '../database/types/AgendaItemsPhase'
+import type DiscussPhase from '../database/types/DiscussPhase'
+import type EstimatePhase from '../database/types/EstimatePhase'
+import type EstimateStage from '../database/types/EstimateStage'
+import type GenericMeetingPhase from '../database/types/GenericMeetingPhase'
+import type GenericMeetingStage from '../database/types/GenericMeetingStage'
+import type TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 
 export const isEstimateStage = (stage: GenericMeetingStage): stage is EstimateStage =>
   stage.phaseType === 'ESTIMATE'

@@ -1,4 +1,4 @@
-import {MutableRefObject, RefObject, useEffect} from 'react'
+import {type MutableRefObject, type RefObject, useEffect} from 'react'
 import {ElementWidth, Times} from '../types/constEnums'
 import useFlip from './useFlip'
 import useFlipDeal from './useFlipDeal'
@@ -34,7 +34,10 @@ const useExpandedReflections = (
     offsetTop,
     isGroup
   })
-  const [modalHeaderRef, headerReverse] = useFlip({firstRef: headerRef, isGroup})
+  const [modalHeaderRef, headerReverse] = useFlip({
+    firstRef: headerRef,
+    isGroup
+  })
   const [setItemsRef, itemsReverse] = useFlipDeal(count)
   const {terminatePortal, openPortal, portal, portalStatus, setPortalStatus} = usePortal({
     id: 'expandedReflectionGroup',

@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import {RouterProps} from 'react-router'
+import type {RouterProps} from 'react-router'
 import {requestSubscription} from 'relay-runtime'
-import {
-  TaskSubscription as TTaskSubscription,
-  TaskSubscription$variables
+import type {
+  TaskSubscription$variables,
+  TaskSubscription as TTaskSubscription
 } from '~/__generated__/TaskSubscription.graphql'
-import Atmosphere from '../Atmosphere'
+import type Atmosphere from '../Atmosphere'
 import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
 import {createTaskTaskUpdater} from '../mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from '../mutations/DeleteTaskMutation'

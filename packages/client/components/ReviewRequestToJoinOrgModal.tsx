@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
-import {PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
-import {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
+import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
+import type {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
+import type {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
 import Checkbox from './Checkbox'
 import DialogContainer from './DialogContainer'
@@ -78,7 +78,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
     return (
       <DialogContainer>
         <DialogTitle>{'Add teammate'}</DialogTitle>
-        <div className={'overflow-y-scroll p-6 text-sm leading-relaxed text-slate-700'}>
+        <div className={'overflow-y-scroll p-6 text-slate-700 text-sm leading-relaxed'}>
           Request expired or deleted
         </div>
         <div className={'flex w-full justify-end px-6 pb-6'}>
@@ -114,7 +114,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
       <div className={'py-4 pl-6 text-base'}>
         Which teams would you like to add <strong>{createdByEmail}</strong> to?
       </div>
-      <div className={'overflow-y-scroll px-6 pb-6 text-sm leading-relaxed text-slate-700'}>
+      <div className={'overflow-y-scroll px-6 pb-6 text-slate-700 text-sm leading-relaxed'}>
         {sortedTeams.map((team) => {
           const {id: teamId, name: teamName, organization, teamMembers} = team
           const {name: orgName} = organization

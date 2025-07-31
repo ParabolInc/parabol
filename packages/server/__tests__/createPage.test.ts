@@ -106,7 +106,12 @@ test('Access propagates to linked children', async () => {
 
   const pageUpdatesUser = await sendPublic({
     query: UPDATE_PAGE_ACCESS,
-    variables: {pageId: parentPageId, subjectType: 'user', subjectId: user2.userId, role: 'owner'},
+    variables: {
+      pageId: parentPageId,
+      subjectType: 'user',
+      subjectId: user2.userId,
+      role: 'owner'
+    },
     authToken
   })
 
@@ -135,7 +140,12 @@ test('Access propagates to linked children', async () => {
 
   const pageUpdatesTeam = await sendPublic({
     query: UPDATE_PAGE_ACCESS,
-    variables: {pageId: parentPageId, subjectType: 'team', subjectId: user1.teamId, role: 'owner'},
+    variables: {
+      pageId: parentPageId,
+      subjectType: 'team',
+      subjectId: user1.teamId,
+      role: 'owner'
+    },
     authToken
   })
 

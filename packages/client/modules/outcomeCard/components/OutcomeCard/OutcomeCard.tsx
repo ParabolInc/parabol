@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
-import {Editor} from '@tiptap/core'
+import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {memo, useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
-import {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import type {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
+import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {PALETTE} from '~/styles/paletteV3'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
@@ -12,7 +12,7 @@ import {TipTapEditor} from '../../../../components/promptResponse/TipTapEditor'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
+import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
 import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
@@ -151,7 +151,7 @@ const OutcomeCard = memo((props: Props) => {
   }
 
   useEffect(() => {
-    if (!!isDraggingOver) {
+    if (isDraggingOver) {
       if (!editor.isEmpty) {
         handleCardUpdate()
       }
@@ -192,6 +192,7 @@ const OutcomeCard = memo((props: Props) => {
             <TipTapEditor
               className='px-4'
               editor={editor}
+              // biome-ignore lint/correctness/useHookAtTopLevel: legacy
               useLinkEditor={() => useTaskChild('editor-link-changer')}
               onBlur={onFocusChange(false)}
               onFocus={onFocusChange(true)}

@@ -1,4 +1,4 @@
 type UpdatePokerTemplateDimensionScalePayload {
-  error: StandardMutationError
-  dimension: TemplateDimension
+	error: StandardMutationError
+	dimension: TemplateDimension
 }

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
+import type {ReactjiCount_reactji$key} from '~/__generated__/ReactjiCount_reactji.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'
 import {TransitionStatus} from '~/hooks/useTransition'
 import {PALETTE} from '~/styles/paletteV3'
@@ -60,7 +60,9 @@ const ReactjiCount = (props: Props) => {
   const {onToggle, reactjiRef, status, onTransitionEnd} = props
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
     MenuPosition.UPPER_CENTER,
-    {delay: Times.SHOW_REACTJI_USERS_DELAY}
+    {
+      delay: Times.SHOW_REACTJI_USERS_DELAY
+    }
   )
   const reactji = useFragment(
     graphql`

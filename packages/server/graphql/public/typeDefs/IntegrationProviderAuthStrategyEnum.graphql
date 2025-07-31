@@ -2,9 +2,9 @@
 The kind of token provided by the service
 """
 enum IntegrationProviderAuthStrategyEnum {
-  oauth1
-  oauth2
-  pat
-  webhook
-  sharedSecret
+	oauth1
+	oauth2
+	pat
+	webhook
+	sharedSecret
 }

@@ -1,4 +1,4 @@
-import {Organization} from '../../postgres/types'
+import type {Organization} from '../../postgres/types'
 import updateSubscriptionQuantity from './updateSubscriptionQuantity'
 
 const handleTeamOrgQuantityChanges = async (paidOrgs: Organization[]) => {

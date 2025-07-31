@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const removeReflectTemplatePrompt: MutationResolvers['removeReflectTemplatePrompt'] = async (
   _source,
@@ -32,7 +32,9 @@ const removeReflectTemplatePrompt: MutationResolvers['removeReflectTemplatePromp
   const promptCount = activePrompts.length
 
   if (promptCount <= 1) {
-    return standardError(new Error('No prompts remain'), {userId: viewerId})
+    return standardError(new Error('No prompts remain'), {
+      userId: viewerId
+    })
   }
 
   // RESOLUTION

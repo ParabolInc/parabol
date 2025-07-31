@@ -1,11 +1,11 @@
-import {
-  SetTaskEstimateMutation as TSetTaskEstimateMutation,
-  TaskEstimateInput
+import type {
+  TaskEstimateInput,
+  SetTaskEstimateMutation as TSetTaskEstimateMutation
 } from '../__generated__/SetTaskEstimateMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
-import {CompletedHandler} from '../types/relayMutations'
+import type {CompletedHandler} from '../types/relayMutations'
 
 const useSetTaskEstimate = () => {
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()

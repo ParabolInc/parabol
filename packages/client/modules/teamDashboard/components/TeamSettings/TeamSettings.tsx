@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
@@ -79,7 +79,10 @@ const TeamSettings = (props: Props) => {
   if (!viewerTeamMember) return null
   const {isLead: viewerIsLead, isOrgAdmin: viewerIsOrgAdmin} = viewerTeamMember
   const lead = teamMembers.find((m) => m.isLead)
-  const contact = lead?.user ?? {email: 'love@parabol.co', preferredName: 'Parabol Support'}
+  const contact = lead?.user ?? {
+    email: 'love@parabol.co',
+    preferredName: 'Parabol Support'
+  }
   return (
     <TeamSettingsLayout>
       <PanelsLayout>

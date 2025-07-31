@@ -2,19 +2,19 @@ import {generateHTML, generateJSON, generateText, type JSONContent} from '@tipta
 import EventEmitter from 'eventemitter3'
 import {parse, stringify} from 'flatted'
 import ms from 'ms'
-import {Variables} from 'relay-runtime'
-import StrictEventEmitter from 'strict-event-emitter-types'
-import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
-import {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
+import type {Variables} from 'relay-runtime'
+import type StrictEventEmitter from 'strict-event-emitter-types'
+import type {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
+import type {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import ReflectPhase from '../../../server/database/types/ReflectPhase'
-import {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
-import {
+import type ReflectPhase from '../../../server/database/types/ReflectPhase'
+import type {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
+import type {Task as ITask} from '../../../server/postgres/types/index.d'
+import type {
   DiscussPhase,
   DiscussStage,
   NewMeetingPhase
 } from '../../../server/postgres/types/NewMeetingPhase'
-import {Task as ITask} from '../../../server/postgres/types/index.d'
 import {getTagsFromTipTapTask} from '../../shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../../shared/tiptap/splitTipTapContent'
@@ -32,7 +32,6 @@ import sleep from '../../utils/sleep'
 import startStage_ from '../../utils/startStage_'
 import unlockAllStagesForPhase from '../../utils/unlockAllStagesForPhase'
 import unlockNextStages from '../../utils/unlockNextStages'
-import LocalAtmosphere from './LocalAtmosphere'
 import getDemoTitles from './getDemoTitles'
 import handleCompletedDemoStage from './handleCompletedDemoStage'
 import initBotScript from './initBotScript'
@@ -40,11 +39,12 @@ import initDB, {
   DemoComment,
   DemoDiscussion,
   DemoThreadableEdge,
-  JiraProjectKeyLookup,
-  RetroDemoDB,
   demoTeamId,
-  demoViewerId
+  demoViewerId,
+  JiraProjectKeyLookup,
+  type RetroDemoDB
 } from './initDB'
+import type LocalAtmosphere from './LocalAtmosphere'
 
 export type DemoReflection = {
   __typename: string
@@ -181,7 +181,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     try {
       const demoDB = window.localStorage.getItem('retroDemo') || ''
       validDB = parse(demoDB)
-    } catch (e) {
+    } catch {
       // noop
     }
     const isFresh = validDB && new Date(validDB._updatedAt).getTime() >= Date.now() - ms('5m')
@@ -437,7 +437,12 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         reactableType,
         isRemove,
         reactji
-      }: {reactableId: string; reactableType: string; isRemove: boolean; reactji: string},
+      }: {
+        reactableId: string
+        reactableType: string
+        isRemove: boolean
+        reactji: string
+      },
       userId: string
     ) => {
       const table =
@@ -466,7 +471,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             id: reactjiId,
             count: 1,
             isViewerReactji: userId === demoViewerId,
-            users: [{__typename: 'user', id: userId, preferredName: user.preferredName}]
+            users: [
+              {
+                __typename: 'user',
+                id: userId,
+                preferredName: user.preferredName
+              }
+            ]
           })
         } else {
           existingReactji.count++
@@ -474,7 +485,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             existingReactji.isViewerReactji || userId === demoViewerId
           existingReactji.users = [
             ...existingReactji.users,
-            {__typename: 'user', id: userId, preferredName: user.preferredName}
+            {
+              __typename: 'user',
+              id: userId,
+              preferredName: user.preferredName
+            }
           ]
         }
       }
@@ -492,7 +507,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         taskId,
         integrationRepoId,
         integrationProviderService
-      }: {taskId: string; integrationRepoId: string; integrationProviderService: string},
+      }: {
+        taskId: string
+        integrationRepoId: string
+        integrationProviderService: string
+      },
       userId: string
     ) => {
       const task = this.db.tasks.find((task) => task.id === taskId)
@@ -586,7 +605,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       {
         input: {content, promptId, sortOrder, id, groupId}
       }: {
-        input: {content: string; promptId: string; sortOrder: number; id: string; groupId: string}
+        input: {
+          content: string
+          promptId: string
+          sortOrder: number
+          id: string
+          groupId: string
+        }
       },
       userId: string
     ) => {
@@ -873,7 +898,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         completedStageId,
         facilitatorStageId,
         meetingId
-      }: {completedStageId: string; facilitatorStageId: string; meetingId: string},
+      }: {
+        completedStageId: string
+        facilitatorStageId: string
+        meetingId: string
+      },
       userId: string
     ) => {
       let phaseCompleteData: any
@@ -1551,7 +1580,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       task.dueDate = dueDate
 
-      const data = {__typename: 'UpdateTaskDueDatePayload', error: null, task}
+      const data = {
+        __typename: 'UpdateTaskDueDatePayload',
+        error: null,
+        task
+      }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.TASK, data)
       }
@@ -1623,7 +1656,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const comment = this.db.comments.find((comment) => comment.id === commentId)!
       comment.content = content
 
-      const data = {__typename: 'UpdateCommentContentSuccess', error: null, comment}
+      const data = {
+        __typename: 'UpdateCommentContentSuccess',
+        error: null,
+        comment
+      }
       if (userId !== demoViewerId) {
         this.emit(SubscriptionChannel.MEETING, data)
       }

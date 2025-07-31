@@ -4,9 +4,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
-import getRedis, {RedisPipelineResponse} from '../../utils/getRedis'
+import getRedis, {type RedisPipelineResponse} from '../../utils/getRedis'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import PokerAnnounceDeckHoverPayload from '../types/PokerAnnounceDeckHoverPayload'
 
 const pokerAnnounceDeckHover = {

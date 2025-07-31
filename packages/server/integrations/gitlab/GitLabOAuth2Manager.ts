@@ -1,7 +1,7 @@
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
 import OAuth2Manager, {
-  OAuth2AuthorizationParams,
-  OAuth2RefreshAuthorizationParams
+  type OAuth2AuthorizationParams,
+  type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
 export default class GitLabOAuth2Manager extends OAuth2Manager {

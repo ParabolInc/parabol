@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import * as React from 'react'
+import type * as React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
-import Atmosphere from '../Atmosphere'
-import {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
+import type {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
+import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 
 const Wrapper = styled('div')({

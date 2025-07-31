@@ -1,4 +1,4 @@
-import {ResetReflectionGroupsSuccessResolvers} from '../resolverTypes'
+import type {ResetReflectionGroupsSuccessResolvers} from '../resolverTypes'
 
 export type ResetReflectionGroupsSuccessSource = {
   meetingId: string

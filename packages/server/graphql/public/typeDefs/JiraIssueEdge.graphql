@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type JiraIssueEdge {
-  """
-  The item at the end of the edge
-  """
-  node: JiraIssue!
-  cursor: String
+	"""
+	The item at the end of the edge
+	"""
+	node: JiraIssue!
+	cursor: String
 }

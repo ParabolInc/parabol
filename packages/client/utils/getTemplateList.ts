@@ -1,7 +1,7 @@
 import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
 import {readInlineData} from 'relay-runtime'
-import {getTemplateList_template$key} from '../__generated__/getTemplateList_template.graphql'
+import type {getTemplateList_template$key} from '../__generated__/getTemplateList_template.graphql'
 
 const getTemplateList = (
   viewerTeamId: string,

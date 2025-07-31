@@ -1,9 +1,9 @@
 import getPg from '../getPg'
 import {
-  IUpdateGitHubSearchQueriesQueryParams,
+  type IUpdateGitHubSearchQueriesQueryParams,
   updateGitHubSearchQueriesQuery
 } from './generated/updateGitHubSearchQueriesQuery'
-import {GitHubSearchQuery} from './getGitHubAuthByUserIdTeamId'
+import type {GitHubSearchQuery} from './getGitHubAuthByUserIdTeamId'
 
 interface UpdateParams extends Omit<IUpdateGitHubSearchQueriesQueryParams, 'githubSearchQueries'> {
   githubSearchQueries: GitHubSearchQuery[]

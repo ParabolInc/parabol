@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {LinearFieldMenu_stage$data} from '../__generated__/LinearFieldMenu_stage.graphql'
-import {UpdateLinearDimensionFieldMutation as TUpdateLinearDimensionFieldMutation} from '../__generated__/UpdateLinearDimensionFieldMutation.graphql'
+import type {LinearFieldMenu_stage$data} from '../__generated__/LinearFieldMenu_stage.graphql'
+import type {UpdateLinearDimensionFieldMutation as TUpdateLinearDimensionFieldMutation} from '../__generated__/UpdateLinearDimensionFieldMutation.graphql'
 import LinearProjectId from '../shared/gqlIds/LinearProjectId'
-import {DiscriminateProxy} from '../types/generics'
-import {StandardMutation} from '../types/relayMutations'
+import type {DiscriminateProxy} from '../types/generics'
+import type {StandardMutation} from '../types/relayMutations'
 import createProxyRecord from '../utils/relay/createProxyRecord'
 
 graphql`

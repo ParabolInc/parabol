@@ -1,6 +1,6 @@
 import isTeamHealthAvailable from 'parabol-client/utils/features/isTeamHealthAvailable'
-import {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
-import {TierEnum} from '../graphql/public/resolverTypes'
+import type {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
+import type {TierEnum} from '../graphql/public/resolverTypes'
 
 const isPhaseAvailable = (tier: TierEnum) => (phaseType: NewMeetingPhaseTypeEnum) => {
   if (phaseType === 'TEAM_HEALTH') {

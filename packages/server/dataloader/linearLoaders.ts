@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
-import {Selectable} from 'kysely'
+import type {Selectable} from 'kysely'
 import getKysely from '../postgres/getKysely'
-import {LinearDimensionFieldMap} from '../postgres/types/pg'
+import type {LinearDimensionFieldMap} from '../postgres/types/pg'
 import type RootDataLoader from './RootDataLoader'
 
 type LinearDimensionFieldMapKey = Omit<Selectable<LinearDimensionFieldMap>, 'id' | 'labelTemplate'>

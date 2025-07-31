@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const reflectTemplatePromptUpdateDescription: MutationResolvers['reflectTemplatePromptUpdateDescription'] =
   async (_source, {promptId, description}, {authToken, dataLoader, socketId: mutatorId}) => {

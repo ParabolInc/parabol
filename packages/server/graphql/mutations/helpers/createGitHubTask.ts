@@ -1,8 +1,8 @@
-import {JSONContent} from '@tiptap/core'
-import {GraphQLResolveInfo} from 'graphql'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
-import {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
-import {
+import type {GitHubAuth} from '../../../postgres/queries/getGitHubAuthByUserIdTeamId'
+import type {
   CreateIssueMutation,
   CreateIssueMutationVariables,
   GetRepoInfoQuery,
@@ -12,7 +12,7 @@ import {convertTipTapToMarkdown} from '../../../utils/convertTipTapToMarkdown'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import createIssueMutation from '../../../utils/githubQueries/createIssue.graphql'
 import getRepoInfo from '../../../utils/githubQueries/getRepoInfo.graphql'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 const createGitHubTask = async (
   rawContent: JSONContent,

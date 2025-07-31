@@ -1,6 +1,6 @@
-import {DataLoaderWorker} from '../graphql/graphql'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import IntegrationProviderServiceEnum, {
-  IntegrationProviderServiceEnumType
+  type IntegrationProviderServiceEnumType
 } from '../graphql/types/IntegrationProviderServiceEnum'
 
 const getTaskServicesWithPerms = async (

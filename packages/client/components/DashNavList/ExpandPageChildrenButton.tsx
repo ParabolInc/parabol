@@ -3,6 +3,7 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import {memo, useRef} from 'react'
 import useEventCallback from '../../hooks/useEventCallback'
 import {cn} from '../../ui/cn'
+
 interface Props {
   expandChildPages: () => void
   showChildren: boolean
@@ -35,17 +36,17 @@ export const ExpandPageChildrenButton = memo((props: Props) => {
       onPointerEnter={handleDragExpandEnter}
       onPointerLeave={handleDragExpandLeave}
       className={cn(
-        'flex size-6 shrink-0 items-center justify-center rounded-sm bg-slate-200 text-slate-600 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300 hover:bg-slate-400',
-        draggingPageId && 'bg-inherit group-hover:bg-sky-300 hover:bg-sky-300'
+        'flex size-6 shrink-0 items-center justify-center rounded-sm bg-slate-200 text-slate-600 hover:bg-slate-400 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300',
+        draggingPageId && 'bg-inherit hover:bg-sky-300 group-hover:bg-sky-300'
       )}
     >
-      <DefaultIcon className='size-5 group-hover:hidden no-hover:hidden' />
+      <DefaultIcon className='no-hover:hidden size-5 group-hover:hidden' />
       <ChevronRightIcon
         className={cn(
-          'sm hidden size-5 transition-transform group-hover:block no-hover:block',
+          'sm no-hover:block hidden size-5 transition-transform group-hover:block',
           showChildren && 'rotate-90'
         )}
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           e.preventDefault()
           expandChildPages()
         }}

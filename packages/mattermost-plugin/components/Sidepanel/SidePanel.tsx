@@ -1,6 +1,6 @@
 import {Forum, Group} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {SidePanelQuery} from 'parabol-client/__generated__/SidePanelQuery.graphql'
+import type {SidePanelQuery} from 'parabol-client/__generated__/SidePanelQuery.graphql'
 import Tab from 'parabol-client/components/Tab/Tab'
 import {Suspense, useEffect, useMemo, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
@@ -69,7 +69,7 @@ const SidePanel = () => {
     <div className='flex h-full flex-col items-stretch overflow-hidden px-2'>
       <Tabs
         activeIdx={Object.keys(panels).indexOf(activePanel)}
-        className='w-full max-w-none border-b border-slate-300'
+        className='w-full max-w-none border-slate-300 border-b'
       >
         {Object.entries(panels).map(([key, {icon, label}]) => (
           <Tab

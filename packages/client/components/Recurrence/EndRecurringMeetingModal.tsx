@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {RRule} from 'rrule'
-import {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
-import {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
+import type {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
+import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import useRouter from '../../hooks/useRouter'
@@ -12,7 +12,7 @@ import EndRetrospectiveMutation from '../../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../../mutations/EndSprintPokerMutation'
 import EndTeamPromptMutation from '../../mutations/EndTeamPromptMutation'
 import UpdateRecurrenceSettingsMutation from '../../mutations/UpdateRecurrenceSettingsMutation'
-import {
+import type {
   CompletedHandler,
   HistoryMaybeLocalHandler,
   StandardMutation
@@ -114,7 +114,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
 
   return (
     <DialogContainer className='p-4'>
-      <div className='mb-4 text-xl font-semibold'>End Meeting</div>
+      <div className='mb-4 font-semibold text-xl'>End Meeting</div>
       <div className='mb-4 flex flex-col gap-2'>
         <RadioToggle
           checked={isMeetingOnly}
@@ -132,7 +132,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
       <div className='flex justify-end gap-2.5'>
         <button
           className={cn(
-            'border border-solid border-slate-400 bg-white text-slate-700 hover:bg-slate-100',
+            'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-100',
             ACTION_BUTTON_CLASSES
           )}
           onClick={closeModal}

@@ -1,6 +1,9 @@
-import {JiraSearchQueryInput, JiraServerSearchQueryInput} from '../../graphql/public/resolverTypes'
+import type {
+  JiraSearchQueryInput,
+  JiraServerSearchQueryInput
+} from '../../graphql/public/resolverTypes'
 import getPg from '../getPg'
-import {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
+import type {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
 import {upsertIntegrationSearchQueryQuery} from './generated/upsertIntegrationSearchQueryQuery'
 import {upsertIntegrationSearchQueryWithProviderIdQuery} from './generated/upsertIntegrationSearchQueryWithProviderIdQuery'
 

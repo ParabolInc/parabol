@@ -1,4 +1,4 @@
-import {NotifyKickedOutResolvers} from '../resolverTypes'
+import type {NotifyKickedOutResolvers} from '../resolverTypes'
 
 const NotifyKickedOut: NotifyKickedOutResolvers = {
   __isTypeOf: ({type}) => type === 'KICKED_OUT',

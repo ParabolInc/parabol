@@ -1,4 +1,4 @@
-import {ConnectionHandler, ReadOnlyRecordProxy} from 'relay-runtime'
+import {ConnectionHandler, type ReadOnlyRecordProxy} from 'relay-runtime'
 
 const getTeamTasksConn = (team: ReadOnlyRecordProxy | null | undefined) => {
   if (team) {

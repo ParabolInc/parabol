@@ -1,12 +1,12 @@
 import ms from 'ms'
-import {JobQueueError} from '../JobQueueError'
-import {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
+import type {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
-import {JobQueueStepRun} from '../custom'
+import type {JobQueueStepRun} from '../custom'
 import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'
+import {JobQueueError} from '../JobQueueError'
 import {
-  SimilarEmbedding,
-  getRerankedEmbeddingsFromChunks
+  getRerankedEmbeddingsFromChunks,
+  type SimilarEmbedding
 } from './helpers/getRerankedEmbeddingsFromChunks'
 import {publishSimilarRetroTopics} from './helpers/publishSimilarRetroTopics'
 

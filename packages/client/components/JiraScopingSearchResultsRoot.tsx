@@ -3,9 +3,9 @@ import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import MockScopingList from '~/modules/meeting/components/MockScopingList'
 import jiraScopingSearchResultsQuery, {
-  JiraScopingSearchResultsQuery
+  type JiraScopingSearchResultsQuery
 } from '../__generated__/JiraScopingSearchResultsQuery.graphql'
-import {JiraScopingSearchResultsRoot_meeting$key} from '../__generated__/JiraScopingSearchResultsRoot_meeting.graphql'
+import type {JiraScopingSearchResultsRoot_meeting$key} from '../__generated__/JiraScopingSearchResultsRoot_meeting.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import ErrorBoundary from './ErrorBoundary'
 import JiraScopingSearchResults from './JiraScopingSearchResults'

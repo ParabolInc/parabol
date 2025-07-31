@@ -1,7 +1,8 @@
 import {computePosition, flip, shift} from '@floating-ui/dom'
-import {posToDOMRect, ReactRenderer, type Editor} from '@tiptap/react'
+import {type Editor, posToDOMRect, ReactRenderer} from '@tiptap/react'
 import type {SuggestionOptions} from '@tiptap/suggestion'
 import type {ForwardRefExoticComponent} from 'react'
+
 interface Options {
   // TODO fix onHide
   onHide?: () => void

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
+import type {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 import {upperFirst} from '../../../../utils/upperFirst'

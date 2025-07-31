@@ -1,33 +1,33 @@
 import EventEmitter from 'eventemitter3'
-import {type Client} from 'graphql-ws'
+import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
-import {Disposable} from 'react-relay'
-import {RouterProps} from 'react-router'
+import type {Disposable} from 'react-relay'
+import type {RouterProps} from 'react-router'
 import {
-  CacheConfig,
-  ConcreteRequest,
+  type CacheConfig,
+  type ConcreteRequest,
   Environment,
-  FetchFunction,
-  FetchQueryFetchPolicy,
-  GraphQLResponse,
-  GraphQLTaggedNode,
+  type FetchFunction,
+  type FetchQueryFetchPolicy,
+  fetchQuery,
+  type GraphQLResponse,
+  type GraphQLTaggedNode,
   Network,
-  NormalizationLinkedField,
+  type NormalizationLinkedField,
   Observable,
-  OperationType,
+  type OperationType,
   RecordSource,
   RelayFeatureFlags,
-  RequestParameters,
+  type RequestParameters,
   Store,
-  UploadableMap,
-  Variables,
-  fetchQuery
+  type UploadableMap,
+  type Variables
 } from 'relay-runtime'
-import StrictEventEmitter from 'strict-event-emitter-types'
-import {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
-import {Snack, SnackbarRemoveFn} from './components/Snackbar'
+import type StrictEventEmitter from 'strict-event-emitter-types'
+import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
+import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
-import {AuthToken} from './types/AuthToken'
+import type {AuthToken} from './types/AuthToken'
 import {LocalStorageKey} from './types/constEnums'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
@@ -203,7 +203,7 @@ export default class Atmosphere extends Environment {
         // waiting a tick prevents `client.subscribe` from creating 2 websocket instances
         try {
           await this.connectWebsocket()
-        } catch (e) {
+        } catch {
           // errors are handled in the closed handler
           return
         }
@@ -293,7 +293,7 @@ export default class Atmosphere extends Environment {
     }
     try {
       this.authObj = jwtDecode(authToken)
-    } catch (e) {
+    } catch {
       this.authObj = null
       this.authToken = null
     }

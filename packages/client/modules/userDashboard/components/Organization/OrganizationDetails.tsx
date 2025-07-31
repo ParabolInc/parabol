@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
+import type {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
 import makeDateString from '../../../../utils/makeDateString'

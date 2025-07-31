@@ -1,7 +1,7 @@
 import getKysely from '../../../postgres/getKysely'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const stripeDeleteSubscription: MutationResolvers['stripeDeleteSubscription'] = async (
   _source,

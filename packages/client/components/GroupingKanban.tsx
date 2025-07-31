@@ -1,8 +1,8 @@
 import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
-import {RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
+import type {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
@@ -14,8 +14,8 @@ import {Breakpoint, Times} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
-import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
+import ReflectWrapperDesktop from './RetroReflectPhase/ReflectWrapperDesktop'
 import SpotlightModal from './SpotlightModal'
 
 interface Props {
@@ -127,7 +127,9 @@ const GroupingKanban = (props: Props) => {
   }
 
   const {groupsByPrompt, isAnyEditing} = useMemo(() => {
-    const container = {} as {[promptId: string]: (typeof reflectionGroups)[0][]}
+    const container = {} as {
+      [promptId: string]: (typeof reflectionGroups)[0][]
+    }
     let isEditing = false
     reflectionGroups.forEach((group) => {
       const {reflections, promptId} = group

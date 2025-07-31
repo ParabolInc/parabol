@@ -1,20 +1,20 @@
-import {Variables} from 'react-relay'
+import type {AnyAction, Store} from '@reduxjs/toolkit'
+import {Client4} from 'mattermost-redux/client'
+import type {GlobalState} from 'mattermost-redux/types/store'
+import type {Variables} from 'react-relay'
 import {
   Environment,
   Network,
   Observable,
   RecordSource,
   RelayFeatureFlags,
-  RelayFieldLogger,
-  RequestParameters
+  type RelayFieldLogger,
+  type RequestParameters
 } from 'relay-runtime'
 import RelayModernStore from 'relay-runtime/lib/store/RelayModernStore'
-
-import {AnyAction, Store} from '@reduxjs/toolkit'
-import {Client4} from 'mattermost-redux/client'
-import {GlobalState} from 'mattermost-redux/types/store'
 import {login as onLogin} from './reducers'
 import {authToken as getAuthToken} from './selectors'
+
 RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true
 
 type State = {

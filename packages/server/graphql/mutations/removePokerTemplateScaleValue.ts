@@ -4,7 +4,7 @@ import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import RemovePokerTemplateScaleValuePayload from '../types/RemovePokerTemplateScaleValuePayload'
 
 const removePokerTemplateScaleValue = {
@@ -31,7 +31,9 @@ const removePokerTemplateScaleValue = {
     // AUTH
     const scale = await dataLoader.get('templateScales').load(scaleId)
     if (!scale || scale.removedAt) {
-      return standardError(new Error('Did not find an active scale'), {userId: viewerId})
+      return standardError(new Error('Did not find an active scale'), {
+        userId: viewerId
+      })
     }
     if (!isTeamMember(authToken, scale.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

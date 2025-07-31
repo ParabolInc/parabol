@@ -1,6 +1,6 @@
-import {MutableRefObject, useRef} from 'react'
+import {type MutableRefObject, useRef} from 'react'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
-import {Dims, Point} from '../types/animations'
+import type {Dims, Point} from '../types/animations'
 import {BezierCurve, ElementWidth, Times} from '../types/constEnums'
 
 interface Options<T> {

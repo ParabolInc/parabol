@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {LinkedTeamsQuery} from 'parabol-client/__generated__/LinkedTeamsQuery.graphql'
+import type {LinkedTeamsQuery} from 'parabol-client/__generated__/LinkedTeamsQuery.graphql'
 import {useMemo} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
@@ -46,7 +46,7 @@ const LinkedTeams = () => {
 
   return (
     <>
-      <div className='flex items-center justify-between py-3 text-2xl font-semibold'>
+      <div className='flex items-center justify-between py-3 font-semibold text-2xl'>
         Linked Teams
         <button className='btn btn-primary' onClick={handleLink}>
           Link Team
@@ -56,7 +56,9 @@ const LinkedTeams = () => {
         <p className='p-2 font-semibold'>There are no teams linked to this channel</p>
       )}
       <div className='flex flex-col overflow-y-scroll'>
-        {linkedTeams?.map((team) => <TeamRow key={team.id} teamRef={team} />)}
+        {linkedTeams?.map((team) => (
+          <TeamRow key={team.id} teamRef={team} />
+        ))}
       </div>
     </>
   )

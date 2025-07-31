@@ -3,7 +3,14 @@
  * but we also need to trigger rerenders, so we need to call useState or similar
  * calling useState is nice because it bails if called with the same input
  */
-import {Dispatch, MutableRefObject, SetStateAction, useCallback, useRef, useState} from 'react'
+import {
+  type Dispatch,
+  type MutableRefObject,
+  type SetStateAction,
+  useCallback,
+  useRef,
+  useState
+} from 'react'
 
 const useRefState = <S>(
   initialState: S | (() => S)

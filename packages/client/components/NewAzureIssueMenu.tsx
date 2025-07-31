@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {MenuProps} from '~/hooks/useMenu'
+import type {MenuProps} from '~/hooks/useMenu'
 import useSearchFilter from '~/hooks/useSearchFilter'
-import {
+import type {
   NewAzureIssueMenu_AzureDevOpsRemoteProjects$data,
   NewAzureIssueMenu_AzureDevOpsRemoteProjects$key
 } from '../__generated__/NewAzureIssueMenu_AzureDevOpsRemoteProjects.graphql'

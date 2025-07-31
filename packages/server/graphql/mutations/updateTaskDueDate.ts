@@ -6,9 +6,9 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
+import type {GQLContext} from './../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import UpdateTaskDueDatePayload from '../types/UpdateTaskDueDatePayload'
-import {GQLContext} from './../graphql'
 
 export default {
   type: UpdateTaskDueDatePayload,

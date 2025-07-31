@@ -1,6 +1,6 @@
 import generateUID from '../../generateUID'
-import EstimateUserScore from './EstimateUserScore'
-import GenericMeetingStage, {GenericMeetingStageInput} from './GenericMeetingStage'
+import type EstimateUserScore from './EstimateUserScore'
+import GenericMeetingStage, {type GenericMeetingStageInput} from './GenericMeetingStage'
 
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   creatorUserId: string

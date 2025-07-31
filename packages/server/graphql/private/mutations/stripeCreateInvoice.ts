@@ -1,7 +1,7 @@
 import updateSubscriptionQuantity from '../../../billing/helpers/updateSubscriptionQuantity'
 import {isSuperUser} from '../../../utils/authorization'
 import {getStripeManager} from '../../../utils/stripe'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const stripeCreateInvoice: MutationResolvers['stripeCreateInvoice'] = async (
   _source,

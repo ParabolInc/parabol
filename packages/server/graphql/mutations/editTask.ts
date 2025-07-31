@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import EditTaskPayload from '../types/EditTaskPayload'
 
 export default {

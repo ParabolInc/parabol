@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import {ReactNode, useState} from 'react'
-import {NotificationStatusEnum} from '../__generated__/NotificationDropdown_query.graphql'
+import {type ReactNode, useState} from 'react'
+import type {NotificationStatusEnum} from '../__generated__/NotificationDropdown_query.graphql'
 import {PALETTE} from '../styles/paletteV3'
 
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({

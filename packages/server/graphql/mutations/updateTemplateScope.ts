@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
+import type {SharingScopeEnum as ESharingScope} from '../../database/types/MeetingTemplate'
 import PokerTemplate from '../../database/types/PokerTemplate'
 import ReflectTemplate from '../../database/types/ReflectTemplate'
 import generateUID from '../../generateUID'
@@ -9,16 +9,22 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import SharingScopeEnum, {SharingScopeEnumType} from '../types/SharingScopeEnum'
+import type {GQLContext} from '../graphql'
+import SharingScopeEnum, {type SharingScopeEnumType} from '../types/SharingScopeEnum'
 import UpdateTemplateScopePayload from '../types/UpdateTemplateScopePayload'
 
 const updateTemplateScope = {
   type: new GraphQLNonNull(UpdateTemplateScopePayload),
   description: `Change the scope of a template`,
   args: {
-    templateId: {type: new GraphQLNonNull(GraphQLID), description: 'The id of the template'},
-    scope: {type: new GraphQLNonNull(SharingScopeEnum), description: 'the new scope'}
+    templateId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The id of the template'
+    },
+    scope: {
+      type: new GraphQLNonNull(SharingScopeEnum),
+      description: 'the new scope'
+    }
   },
   resolve: async (
     _source: unknown,

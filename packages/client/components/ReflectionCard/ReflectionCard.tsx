@@ -1,15 +1,15 @@
 import {isNodeEmpty} from '@tiptap/core'
 import {Node as ProseMirrorNode} from '@tiptap/pm/model'
 import graphql from 'babel-plugin-relay/macro'
-import {MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
+import {type MouseEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {
+import type {
   NewMeetingPhaseTypeEnum,
   ReflectionCard_meeting$key
 } from '~/__generated__/ReflectionCard_meeting.graphql'
 import AddReactjiToReactableMutation from '~/mutations/AddReactjiToReactableMutation'
 import isDemoRoute from '~/utils/isDemoRoute'
-import {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
+import type {ReflectionCard_reflection$key} from '../../__generated__/ReflectionCard_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useEventCallback from '../../hooks/useEventCallback'
@@ -23,7 +23,7 @@ import {Breakpoint} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import isPhaseComplete from '../../utils/meetings/isPhaseComplete'
 import isTempId from '../../utils/relay/isTempId'
-import {OpenSpotlight} from '../GroupingKanbanColumn'
+import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import {TipTapEditor} from '../promptResponse/TipTapEditor'
 import StyledError from '../StyledError'
 import ColorBadge from './ColorBadge'
@@ -165,9 +165,14 @@ const ReflectionCard = (props: Props) => {
   )
 
   const handleModEnter = useEventCallback(() => {
+    if (readOnly) return
     handleContentUpdate()
     updateIsEditing(false)
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+    EditReflectionMutation(atmosphere, {
+      isEditing: false,
+      meetingId,
+      promptId
+    })
   })
 
   const {editor} = useTipTapReflectionEditor(content, {
@@ -179,12 +184,16 @@ const ReflectionCard = (props: Props) => {
   const [isHovering, setIsHovering] = useState(false)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const handleEditorFocus = () => {
-    if (isTempId(reflectionId)) return
+    if (isTempId(reflectionId) || readOnly) return
     if (isEditing) {
       return
     }
     updateIsEditing(true)
-    EditReflectionMutation(atmosphere, {isEditing: true, meetingId, promptId})
+    EditReflectionMutation(atmosphere, {
+      isEditing: true,
+      meetingId,
+      promptId
+    })
   }
 
   const updateIsEditing = (isEditing: boolean) => {
@@ -239,7 +248,7 @@ const ReflectionCard = (props: Props) => {
   }, [editor, isEditing, content])
 
   const handleEditorBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    if (isTempId(reflectionId)) return
+    if (isTempId(reflectionId) || readOnly) return
     // Creating a reflection in the group phase is different than in reflect phase. We're creating an empty reflection and start editing it.
     // For the user however we want to have a consistent behaviour with the reflect phase. This means when they blur without editing, we don't want to submit the reflection.
     if (isFirstEdit) return
@@ -256,7 +265,11 @@ const ReflectionCard = (props: Props) => {
 
     handleContentUpdate()
     updateIsEditing(false)
-    EditReflectionMutation(atmosphere, {isEditing: false, meetingId, promptId})
+    EditReflectionMutation(atmosphere, {
+      isEditing: false,
+      meetingId,
+      promptId
+    })
   }
 
   const onToggleReactji = (emojiId: string) => {
@@ -327,7 +340,7 @@ const ReflectionCard = (props: Props) => {
       <ColorBadge phaseType={phaseType as NewMeetingPhaseTypeEnum} reflection={reflection} />
       <div
         ref={scrollRef}
-        className={cn('relative w-full overflow-auto text-sm leading-5 text-slate-700')}
+        className={cn('relative w-full overflow-auto text-slate-700 text-sm leading-5')}
       >
         <TipTapEditor
           className={cn(

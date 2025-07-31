@@ -4,6 +4,7 @@ import useQueryLoaderNow from '~/hooks/useQueryLoaderNow'
 import type {ImageSelectorSearchTabQuery} from '../../../__generated__/ImageSelectorSearchTabQuery.graphql'
 import imageSelectorSearchTabQuery from '../../../__generated__/ImageSelectorSearchTabQuery.graphql'
 import {ImageSelectorSearchTab} from './ImageSelectorSearchTab'
+
 interface Props {
   editor: Editor
   setImageURL: (url: string) => void

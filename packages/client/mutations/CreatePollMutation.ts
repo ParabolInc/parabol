@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {CreatePollMutation_meeting$data} from '~/__generated__/CreatePollMutation_meeting.graphql'
-import {CreatePollMutation as TCreatePollMutation} from '../__generated__/CreatePollMutation.graphql'
-import {ThreadedPollBase_poll$data} from '../__generated__/ThreadedPollBase_poll.graphql'
-import {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
+import type {CreatePollMutation_meeting$data} from '~/__generated__/CreatePollMutation_meeting.graphql'
+import type {CreatePollMutation as TCreatePollMutation} from '../__generated__/CreatePollMutation.graphql'
+import type {ThreadedPollBase_poll$data} from '../__generated__/ThreadedPollBase_poll.graphql'
+import type {LocalHandlers, SharedUpdater, StandardMutation} from '../types/relayMutations'
 import getDiscussionThreadConn from './connections/getDiscussionThreadConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 

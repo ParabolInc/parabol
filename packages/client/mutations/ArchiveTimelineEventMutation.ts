@@ -1,10 +1,10 @@
-import {ArchiveTimelineEventMutation_notification$data} from '__generated__/ArchiveTimelineEventMutation_notification.graphql'
+import type {ArchiveTimelineEventMutation_notification$data} from '__generated__/ArchiveTimelineEventMutation_notification.graphql'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ConnectionHandler, RecordSourceSelectorProxy} from 'relay-runtime'
+import {ConnectionHandler, type RecordSourceSelectorProxy} from 'relay-runtime'
 import safeRemoveNodeFromConn from '~/utils/relay/safeRemoveNodeFromConn'
-import {ArchiveTimelineEventMutation as TArchiveTimelineEventMutation} from '../__generated__/ArchiveTimelineEventMutation.graphql'
-import {SharedUpdater, SimpleMutation} from '../types/relayMutations'
+import type {ArchiveTimelineEventMutation as TArchiveTimelineEventMutation} from '../__generated__/ArchiveTimelineEventMutation.graphql'
+import type {SharedUpdater, SimpleMutation} from '../types/relayMutations'
 import {parseQueryParams} from '../utils/useQueryParameterParser'
 import getUserTimelineEventsConn from './connections/getUserTimelineEventsConn'
 
@@ -73,7 +73,10 @@ const ArchiveTimelineEventMutation: SimpleMutation<TArchiveTimelineEventMutation
     variables,
     updater: (store) => {
       const payload = store.getRootField('archiveTimelineEvent')
-      archiveTimelineEventNotificationUpdater(payload as any, {atmosphere, store})
+      archiveTimelineEventNotificationUpdater(payload as any, {
+        atmosphere,
+        store
+      })
     },
     optimisticUpdater: (store) => {
       const {timelineEventId} = variables

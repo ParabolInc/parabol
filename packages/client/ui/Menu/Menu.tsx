@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import * as React from 'react'
+import type * as React from 'react'
 
 interface MenuProps extends DropdownMenu.DropdownMenuProps {
   className?: string

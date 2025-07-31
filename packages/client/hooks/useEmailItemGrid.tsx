@@ -1,4 +1,4 @@
-import {ReactElement} from 'react'
+import type {ReactElement} from 'react'
 import getMinColumns from '../utils/getMinColumns'
 import unflattenIntoRows from '../utils/unflattenIntoRows'
 

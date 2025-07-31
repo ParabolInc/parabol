@@ -7,7 +7,7 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import GraphQLISO8601Type from '../types/GraphQLISO8601Type'
 import SetStageTimerPayload from '../types/SetStageTimerPayload'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
@@ -41,7 +41,11 @@ export default {
       meetingId,
       scheduledEndTime: newScheduledEndTime,
       timeRemaining
-    }: {scheduledEndTime: Date | null; meetingId: string; timeRemaining: number | null},
+    }: {
+      scheduledEndTime: Date | null
+      meetingId: string
+      timeRemaining: number | null
+    },
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
     const pg = getKysely()
@@ -59,21 +63,30 @@ export default {
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    if (endedAt)
+      return standardError(new Error('Meeting already ended'), {
+        userId: viewerId
+      })
     if (facilitatorUserId !== viewerId) {
-      return standardError(new Error('Not the facilitator'), {userId: viewerId})
+      return standardError(new Error('Not the facilitator'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION
     if (newScheduledEndTime && newScheduledEndTime.getTime() < now.getTime()) {
-      return standardError(new Error('Time must be in the future'), {userId: viewerId})
+      return standardError(new Error('Time must be in the future'), {
+        userId: viewerId
+      })
     }
 
     const stageRes = findStageById(phases, facilitatorStageId)!
     const {stage} = stageRes
     const {scheduledEndTime, isComplete} = stage
     if (isComplete) {
-      return standardError(new Error('Stage is already complete'), {userId: viewerId})
+      return standardError(new Error('Stage is already complete'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION

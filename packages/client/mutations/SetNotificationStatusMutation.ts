@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {OptionalHandlers, StandardMutation} from '~/types/relayMutations'
-import {SetNotificationStatusMutation as TSetNotificationStatusMutation} from '../__generated__/SetNotificationStatusMutation.graphql'
+import type {OptionalHandlers, StandardMutation} from '~/types/relayMutations'
+import type {SetNotificationStatusMutation as TSetNotificationStatusMutation} from '../__generated__/SetNotificationStatusMutation.graphql'
 
 graphql`
   fragment SetNotificationStatusMutation_notification on SetNotificationStatusPayload {

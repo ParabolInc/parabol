@@ -1,18 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {InviteToMeetingModalQuery} from 'parabol-client/__generated__/InviteToMeetingModalQuery.graphql'
 import {useEffect, useMemo, useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
-
-import {closeInviteToMeetingModal} from '../../reducers'
-
-import Select from '../Select'
-
-import {InviteToMeetingModalQuery} from 'parabol-client/__generated__/InviteToMeetingModalQuery.graphql'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {useInviteToMeeting} from '../../hooks/useInviteToMeeting'
+import {closeInviteToMeetingModal} from '../../reducers'
 import LoadingSpinner from '../LoadingSpinner'
 import Modal from '../Modal'
 import NoLinkedTeamsModal from '../NoLinkedTeamsModal'
+import Select from '../Select'
 
 const InviteToMeetingModal = () => {
   const channel = useCurrentChannel()

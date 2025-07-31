@@ -1,7 +1,7 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
-import {sql, type NotNull} from 'kysely'
+import {type NotNull, sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
@@ -15,7 +15,7 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import MeetingTemplate from '../../../database/types/MeetingTemplate'
+import type MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
 import {
   selectNewMeetings,
@@ -32,7 +32,7 @@ import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
-import {DataLoaderWorker} from '../../graphql'
+import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
@@ -40,7 +40,7 @@ import {aiPrompts} from '../fields/aiPrompts'
 import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
-import {ReqResolvers} from './ReqResolvers'
+import type {ReqResolvers} from './ReqResolvers'
 
 declare const __PRODUCTION__: string
 
@@ -149,7 +149,10 @@ const User: ReqResolvers<'User'> = {
     const viewerId = getUserId(authToken)
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
-      standardError(new Error('Meeting not found'), {userId: viewerId, tags: {meetingId}})
+      standardError(new Error('Meeting not found'), {
+        userId: viewerId,
+        tags: {meetingId}
+      })
       return null
     }
     const {teamId} = meeting
@@ -235,7 +238,10 @@ const User: ReqResolvers<'User'> = {
       const err = new Error('Task filter is too broad')
       standardError(err, {
         userId: viewerId,
-        tags: {userIds: JSON.stringify(userIds), teamIds: JSON.stringify(teamIds)}
+        tags: {
+          userIds: JSON.stringify(userIds),
+          teamIds: JSON.stringify(teamIds)
+        }
       })
       return connectionFromTasks([], 0, err)
     }
@@ -378,10 +384,18 @@ const User: ReqResolvers<'User'> = {
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
     if (validTeamIds.length === 0)
-      return {error: 'No teams', pageInfo: {hasNextPage: false, hasPreviousPage: false}, edges: []}
+      return {
+        error: 'No teams',
+        pageInfo: {hasNextPage: false, hasPreviousPage: false},
+        edges: []
+      }
 
     if (viewerId !== id && !isSuperUser(authToken))
-      return {error: 'Not user', pageInfo: {hasNextPage: false, hasPreviousPage: false}, edges: []}
+      return {
+        error: 'Not user',
+        pageInfo: {hasNextPage: false, hasPreviousPage: false},
+        edges: []
+      }
     const dbAfter = after ? new Date(after) : new Date('3000-01-01')
     const minVal = new Date(0)
 
@@ -643,18 +657,20 @@ const User: ReqResolvers<'User'> = {
     switch (entity) {
       case 'Team':
         return isTeamMember(authToken, id)
-      case 'Meeting':
+      case 'Meeting': {
         const meeting = await dataLoader.get('newMeetings').load(id)
         if (!meeting) {
           return false
         }
         const {teamId} = meeting
         return isTeamMember(authToken, teamId)
-      case 'Organization':
+      }
+      case 'Organization': {
         const organizationUser = await dataLoader
           .get('organizationUsersByUserIdOrgId')
           .load({userId: viewerId, orgId: id})
         return !!organizationUser
+      }
       default:
         return false
     }
@@ -725,7 +741,9 @@ const User: ReqResolvers<'User'> = {
     } else if (parabolActivities!.length + allUserActivities.length > 1000) {
       logError(new Error('User.activities exceeds 1000 activities'), {
         userId,
-        extras: {numActivities: parabolActivities!.length + allUserActivities.length}
+        extras: {
+          numActivities: parabolActivities!.length + allUserActivities.length
+        }
       })
     }
     const getScore = (activity: MeetingTemplate, teamIds: string[]) => {

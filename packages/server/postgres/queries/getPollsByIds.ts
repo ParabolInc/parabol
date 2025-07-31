@@ -1,5 +1,5 @@
 import getPg from '../getPg'
-import {getPollsByIdsQuery, IGetPollsByIdsQueryResult} from './generated/getPollsByIdsQuery'
+import {getPollsByIdsQuery, type IGetPollsByIdsQueryResult} from './generated/getPollsByIdsQuery'
 
 export interface Poll extends IGetPollsByIdsQueryResult {}
 

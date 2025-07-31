@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {EmailPaymentRejected_notification$key} from 'parabol-client/__generated__/EmailPaymentRejected_notification.graphql'
+import type {EmailPaymentRejected_notification$key} from 'parabol-client/__generated__/EmailPaymentRejected_notification.graphql'
 import {useFragment} from 'react-relay'
 import makeAppURL from '../../../../utils/makeAppURL'
 import {notificationSummaryUrlParams} from '../NotificationSummaryEmail'

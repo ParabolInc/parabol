@@ -1,11 +1,17 @@
 import {fetch} from '@whatwg-node/fetch'
-import {GraphQLObjectType, GraphQLResolveInfo, OperationDefinitionNode, parse, print} from 'graphql'
-import nestGraphQLEndpoint from 'nest-graphql-endpoint/lib/nestGraphQLEndpoint'
 import {
+  type GraphQLObjectType,
+  type GraphQLResolveInfo,
+  type OperationDefinitionNode,
+  parse,
+  print
+} from 'graphql'
+import nestGraphQLEndpoint from 'nest-graphql-endpoint/lib/nestGraphQLEndpoint'
+import type {
   EndpointExecutionResult,
   Executor,
-  NestGraphQLEndpointParams,
-  NestedSource
+  NestedSource,
+  NestGraphQLEndpointParams
 } from 'nest-graphql-endpoint/lib/types'
 
 const defaultExecutor: Executor<{

@@ -1,6 +1,6 @@
-import dayjs, {Dayjs} from 'dayjs'
+import dayjs, {type Dayjs} from 'dayjs'
 import ms from 'ms'
-import {MenuProps} from '../../hooks/useMenu'
+import type {MenuProps} from '../../hooks/useMenu'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
 

@@ -1,6 +1,6 @@
 import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
-import {Resolvers} from './resolverTypes'
+import type {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'

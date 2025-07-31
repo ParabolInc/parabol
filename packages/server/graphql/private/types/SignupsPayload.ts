@@ -1,6 +1,6 @@
 import authCount from '../queries/helpers/authCount'
 import authCountByDomain from '../queries/helpers/authCountByDomain'
-import {SignupsPayloadResolvers} from '../resolverTypes'
+import type {SignupsPayloadResolvers} from '../resolverTypes'
 
 export type SignupsPayloadSource = {
   after?: Date | null

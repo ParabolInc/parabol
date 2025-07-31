@@ -1,12 +1,12 @@
-import {GraphQLResolveInfo} from 'graphql'
+import type {GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
 import makeScoreLinearComment from '../../../integrations/linear/makeScoreLinearComment'
 import getPhase from '../../../utils/getPhase'
-import {GQLContext} from '../../graphql'
-import {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import type {GQLContext} from '../../graphql'
+import type {ITaskEstimateInput} from '../../types/TaskEstimateInput'
 
 const pushEstimateToLinear = async (
   taskEstimate: ITaskEstimateInput,

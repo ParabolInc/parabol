@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import {UserResolvers} from '../resolverTypes'
+import type {UserResolvers} from '../resolverTypes'
 
 export const aiPrompts: NonNullable<UserResolvers['aiPrompts']> = async (
   _source,

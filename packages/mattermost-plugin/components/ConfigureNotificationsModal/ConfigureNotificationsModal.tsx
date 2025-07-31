@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
+import type {ConfigureNotificationsModalQuery} from 'parabol-client/__generated__/ConfigureNotificationsModalQuery.graphql'
 import React, {useEffect, useMemo} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-
-import {ConfigureNotificationsModalQuery} from 'parabol-client/__generated__/ConfigureNotificationsModalQuery.graphql'
 import {useLazyLoadQuery} from 'react-relay'
 import {useCurrentChannel} from '../../hooks/useCurrentChannel'
 import {closeConfigureNotificationsModal} from '../../reducers'

@@ -8,7 +8,7 @@ import EmailFooter from './../EmailFooter/EmailFooter'
 import EmptySpace from './../EmptySpace/EmptySpace'
 import Header from './../Header/Header'
 import Layout from './../Layout/Layout'
-import {LimitsEmailProps} from './LockedEmail'
+import type {LimitsEmailProps} from './LockedEmail'
 
 const innerMaxWidth = 480
 
@@ -53,7 +53,11 @@ export default function SevenDayWarningEmail(props: LimitsEmailProps) {
         <p style={{...copyStyle}}>
           {`You'll need to `}
           <a
-            style={{fontWeight: 600, textDecoration: 'underline', color: 'inherit'}}
+            style={{
+              fontWeight: 600,
+              textDecoration: 'underline',
+              color: 'inherit'
+            }}
             href={billingURL}
           >
             {`upgrade your account within the next ${Threshold.FINAL_WARNING_DAYS_BEFORE_LOCK} days`}

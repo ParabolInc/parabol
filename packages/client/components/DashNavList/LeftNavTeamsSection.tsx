@@ -56,7 +56,7 @@ export const LeftNavTeamsSection = (props: Props) => {
   const history = useHistory()
   return (
     <div>
-      <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 text-xs leading-5 font-semibold hover:bg-slate-300'>
+      <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 hover:bg-slate-300'>
         <LeftNavHeader>{'Teams'}</LeftNavHeader>
         <LeftNavItemButtons>
           <LeftNavHeaderButton

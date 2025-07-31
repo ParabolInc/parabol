@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {createAsyncThunk, createSlice, type PayloadAction} from '@reduxjs/toolkit'
 import {Client4} from 'mattermost-redux/client'
 import {getPluginServerRoute} from './selectors'
 

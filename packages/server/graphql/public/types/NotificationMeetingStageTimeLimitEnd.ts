@@ -1,4 +1,4 @@
-import {NotificationMeetingStageTimeLimitEndResolvers} from '../resolverTypes'
+import type {NotificationMeetingStageTimeLimitEndResolvers} from '../resolverTypes'
 
 const NotificationMeetingStageTimeLimitEnd: NotificationMeetingStageTimeLimitEndResolvers = {
   __isTypeOf: ({type}) => type === 'MEETING_STAGE_TIME_LIMIT_END',

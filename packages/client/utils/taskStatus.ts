@@ -1,6 +1,6 @@
 import {PALETTE} from '../styles/paletteV3'
 import {TaskStatus, TaskStatusLabel} from '../types/constEnums'
-import {ValueOf} from '../types/generics'
+import type {ValueOf} from '../types/generics'
 
 export const taskStatusLabels: Record<TaskStatus, TaskStatusLabel> = {
   [TaskStatus.DONE]: TaskStatusLabel.DONE,

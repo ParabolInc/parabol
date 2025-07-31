@@ -2,7 +2,7 @@ import {Link} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
-import {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
+import type {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
@@ -13,9 +13,9 @@ import gitHubMerged from '../../../styles/theme/images/graphics/github-merged.sv
 import githubPRClosed from '../../../styles/theme/images/graphics/github-pr-closed.svg'
 import githubPRDraft from '../../../styles/theme/images/graphics/github-pr-draft.svg'
 import githubPROpen from '../../../styles/theme/images/graphics/github-pr-open.svg'
-import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import relativeDate from '../../../utils/date/relativeDate'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
+import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,
@@ -125,8 +125,8 @@ const GitHubObjectCard = (props: Props) => {
       : PR_STATUS_MAP[modifiedStatus]
 
   return (
-    <div className='rounded-sm border border-solid border-slate-300 p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-xs text-slate-600'>
+    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
+      <div className='flex gap-2 text-slate-600 text-xs'>
         {statusImg && <img src={statusImg} />}
         <a
           href={url}
@@ -158,7 +158,7 @@ const GitHubObjectCard = (props: Props) => {
           <a
             href={repoUrl}
             target='_blank'
-            className='text-xs text-slate-600 hover:underline'
+            className='text-slate-600 text-xs hover:underline'
             rel='noreferrer'
             onClick={trackLinkClick}
           >

@@ -1,10 +1,10 @@
-import {GraphQLNonNull, GraphQLResolveInfo} from 'graphql'
+import {GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
-import {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import updateJiraDimensionFieldMap from '../../postgres/queries/updateJiraDimensionFieldMap'
 import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
@@ -16,9 +16,9 @@ import {fieldTypeToId} from '../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import getPhase from '../../utils/getPhase'
 import makeScoreJiraComment from '../../utils/makeScoreJiraComment'
 import publish from '../../utils/publish'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import SetTaskEstimatePayload from '../types/SetTaskEstimatePayload'
-import TaskEstimateInput, {ITaskEstimateInput} from '../types/TaskEstimateInput'
+import TaskEstimateInput, {type ITaskEstimateInput} from '../types/TaskEstimateInput'
 import pushEstimateToGitHub from './helpers/pushEstimateToGitHub'
 import pushEstimateToGitLab from './helpers/pushEstimateToGitLab'
 import pushEstimateToLinear from './helpers/pushEstimateToLinear'
@@ -91,25 +91,29 @@ const setTaskEstimate = {
     const stageId = stage.id
 
     // RESOLUTION
-    let jiraFieldId: string | undefined = undefined
-    let githubLabelName: string | undefined = undefined
-    let gitlabLabelId: string | undefined = undefined
+    let jiraFieldId: string | undefined
+    let githubLabelName: string | undefined
+    let gitlabLabelId: string | undefined
     const {integration} = task
     const service = integration?.service
     const stageIdx = stages.findIndex((stage) => stage.id === stageId)
     const discussionURL = makeAppURL(appOrigin, `meet/${meetingId}/estimate/${stageIdx + 1}`)
 
     let success = false
-    let errorMessage: string | undefined = undefined
+    let errorMessage: string | undefined
     switch (service) {
       case 'jira': {
         const {accessUserId, cloudId, issueKey} = integration!
         const projectKey = JiraProjectKeyId.join(issueKey)
         const [auth, jiraIssue] = await Promise.all([
           dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
-          dataLoader
-            .get('jiraIssue')
-            .load({teamId, cloudId, viewerId, userId: accessUserId, issueKey})
+          dataLoader.get('jiraIssue').load({
+            teamId,
+            cloudId,
+            viewerId,
+            userId: accessUserId,
+            issueKey
+          })
         ])
         if (!auth) {
           errorMessage = 'User no longer has access to Atlassian'
@@ -307,7 +311,13 @@ const setTaskEstimate = {
 
         const azureDevOpsDimensionFieldMapEntry = await dataLoader
           .get('azureDevOpsDimensionFieldMap')
-          .load({teamId, dimensionName, instanceId, projectKey, workItemType})
+          .load({
+            teamId,
+            dimensionName,
+            instanceId,
+            projectKey,
+            workItemType
+          })
 
         const fieldName = azureDevOpsDimensionFieldMapEntry
           ? azureDevOpsDimensionFieldMapEntry.fieldName

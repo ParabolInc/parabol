@@ -1,8 +1,8 @@
 import base64url from 'base64url'
 import crypto from 'crypto'
 import {Threshold} from 'parabol-client/types/constEnums'
-import AuthIdentityLocal from '../database/types/AuthIdentityLocal'
-import {DataLoaderWorker} from '../graphql/graphql'
+import type AuthIdentityLocal from '../database/types/AuthIdentityLocal'
+import type {DataLoaderWorker} from '../graphql/graphql'
 import getKysely from '../postgres/getKysely'
 import emailVerificationEmailCreator from './emailVerificationEmailCreator'
 import getMailManager from './getMailManager'
@@ -23,7 +23,10 @@ const createEmailVerficationForExistingUser = async (
   const {hashedPassword} = localIdentity
   const tokenBuffer = crypto.randomBytes(48)
   const verifiedEmailToken = base64url.encode(tokenBuffer)
-  const {subject, body, html} = emailVerificationEmailCreator({verifiedEmailToken, invitationToken})
+  const {subject, body, html} = emailVerificationEmailCreator({
+    verifiedEmailToken,
+    invitationToken
+  })
   const success = await getMailManager().sendEmail({
     to: email,
     subject,

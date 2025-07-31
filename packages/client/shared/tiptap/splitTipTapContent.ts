@@ -1,4 +1,4 @@
-import {generateText, JSONContent} from '@tiptap/core'
+import {generateText, type JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from './serverTipTapExtensions'
 
 export const splitTipTapContent = (doc: JSONContent, maxLength = 256) => {

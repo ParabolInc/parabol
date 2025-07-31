@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {ResetReflectionGroupsMutation as TResetReflectionGroupsMutation} from '../__generated__/ResetReflectionGroupsMutation.graphql'
-import {StandardMutation} from '../types/relayMutations'
+import type {ResetReflectionGroupsMutation as TResetReflectionGroupsMutation} from '../__generated__/ResetReflectionGroupsMutation.graphql'
+import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment ResetReflectionGroupsMutation_meeting on ResetReflectionGroupsSuccess {

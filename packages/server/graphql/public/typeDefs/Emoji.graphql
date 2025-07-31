@@ -1,4 +1,4 @@
 type Emoji {
-  id: ID!
-  count: Int!
+	id: ID!
+	count: Int!
 }

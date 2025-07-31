@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {NewMeetingTeamPickerAvatars_team$key} from '../__generated__/NewMeetingTeamPickerAvatars_team.graphql'
+import type {NewMeetingTeamPickerAvatars_team$key} from '../__generated__/NewMeetingTeamPickerAvatars_team.graphql'
 import getShuffledArr from '../utils/getShuffledArr'
 import Avatar from './Avatar/Avatar'
 import ErrorBoundary from './ErrorBoundary'
@@ -72,7 +72,7 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
             <AvatarWrapper count={randomAvatars.length}>
               <Avatar
                 picture={picture}
-                className={`h-7 w-7 border-2 border-solid border-slate-200`}
+                className={`h-7 w-7 border-2 border-slate-200 border-solid`}
               />
             </AvatarWrapper>
           </ErrorBoundary>

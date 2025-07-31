@@ -1,10 +1,10 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
-import {JiraIssue} from '../../../dataloader/atlassianLoaders'
+import type {JiraIssue} from '../../../dataloader/atlassianLoaders'
 import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const getJiraField = async (jiraIssue: JiraIssue, fieldId: string) => {
   // we have 2 special treatment fields, SERVICE_FIELD_COMMENT and SERVICE_FIELD_NULL which are handled

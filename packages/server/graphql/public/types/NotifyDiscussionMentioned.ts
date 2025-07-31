@@ -1,4 +1,4 @@
-import {NotifyDiscussionMentionedResolvers} from '../resolverTypes'
+import type {NotifyDiscussionMentionedResolvers} from '../resolverTypes'
 
 const NotifyDiscussionMentioned: NotifyDiscussionMentionedResolvers = {
   __isTypeOf: ({type}) => type === 'DISCUSSION_MENTIONED',

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Comment} from '@mui/icons-material'
-import {ReactElement, ReactNode} from 'react'
+import type {ReactElement, ReactNode} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import hasToken from '../utils/hasToken'
@@ -30,18 +30,18 @@ export const MeetingTopBarStyles = styled('div')({
   }
 })
 
-export const HeadingBlock = styled('div')<{isMeetingSidebarCollapsed?: boolean}>(
-  ({isMeetingSidebarCollapsed = true}) => ({
-    alignItems: 'flex-start',
-    display: 'flex',
-    paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
-    marginTop: 16,
-    minHeight: 24,
-    [localHeaderBreakpoint]: {
-      flex: 1
-    }
-  })
-)
+export const HeadingBlock = styled('div')<{
+  isMeetingSidebarCollapsed?: boolean
+}>(({isMeetingSidebarCollapsed = true}) => ({
+  alignItems: 'flex-start',
+  display: 'flex',
+  paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
+  marginTop: 16,
+  minHeight: 24,
+  [localHeaderBreakpoint]: {
+    flex: 1
+  }
+}))
 
 const PrimaryActionBlock = styled('div')({
   alignItems: 'center',

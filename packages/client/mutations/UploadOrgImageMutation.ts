@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {UploadableMap} from 'relay-runtime'
-import Atmosphere from '../Atmosphere'
-import {UploadOrgImageMutation as TUploadOrgImageMutation} from '../__generated__/UploadOrgImageMutation.graphql'
-import {BaseLocalHandlers} from '../types/relayMutations'
+import type {UploadableMap} from 'relay-runtime'
+import type {UploadOrgImageMutation as TUploadOrgImageMutation} from '../__generated__/UploadOrgImageMutation.graphql'
+import type Atmosphere from '../Atmosphere'
+import type {BaseLocalHandlers} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation UploadOrgImageMutation($file: File!, $orgId: ID!) {

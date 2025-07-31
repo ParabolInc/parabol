@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
-import {CreditCard} from '../../../postgres/select'
-import {MutationResolvers} from '../resolverTypes'
+import type {CreditCard} from '../../../postgres/select'
+import type {MutationResolvers} from '../resolverTypes'
 
 const assignSAMLIdToOrg: MutationResolvers['assignSAMLIdToOrg'] = async (
   _source,

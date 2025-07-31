@@ -1,4 +1,4 @@
-import {SetTeamNotificationSettingSuccessResolvers} from '../resolverTypes'
+import type {SetTeamNotificationSettingSuccessResolvers} from '../resolverTypes'
 
 export type SetTeamNotificationSettingSuccessSource = {
   // db id

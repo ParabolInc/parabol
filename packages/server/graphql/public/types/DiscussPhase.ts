@@ -1,4 +1,4 @@
-import {DiscussPhaseResolvers} from '../resolverTypes'
+import type {DiscussPhaseResolvers} from '../resolverTypes'
 
 const DiscussPhase: DiscussPhaseResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'discuss'

@@ -1,5 +1,5 @@
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {RemoveTeamMemberIntegrationAuthSuccessResolvers} from '../resolverTypes'
+import type {RemoveTeamMemberIntegrationAuthSuccessResolvers} from '../resolverTypes'
 
 export type RemoveTeamMemberIntegrationAuthSuccessSource = {
   service: string

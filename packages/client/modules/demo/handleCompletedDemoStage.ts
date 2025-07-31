@@ -1,10 +1,10 @@
-import {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
+import type {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import {ACTIVE, GROUP, REFLECT, VOTE} from '../../utils/constants'
 import mapGroupsToStages from '../../utils/makeGroupsToStages'
 import clientTempId from '../../utils/relay/clientTempId'
-import DemoDiscussStage from './DemoDiscussStage'
 import commentLookup from './commentLookup'
-import {RetroDemoDB} from './initDB'
+import DemoDiscussStage from './DemoDiscussStage'
+import type {RetroDemoDB} from './initDB'
 import reactjiLookup from './reactjiLookup'
 import taskLookup from './taskLookup'
 
@@ -51,7 +51,7 @@ const addStageToBotScript = (stageId: string, db: RetroDemoDB, reflectionGroupId
       stageTasks.push(...tasks)
     }
     const reactjis = reactjiLookup[reflection.id as keyof typeof reactjiLookup]
-    if (!!reactjis) {
+    if (reactjis) {
       reactions.push(
         ...reactjis.map((reactji) => ({
           reactableType: 'REFLECTION' as ReactableEnum,

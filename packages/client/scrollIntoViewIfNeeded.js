@@ -2,12 +2,11 @@
  * Not supported natively outside of webkit: https://caniuse.com/#feat=scrollintoviewifneeded
  */
 
-/* eslint-disable */
 if (!Element.prototype.scrollIntoViewIfNeeded) {
-  Element.prototype.scrollIntoViewIfNeeded = function(centerIfNeeded) {
+  Element.prototype.scrollIntoViewIfNeeded = function (centerIfNeeded) {
     centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded
 
-    let parent = this.parentNode,
+    const parent = this.parentNode,
       parentComputedStyle = window.getComputedStyle(parent, null),
       parentBorderTopWidth = parseInt(parentComputedStyle.getPropertyValue('border-top-width')),
       parentBorderLeftWidth = parseInt(parentComputedStyle.getPropertyValue('border-left-width')),

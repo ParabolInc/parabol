@@ -1,5 +1,5 @@
 import franc from 'franc-min'
-import {ISO6391, iso6393To1} from './iso6393To1'
+import {type ISO6391, iso6393To1} from './iso6393To1'
 import {URLRegex} from './regex'
 
 export const inferLanguage = (text: string, minLength = 100): ISO6391 | undefined => {

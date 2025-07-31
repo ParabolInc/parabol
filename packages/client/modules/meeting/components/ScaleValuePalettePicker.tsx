@@ -5,9 +5,9 @@ import Menu from '~/components/Menu'
 import PaletteColor from '~/components/PaletteColor/PaletteColor'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
 import palettePickerOptions from '~/styles/palettePickerOptions'
-import {ScaleValuePalettePicker_scale$key} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
+import type {ScaleValuePalettePicker_scale$key} from '../../../__generated__/ScaleValuePalettePicker_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {MenuProps} from '../../../hooks/useMenu'
+import type {MenuProps} from '../../../hooks/useMenu'
 import useMutationProps from '../../../hooks/useMutationProps'
 
 interface Props {

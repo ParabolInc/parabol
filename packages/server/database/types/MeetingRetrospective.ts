@@ -1,5 +1,5 @@
-import {AutogroupReflectionGroupType, TranscriptBlock} from '../../postgres/types'
-import {RetroMeetingPhase} from '../../postgres/types/NewMeetingPhase'
+import type {AutogroupReflectionGroupType, TranscriptBlock} from '../../postgres/types'
+import type {RetroMeetingPhase} from '../../postgres/types/NewMeetingPhase'
 import Meeting from './Meeting'
 
 interface Input {

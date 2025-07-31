@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
-import {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
+import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {NavSidebar} from '../../types/constEnums'
 import {
   AUTHENTICATION_PAGE,
@@ -100,7 +100,7 @@ const DashSidebar = (props: Props) => {
                   exact
                 />
                 <div className='mt-4 mb-1 flex min-h-[32px] items-center'>
-                  <span className='flex-1 pl-3 text-base leading-6 font-semibold text-slate-700'>
+                  <span className='flex-1 pl-3 font-semibold text-base text-slate-700 leading-6'>
                     {name}
                   </span>
                 </div>

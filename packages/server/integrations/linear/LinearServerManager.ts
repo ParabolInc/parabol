@@ -1,9 +1,9 @@
-import {JSONContent} from '@tiptap/core'
-import {GraphQLResolveInfo} from 'graphql'
+import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
-import {GQLContext} from '../../graphql/graphql'
+import type {GQLContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
 import createIssueMutation from '../../graphql/nestedSchema/Linear/mutations/createIssue.graphql'
 import updateIssueMutation from '../../graphql/nestedSchema/Linear/mutations/updateIssue.graphql'
@@ -13,8 +13,8 @@ import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/get
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
 import getTeamsAndProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getTeamsAndProjects.graphql'
 import {linearRequest} from '../../graphql/public/rootSchema'
-import {TeamMemberIntegrationAuth} from '../../postgres/types'
-import {
+import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {
   CreateCommentMutation,
   CreateCommentMutationVariables,
   CreateIssueMutation,
@@ -27,7 +27,7 @@ import {
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
 import {convertTipTapToMarkdown} from '../../utils/convertTipTapToMarkdown'
-import {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
+import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 
 class LinearServerManager implements TaskIntegrationManager {
@@ -155,7 +155,9 @@ class LinearServerManager implements TaskIntegrationManager {
 
   async getIssue({id}: {id: string}) {
     const linearRequest = this.getLinearRequest(this.info, this.context)
-    const [data, error] = await linearRequest<GetIssueQuery>(getIssueQuery, {id})
+    const [data, error] = await linearRequest<GetIssueQuery>(getIssueQuery, {
+      id
+    })
     return [data, error] as const
   }
 

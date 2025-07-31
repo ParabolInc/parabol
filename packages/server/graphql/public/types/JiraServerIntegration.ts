@@ -1,12 +1,12 @@
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import getLatestIntegrationSearchQueries from '../../../postgres/queries/getLatestIntegrationSearchQueries'
-import {TeamMember} from '../../../postgres/types'
+import type {TeamMember} from '../../../postgres/types'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {JiraServerIntegrationResolvers} from '../resolverTypes'
+import type {JiraServerIntegrationResolvers} from '../resolverTypes'
 
 export type JiraServerIntegrationSource = {
   teamId: string
@@ -60,7 +60,10 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
   issues: async ({teamId, userId}, args, {authToken, dataLoader}) => {
     const {first, after, queryString, isJQL, projectKeyFilters} = args as IssueArgs
     const viewerId = getUserId(authToken)
-    const emptyConnection = {edges: [], pageInfo: {hasNextPage: false, hasPreviousPage: false}}
+    const emptyConnection = {
+      edges: [],
+      pageInfo: {hasNextPage: false, hasPreviousPage: false}
+    }
     if (viewerId !== userId) {
       const err = new Error('Cannot access another team members issues')
       standardError(err, {tags: {teamId, userId}, userId: viewerId})

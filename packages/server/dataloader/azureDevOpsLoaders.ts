@@ -1,19 +1,19 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
-import {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
-import {TeamMemberIntegrationAuth} from '../postgres/types'
+import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import AzureDevOpsServerManager, {
-  ProjectRes,
-  Resource,
-  TeamProjectReference,
-  WorkItem
+  type ProjectRes,
+  type Resource,
+  type TeamProjectReference,
+  type WorkItem
 } from '../utils/AzureDevOpsServerManager'
-import {Logger} from '../utils/Logger'
 import {getInstanceId} from '../utils/azureDevOps/azureDevOpsFieldTypeToId'
+import {Logger} from '../utils/Logger'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 
@@ -506,7 +506,10 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
             parseInt(workItemId)
           ])
           if (workItemDataResponse instanceof Error) {
-            logError(workItemDataResponse, {userId, tags: {instanceId, workItemId, teamId}})
+            logError(workItemDataResponse, {
+              userId,
+              tags: {instanceId, workItemId, teamId}
+            })
             return null
           }
           const {workItems: returnedWorkItems} = workItemDataResponse
@@ -638,9 +641,12 @@ const getMappedAzureDevOpsWorkItem = async (
     projectId: azureDevOpsWorkItem.teamProject
   })
   const {error: projectResultError, projectTemplate} = projectResult
-  if (!!projectResultError) {
+  if (projectResultError) {
     const workItemId = returnedWorkItem.id.toString()
-    logError(projectResultError, {userId, tags: {instanceId, workItemId, teamId}})
+    logError(projectResultError, {
+      userId,
+      tags: {instanceId, workItemId, teamId}
+    })
   } else {
     azureDevOpsWorkItem.type = `${projectTemplate}:${returnedWorkItem.fields['System.WorkItemType']}`
   }

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {DECELERATE} from '../styles/animation'
 import {NavSidebar, ZIndex} from '../types/constEnums'
 

@@ -1,16 +1,16 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
+import type {MeetingsDashHeader_viewer$key} from '../__generated__/MeetingsDashHeader_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {FilterLabels} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {useQueryParameterParser} from '../utils/useQueryParameterParser'
-import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
+import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
 
 const TeamFilterMenu = lazyPreload(
   () =>
@@ -63,7 +63,7 @@ const MeetingsDashHeader = (props: Props) => {
     <DashSectionHeader>
       <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
         <DashFilterToggle
-          className='mt-4 mr-16 mb-4 ml-0 sidebar-left:mt-0 sidebar-left:mr-24 sidebar-left:mb-0 sidebar-left:ml-0'
+          className='mt-4 sidebar-left:mt-0 mr-16 sidebar-left:mr-24 mb-4 sidebar-left:mb-0 ml-0 sidebar-left:ml-0'
           label='Team'
           onClick={teamFilterTogglePortal}
           onMouseEnter={TeamFilterMenu.preload}

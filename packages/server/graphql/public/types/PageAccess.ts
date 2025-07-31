@@ -1,6 +1,6 @@
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import {PageAccessResolvers} from '../resolverTypes'
+import type {PageAccessResolvers} from '../resolverTypes'
 
 export type PageAccessSource = {
   id: number

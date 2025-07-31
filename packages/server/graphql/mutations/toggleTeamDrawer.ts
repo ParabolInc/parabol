@@ -2,8 +2,8 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import TeamDrawerEnum, {TeamDrawer} from '../types/TeamDrawerEnum'
+import type {GQLContext} from '../graphql'
+import TeamDrawerEnum, {type TeamDrawer} from '../types/TeamDrawerEnum'
 import ToggleTeamDrawerPayload from '../types/ToggleTeamDrawerPayload'
 
 const toggleTeamDrawer = {

@@ -6,7 +6,7 @@ import sleep from '../../../../client/utils/sleep'
 import {disconnectAllSockets} from '../../../disconnectAllSockets'
 import {setIsBusy} from '../../../getIsBusy'
 import {Logger} from '../../../utils/Logger'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const {SERVER_ID} = process.env
 

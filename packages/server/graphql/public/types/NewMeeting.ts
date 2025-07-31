@@ -2,7 +2,7 @@ import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import isMeetingLocked from '../../types/helpers/isMeetingLocked'
-import {NewMeetingResolvers} from '../resolverTypes'
+import type {NewMeetingResolvers} from '../resolverTypes'
 
 const NewMeeting: NewMeetingResolvers = {
   __resolveType: ({meetingType}) => {

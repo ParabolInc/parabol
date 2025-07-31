@@ -1,6 +1,6 @@
-import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
+import type GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import {augmentDBStage} from '../../resolvers'
-import {NewMeetingPhaseResolvers} from '../resolverTypes'
+import type {NewMeetingPhaseResolvers} from '../resolverTypes'
 
 export interface NewMeetingPhaseSource extends GenericMeetingPhase {
   meetingId: string

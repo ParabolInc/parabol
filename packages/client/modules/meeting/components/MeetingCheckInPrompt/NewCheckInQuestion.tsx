@@ -4,8 +4,8 @@ import {EditorContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
-import {
+import type {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import type {
   ModifyType,
   useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
 } from '../../../../__generated__/useModifyCheckInQuestionMutation.graphql'

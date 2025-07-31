@@ -1,5 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import MeetingTemplate from './MeetingTemplate'
 import StandardMutationError from './StandardMutationError'
 

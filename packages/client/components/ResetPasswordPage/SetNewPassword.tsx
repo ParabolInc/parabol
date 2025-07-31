@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
-import {RouteComponentProps} from 'react-router'
+import type * as React from 'react'
+import type {RouteComponentProps} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'

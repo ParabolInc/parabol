@@ -1,7 +1,7 @@
 import sleep from 'parabol-client/utils/sleep'
 import getPg from '../../../postgres/getPg'
 import getRedis from '../../../utils/getRedis'
-import {PingableServicesResolvers} from '../resolverTypes'
+import type {PingableServicesResolvers} from '../resolverTypes'
 
 const pingService = async <TSuccess>(thunk: () => Promise<TSuccess>) => {
   const start = Date.now()

@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ActiveMeetingsQuery} from 'parabol-client/__generated__/ActiveMeetingsQuery.graphql'
+import type {ActiveMeetingsQuery} from 'parabol-client/__generated__/ActiveMeetingsQuery.graphql'
 import {useMemo} from 'react'
 import {useDispatch} from 'react-redux'
 import {useLazyLoadQuery} from 'react-relay'
@@ -65,7 +65,7 @@ const ActiveMeetings = () => {
 
   return (
     <>
-      <div className='flex items-center justify-between py-3 text-2xl font-semibold'>
+      <div className='flex items-center justify-between py-3 font-semibold text-2xl'>
         Open Activities
         <button className='btn btn-primary' onClick={handleStart}>
           Start Activity

@@ -1,14 +1,14 @@
 import {
   GraphQLBoolean,
-  GraphQLFieldConfigMap,
+  type GraphQLFieldConfigMap,
   GraphQLID,
   GraphQLInt,
   GraphQLInterfaceType,
   GraphQLNonNull
 } from 'graphql'
-import TimelineEventDB from '../../database/types/TimelineEvent'
+import type TimelineEventDB from '../../database/types/TimelineEvent'
 import connectionDefinitions from '../connectionDefinitions'
-import {GQLContext} from '../graphql'
+import type {GQLContext} from '../graphql'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import Organization from './Organization'
 import PageInfoDateCursor from './PageInfoDateCursor'

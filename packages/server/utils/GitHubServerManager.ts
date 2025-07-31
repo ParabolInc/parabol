@@ -9,7 +9,11 @@ class GitHubServerManager {
     }
 
     const authUrl = `https://github.com/login/oauth/access_token`
-    return authorizeOAuth2<{accessToken: string; refreshToken: string; scopes: string}>({
+    return authorizeOAuth2<{
+      accessToken: string
+      refreshToken: string
+      scopes: string
+    }>({
       authUrl,
       searchParams
     })

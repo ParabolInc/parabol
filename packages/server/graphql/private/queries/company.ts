@@ -1,5 +1,5 @@
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
-import {QueryResolvers} from '../resolverTypes'
+import type {QueryResolvers} from '../resolverTypes'
 
 export type CompanySource = {
   id: string

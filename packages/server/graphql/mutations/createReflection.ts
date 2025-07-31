@@ -13,8 +13,8 @@ import {getUserId} from '../../utils/authorization'
 import {convertToTipTap} from '../../utils/convertToTipTap'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
-import {GQLContext} from '../graphql'
-import CreateReflectionInput, {CreateReflectionInputType} from '../types/CreateReflectionInput'
+import type {GQLContext} from '../graphql'
+import CreateReflectionInput, {type CreateReflectionInputType} from '../types/CreateReflectionInput'
 import CreateReflectionPayload from '../types/CreateReflectionPayload'
 import updateGroupTitle from './helpers/updateGroupTitle'
 
@@ -43,15 +43,22 @@ export default {
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!reflectPrompt) {
-      return standardError(new Error('Category not found'), {userId: viewerId})
+      return standardError(new Error('Category not found'), {
+        userId: viewerId
+      })
     }
-    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
+    if (!meeting)
+      return standardError(new Error('Meeting not found'), {
+        userId: viewerId
+      })
     const {endedAt, phases, teamId} = meeting
     if (endedAt) {
       return {error: {message: 'Meeting already ended'}}
     }
     if (isPhaseComplete('group', phases)) {
-      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
+      return standardError(new Error('Meeting phase already completed'), {
+        userId: viewerId
+      })
     }
 
     // VALIDATION

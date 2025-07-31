@@ -3,8 +3,8 @@ import {analytics} from '../../../utils/analytics/analytics'
 import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
-import {UserPresence} from '../../private/mutations/connectSocket'
-import {MutationResolvers} from '../resolverTypes'
+import type {UserPresence} from '../../private/mutations/connectSocket'
+import type {MutationResolvers} from '../resolverTypes'
 
 const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   _source,

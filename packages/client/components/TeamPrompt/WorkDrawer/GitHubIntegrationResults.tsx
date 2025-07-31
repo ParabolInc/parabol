@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
-import {GitHubIntegrationResultsQuery} from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
-import {GitHubIntegrationResultsSearchPaginationQuery} from '../../../__generated__/GitHubIntegrationResultsSearchPaginationQuery.graphql'
-import {GitHubIntegrationResults_search$key} from '../../../__generated__/GitHubIntegrationResults_search.graphql'
+import type {GitHubIntegrationResults_search$key} from '../../../__generated__/GitHubIntegrationResults_search.graphql'
+import type {GitHubIntegrationResultsQuery} from '../../../__generated__/GitHubIntegrationResultsQuery.graphql'
+import type {GitHubIntegrationResultsSearchPaginationQuery} from '../../../__generated__/GitHubIntegrationResultsSearchPaginationQuery.graphql'
 import useLoadNextOnScrollBottom from '../../../hooks/useLoadNextOnScrollBottom'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import GitHubObjectCard from './GitHubObjectCard'
@@ -110,7 +110,7 @@ const GitHubIntegrationResults = (props: Props) => {
         )}
         {lastItem}
         {hasNext && (
-          <div className='mx-auto -mt-4 mb-4 h-8 text-2xl' key={'loadingNext'}>
+          <div className='-mt-4 mx-auto mb-4 h-8 text-2xl' key={'loadingNext'}>
             <Ellipsis />
           </div>
         )}

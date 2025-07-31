@@ -1,10 +1,10 @@
-import {IntegrationProviderServiceEnum} from '../../../postgres/queries/generated/removeTeamMemberIntegrationAuthQuery'
+import type {IntegrationProviderServiceEnum} from '../../../postgres/queries/generated/removeTeamMemberIntegrationAuthQuery'
 import removeTeamMemberIntegrationAuthQuery from '../../../postgres/queries/removeTeamMemberIntegrationAuth'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegrationAuth'] =
   async (_source, {service, teamId}, context) => {
@@ -27,7 +27,7 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
     analytics.integrationRemoved(viewer, teamId, service)
 
-    const data = {userId: viewerId, teamId}
+    const data = {userId: viewerId, teamId, service}
     return data
   }
 

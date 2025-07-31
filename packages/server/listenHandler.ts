@@ -1,4 +1,4 @@
-import {us_listen_socket} from 'uWebSockets.js'
+import type {us_listen_socket} from 'uWebSockets.js'
 import {RECONNECT_WINDOW} from './server'
 import {Logger} from './utils/Logger'
 import logError from './utils/logError'

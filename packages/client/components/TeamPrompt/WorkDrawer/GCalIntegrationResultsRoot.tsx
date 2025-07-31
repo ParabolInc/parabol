@@ -2,7 +2,7 @@ import ms from 'ms'
 import {Suspense} from 'react'
 import {Loader} from '~/utils/relay/renderLoader'
 import gcalIntegrationResultsQuery, {
-  GCalIntegrationResultsQuery
+  type GCalIntegrationResultsQuery
 } from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import ErrorBoundary from '../../ErrorBoundary'

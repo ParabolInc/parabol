@@ -1,4 +1,4 @@
-import {GenerateGroupsSuccessResolvers} from '../resolverTypes'
+import type {GenerateGroupsSuccessResolvers} from '../resolverTypes'
 
 export type GenerateGroupsSuccessSource = {
   meetingId: string

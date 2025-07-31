@@ -3,7 +3,7 @@ import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
-import {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
 const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
   _source,
@@ -29,7 +29,9 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     .executeTakeFirst()
 
   if (!featureFlag) {
-    return standardError(new Error('Feature flag not found'), {userId: viewerId})
+    return standardError(new Error('Feature flag not found'), {
+      userId: viewerId
+    })
   }
 
   const {id: featureFlagId, scope} = featureFlag

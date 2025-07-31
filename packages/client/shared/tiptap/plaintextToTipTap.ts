@@ -1,4 +1,4 @@
-import {TaskTag} from '../types'
+import type {TaskTag} from '../types'
 
 export const plaintextToTipTap = (str: string, options: {taskTags?: TaskTag[]} = {}) => {
   const textNode = {type: 'text', text: str}
@@ -7,7 +7,12 @@ export const plaintextToTipTap = (str: string, options: {taskTags?: TaskTag[]} =
   taskTags.forEach((taskTag) => {
     content.push({
       type: 'paragraph',
-      content: [{type: 'taskTag', attrs: {id: taskTag, label: null, mentionSuggestionChar: '@'}}]
+      content: [
+        {
+          type: 'taskTag',
+          attrs: {id: taskTag, label: null, mentionSuggestionChar: '@'}
+        }
+      ]
     })
   })
   return {type: 'doc', content: [{type: 'paragraph', content}]}

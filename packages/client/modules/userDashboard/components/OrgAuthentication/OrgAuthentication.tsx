@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenticationQuery.graphql'
 import DialogTitle from '../../../../components/DialogTitle'
 import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
-import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
+import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 
 const StyledPanel = styled(Panel)({
   maxWidth: ElementWidth.PANEL_WIDTH
@@ -43,7 +43,7 @@ const OrgAuthentication = (props: Props) => {
     <StyledPanel>
       <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
       <OrgAuthenticationSSOFrame samlRef={saml} />
-      <div className={disabled ? 'pointer-events-none opacity-40 select-none' : ''}>
+      <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
         <OrgAuthenticationSignOnUrl samlRef={saml} />
         <OrgAuthenticationMetadata samlRef={saml} />
       </div>

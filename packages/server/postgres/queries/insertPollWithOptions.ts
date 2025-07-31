@@ -1,6 +1,6 @@
 import getPg from '../getPg'
 import {
-  IInsertPollWithOptionsQueryParams,
+  type IInsertPollWithOptionsQueryParams,
   insertPollWithOptionsQuery
 } from './generated/insertPollWithOptionsQuery'
 

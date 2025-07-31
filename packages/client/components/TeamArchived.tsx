@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {TeamArchived_notification$key} from '../__generated__/TeamArchived_notification.graphql'
+import type {TeamArchived_notification$key} from '../__generated__/TeamArchived_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
 
 interface Props {

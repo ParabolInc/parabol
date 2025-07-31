@@ -1,6 +1,6 @@
 import {Suspense} from 'react'
 import unpaidTeamModalQuery, {
-  UnpaidTeamModalQuery
+  type UnpaidTeamModalQuery
 } from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import {Loader} from '../../../../utils/relay/renderLoader'
