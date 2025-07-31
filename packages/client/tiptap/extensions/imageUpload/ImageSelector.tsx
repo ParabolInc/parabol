@@ -27,7 +27,7 @@ const tabs = [
     id: 'addGif',
     label: 'Add Gif',
     Component: ImageSelectorSearchTabRoot,
-    isVisible: !!window.__ACTION__.GIF_PROVIDER
+    isVisible: !!window.__ACTION__?.GIF_PROVIDER
   }
 ] as const
 

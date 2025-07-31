@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.16.3](https://github.com/ParabolInc/parabol/compare/v10.16.2...v10.16.3) (2025-07-31)
+
+
+### Fixed
+
+* end meetings without insights ([#11643](https://github.com/ParabolInc/parabol/issues/11643)) ([905a058](https://github.com/ParabolInc/parabol/commit/905a0583c8cb453e7128f8cf2312559a8dce6670))
+
+## [10.16.2](https://github.com/ParabolInc/parabol/compare/v10.16.1...v10.16.2) (2025-07-31)
+
+
+### Fixed
+
+* filter reflection slash commands ([#11630](https://github.com/ParabolInc/parabol/issues/11630)) ([f47becd](https://github.com/ParabolInc/parabol/commit/f47becdec3e23df703e0eacb6fbde368e9fd9c61))
+* window.__ACTION__ is not defined for MattermostPlugin ([#11623](https://github.com/ParabolInc/parabol/issues/11623)) ([888b967](https://github.com/ParabolInc/parabol/commit/888b9675f84f2f1038fccff37827934a28b09e55))
+
+
+### Changed
+
+* add more ignore files to biome and add .editorconfig ([#11627](https://github.com/ParabolInc/parabol/issues/11627)) ([9dc3674](https://github.com/ParabolInc/parabol/commit/9dc3674634c024921a7728f62223befe9cb1cad0))
+
+## [10.16.1](https://github.com/ParabolInc/parabol/compare/v10.16.0...v10.16.1) (2025-07-31)
+
+
+### Changed
+
+* remove ReactRenderingError ([#11619](https://github.com/ParabolInc/parabol/issues/11619)) ([3a95bd6](https://github.com/ParabolInc/parabol/commit/3a95bd6a9e04b30d7beba21ce23266c25bf00181))
+* replace eslint and prettier with biome ([#11603](https://github.com/ParabolInc/parabol/issues/11603)) ([5cc1ec7](https://github.com/ParabolInc/parabol/commit/5cc1ec7c3bd49bd4f75dd07d8f96906528152aba))
+* set git sha and repository in docker for Datadog ([#11590](https://github.com/ParabolInc/parabol/issues/11590)) ([a1f59ac](https://github.com/ParabolInc/parabol/commit/a1f59acc3d62d63e37c7428209dd286676c2c793))
+
 ## [10.16.0](https://github.com/ParabolInc/parabol/compare/v10.15.0...v10.16.0) (2025-07-30)
 
 

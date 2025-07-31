@@ -17,7 +17,9 @@
       "!**/packages/client/styles/theme/global.css",
       "!**/packages/server/types/**",
       "!**/packages/server/graphql/**/resolverTypes.ts",
-      "!**/packages/server/graphql/**/resolverTypes.ts"
+      "!**/packages/server/graphql/**/resolverTypes.ts",
+      "!**/packages/server/postgres/queries/generated/**",
+      "!**/queryMap.json"
     ]
   },
   "formatter": {

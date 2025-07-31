@@ -16,7 +16,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
-import gatherInsights from './gatherInsights'
+import gatherInsights, {gatherRetroInsights} from './gatherInsights'
 import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import handleCompletedStage from './handleCompletedStage'
@@ -84,8 +84,12 @@ const safeEndRetrospective = async ({
     stage.endAt = now
   }
   const phase = getMeetingPhase(phases)
-  const {engagement, usedReactjis, commentCount, taskCount, topicCount, reflectionCount} =
-    await gatherInsights(meeting, dataLoader)
+  const [insights, retroInsights] = await Promise.all([
+    gatherInsights(meeting, dataLoader),
+    gatherRetroInsights(meeting, dataLoader)
+  ])
+  const {commentCount, taskCount, topicCount, reflectionCount} = retroInsights
+  const {engagement, usedReactjis} = insights
   await getKysely()
     .updateTable('NewMeeting')
     .set({
