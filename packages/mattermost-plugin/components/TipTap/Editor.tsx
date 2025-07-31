@@ -12,7 +12,7 @@ export const TipTapEditor = (props: Props) => {
   const {className, editor, showBubbleMenu, useLinkEditor, ref, ...rest} = props
   return (
     <>
-      <StandardBubbleMenu editor={editor} />
+      <StandardBubbleMenu editor={editor} buttonClassName='btn' />
       <TipTapLinkMenu editor={editor} useLinkEditor={useLinkEditor} />
       <EditorContent
         ref={ref as any}
