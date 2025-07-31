@@ -16,6 +16,7 @@ import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
+import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 
 const isValid = <T>(obj: T | undefined | null | boolean): obj is T => {
@@ -41,6 +42,14 @@ export const useTipTapReflectionEditor = (
       content: contentJSON,
       extensions: [
         StarterKit.configure({link: false}),
+        Details.configure({
+          persist: true,
+          HTMLAttributes: {
+            class: 'details'
+          }
+        }),
+        DetailsSummary,
+        DetailsContent,
         TaskList,
         TaskItem.configure({
           nested: true
@@ -49,7 +58,10 @@ export const useTipTapReflectionEditor = (
           'Heading 1': false,
           'Heading 2': false,
           'To-do list': false,
-          Insights: false
+          Insights: false,
+          'Table': false,
+          'Details': false,
+          'Create page': false,
         }),
         ClearOnSubmit,
         Focus,
