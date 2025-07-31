@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.16.2](https://github.com/ParabolInc/parabol/compare/v10.16.1...v10.16.2) (2025-07-31)
+
+
+### Fixed
+
+* filter reflection slash commands ([#11630](https://github.com/ParabolInc/parabol/issues/11630)) ([f47becd](https://github.com/ParabolInc/parabol/commit/f47becdec3e23df703e0eacb6fbde368e9fd9c61))
+* window.__ACTION__ is not defined for MattermostPlugin ([#11623](https://github.com/ParabolInc/parabol/issues/11623)) ([888b967](https://github.com/ParabolInc/parabol/commit/888b9675f84f2f1038fccff37827934a28b09e55))
+
+
+### Changed
+
+* add more ignore files to biome and add .editorconfig ([#11627](https://github.com/ParabolInc/parabol/issues/11627)) ([9dc3674](https://github.com/ParabolInc/parabol/commit/9dc3674634c024921a7728f62223befe9cb1cad0))
+
 ## [10.16.1](https://github.com/ParabolInc/parabol/compare/v10.16.0...v10.16.1) (2025-07-31)
 
 
