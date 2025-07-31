@@ -4,6 +4,7 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
+import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
 import getKysely from '../../../postgres/getKysely'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
@@ -23,7 +24,6 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
-import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
 
 const summarizeRetroMeeting = async (
   meeting: RetrospectiveMeeting,

@@ -39,7 +39,11 @@ export const meetingInsightsInput = (parent: RootDataLoader) => {
 }
 
 export const meetingInsightsContent = (parent: RootDataLoader) => {
-  return new DataLoader<string, {content?: string; error?: 'nodata' | 'disabled' | 'modelFail'}, string>(
+  return new DataLoader<
+    string,
+    {content?: string; error?: 'nodata' | 'disabled' | 'modelFail'},
+    string
+  >(
     async (meetingIds) => {
       const contents = await Promise.all(
         meetingIds.map(async (meetingId) => {
@@ -76,7 +80,8 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
           })
           const responseContent = response.choices[0]?.message?.content?.trim()
           if (!responseContent) return {error: 'modelFail' as const}
-          if (responseContent.includes(NOT_ENOUGH_DATA_FOR_INSIGHTS)) return {error: 'nodata' as const}
+          if (responseContent.includes(NOT_ENOUGH_DATA_FOR_INSIGHTS))
+            return {error: 'nodata' as const}
           return {content: responseContent}
         })
       )

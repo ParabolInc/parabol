@@ -13,7 +13,9 @@ export const generateRetroMeetingSummaryPage = async function* (
   meetingId: string,
   dataLoader: DataLoaderInstance
 ) {
-  const meeting = (await dataLoader.get('newMeetings').loadNonNull(meetingId)) as RetrospectiveMeeting
+  const meeting = (await dataLoader
+    .get('newMeetings')
+    .loadNonNull(meetingId)) as RetrospectiveMeeting
   // start the work at the same time, then deliver it in order
   const promises = [
     getTitleBlock(meeting),
