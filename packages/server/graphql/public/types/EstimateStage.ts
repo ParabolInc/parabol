@@ -8,6 +8,7 @@ import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
+import {resolveStoryFinalScore} from '../../resolvers/resolveStoryFinalScore'
 import type {EstimateStageResolvers} from '../resolverTypes'
 
 const EstimateStage: EstimateStageResolvers = {
@@ -260,18 +261,7 @@ const EstimateStage: EstimateStageResolvers = {
   },
 
   finalScore: async ({taskId, meetingId, dimensionRefIdx}, _args, {dataLoader}) => {
-    const [meeting, estimates] = await Promise.all([
-      dataLoader.get('newMeetings').loadNonNull(meetingId),
-      dataLoader.get('meetingTaskEstimates').load({taskId, meetingId})
-    ])
-    if (meeting.meetingType !== 'poker') return null
-    const {templateRefId} = meeting
-    const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-    const {dimensions} = templateRef
-    const dimensionRef = dimensions[dimensionRefIdx]!
-    const {name: dimensionName} = dimensionRef
-    const dimensionEstimate = estimates.find((estimate) => estimate.name === dimensionName)
-    return dimensionEstimate?.label ?? null
+    return resolveStoryFinalScore(taskId, meetingId, dimensionRefIdx, dataLoader)
   },
 
   hoveringUserIds: async ({id: stageId}) => {
