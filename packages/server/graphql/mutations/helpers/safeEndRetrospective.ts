@@ -1,3 +1,4 @@
+import type {GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
@@ -24,7 +25,6 @@ import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import removeEmptyTasks from './removeEmptyTasks'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
-import type {GraphQLResolveInfo} from 'graphql'
 
 const summarizeRetroMeeting = async (
   meeting: RetrospectiveMeeting,

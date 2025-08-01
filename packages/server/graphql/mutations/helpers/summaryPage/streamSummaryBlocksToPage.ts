@@ -1,4 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
+import type {GraphQLResolveInfo} from 'graphql'
 import {sleep} from 'openai/core.mjs'
 import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
@@ -6,7 +7,6 @@ import {server} from '../../../../hocusPocus'
 import {CipherId} from '../../../../utils/CipherId'
 import type {InternalContext} from '../../../graphql'
 import {generateMeetingSummaryPage} from './generateMeetingSummaryPage'
-import type {GraphQLResolveInfo} from 'graphql'
 
 // native clone method only clones attributes that are strings
 const cloneBlock = (elToClone: XmlElement) => {

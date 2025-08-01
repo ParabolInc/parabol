@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import type {PokerMeeting} from '../../../../postgres/types/Meeting'
 import type {InternalContext} from '../../../graphql'
 import {getParticipantBlocks} from './getParticipantBlocks'
@@ -6,7 +7,6 @@ import {getPokerMetaBlock} from './getPokerMetaBlock'
 import {getPokerTable} from './getPokerTable'
 import {getSubtitleBlock} from './getSubtitleBlock'
 import {getTitleBlock} from './getTitleBlock'
-import type {GraphQLResolveInfo} from 'graphql'
 
 export const generatePokerMeetingSummaryPage = async function* (
   meetingId: string,
