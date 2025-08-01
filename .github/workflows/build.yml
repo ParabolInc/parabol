@@ -125,7 +125,7 @@ jobs:
           pnpm datadog-ci sourcemaps upload ./build \
             --service=parabol-saas-production \
             --release-version=${{env.ACTION_VERSION}} \
-            --minified-path-prefix="build/"
+            --minified-path-prefix="/build/"
       - name: Push Server Artifacts to Datadog
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
