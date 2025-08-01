@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
@@ -19,6 +19,7 @@ import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import {publishSummaryPage} from './helpers/summaryPage/publishSummaryPage'
 
 export default {
   type: new GraphQLNonNull(EndSprintPokerPayload),
@@ -29,7 +30,12 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
+  async resolve(
+    _source: unknown,
+    {meetingId}: {meetingId: string},
+    context: GQLContext,
+    info: GraphQLResolveInfo
+  ) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -104,16 +110,18 @@ export default {
       })
     }
     const {templateId} = completedMeeting
-    const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
-      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
-      // technically, this template could have mutated while the meeting was going on. but in practice, probably not
-      dataLoader
-        .get('meetingTemplates')
-        .loadNonNull(templateId)
-    ])
+    const [makePagesSummary, meetingMembers, team, teamMembers, removedTaskIds, template] =
+      await Promise.all([
+        dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
+        dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+        dataLoader.get('teams').loadNonNull(teamId),
+        dataLoader.get('teamMembersByTeamId').load(teamId),
+        removeEmptyTasks(meetingId),
+        // technically, this template could have mutated while the meeting was going on. but in practice, probably not
+        dataLoader
+          .get('meetingTemplates')
+          .loadNonNull(templateId)
+      ])
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
@@ -131,8 +139,9 @@ export default {
     )
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
-
+    await publishSummaryPage(meetingId, context, info)
     const data = {
+      gotoPageSummary: makePagesSummary,
       meetingId,
       teamId,
       isKill,

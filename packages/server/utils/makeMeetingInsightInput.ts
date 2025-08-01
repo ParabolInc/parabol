@@ -1,6 +1,7 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
 import {getComments} from '../graphql/public/mutations/helpers/getTopics'
+import {resolveStoryFinalScore} from '../graphql/resolvers/resolveStoryFinalScore'
 import type {RetroReflection} from '../postgres/types'
 import type {
   AnyMeeting,
@@ -120,12 +121,18 @@ const makePokerMeetingInsightInput = async (
   meeting: PokerMeeting,
   dataLoader: DataLoaderInstance
 ) => {
-  const {phases, meetingType} = meeting
+  const {id: meetingId, phases, meetingType} = meeting
   const estimatePhase = getPhase(phases, 'ESTIMATE')
   const {stages} = estimatePhase
   const allStories = await Promise.all(
     stages.map(async (stage) => {
-      const {finalScore, serviceTaskId} = stage
+      const {serviceTaskId, taskId, dimensionRefIdx} = stage
+      const finalScore = await resolveStoryFinalScore(
+        taskId,
+        meetingId,
+        dimensionRefIdx,
+        dataLoader
+      )
       if (finalScore === null || finalScore === undefined) return null
       const tasks = await dataLoader.get('tasksByIntegrationHash').load(serviceTaskId)
       if (tasks.length !== 1) {

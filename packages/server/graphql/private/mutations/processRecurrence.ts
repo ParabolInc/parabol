@@ -116,7 +116,7 @@ const startRecurringMeeting = async (
 }
 
 const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(
-  async (_source, _args, context) => {
+  async (_source, _args, context, info) => {
     const {dataLoader, socketId: mutatorId} = context
     const now = new Date()
     const operationId = dataLoader.share()
@@ -135,7 +135,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
           if (meeting.meetingType === 'teamPrompt') {
             return safeEndTeamPrompt({meeting, context, subOptions})
           } else if (meeting.meetingType === 'retrospective') {
-            return safeEndRetrospective({meeting, now, context})
+            return safeEndRetrospective({meeting, now, context, info})
           } else {
             return standardError(new Error('Unhandled recurring meeting type'), {
               tags: {

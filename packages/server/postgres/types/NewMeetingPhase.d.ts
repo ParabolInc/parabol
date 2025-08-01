@@ -40,7 +40,6 @@ interface EstimateStage extends GenericMeetingStage {
   taskId: string
   sortOrder: number
   dimensionRefIdx: number
-  finalScore?: number
   scores: {
     userId: string
     label: string

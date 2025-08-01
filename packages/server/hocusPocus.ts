@@ -1,4 +1,5 @@
 import {Database} from '@hocuspocus/extension-database'
+import {Redis} from '@hocuspocus/extension-redis'
 import {Throttle} from '@hocuspocus/extension-throttle'
 import {type connectedPayload, Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
@@ -16,7 +17,6 @@ import publish from './utils/publish'
 import RedisInstance from './utils/RedisInstance'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
 import {withBacklinks} from './utils/tiptap/hocusPocusHub'
-import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
 
