@@ -65,9 +65,7 @@ export const getPokerTable = async (
       const service = task.integration?.service
       const getTitle = Task.title as (task: {plaintextContent: string}) => string
       let title = getTitle(task)
-      console.log('title 1', title)
       if (service) {
-        console.log('title 2', service)
         let fieldName = '...info'
         switch (service) {
           case 'azureDevOps':
@@ -87,7 +85,6 @@ export const getPokerTable = async (
         )
 
         title = extractTitleOrSummary(integrationRes) ?? 'Unknown Story'
-        console.log('title 3', title, fieldName, integrationRes)
       }
       return {
         type: 'tableRow',
@@ -111,6 +108,7 @@ export const getPokerTable = async (
     })
   )
   return [
+    {type: 'paragraph'},
     {
       type: 'table',
       content: [
