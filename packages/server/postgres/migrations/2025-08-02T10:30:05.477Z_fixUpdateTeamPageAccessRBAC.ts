@@ -28,6 +28,29 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION "removePageAccessOnTeamArchive"() RETURNS TRIGGER AS $$
+DECLARE
+  "_pageIds" INT[];
+  "_userIds" VARCHAR[];
+BEGIN
+  IF NEW."isArchived" = TRUE AND OLD."isArchived" != TRUE THEN
+    WITH "deleted" AS (
+      DELETE FROM "PageTeamAccess"
+      WHERE "teamId" = NEW."id"
+      RETURNING "pageId"
+    ) SELECT ARRAY(
+      SELECT "pageId" FROM "deleted"
+    ) INTO "_pageIds";
+    SELECT ARRAY(
+      SELECT "userId" FROM "TeamMember" WHERE "teamId" = NEW."id"
+    ) INTO "_userIds";
+    PERFORM "updatePageAccess"("_userIds", "_pageIds");
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 `.execute(db)
 }
 
