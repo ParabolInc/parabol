@@ -117,7 +117,7 @@
     "sanitize-html": "^2.13.0",
     "string-score": "^1.0.1",
     "swiper": "8.3.1",
-    "tailwind-merge": "^1.13.2",
+    "tailwind-merge": "^3.3.1",
     "tayden-clusterfck": "^0.7.0",
     "tiptap-extension-auto-joiner": "^0.1.3",
     "tiptap-extension-global-drag-handle": "^0.1.18",
