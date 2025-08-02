@@ -4,6 +4,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventPokerComplete from '../../database/types/TimelineEventPokerComplete'
+import {sendSummaryEmailV2} from '../../email/sendSummaryEmailV2'
 import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
@@ -125,7 +126,7 @@ export default {
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
-    if (!isKill) {
+    if (!isKill && !makePagesSummary) {
       sendNewMeetingSummary(completedMeeting, false, context).catch(Logger.log)
     }
     const events = teamMembers.map(
@@ -139,7 +140,10 @@ export default {
     )
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
-    await publishSummaryPage(meetingId, context, info)
+    const page = await publishSummaryPage(meetingId, context, info)
+    if (makePagesSummary) {
+      sendSummaryEmailV2(meetingId, page.id, context, info)
+    }
     const data = {
       gotoPageSummary: makePagesSummary,
       meetingId,

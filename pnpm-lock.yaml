@@ -878,6 +878,9 @@ importers:
       '@react-email/button':
         specifier: ^0.2.0
         version: 0.2.0(react@17.0.2)
+      '@react-email/column':
+        specifier: ^0.0.13
+        version: 0.0.13(react@17.0.2)
       '@react-email/container':
         specifier: ^0.0.15
         version: 0.0.15(react@17.0.2)
@@ -896,6 +899,9 @@ importers:
       '@react-email/preview':
         specifier: ^0.0.13
         version: 0.0.13(react@17.0.2)
+      '@react-email/row':
+        specifier: ^0.0.12
+        version: 0.0.12(react@17.0.2)
       '@react-email/section':
         specifier: ^0.0.16
         version: 0.0.16(react@17.0.2)
@@ -4724,6 +4730,12 @@ packages:
     peerDependencies:
       react: 17.0.2
 
+  '@react-email/column@0.0.13':
+    resolution: {integrity: sha512-Lqq17l7ShzJG/d3b1w/+lVO+gp2FM05ZUo/nW0rjxB8xBICXOVv6PqjDnn3FXKssvhO5qAV20lHM6S+spRhEwQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
   '@react-email/container@0.0.15':
     resolution: {integrity: sha512-Qo2IQo0ru2kZq47REmHW3iXjAQaKu4tpeq/M8m1zHIVwKduL2vYOBQWbC2oDnMtWPmkBjej6XxgtZByxM6cCFg==}
     engines: {node: '>=18.0.0'}
@@ -4756,6 +4768,12 @@ packages:
 
   '@react-email/preview@0.0.13':
     resolution: {integrity: sha512-F7j9FJ0JN/A4d7yr+aw28p4uX7VLWs7hTHtLo7WRyw4G+Lit6Zucq4UWKRxJC8lpsUdzVmG7aBJnKOT+urqs/w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/row@0.0.12':
+    resolution: {integrity: sha512-HkCdnEjvK3o+n0y0tZKXYhIXUNPDx+2vq1dJTmqappVHXS5tXS6W5JOPZr5j+eoZ8gY3PShI2LWj5rWF7ZEtIQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: 17.0.2
@@ -18209,6 +18227,10 @@ snapshots:
     dependencies:
       react: 17.0.2
 
+  '@react-email/column@0.0.13(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
   '@react-email/container@0.0.15(react@17.0.2)':
     dependencies:
       react: 17.0.2
@@ -18231,6 +18253,10 @@ snapshots:
       react: 17.0.2
 
   '@react-email/preview@0.0.13(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/row@0.0.12(react@17.0.2)':
     dependencies:
       react: 17.0.2
 
