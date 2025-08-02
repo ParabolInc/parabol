@@ -10,7 +10,6 @@ interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   durations: number[] | undefined
   dimensionRefIdx: number
   scores?: EstimateUserScore[]
-  finalScore?: number
   discussionId?: string
 }
 
@@ -20,7 +19,6 @@ export default class EstimateStage extends GenericMeetingStage {
   taskId: string
   sortOrder: number
   dimensionRefIdx: number
-  finalScore?: number
   scores: EstimateUserScore[]
   isVoting: boolean
   discussionId: string

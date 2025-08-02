@@ -1,6 +1,7 @@
+import type {GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import ReactDOMServer from 'react-dom/server'
-import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
+import type {GQLContext} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
 import getMailManager from './getMailManager'
@@ -9,10 +10,12 @@ import {makeSummaryEmailV2} from './makeSummaryEmailV2'
 export const sendSummaryEmailV2 = async (
   meetingId: string,
   pageId: number,
-  dataLoader: DataLoaderInstance
+  context: GQLContext,
+  info: GraphQLResolveInfo
 ) => {
+  const {dataLoader} = context
   const [MeetingSummaryV2, meetingMembers, meeting] = await Promise.all([
-    makeSummaryEmailV2(meetingId, pageId, dataLoader),
+    makeSummaryEmailV2(meetingId, pageId, context, info),
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('newMeetings').loadNonNull(meetingId)
   ])

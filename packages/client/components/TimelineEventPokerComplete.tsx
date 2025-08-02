@@ -50,6 +50,7 @@ const TimelineEventPokerComplete = (props: Props) => {
               id
             }
           }
+          summaryPageId
         }
         team {
           id
@@ -61,7 +62,15 @@ const TimelineEventPokerComplete = (props: Props) => {
     timelineEventRef
   )
   const {meeting, team} = timelineEvent
-  const {id: meetingId, name: meetingName, commentCount, storyCount, locked, organization} = meeting
+  const {
+    id: meetingId,
+    name: meetingName,
+    commentCount,
+    storyCount,
+    locked,
+    organization,
+    summaryPageId
+  } = meeting
   const {name: teamName} = team
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
@@ -74,7 +83,9 @@ const TimelineEventPokerComplete = (props: Props) => {
       meetingId
     })
   }
-
+  const summaryURL = summaryPageId
+    ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+    : `/new-summary/${meetingId}`
   return (
     <TimelineEventCard
       IconSVG={locked && canUpgrade ? undefined : <CardsSVG />}
@@ -106,7 +117,7 @@ const TimelineEventPokerComplete = (props: Props) => {
           <>
             <Link to={`/meet/${meetingId}/estimate/1`}>See the estimates</Link>
             {' in your meeting or '}
-            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+            <Link to={summaryURL}>review a summary</Link>
           </>
         )}
       </TimelineEventBody>
