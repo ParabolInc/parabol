@@ -6,7 +6,8 @@ import type {MutationResolvers} from '../resolverTypes'
 const endRetrospective: MutationResolvers['endRetrospective'] = async (
   _source,
   {meetingId},
-  context
+  context,
+  info
 ) => {
   const {authToken, dataLoader} = context
   const now = new Date()
@@ -30,7 +31,7 @@ const endRetrospective: MutationResolvers['endRetrospective'] = async (
     })
 
   // RESOLUTION
-  const res = await safeEndRetrospective({meeting, now, context})
+  const res = await safeEndRetrospective({meeting, now, context, info})
   return res
 }
 
