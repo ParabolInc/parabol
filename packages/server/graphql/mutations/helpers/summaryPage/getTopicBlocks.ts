@@ -1,12 +1,10 @@
 import makeAppURL from '../../../../../client/utils/makeAppURL'
 import plural from '../../../../../client/utils/plural'
 import appOrigin from '../../../../appOrigin'
-import type {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
+import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 
-export const getTopicBlocks = (
-  meetingId: string,
-  meetingInsightObject: Awaited<ReturnType<typeof makeMeetingInsightInput>>
-) => {
+export const getTopicBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
+  const meetingInsightObject = await dataLoader.get('meetingInsightsInput').load(meetingId)
   if (!meetingInsightObject) return []
   const retroMeetingInsights = meetingInsightObject as Extract<
     typeof meetingInsightObject,

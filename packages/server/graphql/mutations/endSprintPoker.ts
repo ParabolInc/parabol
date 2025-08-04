@@ -118,7 +118,7 @@ export default {
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     if (!isKill) {
-      sendNewMeetingSummary(completedMeeting, context).catch(Logger.log)
+      sendNewMeetingSummary(completedMeeting, false, context).catch(Logger.log)
     }
     const events = teamMembers.map(
       (teamMember) =>

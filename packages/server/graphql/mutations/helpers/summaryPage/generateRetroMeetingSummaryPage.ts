@@ -1,7 +1,6 @@
 import type {JSONContent} from '@tiptap/core'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import type {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
-import {makeMeetingInsightInput} from '../../../../utils/makeMeetingInsightInput'
 import {getInsightsBlocks} from './getInsightsBlocks'
 import {getParticipantBlocks} from './getParticipantBlocks'
 import {getRetroMetaBlock} from './getRetroMetaBlock'
@@ -17,15 +16,14 @@ export const generateRetroMeetingSummaryPage = async function* (
   const meeting = (await dataLoader
     .get('newMeetings')
     .loadNonNull(meetingId)) as RetrospectiveMeeting
-  const meetingInsightObject = await makeMeetingInsightInput(meeting, dataLoader)
   // start the work at the same time, then deliver it in order
   const promises = [
     getTitleBlock(meeting),
     getSubtitleBlock(meeting, dataLoader),
     getRetroMetaBlock(meeting, dataLoader),
-    getInsightsBlocks(meetingId, meetingInsightObject, dataLoader),
+    getInsightsBlocks(meetingId, dataLoader),
     getTaskBlocks(meetingId, dataLoader),
-    getTopicBlocks(meetingId, meetingInsightObject),
+    getTopicBlocks(meetingId, dataLoader),
     getParticipantBlocks(meetingId, dataLoader)
   ] as Promise<JSONContent[] | null>[]
   for (const promise of promises) {

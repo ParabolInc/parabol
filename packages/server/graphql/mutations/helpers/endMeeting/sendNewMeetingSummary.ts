@@ -8,10 +8,13 @@ import isValid from '../../../isValid'
 
 export default async function sendNewMeetingSummary(
   newMeeting: AnyMeeting,
+  makePagesSummary: boolean,
   context: InternalContext
 ) {
   const {id: meetingId, teamId, summarySentAt} = newMeeting
   if (summarySentAt) return
+  if (makePagesSummary) return // if pages summary is turned on, we'll build the email after we create the page
+
   const pg = getKysely()
   const {dataLoader} = context
   const [teamMembers, team] = await Promise.all([

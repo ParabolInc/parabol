@@ -872,6 +872,36 @@ importers:
       '@pgtyped/runtime':
         specifier: ^2.4.2
         version: 2.4.2
+      '@react-email/body':
+        specifier: ^0.1.0
+        version: 0.1.0(react@17.0.2)
+      '@react-email/button':
+        specifier: ^0.2.0
+        version: 0.2.0(react@17.0.2)
+      '@react-email/container':
+        specifier: ^0.0.15
+        version: 0.0.15(react@17.0.2)
+      '@react-email/head':
+        specifier: ^0.0.12
+        version: 0.0.12(react@17.0.2)
+      '@react-email/html':
+        specifier: ^0.0.11
+        version: 0.0.11(react@17.0.2)
+      '@react-email/img':
+        specifier: ^0.0.11
+        version: 0.0.11(react@17.0.2)
+      '@react-email/markdown':
+        specifier: ^0.0.15
+        version: 0.0.15(react@17.0.2)
+      '@react-email/preview':
+        specifier: ^0.0.13
+        version: 0.0.13(react@17.0.2)
+      '@react-email/section':
+        specifier: ^0.0.16
+        version: 0.0.16(react@17.0.2)
+      '@react-email/text':
+        specifier: ^0.1.5
+        version: 0.1.5(react@17.0.2)
       '@smithy/types':
         specifier: ^4.2.0
         version: 4.3.1
@@ -4682,6 +4712,65 @@ packages:
 
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
+
+  '@react-email/body@0.1.0':
+    resolution: {integrity: sha512-o1bcSAmDYNNHECbkeyceCVPGmVsYvT+O3sSO/Ct7apKUu3JphTi31hu+0Nwqr/pgV5QFqdoT5vdS3SW5DJFHgQ==}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/button@0.2.0':
+    resolution: {integrity: sha512-8i+v6cMxr2emz4ihCrRiYJPp2/sdYsNNsBzXStlcA+/B9Umpm5Jj3WJKYpgTPM+aeyiqlG/MMI1AucnBm4f1oQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/container@0.0.15':
+    resolution: {integrity: sha512-Qo2IQo0ru2kZq47REmHW3iXjAQaKu4tpeq/M8m1zHIVwKduL2vYOBQWbC2oDnMtWPmkBjej6XxgtZByxM6cCFg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/head@0.0.12':
+    resolution: {integrity: sha512-X2Ii6dDFMF+D4niNwMAHbTkeCjlYYnMsd7edXOsi0JByxt9wNyZ9EnhFiBoQdqkE+SMDcu8TlNNttMrf5sJeMA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/html@0.0.11':
+    resolution: {integrity: sha512-qJhbOQy5VW5qzU74AimjAR9FRFQfrMa7dn4gkEXKMB/S9xZN8e1yC1uA9C15jkXI/PzmJ0muDIWmFwatm5/+VA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/img@0.0.11':
+    resolution: {integrity: sha512-aGc8Y6U5C3igoMaqAJKsCpkbm1XjguQ09Acd+YcTKwjnC2+0w3yGUJkjWB2vTx4tN8dCqQCXO8FmdJpMfOA9EQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/markdown@0.0.15':
+    resolution: {integrity: sha512-UQA9pVm5sbflgtg3EX3FquUP4aMBzmLReLbGJ6DZQZnAskBF36aI56cRykDq1o+1jT+CKIK1CducPYziaXliag==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/preview@0.0.13':
+    resolution: {integrity: sha512-F7j9FJ0JN/A4d7yr+aw28p4uX7VLWs7hTHtLo7WRyw4G+Lit6Zucq4UWKRxJC8lpsUdzVmG7aBJnKOT+urqs/w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/section@0.0.16':
+    resolution: {integrity: sha512-FjqF9xQ8FoeUZYKSdt8sMIKvoT9XF8BrzhT3xiFKdEMwYNbsDflcjfErJe3jb7Wj/es/lKTbV5QR1dnLzGpL3w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
+
+  '@react-email/text@0.1.5':
+    resolution: {integrity: sha512-o5PNHFSE085VMXayxH+SJ1LSOtGsTv+RpNKnTiJDrJUwoBu77G3PlKOsZZQHCNyD28WsQpl9v2WcJLbQudqwPg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: 17.0.2
 
   '@react-native-community/netinfo@4.7.0':
     resolution: {integrity: sha512-a/sDB+AsLEUNmhAUlAaTYeXKyQdFGBUfatqKkX5jluBo2CB3OAuTHfm7rSjcaLB9EmG5iSq3fOTpync2E7EYTA==}
@@ -9759,6 +9848,11 @@ packages:
     engines: {node: '>= 18'}
     hasBin: true
 
+  marked@7.0.4:
+    resolution: {integrity: sha512-t8eP0dXRJMtMvBojtkcsA7n48BkauktUKzfkPSCq85ZMTJ0v76Rke4DYz01omYpPTUh4p/f7HePgRo3ebG8+QQ==}
+    engines: {node: '>= 16'}
+    hasBin: true
+
   marky@1.3.0:
     resolution: {integrity: sha512-ocnPZQLNpvbedwTy9kNrQEsknEfgvcLMvOtz3sFeWApDq1MXH1TqkCIx58xlpESsfwQOnuBO9beyQuNGzVvuhQ==}
 
@@ -9771,6 +9865,11 @@ packages:
 
   md-to-adf@0.6.4:
     resolution: {integrity: sha512-MynWm2w+adyzeaCJGXoOjgHAAhql0I9jR2Bq55hM7GQ05u6cGX7jThdWN6dgVSGnBmuAGmZGy2rDGBP+hJRckA==}
+
+  md-to-react-email@5.0.5:
+    resolution: {integrity: sha512-OvAXqwq57uOk+WZqFFNCMZz8yDp8BD3WazW1wAKHUrPbbdr89K9DWS6JXY09vd9xNdPNeurI8DU/X4flcfaD8A==}
+    peerDependencies:
+      react: 17.0.2
 
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
@@ -17387,7 +17486,7 @@ snapshots:
     dependencies:
       antlr4ts: 0.5.0-alpha.4
       chalk: 4.1.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -17404,7 +17503,7 @@ snapshots:
     dependencies:
       '@pgtyped/parser': 2.4.2
       chalk: 4.1.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -18101,6 +18200,47 @@ snapshots:
       '@types/react-dom': 17.0.2
 
   '@radix-ui/rect@1.1.1': {}
+
+  '@react-email/body@0.1.0(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/button@0.2.0(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/container@0.0.15(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/head@0.0.12(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/html@0.0.11(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/img@0.0.11(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/markdown@0.0.15(react@17.0.2)':
+    dependencies:
+      md-to-react-email: 5.0.5(react@17.0.2)
+      react: 17.0.2
+
+  '@react-email/preview@0.0.13(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/section@0.0.16(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
+
+  '@react-email/text@0.1.5(react@17.0.2)':
+    dependencies:
+      react: 17.0.2
 
   '@react-native-community/netinfo@4.7.0(react-native@0.79.1(@babel/core@7.28.0)(@types/react@17.0.2)(react@17.0.2))':
     dependencies:
@@ -19973,7 +20113,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -20165,7 +20305,7 @@ snapshots:
 
   axios@1.11.0:
     dependencies:
-      follow-redirects: 1.15.9(debug@4.3.7)
+      follow-redirects: 1.15.9
       form-data: 4.0.4
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -21145,6 +21285,10 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
+  debug@4.4.1:
+    dependencies:
+      ms: 2.1.3
+
   debug@4.4.1(supports-color@5.5.0):
     dependencies:
       ms: 2.1.3
@@ -21867,6 +22011,8 @@ snapshots:
 
   flow-parser@0.269.1: {}
 
+  follow-redirects@1.15.9: {}
+
   follow-redirects@1.15.9(debug@4.3.7):
     optionalDependencies:
       debug: 4.3.7
@@ -22573,7 +22719,7 @@ snapshots:
     dependencies:
       '@tootallnate/once': 2.0.0
       agent-base: 6.0.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -22607,7 +22753,7 @@ snapshots:
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -22760,7 +22906,7 @@ snapshots:
     dependencies:
       '@ioredis/commands': 1.2.0
       cluster-key-slot: 1.1.2
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.1
       denque: 2.1.0
       lodash.defaults: 4.2.0
       lodash.isarguments: 3.1.0
@@ -24001,6 +24147,8 @@ snapshots:
 
   marked@15.0.12: {}
 
+  marked@7.0.4: {}
+
   marky@1.3.0: {}
 
   math-intrinsics@1.1.0: {}
@@ -24032,6 +24180,11 @@ snapshots:
     dependencies:
       adf-builder: 3.3.0
       marked: 0.8.2
+
+  md-to-react-email@5.0.5(react@17.0.2):
+    dependencies:
+      marked: 7.0.4
+      react: 17.0.2
 
   mdurl@2.0.0: {}
 
