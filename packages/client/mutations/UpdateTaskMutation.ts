@@ -68,7 +68,8 @@ export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task$data> 
   payload,
   {store}
 ) => {
-  const task = payload.getLinkedRecord('task')!
+  const task = payload.getLinkedRecord('task')
+  if (!task) return
   handleUpsertTasks(task as any, store as any)
 
   const addedNotification = payload.getLinkedRecord('addedNotification')

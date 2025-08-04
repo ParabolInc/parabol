@@ -19,6 +19,7 @@ import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {INSTANCE_ID} from './utils/instanceId'
+import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
@@ -103,7 +104,9 @@ export const wsHandler = makeBehavior<{token?: string}>({
     if (isBlacklistedJWT) return false
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
-    extra.ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || extra.socket.ip
+    const clientIP =
+      typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
+    extra.ip = clientIP || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
     extra.resubscribe = {}
     extra.dispose = {}
