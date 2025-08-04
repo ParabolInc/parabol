@@ -126,7 +126,7 @@ export default class GCSManager extends FileStoreManager {
     try {
       await fetch(url, {
         method: 'POST',
-        body: file,
+        body: file as any,
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Accept: 'application/json',
