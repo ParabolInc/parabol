@@ -20,9 +20,10 @@ export const createTopLevelPage = async (
     content?: JSONContent | null
     teamId?: string | null
     mutatorId?: string | null
+    summaryMeetingId?: string | null
   } = {}
 ) => {
-  const {teamId, content, mutatorId} = options
+  const {teamId, content, mutatorId, summaryMeetingId} = options
   const operationId = dataLoader.share()
   const subOptions = {mutatorId: mutatorId || undefined, operationId}
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
@@ -43,6 +44,7 @@ export const createTopLevelPage = async (
       teamId,
       sortOrder,
       yDoc,
+      summaryMeetingId,
       ...contentRes
     })
     .returningAll()
