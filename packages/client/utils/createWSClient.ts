@@ -36,11 +36,12 @@ export const onDisconnected = (atmosphere: Atmosphere) => {
       return
     }
   }
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    autoDismiss: 0,
-    message: 'You’re offline, reconnecting…',
-    key: 'offline'
-  })
+  // This gets too noisy, so we're going to try not mentioning it
+  // atmosphere.eventEmitter.emit('addSnackbar', {
+  //   autoDismiss: 0,
+  //   message: 'You’re offline, reconnecting…',
+  //   key: 'offline'
+  // })
 }
 
 export const onReconnect = (atmosphere: Atmosphere) => {
@@ -139,7 +140,6 @@ export function createWSClient(atmosphere: Atmosphere) {
               onDisconnected(atmosphere)
             }
           }
-          hasConnected = false
         }
       },
       url,

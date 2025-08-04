@@ -123,7 +123,9 @@ const PokerSidebarEstimateSection = (props: Props) => {
       // goto the first stage that the user hasn't voted on
       const summaryStages = stageIds.map((id) => stages.find((stage) => stage.id === id))
       const unvotedStage = summaryStages.find((stage) => {
-        return !stage!.scores!.find(({userId}) => userId === viewerId)
+        if (!stage || !stage.scores) return false
+        const hasUserVoted = stage.scores.find(({userId}) => userId === viewerId)
+        return !hasUserVoted
       })
       if (unvotedStage) {
         gotoStageId(unvotedStage.id)

@@ -29,9 +29,12 @@ interface Props {
   eventId: string
 }
 
+const IGNORED_ERRORS = ['ChunkLoadError']
 const ErrorComponent = (props: Props) => {
   const {error, eventId} = props
-  console.error(error)
+  if (!IGNORED_ERRORS.includes(error?.name)) {
+    console.error(error)
+  }
   const {modalPortal, openPortal, closePortal} = useModal()
 
   if (isNotFoundError(error)) {
