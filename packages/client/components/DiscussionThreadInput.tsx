@@ -204,7 +204,7 @@ const DiscussionThreadInput = (props: Props) => {
       block: 'center'
     })
     editor?.commands.focus('end')
-  }, [discussionId])
+  }, [discussionId, editor])
   const containerRef = useRef<HTMLDivElement>(null)
   useClickAway(containerRef, clearReplyingTo)
   if (!editor) return null

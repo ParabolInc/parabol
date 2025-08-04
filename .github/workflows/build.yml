@@ -118,16 +118,6 @@ jobs:
           tags: |
             "${{ secrets.GCP_AR_PARABOL_DEV }}:${{github.sha}}"
 
-      - name: Push Artifacts to Sentry
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: "${{secrets.SENTRY_AUTH_TOKEN}}"
-          SENTRY_ORG: "parabol"
-          SENTRY_PROJECT: "action-production"
-        with:
-          environment: "production"
-          sourcemaps: "./build"
-          version: ${{env.ACTION_VERSION}}
       - name: Push Client Artifacts to Datadog
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
