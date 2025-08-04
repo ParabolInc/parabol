@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.17.0](https://github.com/ParabolInc/parabol/compare/v10.16.3...v10.17.0) (2025-08-04)
+
+
+### Added
+
+* new email summary for retros ([#11645](https://github.com/ParabolInc/parabol/issues/11645)) ([5bc3f4f](https://github.com/ParabolInc/parabol/commit/5bc3f4f58a3c3a29661e975a1e1e747855174992))
+
+
+### Fixed
+
+* remove team member or archive team with pages ([#11668](https://github.com/ParabolInc/parabol/issues/11668)) ([b774451](https://github.com/ParabolInc/parabol/commit/b774451cbb38daaac83f65d918c461b19e97a68d))
+
+
+### Changed
+
+* fix server source maps path for Datadog ([#11656](https://github.com/ParabolInc/parabol/issues/11656)) ([75c805a](https://github.com/ParabolInc/parabol/commit/75c805a0610077844c6d03fbbb71e3fda8c62b72))
+* fix source map path back ([#11658](https://github.com/ParabolInc/parabol/issues/11658)) ([5385f19](https://github.com/ParabolInc/parabol/commit/5385f191c18e3c628ff15291a678bfd221d38d36))
+* source map build path ([#11657](https://github.com/ParabolInc/parabol/issues/11657)) ([0fb767d](https://github.com/ParabolInc/parabol/commit/0fb767dc41052b64c55922cf238cce7e3d63bf96))
+
 ## [10.16.3](https://github.com/ParabolInc/parabol/compare/v10.16.2...v10.16.3) (2025-07-31)
 
 
