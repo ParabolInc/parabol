@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  typescript: ^5.7.3
+  typescript: ^5.9.2
   hoist-non-react-statics: ^3.3.0
   '@types/react': 17.0.2
   '@types/react-dom': 17.0.2
@@ -95,7 +95,7 @@ importers:
         specifier: 3.0.7
         version: 3.0.7(@tiptap/core@3.0.7(@tiptap/pm@3.0.7))(@tiptap/pm@3.0.7)
       '@whatwg-node/fetch':
-        specifier: ^0.10.6
+        specifier: ^0.10.10
         version: 0.10.10
       base64url:
         specifier: ^3.0.1
@@ -360,7 +360,7 @@ importers:
         specifier: 9.2.6
         version: 9.2.6(typescript@5.9.2)(webpack@5.101.0)
       typescript:
-        specifier: ^5.7.3
+        specifier: ^5.9.2
         version: 5.9.2
       url-loader:
         specifier: ^4.1.1
@@ -3389,7 +3389,7 @@ packages:
   '@mattermost/types@6.7.0-0':
     resolution: {integrity: sha512-mT8wJwWEp20KPo9D12y7bW7EdUHO7VhUHxr3gH8nPGapWooGcl0Ra0H3u1iCjPpqPWvp7LiodcneU0IysunYKQ==}
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -3423,7 +3423,7 @@ packages:
   '@module-federation/dts-plugin@0.13.1':
     resolution: {integrity: sha512-PQMs57h9s5pCkLWZ0IyDGCcac4VZ+GgJE40pAWrOQ+/AgTC+WFyAT16M7PsRENS57Qed4wWQwgfOjS9zmfxKJA==}
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
       vue-tsc: '>=1.0.24'
     peerDependenciesMeta:
       vue-tsc:
@@ -3433,7 +3433,7 @@ packages:
     resolution: {integrity: sha512-jbbk68RnvNmusGGcXNXVDJAzJOFB/hV+RVV2wWNWmBOVkDZPiWj7aFb0cJAwc9EYZbPel3QzRitZJ73+SaH1IA==}
     hasBin: true
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
       vue-tsc: '>=1.0.24'
       webpack: ^5.0.0
     peerDependenciesMeta:
@@ -3465,7 +3465,7 @@ packages:
     resolution: {integrity: sha512-+qz8sW99SYDULajjjn4rSNaI4rogEPVOZsBvT6y0PdfpMD/wZxvh5HlV0u7+5DgWEjgrdm0cJHBHChlIbV/CMQ==}
     peerDependencies:
       '@rspack/core': '>=0.7'
-      typescript: ^5.7.3
+      typescript: ^5.9.2
       vue-tsc: '>=1.0.24'
     peerDependenciesMeta:
       typescript:
@@ -4019,7 +4019,7 @@ packages:
     engines: {node: '>=14.16'}
     hasBin: true
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
 
   '@pgtyped/parser@2.4.2':
     resolution: {integrity: sha512-LbK90cz+CAjG+jsiKS5FNVkb97Ys5xZa1xmSIq7N2zYz1vX04hr6xNhDUSjbC8C/YnFm1S+d2D6BbHMgzsBilw==}
@@ -7252,7 +7252,7 @@ packages:
     resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -7261,7 +7261,7 @@ packages:
     resolution: {integrity: sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -12360,7 +12360,7 @@ packages:
       esbuild: '*'
       jest: ^29.0.0 || ^30.0.0
       jest-util: ^29.0.0 || ^30.0.0
-      typescript: ^5.7.3
+      typescript: ^5.9.2
     peerDependenciesMeta:
       '@babel/core':
         optional: true
@@ -12379,7 +12379,7 @@ packages:
     resolution: {integrity: sha512-QMTC4UFzHmu9wU2VHZEmWWE9cUajjfcdcws+Gh7FhiO+Dy0RnR1bNz0YCHqhI0yRowCE9arVnNxYHqELOy9Hjw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
-      typescript: ^5.7.3
+      typescript: ^5.9.2
       webpack: ^5.0.0
 
   ts-log@2.2.7:
@@ -12476,11 +12476,6 @@ packages:
   typed-array-length@1.0.7:
     resolution: {integrity: sha512-3KS2b+kL7fsuk/eJZ7EQdnEmQoaho/r6KUef7hxvltNA5DR8NAUM+8wJMbJyZ4G9/7i3v5zPBIMN5aybAh2/Jg==}
     engines: {node: '>= 0.4'}
-
-  typescript@5.8.3:
-    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
@@ -24537,7 +24532,7 @@ snapshots:
       dataloader: 2.2.3
       graphql: 16.11.0
       tslib: 2.8.1
-      typescript: 5.8.3
+      typescript: 5.9.2
 
   netmask@2.0.2: {}
 
@@ -27264,8 +27259,6 @@ snapshots:
       is-typed-array: 1.1.15
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
-
-  typescript@5.8.3: {}
 
   typescript@5.9.2: {}
 
