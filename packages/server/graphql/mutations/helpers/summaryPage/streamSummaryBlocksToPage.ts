@@ -42,34 +42,38 @@ export const streamSummaryBlocksToPage = async (
     if (!rawContent) continue
     const content = rawContent.filter(Boolean)
     if (content.length === 0) continue
-    const tempYDoc = TiptapTransformer.toYdoc(
-      {
-        type: 'doc',
-        content
-      },
-      undefined,
-      serverTipTapExtensions
-    )
-    const blocks = tempYDoc.getXmlFragment('default').toArray() as XmlElement[]
-    await conn.transact((doc) => {
-      const frag = doc.getXmlFragment('default')
-      for (let i = frag.length - 1; i >= 0; i--) {
-        const node = frag.get(i) as XmlElement
-        if (node.nodeName === 'thinkingBlock') {
-          continue
+    try {
+      const tempYDoc = TiptapTransformer.toYdoc(
+        {
+          type: 'doc',
+          content
+        },
+        undefined,
+        serverTipTapExtensions
+      )
+      const blocks = tempYDoc.getXmlFragment('default').toArray() as XmlElement[]
+      await conn.transact((doc) => {
+        const frag = doc.getXmlFragment('default')
+        for (let i = frag.length - 1; i >= 0; i--) {
+          const node = frag.get(i) as XmlElement
+          if (node.nodeName === 'thinkingBlock') {
+            continue
+          }
+          if (node.length === 0 && ['paragraph', 'heading'].includes(node.nodeName)) {
+            // delete tailing empty headings or paragraphs that may have been added by the user
+            frag.delete(i)
+          } else {
+            break
+          }
         }
-        if (node.length === 0 && ['paragraph', 'heading'].includes(node.nodeName)) {
-          // delete tailing empty headings or paragraphs that may have been added by the user
-          frag.delete(i)
-        } else {
-          break
+        for (const block of blocks) {
+          // insert it before the thinking block
+          frag.insert(frag.length - 1, [cloneBlock(block)])
         }
-      }
-      for (const block of blocks) {
-        // insert it before the thinking block
-        frag.insert(frag.length - 1, [cloneBlock(block)])
-      }
-    })
+      })
+    } catch (e) {
+      console.error('Invalid block generated', e, JSON.stringify(content))
+    }
     // not necessary, just to make it look like it is streaming lol
     await sleep(100)
   }

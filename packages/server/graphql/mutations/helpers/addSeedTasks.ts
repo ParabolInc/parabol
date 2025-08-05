@@ -1,10 +1,10 @@
-import {generateJSON} from '@tiptap/html/server'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import appOrigin from '../../../appOrigin'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
+import {generateJSON} from '../../../utils/tiptap/generateJSON'
 
 const NORMAL_TASK_STRING = `This is a task card. They can be created here, in a meeting, or via an integration`
 const INTEGRATIONS_TASK_STRING = `Parabol supports integrations for Jira, GitHub, GitLab, Slack and Mattermost. Connect your tools in Settings > Integrations.`
