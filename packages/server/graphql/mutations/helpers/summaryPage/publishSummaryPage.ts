@@ -25,7 +25,7 @@ export const publishSummaryPage = async (
     .set({summaryPageId: pageId})
     .where('id', '=', meetingId)
     .execute()
-  meeting.summaryPageId = pageId
+  dataLoader.get('newMeetings').clear(meetingId)
   // don't wait for the stream to finish
   streamSummaryBlocksToPage(pageId, meetingId, context, info)
   return page

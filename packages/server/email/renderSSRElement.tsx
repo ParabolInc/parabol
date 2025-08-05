@@ -1,9 +1,10 @@
-import {generateHTML, generateJSON} from '@tiptap/html/server'
+import {generateHTML} from '@tiptap/html/server'
 import type {ReactElement} from 'react'
 import ReactDOMServer from 'react-dom/server'
 import {RelayEnvironmentProvider} from 'react-relay'
 import {TipTapProvider} from '../../client/components/TipTapProvider'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
+import {generateJSON} from '../utils/tiptap/generateJSON'
 import type ServerEnvironment from './ServerEnvironment'
 
 const renderSSRElement = async (element: ReactElement, environment: ServerEnvironment) => {
