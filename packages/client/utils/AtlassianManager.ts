@@ -73,6 +73,7 @@ export default abstract class AtlassianManager {
       })
       const {headers} = res
       if (res.status === 429) {
+        await res.arrayBuffer().catch(() => {})
         const retryAfterSeconds = headers.get('Retry-After') ?? '3'
         return new RateLimitError(
           'got jira rate limit error',
@@ -81,6 +82,7 @@ export default abstract class AtlassianManager {
       }
       const contentType = headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
+        await res.arrayBuffer().catch(() => {})
         return new Error('Received non-JSON Atlassian Response')
       }
       const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T

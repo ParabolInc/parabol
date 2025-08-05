@@ -64,6 +64,8 @@ const useGotoStageId = (meetingRef: useGotoStageId_meeting$key) => {
       }
       updateLocalStage(atmosphere, meeting, stageId)
       if (isViewerFacilitator && isNavigableByFacilitator && !endedAt) {
+        // this shouldn't be necessary, but we're getting a lot of "already at stage" errors
+        if (facilitatorStageId === stageId) return
         const res = findStageById(phases, facilitatorStageId)
         if (!res) return
         const {stage: oldStage} = res

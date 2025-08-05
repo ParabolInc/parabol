@@ -137,7 +137,7 @@ export class Redis implements Extension {
       this.pub = new RedisClient(port, host, options!)
       this.sub = new RedisClient(port, host, options!)
     }
-    this.sub.on('messageBuffer', this.handleIncomingMessage)
+    ;(this.sub as RedisClient).on('messageBuffer', this.handleIncomingMessage)
 
     this.redlock = new Redlock([this.pub], {
       driftFactor: 0.1

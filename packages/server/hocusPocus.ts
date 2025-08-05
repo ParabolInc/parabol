@@ -1,6 +1,6 @@
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {type connectedPayload, Server} from '@hocuspocus/server'
+import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -57,9 +57,7 @@ export const server = new Server({
     req.userId = authToken.sub
   },
   async onAuthenticate(data) {
-    const {documentName, request} = data
-    // TODO: see if this is another tiptap typing error
-    const connection = (data as any as connectedPayload).connection
+    const {documentName, request, connectionConfig} = data
     const userId = (request as any).userId as string
     const [dbId] = CipherId.fromClient(documentName)
     const pageAccess = await getKysely()
@@ -71,7 +69,7 @@ export const server = new Server({
     if (!pageAccess) throw new Error('Document does not exist or user is not authorized')
     const {role} = pageAccess
     if (role === 'viewer' || role === 'commenter') {
-      connection.readOnly = true
+      connectionConfig.readOnly = true
     }
     return {userId}
   },

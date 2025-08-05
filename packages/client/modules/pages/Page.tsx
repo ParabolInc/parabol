@@ -1,5 +1,6 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {PageQuery} from '../../__generated__/PageQuery.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
@@ -21,11 +22,13 @@ export const Page = (props: Props) => {
     graphql`
       query PageQuery($pageId: ID!) {
         viewer {
-          ...usePageSharingAutocomplete_viewer
           page(pageId: $pageId) {
             ...PageBreadCrumbs_page
             id
             ancestorIds
+            access {
+              viewer
+            }
           }
         }
       }
@@ -34,7 +37,13 @@ export const Page = (props: Props) => {
   )
   const {viewer} = query
   const {page} = viewer
+  const {access} = page
+  const {viewer: viewerAccess} = access
   const {editor, synced} = useTipTapPageEditor(pageId, {viewerRef})
+  useEffect(() => {
+    const readOnly = viewerAccess === 'commenter' || viewerAccess === 'viewer'
+    editor?.setEditable(!readOnly)
+  }, [editor, viewerAccess])
   if (!editor) return <div>No editor</div>
   return (
     <div className='relative flex w-full flex-col items-center bg-white pt-2'>

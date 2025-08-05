@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.18.0](https://github.com/ParabolInc/parabol/compare/v10.17.0...v10.18.0) (2025-08-05)
+
+
+### Added
+
+* poker emails for pages ([#11667](https://github.com/ParabolInc/parabol/issues/11667)) ([6de8d1d](https://github.com/ParabolInc/parabol/commit/6de8d1dc4b9cc71b364e13e08f5adcd05a713520))
+* poker summary on a page ([#11666](https://github.com/ParabolInc/parabol/issues/11666)) ([92aedd7](https://github.com/ParabolInc/parabol/commit/92aedd785ea813eba214f9588b0c74bdd553594c))
+
+
+### Fixed
+
+* always consume stream before abort handler throws ([#11696](https://github.com/ParabolInc/parabol/issues/11696)) ([04a5921](https://github.com/ParabolInc/parabol/commit/04a59219769326b130a47a96d18fa89a8911a9b1))
+* drop unused dependencies chart.js, immutablejs ([#11695](https://github.com/ParabolInc/parabol/issues/11695)) ([709fc32](https://github.com/ParabolInc/parabol/commit/709fc32382cf049bb3d446e6b8d396a5cac90b33))
+* remove reconnecting toast ([#11698](https://github.com/ParabolInc/parabol/issues/11698)) ([6bc69ce](https://github.com/ParabolInc/parabol/commit/6bc69ce37f7627da6b666502fbc283ee0dc091fd))
+* tiptap memory leak ([#11709](https://github.com/ParabolInc/parabol/issues/11709)) ([90b6f1d](https://github.com/ParabolInc/parabol/commit/90b6f1d2229f78624e13736c8ef6956f9bdbc9ed))
+
+
+### Changed
+
+* **deps:** bump tailwind-merge from 1.14.0 to 3.3.1 ([#11671](https://github.com/ParabolInc/parabol/issues/11671)) ([05f9d8b](https://github.com/ParabolInc/parabol/commit/05f9d8b99b791472f617f28021a891dd0910da2a))
+
 ## [10.17.0](https://github.com/ParabolInc/parabol/compare/v10.16.3...v10.17.0) (2025-08-04)
 
 

@@ -141,4 +141,5 @@ type PokerMeeting implements NewMeeting {
 	The last time a meeting was updated (stage completed, finished, etc)
 	"""
 	updatedAt: DateTime
+	summaryPageId: ID
 }

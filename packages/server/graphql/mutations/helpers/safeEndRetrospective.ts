@@ -1,3 +1,4 @@
+import type {GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DISCUSS} from 'parabol-client/utils/constants'
@@ -13,7 +14,7 @@ import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import type {InternalContext} from '../../graphql'
+import type {GQLContext, InternalContext} from '../../graphql'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
@@ -63,11 +64,13 @@ const summarizeRetroMeeting = async (
 const safeEndRetrospective = async ({
   meeting,
   context,
-  now
+  now,
+  info
 }: {
   meeting: RetrospectiveMeeting
   context: InternalContext
   now: Date
+  info: GraphQLResolveInfo
 }) => {
   const {authToken, socketId: mutatorId, dataLoader} = context
   const {id: meetingId, phases, facilitatorStageId, teamId} = meeting
@@ -156,10 +159,10 @@ const safeEndRetrospective = async ({
     }
   }
   // the promise only creates the initial page, the page blocks are generated and sent after resolving
-  const page = await publishSummaryPage(viewerId, meetingId, dataLoader, mutatorId)
+  const page = await publishSummaryPage(meetingId, context, info)
   if (makePagesSummary) {
     // do not await sending the email
-    sendSummaryEmailV2(meetingId, page.id, dataLoader)
+    sendSummaryEmailV2(meetingId, page.id, context as GQLContext, info)
   }
   const data = {
     gotoPageSummary: makePagesSummary,

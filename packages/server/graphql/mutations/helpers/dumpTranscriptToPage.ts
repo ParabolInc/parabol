@@ -1,5 +1,4 @@
 import {generateText, type JSONContent} from '@tiptap/core'
-import {generateJSON} from '@tiptap/html/server'
 import {sql} from 'kysely'
 import {__START__} from 'parabol-client/shared/sortOrder'
 import {getTitleFromPageText} from 'parabol-client/shared/tiptap/getTitleFromPageText'
@@ -9,6 +8,7 @@ import getKysely from '../../../postgres/getKysely'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {analytics} from '../../../utils/analytics/analytics'
 import RecallAIServerManager from '../../../utils/RecallAIServerManager'
+import {generateJSON} from '../../../utils/tiptap/generateJSON'
 import {getPageNextSortOrder} from '../../public/mutations/helpers/getPageNextSortOrder'
 
 function escapeHtml(str: string) {
