@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import type {PokerMeeting} from '../../../../postgres/types/Meeting'
 import getPhase from '../../../../utils/getPhase'
 import type {GQLContext, InternalContext} from '../../../graphql'
@@ -30,17 +31,22 @@ function extractTitleOrSummary(obj: Record<string, any>): string | undefined {
   return undefined
 }
 
-export const getPokerTable = async (
+export const getDimensionNames = async (meetingId: string, dataLoader: DataLoaderInstance) => {
+  const meeting = (await dataLoader.get('newMeetings').loadNonNull(meetingId)) as PokerMeeting
+  const {templateRefId} = meeting
+  const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
+  const {dimensions} = templateRef
+  return dimensions.map((d) => d.name)
+}
+
+export const getPokerRowData = async (
   meetingId: string,
-  context: InternalContext,
+  context: GQLContext,
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
   const meeting = (await dataLoader.get('newMeetings').loadNonNull(meetingId)) as PokerMeeting
-  const {phases, templateRefId} = meeting
-  const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
-  const {dimensions} = templateRef
-  const dimensionNames = dimensions.map((d) => d.name)
+  const {phases} = meeting
   const estimatePhase = getPhase(phases, 'ESTIMATE')
   const {stages} = estimatePhase
   const agg = {} as Record<string, string[]>
@@ -86,27 +92,21 @@ export const getPokerTable = async (
 
         title = extractTitleOrSummary(integrationRes) ?? 'Unknown Story'
       }
-      return {
-        type: 'tableRow',
-        content: [title, ...scores].map((text, idx) => ({
-          type: 'tableCell',
-          attrs: {colspan: 1, rowspan: 1},
-          content: [
-            {
-              type: 'paragraph',
-              content: [
-                {
-                  type: 'text',
-                  text,
-                  marks: idx === 0 ? [{type: 'bold', attrs: {}}] : undefined
-                }
-              ]
-            }
-          ]
-        }))
-      }
+      return [title, ...scores]
     })
   )
+  return rows
+}
+
+export const getPokerTable = async (
+  meetingId: string,
+  context: InternalContext,
+  info: GraphQLResolveInfo
+) => {
+  const {dataLoader} = context
+  const dimensionNames = await getDimensionNames(meetingId, dataLoader)
+  const pokerRowData = await getPokerRowData(meetingId, context as GQLContext, info)
+
   return [
     {type: 'paragraph'},
     {
@@ -125,7 +125,25 @@ export const getPokerTable = async (
             ]
           }))
         },
-        ...rows
+        ...pokerRowData.map((row) => ({
+          type: 'tableRow',
+          content: row.map((text, idx) => ({
+            type: 'tableCell',
+            attrs: {colspan: 1, rowspan: 1},
+            content: [
+              {
+                type: 'paragraph',
+                content: [
+                  {
+                    type: 'text',
+                    text,
+                    marks: idx === 0 ? [{type: 'bold', attrs: {}}] : undefined
+                  }
+                ]
+              }
+            ]
+          }))
+        }))
       ]
     }
   ]

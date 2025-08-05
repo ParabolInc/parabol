@@ -14,7 +14,7 @@ import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import type {InternalContext} from '../../graphql'
+import type {GQLContext, InternalContext} from '../../graphql'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
@@ -162,7 +162,7 @@ const safeEndRetrospective = async ({
   const page = await publishSummaryPage(meetingId, context, info)
   if (makePagesSummary) {
     // do not await sending the email
-    sendSummaryEmailV2(meetingId, page.id, dataLoader)
+    sendSummaryEmailV2(meetingId, page.id, context as GQLContext, info)
   }
   const data = {
     gotoPageSummary: makePagesSummary,
