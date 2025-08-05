@@ -1,0 +1,35 @@
+name: Create a new issue from Datadog
+
+on:
+  workflow_dispatch:
+    inputs:
+      issueLink:
+        description: 'Datadog issueLink'
+        required: true
+        type: string
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    name: Create a new issue from Datadog
+    steps:
+      # Remove this step once the https://github.com/CodelyTV/pr-size-labeler/issues/96 is resolved
+      - name: Create a new issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueLink = '${{ inputs.issueLink }}';
+            const issueLinkURL = new URL(issueLink);
+            const searchPattern = `${issueLink.split('?')[0]}?.*issueId=${issueLinkURL.searchParams.get('issueId')}`
+            const existingIssues = await github.rest.search.issues({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue '${searchPattern}"`,
+              per_page: 10
+            });
+            console.log(`Found ${existingIssues.data.total_count} issues matching the pattern.`);
+            console.log(`Found ', JSON.stringify(existingIssues.data, null, 2));
+
