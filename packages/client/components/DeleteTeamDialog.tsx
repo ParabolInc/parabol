@@ -41,7 +41,7 @@ const DeleteTeamDialog = (props: Props) => {
     e.preventDefault()
 
     // Convert smart quote to regular quote before comparison
-    if (e.target.value.replace(`’`, `'`) === teamName) {
+    if (e.target.value.replaceAll(`’`, `'`) === teamName) {
       setTypedTeamName(true)
     } else {
       setTypedTeamName(false)
