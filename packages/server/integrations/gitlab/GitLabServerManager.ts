@@ -2,7 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import GitLabIssueId from 'parabol-client/shared/gqlIds/GitLabIssueId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
-import type {GQLContext} from '../../graphql/graphql'
+import type {InternalContext} from '../../graphql/graphql'
 import createIssueMutation from '../../graphql/nestedSchema/GitLab/mutations/createIssue.graphql'
 import createLabel from '../../graphql/nestedSchema/GitLab/mutations/createLabel.graphql'
 import createNote from '../../graphql/nestedSchema/GitLab/mutations/createNote.graphql'
@@ -35,13 +35,13 @@ import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegratio
 class GitLabServerManager implements TaskIntegrationManager {
   public title = 'GitLab'
   private readonly auth: TeamMemberIntegrationAuth
-  private readonly context: GQLContext
+  private readonly context: InternalContext
   private readonly info: GraphQLResolveInfo
   private readonly serverBaseUrl: string
 
   constructor(
     auth: TeamMemberIntegrationAuth,
-    context: GQLContext,
+    context: InternalContext,
     info: GraphQLResolveInfo,
     serverBaseUrl: string
   ) {

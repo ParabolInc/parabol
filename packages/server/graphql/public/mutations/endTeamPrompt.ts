@@ -3,11 +3,14 @@ import standardError from '../../../utils/standardError'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
 
-const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (_source, {meetingId}, context) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (
+  _source,
+  {meetingId},
+  context,
+  info
+) => {
+  const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
-  const operationId = dataLoader.share()
-  const subOptions = {mutatorId, operationId}
 
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
@@ -21,7 +24,7 @@ const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (_source, {meeti
   if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
-  return safeEndTeamPrompt({meeting, context, subOptions, viewerId})
+  return safeEndTeamPrompt({meeting, context, info})
 }
 
 export default endTeamPrompt

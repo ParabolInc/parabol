@@ -1,7 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import ReactDOMServer from 'react-dom/server'
-import type {GQLContext} from '../graphql/graphql'
+import type {InternalContext} from '../graphql/graphql'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
 import getMailManager from './getMailManager'
@@ -10,7 +10,7 @@ import {makeSummaryEmailV2} from './makeSummaryEmailV2'
 export const sendSummaryEmailV2 = async (
   meetingId: string,
   pageId: number,
-  context: GQLContext,
+  context: InternalContext,
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context

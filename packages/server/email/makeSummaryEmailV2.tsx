@@ -16,12 +16,13 @@ import makeAppURL from '../../client/utils/makeAppURL'
 import plural from '../../client/utils/plural'
 import appOrigin from '../appOrigin'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
-import type {GQLContext} from '../graphql/graphql'
+import type {InternalContext} from '../graphql/graphql'
 import {
   getDimensionNames,
   getPokerRowData
 } from '../graphql/mutations/helpers/summaryPage/getPokerTable'
 import {CipherId} from '../utils/CipherId'
+import {convertTipTapToMarkdown} from '../utils/convertTipTapToMarkdown'
 
 const insightBox = {
   marginBottom: '20px'
@@ -69,10 +70,36 @@ const makeFallbackInsights = async (meetingId: string, dataLoader: DataLoaderIns
   }
   return null
 }
+
+const makeTeamPromptFallbackInsights = async (
+  meetingId: string,
+  dataLoader: DataLoaderInstance
+) => {
+  const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+  const responseBlock = await Promise.all(
+    responses.map(async (response) => {
+      const {userId, content} = response
+      if (!userId) return null
+      const user = await dataLoader.get('users').loadNonNull(userId)
+      const {preferredName} = user
+      const markdown = convertTipTapToMarkdown(content)
+
+      return (
+        <>
+          <Text style={paragraph} key={userId}>
+            {preferredName}
+          </Text>
+          <Markdown children={markdown} />
+        </>
+      )
+    })
+  )
+  return <Section style={insightBox}>{responseBlock}</Section>
+}
 export const makeSummaryEmailV2 = async (
   meetingId: string,
   pageId: number,
-  context: GQLContext,
+  context: InternalContext,
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
@@ -287,7 +314,67 @@ export const makeSummaryEmailV2 = async (
             </Section>
 
             <Section>
-              <Text style={{fontSize: '12px', marginBottom: '0px'}}>Retro Workflow Summary</Text>
+              <Text style={{fontSize: '12px', marginBottom: '0px'}}>
+                Sprint Poker Workflow Summary
+              </Text>
+              <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
+                <a href={unsubscribeURL} style={unsubscribeLink}>
+                  Unsubscribe from workflow summaries
+                </a>
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Html>
+    )
+  } else if (meetingType === 'teamPrompt') {
+    const responses = await dataLoader.get('teamPromptResponsesByMeetingId').load(meetingId)
+    const responseCount = responses.length
+    const responseLabel = `${responseCount} ${plural(responseCount || 0, 'response')}`
+    const subHeadingMeta = `${responseLabel}`
+    const {content: insightsMarkdown} = await dataLoader
+      .get('meetingInsightsContent')
+      .load(meetingId)
+
+    const markdownWithoutBullets = insightsMarkdown
+      ? // replace bullets with a newline
+        insightsMarkdown
+          .replace(/^\s*([-*]|\d+\.)\s+/gm, '\n')
+          .replace(/\n{2,}/g, '\n\n')
+          .trim()
+      : null
+    const fallbackInsights = await makeTeamPromptFallbackInsights(meetingId, dataLoader)
+    return () => (
+      <Html>
+        <Head />
+        <Preview>{title}</Preview>
+        <Body style={main}>
+          <Container style={container}>
+            <Section style={{marginBottom: '20px'}}>
+              <Text style={heading}>{title}</Text>
+              <Text style={subheading}>
+                <strong>{subHeading}</strong>
+                <br />
+                {subHeadingMeta}
+              </Text>
+            </Section>
+            {markdownWithoutBullets && (
+              <Markdown markdownContainerStyles={insightBox} children={markdownWithoutBullets} />
+            )}
+            {fallbackInsights}
+            <Section style={{marginBottom: '32px'}}>
+              <Button style={ctaButton} href={CTAURL}>
+                See Responses in Parabol
+              </Button>
+            </Section>
+
+            <Section style={{marginTop: '32px'}}>
+              <Img src={logoSVG} alt='Parabol' style={{marginBottom: '8px'}} />
+              <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
+            </Section>
+
+            <Section>
+              <Text style={{fontSize: '12px', marginBottom: '0px'}}>Standup Workflow Summary</Text>
               <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
                 <a href={unsubscribeURL} style={unsubscribeLink}>
                   Unsubscribe from workflow summaries

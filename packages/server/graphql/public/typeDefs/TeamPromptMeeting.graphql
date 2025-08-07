@@ -167,4 +167,5 @@ type TeamPromptMeeting implements NewMeeting {
 	The next meeting in the series if this meeting is recurring
 	"""
 	nextMeeting: TeamPromptMeeting
+	summaryPageId: ID
 }
