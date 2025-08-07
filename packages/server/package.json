@@ -113,7 +113,7 @@
     "parabol-client": "workspace:*",
     "pg": "^8.5.1",
     "react-dom": "^17.0.2",
-    "react-relay": "^18.2.0",
+    "react-relay": "^20.1.0",
     "relay-runtime": "^14.1.0",
     "rrule-rust": "^2.0.2",
     "samlify": "^2.10.0",
