@@ -37,6 +37,17 @@ const DeleteTeamDialog = (props: Props) => {
     history.push(`/me/organizations/${teamOrgId}/teams`)
   }
 
+  const handleTypeTeamName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault()
+
+    // Convert smart quote to regular quote before comparison
+    if (e.target.value.replaceAll(`’`, `'`) === teamName.replaceAll(`’`, `'`)) {
+      setTypedTeamName(true)
+    } else {
+      setTypedTeamName(false)
+    }
+  }
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='z-10'>
@@ -46,15 +57,7 @@ const DeleteTeamDialog = (props: Props) => {
           <label className='mb-3 text-left font-semibold text-slate-600 text-sm'>
             Please type your team name to confirm. <b>This action can't be undone.</b>
           </label>
-          <Input
-            autoFocus
-            onChange={(e) => {
-              e.preventDefault()
-              if (e.target.value === teamName) setTypedTeamName(true)
-              else setTypedTeamName(false)
-            }}
-            placeholder={teamName}
-          />
+          <Input autoFocus onChange={handleTypeTeamName} placeholder={teamName} />
           {error && (
             <div className='mt-2 font-semibold text-sm text-tomato-500'>{error.message}</div>
           )}
