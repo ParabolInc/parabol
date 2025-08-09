@@ -78,7 +78,7 @@
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.3",
     "dompurify": "^3.2.4",
-    "email-addresses": "^3.0.1",
+    "email-addresses": "^5.0.0",
     "emoji-mart": "^5.6.0",
     "eventemitter3": "^4.0.0",
     "fbjs": "^3.0.4",
