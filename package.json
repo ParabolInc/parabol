@@ -154,7 +154,7 @@
   "dependencies": {
     "@floating-ui/dom": "^1.6.13",
     "@graphql-yoga/plugin-prometheus": "^6.8.5",
-    "@hocuspocus/provider": "^3.2.0",
+    "@hocuspocus/provider": "^3.2.3",
     "@module-federation/enhanced": "^0.13.0",
     "@sesamecare-oss/redlock": "^1.4.0",
     "@tiptap/core": "3.0.7",
