@@ -82,7 +82,7 @@
     "emoji-mart": "^5.6.0",
     "eventemitter3": "^4.0.0",
     "fbjs": "^3.0.4",
-    "flatted": "^2.0.1",
+    "flatted": "^3.3.3",
     "graphiql": "^3.8.3",
     "history": "4.9.0",
     "hoist-non-react-statics": "^3.3.0",
