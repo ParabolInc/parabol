@@ -86,7 +86,7 @@ const makeTeamPromptFallbackInsights = async (
 
       return (
         <>
-          <Text style={paragraph} key={userId}>
+          <Text style={{...paragraph, lineHeight: '14px'}} key={userId}>
             {preferredName}
           </Text>
           <Markdown children={markdown} />
