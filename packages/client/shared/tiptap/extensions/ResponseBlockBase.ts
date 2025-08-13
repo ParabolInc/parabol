@@ -1,6 +1,5 @@
 import {generateText} from '@tiptap/core'
-import {mergeAttributes, Node, ReactNodeViewRenderer} from '@tiptap/react'
-import {ResponseBlockView} from '../../../tiptap/extensions/insightsBlock/ResponseBlockView'
+import {mergeAttributes, Node} from '@tiptap/react'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
 export interface ResponseBlockAttrs {
@@ -62,9 +61,5 @@ export const ResponseBlockBase = Node.create({
     const {content, preferredName} = attrs
     const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
     return `${preferredName}: ${plaintextContent}`
-  },
-  addNodeView() {
-    // By convention, components rendered here are named with a *View suffix
-    return ReactNodeViewRenderer(ResponseBlockView)
   }
 })
