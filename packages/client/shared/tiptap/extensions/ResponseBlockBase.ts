@@ -2,17 +2,15 @@ import {generateText} from '@tiptap/core'
 import {mergeAttributes, Node} from '@tiptap/react'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
-export interface TaskBlockAttrs {
+export interface ResponseBlockAttrs {
   id: string
-  status: string
   preferredName: string
   avatar: string
-  service?: string
   content: string
 }
 
-export const TaskBlockBase = Node.create({
-  name: 'taskBlock',
+export const ResponseBlockBase = Node.create({
+  name: 'responseBlock',
 
   isolating: true,
 
@@ -31,13 +29,6 @@ export const TaskBlockBase = Node.create({
           'data-id': attributes.id
         })
       },
-      status: {
-        default: 'active',
-        parseHTML: (element) => element.getAttribute('data-status'),
-        renderHTML: (attributes) => ({
-          'data-status': attributes.status
-        })
-      },
       preferredName: {
         parseHTML: (element) => element.getAttribute('data-preferredname'),
         renderHTML: (attributes) => ({
@@ -48,12 +39,6 @@ export const TaskBlockBase = Node.create({
         parseHTML: (element) => element.getAttribute('data-avatar'),
         renderHTML: (attributes) => ({
           'data-avatar': attributes.avatar
-        })
-      },
-      service: {
-        parseHTML: (element) => element.getAttribute('data-service'),
-        renderHTML: (attributes) => ({
-          'data-service': attributes.service
         })
       },
       content: {
@@ -72,9 +57,9 @@ export const TaskBlockBase = Node.create({
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   },
   renderText({node}) {
-    const attrs = node.attrs as TaskBlockAttrs
-    const {content} = attrs
+    const attrs = node.attrs as ResponseBlockAttrs
+    const {content, preferredName} = attrs
     const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
-    return `Task: ${plaintextContent}`
+    return `${preferredName}: ${plaintextContent}`
   }
 })

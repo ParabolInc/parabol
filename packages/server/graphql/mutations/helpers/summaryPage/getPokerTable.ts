@@ -2,7 +2,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import type {PokerMeeting} from '../../../../postgres/types/Meeting'
 import getPhase from '../../../../utils/getPhase'
-import type {GQLContext, InternalContext} from '../../../graphql'
+import type {InternalContext} from '../../../graphql'
 import Task from '../../../public/types/Task'
 import {resolveStoryFinalScore} from '../../../resolvers/resolveStoryFinalScore'
 import {resolveTaskIntegration} from '../../../resolvers/resolveTaskIntegration'
@@ -41,7 +41,7 @@ export const getDimensionNames = async (meetingId: string, dataLoader: DataLoade
 
 export const getPokerRowData = async (
   meetingId: string,
-  context: GQLContext,
+  context: InternalContext,
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
@@ -83,12 +83,7 @@ export const getPokerRowData = async (
           case 'jiraServer':
             fieldName = 'summary'
         }
-        const integrationRes = await resolveTaskIntegration(
-          task,
-          context as GQLContext,
-          info,
-          fieldName
-        )
+        const integrationRes = await resolveTaskIntegration(task, context, info, fieldName)
 
         title = extractTitleOrSummary(integrationRes) ?? 'Unknown Story'
       }
@@ -105,7 +100,7 @@ export const getPokerTable = async (
 ) => {
   const {dataLoader} = context
   const dimensionNames = await getDimensionNames(meetingId, dataLoader)
-  const pokerRowData = await getPokerRowData(meetingId, context as GQLContext, info)
+  const pokerRowData = await getPokerRowData(meetingId, context, info)
 
   return [
     {type: 'paragraph'},

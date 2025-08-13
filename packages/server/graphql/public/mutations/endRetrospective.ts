@@ -10,7 +10,6 @@ const endRetrospective: MutationResolvers['endRetrospective'] = async (
   info
 ) => {
   const {authToken, dataLoader} = context
-  const now = new Date()
   const viewerId = getUserId(authToken)
 
   // AUTH
@@ -31,7 +30,7 @@ const endRetrospective: MutationResolvers['endRetrospective'] = async (
     })
 
   // RESOLUTION
-  const res = await safeEndRetrospective({meeting, now, context, info})
+  const res = await safeEndRetrospective({meeting, context, info})
   return res
 }
 
