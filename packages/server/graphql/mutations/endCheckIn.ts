@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {AGENDA_ITEMS, LAST_CALL} from 'parabol-client/utils/constants'
@@ -7,6 +7,7 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import {positionAfter} from '../../../client/shared/sortOrder'
 import TimelineEventCheckinComplete from '../../database/types/TimelineEventCheckinComplete'
 import type {DataLoaderInstance} from '../../dataloader/RootDataLoader'
+import {sendSummaryEmailV2} from '../../email/sendSummaryEmailV2'
 import generateUID from '../../generateUID'
 import getKysely from '../../postgres/getKysely'
 import {selectTasks} from '../../postgres/select'
@@ -27,6 +28,7 @@ import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
+import {publishSummaryPage} from './helpers/summaryPage/publishSummaryPage'
 
 type SortOrderTask = Pick<Task, 'id' | 'sortOrder'>
 const updateTaskSortOrders = async (userIds: string[], tasks: SortOrderTask[]) => {
@@ -146,7 +148,12 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(_source: unknown, {meetingId}: {meetingId: string}, context: GQLContext) {
+  async resolve(
+    _source: unknown,
+    {meetingId}: {meetingId: string},
+    context: GQLContext,
+    info: GraphQLResolveInfo
+  ) {
     const {authToken, socketId: mutatorId, dataLoader} = context
     const pg = getKysely()
     const operationId = dataLoader.share()
@@ -204,19 +211,24 @@ export default {
       })
     }
     // remove any empty tasks
-    const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
-      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId)
-    ])
+    const [makePagesSummary, meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all(
+      [
+        dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
+        dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+        dataLoader.get('teams').loadNonNull(teamId),
+        dataLoader.get('teamMembersByTeamId').load(teamId),
+        removeEmptyTasks(meetingId)
+      ]
+    )
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
 
     analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader)
-    sendNewMeetingSummary(completedCheckIn, false, context).catch(Logger.log)
+    if (!makePagesSummary) {
+      sendNewMeetingSummary(completedCheckIn, false, context).catch(Logger.log)
+    }
 
     const events = teamMembers.map(
       (teamMember) =>
@@ -248,7 +260,15 @@ export default {
       }
     }
 
+    // the promise only creates the initial page, the page blocks are generated and sent after resolving
+    const page = await publishSummaryPage(meetingId, context, info)
+    if (makePagesSummary) {
+      // do not await sending the email
+      sendSummaryEmailV2(meetingId, page.id, context, info)
+    }
+
     const data = {
+      gotoPageSummary: makePagesSummary,
       meetingId,
       teamId,
       isKill: !!(phase && ![AGENDA_ITEMS, LAST_CALL].includes(phase.phaseType)),
