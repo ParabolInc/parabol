@@ -1,8 +1,8 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
-import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import type {PageQuery} from '../../__generated__/PageQuery.graphql'
+import {useFragment} from 'react-relay'
+import type {Page_page$key} from '../../__generated__/Page_page.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
@@ -12,32 +12,26 @@ import {PageSharingRoot} from './PageSharingRoot'
 
 interface Props {
   viewerRef: useTipTapPageEditor_viewer$key | null
-  queryRef: PreloadedQuery<PageQuery>
-  pageId: string
+  pageRef: Page_page$key
 }
 
 export const Page = (props: Props) => {
-  const {viewerRef, queryRef, pageId} = props
-  const query = usePreloadedQuery<PageQuery>(
+  const {viewerRef, pageRef} = props
+  const page = useFragment(
     graphql`
-      query PageQuery($pageId: ID!) {
-        viewer {
-          page(pageId: $pageId) {
+      fragment Page_page on Page {
             ...PageBreadCrumbs_page
             id
             ancestorIds
             access {
               viewer
             }
-          }
-        }
       }
     `,
-    queryRef
+    pageRef
   )
-  const {viewer} = query
-  const {page} = viewer
-  const {access} = page
+
+  const {id: pageId, access} = page
   const {viewer: viewerAccess} = access
   const {editor, synced} = useTipTapPageEditor(pageId, {viewerRef})
   useEffect(() => {

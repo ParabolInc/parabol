@@ -118,7 +118,7 @@ export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete
   const [value, setValue] = useState([] as Option[])
   const [error, setError] = useState<string | null>(null)
   const viewerDomain = email.slice(email.indexOf('@') + 1)
-  const {access} = page
+  const {access} = page!
   const {guests} = access
   const options = useMemo(() => {
     const userIdSet = new Set(access.users.map((u) => u.user.id))
