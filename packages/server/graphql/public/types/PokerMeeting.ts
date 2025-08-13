@@ -1,7 +1,6 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import type {PokerMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
 import {Logger} from '../../../utils/Logger'
 import {PokerMeetingResolvers} from '../resolverTypes'
 
@@ -29,9 +28,7 @@ const PokerMeeting: PokerMeetingResolvers = {
       .get('meetingMembers')
       .loadNonNull(meetingMemberId)) as PokerMeetingMember
     return meetingMember as typeof meetingMember
-  },
-  summaryPageId: ({summaryPageId}) =>
-    summaryPageId ? CipherId.toClient(summaryPageId, 'page') : null
+  }
 }
 
 export default PokerMeeting

@@ -11,7 +11,7 @@ import {Text} from '@react-email/text'
 import dayjs from 'dayjs'
 import type {GraphQLResolveInfo} from 'graphql'
 import {PALETTE} from '../../client/styles/paletteV3'
-import logoSVG from '../../client/styles/theme/images/brand/lockup_color_mark_dark_type.svg'
+import logoImg from '../../client/styles/theme/images/brand/parabol_logo_transparent@1X.png'
 import makeAppURL from '../../client/utils/makeAppURL'
 import plural from '../../client/utils/plural'
 import appOrigin from '../appOrigin'
@@ -221,7 +221,7 @@ export const makeSummaryEmailV2 = async (
             </Section>
 
             <Section style={{marginTop: '32px'}}>
-              <Img src={logoSVG} alt='Parabol' style={{marginBottom: '8px'}} />
+              <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
               <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
             </Section>
 
@@ -309,7 +309,7 @@ export const makeSummaryEmailV2 = async (
               </table>
             </Section>
             <Section style={{marginTop: '32px'}}>
-              <Img src={logoSVG} alt='Parabol' style={{marginBottom: '8px'}} />
+              <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
               <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
             </Section>
 
@@ -369,7 +369,7 @@ export const makeSummaryEmailV2 = async (
             </Section>
 
             <Section style={{marginTop: '32px'}}>
-              <Img src={logoSVG} alt='Parabol' style={{marginBottom: '8px'}} />
+              <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
               <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
             </Section>
 

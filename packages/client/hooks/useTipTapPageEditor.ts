@@ -19,6 +19,7 @@ import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPag
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
+import {ResponseBlockBase} from '../shared/tiptap/extensions/ResponseBlockBase'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
@@ -162,7 +163,8 @@ export const useTipTapPageEditor = (
         }),
         PageLinkBlock.configure({yDoc: provider.document}),
         TaskBlock,
-        ThinkingBlock
+        ThinkingBlock,
+        ResponseBlockBase
       ],
       autofocus: true,
       editable: true
@@ -202,7 +204,8 @@ export const makeEditorFromYDoc = (document: Y.Doc) => {
       InsightsBlock,
       PageLinkBlock.configure({yDoc: document}),
       TaskBlock,
-      ThinkingBlock
+      ThinkingBlock,
+      ResponseBlockBase
     ]
   })
 }

@@ -13,7 +13,7 @@ export const getTeamPromptBlocks = async (meetingId: string, dataLoader: DataLoa
       return {
         type: 'responseBlock' as const,
         attrs: {
-          content,
+          content: JSON.stringify(content),
           preferredName,
           avatar: picture
         }
