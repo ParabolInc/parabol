@@ -1,0 +1,4 @@
+interface TeamPartial {
+	id: ID!
+	name: String!
+}
