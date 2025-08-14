@@ -1,5 +1,6 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {InternalContext} from '../../../graphql'
+import {generateCheckinMeetingSummaryPage} from './generateCheckinMeetingSummaryPage'
 import {generatePokerMeetingSummaryPage} from './generatePokerMeetingSummaryPage'
 import {generateRetroMeetingSummaryPage} from './generateRetroMeetingSummaryPage'
 import {generateTeamPromptMeetingSummaryPage} from './generateTeamPromptMeetingSummaryPage'
@@ -19,6 +20,8 @@ export const generateMeetingSummaryPage = async (
       return generatePokerMeetingSummaryPage(meetingId, context, info)
     case 'teamPrompt':
       return generateTeamPromptMeetingSummaryPage(meetingId, context)
+    case 'action':
+      return generateCheckinMeetingSummaryPage(meetingId, context)
     default:
       throw new Error(`${meetingType}: generator not implemented`)
   }

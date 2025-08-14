@@ -96,6 +96,41 @@ const makeTeamPromptFallbackInsights = async (
   )
   return <Section style={insightBox}>{responseBlock}</Section>
 }
+
+const EmailFooter = (props: {meetingName: string}) => {
+  const {meetingName} = props
+
+  const brandSubtitle = {
+    fontSize: '14px',
+    color: PALETTE.SLATE_700,
+    margin: 0
+  }
+
+  const unsubscribeLink = {
+    color: PALETTE.SKY_500,
+    textDecoration: 'underline'
+  }
+  const unsubscribeURL = makeAppURL(appOrigin, '/me/profile')
+  return (
+    <>
+      <Section style={{marginTop: '32px'}}>
+        <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
+        <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
+      </Section>
+
+      <Section>
+        <Text
+          style={{fontSize: '12px', marginBottom: '0px'}}
+        >{`${meetingName} Workflow Summary`}</Text>
+        <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
+          <a href={unsubscribeURL} style={unsubscribeLink}>
+            Unsubscribe from workflow summaries
+          </a>
+        </Text>
+      </Section>
+    </>
+  )
+}
 export const makeSummaryEmailV2 = async (
   meetingId: string,
   pageId: number,
@@ -112,6 +147,7 @@ export const makeSummaryEmailV2 = async (
     name: meetingName,
     endedAt,
     teamId,
+    agendaItemCount,
     topicCount,
     taskCount,
     reflectionCount,
@@ -159,20 +195,8 @@ export const makeSummaryEmailV2 = async (
     paddingLeft: '12px',
     paddingRight: '12px'
   }
-
-  const brandSubtitle = {
-    fontSize: '14px',
-    color: PALETTE.SLATE_700,
-    margin: 0
-  }
-
-  const unsubscribeLink = {
-    color: PALETTE.SKY_500,
-    textDecoration: 'underline'
-  }
   const pageCode = CipherId.encrypt(pageId)
   const CTAURL = makeAppURL(appOrigin, `/pages/${pageCode}`)
-  const unsubscribeURL = makeAppURL(appOrigin, '/me/profile')
   const endLabel = endTime.format('MMM D, YYYY')
   const title = `${meetingName} Summary - ${endLabel}`
   const participantLabel = `${meetingMembers.length} ${plural(meetingMembers.length, 'Participant')}`
@@ -219,20 +243,7 @@ export const makeSummaryEmailV2 = async (
                 See Retro Insights & Tasks
               </Button>
             </Section>
-
-            <Section style={{marginTop: '32px'}}>
-              <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
-              <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
-            </Section>
-
-            <Section>
-              <Text style={{fontSize: '12px', marginBottom: '0px'}}>Retro Workflow Summary</Text>
-              <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
-                <a href={unsubscribeURL} style={unsubscribeLink}>
-                  Unsubscribe from workflow summaries
-                </a>
-              </Text>
-            </Section>
+            <EmailFooter meetingName='Retro' />
           </Container>
         </Body>
       </Html>
@@ -308,21 +319,7 @@ export const makeSummaryEmailV2 = async (
                 </tbody>
               </table>
             </Section>
-            <Section style={{marginTop: '32px'}}>
-              <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
-              <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
-            </Section>
-
-            <Section>
-              <Text style={{fontSize: '12px', marginBottom: '0px'}}>
-                Sprint Poker Workflow Summary
-              </Text>
-              <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
-                <a href={unsubscribeURL} style={unsubscribeLink}>
-                  Unsubscribe from workflow summaries
-                </a>
-              </Text>
-            </Section>
+            <EmailFooter meetingName='Sprint Poker' />
           </Container>
         </Body>
       </Html>
@@ -367,20 +364,35 @@ export const makeSummaryEmailV2 = async (
                 See Responses in Parabol
               </Button>
             </Section>
-
-            <Section style={{marginTop: '32px'}}>
-              <Img src={logoImg} alt='Parabol' style={{marginBottom: '8px'}} />
-              <Text style={brandSubtitle}>Collaborative Workflows & Insights</Text>
-            </Section>
-
-            <Section>
-              <Text style={{fontSize: '12px', marginBottom: '0px'}}>Standup Workflow Summary</Text>
-              <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
-                <a href={unsubscribeURL} style={unsubscribeLink}>
-                  Unsubscribe from workflow summaries
-                </a>
+            <EmailFooter meetingName='Standup' />
+          </Container>
+        </Body>
+      </Html>
+    )
+  } else if (meetingType === 'action') {
+    const topicLabel = `${agendaItemCount} ${plural(agendaItemCount || 0, 'Agenda Item')}`
+    const taskLabel = `${taskCount} ${plural(taskCount || 0, 'New Task')}`
+    const subHeadingMeta = `${taskLabel} • ${topicLabel}`
+    return () => (
+      <Html>
+        <Head />
+        <Preview>{title}</Preview>
+        <Body style={main}>
+          <Container style={container}>
+            <Section style={{marginBottom: '20px'}}>
+              <Text style={heading}>{title}</Text>
+              <Text style={subheading}>
+                <strong>{subHeading}</strong>
+                <br />
+                {subHeadingMeta}
               </Text>
             </Section>
+            <Section style={{marginBottom: '32px'}}>
+              <Button style={ctaButton} href={CTAURL}>
+                See New Tasks
+              </Button>
+            </Section>
+            <EmailFooter meetingName={'Check-in'} />
           </Container>
         </Body>
       </Html>
