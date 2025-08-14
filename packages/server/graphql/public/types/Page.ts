@@ -62,6 +62,11 @@ const Page: ReqResolvers<'Page'> = {
     ])
     if (!teamMember) return null
     return team || null
+  },
+  deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {
+    if (!deletedBy) return null
+    const user = await dataLoader.get('users').loadNonNull(deletedBy)
+    return user
   }
 }
 
