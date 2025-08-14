@@ -8,6 +8,7 @@ import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
 import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
 import {PageBreadCrumbs} from './PageBreadCrumbs'
+import {PageDeletedHeader} from './PageDeletedHeader'
 import {PageSharingRoot} from './PageSharingRoot'
 
 interface Props {
@@ -21,6 +22,7 @@ export const Page = (props: Props) => {
     graphql`
       fragment Page_page on Page {
             ...PageBreadCrumbs_page
+            ...PageDeletedHeader_page
             id
             ancestorIds
             access {
@@ -58,6 +60,7 @@ export const Page = (props: Props) => {
           </Popover.Root>
         </div>
       </div>
+      <PageDeletedHeader pageRef={page} />
       <div className='flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
         <TipTapEditor
           editor={editor}
