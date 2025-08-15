@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.19.1](https://github.com/ParabolInc/parabol/compare/v10.19.0...v10.19.1) (2025-08-15)
+
+
+### Fixed
+
+* dynamic meeting type for insights block ([#11818](https://github.com/ParabolInc/parabol/issues/11818)) ([f459cbb](https://github.com/ParabolInc/parabol/commit/f459cbbeb7c7de84437b62b197b21cf67bc68944))
+
 ## [10.19.0](https://github.com/ParabolInc/parabol/compare/v10.18.0...v10.19.0) (2025-08-15)
 
 
