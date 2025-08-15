@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.19.2](https://github.com/ParabolInc/parabol/compare/v10.19.1...v10.19.2) (2025-08-15)
+
+
+### Fixed
+
+* prefix breadcrumbs with team name ([#11824](https://github.com/ParabolInc/parabol/issues/11824)) ([7251b6b](https://github.com/ParabolInc/parabol/commit/7251b6be1bfdf4c10b205122d217e79abebfe66f))
+
 ## [10.19.1](https://github.com/ParabolInc/parabol/compare/v10.19.0...v10.19.1) (2025-08-15)
 
 
