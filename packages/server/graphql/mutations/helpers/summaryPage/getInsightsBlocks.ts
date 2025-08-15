@@ -13,7 +13,7 @@ const NOT_ENOUGH_DATA_BLOCK = [
 
 export const getInsightsBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId, createdAt, endedAt} = meeting
+  const {teamId, createdAt, endedAt, meetingType} = meeting
   const startTime = dayjs(createdAt)
   const endTime = dayjs(endedAt)
   const {content, error} = await dataLoader.get('meetingInsightsContent').load(meetingId)
@@ -37,7 +37,7 @@ export const getInsightsBlocks = async (meetingId: string, dataLoader: DataLoade
         id: crypto.randomUUID(),
         editing: false,
         teamIds: [teamId],
-        meetingTypes: ['retrospective'],
+        meetingTypes: [meetingType],
         after: startTimeRange,
         before: endTimeRange,
         meetingIds: [meetingId],
