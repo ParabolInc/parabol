@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.19.0](https://github.com/ParabolInc/parabol/compare/v10.18.0...v10.19.0) (2025-08-15)
+
+
+### Added
+
+* add check-in summaries for pages ([#11801](https://github.com/ParabolInc/parabol/issues/11801)) ([9f106dc](https://github.com/ParabolInc/parabol/commit/9f106dca8042b4c3cd3ff5483368d132ea534d8a))
+* add page access modal ([#11737](https://github.com/ParabolInc/parabol/issues/11737)) ([96386ca](https://github.com/ParabolInc/parabol/commit/96386ca9e636838493b3935fc5cf839118536b6c))
+* standups pages summary ([#11799](https://github.com/ParabolInc/parabol/issues/11799)) ([267e030](https://github.com/ParabolInc/parabol/commit/267e030d7c13ae7b77773e68a129b896f059e647))
+
+
+### Fixed
+
+* delete page triggers ([#11812](https://github.com/ParabolInc/parabol/issues/11812)) ([d8b1cbc](https://github.com/ParabolInc/parabol/commit/d8b1cbcae5b9d1019b9b31e4921d4559d7519d99))
+* hide access to teams and orgs ([#11815](https://github.com/ParabolInc/parabol/issues/11815)) ([c24be66](https://github.com/ParabolInc/parabol/commit/c24be66a947085244a6f3b73179e07997a861087))
+
 ## [10.18.0](https://github.com/ParabolInc/parabol/compare/v10.17.0...v10.18.0) (2025-08-05)
 
 
