@@ -6,6 +6,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../../../client/shared/rruleUtil'
+import AuthToken from '../../../database/types/AuthToken'
 import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
 import {selectNewMeetings} from '../../../postgres/select'
 import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
@@ -116,8 +117,8 @@ const startRecurringMeeting = async (
 }
 
 const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(
-  async (_source, _args, context, info) => {
-    const {dataLoader, socketId: mutatorId} = context
+  async (_source, _args, serverContext, info) => {
+    const {dataLoader, socketId: mutatorId} = serverContext
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -131,11 +132,21 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
 
     const res = await tracer.trace('processRecurrence.endMeetings', async () =>
       Promise.all(
-        meetingsToEnd.map((meeting) => {
+        meetingsToEnd.map(async (meeting) => {
+          const {facilitatorUserId} = meeting
+          if (!facilitatorUserId) return {error: {message: 'No facilitator'}}
+          const userTeams = await dataLoader.get('teamMembersByUserId').load(facilitatorUserId)
+          const tms = userTeams.map(({teamId}) => teamId)
+          const authToken = new AuthToken({
+            sub: facilitatorUserId,
+            tms,
+            rol: 'impersonate'
+          })
+          const context = {...serverContext, authToken}
           if (meeting.meetingType === 'teamPrompt') {
-            return safeEndTeamPrompt({meeting, context, subOptions})
+            return safeEndTeamPrompt({meeting, context, info})
           } else if (meeting.meetingType === 'retrospective') {
-            return safeEndRetrospective({meeting, now, context, info})
+            return safeEndRetrospective({meeting, context, info})
           } else {
             return standardError(new Error('Unhandled recurring meeting type'), {
               tags: {

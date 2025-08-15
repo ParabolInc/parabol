@@ -28,7 +28,7 @@ export const PageSharing = (props: Props) => {
     queryRef
   )
   const {viewer} = query
-  const {page} = viewer
+  const page = viewer.page!
   const {
     getRootProps,
     getInputProps,

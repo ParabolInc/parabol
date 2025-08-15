@@ -15,9 +15,11 @@ import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
 graphql`
   fragment EndTeamPromptMutation_team on EndTeamPromptSuccess {
+    gotoPageSummary
     meeting {
       id
       endedAt
+      summaryPageId
       ...TeamPromptMeetingStatus_meeting
       ...TeamPromptMeeting_meeting
     }
@@ -62,12 +64,17 @@ export const endTeamPromptTeamOnNext: OnNextHandler<
   EndTeamPromptMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
-  const {meeting} = payload
+  const {meeting, gotoPageSummary} = payload
   const {history} = context
   if (!meeting) return
-  const {id: meetingId} = meeting
+  const {id: meetingId, summaryPageId} = meeting
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
-    history.push(`/new-summary/${meetingId}`)
+    if (gotoPageSummary && summaryPageId) {
+      const pageCode = Number(summaryPageId.split('page:')[1])
+      history.push(`/pages/${pageCode}`)
+    } else {
+      history.push(`/new-summary/${meetingId}`)
+    }
   }
 }
 

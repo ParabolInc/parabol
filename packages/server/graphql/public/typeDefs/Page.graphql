@@ -16,6 +16,7 @@ type Page implements PagePartial {
 	sortOrder: String!
 	deletedAt: DateTime
 	deletedBy: ID
+	deletedByUser: User
 	ancestorIds: [ID!]!
 	ancestors: [PagePartial!]!
 }

@@ -147,4 +147,5 @@ type ActionMeeting implements NewMeeting {
 	The tasks created within the meeting
 	"""
 	tasks: [Task!]!
+	summaryPageId: ID
 }

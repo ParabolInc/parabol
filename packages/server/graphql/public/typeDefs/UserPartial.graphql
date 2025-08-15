@@ -1,0 +1,8 @@
+directive @stream_HACK on FIELD
+
+interface UserPartial {
+	id: ID!
+	email: Email!
+	preferredName: String!
+	picture: URL!
+}

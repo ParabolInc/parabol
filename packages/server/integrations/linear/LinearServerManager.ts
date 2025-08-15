@@ -3,7 +3,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import LinearIssueId from 'parabol-client/shared/gqlIds/LinearIssueId'
 import LinearProjectId from 'parabol-client/shared/gqlIds/LinearProjectId'
 import {splitTipTapContent} from 'parabol-client/shared/tiptap/splitTipTapContent'
-import type {GQLContext} from '../../graphql/graphql'
+import type {InternalContext} from '../../graphql/graphql'
 import createCommentMutation from '../../graphql/nestedSchema/Linear/mutations/createComment.graphql'
 import createIssueMutation from '../../graphql/nestedSchema/Linear/mutations/createIssue.graphql'
 import updateIssueMutation from '../../graphql/nestedSchema/Linear/mutations/updateIssue.graphql'
@@ -33,10 +33,10 @@ import makeCreateLinearTaskComment from './makeCreateLinearTaskComment'
 class LinearServerManager implements TaskIntegrationManager {
   public title = 'Linear'
   private readonly auth: TeamMemberIntegrationAuth
-  private readonly context: GQLContext
+  private readonly context: InternalContext
   private readonly info: GraphQLResolveInfo
 
-  constructor(auth: TeamMemberIntegrationAuth, context: GQLContext, info: GraphQLResolveInfo) {
+  constructor(auth: TeamMemberIntegrationAuth, context: InternalContext, info: GraphQLResolveInfo) {
     this.auth = auth
     this.context = context
     this.info = info
@@ -224,7 +224,7 @@ class LinearServerManager implements TaskIntegrationManager {
     variables
   }: {
     info: GraphQLResolveInfo
-    context: GQLContext
+    context: InternalContext
     variables: CreateCommentMutationVariables
   }): Promise<[CreateCommentMutation | null, Error | null]> {
     const linearRequest = this.getLinearRequest(info, context)

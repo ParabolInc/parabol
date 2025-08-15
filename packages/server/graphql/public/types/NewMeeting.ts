@@ -1,6 +1,7 @@
 import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import {getUserId} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import isMeetingLocked from '../../types/helpers/isMeetingLocked'
 import type {NewMeetingResolvers} from '../resolverTypes'
 
@@ -80,7 +81,9 @@ const NewMeeting: NewMeetingResolvers = {
     const meetingMemberId = toTeamMemberId(meetingId, viewerId)
     const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     return meetingMember || null
-  }
+  },
+  summaryPageId: ({summaryPageId}) =>
+    summaryPageId ? CipherId.toClient(summaryPageId, 'page') : null
 }
 
 export default NewMeeting

@@ -1,7 +1,7 @@
 """
 An organization
 """
-type Organization {
+type Organization implements OrganizationPartial {
 	"""
 	The unique organization ID
 	"""

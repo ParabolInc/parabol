@@ -8,11 +8,11 @@ import type {Task} from '../../postgres/types'
 import {getUserId} from '../../utils/authorization'
 import getGitHubRequest from '../../utils/getGitHubRequest'
 import logError from '../../utils/logError'
-import type {GQLContext} from '../graphql'
+import type {InternalContext} from '../graphql'
 
 export const resolveTaskIntegration = async (
   {integration, integrationHash, teamId, id: taskId}: Task,
-  context: GQLContext,
+  context: InternalContext,
   info: GraphQLResolveInfo,
   fieldsToFetch = '...info'
 ) => {

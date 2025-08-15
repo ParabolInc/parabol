@@ -14,7 +14,7 @@ import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import type {GQLContext, InternalContext} from '../../graphql'
+import type {InternalContext} from '../../graphql'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
@@ -64,12 +64,10 @@ const summarizeRetroMeeting = async (
 const safeEndRetrospective = async ({
   meeting,
   context,
-  now,
   info
 }: {
   meeting: RetrospectiveMeeting
   context: InternalContext
-  now: Date
   info: GraphQLResolveInfo
 }) => {
   const {authToken, socketId: mutatorId, dataLoader} = context
@@ -84,7 +82,7 @@ const safeEndRetrospective = async ({
     const {stage} = currentStageRes
     await handleCompletedStage(stage, meeting, dataLoader)
     stage.isComplete = true
-    stage.endAt = now
+    stage.endAt = new Date()
   }
   const phase = getMeetingPhase(phases)
   const [insights, retroInsights] = await Promise.all([
@@ -162,7 +160,7 @@ const safeEndRetrospective = async ({
   const page = await publishSummaryPage(meetingId, context, info)
   if (makePagesSummary) {
     // do not await sending the email
-    sendSummaryEmailV2(meetingId, page.id, context as GQLContext, info)
+    sendSummaryEmailV2(meetingId, page.id, context, info)
   }
   const data = {
     gotoPageSummary: makePagesSummary,

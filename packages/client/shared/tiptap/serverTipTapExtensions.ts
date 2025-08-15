@@ -11,6 +11,7 @@ import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
+import {ResponseBlockBase} from './extensions/ResponseBlockBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
 import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
 
@@ -64,5 +65,6 @@ export const serverTipTapExtensions: Extensions = [
   UniqueID,
   PageLinkBlockBase,
   TaskBlockBase,
-  ThinkingBlockBase
+  ThinkingBlockBase,
+  ResponseBlockBase
 ]

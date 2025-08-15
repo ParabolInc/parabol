@@ -27,6 +27,7 @@ declare module 'md-to-adf'
 declare const __APP_VERSION__: string
 declare const __PRODUCTION__: boolean
 declare const __SOCKET_PORT__: string
+declare const __HOCUS_POCUS_PORT__: string
 declare const __webpack_public_path__: string
 
 interface Window {

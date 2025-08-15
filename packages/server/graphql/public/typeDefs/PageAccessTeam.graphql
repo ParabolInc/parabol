@@ -1,4 +1,4 @@
 type PageAccessTeam {
-	team: Team!
+	team: TeamPreview!
 	role: PageRoleEnum!
 }
