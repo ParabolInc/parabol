@@ -2,7 +2,7 @@ directive @stream_HACK on FIELD
 """
 The user account profile
 """
-type User {
+type User implements UserPartial {
 	"""
 	The userId provided by us
 	"""

@@ -3,6 +3,7 @@ import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import type {PokerMeeting} from '../../../../postgres/types/Meeting'
 import getPhase from '../../../../utils/getPhase'
 import type {InternalContext} from '../../../graphql'
+import isValid from '../../../isValid'
 import Task from '../../../public/types/Task'
 import {resolveStoryFinalScore} from '../../../resolvers/resolveStoryFinalScore'
 import {resolveTaskIntegration} from '../../../resolvers/resolveTaskIntegration'
@@ -67,7 +68,8 @@ export const getPokerRowData = async (
   )
   const rows = await Promise.all(
     Object.entries(agg).map(async ([taskId, scores]) => {
-      const task = await dataLoader.get('tasks').loadNonNull(taskId)
+      const task = await dataLoader.get('tasks').load(taskId)
+      if (!task) return null
       const service = task.integration?.service
       const getTitle = Task.title as (task: {plaintextContent: string}) => string
       let title = getTitle(task)
@@ -90,7 +92,7 @@ export const getPokerRowData = async (
       return [title, ...scores]
     })
   )
-  return rows
+  return rows.filter(isValid)
 }
 
 export const getPokerTable = async (

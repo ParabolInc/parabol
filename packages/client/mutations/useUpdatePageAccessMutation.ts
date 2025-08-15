@@ -37,6 +37,14 @@ const mutation = graphql`
   }
 `
 
+// since all preview types (e.g. TeamPreview) start with the `preview:` in their ID
+// this is because relay forces a GUID, so it can't have the same ID as a Team type
+// We need to use a TeamPreview type here
+// so someone with viewer access doesn't access all the props on the Team object
+const getServerSubjectId = (subjectId: string) => {
+  const PREFIX = 'preview:'
+  return subjectId.startsWith(PREFIX) ? subjectId.slice(PREFIX.length) : subjectId
+}
 export const useUpdatePageAccessMutation = () => {
   const [commit, submitting] = useMutation<TuseUpdatePageAccessMutation>(mutation)
   const execute = (config: UseMutationConfig<TuseUpdatePageAccessMutation>) => {
@@ -65,7 +73,11 @@ export const useUpdatePageAccessMutation = () => {
         ConnectionHandler.deleteNode(sourceConn, pageId)
         safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
       },
-      ...config
+      ...config,
+      variables: {
+        ...config.variables,
+        subjectId: getServerSubjectId(config.variables.subjectId)
+      }
     })
   }
   return [execute, submitting] as const

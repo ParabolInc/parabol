@@ -1,4 +1,4 @@
 type PageAccessOrganization {
-	organization: Organization!
+	organization: OrganizationPreview!
 	role: PageRoleEnum!
 }

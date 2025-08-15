@@ -1,4 +1,3 @@
-import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import type {ActionMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
@@ -36,12 +35,6 @@ const ActionMeeting: ActionMeetingResolvers = {
     const {teamId} = meeting
     const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
-  },
-  viewerMeetingMember: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-    return (meetingMember as ActionMeetingMember) || null
   }
 }
 

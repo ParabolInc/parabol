@@ -1,0 +1,5 @@
+type OrganizationPreview implements OrganizationPartial {
+	id: ID!
+	name: String!
+	picture: URL
+}

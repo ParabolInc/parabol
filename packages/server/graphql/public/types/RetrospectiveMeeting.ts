@@ -1,4 +1,3 @@
-import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import type {RetroMeetingMember} from '../../../postgres/types/Meeting'
 import {getUserId} from '../../../utils/authorization'
 import filterTasksByMeeting from '../../../utils/filterTasksByMeeting'
@@ -63,14 +62,6 @@ const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
       .get('meetingMembersByMeetingId')
       .load(meetingId)) as RetroMeetingMember[]
     return meetingMembers.reduce((sum, member) => sum + member.votesRemaining, 0)
-  },
-  viewerMeetingMember: async ({id: meetingId}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-    const meetingMember = (await dataLoader
-      .get('meetingMembers')
-      .load(meetingMemberId)) as RetroMeetingMember
-    return meetingMember || null
   }
 }
 
