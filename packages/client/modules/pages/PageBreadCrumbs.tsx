@@ -40,15 +40,23 @@ export const PageBreadCrumbs = (props: Props) => {
       fragment PageBreadCrumbs_page on Page {
         id
         title
+        team {
+          id
+          name
+        }
         ancestors {
           id
           title
+          team {
+            id
+            name
+          }
         }
       }
     `,
     pageRef
   )
-  const {ancestors, id, title} = page
+  const {ancestors, id, title, team} = page
   const self = {id, title}
   useSetCurrentPageAncestor(id, ancestors)
   let visibleAncestors: typeof ancestors = []
@@ -63,8 +71,23 @@ export const PageBreadCrumbs = (props: Props) => {
     ] as const
     hiddenAncestors = ancestors.slice(1, -1) // All middle ancestors
   }
+  const renderTeamCrumb = (team: {id: string; name: string}) => {
+    return (
+      <>
+        <Link
+          draggable={false}
+          to={`/team/${team.id}`}
+          className='rounded-md px-1 hover:bg-slate-200'
+        >
+          {team.name}
+        </Link>
+        <span className='px-1'>/</span>
+      </>
+    )
+  }
   const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => (
     <React.Fragment key={page.id}>
+      {page.team && renderTeamCrumb(page.team)}
       <Link
         draggable={false}
         to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
@@ -115,6 +138,7 @@ export const PageBreadCrumbs = (props: Props) => {
       {visibleAncestors.length > 1 && renderBreadcrumbItem(visibleAncestors[1]!)}
 
       {/* Self (not a link) */}
+      {ancestors.length === 0 && team && renderTeamCrumb(team)}
       <span className='font-medium text-slate-900'>{self.title}</span>
     </nav>
   )

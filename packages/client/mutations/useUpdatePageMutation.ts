@@ -20,6 +20,8 @@ graphql`
       isParentLinked
       title
       ...LeftNavPageLink_page
+      ...Page_page
+
     }
   }
 `
