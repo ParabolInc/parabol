@@ -121,7 +121,7 @@ jobs:
       - name: Push Client Artifacts to Datadog
         env:
           DATADOG_API_KEY: "${{secrets.DATADOG_API_KEY}}"
-          CDN_BUILD_URL: "https://action-files.parabol.co/production/build/"
+          CDN_BUILD_URL: "https://action-files.parabol.co/production/"
         run: |
           pnpm datadog-ci sourcemaps upload ./build \
             --service=parabol-saas-production \
