@@ -1,17 +1,14 @@
 reviewers:
   groups:
     reviewers:
-      - nickoferrall
     maintainers:
       - mattkrick
       - Dschoordsch
     data:
-      - tianrunhe
     designers:
       - ackernaut
     devops:
       - rafaelromcar-parabol
-      - dbumblis-parabol
     none:
 
   per_author:
