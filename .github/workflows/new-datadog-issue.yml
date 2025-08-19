@@ -3,8 +3,12 @@ name: Create a new issue from Datadog
 on:
   workflow_dispatch:
     inputs:
+      issueId:
+        description: 'Datadog issue ID'
+        required: true
+        type: string
       issueLink:
-        description: 'Datadog issueLink'
+        description: 'Datadog issue link'
         required: true
         type: string
       errorType:
@@ -34,26 +38,23 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const issueId = '${{ inputs.issueId }}';
             const issueLink = '${{ inputs.issueLink }}';
             const errorType = '${{ inputs.errorType }}';
             const errorMessage = '${{ inputs.errorMessage }}';
-            const errorStack = '${{ inputs.errorStack }}';
-
-            const issueLinkURL = new URL(issueLink);
-            const searchPattern = `${issueLink.split('?')[0]}?.*issueId=${issueLinkURL.searchParams.get('issueId')}`
-            const existingIssues = await github.rest.search.issues({
-              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue '${searchPattern}"`,
+            const errorStack = '${{ toJSON(inputs.errorStack) }}';
+            const existingIssues = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue "${issueId}"`,
               per_page: 10
             });
-            console.log(`Found ', JSON.stringify(existingIssues.data, null, 2));
+            console.log('Found ', JSON.stringify(existingIssues.data, null, 2));
             const existingCount = existingIssues.data.total_count;
             if (existingCount > 0) {
-              console.log(`An issue with the same link already exists. Skipping creation.`);
+              console.log('An issue with the same link already exists. Skipping creation.');
               return;
             }
-
             const issueTitle = `${errorType}: ${errorMessage.substring(0,120)}${errorMessage.length > 120 ? '...' : ''}`;
-            const issueBody = `${errorType}\n\n${errorMessage}\n\n\`\`\`${errorStack}\`\`\`\n\n[see Datadog](${issueLink}) 🔒`;
+            const issueBody = `${errorType}\n\n${errorMessage}\n\n\`\`\`${errorStack}\`\`\`\n\n[see Datadog ${issueId}](${issueLink}) 🔒`;
             const newIssue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
