@@ -39,3 +39,12 @@ jobs:
           gcloud container images add-tag -q \
           ${{ secrets.GCP_AR_PARABOL }}:v${{ github.event.inputs.version_number }}  \
           ${{ secrets.GCP_AR_PARABOL_EXTERNAL }}:v${{ github.event.inputs.version_number }}
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
