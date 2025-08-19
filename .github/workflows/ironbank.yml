@@ -62,3 +62,12 @@ jobs:
         with:
           args: storage cp ${{ github.event.inputs.version_number }}.zip gs://parabol-ironbank-resources/${{ github.event.inputs.version_number }}.zip
           cli: gcloud
+
+      - name: Report Status
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GH_ACTIONS_NOTIFICATIONS }}
