@@ -22,7 +22,9 @@ const JiraScopingSearchBar = (props: Props) => {
         id
         teamId
         jiraSearchQuery {
+          queryString
           projectKeyFilters
+          isJQL
         }
         viewerMeetingMember {
           teamMember {
@@ -42,7 +44,7 @@ const JiraScopingSearchBar = (props: Props) => {
   )
 
   const {jiraSearchQuery, viewerMeetingMember} = meeting
-  const {projectKeyFilters} = jiraSearchQuery
+  const {queryString, projectKeyFilters} = jiraSearchQuery
   const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
 
   const selectedProjectsPaths = [] as string[]
@@ -50,7 +52,11 @@ const JiraScopingSearchBar = (props: Props) => {
     const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
     if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
   })
-  const currentFilters = selectedProjectsPaths.length ? selectedProjectsPaths.join(', ') : 'None'
+  const currentFilters = selectedProjectsPaths.length
+    ? selectedProjectsPaths.join(', ')
+    : queryString
+      ? 'None'
+      : 'Viewed in the last 30 days'
 
   return (
     <ScopingSearchBar currentFilters={currentFilters}>
