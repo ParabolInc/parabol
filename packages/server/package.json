@@ -81,7 +81,7 @@
     "cron": "^4.3.0",
     "dataloader": "^2.0.0",
     "dayjs": "^1.11.13",
-    "dd-trace": "^5.45.0",
+    "dd-trace": "^5.63.2",
     "dotenv": "8.6.0",
     "dotenv-expand": "5.1.0",
     "emoji-mart": "^5.6.0",
