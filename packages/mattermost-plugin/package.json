@@ -1,6 +1,6 @@
 {
   "name": "parabol-mattermost-plugin",
-  "version": "10.18.0",
+  "version": "10.19.2",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Georg Bremer <github@dschoordsch.de>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/mattermost-plugin#readme",
@@ -28,7 +28,7 @@
     "@types/relay-runtime": "^18.2.5",
     "@types/styled-components": "^5.1.34",
     "openapi-fetch": "^0.10.0",
-    "relay-compiler": "^18.2.0",
+    "relay-compiler": "^20.1.0",
     "tailwindcss": "^4.0.3"
   },
   "dependencies": {
@@ -43,7 +43,7 @@
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
     "react-redux": "^9.2.0",
-    "react-relay": "^18.2.0",
+    "react-relay": "^20.1.0",
     "react-select": "5.8.2",
     "relay-runtime": "^18.1.1",
     "styled-components": "5.3.6"

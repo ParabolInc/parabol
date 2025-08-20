@@ -3,6 +3,7 @@ import DescriptionIcon from '@mui/icons-material/Description'
 import UndoIcon from '@mui/icons-material/Undo'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {ArchivedPagesButton} from './ArchivedPagesButton'
@@ -35,6 +36,7 @@ export const ArchivedPages = (props: Props) => {
   const {archivedPages} = viewer
   const {edges} = archivedPages
   const [execute] = useArchivePageMutation()
+  const history = useHistory()
   const restorePage = (pageId: string) => {
     execute({
       variables: {
@@ -44,6 +46,10 @@ export const ArchivedPages = (props: Props) => {
     })
   }
   const deletePage = (pageId: string) => {
+    const pageCode = pageId.split('page:')[1]!
+    if (location.href.endsWith(pageCode)) {
+      history.push('/me')
+    }
     execute({
       variables: {
         pageId,

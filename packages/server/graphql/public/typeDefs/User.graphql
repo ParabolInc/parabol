@@ -2,7 +2,7 @@ directive @stream_HACK on FIELD
 """
 The user account profile
 """
-type User {
+type User implements UserPartial {
 	"""
 	The userId provided by us
 	"""
@@ -527,7 +527,7 @@ type User {
 	"""
 	A single page accessible by the User
 	"""
-	page(pageId: ID!): Page!
+	page(pageId: ID!): Page
 	"""
 	All the pages accessible by a user
 	"""

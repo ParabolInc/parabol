@@ -117,4 +117,5 @@ interface NewMeeting {
 	The meeting member of the viewer
 	"""
 	viewerMeetingMember: MeetingMember
+	summaryPageId: ID
 }

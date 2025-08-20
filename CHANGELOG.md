@@ -5,6 +5,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.19.2](https://github.com/ParabolInc/parabol/compare/v10.19.1...v10.19.2) (2025-08-20)
+
+
+### Fixed
+
+* increase maximum OAuth token length for Atlassian ([#11863](https://github.com/ParabolInc/parabol/issues/11863)) ([affef7e](https://github.com/ParabolInc/parabol/commit/affef7efb0433c6d3d9c0f10ba072a5928fe87a2))
+* normalize smart quote to regular quote before comparison ([#11723](https://github.com/ParabolInc/parabol/issues/11723)) ([6081548](https://github.com/ParabolInc/parabol/commit/608154811a89bf13cf444926b7786515ee168356))
+* prefix breadcrumbs with team name ([#11824](https://github.com/ParabolInc/parabol/issues/11824)) ([7251b6b](https://github.com/ParabolInc/parabol/commit/7251b6be1bfdf4c10b205122d217e79abebfe66f))
+* show old browser error if Intl.Segmenter is missing ([#11859](https://github.com/ParabolInc/parabol/issues/11859)) ([38de79e](https://github.com/ParabolInc/parabol/commit/38de79e16474643acc378686d154209fb6cc1b10))
+* update Jira's search issue API ([#11874](https://github.com/ParabolInc/parabol/issues/11874)) ([89550cf](https://github.com/ParabolInc/parabol/commit/89550cfc97ff8f8243ba1a4ae01748a0d1d32615))
+
+
+### Changed
+
+* fix source map path for client ([#11861](https://github.com/ParabolInc/parabol/issues/11861)) ([1cdaa57](https://github.com/ParabolInc/parabol/commit/1cdaa572f91c798cc3fda0b7587a2a962438e33e))
+* **gh-actions:** report to Slack GH Actions docker-external, ironbank and release-please if they fail. ([#11867](https://github.com/ParabolInc/parabol/issues/11867)) ([8a54daf](https://github.com/ParabolInc/parabol/commit/8a54dafe3d64488c5114ef66f4c51736ef93856c))
+* update reviewers list ([#11864](https://github.com/ParabolInc/parabol/issues/11864)) ([560631b](https://github.com/ParabolInc/parabol/commit/560631baa6263410297e46a51e0103b3794088c3))
+
+## [10.19.1](https://github.com/ParabolInc/parabol/compare/v10.19.0...v10.19.1) (2025-08-15)
+
+
+### Fixed
+
+* dynamic meeting type for insights block ([#11818](https://github.com/ParabolInc/parabol/issues/11818)) ([f459cbb](https://github.com/ParabolInc/parabol/commit/f459cbbeb7c7de84437b62b197b21cf67bc68944))
+
+## [10.19.0](https://github.com/ParabolInc/parabol/compare/v10.18.0...v10.19.0) (2025-08-15)
+
+
+### Added
+
+* add check-in summaries for pages ([#11801](https://github.com/ParabolInc/parabol/issues/11801)) ([9f106dc](https://github.com/ParabolInc/parabol/commit/9f106dca8042b4c3cd3ff5483368d132ea534d8a))
+* add page access modal ([#11737](https://github.com/ParabolInc/parabol/issues/11737)) ([96386ca](https://github.com/ParabolInc/parabol/commit/96386ca9e636838493b3935fc5cf839118536b6c))
+* standups pages summary ([#11799](https://github.com/ParabolInc/parabol/issues/11799)) ([267e030](https://github.com/ParabolInc/parabol/commit/267e030d7c13ae7b77773e68a129b896f059e647))
+
+
+### Fixed
+
+* delete page triggers ([#11812](https://github.com/ParabolInc/parabol/issues/11812)) ([d8b1cbc](https://github.com/ParabolInc/parabol/commit/d8b1cbcae5b9d1019b9b31e4921d4559d7519d99))
+* hide access to teams and orgs ([#11815](https://github.com/ParabolInc/parabol/issues/11815)) ([c24be66](https://github.com/ParabolInc/parabol/commit/c24be66a947085244a6f3b73179e07997a861087))
+
 ## [10.18.0](https://github.com/ParabolInc/parabol/compare/v10.17.0...v10.18.0) (2025-08-05)
 
 

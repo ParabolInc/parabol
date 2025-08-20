@@ -6,8 +6,12 @@ import {DialogOverlay} from './DialogOverlay'
 
 export const DialogContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentPropsWithoutRef<typeof RadixDialog.Content>
->(({className, children, ...props}, ref) => (
+  React.ComponentPropsWithoutRef<
+    React.ForwardRefExoticComponent<
+      RadixDialog.DialogContentProps & {noClose?: boolean} & React.RefAttributes<HTMLDivElement>
+    >
+  >
+>(({className, children, noClose, ...props}, ref) => (
   <RadixDialog.Portal>
     <DialogOverlay />
     <RadixDialog.Content
@@ -20,7 +24,7 @@ export const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogClose />
+      {!noClose && <DialogClose />}
     </RadixDialog.Content>
   </RadixDialog.Portal>
 ))

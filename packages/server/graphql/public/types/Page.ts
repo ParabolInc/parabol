@@ -1,11 +1,11 @@
 import {GraphQLError} from 'graphql'
-import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import isValid from '../../isValid'
 import type {ReqResolvers} from './ReqResolvers'
 
-const Page: ReqResolvers<'Page'> = {
+// team is captured in PagePartial so it's not needed here
+const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
   access: ({id}) => ({id}),
   parentPage: async ({parentPageId}, _args, {authToken, dataLoader}) => {
     if (!parentPageId) return null
@@ -54,14 +54,10 @@ const Page: ReqResolvers<'Page'> = {
       }
     })
   },
-  team: async ({teamId}, _args, {authToken, dataLoader}) => {
-    if (!teamId) return null
-    const [teamMember, team] = await Promise.all([
-      dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, authToken.sub)),
-      dataLoader.get('teams').load(teamId)
-    ])
-    if (!teamMember) return null
-    return team || null
+  deletedByUser: async ({deletedBy}, _args, {dataLoader}) => {
+    if (!deletedBy) return null
+    const user = await dataLoader.get('users').loadNonNull(deletedBy)
+    return user
   }
 }
 

@@ -4,6 +4,7 @@ import updateJiraSearchQueries from '../../../postgres/queries/updateJiraSearchQ
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
 
@@ -37,51 +38,82 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
         projectKeyFiltersByCloudId[cloudId] = []
       })
     }
-    // Request one extra item to see if there are more results
-    const maxResults = first + 1
-    // Relay requires the cursor to be a string
-    const afterInt = parseInt(after ?? '-1', 10)
-    const startAt = Number.isNaN(afterInt) ? 0 : afterInt + 1
-    const issueRes = await manager.getIssues(
-      queryString ?? null,
-      isJQL,
-      projectKeyFiltersByCloudId,
-      maxResults,
-      startAt
-    )
-    const {error, issues} = issueRes
-    const mappedIssues = issues.map((issue) => {
-      const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
-        issue.cloudId,
-        issue.descriptionHTML
+
+    if (after) {
+      Logger.warn(
+        `Ignoring 'after' argument in AtlassianIntegration.issues resolver. Pagination is not implemented yet.`
       )
-      downloadAndCacheImages(manager, imageUrlToHash)
+    }
 
-      return {
-        ...issue,
-        teamId,
-        userId,
-        descriptionHTML: updatedDescription
-      }
-    })
+    const cloudResults = await Promise.all(
+      Object.entries(projectKeyFiltersByCloudId).map(async ([cloudId, projectKeyFilters]) => {
+        const issueRes = await manager.getIssues(
+          cloudId,
+          queryString ?? null,
+          isJQL,
+          projectKeyFilters,
+          first
+          // TODO implement proper pagination
+          //after
+        )
+        const {error, issues, nextPageToken} = issueRes
+        if (error) {
+          return {
+            error: {message: error.message},
+            edges: [],
+            pageInfo: {
+              hasNextPage: false,
+              hasPreviousPage: false
+            }
+          }
+        }
+        const nodes = issues.map((issue) => {
+          const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
+            issue.cloudId,
+            issue.descriptionHTML
+          )
+          downloadAndCacheImages(manager, imageUrlToHash)
 
-    const nodes = mappedIssues.slice(0, first)
-    const edges = nodes.map((node, index) => ({
-      cursor: `${index + startAt}`,
-      node
-    }))
+          return {
+            ...issue,
+            teamId,
+            userId,
+            descriptionHTML: updatedDescription
+          }
+        })
 
-    const firstEdge = edges[0]
+        const edges = nodes.map((node, _index) => ({
+          node
+        }))
 
+        return {
+          edges,
+          pageInfo: {
+            startCursor: after,
+            endCursor: nextPageToken,
+            hasNextPage: !!nextPageToken,
+            hasPreviousPage: false
+          }
+        }
+      })
+    )
+
+    const combinedEdges = cloudResults
+      .flatMap((result) => result.edges)
+      .filter(Boolean)
+      .sort((a, b) => b.node.lastViewed.localeCompare(a.node.lastViewed))
+    const combinedError = cloudResults.find((result) => result.error)
     return {
-      error: error ? {message: error.message} : undefined,
-      edges,
+      edges: combinedEdges.slice(0, first),
+      // TODO if we want to paginate properly, we need to keep track of how many results from each cloudId we presented in addition to the cloudId's endCursor.
+      // At the moment the client does not paginate anyway, so we just hack it together like this.
       pageInfo: {
-        startCursor: firstEdge && firstEdge.cursor,
-        endCursor: firstEdge ? edges[edges.length - 1]!.cursor : null,
-        hasNextPage: mappedIssues.length > nodes.length,
-        hasPreviousPage: false
-      }
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startCursor: after,
+        endCursor: null
+      },
+      error: combinedError?.error || null
     }
   },
   id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),

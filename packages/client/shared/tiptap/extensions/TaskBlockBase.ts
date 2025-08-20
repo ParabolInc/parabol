@@ -25,6 +25,7 @@ export const TaskBlockBase = Node.create({
   addAttributes() {
     return {
       id: {
+        default: () => crypto.randomUUID(),
         parseHTML: (element) => element.getAttribute('data-id'),
         renderHTML: (attributes) => ({
           'data-id': attributes.id
