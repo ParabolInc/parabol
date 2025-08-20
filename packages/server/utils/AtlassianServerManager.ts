@@ -546,6 +546,7 @@ class AtlassianServerManager extends AtlassianManager {
       const {key: issueKey, fields, renderedFields, changelog} = issue
       const {description, summary, issuetype, created, lastViewed} = fields
       const {description: descriptionHTML} = renderedFields
+      const lastUpdated = changelog.histories[0]?.created ?? created
       return {
         issuetype,
         summary,
@@ -553,8 +554,8 @@ class AtlassianServerManager extends AtlassianManager {
         descriptionHTML,
         cloudId,
         issueKey,
-        lastUpdated: changelog.histories[0]?.created ?? created,
-        lastViewed
+        lastUpdated,
+        lastViewed: lastViewed || lastUpdated
       }
     })
     const {nextPageToken: nextNextPageToken, isLast} = res
