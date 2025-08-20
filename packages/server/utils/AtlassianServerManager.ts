@@ -211,12 +211,14 @@ interface JiraSearchResponse<
     description: string
     issuetype: {id: string; iconUrl: string}
     created: string
+    lastViewed: string
   }
 > {
   expand: string
-  startAt: number
   maxResults: number
   total: number
+  isLast: boolean
+  nextPageToken: string | null
   issues: {
     expand: string
     id: string
@@ -516,53 +518,47 @@ class AtlassianServerManager extends AtlassianManager {
   }
 
   async getIssues(
+    cloudId: string,
     queryString: string | null,
     isJQL: boolean,
-    projectFiltersByCloudId: {[cloudId: string]: string[]},
+    projectFilters: string[],
     maxResults: number,
-    startAt?: number
+    nextPageToken: string | null = null
   ) {
-    const allIssues = [] as JiraGQLFields[]
-    let firstError: Error | undefined
-    const reqs = Object.entries(projectFiltersByCloudId).map(async ([cloudId, projectKeys]) => {
-      const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search`
-      const jql = composeJQL(queryString, isJQL, projectKeys)
-      const payload = {
-        jql,
-        maxResults,
-        startAt,
-        fields: ['summary', 'description', 'issuetype', 'created'],
-        expand: ['renderedFields,changelog']
-      }
+    const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search/jql`
+    const jql = composeJQL(queryString, isJQL, projectFilters)
+    const payload = {
+      jql,
+      maxResults,
+      nextPageToken,
+      fields: ['summary', 'description', 'issuetype', 'created', 'lastViewed'],
+      expand: 'renderedFields,changelog'
+    }
 
-      const res = await this.post<JiraSearchResponse>(url, payload)
-      if (res instanceof Error) {
-        if (!firstError) {
-          firstError = res
-          if (firstError.message.includes('not installed on this instance')) {
-            firstError.message = 'Jira access revoked. Please reintegrate with Jira.'
-          }
-        }
-        return
+    const res = await this.post<JiraSearchResponse>(url, payload)
+    if (res instanceof Error) {
+      if (res.message.includes('not installed on this instance')) {
+        res.message = 'Jira access revoked. Please reintegrate with Jira.'
       }
-      const issues = res.issues.map((issue) => {
-        const {key: issueKey, fields, renderedFields, changelog} = issue
-        const {description, summary, issuetype, created} = fields
-        const {description: descriptionHTML} = renderedFields
-        return {
-          issuetype,
-          summary,
-          description,
-          descriptionHTML,
-          cloudId,
-          issueKey,
-          lastUpdated: changelog.histories[0]?.created ?? created
-        }
-      })
-      allIssues.push(...issues)
+      return {error: res, issues: null, nextPageToken: null, isLast: false}
+    }
+    const issues = res.issues.map((issue) => {
+      const {key: issueKey, fields, renderedFields, changelog} = issue
+      const {description, summary, issuetype, created, lastViewed} = fields
+      const {description: descriptionHTML} = renderedFields
+      return {
+        issuetype,
+        summary,
+        description,
+        descriptionHTML,
+        cloudId,
+        issueKey,
+        lastUpdated: changelog.histories[0]?.created ?? created,
+        lastViewed
+      }
     })
-    await Promise.all(reqs)
-    return {error: firstError, issues: allIssues}
+    const {nextPageToken: nextNextPageToken, isLast} = res
+    return {error: null, issues, nextPageToken: nextNextPageToken, isLast}
   }
 
   async getComments(cloudId: string, issueKey: string) {
