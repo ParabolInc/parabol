@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.19.3](https://github.com/ParabolInc/parabol/compare/v10.19.2...v10.19.3) (2025-08-21)
+
+
+### Fixed
+
+* remove poker template dimensions ([#11886](https://github.com/ParabolInc/parabol/issues/11886)) ([0f71cdb](https://github.com/ParabolInc/parabol/commit/0f71cdb49292a924df549906239e76c1a725d67b))
+* update top-level title updates ([#11880](https://github.com/ParabolInc/parabol/issues/11880)) ([b8e989d](https://github.com/ParabolInc/parabol/commit/b8e989db26670de379aa6ac56acbe6a85a57242a))
+
+
+### Changed
+
+* reopen issue on datadog comment ([#11885](https://github.com/ParabolInc/parabol/issues/11885)) ([7ff9d73](https://github.com/ParabolInc/parabol/commit/7ff9d7320084a8f7d306605befd64cc5620cba47))
+* workflow to create GitHub issues from Datadog ([#11670](https://github.com/ParabolInc/parabol/issues/11670)) ([606e474](https://github.com/ParabolInc/parabol/commit/606e474c1c6d05a5f054ccabbf7c42001a1f77e4))
+
 ## [10.19.2](https://github.com/ParabolInc/parabol/compare/v10.19.1...v10.19.2) (2025-08-20)
 
 

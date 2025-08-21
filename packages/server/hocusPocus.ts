@@ -105,7 +105,7 @@ export const server = new Server({
         const [{updatedTitle}] = await Promise.all([updatePageContent(dbId, content, state)])
         if (updatedTitle) {
           await Promise.all([
-            pushGQLTitleUpdates,
+            pushGQLTitleUpdates(dbId),
             withBacklinks(dbId, (doc) => {
               updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
                 node.setAttribute('title', updatedTitle)

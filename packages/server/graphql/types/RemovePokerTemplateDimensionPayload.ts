@@ -18,11 +18,7 @@ const RemovePokerTemplateDimensionPayload = new GraphQLObjectType<any, GQLContex
       }
     },
     dimension: {
-      type: TemplateDimension,
-      resolve: ({dimensionId}, _args: unknown, {dataLoader}) => {
-        if (!dimensionId) return null
-        return dataLoader.get('templateDimensions').load(dimensionId)
-      }
+      type: TemplateDimension
     }
   })
 })
