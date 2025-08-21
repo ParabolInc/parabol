@@ -38,10 +38,20 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const decodeHtmlEntities = (str) => (str
+              .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(dec))
+              .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'");
+            )
+
             const issueId = ${{ toJSON(inputs.issueId) }};
             const issueLink = ${{ toJSON(inputs.issueLink) }};
             const errorType = ${{ toJSON(inputs.errorType) }};
-            const errorMessage = ${{ toJSON(inputs.errorMessage) }};
+            const errorMessage = decodeHtmlEntities( ${{ toJSON(inputs.errorMessage) }} );
             const errorStack = ${{ toJSON(inputs.errorStack) }};
 
             const title = `${errorType}: ${errorMessage.substring(0,120)}${errorMessage.length > 120 ? '...' : ''}`;
