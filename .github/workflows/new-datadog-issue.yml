@@ -62,6 +62,13 @@ jobs:
                 issue_number: existingIssue.number,
                 body
               });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                state: 'open',
+                state_reason: 'reopened'
+              });
               return;
             }
             const newIssue = await github.rest.issues.create({
