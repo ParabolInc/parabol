@@ -22,7 +22,7 @@
     "openapi-fetch": "^0.10.0"
   },
   "dependencies": {
-    "dd-trace": "^5.0.0",
+    "dd-trace": "^5.63.2",
     "franc-min": "^6.2.0"
   }
 }
