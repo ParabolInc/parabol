@@ -12,17 +12,21 @@ graphql`
       }
     }
     team {
+      ...DashNavListTeam
+      ...MeetingsDashActiveMeetings
       id
       name
       organization {
         id
         name
         isPaid
+        ...DashNavList_organization
       }
       sortOrder
       ...PublicTeamsFrag_team
     }
     teamMember {
+      ...DashboardAvatar_teamMember
       id
       user {
         id
